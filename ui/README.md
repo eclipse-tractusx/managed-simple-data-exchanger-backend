@@ -41,6 +41,14 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 
 ## Learn More
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### `Build docker image`
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```shell
+docker build . -t web:latest
+```
+
+### `Run docker container`
+
+```shell
+docker run -it --rm -d -p 8080:80/tcp --name app web
+```

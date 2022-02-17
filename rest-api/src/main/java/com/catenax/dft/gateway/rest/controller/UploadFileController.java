@@ -1,4 +1,4 @@
-package com.catenax.dft.rest;
+package com.catenax.dft.gateway.rest.controller;
 
 import com.catenax.dft.storage.CSVStorageService;
 import org.springframework.beans.factory.annotation.Autowired;

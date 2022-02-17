@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import static org.springframework.http.ResponseEntity.ok;
-import static org.springframework.http.ResponseEntity.status;
 
 @RestController
 public class UploadFileController {
@@ -21,7 +20,7 @@ public class UploadFileController {
         this.storageService = storageService;
     }
 
-    @RequestMapping(value="/upload")
+    @RequestMapping(value = "/upload")
     public ResponseEntity<String> fileUpload(@RequestParam("file") MultipartFile file) {
 
         String processId = storageService.storeFile(file);

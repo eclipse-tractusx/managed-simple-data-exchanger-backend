@@ -19,9 +19,8 @@ public class StorageService {
 
     private final Path fileStorageLocation;
 
-    @Autowired
-    public StorageService(FileStorageProperties fileStorageProperties) {
-        this.fileStorageLocation = Paths.get(fileStorageProperties.getUploadDir())
+    public StorageService() {
+        this.fileStorageLocation = Paths.get("/temp")
                 .toAbsolutePath().normalize();
 
         try {

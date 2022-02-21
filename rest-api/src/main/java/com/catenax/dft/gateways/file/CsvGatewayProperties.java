@@ -1,9 +1,9 @@
-package com.catenax.dft.storage;
+package com.catenax.dft.gateways.file;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "file")
-public class FileStorageProperties {
+public class CsvGatewayProperties {
     private String uploadDir;
 
     public String getUploadDir() {

@@ -1,13 +1,13 @@
 package com.catenax.dft;
 
-import com.catenax.dft.storage.FileStorageProperties;
+import com.catenax.dft.gateways.file.CsvGatewayProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 @SpringBootApplication
 @EnableConfigurationProperties({
-        FileStorageProperties.class
+        CsvGatewayProperties.class
 })
 public class DftApplication {
 

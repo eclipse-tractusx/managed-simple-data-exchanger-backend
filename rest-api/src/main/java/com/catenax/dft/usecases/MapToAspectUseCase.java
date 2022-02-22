@@ -4,14 +4,18 @@ import com.catenax.dft.entities.Aspect;
 import com.catenax.dft.usecases.exceptions.UseCaseException;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
+@Component
 @Slf4j
-public class MapToAspectUseCase {
+public class MapToAspectUseCase extends AbstractUseCase<String, Aspect> {
+
+    public MapToAspectUseCase(GenerateUuIdUseCase nextUseCase) {
+        super(nextUseCase);
+    }
 
     @SneakyThrows
-    public Aspect run(String rowData) {
+    public Aspect executeUseCase(String rowData) {
         String[] rowDataFields = rowData.split(";");
         if (rowDataFields.length != 6) {
             throw new UseCaseException("MapToAspect", "missing columns in row");

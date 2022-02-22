@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 
 import static org.springframework.http.ResponseEntity.ok;
@@ -21,11 +19,11 @@ import static org.springframework.http.ResponseEntity.ok;
 public class UploadFileController {
 
     private final CsvGateway csvGateway;
-    @Autowired
-    private MapToAspectUseCase mapToAspectUseCase;
+    private final MapToAspectUseCase mapToAspectUseCase;
 
-    public UploadFileController(CsvGateway storageService) {
+    public UploadFileController(CsvGateway storageService, MapToAspectUseCase mapToAspectUseCase) {
         this.csvGateway = storageService;
+        this.mapToAspectUseCase = mapToAspectUseCase;
     }
 
     @RequestMapping(value = "/upload")
@@ -35,8 +33,8 @@ public class UploadFileController {
 
         Runnable runnable = () ->
         {
-            List<String> x = csvGateway.processFile(processId);
-            x.forEach(mapToAspectUseCase::run);
+            List<String> csvRows = csvGateway.processFile(processId);
+            csvRows.parallelStream().forEach(mapToAspectUseCase::run);
         };
 
         new Thread(runnable).start();

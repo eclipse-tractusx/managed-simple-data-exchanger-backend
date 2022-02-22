@@ -7,6 +7,7 @@ import lombok.Data;
 @Builder
 public class Aspect {
 
+    public String uuid;
     public Integer id;
     public String firstName;
     public String lastName;

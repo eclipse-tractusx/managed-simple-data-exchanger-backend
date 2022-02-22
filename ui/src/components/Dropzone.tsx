@@ -23,8 +23,6 @@ const DropZone = () => {
     }
   };
 
-  const dragOver = (e: SyntheticEvent) => e.preventDefault();
-
   const dragEnter = (e: any) => {
     e.preventDefault();
     e.stopPropagation();
@@ -49,8 +47,6 @@ const DropZone = () => {
     setIsDragging(false);
   };
 
-  const getSelectedFiles = (files: any) => handleFiles(files);
-
   const removeSelectedFiles = (clearState: boolean) => {
     if (clearState) setSelectedFiles([]);
   };
@@ -59,7 +55,7 @@ const DropZone = () => {
     <div className="bg-[url('../public/images/back-image.jpg')] bg-cover min-h-screen min-w-screen grid grid-cols-12 gap-1">
       <section
         className="col-span-12"
-        onDragOver={dragOver}
+        onDragOver={(e: SyntheticEvent) => e.preventDefault()}
         onDragEnter={dragEnter}
         onDragLeave={dragLeave}
         onDrop={fileDrop}
@@ -68,7 +64,7 @@ const DropZone = () => {
           <div className="flex flex-col justify-center w-auto h-full">
             <div className="flex flex-row">
               <UploadForm
-                getSelectedFiles={getSelectedFiles}
+                getSelectedFiles={(files: any) => handleFiles(files)}
                 selectedFiles={selectedFiles}
                 removeSelectedFiles={removeSelectedFiles}
               />

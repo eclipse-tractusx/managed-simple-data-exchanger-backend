@@ -2,14 +2,13 @@
 FROM maven:3.5-jdk-11 as build
 
 # copy the project files
-#COPY / /
-COPY ./pom.xml /pom.xml
+COPY ../pom.xml /pom.xml
 
 # build all dependencies
 RUN mvn dependency:go-offline -B
 
 # copy your other files
-COPY ./src ./src
+COPY ../src ./src
 
 # build for release
 RUN mvn package

@@ -8,9 +8,11 @@ const UploadForm = (props: any) => {
   const fileInputClicked = () => {
     if (fileInputRef.current) fileInputRef.current.click();
   };
+
   const filesSelected = () => {
     if (fileInputRef.current && fileInputRef.current.files) props.getSelectedFiles(fileInputRef.current.files);
   };
+
   const fileSize = (size: number) => {
     if (size === 0) return '0 Bytes';
     const k = 1024;
@@ -21,10 +23,6 @@ const UploadForm = (props: any) => {
 
   const fileType = (fileName: string) => {
     return fileName.substring(fileName.lastIndexOf('.') + 1, fileName.length) || fileName;
-  };
-
-  const removeSelectedFiles = () => {
-    props.removeSelectedFiles(true);
   };
 
   return (
@@ -63,7 +61,12 @@ const UploadForm = (props: any) => {
               <p className="text-sm">({fileSize(selectedFiles[0].size)})</p>
             </div>
             <span className="p-2 cursor-pointer">
-              <p className="text-sky-500 text-lg" onClick={removeSelectedFiles}>
+              <p
+                className="text-sky-500 text-lg"
+                onClick={() => {
+                  props.removeSelectedFiles(true);
+                }}
+              >
                 X
               </p>
             </span>

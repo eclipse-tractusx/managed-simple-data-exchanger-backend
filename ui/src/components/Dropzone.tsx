@@ -14,11 +14,11 @@ const DropZone = () => {
     return validTypes.includes(file.type);
   };
 
-  const handleFiles = (files: any[]) => {
-    if (validateFile(files[0])) {
-      setSelectedFiles([...selectedFiles, files[0]]);
+  const handleFiles = (file: File) => {
+    if (validateFile(file) || file.size < 10000) {
+      setSelectedFiles([...selectedFiles, file]);
     } else {
-      files[0].invalid = true;
+      file.invalid = true;
       setErrorMessage('File not permitted');
     }
   };
@@ -43,7 +43,11 @@ const DropZone = () => {
   const fileDrop = (e: any) => {
     e.preventDefault();
     const files = e.dataTransfer.files;
-    if (files.length && files.length < 2) handleFiles(files);
+    if (files.length && files.length < 2 && selectedFiles.length === 0) {
+      handleFiles(files[0]);
+    } else {
+      setErrorMessage('Only one file is permitted');
+    }
     setIsDragging(false);
   };
 
@@ -60,6 +64,7 @@ const DropZone = () => {
         onDragLeave={dragLeave}
         onDrop={fileDrop}
       >
+        {errorMessage !== '' && <div className="bg-red-400 w-full h-48">{errorMessage}</div>}
         {!isDragging && (
           <div className="flex flex-col justify-center w-auto h-full">
             <div className="flex flex-row">

@@ -12,6 +12,8 @@
 
 .DS_Store
 
+node_modules
+
 # Package Files #
 *.jar
 *.war

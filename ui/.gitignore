@@ -12,3 +12,5 @@ yarn-debug.log*
 yarn-error.log*
 /.changelog
 .npm/
+/public/env-config.js
+env-config.js

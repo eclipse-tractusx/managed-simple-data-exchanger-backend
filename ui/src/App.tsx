@@ -1,4 +1,4 @@
-import Login from './pages/Login';
+import Login from './pages/login';
 import { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoutes';
@@ -17,13 +17,7 @@ function App() {
       <Routes>
         <Route
           path="/login"
-          element={
-            <Login
-              setIsAuth={setIsAuth}
-              setIsAuthError={setIsAuthError}
-              isAuthError={isAuthError}
-            />
-          }
+          element={<Login setIsAuth={setIsAuth} setIsAuthError={setIsAuthError} isAuthError={isAuthError} />}
         />
         <Route element={<ProtectedRoute isAuth={isAuth} />}>
           <Route path="/dashboard" element={<Dashboard />} />

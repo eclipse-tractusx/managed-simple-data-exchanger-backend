@@ -44,11 +44,15 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 ### `Build docker image`
 
 ```shell
-docker build . -t web:latest
+docker build . -t webapp:01
 ```
 
 ### `Run docker container`
 
 ```shell
 docker run -it --rm -d -p 8080:80/tcp --name app web
+
+
+docker run -p 3000:80 -e PASS=1200456 -t webapp:01
+
 ```

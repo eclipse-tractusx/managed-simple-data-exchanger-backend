@@ -1,31 +1,44 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import getHash from '../modules/Hash';
+interface Props {
+  setIsAuth: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsAuthError: React.Dispatch<React.SetStateAction<boolean>>;
+  isAuthError: boolean;
+}
 
 type FormValues = {
-  email: string;
+  username: string;
   password: string;
 };
 
-function Login() {
+const Login: React.FC<Props> = ({ setIsAuth, setIsAuthError, isAuthError }) => {
   const { register, handleSubmit } = useForm<FormValues>();
-  const onSubmit = handleSubmit(({ email, password }) => {
-    console.log(email, password);
+  const navigate = useNavigate();
+  const onSubmit = handleSubmit(({ username, password }) => {
+    if (getHash(password) === window._env_.PASS && username === window._env_.USERNAME) {
+      setIsAuth(true);
+      navigate('/dashboard');
+    } else {
+      setIsAuthError(true);
+    }
   });
 
   return (
-    <div className="min-h-screen flex flex-col justify-center bg-white">
-      <div className="max-w-md w-full mx-auto font-bold text-6xl text-center"> DFT</div>
+    <div className="min-h-screen flex flex-col justify-center bg-white bg-fixed bg-[url('../public/images/login.jpg')] bg-cover">
+      <div className="max-w-md w-full mx-auto font-bold text-6xl text-center">DFT</div>
       <div className="max-w-md w-full mx-auto mt-4 bg-white p-8 border ">
         <form action="" className="space-y-6" onSubmit={onSubmit}>
           <div>
             <label htmlFor="" className="text-sm font-bold text-gray-600 block">
               {' '}
-              Email
+              Username
             </label>
             <input
-              {...register('email', { required: true, minLength: 5, maxLength: 80 })}
-              name="email"
-              type="email"
+              {...register('username', { required: true, minLength: 5, maxLength: 80 })}
+              name="username"
+              type="text"
               className="w-full p-2 border border-gray-300 rounded mt-1"
             />
           </div>
@@ -37,7 +50,7 @@ function Login() {
             <input
               {...register('password', { required: true, minLength: 4, maxLength: 80 })}
               name="password"
-              type="text"
+              type="password"
               className="w-full p-2 border border-gray-300 rounded mt-1"
             />
           </div>
@@ -46,10 +59,20 @@ function Login() {
               Login
             </button>
           </div>
+          {isAuthError ? (
+            <div>
+              <label htmlFor="" className="text-sm font-bold text-red-600 block text-center ">
+                {' '}
+                Username or Password is Incorrect
+              </label>
+            </div>
+          ) : (
+            <div />
+          )}
         </form>
       </div>
     </div>
   );
-}
+};
 
 export default Login;

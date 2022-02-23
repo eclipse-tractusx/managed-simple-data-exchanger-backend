@@ -15,7 +15,7 @@ const DropZone = () => {
   };
 
   const handleFiles = (file: File) => {
-    if (validateFile(file) || file.size < 10000) {
+    if (validateFile(file)) {
       setSelectedFiles([...selectedFiles, file]);
     } else {
       file.invalid = true;

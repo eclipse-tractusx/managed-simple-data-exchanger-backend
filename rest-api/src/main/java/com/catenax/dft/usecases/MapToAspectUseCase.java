@@ -1,6 +1,6 @@
 package com.catenax.dft.usecases;
 
-import com.catenax.dft.entities.Aspect;
+import com.catenax.dft.entities.usecases.Aspect;
 import com.catenax.dft.usecases.exceptions.UseCaseException;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;

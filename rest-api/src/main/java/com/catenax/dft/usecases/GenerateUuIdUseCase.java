@@ -1,6 +1,6 @@
 package com.catenax.dft.usecases;
 
-import com.catenax.dft.entities.Aspect;
+import com.catenax.dft.entities.usecases.Aspect;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;

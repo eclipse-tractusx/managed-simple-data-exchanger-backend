@@ -1,17 +1,20 @@
-package com.catenax.dft.entities;
+package com.catenax.dft.entities.database;
 
-import lombok.Builder;
 import lombok.Data;
 
-@Data
-@Builder
-public class Aspect {
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
-    public String uuid;
+@Entity
+@Data
+public class AspectEntity {
+
     public Integer id;
     public String firstName;
     public String lastName;
     public String email;
     public String email2;
     public String profession;
+    @Id
+    private String uuid;
 }

@@ -1,8 +1,8 @@
 package com.catenax.dft.usecases;
 
-import com.catenax.dft.entities.Aspect;
-import com.catenax.dft.mapper.AspectEntityDaoMapper;
-import com.catenax.dft.repository.AspectDaoRepository;
+import com.catenax.dft.entities.usecases.Aspect;
+import com.catenax.dft.gateways.database.AspectRepository;
+import com.catenax.dft.mapper.AspectEntityMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -10,19 +10,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class StoreAspectUseCase extends AbstractUseCase<Aspect, Aspect> {
 
-    private final AspectDaoRepository aspectDaoRepository;
+    private final AspectRepository aspectRepository;
+    private final AspectEntityMapper mapper;
 
-    private final AspectEntityDaoMapper mapper;
-
-    public StoreAspectUseCase(AspectDaoRepository aspectDaoRepository, AspectEntityDaoMapper mapper) {
+    public StoreAspectUseCase(AspectRepository aspectRepository, AspectEntityMapper mapper) {
         super(null);
-        this.aspectDaoRepository = aspectDaoRepository;
+        this.aspectRepository = aspectRepository;
         this.mapper = mapper;
     }
 
     protected Aspect executeUseCase(Aspect input) {
-
-        aspectDaoRepository.save(mapper.mapFrom(input));
+        aspectRepository.save(mapper.mapFrom(input));
         log.debug("Aspect store successfully");
         return input;
     }

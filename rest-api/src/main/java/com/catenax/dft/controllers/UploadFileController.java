@@ -1,9 +1,8 @@
-package com.catenax.dft.gateways.rest;
+package com.catenax.dft.controllers;
 
 import com.catenax.dft.gateways.file.CsvGateway;
 import com.catenax.dft.usecases.MapToAspectUseCase;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;

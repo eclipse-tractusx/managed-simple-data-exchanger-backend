@@ -53,6 +53,7 @@ docker build . -t webapp:01
 docker run -it --rm -d -p 8080:80/tcp --name app web
 
 
-docker run -p 3000:80 -e PASS=1200456 -t webapp:01
+docker run -p 3000:8081 -t webapp:01
+
 
 ```

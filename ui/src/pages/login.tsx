@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import getHash from '../modules/Hash';
 interface Props {
-  setIsAuth: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsAuth: any;
   setIsAuthError: React.Dispatch<React.SetStateAction<boolean>>;
   isAuthError: boolean;
 }

@@ -1,6 +1,7 @@
 package com.catenax.dft.entities.database;
 
 import lombok.Data;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;

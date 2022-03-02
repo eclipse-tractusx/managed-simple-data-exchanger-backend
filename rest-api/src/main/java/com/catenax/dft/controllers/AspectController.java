@@ -1,8 +1,11 @@
 package com.catenax.dft.controllers;
 
+import com.catenax.dft.entities.database.AspectEntity;
 import com.catenax.dft.entities.usecases.Aspect;
-import com.catenax.dft.usecases.GetAspectsUseCase;
+import com.catenax.dft.usecases.aspects.GetAspectsUseCase;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,9 +26,11 @@ public class AspectController {
     }
 
     @GetMapping(path = "/aspect")
-    public ResponseEntity<List<Aspect>> getAspects(){
+    public ResponseEntity<Page<AspectEntity>> getAspects(@Param("page") Integer page, @Param("pageSize") Integer pageSize) {
 
-        return ok().body(useCase.fetchAllAspects());
+        page = page == null ? 1 : page;
+        pageSize = pageSize == null ? 10 : pageSize;
+        return ok().body(useCase.fetchAllAspects(page, pageSize));
     }
 
 }

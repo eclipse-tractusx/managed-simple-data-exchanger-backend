@@ -1,4 +1,4 @@
-package com.catenax.dft.usecases;
+package com.catenax.dft.usecases.csvHandler;
 
 import com.catenax.dft.entities.usecases.Aspect;
 import com.catenax.dft.gateways.database.AspectRepository;
@@ -8,12 +8,12 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class StoreAspectUseCase extends AbstractUseCase<Aspect, Aspect> {
+public class StoreAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<Aspect, Aspect> {
 
     private final AspectRepository aspectRepository;
     private final AspectEntityMapper mapper;
 
-    public StoreAspectUseCase(AspectRepository aspectRepository, AspectEntityMapper mapper) {
+    public StoreAspectCsvHandlerUseCase(AspectRepository aspectRepository, AspectEntityMapper mapper) {
         super(null);
         this.aspectRepository = aspectRepository;
         this.mapper = mapper;

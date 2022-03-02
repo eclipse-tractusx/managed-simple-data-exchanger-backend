@@ -1,7 +1,7 @@
 package com.catenax.dft.controllers;
 
 import com.catenax.dft.gateways.file.CsvGateway;
-import com.catenax.dft.usecases.MapToAspectUseCase;
+import com.catenax.dft.usecases.csvHandler.MapToAspectCsvHandlerUseCase;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,9 +18,9 @@ import static org.springframework.http.ResponseEntity.ok;
 public class UploadFileController {
 
     private final CsvGateway csvGateway;
-    private final MapToAspectUseCase mapToAspectUseCase;
+    private final MapToAspectCsvHandlerUseCase mapToAspectUseCase;
 
-    public UploadFileController(CsvGateway storageService, MapToAspectUseCase mapToAspectUseCase) {
+    public UploadFileController(CsvGateway storageService, MapToAspectCsvHandlerUseCase mapToAspectUseCase) {
         this.csvGateway = storageService;
         this.mapToAspectUseCase = mapToAspectUseCase;
     }

@@ -1,4 +1,4 @@
-package com.catenax.dft.usecases;
+package com.catenax.dft.usecases.csvHandler;
 
 import com.catenax.dft.entities.usecases.Aspect;
 import com.catenax.dft.usecases.exceptions.UseCaseException;
@@ -8,9 +8,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-public class MapToAspectUseCase extends AbstractUseCase<String, Aspect> {
+public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<String, Aspect> {
 
-    public MapToAspectUseCase(GenerateUuIdUseCase nextUseCase) {
+    public MapToAspectCsvHandlerUseCase(GenerateUuIdCsvHandlerUseCase nextUseCase) {
         super(nextUseCase);
     }
 

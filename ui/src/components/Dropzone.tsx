@@ -15,12 +15,13 @@ const DropZone = () => {
   };
 
   const handleFiles = (file: File) => {
-    if (validateFile(file)) {
+    /*if (validateFile(file)) {
       setSelectedFiles([...selectedFiles, file]);
     } else {
       file.invalid = true;
       setErrorMessage('File not permitted');
-    }
+    } */
+    setSelectedFiles([...selectedFiles, file]);
   };
 
   const dragEnter = (e: any) => {
@@ -56,7 +57,7 @@ const DropZone = () => {
   };
 
   return (
-    <div className="bg-[url('../public/images/back-image.jpg')] bg-cover min-h-screen min-w-screen grid grid-cols-12 gap-1">
+    <div className=" bg-cover min-h-screen min-w-screen grid grid-cols-5 gap-19  ">
       <section
         className="col-span-12"
         onDragOver={(e: SyntheticEvent) => e.preventDefault()}
@@ -66,8 +67,8 @@ const DropZone = () => {
       >
         {errorMessage !== '' && <div className="bg-red-400 w-full h-48">{errorMessage}</div>}
         {!isDragging && (
-          <div className="flex flex-col justify-center w-auto h-full">
-            <div className="flex flex-row">
+          <div className="flex flex-row justify-center w-auto h-full items-center">
+            <div className="flex flex-col items-center">
               <UploadForm
                 getSelectedFiles={(files: any) => handleFiles(files)}
                 selectedFiles={selectedFiles}

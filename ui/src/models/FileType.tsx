@@ -1,4 +1,4 @@
 export enum FileType {
-  CSV = 'text/csv',
+  CSV = 'csv',
   EXCEL = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 }

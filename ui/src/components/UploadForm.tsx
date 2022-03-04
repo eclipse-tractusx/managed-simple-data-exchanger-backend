@@ -1,16 +1,30 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, FormEvent, FC } from 'react';
 import { FileSize } from '../models/FileSize';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import CloseIcon from '@mui/icons-material/Close';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
+import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 
 const UploadForm = (props: any) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { selectedFiles } = props;
+  const [uploadProgress, updateUploadProgress] = useState(0);
+  const [fileURI, setFileURI] = useState<string | null>(null);
+  const [uploadStatus, setUploadStatus] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const fileInputClicked = () => {
     if (fileInputRef.current) fileInputRef.current.click();
   };
 
   const filesSelected = () => {
-    if (fileInputRef.current && fileInputRef.current.files) props.getSelectedFiles(fileInputRef.current.files);
+    if (fileInputRef.current && fileInputRef.current.files) {
+      console.log(`Files available filesSelected = ${props.getSelectedFiles(fileInputRef.current.files)}`);
+
+      props.getSelectedFiles(fileInputRef.current.files);
+    }
   };
 
   const fileSize = (size: number) => {
@@ -25,11 +39,56 @@ const UploadForm = (props: any) => {
     return fileName.substring(fileName.lastIndexOf('.') + 1, fileName.length) || fileName;
   };
 
+  const getBase64 = (img: Blob, callback: any) => {
+    const reader = new FileReader();
+    // FileReader API Spec: https://developer.mozilla.org/en-US/docs/Web/API/FileReader/FileReader
+    reader.addEventListener('load', () => callback(reader.result));
+    reader.readAsDataURL(img);
+  };
+
+  const handleFileUpload = (e: any) => {
+    e.preventDefault();
+
+    /* if (!isValidFileType(file.type)) {
+        alert('Only csv files are allowed');
+        return;
+    } */
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append('file', selectedFiles[0]);
+    console.log(selectedFiles[0].toString());
+    const config: AxiosRequestConfig = {
+      method: 'post',
+      url: 'http://3.66.97.83:8080/api/upload',
+
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Access-Control-Allow-Origin': '*',
+      },
+      data: formData,
+      /* onUploadProgress: (ev: ProgressEvent) => {
+        const progress = (ev.loaded / ev.total) * 100;
+        updateUploadProgress(Math.round(progress));
+      },*/
+    };
+    console.log(`${JSON.stringify(config)}`);
+
+    axios(config)
+      .then(resp => {
+        console.log(JSON.stringify(resp.data));
+        setUploadStatus(true);
+        setUploading(false);
+      })
+      .catch(err => console.error(err));
+  };
+
   return (
-    <section className="bg-white shadow-md rounded-md w-72 col-start-2 col-span-2 top-1/2 h-42">
-      <div className="flex flex-col gap-y-4">
-        {selectedFiles.length === 0 && (
-          <div className="py-6 px-4 flex flex-row items-center gap-x-4 relative">
+    <div className="flex flex-col">
+      <h2 className=" text-5xl font-sans text-[#444444] m-10 justify-center items-center">Upload a file </h2>
+      <div className="border border-dashed  border-3  flex flex-row justify-center w-auto h-full items-center">
+        <div className="flex flex-col gap-y-4 mx-20  ">
+          <div className="py-6 px-4 flex flex-col items-center gap-x-4 relative">
             <input
               id="round"
               ref={fileInputRef}
@@ -38,45 +97,64 @@ const UploadForm = (props: any) => {
               onChange={filesSelected}
               className="hidden"
             />
-            <label
-              htmlFor="round"
-              className="relative cursor-pointer w-10 h-10 rounded-full bg-sky-500 hover:bg-sky-600"
-            >
-              <i className="text-white absolute left-1 top-1">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="30" height="30">
-                  <path fill="none" d="M0 0h24v24H0z" />
-                  <path d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2z" />
-                </svg>
-              </i>
+            <CloudUploadIcon sx={{ fontSize: 40, color: '#444444' }} />
+            <h2 className=" my-1">Drag and drop your file on this page</h2>
+            <h2 className=" my-1">or</h2>
+
+            <label htmlFor="round" className="relative rounded-md cursor-pointer p-2 text-sky-500  border items-center">
+              CHOOSE A FILE
             </label>
-            <h2>Upload Files</h2>
           </div>
-        )}
-        {selectedFiles.length > 0 && (
-          <div className="py-6 px-4 flex flex-row items-center gap-x-4 relative">
+        </div>
+      </div>{' '}
+      {uploading ? (
+        <div className="progress-bar-container z-40">
+          <CircularProgressbar
+            value={uploadProgress}
+            text={`${uploadProgress}% uploaded`}
+            styles={buildStyles({
+              textSize: '10px',
+              pathColor: 'teal',
+            })}
+          />
+        </div>
+      ) : null}
+      {selectedFiles.length ? (
+        <div className="flex flex-col mt-5 ">
+          <label htmlFor="" className="font-bold text-[#000000] block mb-5  text-left ">
+            {' '}
+            Selected file
+          </label>
+
+          <div className="flex flex-row items-center gap-x-4 relative bg-[#f1f1f1]">
+            <UploadFileIcon className="ml-2" />
             <div className="flex flex-col gap-y-2 overflow-x-auto">
-              <p className="text-md truncate w-10/12">
-                {selectedFiles[0].name} ({fileType(selectedFiles[0].name)})
-              </p>
+              <p className="text-md truncate w-10/12">{selectedFiles[0].name}</p>
               <p className="text-sm">({fileSize(selectedFiles[0].size)})</p>
             </div>
             <span className="p-2 cursor-pointer">
-              <p
-                className="text-sky-500 text-lg"
+              <button
+                className="text-[#212121] text-sm"
                 onClick={() => {
                   props.removeSelectedFiles(true);
                 }}
               >
-                X
-              </p>
+                <CloseIcon />
+              </button>
             </span>
           </div>
-        )}
-        <div className="flex flex-col justify-center items-center border-t border-gray-300 py-4">
-          <button className="bg-sky-500 hover:bg-sky-600 rounded-lg w-32 h-10 text-white uppercase">Upload</button>
+
+          <button
+            className="w-full py-2 px-4 bg-[#03a9f4] hover:bg-[#01579b] rounded-md text-white text-sm mt-5"
+            onClick={handleFileUpload}
+          >
+            UPLOAD FILE
+          </button>
         </div>
-      </div>
-    </section>
+      ) : (
+        <div />
+      )}
+    </div>
   );
 };
 

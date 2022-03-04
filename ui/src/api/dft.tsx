@@ -1,5 +1,5 @@
 import axios from 'axios';
 
 export default axios.create({
-  baseURL: 'http://localhost:3000',
+  baseURL: 'http://3.66.97.83:8080/api/upload',
 });

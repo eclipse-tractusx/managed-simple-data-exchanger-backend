@@ -113,10 +113,10 @@ const UploadForm = (props: any) => {
             Selected file
           </label>
 
-          <div className="flex flex-row items-center gap-x-4 relative bg-[#f1f1f1]">
+          <div className="flex flex-row items-center gap-x-4 relative bg-[#f1f1f1] p-2">
             <UploadFileIcon className="ml-2" />
-            <div className="flex flex-col gap-y-2 overflow-x-auto">
-              <p className="text-md truncate w-10/12">{selectedFiles[0].name}</p>
+            <div className="flex flex-row gap-x-4 items-center">
+              <p className="text-md">{selectedFiles[0].name}</p>
               <p className="text-sm">({fileSize(selectedFiles[0].size)})</p>
             </div>
             <span className="p-2 cursor-pointer">

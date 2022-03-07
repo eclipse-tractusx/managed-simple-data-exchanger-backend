@@ -68,12 +68,12 @@ export const Login: React.FC<Props> = ({ setIsAuth, setIsAuthError, isAuthError 
   return (
     <div className="grid grid-cols-2 gap-0">
       <div className="min-h-screen flex flex-col justify-center bg-white bg-fixed bg-[url('../public/images/login.jpg')] bg-cover"></div>
-      <div className="min-h-screen flex flex-col justify-center ">
-        <div className="max-w-md w-full mx-auto font-bold text-6xl text-center">DFT</div>
+      <div className="min-h-screen flex flex-col justify-center items-center ">
+        <img src="images/logo-dft-blue.svg" alt="DFT logo" className=" w-32 h-32 fill-white" />
 
         {isAuthError ? (
           <div>
-            <label htmlFor="" className="text-sm font-bold text-red-600 block text-center  ">
+            <label htmlFor="" className="text-sm font-bold text-red-600 block text-center content-center ">
               {' '}
               Username or Password is Incorrect
             </label>

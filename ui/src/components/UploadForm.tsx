@@ -1,17 +1,15 @@
-import React, { useRef, useState, FormEvent, FC } from 'react';
+import React, { useRef, useState } from 'react';
 import { FileSize } from '../models/FileSize';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CloseIcon from '@mui/icons-material/Close';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
-import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
-import 'react-circular-progressbar/dist/styles.css';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import UploadProgressBar from './UploadProgressBar';
 
 const UploadForm = (props: any) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { selectedFiles } = props;
   const [uploadProgress, updateUploadProgress] = useState(0);
-  const [fileURI, setFileURI] = useState<string | null>(null);
   const [uploadStatus, setUploadStatus] = useState(false);
   const [uploading, setUploading] = useState(false);
 
@@ -67,10 +65,10 @@ const UploadForm = (props: any) => {
         'Access-Control-Allow-Origin': '*',
       },
       data: formData,
-      /* onUploadProgress: (ev: ProgressEvent) => {
+      onUploadProgress: (ev: ProgressEvent) => {
         const progress = (ev.loaded / ev.total) * 100;
         updateUploadProgress(Math.round(progress));
-      },*/
+      },
     };
     console.log(`${JSON.stringify(config)}`);
 
@@ -85,7 +83,7 @@ const UploadForm = (props: any) => {
 
   return (
     <div className="flex flex-col">
-      <h2 className=" text-5xl font-sans text-[#444444] m-10 justify-center items-center">Upload a file </h2>
+      <h2 className=" text-5xl font-sans text-[#444444] text-center mb-3">Upload a file </h2>
       <div className="border border-dashed  border-3  flex flex-row justify-center w-auto h-full items-center">
         <div className="flex flex-col gap-y-4 mx-20  ">
           <div className="py-6 px-4 flex flex-col items-center gap-x-4 relative">
@@ -107,18 +105,7 @@ const UploadForm = (props: any) => {
           </div>
         </div>
       </div>{' '}
-      {uploading ? (
-        <div className="progress-bar-container z-40">
-          <CircularProgressbar
-            value={uploadProgress}
-            text={`${uploadProgress}% uploaded`}
-            styles={buildStyles({
-              textSize: '10px',
-              pathColor: 'teal',
-            })}
-          />
-        </div>
-      ) : null}
+      {uploading ? <UploadProgressBar uploadProgress={uploadProgress} /> : null}
       {selectedFiles.length ? (
         <div className="flex flex-col mt-5 ">
           <label htmlFor="" className="font-bold text-[#000000] block mb-5  text-left ">

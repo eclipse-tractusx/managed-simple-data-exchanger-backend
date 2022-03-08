@@ -19,7 +19,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         log.debug("WebSecurityConfig ENGAGED");
-        http.cors();
+        http
+                .csrf()
+                .disable()
+                .cors()
+                .and()
+                .headers()
+                .frameOptions()
+                .sameOrigin();
     }
 
     @Bean

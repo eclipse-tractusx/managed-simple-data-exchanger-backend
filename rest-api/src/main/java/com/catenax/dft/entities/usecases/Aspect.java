@@ -9,11 +9,14 @@ import lombok.Data;
 @AllArgsConstructor
 public class Aspect {
 
-    public String uuid;
-    public Integer id;
-    public String firstName;
-    public String lastName;
-    public String email;
-    public String email2;
-    public String profession;
+    private String uuid;
+    private String localIdentifiersKey;
+    private String localIdentifiersValue;
+    private String manufacturingDate;
+    private String manufacturingCountry;
+    private String manufacturerPartId;
+    private String customerPartId;
+    private String classification;
+    private String nameAtManufacturer;
+    private String nameAtCustomer;
 }

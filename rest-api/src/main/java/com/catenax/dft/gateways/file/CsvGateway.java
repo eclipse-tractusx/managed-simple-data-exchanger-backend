@@ -1,5 +1,6 @@
 package com.catenax.dft.gateways.file;
 
+import com.catenax.dft.entities.csv.CsvContent;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +16,17 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class CsvGateway {
 
     public static final String CSV_FILE_EXTENSION = ".csv";
+    public static final String SEPARATOR = ";";
+    private static final String PARENT_ASPECT_COLUMNS = "local_identifiers_key;local_identifiers_value;manufacturing_date;manufactoring_country;manufacturer_part_id;customer_part_id;classification;name_at_manufacturer;name_at_customer";
     private final Path fileStorageLocation;
+
 
     @Autowired
     public CsvGateway(CsvGatewayProperties csvGatewayProperties) {
@@ -62,9 +67,9 @@ public class CsvGateway {
     }
 
     @SneakyThrows
-    public List<String> processFile(String fileName) {
+    public CsvContent processFile(String fileName) {
 
-        ArrayList<String> resultData = new ArrayList<>();
+
         log.debug(String.format("Start processing '%s.csv' file", fileName));
         String filePath = getFilePath(fileName);
         File file = new File(filePath);
@@ -72,24 +77,35 @@ public class CsvGateway {
             throw new CsvGatewayException("no such file");
         }
 
-        Scanner scanner = new Scanner(file);
         int numberOfRows = 0;
+        Set<String> fileColumns;
+        ArrayList<String> rows = new ArrayList<>();
+        CsvContent csvContent = new CsvContent();
+
+        Scanner scanner = new Scanner(file);
+
         while (scanner.hasNextLine()) {
             String row = scanner.nextLine();
-            if (numberOfRows != 0) {
-                resultData.add(row);
-            }
 
+            if (numberOfRows == 0) {
+                fileColumns = Arrays.stream(row.split(";")).collect(Collectors.toSet());
+                csvContent.setColumns(fileColumns);
+
+            } else {
+                rows.add(row);
+            }
             numberOfRows++;
         }
+
         scanner.close();
+        csvContent.setRows(rows);
 
         if (deleteFile(fileName)) {
             log.debug(String.format("File %s deleted", fileName));
         }
 
         log.debug(String.format("File '%s.csv' is fully processed. Total of lines: %s", fileName, numberOfRows));
-        return resultData;
+        return csvContent;
     }
 
     public boolean deleteFile(String fileName) {
@@ -99,10 +115,7 @@ public class CsvGateway {
     }
 
     public String getFilePath(String fileName) {
-        String fileNameWithExtension = new StringBuffer()
-                .append(fileName)
-                .append(CSV_FILE_EXTENSION)
-                .toString();
+        String fileNameWithExtension = fileName + CSV_FILE_EXTENSION;
         Path targetLocation = this.fileStorageLocation.resolve(fileNameWithExtension);
 
         return targetLocation.toString();

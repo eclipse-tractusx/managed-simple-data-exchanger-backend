@@ -1,6 +1,7 @@
-package com.catenax.dft.usecases.csvHandler;
+package com.catenax.dft.usecases.csvHandler.aspects;
 
 import com.catenax.dft.entities.usecases.Aspect;
+import com.catenax.dft.usecases.csvHandler.AbstractCsvHandlerUseCase;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
@@ -14,7 +15,7 @@ public class GenerateUuIdCsvHandlerUseCase extends AbstractCsvHandlerUseCase<Asp
 
     @Override
     protected Aspect executeUseCase(Aspect input) {
-        input.uuid = UUID.randomUUID().toString();
+        input.setUuid(UUID.randomUUID().toString());
 
         return input;
     }

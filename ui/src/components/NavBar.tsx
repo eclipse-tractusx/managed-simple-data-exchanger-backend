@@ -17,7 +17,7 @@ const Nav = (props: any) => {
 
   return (
     <div className="shadow-md w-full fixed top-0 left-0 bg-[#01579b] z-50">
-      <div className="md:flex items-center justify-between py-1 md:px-6">
+      <div className="md:flex items-center justify-between py-1 md:px-4">
         <div className="flex flex-row items-center gap-x-8">
           <span className="cursor-pointer" onClick={handleExpanded}>
             <MenuOutlinedIcon fontSize="medium" sx={{ color: '#ffffff' }} />

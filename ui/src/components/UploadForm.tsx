@@ -19,9 +19,7 @@ const UploadForm = (props: any) => {
 
   const filesSelected = () => {
     if (fileInputRef.current && fileInputRef.current.files) {
-      console.log(`Files available filesSelected = ${props.getSelectedFiles(fileInputRef.current.files)}`);
-
-      props.getSelectedFiles(fileInputRef.current.files);
+      props.getSelectedFiles(fileInputRef.current.files[0]);
     }
   };
 
@@ -54,8 +52,7 @@ const UploadForm = (props: any) => {
 
     setUploading(true);
     const formData = new FormData();
-    formData.append('file', selectedFiles[0]);
-    console.log(selectedFiles[0].toString());
+    formData.append('File', selectedFiles[0]);
     const config: AxiosRequestConfig = {
       method: 'post',
       url: 'http://3.66.97.83:8080/api/upload',
@@ -85,7 +82,7 @@ const UploadForm = (props: any) => {
     <div className="flex flex-col">
       <h2 className=" text-5xl font-sans text-[#444444] text-center mb-3">Upload a file </h2>
       <div className="border border-dashed  border-3  flex flex-row justify-center w-auto h-full items-center">
-        <div className="flex flex-col gap-y-4 mx-20  ">
+        <div className="flex flex-col gap-y-4 mx-20 ">
           <div className="py-6 px-4 flex flex-col items-center gap-x-4 relative">
             <input
               id="round"
@@ -95,21 +92,23 @@ const UploadForm = (props: any) => {
               onChange={filesSelected}
               className="hidden"
             />
-            <CloudUploadIcon sx={{ fontSize: 40, color: '#444444' }} />
+            <CloudUploadIcon sx={{ fontSize: 40, color: '#444' }} />
             <h2 className=" my-1">Drag and drop your file on this page</h2>
             <h2 className=" my-1">or</h2>
 
-            <label htmlFor="round" className="relative rounded-md cursor-pointer p-2 text-sky-500  border items-center">
+            <label
+              htmlFor="round"
+              className="relative rounded-md cursor-pointer p-2 text-sky-500  border items-center hover:bg-[#efefef]"
+            >
               CHOOSE A FILE
             </label>
           </div>
         </div>
-      </div>{' '}
+      </div>
       {uploading ? <UploadProgressBar uploadProgress={uploadProgress} /> : null}
       {selectedFiles.length ? (
         <div className="flex flex-col mt-5 ">
           <label htmlFor="" className="font-bold text-[#000000] block mb-5  text-left ">
-            {' '}
             Selected file
           </label>
 

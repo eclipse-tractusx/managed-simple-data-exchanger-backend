@@ -1,17 +1,12 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { FileSize } from '../models/FileSize';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CloseIcon from '@mui/icons-material/Close';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import UploadProgressBar from './UploadProgressBar';
 
 const UploadForm = (props: any) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { selectedFiles } = props;
-  const [uploadProgress, updateUploadProgress] = useState(0);
-  const [uploadStatus, setUploadStatus] = useState(false);
-  const [uploading, setUploading] = useState(false);
+  const { selectedFiles, uploadStatus } = props;
 
   const fileInputClicked = () => {
     if (fileInputRef.current) fileInputRef.current.click();
@@ -26,9 +21,9 @@ const UploadForm = (props: any) => {
   const fileSize = (size: number) => {
     if (size === 0) return '0 Bytes';
     const k = 1024;
-    const sizes = Object.keys(FileSize);
+    const sizes: string[] = Object.keys(FileSize);
     const i = Math.floor(Math.log(size) / Math.log(k));
-    return parseFloat((size / Math.pow(k, i)).toFixed(2) + ' ' + sizes[i]);
+    return `${parseFloat((size / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
   };
 
   const fileType = (fileName: string) => {
@@ -42,40 +37,8 @@ const UploadForm = (props: any) => {
     reader.readAsDataURL(img);
   };
 
-  const handleFileUpload = (e: any) => {
-    e.preventDefault();
-
-    /* if (!isValidFileType(file.type)) {
-        alert('Only csv files are allowed');
-        return;
-    } */
-
-    setUploading(true);
-    const formData = new FormData();
-    formData.append('File', selectedFiles[0]);
-    const config: AxiosRequestConfig = {
-      method: 'post',
-      url: 'http://3.66.97.83:8080/api/upload',
-
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        'Access-Control-Allow-Origin': '*',
-      },
-      data: formData,
-      onUploadProgress: (ev: ProgressEvent) => {
-        const progress = (ev.loaded / ev.total) * 100;
-        updateUploadProgress(Math.round(progress));
-      },
-    };
-    console.log(`${JSON.stringify(config)}`);
-
-    axios(config)
-      .then(resp => {
-        console.log(JSON.stringify(resp.data));
-        setUploadStatus(true);
-        setUploading(false);
-      })
-      .catch(err => console.error(err));
+  const emitFileUpload = (e: any) => {
+    props.emitFileUpload(e);
   };
 
   return (
@@ -105,18 +68,19 @@ const UploadForm = (props: any) => {
           </div>
         </div>
       </div>
-      {uploading ? <UploadProgressBar uploadProgress={uploadProgress} /> : null}
-      {selectedFiles.length ? (
+      {selectedFiles.length && !uploadStatus ? (
         <div className="flex flex-col mt-5 ">
           <label htmlFor="" className="font-bold text-[#000000] block mb-5  text-left ">
             Selected file
           </label>
 
-          <div className="flex flex-row items-center gap-x-4 relative bg-[#f1f1f1] p-2">
-            <UploadFileIcon className="ml-2" />
-            <div className="flex flex-row gap-x-4 items-center">
-              <p className="text-md">{selectedFiles[0].name}</p>
-              <p className="text-sm">({fileSize(selectedFiles[0].size)})</p>
+          <div className="flex justify-between bg-[#f1f1f1] p-2">
+            <div className="flex flex-row items-center gap-x-4 relative">
+              <UploadFileIcon className="ml-2" />
+              <div className="flex flex-row gap-x-4 items-center">
+                <p className="text-md">{selectedFiles[0].name}</p>
+                <p className="text-sm">({fileSize(selectedFiles[0].size)})</p>
+              </div>
             </div>
             <span className="p-2 cursor-pointer">
               <button
@@ -132,7 +96,7 @@ const UploadForm = (props: any) => {
 
           <button
             className="w-full py-2 px-4 bg-[#03a9f4] hover:bg-[#01579b] rounded-md text-white text-sm mt-5"
-            onClick={handleFileUpload}
+            onClick={emitFileUpload}
           >
             UPLOAD FILE
           </button>

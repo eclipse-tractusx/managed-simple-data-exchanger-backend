@@ -3,9 +3,14 @@ import Nav from '../components/NavBar';
 import Sidebar from '../components/Sidebar';
 import UploadForm from '../components/UploadForm';
 import { FileType } from '../models/FileType';
+import { File } from '../models/File';
 
 import UploadFileOutlinedIcon from '@mui/icons-material/UploadFileOutlined';
 import Notification from '../components/Notification';
+import dft from '../api/dft';
+import UploadProgressBar from '../components/UploadProgressBar';
+import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
+import CloseIcon from '@mui/icons-material/Close';
 
 const Dashboard: React.FC = () => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -13,6 +18,9 @@ const Dashboard: React.FC = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [uploadProgress, updateUploadProgress] = useState(0);
+  const [uploadStatus, setUploadStatus] = useState(false);
+  const [uploading, setUploading] = useState(false);
   let dragCounter = 0;
 
   const handleExpanded = (expanded: boolean) => {
@@ -25,13 +33,13 @@ const Dashboard: React.FC = () => {
   };
 
   const handleFiles = (file: File) => {
-    /*if (validateFile(file)) {
+    const maxFileSize = 268435456;
+    if (validateFile(file) && file.size < maxFileSize) {
       setSelectedFiles([...selectedFiles, file]);
     } else {
       file.invalid = true;
       setErrorMessage('File not permitted');
-    } */
-    setSelectedFiles([...selectedFiles, file]);
+    }
   };
 
   const dragEnter = (e: any) => {
@@ -70,17 +78,58 @@ const Dashboard: React.FC = () => {
     setMenuIndex(index);
   };
 
+  const uploadFile = (e: any) => {
+    e.preventDefault();
+    setUploading(true);
+    const formData = new FormData();
+    formData.append('file', selectedFiles[0] as any);
+
+    dft
+      .post('/upload', formData, {
+        onUploadProgress: (ev: ProgressEvent) => {
+          console.log(ev);
+
+          const progress = (ev.loaded / ev.total) * 100;
+          updateUploadProgress(Math.round(progress));
+        },
+      })
+      .then(resp => {
+        console.log(resp.data);
+        setTimeout(() => {
+          setUploading(false);
+          setUploadStatus(true);
+        }, 1000);
+      })
+      .catch(err => console.error(err));
+  };
+
   const layout = () => {
     if (menuIndex === 0) {
       return (
         <div className="flex flex-1 flex-col items-center justify-center min-w-0 relative">
           <div className="flex-[1_0_0%] flex order-1">
             <div className="flex flex-col items-center justify-center">
-              <UploadForm
-                getSelectedFiles={(files: any) => handleFiles(files)}
-                selectedFiles={selectedFiles}
-                removeSelectedFiles={removeSelectedFiles}
-              />
+              {uploading ? <UploadProgressBar uploadProgress={uploadProgress} /> : null}
+              {!uploading && (
+                <UploadForm
+                  getSelectedFiles={(files: any) => handleFiles(files)}
+                  selectedFiles={selectedFiles}
+                  removeSelectedFiles={removeSelectedFiles}
+                  uploadStatus={uploadStatus}
+                  emitFileUpload={(e: any) => uploadFile(e)}
+                />
+              )}
+              {uploadStatus && (
+                <div className="flex justify-between bg-[#e0eee0] p-4 w-full mt-4">
+                  <div className="flex items-center gap-x-2">
+                    <CheckCircleOutlineOutlinedIcon sx={{ color: 'rgb(34 197 94)' }} />
+                    <p className="text-md">{selectedFiles[0].name}</p>
+                  </div>
+                  <span onClick={() => setUploadStatus(false)}>
+                    <CloseIcon />
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -109,7 +158,7 @@ const Dashboard: React.FC = () => {
             <Sidebar isExpanded={isExpanded} emitMenuIndex={(index: number) => getMenuIndex(index)} />
           </div>
           {errorMessage !== '' && (
-            <div className={`${isExpanded ? 'left-64' : 'left-14'} absolute top-16 left-4 z-50 w-screen`}>
+            <div className={`${isExpanded ? 'left-64' : 'left-14'} absolute top-16 z-50 w-screen`}>
               <Notification errorMessage={errorMessage} clear={() => setErrorMessage('')} />
             </div>
           )}

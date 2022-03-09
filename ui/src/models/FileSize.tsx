@@ -1,7 +1,5 @@
 export enum FileSize {
-  'Bytes',
-  'KB',
-  'MB',
-  'GB',
-  'TB',
+  'Bytes' = 'bytes',
+  'KB' = 'KB',
+  'MB' = 'MB',
 }

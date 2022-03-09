@@ -8,10 +8,9 @@ interface Props {
 
 const UploadProgressBar: React.FC<Props> = ({ uploadProgress }) => {
   return (
-    <div className="w-screen  h-screen fixed flex   top-0 left-0 bg-black opacity-80 z-50">
+    <div className="w-screen h-screen fixed flex top-0 left-0 bg-white opacity-40 z-50">
       <div className="flex flex-col justify-center items-center h-full w-full ">
         <div className="flex w-96 h-96">
-          {' '}
           <CircularProgressbar
             value={uploadProgress}
             text={`${uploadProgress}% uploaded`}

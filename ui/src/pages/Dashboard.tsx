@@ -102,6 +102,7 @@ const Dashboard: React.FC = () => {
       .catch(err => console.error(err));
   };
 
+  // TODO: Replace this logic with routes
   const layout = () => {
     if (menuIndex === 0) {
       return (
@@ -124,7 +125,7 @@ const Dashboard: React.FC = () => {
                     <CheckCircleOutlineOutlinedIcon sx={{ color: 'rgb(34 197 94)' }} />
                     <p className="text-md">{selectedFiles[0].name}</p>
                   </div>
-                  <span onClick={() => setUploadStatus(false)}>
+                  <span className="cursor-pointer" onClick={() => setUploadStatus(false)}>
                     <CloseIcon />
                   </span>
                 </div>
@@ -135,8 +136,11 @@ const Dashboard: React.FC = () => {
       );
     } else {
       return (
-        <div className="flex flex-1 flex-col items-center justify-center min-w-0 relative px-10">
-          <StickyHeadTable />
+        <div className="flex-1 py-6 px-20">
+          <h1 className="flex flex-row text-bold text-3xl">Upload History</h1>
+          <div className="mt-8">
+            <StickyHeadTable />
+          </div>
         </div>
       );
     }

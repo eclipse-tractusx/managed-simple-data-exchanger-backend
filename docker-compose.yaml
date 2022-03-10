@@ -22,7 +22,7 @@ services:
   rest-api:
     depends_on:      
       - db
-    image: 460700981334.dkr.ecr.eu-central-1.amazonaws.com/dft-api:5fc3290d38403674cb54cd95b778ce6c88845fbf
+    image: 460700981334.dkr.ecr.eu-central-1.amazonaws.com/dft-api:latest
     network_mode: host
     ports:
       - "8080:8080"

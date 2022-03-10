@@ -1,7 +1,7 @@
 import Login from './pages/Login';
 import { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import ProtectedRoute from './components/ProtectedRoutes';
+import ProtectedRoute from './modules/ProtectedRoutes';
 import Dashboard from './pages/Dashboard';
 
 import { useLocalStorage } from './modules/LocalStorage';

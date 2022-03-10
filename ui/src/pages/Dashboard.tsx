@@ -88,8 +88,6 @@ const Dashboard: React.FC = () => {
     dft
       .post('/upload', formData, {
         onUploadProgress: (ev: ProgressEvent) => {
-          console.log(ev);
-
           const progress = (ev.loaded / ev.total) * 100;
           updateUploadProgress(Math.round(progress));
         },

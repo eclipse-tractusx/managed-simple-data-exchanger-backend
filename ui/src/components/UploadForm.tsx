@@ -26,17 +26,6 @@ const UploadForm = (props: any) => {
     return `${parseFloat((size / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
   };
 
-  const fileType = (fileName: string) => {
-    return fileName.substring(fileName.lastIndexOf('.') + 1, fileName.length) || fileName;
-  };
-
-  const getBase64 = (img: Blob, callback: any) => {
-    const reader = new FileReader();
-    // FileReader API Spec: https://developer.mozilla.org/en-US/docs/Web/API/FileReader/FileReader
-    reader.addEventListener('load', () => callback(reader.result));
-    reader.readAsDataURL(img);
-  };
-
   const emitFileUpload = (e: any) => {
     props.emitFileUpload(e);
   };

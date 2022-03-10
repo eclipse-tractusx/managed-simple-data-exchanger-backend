@@ -74,7 +74,6 @@ export const Login: React.FC<Props> = ({ setIsAuth, setIsAuthError, isAuthError 
         {isAuthError ? (
           <div>
             <label htmlFor="" className="text-sm font-bold text-red-600 block text-center content-center ">
-              {' '}
               Username or Password is Incorrect
             </label>
           </div>
@@ -111,7 +110,7 @@ export const Login: React.FC<Props> = ({ setIsAuth, setIsAuthError, isAuthError 
                   </InputAdornment>
                 }
                 label="Password"
-              />{' '}
+              />
             </FormControl>
 
             <div>

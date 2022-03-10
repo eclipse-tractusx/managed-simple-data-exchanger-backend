@@ -11,6 +11,7 @@ import dft from '../api/dft';
 import UploadProgressBar from '../components/UploadProgressBar';
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 import CloseIcon from '@mui/icons-material/Close';
+import StickyHeadTable from '../components/Table';
 
 const Dashboard: React.FC = () => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -33,7 +34,7 @@ const Dashboard: React.FC = () => {
   };
 
   const handleFiles = (file: File) => {
-    const maxFileSize = 268435456;
+    const maxFileSize = window._env_.FILESIZE;
     if (validateFile(file) && file.size < maxFileSize) {
       setSelectedFiles([...selectedFiles, file]);
     } else {
@@ -87,8 +88,6 @@ const Dashboard: React.FC = () => {
     dft
       .post('/upload', formData, {
         onUploadProgress: (ev: ProgressEvent) => {
-          console.log(ev);
-
           const progress = (ev.loaded / ev.total) * 100;
           updateUploadProgress(Math.round(progress));
         },
@@ -136,8 +135,8 @@ const Dashboard: React.FC = () => {
       );
     } else {
       return (
-        <div>
-          <h1>Gins page</h1>
+        <div className="flex flex-1 flex-col items-center justify-center min-w-0 relative px-10">
+          <StickyHeadTable />
         </div>
       );
     }

@@ -34,8 +34,7 @@ const Dashboard: React.FC = () => {
   };
 
   const handleFiles = (file: File) => {
-    const maxFileSize = window._env_.FILESIZE;
-    console.log('validateFile(file)', validateFile(file));
+    const maxFileSize = window._env_.FILESIZE;«
     if (validateFile(file) && file.size < maxFileSize) {
       setSelectedFiles([...selectedFiles, file]);
     } else {

@@ -30,11 +30,12 @@ const Dashboard: React.FC = () => {
 
   const validateFile = (file: File) => {
     const validTypes: string[] = Object.values(FileType);
-    return validTypes.includes(file.type);
+    return validTypes.includes(file.type) || file.name.endsWith('.csv');
   };
 
   const handleFiles = (file: File) => {
     const maxFileSize = window._env_.FILESIZE;
+    console.log('validateFile(file)', validateFile(file));
     if (validateFile(file) && file.size < maxFileSize) {
       setSelectedFiles([...selectedFiles, file]);
     } else {

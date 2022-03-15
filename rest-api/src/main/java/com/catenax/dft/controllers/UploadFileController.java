@@ -36,6 +36,7 @@ public class UploadFileController {
         };
 
         new Thread(runnable).start();
+
         return ok().body(processId);
     }
 }

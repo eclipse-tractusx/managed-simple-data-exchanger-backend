@@ -6,6 +6,7 @@ import lombok.Data;
 @Builder
 @Data
 public class ChildAspect {
+
     private String parentIdentifierKey;
     private String parentIdentifierValue;
     private String lifecycleContext;

@@ -8,5 +8,6 @@ import org.springframework.stereotype.Component;
 @Component
 @Mapper(componentModel = "spring")
 public interface AspectMapper {
+
     AspectEntity mapFrom(Aspect aspect);
 }

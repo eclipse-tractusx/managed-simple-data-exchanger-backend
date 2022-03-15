@@ -15,8 +15,5 @@ public class DftApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(DftApplication.class, args);
-
     }
-
-
 }

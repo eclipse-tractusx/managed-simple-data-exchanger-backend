@@ -24,9 +24,7 @@ public class CsvGateway {
 
     public static final String CSV_FILE_EXTENSION = ".csv";
     public static final String SEPARATOR = ";";
-    private static final String PARENT_ASPECT_COLUMNS = "local_identifiers_key;local_identifiers_value;manufacturing_date;manufactoring_country;manufacturer_part_id;customer_part_id;classification;name_at_manufacturer;name_at_customer";
     private final Path fileStorageLocation;
-
 
     @Autowired
     public CsvGateway(CsvGatewayProperties csvGatewayProperties) {
@@ -68,8 +66,6 @@ public class CsvGateway {
 
     @SneakyThrows
     public CsvContent processFile(String fileName) {
-
-
         log.debug(String.format("Start processing '%s.csv' file", fileName));
         String filePath = getFilePath(fileName);
         File file = new File(filePath);
@@ -88,7 +84,7 @@ public class CsvGateway {
             String row = scanner.nextLine();
 
             if (numberOfRows == 0) {
-                fileColumns = Arrays.stream(row.split(";")).collect(Collectors.toSet());
+                fileColumns = Arrays.stream(row.split(SEPARATOR)).collect(Collectors.toSet());
                 csvContent.setColumns(fileColumns);
 
             } else {

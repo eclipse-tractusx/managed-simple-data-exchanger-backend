@@ -49,7 +49,7 @@ public class UploadFileController {
         Runnable runnable = () ->
         {
             CsvContent csvContent = csvGateway.processFile(processId);
-            csvHandlerOrchestrator.execute(csvContent);
+            csvHandlerOrchestrator.execute(csvContent, processId);
         };
 
         new Thread(runnable).start();

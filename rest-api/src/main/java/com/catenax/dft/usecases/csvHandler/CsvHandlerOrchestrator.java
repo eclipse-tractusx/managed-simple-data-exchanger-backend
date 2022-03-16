@@ -55,20 +55,27 @@ public class CsvHandlerOrchestrator {
             "measurement_unit_lexical_value")
             .collect(Collectors.toSet());
 
+    //new
+
     public CsvHandlerOrchestrator(MapToAspectCsvHandlerUseCase aspectStarterUseCase, MapToChildAspectCsvHandlerUseCase childAspectStarterUseCase) {
         this.aspectStarterUseCase = aspectStarterUseCase;
         this.childAspectStarterUseCase = childAspectStarterUseCase;
     }
 
     @SneakyThrows
-    public void execute(CsvContent csvContent) {
+    public void execute(CsvContent csvContent, String processId) {
         if (ASPECT_COLUMNS.equals(csvContent.getColumns())) {
+            //guardar bd process in progress... first timestamp e nº linhas
             log.info("I'm an ASPECT file. Unpacked and ready to be processed.");
             csvContent.getRows().parallelStream().forEach(aspectStarterUseCase::run);
+            //guardar completed, data fim e os restantes elementos
         } else if (CHILD_ASPECT_COLUMNS.equals(csvContent.getColumns())) {
+            //guardar bd process in progress... first timestamp e nº linhas
             log.info("I'm an CHILD ASPECT file. Unpacked and ready to be processed.");
             csvContent.getRows().parallelStream().forEach(childAspectStarterUseCase::run);
+            //guardar completed, data fim e os restantes elementos
         } else {
+            //unknow id, failed, data
             throw new Exception("I don't know what to do with you");
         }
     }

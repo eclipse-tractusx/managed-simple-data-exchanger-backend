@@ -22,6 +22,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.sql.Date;
+import java.time.LocalDateTime;
 
 @Table(name = "historicFiles")
 @Entity
@@ -34,6 +35,6 @@ public class HistoricFilesEntity {
     private int numberOfFailedItems;
     private int numberOfSucceededItems;
     private String status;
-    private Date startDate;
-    private Date endDate;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
 }

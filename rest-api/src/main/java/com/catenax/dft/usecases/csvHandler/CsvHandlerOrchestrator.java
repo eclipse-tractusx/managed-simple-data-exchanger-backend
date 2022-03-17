@@ -19,12 +19,15 @@ package com.catenax.dft.usecases.csvHandler;
 
 
 import com.catenax.dft.entities.csv.CsvContent;
+import com.catenax.dft.enums.CsvTypeEnum;
 import com.catenax.dft.usecases.csvHandler.aspects.MapToAspectCsvHandlerUseCase;
 import com.catenax.dft.usecases.csvHandler.childAspects.MapToChildAspectCsvHandlerUseCase;
+import com.catenax.dft.usecases.historicFiles.GetHistoricFilesUseCase;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -35,6 +38,7 @@ public class CsvHandlerOrchestrator {
 
     private final MapToAspectCsvHandlerUseCase aspectStarterUseCase;
     private final MapToChildAspectCsvHandlerUseCase childAspectStarterUseCase;
+    private final GetHistoricFilesUseCase getHistoricFilesUseCase;
 
     private final Set<String> ASPECT_COLUMNS = Stream.of(
             "local_identifiers_key",
@@ -57,25 +61,27 @@ public class CsvHandlerOrchestrator {
 
     //new
 
-    public CsvHandlerOrchestrator(MapToAspectCsvHandlerUseCase aspectStarterUseCase, MapToChildAspectCsvHandlerUseCase childAspectStarterUseCase) {
+    public CsvHandlerOrchestrator(MapToAspectCsvHandlerUseCase aspectStarterUseCase, MapToChildAspectCsvHandlerUseCase childAspectStarterUseCase,
+                                  GetHistoricFilesUseCase getHistoricFilesUseCase) {
         this.aspectStarterUseCase = aspectStarterUseCase;
         this.childAspectStarterUseCase = childAspectStarterUseCase;
+        this.getHistoricFilesUseCase = getHistoricFilesUseCase;
     }
 
     @SneakyThrows
     public void execute(CsvContent csvContent, String processId) {
         if (ASPECT_COLUMNS.equals(csvContent.getColumns())) {
-            //guardar bd process in progress... first timestamp e nº linhas
+            getHistoricFilesUseCase.startBuildHistoricFile(processId, CsvTypeEnum.ASPECT, csvContent.getRows().size(), LocalDateTime.now());
             log.info("I'm an ASPECT file. Unpacked and ready to be processed.");
             csvContent.getRows().parallelStream().forEach(aspectStarterUseCase::run);
-            //guardar completed, data fim e os restantes elementos
+            getHistoricFilesUseCase.finishBuildHistoricFile(LocalDateTime.now());
         } else if (CHILD_ASPECT_COLUMNS.equals(csvContent.getColumns())) {
-            //guardar bd process in progress... first timestamp e nº linhas
+            getHistoricFilesUseCase.startBuildHistoricFile(processId, CsvTypeEnum.CHILD_ASPECT, csvContent.getRows().size(), LocalDateTime.now());
             log.info("I'm an CHILD ASPECT file. Unpacked and ready to be processed.");
             csvContent.getRows().parallelStream().forEach(childAspectStarterUseCase::run);
-            //guardar completed, data fim e os restantes elementos
+            getHistoricFilesUseCase.finishBuildHistoricFile(LocalDateTime.now());
         } else {
-            //unknow id, failed, data
+            getHistoricFilesUseCase.unknownFileToHistoricFile(processId, LocalDateTime.now());
             throw new Exception("I don't know what to do with you");
         }
     }

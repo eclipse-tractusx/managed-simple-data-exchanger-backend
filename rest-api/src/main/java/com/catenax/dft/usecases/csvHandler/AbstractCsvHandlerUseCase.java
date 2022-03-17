@@ -30,8 +30,7 @@ public abstract class AbstractCsvHandlerUseCase<I, T> implements CsvHandlerUseCa
 
     protected abstract T executeUseCase(I input);
 
-    //new
-    //protected abstract T putOnHistoricFile(I input);
+
 
     @Override
     public void run(I input) {

@@ -14,26 +14,10 @@
  * limitations under the License.
  */
 
-package com.catenax.dft.entities.usecases;
+package com.catenax.dft.enums;
 
-import com.catenax.dft.enums.ProgressStatusEnum;
-import com.catenax.dft.enums.CsvTypeEnum;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-
-import java.time.LocalDateTime;
-
-@Data
-@Builder
-@AllArgsConstructor
-public class HistoricFile {
-    private String processId;
-    private CsvTypeEnum csvType;
-    private int numberOfItems;
-    private int numberOfFailedItems;
-    private int numberOfSucceededItems;
-    private ProgressStatusEnum status;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+public enum CsvTypeEnum {
+    ASPECT,
+    CHILD_ASPECT,
+    UNKNOWN
 }

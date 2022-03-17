@@ -18,6 +18,13 @@ package com.catenax.dft.gateways.database;
 
 import com.catenax.dft.entities.database.HistoricFilesEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
+@Repository
 public interface HistoricFileRepository extends JpaRepository<HistoricFilesEntity, String> {
+    //List<HistoricFilesEntity> findAllOrderByStartDateDesc();
+
+
 }

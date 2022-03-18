@@ -59,9 +59,11 @@ public class GetHistoricFilesUseCase {
         saveHistoric(historicFile);
     }
 
-    public void finishBuildHistoricFile(LocalDateTime now){
+    public void finishBuildHistoricFile(LocalDateTime now, int successes, int failures){
         historicFile.setEndDate(now);
         historicFile.setStatus(ProgressStatusEnum.COMPLETED);
+        historicFile.setNumberOfSucceededItems(successes);
+        historicFile.setNumberOfFailedItems(failures);
         saveHistoric(historicFile);
     }
 

@@ -18,7 +18,7 @@
 package com.catenax.dft.usecases.csvHandler;
 
 public interface CsvHandlerUseCase<I>{
-    void run(I input);
+    void run(I input, CsvErrorHandler errorHandler);
 }
 
 

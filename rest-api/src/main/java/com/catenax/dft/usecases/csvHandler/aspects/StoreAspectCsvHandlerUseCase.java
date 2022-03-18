@@ -24,6 +24,7 @@ import com.catenax.dft.gateways.database.AspectRepository;
 import com.catenax.dft.mapper.AspectMapper;
 import com.catenax.dft.mapper.ChildAspectMapper;
 import com.catenax.dft.usecases.csvHandler.AbstractCsvHandlerUseCase;
+import com.catenax.dft.usecases.csvHandler.CsvErrorHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -37,6 +38,7 @@ public class StoreAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<Aspe
     private final AspectRepository aspectRepository;
     private final AspectMapper aspectMapper;
     private final ChildAspectMapper childAspectMapper;
+   // private final CsvErrorHandler csvErrorHandler = new CsvErrorHandler();
 
     public StoreAspectCsvHandlerUseCase(AspectRepository aspectRepository, AspectMapper mapper, ChildAspectMapper childAspectMapper) {
         super(null);
@@ -49,6 +51,8 @@ public class StoreAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<Aspe
         AspectEntity entity = aspectMapper.mapFrom(input);
         aspectRepository.save(entity);
         log.debug("Aspect store successfully");
+       // csvErrorHandler.addSuccess();
+       // System.out.println("\nSUCECSS!!"+csvErrorHandler.getSuccessfulRows());
         return input;
     }
 }

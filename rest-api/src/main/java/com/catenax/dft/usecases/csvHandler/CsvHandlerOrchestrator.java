@@ -40,27 +40,27 @@ public class CsvHandlerOrchestrator {
     private final MapToAspectCsvHandlerUseCase aspectStarterUseCase;
     private final MapToChildAspectCsvHandlerUseCase childAspectStarterUseCase;
     private final GetHistoricFilesUseCase getHistoricFilesUseCase;
+    private final CsvErrorHandler csvErrorHandler = new CsvErrorHandler();
 
     private final List<String> ASPECT_COLUMNS = Stream.of(
-            "local_identifiers_key",
-            "local_identifiers_value",
-            "manufacturing_date",
-            "manufacturing_country",
-            "manufacturer_part_id",
-            "customer_part_id",
-            "classification",
-            "name_at_manufacturer",
-            "name_at_customer")
+                    "local_identifiers_key",
+                    "local_identifiers_value",
+                    "manufacturing_date",
+                    "manufacturing_country",
+                    "manufacturer_part_id",
+                    "customer_part_id",
+                    "classification",
+                    "name_at_manufacturer",
+                    "name_at_customer")
             .collect(Collectors.toList());
     private final List<String> CHILD_ASPECT_COLUMNS = Stream.of(
-            "parent_identifier_key",
-            "parent_identifier_value",
-            "lifecycle_context",
-            "quantity_number",
-            "measurement_unit_lexical_value")
+                    "parent_identifier_key",
+                    "parent_identifier_value",
+                    "lifecycle_context",
+                    "quantity_number",
+                    "measurement_unit_lexical_value")
             .collect(Collectors.toList());
 
-    //new
 
     public CsvHandlerOrchestrator(MapToAspectCsvHandlerUseCase aspectStarterUseCase, MapToChildAspectCsvHandlerUseCase childAspectStarterUseCase,
                                   GetHistoricFilesUseCase getHistoricFilesUseCase) {
@@ -72,15 +72,20 @@ public class CsvHandlerOrchestrator {
     @SneakyThrows
     public void execute(CsvContent csvContent, String processId) {
         if (ASPECT_COLUMNS.equals(csvContent.getColumns())) {
+            csvErrorHandler.setProcessId(processId);
             getHistoricFilesUseCase.startBuildHistoricFile(processId, CsvTypeEnum.ASPECT, csvContent.getRows().size(), LocalDateTime.now());
             log.info("I'm an ASPECT file. Unpacked and ready to be processed.");
-            csvContent.getRows().parallelStream().forEach(aspectStarterUseCase::run);
-            getHistoricFilesUseCase.finishBuildHistoricFile(LocalDateTime.now());
+            csvContent.getRows().parallelStream().forEach(input -> aspectStarterUseCase.run(input, csvErrorHandler));
+            getHistoricFilesUseCase.finishBuildHistoricFile(LocalDateTime.now(), csvErrorHandler.getSuccessfulRows(), csvErrorHandler.getFailedRows());
+            csvErrorHandler.reset();
+
         } else if (CHILD_ASPECT_COLUMNS.equals(csvContent.getColumns())) {
             getHistoricFilesUseCase.startBuildHistoricFile(processId, CsvTypeEnum.CHILD_ASPECT, csvContent.getRows().size(), LocalDateTime.now());
             log.info("I'm an CHILD ASPECT file. Unpacked and ready to be processed.");
-            csvContent.getRows().parallelStream().forEach(childAspectStarterUseCase::run);
-            getHistoricFilesUseCase.finishBuildHistoricFile(LocalDateTime.now());
+            csvContent.getRows().parallelStream().forEach(input -> childAspectStarterUseCase.run(input, csvErrorHandler));
+            getHistoricFilesUseCase.finishBuildHistoricFile(LocalDateTime.now(), csvErrorHandler.getSuccessfulRows(), csvErrorHandler.getFailedRows());
+            csvErrorHandler.reset();
+
         } else {
             getHistoricFilesUseCase.unknownFileToHistoricFile(processId, LocalDateTime.now());
             throw new Exception("I don't know what to do with you");

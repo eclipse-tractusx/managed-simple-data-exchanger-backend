@@ -19,6 +19,7 @@ package com.catenax.dft.usecases.csvHandler.aspects;
 
 import com.catenax.dft.entities.digitalTwins.AssetAdministrationShellDescriptor;
 import com.catenax.dft.entities.digitalTwins.LocalIdentifier;
+import com.catenax.dft.entities.digitalTwins.LookupRequest;
 import com.catenax.dft.entities.usecases.Aspect;
 import com.catenax.dft.gateways.external.DigitalTwinGateway;
 import com.catenax.dft.usecases.csvHandler.AbstractCsvHandlerUseCase;
@@ -29,11 +30,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class LookUpShellsUseCase extends AbstractCsvHandlerUseCase<Aspect, Aspect> {
+public class RegisterDigitalTwinUseCase extends AbstractCsvHandlerUseCase<Aspect, Aspect> {
 
     private final DigitalTwinGateway gateway;
 
-    public LookUpShellsUseCase(DigitalTwinGateway gateway, StoreAspectCsvHandlerUseCase nextUseCase) {
+    public RegisterDigitalTwinUseCase(DigitalTwinGateway gateway, StoreAspectCsvHandlerUseCase nextUseCase) {
         super(nextUseCase);
         this.gateway = gateway;
     }
@@ -42,14 +43,13 @@ public class LookUpShellsUseCase extends AbstractCsvHandlerUseCase<Aspect, Aspec
     @Override
     @SneakyThrows
     protected Aspect executeUseCase(Aspect aspect) {
-        List<LocalIdentifier> localIdentifiers = new ArrayList<>();
-        localIdentifiers.add(LocalIdentifier.builder()
-                .key(aspect.getLocalIdentifiersKey())
-                .value(aspect.getLocalIdentifiersValue())
-                .build()
-        );
 
-        List<String> shellIds = gateway.getDigitalTwins(localIdentifiers);
+        LookupRequest lookupRequest=new LookupRequest();
+        lookupRequest.addLocalIdentifier (aspect.getLocalIdentifiersKey(),aspect.getLocalIdentifiersValue());
+
+
+
+        List<String> shellIds = gateway.getDigitalTwins(lookupRequest);
 
         if (shellIds.isEmpty()) {
             AssetAdministrationShellDescriptor aasDescriptor = AssetAdministrationShellDescriptor

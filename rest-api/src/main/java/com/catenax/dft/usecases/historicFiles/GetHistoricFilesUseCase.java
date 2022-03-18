@@ -27,23 +27,23 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import lombok.extern.slf4j.Slf4j;
+
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Slf4j
 @Component
 public class GetHistoricFilesUseCase {
-    private  final HistoricFileRepository repository;
-    private  HistoricFile historicFile;
-    private  final HistoricFileMapper mapper;
+    private final HistoricFileRepository repository;
+    private HistoricFile historicFile;
+    private final HistoricFileMapper mapper;
 
 
     public GetHistoricFilesUseCase(HistoricFileRepository repository, HistoricFileMapper mapper) {
-            this.repository = repository;
-            this.mapper = mapper;
+        this.repository = repository;
+        this.mapper = mapper;
     }
 
-    public void startBuildHistoricFile(String processId, CsvTypeEnum aspect, int size, LocalDateTime now){
+    public void startBuildHistoricFile(String processId, CsvTypeEnum aspect, int size, LocalDateTime now) {
         historicFile = new HistoricFile();
         historicFile.setProcessId(processId);
         historicFile.setCsvType(aspect);
@@ -53,21 +53,18 @@ public class GetHistoricFilesUseCase {
         saveHistoric(historicFile);
     }
 
-    public void inProgressBuildHistoricFile(int numberOfSucceeded, int numberOfFailures){
+    public void inProgressBuildHistoricFile(int numberOfSucceeded, int numberOfFailures) {
         historicFile.setNumberOfSucceededItems(numberOfSucceeded);
         historicFile.setNumberOfFailedItems(numberOfFailures);
-        saveHistoric(historicFile);
     }
 
-    public void finishBuildHistoricFile(LocalDateTime now, int successes, int failures){
-        historicFile.setEndDate(now);
-        historicFile.setStatus(ProgressStatusEnum.COMPLETED);
-        historicFile.setNumberOfSucceededItems(successes);
-        historicFile.setNumberOfFailedItems(failures);
-        saveHistoric(historicFile);
+    public void finishBuildHistoricFile(String processId) {
+        repository.setEndDate(processId, LocalDateTime.now());
+        repository.setStatus(ProgressStatusEnum.COMPLETED, processId);
+        repository.calculateFailedItems(processId);
     }
 
-    public void unknownFileToHistoricFile(String processId,LocalDateTime now){
+    public void unknownFileToHistoricFile(String processId, LocalDateTime now) {
         historicFile = new HistoricFile();
         historicFile.setProcessId(processId);
         historicFile.setCsvType(CsvTypeEnum.UNKNOWN);
@@ -83,10 +80,15 @@ public class GetHistoricFilesUseCase {
         log.debug("Historic store successfully");
     }
 
-    public Page<HistoricFilesEntity> listAllHistoric(int page, int size){
+    public Page<HistoricFilesEntity> listAllHistoric(int page, int size) {
         return repository.findAll(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "startDate")));
     }
 
+    public void addSuccess(String pid) {
+        repository.incrementSucceededItems(pid);
+    }
 
-
+    public void addFailure(String processId) {
+        repository.incrementFailedItems(processId);
+    }
 }

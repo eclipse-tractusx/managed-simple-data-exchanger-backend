@@ -17,9 +17,9 @@
 
 package com.catenax.dft.usecases.csvHandler;
 
+import com.catenax.dft.usecases.historicFiles.GetHistoricFilesUseCase;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.logging.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Slf4j
 public abstract class AbstractCsvHandlerUseCase<I, T> implements CsvHandlerUseCase<I> {
@@ -32,25 +32,27 @@ public abstract class AbstractCsvHandlerUseCase<I, T> implements CsvHandlerUseCa
 
     protected abstract T executeUseCase(I input);
 
+    @Autowired
+    protected GetHistoricFilesUseCase historicFilesUseCase;
+
 
     @Override
-    public void run(I input, CsvErrorHandler errorHandler) {
+    public void run(I input, String processId) {
 
         try {
+
             T result = executeUseCase(input);
 
             if (nextUseCase != null) {
                 log.info(String.format("[%s] is running now", this.getClass().getCanonicalName()));
-                nextUseCase.run(result, errorHandler);
+                nextUseCase.run(result, processId);
             } else {
-                errorHandler.addSuccess();
-                System.out.println("\nSUCCESS!!!" + errorHandler.getSuccessfulRows());
+               historicFilesUseCase.addSuccess(processId);
             }
         } catch (RuntimeException e) {
-            errorHandler.addFailure();
+            historicFilesUseCase.addFailure(processId);
+            System.out.println(e);
             log.debug(String.valueOf(e));
-            System.out.println("\nCATASTROPHE!!!!" + errorHandler.getFailedRows() + e);
-
         }
     }
 }

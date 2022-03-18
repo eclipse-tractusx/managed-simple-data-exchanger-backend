@@ -37,6 +37,10 @@ public class MapToChildAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase
     protected ChildAspect executeUseCase(String rowData) {
         String[] rowDataFields = rowData.split(SEPARATOR);
 
+        if (rowDataFields.length != 5) {
+            throw new RuntimeException("This row has wrong amount of fields");
+        }
+
         return ChildAspect.builder()
                 .parentIdentifierKey(rowDataFields[0])
                 .parentIdentifierValue(rowDataFields[1])

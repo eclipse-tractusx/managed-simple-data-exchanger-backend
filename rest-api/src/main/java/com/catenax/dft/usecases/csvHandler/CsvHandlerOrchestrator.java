@@ -29,7 +29,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -40,7 +39,7 @@ public class CsvHandlerOrchestrator {
     private final MapToAspectCsvHandlerUseCase aspectStarterUseCase;
     private final MapToChildAspectCsvHandlerUseCase childAspectStarterUseCase;
     private final GetHistoricFilesUseCase getHistoricFilesUseCase;
-    private final CsvErrorHandler csvErrorHandler = new CsvErrorHandler();
+
 
     private final List<String> ASPECT_COLUMNS = Stream.of(
                     "local_identifiers_key",
@@ -72,19 +71,19 @@ public class CsvHandlerOrchestrator {
     @SneakyThrows
     public void execute(CsvContent csvContent, String processId) {
         if (ASPECT_COLUMNS.equals(csvContent.getColumns())) {
-            csvErrorHandler.setProcessId(processId);
+
             getHistoricFilesUseCase.startBuildHistoricFile(processId, CsvTypeEnum.ASPECT, csvContent.getRows().size(), LocalDateTime.now());
             log.info("I'm an ASPECT file. Unpacked and ready to be processed.");
-            csvContent.getRows().parallelStream().forEach(input -> aspectStarterUseCase.run(input, csvErrorHandler));
-            getHistoricFilesUseCase.finishBuildHistoricFile(LocalDateTime.now(), csvErrorHandler.getSuccessfulRows(), csvErrorHandler.getFailedRows());
-            csvErrorHandler.reset();
+            csvContent.getRows().parallelStream().forEach(input -> aspectStarterUseCase.run(input, processId));
+            getHistoricFilesUseCase.finishBuildHistoricFile(processId);
+
 
         } else if (CHILD_ASPECT_COLUMNS.equals(csvContent.getColumns())) {
+
             getHistoricFilesUseCase.startBuildHistoricFile(processId, CsvTypeEnum.CHILD_ASPECT, csvContent.getRows().size(), LocalDateTime.now());
             log.info("I'm an CHILD ASPECT file. Unpacked and ready to be processed.");
-            csvContent.getRows().parallelStream().forEach(input -> childAspectStarterUseCase.run(input, csvErrorHandler));
-            getHistoricFilesUseCase.finishBuildHistoricFile(LocalDateTime.now(), csvErrorHandler.getSuccessfulRows(), csvErrorHandler.getFailedRows());
-            csvErrorHandler.reset();
+            csvContent.getRows().parallelStream().forEach(input -> childAspectStarterUseCase.run(input, processId));
+            getHistoricFilesUseCase.finishBuildHistoricFile(processId);
 
         } else {
             getHistoricFilesUseCase.unknownFileToHistoricFile(processId, LocalDateTime.now());

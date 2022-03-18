@@ -16,11 +16,10 @@
 
 package com.catenax.dft.entities.database;
 
+import com.catenax.dft.enums.ProgressStatusEnum;
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.sql.Date;
 import java.time.LocalDateTime;
 
@@ -34,7 +33,8 @@ public class HistoricFilesEntity {
     private int numberOfItems;
     private int numberOfFailedItems;
     private int numberOfSucceededItems;
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private ProgressStatusEnum status;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
 }

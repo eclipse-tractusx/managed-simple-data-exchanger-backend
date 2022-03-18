@@ -17,14 +17,51 @@
 package com.catenax.dft.gateways.database;
 
 import com.catenax.dft.entities.database.HistoricFilesEntity;
+import com.catenax.dft.enums.ProgressStatusEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
 public interface HistoricFileRepository extends JpaRepository<HistoricFilesEntity, String> {
-    //List<HistoricFilesEntity> findAllOrderByStartDateDesc();
 
+    @Modifying
+    @Transactional
+    @Query("UPDATE HistoricFilesEntity " +
+            "SET numberOfSucceededItems = numberOfSucceededItems +1 " +
+            "WHERE processId = :processId")
+    void incrementSucceededItems(String processId);
 
+    @Modifying
+    @Transactional
+    @Query("UPDATE HistoricFilesEntity " +
+            "SET numberOfFailedItems = numberOfFailedItems +1 " +
+            "WHERE processId = :processId")
+    void incrementFailedItems(String processId);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE HistoricFilesEntity " +
+            "SET numberOfFailedItems = numberOfItems - numberOfSucceededItems " +
+            "WHERE processId = :processId")
+    void calculateFailedItems(String processId);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE HistoricFilesEntity " +
+            "SET endDate = :endDate " +
+            "WHERE processId = :processId")
+    void setEndDate(String processId, LocalDateTime endDate);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE HistoricFilesEntity " +
+            "SET status = :status " +
+            "WHERE processId = :processId")
+    void setStatus(ProgressStatusEnum status, String processId);
 }

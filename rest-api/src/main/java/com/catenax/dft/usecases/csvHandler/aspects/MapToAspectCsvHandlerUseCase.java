@@ -37,6 +37,9 @@ public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<Stri
     public Aspect executeUseCase(String rowData) {
         String[] rowDataFields = rowData.split(SEPARATOR);
 
+        if (rowDataFields.length != 9){
+            throw new RuntimeException("This row has wrong amount of fields");
+        }
         return Aspect.builder()
                 .localIdentifiersKey(rowDataFields[0])
                 .localIdentifiersValue(rowDataFields[1])

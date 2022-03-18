@@ -74,7 +74,6 @@ public class CsvHandlerOrchestrator {
             getHistoricFilesUseCase.startBuildHistoricFile(processId, CsvTypeEnum.ASPECT, csvContent.getRows().size(), LocalDateTime.now());
             log.info("I'm an ASPECT file. Unpacked and ready to be processed.");
             csvContent.getRows().parallelStream().forEach(aspectStarterUseCase::run);
-            //colocar aqui
             getHistoricFilesUseCase.finishBuildHistoricFile(LocalDateTime.now());
         } else if (CHILD_ASPECT_COLUMNS.equals(csvContent.getColumns())) {
             getHistoricFilesUseCase.startBuildHistoricFile(processId, CsvTypeEnum.CHILD_ASPECT, csvContent.getRows().size(), LocalDateTime.now());

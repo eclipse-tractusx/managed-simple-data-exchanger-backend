@@ -44,6 +44,7 @@ public class GetHistoricFilesUseCase {
     }
 
     public void startBuildHistoricFile(String processId, CsvTypeEnum aspect, int size, LocalDateTime now){
+        historicFile = new HistoricFile();
         historicFile.setProcessId(processId);
         historicFile.setCsvType(aspect);
         historicFile.setStatus(ProgressStatusEnum.IN_PROGRESS);
@@ -52,18 +53,26 @@ public class GetHistoricFilesUseCase {
         saveHistoric(historicFile);
     }
 
+    public void inProgressBuildHistoricFile(int numberOfSucceeded, int numberOfFailures){
+        historicFile.setNumberOfSucceededItems(numberOfSucceeded);
+        historicFile.setNumberOfFailedItems(numberOfFailures);
+        saveHistoric(historicFile);
+    }
+
     public void finishBuildHistoricFile(LocalDateTime now){
         historicFile.setEndDate(now);
         historicFile.setStatus(ProgressStatusEnum.COMPLETED);
-        //temporariamente... casos de sucesso e insucesso sem resultados
         saveHistoric(historicFile);
     }
 
     public void unknownFileToHistoricFile(String processId,LocalDateTime now){
+        historicFile = new HistoricFile();
         historicFile.setProcessId(processId);
         historicFile.setCsvType(CsvTypeEnum.UNKNOWN);
         historicFile.setStartDate(now);
         historicFile.setEndDate(now);
+        historicFile.setStatus(ProgressStatusEnum.FAILED);
+        saveHistoric(historicFile);
     }
 
     private void saveHistoric(HistoricFile input) {

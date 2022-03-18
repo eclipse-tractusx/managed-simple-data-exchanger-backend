@@ -21,12 +21,14 @@ import com.catenax.dft.enums.CsvTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class HistoricFile {
     private String processId;
     private CsvTypeEnum csvType;

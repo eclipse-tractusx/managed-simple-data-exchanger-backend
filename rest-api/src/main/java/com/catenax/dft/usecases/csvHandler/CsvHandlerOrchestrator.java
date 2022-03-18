@@ -28,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -40,7 +41,7 @@ public class CsvHandlerOrchestrator {
     private final MapToChildAspectCsvHandlerUseCase childAspectStarterUseCase;
     private final GetHistoricFilesUseCase getHistoricFilesUseCase;
 
-    private final Set<String> ASPECT_COLUMNS = Stream.of(
+    private final List<String> ASPECT_COLUMNS = Stream.of(
             "local_identifiers_key",
             "local_identifiers_value",
             "manufacturing_date",
@@ -50,14 +51,14 @@ public class CsvHandlerOrchestrator {
             "classification",
             "name_at_manufacturer",
             "name_at_customer")
-            .collect(Collectors.toSet());
-    private final Set<String> CHILD_ASPECT_COLUMNS = Stream.of(
+            .collect(Collectors.toList());
+    private final List<String> CHILD_ASPECT_COLUMNS = Stream.of(
             "parent_identifier_key",
             "parent_identifier_value",
             "lifecycle_context",
             "quantity_number",
             "measurement_unit_lexical_value")
-            .collect(Collectors.toSet());
+            .collect(Collectors.toList());
 
     //new
 

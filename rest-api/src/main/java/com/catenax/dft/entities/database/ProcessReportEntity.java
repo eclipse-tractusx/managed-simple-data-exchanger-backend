@@ -14,16 +14,26 @@
  * limitations under the License.
  */
 
-package com.catenax.dft.mapper;
+package com.catenax.dft.entities.database;
 
-import com.catenax.dft.entities.database.HistoricFilesEntity;
-import com.catenax.dft.entities.usecases.HistoricFile;
-import org.mapstruct.Mapper;
-import org.springframework.stereotype.Component;
+import com.catenax.dft.enums.ProgressStatusEnum;
+import lombok.Data;
 
-@Component
-@Mapper(componentModel = "spring")
-public interface HistoricFileMapper {
+import javax.persistence.*;
+import java.time.LocalDateTime;
 
-    HistoricFilesEntity mapFrom(HistoricFile historicFile);
+@Table(name = "historicFiles")
+@Entity
+@Data
+public class ProcessReportEntity {
+    @Id
+    private String processId;
+    private String csvType;
+    private int numberOfItems;
+    private int numberOfFailedItems;
+    private int numberOfSucceededItems;
+    @Enumerated(EnumType.STRING)
+    private ProgressStatusEnum status;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
 }

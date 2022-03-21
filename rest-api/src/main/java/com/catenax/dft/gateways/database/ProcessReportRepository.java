@@ -16,7 +16,7 @@
 
 package com.catenax.dft.gateways.database;
 
-import com.catenax.dft.entities.database.HistoricFilesEntity;
+import com.catenax.dft.entities.database.ProcessReportEntity;
 import com.catenax.dft.enums.ProgressStatusEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -25,42 +25,42 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Repository
-public interface HistoricFileRepository extends JpaRepository<HistoricFilesEntity, String> {
+public interface
+ProcessReportRepository extends JpaRepository<ProcessReportEntity, String> {
 
     @Modifying
     @Transactional
-    @Query("UPDATE HistoricFilesEntity " +
+    @Query("UPDATE ProcessReportEntity " +
             "SET numberOfSucceededItems = numberOfSucceededItems +1 " +
             "WHERE processId = :processId")
     void incrementSucceededItems(String processId);
 
     @Modifying
     @Transactional
-    @Query("UPDATE HistoricFilesEntity " +
+    @Query("UPDATE ProcessReportEntity " +
             "SET numberOfFailedItems = numberOfFailedItems +1 " +
             "WHERE processId = :processId")
     void incrementFailedItems(String processId);
 
     @Modifying
     @Transactional
-    @Query("UPDATE HistoricFilesEntity " +
+    @Query("UPDATE ProcessReportEntity " +
             "SET numberOfFailedItems = numberOfItems - numberOfSucceededItems " +
             "WHERE processId = :processId")
     void calculateFailedItems(String processId);
 
     @Modifying
     @Transactional
-    @Query("UPDATE HistoricFilesEntity " +
+    @Query("UPDATE ProcessReportEntity " +
             "SET endDate = :endDate " +
             "WHERE processId = :processId")
     void setEndDate(String processId, LocalDateTime endDate);
 
     @Modifying
     @Transactional
-    @Query("UPDATE HistoricFilesEntity " +
+    @Query("UPDATE ProcessReportEntity " +
             "SET status = :status " +
             "WHERE processId = :processId")
     void setStatus(ProgressStatusEnum status, String processId);

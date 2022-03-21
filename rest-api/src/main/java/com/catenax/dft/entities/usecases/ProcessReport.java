@@ -14,26 +14,27 @@
  * limitations under the License.
  */
 
-package com.catenax.dft.entities.database;
+package com.catenax.dft.entities.usecases;
 
 import com.catenax.dft.enums.ProgressStatusEnum;
+import com.catenax.dft.enums.CsvTypeEnum;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-import java.sql.Date;
 import java.time.LocalDateTime;
 
-@Table(name = "historicFiles")
-@Entity
 @Data
-public class HistoricFilesEntity {
-    @Id
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class ProcessReport {
     private String processId;
-    private String csvType;
+    private CsvTypeEnum csvType;
     private int numberOfItems;
     private int numberOfFailedItems;
     private int numberOfSucceededItems;
-    @Enumerated(EnumType.STRING)
     private ProgressStatusEnum status;
     private LocalDateTime startDate;
     private LocalDateTime endDate;

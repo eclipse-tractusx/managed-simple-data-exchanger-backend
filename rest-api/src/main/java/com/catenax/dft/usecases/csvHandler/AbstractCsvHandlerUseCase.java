@@ -17,9 +17,14 @@
 
 package com.catenax.dft.usecases.csvHandler;
 
-import com.catenax.dft.usecases.historicFiles.GetHistoricFilesUseCase;
+import com.catenax.dft.entities.database.FailureLogsEntity;
+import com.catenax.dft.usecases.processReport.ProcessReportUseCase;
+import com.catenax.dft.usecases.logs.FailureLogsUseCase;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Slf4j
 public abstract class AbstractCsvHandlerUseCase<I, T> implements CsvHandlerUseCase<I> {
@@ -33,7 +38,9 @@ public abstract class AbstractCsvHandlerUseCase<I, T> implements CsvHandlerUseCa
     protected abstract T executeUseCase(I input);
 
     @Autowired
-    protected GetHistoricFilesUseCase historicFilesUseCase;
+    protected ProcessReportUseCase historicFilesUseCase;
+    @Autowired
+    protected FailureLogsUseCase failureLogsUseCase;
 
 
     @Override
@@ -49,7 +56,16 @@ public abstract class AbstractCsvHandlerUseCase<I, T> implements CsvHandlerUseCa
             } else {
                historicFilesUseCase.addSuccess(processId);
             }
+
         } catch (RuntimeException e) {
+
+            FailureLogsEntity entity = FailureLogsEntity.builder()
+                    .uuid(UUID.randomUUID().toString())
+                    .processId(processId)
+                    .log(e.getMessage())
+                    .dateTime(LocalDateTime.now())
+                    .build();
+            failureLogsUseCase.saveLog(entity);
             historicFilesUseCase.addFailure(processId);
             System.out.println(e);
             log.debug(String.valueOf(e));

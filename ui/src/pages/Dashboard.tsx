@@ -1,4 +1,4 @@
-import React, { SyntheticEvent, useState } from 'react';
+import React, { SyntheticEvent, useEffect, useState } from 'react';
 import Nav from '../components/NavBar';
 import Sidebar from '../components/Sidebar';
 import UploadForm from '../components/UploadForm';
@@ -8,6 +8,7 @@ import { File } from '../models/File';
 import UploadFileOutlinedIcon from '@mui/icons-material/UploadFileOutlined';
 import Notification from '../components/Notification';
 import dft from '../api/dft';
+import dftMock from '../api/dft-mock'; // TODO - remove
 import UploadProgressBar from '../components/UploadProgressBar';
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 import CloseIcon from '@mui/icons-material/Close';
@@ -22,7 +23,20 @@ const Dashboard: React.FC = () => {
   const [uploadProgress, updateUploadProgress] = useState(0);
   const [uploadStatus, setUploadStatus] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [tableData, setTableData] = useState<any>([]);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(15);
+  const [page, setPage] = useState<number>(0);
+  const [totalElements, setTotalElements] = useState<number>(0);
   let dragCounter = 0;
+
+  useEffect(() => {
+    (async () => {
+      dftMock.get(`/reports?page=${page}&pageSize=${rowsPerPage}`).then(response => {
+        setTableData(response.data.content);
+        setTotalElements(response.data.totalElements);
+      });
+    })();
+  }, [page, rowsPerPage]);
 
   const handleExpanded = (expanded: boolean) => {
     setIsExpanded(expanded);
@@ -139,7 +153,14 @@ const Dashboard: React.FC = () => {
         <div className="flex-1 py-6 px-20">
           <h1 className="flex flex-row text-bold text-3xl">Upload History</h1>
           <div className="mt-8">
-            <StickyHeadTable />
+            <StickyHeadTable
+              rows={tableData}
+              page={page}
+              rowsPerPage={rowsPerPage}
+              totalElements={totalElements}
+              setPage={setPage}
+              setRowsPerPage={setRowsPerPage}
+            />
           </div>
         </div>
       );

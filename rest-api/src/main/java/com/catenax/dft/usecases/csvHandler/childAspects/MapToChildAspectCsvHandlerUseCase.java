@@ -27,6 +27,7 @@ import static com.catenax.dft.gateways.file.CsvGateway.SEPARATOR;
 @Service
 public class MapToChildAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<String, ChildAspect> {
 
+    private int ROW_LENGTH = 5;
 
     public MapToChildAspectCsvHandlerUseCase(CsvHandlerUseCase<ChildAspect> nextUseCase) {
         super(nextUseCase);
@@ -37,7 +38,7 @@ public class MapToChildAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase
     protected ChildAspect executeUseCase(String rowData) {
         String[] rowDataFields = rowData.split(SEPARATOR);
 
-        if (rowDataFields.length != 5) {
+        if (rowDataFields.length != ROW_LENGTH) {
             throw new RuntimeException("This row has wrong amount of fields");
         }
 

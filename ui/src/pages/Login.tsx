@@ -114,7 +114,10 @@ export const Login: React.FC<Props> = ({ setIsAuth, setIsAuthError, isAuthError 
             </FormControl>
 
             <div>
-              <button className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 rounded-md text-white text-sm">
+              <button
+                type="submit"
+                className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 rounded-md text-white text-sm"
+              >
                 Login
               </button>
             </div>

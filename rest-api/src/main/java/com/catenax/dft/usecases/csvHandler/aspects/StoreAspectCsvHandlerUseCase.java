@@ -42,7 +42,7 @@ public class StoreAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<Aspe
         this.childAspectMapper = childAspectMapper;
     }
 
-    protected Aspect executeUseCase(Aspect input) {
+    protected Aspect executeUseCase(Aspect input, String processId) {
         AspectEntity entity = aspectMapper.mapFrom(input);
         aspectRepository.save(entity);
         log.debug("Aspect store successfully");

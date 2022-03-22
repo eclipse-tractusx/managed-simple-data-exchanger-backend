@@ -27,7 +27,7 @@ import static com.catenax.dft.gateways.file.CsvGateway.SEPARATOR;
 @Service
 public class MapToChildAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<String, ChildAspect> {
 
-    private int ROW_LENGTH = 5;
+    private final int ROW_LENGTH = 5;
 
     public MapToChildAspectCsvHandlerUseCase(CsvHandlerUseCase<ChildAspect> nextUseCase) {
         super(nextUseCase);
@@ -35,7 +35,7 @@ public class MapToChildAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase
     }
 
     @Override
-    protected ChildAspect executeUseCase(String rowData) {
+    protected ChildAspect executeUseCase(String rowData, String processId) {
         String[] rowDataFields = rowData.split(SEPARATOR);
 
         if (rowDataFields.length != ROW_LENGTH) {
@@ -43,6 +43,7 @@ public class MapToChildAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase
         }
 
         return ChildAspect.builder()
+                .processId(processId)
                 .parentIdentifierKey(rowDataFields[0])
                 .parentIdentifierValue(rowDataFields[1])
                 .lifecycleContext(rowDataFields[2])

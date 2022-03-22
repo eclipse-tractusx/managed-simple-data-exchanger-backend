@@ -75,7 +75,7 @@ public class CsvHandlerOrchestrator {
             getHistoricFilesUseCase.startBuildHistoricFile(processId, CsvTypeEnum.ASPECT, csvContent.getRows().size(), LocalDateTime.now());
             log.info("I'm an ASPECT file. Unpacked and ready to be processed.");
             csvContent.getRows().parallelStream().forEach(input -> aspectStarterUseCase.run(input, processId));
-            getHistoricFilesUseCase.finishBuildHistoricFile(processId);
+            getHistoricFilesUseCase.finishBuildAspectHistoricFile(processId);
 
 
         } else if (CHILD_ASPECT_COLUMNS.equals(csvContent.getColumns())) {
@@ -83,7 +83,7 @@ public class CsvHandlerOrchestrator {
             getHistoricFilesUseCase.startBuildHistoricFile(processId, CsvTypeEnum.CHILD_ASPECT, csvContent.getRows().size(), LocalDateTime.now());
             log.info("I'm an CHILD ASPECT file. Unpacked and ready to be processed.");
             csvContent.getRows().parallelStream().forEach(input -> childAspectStarterUseCase.run(input, processId));
-            getHistoricFilesUseCase.finishBuildHistoricFile(processId);
+            getHistoricFilesUseCase.finishBuildChildAspectHistoricFile(processId);
 
         } else {
             getHistoricFilesUseCase.unknownFileToHistoricFile(processId, LocalDateTime.now());

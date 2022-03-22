@@ -58,10 +58,12 @@ public class GetHistoricFilesUseCase {
         historicFile.setNumberOfFailedItems(numberOfFailures);
     }
 
-    public void finishBuildHistoricFile(String processId) {
-        repository.setEndDate(processId, LocalDateTime.now());
-        repository.setStatus(ProgressStatusEnum.COMPLETED, processId);
-        repository.calculateFailedItems(processId);
+    public void finishBuildAspectHistoricFile(String processId) {
+        repository.finalizeAspectHistoric(processId, LocalDateTime.now(), ProgressStatusEnum.COMPLETED);
+    }
+
+    public void finishBuildChildAspectHistoricFile(String processId) {
+        repository.finalizeChildAspectHistoric(processId, LocalDateTime.now(), ProgressStatusEnum.COMPLETED);
     }
 
     public void unknownFileToHistoricFile(String processId, LocalDateTime now) {
@@ -82,13 +84,5 @@ public class GetHistoricFilesUseCase {
 
     public Page<HistoricFilesEntity> listAllHistoric(int page, int size) {
         return repository.findAll(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "startDate")));
-    }
-
-    public void addSuccess(String pid) {
-        repository.incrementSucceededItems(pid);
-    }
-
-    public void addFailure(String processId) {
-        repository.incrementFailedItems(processId);
     }
 }

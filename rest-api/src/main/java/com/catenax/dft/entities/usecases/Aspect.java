@@ -27,6 +27,7 @@ import lombok.Data;
 public class Aspect {
 
     private String uuid;
+    private String processId;
     private String localIdentifiersKey;
     private String localIdentifiersValue;
     private String manufacturingDate;

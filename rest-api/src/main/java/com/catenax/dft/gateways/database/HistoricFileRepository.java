@@ -25,7 +25,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Repository
 public interface HistoricFileRepository extends JpaRepository<HistoricFilesEntity, String> {
@@ -33,35 +32,24 @@ public interface HistoricFileRepository extends JpaRepository<HistoricFilesEntit
     @Modifying
     @Transactional
     @Query("UPDATE HistoricFilesEntity " +
-            "SET numberOfSucceededItems = numberOfSucceededItems +1 " +
+            "SET endDate = :endDate, " +
+            "status = :status, " +
+            "numberOfSucceededItems = " +
+            "(SELECT COUNT(a) FROM AspectEntity a WHERE a.processId = :processId), " +
+            "numberOfFailedItems = numberOfItems - " +
+            "(SELECT COUNT(a) FROM AspectEntity a WHERE a.processId = :processId) " +
             "WHERE processId = :processId")
-    void incrementSucceededItems(String processId);
+    void finalizeAspectHistoric(String processId, LocalDateTime endDate, ProgressStatusEnum status);
 
     @Modifying
     @Transactional
     @Query("UPDATE HistoricFilesEntity " +
-            "SET numberOfFailedItems = numberOfFailedItems +1 " +
+            "SET endDate = :endDate, " +
+            "status = :status, " +
+            "numberOfSucceededItems = " +
+            "(SELECT COUNT(c) FROM ChildAspectEntity c WHERE c.processId = :processId), " +
+            "numberOfFailedItems = numberOfItems - " +
+            "(SELECT COUNT(c) FROM ChildAspectEntity c WHERE c.processId = :processId) " +
             "WHERE processId = :processId")
-    void incrementFailedItems(String processId);
-
-    @Modifying
-    @Transactional
-    @Query("UPDATE HistoricFilesEntity " +
-            "SET numberOfFailedItems = numberOfItems - numberOfSucceededItems " +
-            "WHERE processId = :processId")
-    void calculateFailedItems(String processId);
-
-    @Modifying
-    @Transactional
-    @Query("UPDATE HistoricFilesEntity " +
-            "SET endDate = :endDate " +
-            "WHERE processId = :processId")
-    void setEndDate(String processId, LocalDateTime endDate);
-
-    @Modifying
-    @Transactional
-    @Query("UPDATE HistoricFilesEntity " +
-            "SET status = :status " +
-            "WHERE processId = :processId")
-    void setStatus(ProgressStatusEnum status, String processId);
+    void finalizeChildAspectHistoric(String processId, LocalDateTime endDate, ProgressStatusEnum status);
 }

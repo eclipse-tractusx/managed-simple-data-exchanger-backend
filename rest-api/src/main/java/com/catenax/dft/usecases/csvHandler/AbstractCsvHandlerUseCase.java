@@ -35,7 +35,7 @@ public abstract class AbstractCsvHandlerUseCase<I, T> implements CsvHandlerUseCa
         this.nextUseCase = nextUseCase;
     }
 
-    protected abstract T executeUseCase(I input);
+    protected abstract T executeUseCase(I input, String processId);
 
     @Autowired
     protected GetHistoricFilesUseCase historicFilesUseCase;
@@ -48,13 +48,11 @@ public abstract class AbstractCsvHandlerUseCase<I, T> implements CsvHandlerUseCa
 
         try {
 
-            T result = executeUseCase(input);
+            T result = executeUseCase(input, processId);
 
             if (nextUseCase != null) {
                 log.info(String.format("[%s] is running now", this.getClass().getCanonicalName()));
                 nextUseCase.run(result, processId);
-            } else {
-               historicFilesUseCase.addSuccess(processId);
             }
 
         } catch (RuntimeException e) {
@@ -66,7 +64,6 @@ public abstract class AbstractCsvHandlerUseCase<I, T> implements CsvHandlerUseCa
                     .dateTime(LocalDateTime.now())
                     .build();
             failureLogsUseCase.saveLog(entity);
-            historicFilesUseCase.addFailure(processId);
             System.out.println(e);
             log.debug(String.valueOf(e));
         }

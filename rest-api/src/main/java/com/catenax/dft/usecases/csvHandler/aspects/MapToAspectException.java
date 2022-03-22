@@ -17,20 +17,11 @@
  *
  */
 
-package com.catenax.dft.usecases.logs;
+package com.catenax.dft.usecases.csvHandler.aspects;
 
-import com.catenax.dft.entities.database.FailureLogEntity;
-import com.catenax.dft.gateways.database.FailureLogsRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+public class MapToAspectException extends RuntimeException{
 
-@Service
-public class FailureLogsUseCase {
-
-    @Autowired
-    private FailureLogsRepository repository;
-
-    public void saveLog(FailureLogEntity entity) {
-        repository.save(entity);
+    public MapToAspectException(String message) {
+        super(message);
     }
 }

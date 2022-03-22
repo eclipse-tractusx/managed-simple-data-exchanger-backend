@@ -17,29 +17,10 @@
  *
  */
 
-package com.catenax.dft.entities.database;
+package com.catenax.dft.usecases.csvHandler.childAspects;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import java.time.LocalDateTime;
-
-@Getter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-@Entity
-@Table(name = "failure_logs")
-public class FailureLogsEntity {
-
-    @Id
-    private String uuid;
-    private String processId;
-    private String log;
-    private LocalDateTime dateTime;
+public class MapToChildAspectException extends RuntimeException{
+    public MapToChildAspectException(String message) {
+        super(message);
+    }
 }

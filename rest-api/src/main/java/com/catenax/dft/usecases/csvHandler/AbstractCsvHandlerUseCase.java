@@ -17,8 +17,9 @@
 
 package com.catenax.dft.usecases.csvHandler;
 
-import com.catenax.dft.entities.database.FailureLogsEntity;
-import com.catenax.dft.usecases.historicFiles.GetHistoricFilesUseCase;
+import com.catenax.dft.entities.database.FailureLogEntity;
+import com.catenax.dft.enums.CsvTypeEnum;
+import com.catenax.dft.usecases.csvHandler.aspects.MapToAspectException;
 import com.catenax.dft.usecases.logs.FailureLogsUseCase;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +39,6 @@ public abstract class AbstractCsvHandlerUseCase<I, T> implements CsvHandlerUseCa
     protected abstract T executeUseCase(I input, String processId);
 
     @Autowired
-    protected GetHistoricFilesUseCase historicFilesUseCase;
-    @Autowired
     protected FailureLogsUseCase failureLogsUseCase;
 
 
@@ -57,11 +56,12 @@ public abstract class AbstractCsvHandlerUseCase<I, T> implements CsvHandlerUseCa
 
         } catch (RuntimeException e) {
 
-            FailureLogsEntity entity = FailureLogsEntity.builder()
+            FailureLogEntity entity = FailureLogEntity.builder()
                     .uuid(UUID.randomUUID().toString())
                     .processId(processId)
                     .log(e.getMessage())
                     .dateTime(LocalDateTime.now())
+                    .type(e instanceof MapToAspectException ? CsvTypeEnum.ASPECT :CsvTypeEnum.CHILD_ASPECT)
                     .build();
             failureLogsUseCase.saveLog(entity);
             System.out.println(e);

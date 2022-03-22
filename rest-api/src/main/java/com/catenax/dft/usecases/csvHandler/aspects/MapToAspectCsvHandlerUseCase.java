@@ -39,7 +39,7 @@ public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<Stri
         String[] rowDataFields = rowData.split(SEPARATOR);
 
         if (rowDataFields.length != ROW_LENGTH){
-            throw new RuntimeException("This row has wrong amount of fields");
+            throw new MapToAspectException("This row has wrong amount of fields");
         }
         return Aspect.builder()
                 .processId(processId)

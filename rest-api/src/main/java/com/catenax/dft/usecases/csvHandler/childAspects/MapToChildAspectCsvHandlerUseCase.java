@@ -20,6 +20,7 @@ package com.catenax.dft.usecases.csvHandler.childAspects;
 import com.catenax.dft.entities.usecases.ChildAspect;
 import com.catenax.dft.usecases.csvHandler.AbstractCsvHandlerUseCase;
 import com.catenax.dft.usecases.csvHandler.CsvHandlerUseCase;
+import com.catenax.dft.usecases.csvHandler.aspects.MapToAspectException;
 import org.springframework.stereotype.Service;
 
 import static com.catenax.dft.gateways.file.CsvGateway.SEPARATOR;
@@ -39,7 +40,7 @@ public class MapToChildAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase
         String[] rowDataFields = rowData.split(SEPARATOR);
 
         if (rowDataFields.length != ROW_LENGTH) {
-            throw new RuntimeException("This row has wrong amount of fields");
+            throw new MapToChildAspectException("This row has wrong amount of fields");
         }
 
         return ChildAspect.builder()

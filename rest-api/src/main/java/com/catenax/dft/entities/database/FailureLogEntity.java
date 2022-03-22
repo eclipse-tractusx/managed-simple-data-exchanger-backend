@@ -17,20 +17,30 @@
  *
  */
 
-package com.catenax.dft.usecases.logs;
+package com.catenax.dft.entities.database;
 
-import com.catenax.dft.entities.database.FailureLogEntity;
-import com.catenax.dft.gateways.database.FailureLogsRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.catenax.dft.enums.CsvTypeEnum;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Service
-public class FailureLogsUseCase {
+import javax.persistence.*;
+import java.time.LocalDateTime;
 
-    @Autowired
-    private FailureLogsRepository repository;
+@Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "failure_log")
+public class FailureLogEntity {
 
-    public void saveLog(FailureLogEntity entity) {
-        repository.save(entity);
-    }
+    @Id
+    private String uuid;
+    private String processId;
+    private String log;
+    private LocalDateTime dateTime;
+    @Enumerated(EnumType.STRING)
+    private CsvTypeEnum type;
 }

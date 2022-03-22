@@ -18,7 +18,6 @@
 package com.catenax.dft.usecases.csvHandler.aspects;
 
 import com.catenax.dft.entities.digitalTwins.AssetAdministrationShellDescriptor;
-import com.catenax.dft.entities.digitalTwins.LocalIdentifier;
 import com.catenax.dft.entities.digitalTwins.LookupRequest;
 import com.catenax.dft.entities.usecases.Aspect;
 import com.catenax.dft.gateways.external.DigitalTwinGateway;
@@ -26,7 +25,6 @@ import com.catenax.dft.usecases.csvHandler.AbstractCsvHandlerUseCase;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -35,7 +33,8 @@ public class RegisterDigitalTwinUseCase extends AbstractCsvHandlerUseCase<Aspect
     private final DigitalTwinGateway gateway;
 
     public RegisterDigitalTwinUseCase(DigitalTwinGateway gateway, StoreAspectCsvHandlerUseCase nextUseCase) {
-        super(nextUseCase);
+        super(null);
+        //    super(nextUseCase);
         this.gateway = gateway;
     }
 
@@ -44,16 +43,18 @@ public class RegisterDigitalTwinUseCase extends AbstractCsvHandlerUseCase<Aspect
     @SneakyThrows
     protected Aspect executeUseCase(Aspect aspect) {
 
-        LookupRequest lookupRequest=new LookupRequest();
-        lookupRequest.addLocalIdentifier (aspect.getLocalIdentifiersKey(),aspect.getLocalIdentifiersValue());
-
-
+        LookupRequest lookupRequest = new LookupRequest();
+        lookupRequest.addLocalIdentifier(aspect.getLocalIdentifiersKey(), aspect.getLocalIdentifiersValue());
+        lookupRequest.addLocalIdentifier("ManufacturerID", aspect.getCustomerPartId());
+        lookupRequest.addLocalIdentifier("ManufacturerPartID", aspect.getManufacturerPartId());
 
         List<String> shellIds = gateway.getDigitalTwins(lookupRequest);
 
         if (shellIds.isEmpty()) {
             AssetAdministrationShellDescriptor aasDescriptor = AssetAdministrationShellDescriptor
                     .builder()
+                    .idShort("something random")
+                    .identification(aspect.getUuid())
                     .build();
             gateway.createDigitalTwin(aasDescriptor);
         } else if (shellIds.size() == 1) {

@@ -29,7 +29,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
+import java.io.ByteArrayOutputStream;
+import java.util.*;
 
 @Component
 @Slf4j
@@ -39,22 +40,51 @@ public class DigitalTwinGateway {
     private final String TOKEN_URL = "https://catenaxintakssrv.germanywestcentral.cloudapp.azure.com/iamcentralidp/auth/realms/CX-Central/protocol/openid-connect/token";
 
     @SneakyThrows
-    public List<String> getDigitalTwins(LookupRequest lookupRequest) {
+    public List getDigitalTwins(LookupRequest lookupRequest) {
 
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", String.format("Bearer %s", getToken()));
-        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>( headers);
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add("assetIds",lookupRequest.getAssetIds());
-        ResponseEntity<String> response = restTemplate.exchange(DIGITAL_TWINS_URL + "/lookup/shells",HttpMethod.GET, String.class);
+        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(headers);
 
-        log.info(response.getBody());
-        return null;
+
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        final ObjectMapper mapper = new ObjectMapper();
+        mapper.writeValue(out, lookupRequest.getAssetIds());
+        Map<String, String> map = new HashMap<>();
+        map.put("assetIds", out.toString());
+
+        ResponseEntity<List> response = restTemplate.exchange(DIGITAL_TWINS_URL + "/lookup/shells", HttpMethod.GET, entity, List.class, map);
+
+        List responseBody;
+        if (response.getStatusCode() != HttpStatus.OK) {
+            log.error("Unable to find shells");
+            responseBody = new ArrayList();
+        } else {
+            responseBody = response.getBody();
+        }
+        return responseBody;
     }
 
-    public void createDigitalTwin(AssetAdministrationShellDescriptor aasDescriptor) {
+    public String createDigitalTwin(AssetAdministrationShellDescriptor aasDescriptor) {
 
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Authorization", String.format("Bearer %s", getToken()));
+        HttpEntity<AssetAdministrationShellDescriptor> entity = new HttpEntity(aasDescriptor,headers);
+
+        ResponseEntity<String> response = restTemplate.postForEntity(DIGITAL_TWINS_URL + "/registry/shell-descriptors", entity, String.class);
+
+        String responseBody;
+        if (response.getStatusCode() != HttpStatus.OK) {
+            log.error("Unable to find shells");
+            responseBody = null;
+        } else {
+            responseBody = response.getBody();
+        }
+        return responseBody;
     }
 
     @SneakyThrows
@@ -70,14 +100,11 @@ public class DigitalTwinGateway {
         map.add("grant_type", "client_credentials");
 
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
-
-
         ResponseEntity<String> response = restTemplate.exchange(TOKEN_URL, HttpMethod.POST, entity, String.class);
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper.readTree(response.getBody());
-        String token = node.path("access_token").asText();
 
-        return  token;
+        return node.path("access_token").asText();
     }
 }

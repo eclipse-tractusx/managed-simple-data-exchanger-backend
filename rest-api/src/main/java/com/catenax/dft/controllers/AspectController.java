@@ -18,7 +18,11 @@
 package com.catenax.dft.controllers;
 
 import com.catenax.dft.entities.database.AspectEntity;
+import com.catenax.dft.entities.digitalTwins.LookupRequest;
+import com.catenax.dft.entities.usecases.Aspect;
+import com.catenax.dft.gateways.external.DigitalTwinGateway;
 import com.catenax.dft.usecases.aspects.GetAspectsUseCase;
+import com.catenax.dft.usecases.csvHandler.aspects.RegisterDigitalTwinUseCase;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.repository.query.Param;
@@ -34,16 +38,26 @@ import static org.springframework.http.ResponseEntity.ok;
 public class AspectController {
 
     private final GetAspectsUseCase useCase;
-
-    public AspectController(GetAspectsUseCase useCase) {
+    private final RegisterDigitalTwinUseCase digitalTwinUseCase;
+    public AspectController(GetAspectsUseCase useCase, RegisterDigitalTwinUseCase digitalTwinUseCase) {
         this.useCase = useCase;
+        this.digitalTwinUseCase = digitalTwinUseCase;
     }
 
     @GetMapping(path = "/aspect")
     public ResponseEntity<Page<AspectEntity>> getAspects(@Param("page") Integer page, @Param("pageSize") Integer pageSize) {
+
+
+        Aspect input= Aspect.builder()
+                .localIdentifiersKey("PartInstanceID")
+                .localIdentifiersValue("czxczxcxzc")
+                .manufacturerPartId("34534dfgdfgsd")
+                .customerPartId("234234sfdsdfgsdf")
+                .build();
+        digitalTwinUseCase.run(input);
+
         page = page == null ? 0 : page;
         pageSize = pageSize == null ? 10 : pageSize;
         return ok().body(useCase.fetchAllAspects(page, pageSize));
     }
-
 }

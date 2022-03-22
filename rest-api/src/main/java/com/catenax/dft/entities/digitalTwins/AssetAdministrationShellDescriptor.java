@@ -18,7 +18,12 @@
 package com.catenax.dft.entities.digitalTwins;
 
 import lombok.Builder;
+import lombok.Data;
 
 @Builder
+@Data
 public class AssetAdministrationShellDescriptor {
+
+    private final String idShort;
+    private final String identification;
 }

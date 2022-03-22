@@ -22,7 +22,7 @@ import lombok.Data;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Table(name = "historicFiles")
+@Table(name = "process_report")
 @Entity
 @Data
 public class ProcessReportEntity {

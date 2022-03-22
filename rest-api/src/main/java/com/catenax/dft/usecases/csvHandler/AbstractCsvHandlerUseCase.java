@@ -17,13 +17,11 @@
 
 package com.catenax.dft.usecases.csvHandler;
 
-import com.catenax.dft.entities.database.FailureLogsEntity;
 import com.catenax.dft.usecases.processReport.ProcessReportUseCase;
 import com.catenax.dft.usecases.logs.FailureLogsUseCase;
 import com.catenax.dft.entities.database.FailureLogEntity;
 import com.catenax.dft.enums.CsvTypeEnum;
 import com.catenax.dft.usecases.csvHandler.aspects.MapToAspectException;
-import com.catenax.dft.usecases.logs.FailureLogsUseCase;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -44,6 +42,8 @@ public abstract class AbstractCsvHandlerUseCase<I, T> implements CsvHandlerUseCa
     @Autowired
     protected ProcessReportUseCase historicFilesUseCase;
 
+    @Autowired
+    FailureLogsUseCase failureLogsUseCase;
 
     @Override
     public void run(I input, String processId) {
@@ -55,8 +55,6 @@ public abstract class AbstractCsvHandlerUseCase<I, T> implements CsvHandlerUseCa
             if (nextUseCase != null) {
                 log.info(String.format("[%s] is running now", this.getClass().getCanonicalName()));
                 nextUseCase.run(result, processId);
-            } else {
-               historicFilesUseCase.addSuccess(processId);
             }
         } catch (RuntimeException e) {
 

@@ -72,21 +72,21 @@ public class CsvHandlerOrchestrator {
     public void execute(CsvContent csvContent, String processId) {
         if (ASPECT_COLUMNS.equals(csvContent.getColumns())) {
 
-            processReportUseCase.startBuildHistoricFile(processId, CsvTypeEnum.ASPECT, csvContent.getRows().size(), LocalDateTime.now());
+            processReportUseCase.startBuildProcessReport(processId, CsvTypeEnum.ASPECT, csvContent.getRows().size(), LocalDateTime.now());
             log.info("I'm an ASPECT file. Unpacked and ready to be processed.");
             csvContent.getRows().parallelStream().forEach(input -> aspectStarterUseCase.run(input, processId));
-            processReportUseCase.finishBuildHistoricFile(processId);
+            processReportUseCase.finishBuildAspectProgressReport(processId);
 
 
         } else if (CHILD_ASPECT_COLUMNS.equals(csvContent.getColumns())) {
 
-            processReportUseCase.startBuildHistoricFile(processId, CsvTypeEnum.CHILD_ASPECT, csvContent.getRows().size(), LocalDateTime.now());
+            processReportUseCase.startBuildProcessReport(processId, CsvTypeEnum.CHILD_ASPECT, csvContent.getRows().size(), LocalDateTime.now());
             log.info("I'm an CHILD ASPECT file. Unpacked and ready to be processed.");
             csvContent.getRows().parallelStream().forEach(input -> childAspectStarterUseCase.run(input, processId));
-            processReportUseCase.finishBuildHistoricFile(processId);
+            processReportUseCase.finishBuildChildAspectProgressReport(processId);
 
         } else {
-            processReportUseCase.unknownFileToHistoricFile(processId, LocalDateTime.now());
+            processReportUseCase.unknownProcessReport(processId, LocalDateTime.now());
             throw new Exception("I don't know what to do with you");
         }
     }

@@ -38,17 +38,7 @@ import java.util.stream.Collectors;
 @Component
 public class ProcessReportUseCase {
     private final ProcessReportRepository repository;
-    private ProcessReport processReport;
     private final ProcessReportMapper mapper;
-
-    public ProcessReport getReportsById(String id){
-        Optional<ProcessReportEntity> result = repository.findById(id);
-        if( result.isPresent()){
-            return mapper.mapFrom(result.get());
-        }
-        return null;
-
-    }
 
 
     public ProcessReportUseCase(ProcessReportRepository repository, ProcessReportMapper mapper) {
@@ -56,44 +46,42 @@ public class ProcessReportUseCase {
         this.mapper = mapper;
     }
 
-    public void startBuildHistoricFile(String processId, CsvTypeEnum aspect, int size, LocalDateTime now) {
-        processReport = new ProcessReport();
-        processReport.setProcessId(processId);
-        processReport.setCsvType(aspect);
-        processReport.setStatus(ProgressStatusEnum.IN_PROGRESS);
-        processReport.setNumberOfItems(size);
-        processReport.setStartDate(now);
-        saveHistoric(processReport);
+    public void startBuildProcessReport(String processId, CsvTypeEnum type, int size, LocalDateTime now) {
+        saveProcessReport(ProcessReport.builder()
+                .processId(processId)
+                .csvType(type)
+                .status(ProgressStatusEnum.IN_PROGRESS)
+                .numberOfItems(size)
+                .startDate(now)
+                .build());
     }
 
-    public void inProgressBuildHistoricFile(int numberOfSucceeded, int numberOfFailures) {
-        processReport.setNumberOfSucceededItems(numberOfSucceeded);
-        processReport.setNumberOfFailedItems(numberOfFailures);
+    public void finishBuildAspectProgressReport(String processId) {
+        repository.finalizeAspectProgressReport(processId, LocalDateTime.now(), ProgressStatusEnum.COMPLETED);
     }
 
-    public void finishBuildHistoricFile(String processId) {
-        repository.setEndDate(processId, LocalDateTime.now());
-        repository.setStatus(ProgressStatusEnum.COMPLETED, processId);
-        repository.calculateFailedItems(processId);
+    public void finishBuildChildAspectProgressReport(String processId) {
+        repository.finalizeChildAspectProgressReport(processId, LocalDateTime.now(), ProgressStatusEnum.COMPLETED);
     }
 
-    public void unknownFileToHistoricFile(String processId, LocalDateTime now) {
-        processReport = new ProcessReport();
-        processReport.setProcessId(processId);
-        processReport.setCsvType(CsvTypeEnum.UNKNOWN);
-        processReport.setStartDate(now);
-        processReport.setEndDate(now);
-        processReport.setStatus(ProgressStatusEnum.FAILED);
-        saveHistoric(processReport);
+
+    public void unknownProcessReport(String processId, LocalDateTime now) {
+        saveProcessReport(ProcessReport.builder()
+                .processId(processId)
+                .csvType(CsvTypeEnum.UNKNOWN)
+                .startDate(now)
+                .endDate(now)
+                .status(ProgressStatusEnum.FAILED)
+                .build());
     }
 
-    private void saveHistoric(ProcessReport input) {
+    private void saveProcessReport(ProcessReport input) {
         ProcessReportEntity entity = mapper.mapFrom(input);
         repository.save(entity);
-        log.debug("Historic store successfully");
+        log.debug("Process report stored successfully");
     }
 
-    public ProcessReportPageResponse listAllHistoric(int page, int size) {
+    public ProcessReportPageResponse listAllProcessReports(int page, int size) {
         Page<ProcessReportEntity> result = repository.findAll(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "startDate")));
         List<ProcessReport> processReports = result.get().map(mapper::mapFrom).collect(Collectors.toList());
         return ProcessReportPageResponse.builder()
@@ -104,11 +92,13 @@ public class ProcessReportUseCase {
                 .build();
     }
 
-    public void addSuccess(String pid) {
-        repository.incrementSucceededItems(pid);
+    public ProcessReport getProcessReportById(String id){
+        Optional<ProcessReportEntity> result = repository.findById(id);
+        if( result.isPresent()){
+            return mapper.mapFrom(result.get());
+        }
+        return null;
+
     }
 
-    public void addFailure(String processId) {
-        repository.incrementFailedItems(processId);
-    }
 }

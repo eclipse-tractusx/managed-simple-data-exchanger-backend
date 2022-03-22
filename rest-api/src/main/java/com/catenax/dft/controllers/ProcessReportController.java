@@ -39,22 +39,22 @@ public class ProcessReportController {
     }
 
     @GetMapping(path = "/processing-report")
-    public ResponseEntity<ProcessReportPageResponse> getHistoricByDateDesc(@Param("page") Integer page, @Param("pageSize") Integer pageSize){
+    public ResponseEntity<ProcessReportPageResponse> getProcessingReportsByDateDesc(@Param("page") Integer page, @Param("pageSize") Integer pageSize){
 
         page = page == null ? 0 : page;
         pageSize = pageSize == null ? 10 : pageSize;
 
-        return ok().body(processReportUseCase.listAllHistoric(page, pageSize));
+        return ok().body(processReportUseCase.listAllProcessReports(page, pageSize));
 
     }
 
     @GetMapping(value = "/processing-report/{id}")
-    public ResponseEntity<ProcessReport> findHistoricFilesById(@PathVariable("id") String id){
-        ProcessReport historicById = processReportUseCase.getReportsById(id);
-        if(historicById == null){
+    public ResponseEntity<ProcessReport> getProcessReportById(@PathVariable("id") String id){
+        ProcessReport processReportById = processReportUseCase.getProcessReportById(id);
+        if(processReportById == null){
             return notFound().build();
         }
-        return ok().body(historicById);
+        return ok().body(processReportById);
     }
 
 }

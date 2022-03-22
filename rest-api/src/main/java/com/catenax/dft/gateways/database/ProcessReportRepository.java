@@ -33,35 +33,24 @@ ProcessReportRepository extends JpaRepository<ProcessReportEntity, String> {
     @Modifying
     @Transactional
     @Query("UPDATE ProcessReportEntity " +
-            "SET numberOfSucceededItems = numberOfSucceededItems +1 " +
+            "SET endDate = :endDate, " +
+            "status = :status, " +
+            "numberOfSucceededItems = " +
+            "(SELECT COUNT(a) FROM AspectEntity a WHERE a.processId = :processId), " +
+            "numberOfFailedItems = numberOfItems - " +
+            "(SELECT COUNT(a) FROM AspectEntity a WHERE a.processId = :processId) " +
             "WHERE processId = :processId")
-    void incrementSucceededItems(String processId);
+    void finalizeAspectHistoric(String processId, LocalDateTime endDate, ProgressStatusEnum status);
 
     @Modifying
     @Transactional
     @Query("UPDATE ProcessReportEntity " +
-            "SET numberOfFailedItems = numberOfFailedItems +1 " +
+            "SET endDate = :endDate, " +
+            "status = :status, " +
+            "numberOfSucceededItems = " +
+            "(SELECT COUNT(c) FROM ChildAspectEntity c WHERE c.processId = :processId), " +
+            "numberOfFailedItems = numberOfItems - " +
+            "(SELECT COUNT(c) FROM ChildAspectEntity c WHERE c.processId = :processId) " +
             "WHERE processId = :processId")
-    void incrementFailedItems(String processId);
-
-    @Modifying
-    @Transactional
-    @Query("UPDATE ProcessReportEntity " +
-            "SET numberOfFailedItems = numberOfItems - numberOfSucceededItems " +
-            "WHERE processId = :processId")
-    void calculateFailedItems(String processId);
-
-    @Modifying
-    @Transactional
-    @Query("UPDATE ProcessReportEntity " +
-            "SET endDate = :endDate " +
-            "WHERE processId = :processId")
-    void setEndDate(String processId, LocalDateTime endDate);
-
-    @Modifying
-    @Transactional
-    @Query("UPDATE ProcessReportEntity " +
-            "SET status = :status " +
-            "WHERE processId = :processId")
-    void setStatus(ProgressStatusEnum status, String processId);
+    void finalizeChildAspectHistoric(String processId, LocalDateTime endDate, ProgressStatusEnum status);
 }

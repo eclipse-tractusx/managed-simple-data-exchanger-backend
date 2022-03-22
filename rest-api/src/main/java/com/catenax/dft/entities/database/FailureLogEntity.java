@@ -17,14 +17,30 @@
  *
  */
 
-package com.catenax.dft.gateways.database;
+package com.catenax.dft.entities.database;
 
+import com.catenax.dft.enums.CsvTypeEnum;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import com.catenax.dft.entities.database.FailureLogEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import javax.persistence.*;
+import java.time.LocalDateTime;
 
+@Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "failure_log")
+public class FailureLogEntity {
 
-public interface FailureLogsRepository extends JpaRepository<FailureLogEntity, String> {
-
+    @Id
+    private String uuid;
+    private String processId;
+    private String log;
+    private LocalDateTime dateTime;
+    @Enumerated(EnumType.STRING)
+    private CsvTypeEnum type;
 }

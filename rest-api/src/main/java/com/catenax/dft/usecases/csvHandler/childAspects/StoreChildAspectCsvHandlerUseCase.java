@@ -38,9 +38,8 @@ public class StoreChildAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase
         this.mapper = mapper;
     }
 
-    protected ChildAspect executeUseCase(ChildAspect input) {
+    protected ChildAspect executeUseCase(ChildAspect input, String processId) {
         ChildAspectEntity entity = mapper.mapFrom(input);
-
         repository.save(entity);
         log.debug("Aspect store successfully");
         return input;

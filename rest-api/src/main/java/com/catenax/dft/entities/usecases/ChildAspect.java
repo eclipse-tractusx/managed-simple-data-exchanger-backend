@@ -24,6 +24,7 @@ import lombok.Data;
 @Data
 public class ChildAspect {
 
+    private String processId;
     private String parentIdentifierKey;
     private String parentIdentifierValue;
     private String lifecycleContext;

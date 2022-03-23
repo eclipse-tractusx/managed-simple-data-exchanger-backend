@@ -12,22 +12,28 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package com.catenax.dft.entities.usecases;
+package com.catenax.dft.entities.database;
 
-import lombok.Builder;
+import com.catenax.dft.enums.ProgressStatusEnum;
 import lombok.Data;
 
-@Builder
-@Data
-public class ChildAspect {
+import javax.persistence.*;
+import java.time.LocalDateTime;
 
+@Table(name = "process_report")
+@Entity
+@Data
+public class ProcessReportEntity {
+    @Id
     private String processId;
-    private String parentIdentifierKey;
-    private String parentIdentifierValue;
-    private String lifecycleContext;
-    private int quantityNumber;
-    private String measurementUnitLexicalValue;
+    private String csvType;
+    private int numberOfItems;
+    private int numberOfFailedItems;
+    private int numberOfSucceededItems;
+    @Enumerated(EnumType.STRING)
+    private ProgressStatusEnum status;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
 }

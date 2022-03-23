@@ -12,22 +12,24 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
-
 package com.catenax.dft.entities.usecases;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Builder
+import java.util.List;
+
 @Data
-public class ChildAspect {
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class ProcessReportPageResponse {
+    private int pageNumber;
+    private int pageSize;
+    private long totalItems;
+    private List<ProcessReport> items;
 
-    private String processId;
-    private String parentIdentifierKey;
-    private String parentIdentifierValue;
-    private String lifecycleContext;
-    private int quantityNumber;
-    private String measurementUnitLexicalValue;
 }

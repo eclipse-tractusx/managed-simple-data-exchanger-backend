@@ -12,22 +12,32 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package com.catenax.dft.entities.usecases;
+package com.catenax.dft.entities.database;
 
+import com.catenax.dft.enums.CsvTypeEnum;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+import javax.persistence.*;
+import java.time.LocalDateTime;
+
+@Getter
 @Builder
-@Data
-public class ChildAspect {
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "failure_log")
+public class FailureLogEntity {
 
+    @Id
+    private String uuid;
     private String processId;
-    private String parentIdentifierKey;
-    private String parentIdentifierValue;
-    private String lifecycleContext;
-    private int quantityNumber;
-    private String measurementUnitLexicalValue;
+    private String log;
+    private LocalDateTime dateTime;
+    @Enumerated(EnumType.STRING)
+    private CsvTypeEnum type;
 }

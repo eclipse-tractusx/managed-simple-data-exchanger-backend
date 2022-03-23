@@ -17,7 +17,16 @@
 
 package com.catenax.dft.usecases.csvHandler;
 
+import com.catenax.dft.usecases.processReport.ProcessReportUseCase;
+import com.catenax.dft.usecases.logs.FailureLogsUseCase;
+import com.catenax.dft.entities.database.FailureLogEntity;
+import com.catenax.dft.enums.CsvTypeEnum;
+import com.catenax.dft.usecases.csvHandler.aspects.MapToAspectException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Slf4j
 public abstract class AbstractCsvHandlerUseCase<I, T> implements CsvHandlerUseCase<I> {
@@ -28,15 +37,37 @@ public abstract class AbstractCsvHandlerUseCase<I, T> implements CsvHandlerUseCa
         this.nextUseCase = nextUseCase;
     }
 
-    protected abstract T executeUseCase(I input);
+    protected abstract T executeUseCase(I input, String processId);
+
+    @Autowired
+    protected ProcessReportUseCase historicFilesUseCase;
+
+    @Autowired
+    FailureLogsUseCase failureLogsUseCase;
 
     @Override
-    public void run(I input) {
-        T result = executeUseCase(input);
+    public void run(I input, String processId) {
 
-        if (nextUseCase != null) {
-            log.info(String.format("[%s] is running now", this.getClass().getCanonicalName()));
-            nextUseCase.run(result);
+        try {
+
+            T result = executeUseCase(input, processId);
+
+            if (nextUseCase != null) {
+                log.info(String.format("[%s] is running now", this.getClass().getCanonicalName()));
+                nextUseCase.run(result, processId);
+            }
+        } catch (RuntimeException e) {
+
+            FailureLogEntity entity = FailureLogEntity.builder()
+                    .uuid(UUID.randomUUID().toString())
+                    .processId(processId)
+                    .log(e.getMessage())
+                    .dateTime(LocalDateTime.now())
+                    .type(e instanceof MapToAspectException ? CsvTypeEnum.ASPECT :CsvTypeEnum.CHILD_ASPECT)
+                    .build();
+            failureLogsUseCase.saveLog(entity);
+            System.out.println(e);
+            log.debug(String.valueOf(e));
         }
     }
 }

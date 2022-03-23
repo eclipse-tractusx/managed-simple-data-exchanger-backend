@@ -120,7 +120,7 @@ const Dashboard: React.FC = () => {
                   if (
                     result &&
                     result.data &&
-                    (r.data.status === Status.completed || r.data.status === Status.failed)
+                    (result.data.status === Status.completed || result.data.status === Status.failed)
                   ) {
                     clearInterval(interval);
                     clearUpload();

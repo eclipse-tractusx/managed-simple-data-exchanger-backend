@@ -8,6 +8,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
+import { formateDate } from '../utils/utils';
 
 interface Column {
   id:
@@ -15,14 +16,14 @@ interface Column {
     | 'csvType'
     | 'numberOfItems'
     | 'numberOfFailedItems'
-    | 'numberOfSuccededItems'
+    | 'numberOfSucceededItems'
     | 'status'
     | 'startDate'
     | 'endDate';
   label: string;
   minWidth?: number;
   align?: 'right';
-  format?: (value: number) => string;
+  format?: (value: string) => string;
 }
 
 const columns: readonly Column[] = [
@@ -41,7 +42,7 @@ const columns: readonly Column[] = [
     align: 'right',
   },
   {
-    id: 'numberOfSuccededItems',
+    id: 'numberOfSucceededItems',
     label: 'Number of Succeded Items',
     minWidth: 170,
     align: 'right',
@@ -57,12 +58,14 @@ const columns: readonly Column[] = [
     label: 'Start Date',
     minWidth: 170,
     align: 'right',
+    format: (value: string) => formateDate(value),
   },
   {
     id: 'endDate',
     label: 'End Date',
     minWidth: 170,
     align: 'right',
+    format: (value: string) => formateDate(value),
   },
 ];
 
@@ -99,14 +102,14 @@ export default function StickyHeadTable({
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
+            {rows.map(row => {
               return (
                 <TableRow hover role="checkbox" tabIndex={-1} key={row.processId}>
                   {columns.map(column => {
                     const value = row[column.id];
                     return (
                       <TableCell key={column.id} align={column.align}>
-                        {column.format && typeof value === 'number' ? column.format(value) : value}
+                        {column.format && typeof value === 'string' ? column.format(value) : value}
                       </TableCell>
                     );
                   })}

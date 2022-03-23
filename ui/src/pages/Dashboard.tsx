@@ -4,15 +4,15 @@ import Sidebar from '../components/Sidebar';
 import UploadForm from '../components/UploadForm';
 import { FileType } from '../models/FileType';
 import { File } from '../models/File';
+import { HistoricData, Status } from '../models/HistoricData';
 
 import UploadFileOutlinedIcon from '@mui/icons-material/UploadFileOutlined';
 import Notification from '../components/Notification';
 import dft from '../api/dft';
-import dftMock from '../api/dft-mock'; // TODO - remove
-import UploadProgressBar from '../components/UploadProgressBar';
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 import CloseIcon from '@mui/icons-material/Close';
 import StickyHeadTable from '../components/Table';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const Dashboard: React.FC = () => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -20,10 +20,9 @@ const Dashboard: React.FC = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [uploadProgress, updateUploadProgress] = useState(0);
   const [uploadStatus, setUploadStatus] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [tableData, setTableData] = useState<any>([]);
+  const [tableData, setTableData] = useState<HistoricData[]>([]);
   const [rowsPerPage, setRowsPerPage] = useState<number>(15);
   const [page, setPage] = useState<number>(0);
   const [totalElements, setTotalElements] = useState<number>(0);
@@ -31,9 +30,9 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     (async () => {
-      dftMock.get(`/reports?page=${page}&pageSize=${rowsPerPage}`).then(response => {
-        setTableData(response.data.content);
-        setTotalElements(response.data.totalElements);
+      dft.get(`/processing-report?page=${page}&pageSize=${rowsPerPage}`).then(response => {
+        setTableData(response.data.items);
+        setTotalElements(response.data.totalItems);
       });
     })();
   }, [page, rowsPerPage]);
@@ -93,6 +92,13 @@ const Dashboard: React.FC = () => {
     setMenuIndex(index);
   };
 
+  const clearUpload = () => {
+    setTimeout(() => {
+      setUploading(false);
+      setUploadStatus(true);
+    }, 1000);
+  };
+
   const uploadFile = (e: any) => {
     e.preventDefault();
     setUploading(true);
@@ -100,18 +106,32 @@ const Dashboard: React.FC = () => {
     formData.append('file', selectedFiles[0] as any);
 
     dft
-      .post('/upload', formData, {
-        onUploadProgress: (ev: ProgressEvent) => {
-          const progress = (ev.loaded / ev.total) * 100;
-          updateUploadProgress(Math.round(progress));
-        },
-      })
+      .post('/upload', formData)
       .then(resp => {
-        console.log(resp.data);
-        setTimeout(() => {
-          setUploading(false);
-          setUploadStatus(true);
-        }, 1000);
+        const processId = resp.data;
+
+        // first call
+        dft.get(`/processing-report/${processId}`).then(r => {
+          if (r && r.data && r.data.status !== Status.completed && r.data.status !== Status.failed) {
+            // if status !== 'COMPLETED' && status !== 'FAILED' -> set interval with 10 seconds to refresh data
+            const interval = setInterval(
+              () =>
+                dft.get(`/processing-report/${processId}`).then(result => {
+                  if (
+                    result &&
+                    result.data &&
+                    (r.data.status === Status.completed || r.data.status === Status.failed)
+                  ) {
+                    clearInterval(interval);
+                    clearUpload();
+                  }
+                }),
+              10000,
+            );
+          } else {
+            clearUpload();
+          }
+        });
       })
       .catch(err => console.error(err));
   };
@@ -123,7 +143,12 @@ const Dashboard: React.FC = () => {
         <div className="flex flex-1 flex-col items-center justify-center min-w-0 relative">
           <div className="flex-[1_0_0%] flex order-1">
             <div className="flex flex-col items-center justify-center">
-              {uploading ? <UploadProgressBar uploadProgress={uploadProgress} /> : null}
+              {uploading ? (
+                <div className="text-center">
+                  <CircularProgress />
+                  <div> Uploading your file... </div>
+                </div>
+              ) : null}
               {!uploading && (
                 <UploadForm
                   getSelectedFiles={(files: any) => handleFiles(files)}

@@ -32,14 +32,13 @@ public class StoreAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<Aspe
 
     private final AspectRepository aspectRepository;
     private final AspectMapper aspectMapper;
-    private final ChildAspectMapper childAspectMapper;
 
 
     public StoreAspectCsvHandlerUseCase(AspectRepository aspectRepository, AspectMapper mapper, ChildAspectMapper childAspectMapper) {
+    public StoreAspectCsvHandlerUseCase(AspectRepository aspectRepository, AspectMapper mapper) {
         super(null);
         this.aspectRepository = aspectRepository;
         this.aspectMapper = mapper;
-        this.childAspectMapper = childAspectMapper;
     }
 
     protected Aspect executeUseCase(Aspect input, String processId) {

@@ -146,13 +146,19 @@ export default function StickyHeadTable({
                           (!column.format || typeof value !== 'string') &&
                           value}
                         {column.id === 'status' && value === Status.completed && (
-                          <CheckBox fontSize="small" sx={{ color: '#8bc34a' }} />
+                          <span title={Status.completed}>
+                            <CheckBox fontSize="small" sx={{ color: '#8bc34a' }} />{' '}
+                          </span>
                         )}
                         {column.id === 'status' && value === Status.failed && (
-                          <HighlightOff fontSize="small" sx={{ color: '#f44336' }} />
+                          <span title={Status.failed}>
+                            <HighlightOff fontSize="small" sx={{ color: '#f44336' }} />{' '}
+                          </span>
                         )}
                         {column.id === 'status' && value === Status.inProgress && (
-                          <Pending fontSize="small" sx={{ color: '#2196f3' }} />
+                          <span title={Status.inProgress}>
+                            <Pending fontSize="small" sx={{ color: '#2196f3' }} />{' '}
+                          </span>
                         )}
                       </StyledTableCell>
                     );

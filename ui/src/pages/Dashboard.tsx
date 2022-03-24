@@ -1,10 +1,11 @@
 import React, { SyntheticEvent, useEffect, useState } from 'react';
 import Nav from '../components/NavBar';
 import Sidebar from '../components/Sidebar';
+import Timer from '../components/Timer';
 import UploadForm from '../components/UploadForm';
 import { FileType } from '../models/FileType';
 import { File } from '../models/File';
-import { HistoricData, Status } from '../models/HistoricData';
+import { CsvTypes, HistoricData, Status } from '../models/HistoricData';
 
 import UploadFileOutlinedIcon from '@mui/icons-material/UploadFileOutlined';
 import Notification from '../components/Notification';
@@ -16,6 +17,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 import { Refresh } from '@mui/icons-material';
+import { formatDate } from '../utils/utils';
 
 const Dashboard: React.FC = () => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -29,6 +31,16 @@ const Dashboard: React.FC = () => {
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
   const [page, setPage] = useState<number>(0);
   const [totalElements, setTotalElements] = useState<number>(0);
+  const [currentUploadData, setUploadData] = useState<HistoricData>({
+    processId: '',
+    csvType: CsvTypes.unknown,
+    numberOfItems: 0,
+    numberOfFailedItems: 0,
+    numberOfSucceededItems: 0,
+    status: Status.inProgress,
+    startDate: '',
+    endDate: undefined,
+  });
   let dragCounter = 0;
 
   const refreshTable = () => {
@@ -54,9 +66,11 @@ const Dashboard: React.FC = () => {
   };
 
   const handleFiles = (file: File) => {
+    setUploadStatus(false);
+    setUploading(false);
     const maxFileSize = window._env_.FILESIZE;
     if (validateFile(file) && file.size < maxFileSize) {
-      setSelectedFiles([...selectedFiles, file]);
+      setSelectedFiles([file]);
     } else {
       file.invalid = true;
       setErrorMessage('File not permitted');
@@ -80,23 +94,34 @@ const Dashboard: React.FC = () => {
     setIsDragging(false);
   };
 
+  const removeSelectedFiles = (clearState: boolean) => {
+    if (clearState) setSelectedFiles([]);
+    setUploadStatus(false);
+    setUploading(false);
+  };
+
   const fileDrop = (e: any) => {
     e.preventDefault();
     const files = e.dataTransfer.files;
     if (files.length && files.length < 2 && selectedFiles.length === 0) {
       handleFiles(files[0]);
+      setUploadStatus(false);
+      setUploading(false);
+    } else if (files.length && files.length < 2 && selectedFiles.length > 0) {
+      setSelectedFiles([files[0]]);
+      setUploadStatus(false);
+      setUploading(false);
     } else {
       setErrorMessage('Only one file is permitted');
     }
     setIsDragging(false);
   };
 
-  const removeSelectedFiles = (clearState: boolean) => {
-    if (clearState) setSelectedFiles([]);
-  };
-
   const getMenuIndex = (index = 0) => {
     setMenuIndex(index);
+    if (index === 1) {
+      refreshTable();
+    }
   };
 
   const clearUpload = () => {
@@ -109,6 +134,16 @@ const Dashboard: React.FC = () => {
   const uploadFile = (e: any) => {
     e.preventDefault();
     setUploading(true);
+    setUploadData({
+      processId: '',
+      csvType: CsvTypes.unknown,
+      numberOfItems: 0,
+      numberOfFailedItems: 0,
+      numberOfSucceededItems: 0,
+      status: Status.inProgress,
+      startDate: '',
+      endDate: undefined,
+    });
     const formData = new FormData();
     formData.append('file', selectedFiles[0] as any);
 
@@ -119,11 +154,13 @@ const Dashboard: React.FC = () => {
 
         // first call
         dft.get(`/processing-report/${processId}`).then(r => {
+          setUploadData(r.data);
           if (r && r.data && r.data.status !== Status.completed && r.data.status !== Status.failed) {
             // if status !== 'COMPLETED' && status !== 'FAILED' -> set interval with 10 seconds to refresh data
             const interval = setInterval(
               () =>
                 dft.get(`/processing-report/${processId}`).then(result => {
+                  setUploadData(result.data);
                   if (
                     result &&
                     result.data &&
@@ -152,8 +189,11 @@ const Dashboard: React.FC = () => {
             <div className="flex flex-col items-center justify-center">
               {uploading ? (
                 <div className="text-center">
-                  <CircularProgress />
-                  <div> Uploading your file... </div>
+                  <CircularProgress size={100} />
+                  <Timer />
+                  <span>
+                    Upload started at: {currentUploadData.startDate ? formatDate(currentUploadData.startDate) : '-'}
+                  </span>
                 </div>
               ) : null}
               {!uploading && (

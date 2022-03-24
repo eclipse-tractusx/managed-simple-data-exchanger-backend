@@ -10,7 +10,7 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { HistoricData, CsvTypes, Status } from '../models/HistoricData';
-import { formateDate } from '../utils/utils';
+import { formatDate } from '../utils/utils';
 
 interface Column {
   id:
@@ -60,14 +60,14 @@ const columns: readonly Column[] = [
     label: 'Start Date',
     minWidth: 170,
     align: 'center',
-    format: (value: string) => formateDate(value),
+    format: (value: string) => formatDate(value),
   },
   {
     id: 'endDate',
     label: 'End Date',
     minWidth: 170,
     align: 'center',
-    format: (value: string) => formateDate(value),
+    format: (value: string) => formatDate(value),
   },
 ];
 
@@ -132,6 +132,7 @@ export default function StickyHeadTable({
                             <AccessTime fontSize="small" sx={{ color: '#000000' }} /> &nbsp;
                           </span>
                         )}
+                        {column.id === 'endDate' && !value && '-'}
                         {column.id === 'csvType' && value === CsvTypes.aspect && <b> ASPECT </b>}
                         {column.id === 'csvType' && value === CsvTypes.childAspect && <b> CHILD ASPECT </b>}
                         {column.id === 'csvType' && value === CsvTypes.unknown && <b> UNKNOWN </b>}

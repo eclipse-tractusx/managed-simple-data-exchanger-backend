@@ -1,4 +1,4 @@
-export function formateDate(isoDate: string) {
+export function formatDate(isoDate: string) {
   const date = new Date(isoDate);
 
   const day = date.getDate() > 9 ? date.getDate() : '0' + date.getDate();

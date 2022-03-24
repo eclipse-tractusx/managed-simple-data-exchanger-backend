@@ -4,7 +4,7 @@ export interface HistoricData {
   numberOfItems: number;
   numberOfFailedItems: number;
   numberOfSucceededItems: number;
-  status: PermissionStatusEventMap;
+  status: Status;
   startDate: string;
   endDate?: string;
 }

@@ -26,12 +26,12 @@ import java.util.UUID;
 @Component
 public class GenerateUuIdCsvHandlerUseCase extends AbstractCsvHandlerUseCase<Aspect, Aspect> {
 
-    public GenerateUuIdCsvHandlerUseCase(RegisterDigitalTwinUseCase nextUseCase) {
+    public GenerateUuIdCsvHandlerUseCase(StoreAspectCsvHandlerUseCase nextUseCase) {
         super(nextUseCase);
     }
 
     @Override
-    protected Aspect executeUseCase(Aspect input) {
+    protected Aspect executeUseCase(Aspect input, String processId) {
         input.setUuid(UUID.randomUUID().toString());
 
         return input;

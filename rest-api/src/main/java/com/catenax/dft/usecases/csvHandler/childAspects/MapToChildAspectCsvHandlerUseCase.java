@@ -20,6 +20,7 @@ package com.catenax.dft.usecases.csvHandler.childAspects;
 import com.catenax.dft.entities.usecases.ChildAspect;
 import com.catenax.dft.usecases.csvHandler.AbstractCsvHandlerUseCase;
 import com.catenax.dft.usecases.csvHandler.CsvHandlerUseCase;
+import com.catenax.dft.usecases.csvHandler.aspects.MapToAspectException;
 import org.springframework.stereotype.Service;
 
 import static com.catenax.dft.gateways.file.CsvGateway.SEPARATOR;
@@ -27,6 +28,7 @@ import static com.catenax.dft.gateways.file.CsvGateway.SEPARATOR;
 @Service
 public class MapToChildAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<String, ChildAspect> {
 
+    private final int ROW_LENGTH = 5;
 
     public MapToChildAspectCsvHandlerUseCase(CsvHandlerUseCase<ChildAspect> nextUseCase) {
         super(nextUseCase);
@@ -34,10 +36,15 @@ public class MapToChildAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase
     }
 
     @Override
-    protected ChildAspect executeUseCase(String rowData) {
+    protected ChildAspect executeUseCase(String rowData, String processId) {
         String[] rowDataFields = rowData.split(SEPARATOR);
 
+        if (rowDataFields.length != ROW_LENGTH) {
+            throw new MapToChildAspectException("This row has wrong amount of fields");
+        }
+
         return ChildAspect.builder()
+                .processId(processId)
                 .parentIdentifierKey(rowDataFields[0])
                 .parentIdentifierValue(rowDataFields[1])
                 .lifecycleContext(rowDataFields[2])

@@ -61,6 +61,7 @@ const Dashboard: React.FC = () => {
   };
 
   const validateFile = (file: File) => {
+    console.log('File', file.type);
     const validTypes: string[] = Object.values(FileType);
     return validTypes.includes(file.type) || file.name.endsWith('.csv');
   };

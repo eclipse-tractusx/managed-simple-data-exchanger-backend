@@ -12,22 +12,11 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
+package com.catenax.dft.enums;
 
-package com.catenax.dft.entities.usecases;
-
-import lombok.Builder;
-import lombok.Data;
-
-@Builder
-@Data
-public class ChildAspect {
-
-    private String processId;
-    private String parentIdentifierKey;
-    private String parentIdentifierValue;
-    private String lifecycleContext;
-    private int quantityNumber;
-    private String measurementUnitLexicalValue;
+public enum ProgressStatusEnum {
+    IN_PROGRESS,
+    COMPLETED,
+    FAILED
 }

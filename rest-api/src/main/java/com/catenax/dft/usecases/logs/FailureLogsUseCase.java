@@ -12,22 +12,22 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package com.catenax.dft.entities.usecases;
+package com.catenax.dft.usecases.logs;
 
-import lombok.Builder;
-import lombok.Data;
+import com.catenax.dft.entities.database.FailureLogEntity;
+import com.catenax.dft.gateways.database.FailureLogsRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-@Builder
-@Data
-public class ChildAspect {
+@Service
+public class FailureLogsUseCase {
 
-    private String processId;
-    private String parentIdentifierKey;
-    private String parentIdentifierValue;
-    private String lifecycleContext;
-    private int quantityNumber;
-    private String measurementUnitLexicalValue;
+    @Autowired
+    private FailureLogsRepository repository;
+
+    public void saveLog(FailureLogEntity entity) {
+        repository.save(entity);
+    }
 }

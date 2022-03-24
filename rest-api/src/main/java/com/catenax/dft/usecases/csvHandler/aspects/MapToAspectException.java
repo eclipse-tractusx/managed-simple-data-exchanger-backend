@@ -12,22 +12,13 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package com.catenax.dft.entities.usecases;
+package com.catenax.dft.usecases.csvHandler.aspects;
 
-import lombok.Builder;
-import lombok.Data;
+public class MapToAspectException extends RuntimeException{
 
-@Builder
-@Data
-public class ChildAspect {
-
-    private String processId;
-    private String parentIdentifierKey;
-    private String parentIdentifierValue;
-    private String lifecycleContext;
-    private int quantityNumber;
-    private String measurementUnitLexicalValue;
+    public MapToAspectException(String message) {
+        super(message);
+    }
 }

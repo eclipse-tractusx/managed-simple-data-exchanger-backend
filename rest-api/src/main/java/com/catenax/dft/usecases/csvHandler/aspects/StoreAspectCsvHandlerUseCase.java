@@ -18,7 +18,6 @@
 package com.catenax.dft.usecases.csvHandler.aspects;
 
 import com.catenax.dft.entities.database.AspectEntity;
-import com.catenax.dft.entities.database.ChildAspectEntity;
 import com.catenax.dft.entities.usecases.Aspect;
 import com.catenax.dft.gateways.database.AspectRepository;
 import com.catenax.dft.mapper.AspectMapper;
@@ -26,9 +25,6 @@ import com.catenax.dft.mapper.ChildAspectMapper;
 import com.catenax.dft.usecases.csvHandler.AbstractCsvHandlerUseCase;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -43,9 +39,8 @@ public class StoreAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<Aspe
         this.aspectMapper = mapper;
     }
 
-    protected Aspect executeUseCase(Aspect input) {
+    protected Aspect executeUseCase(Aspect input, String processId) {
         AspectEntity entity = aspectMapper.mapFrom(input);
-
         aspectRepository.save(entity);
         log.debug("Aspect store successfully");
         return input;

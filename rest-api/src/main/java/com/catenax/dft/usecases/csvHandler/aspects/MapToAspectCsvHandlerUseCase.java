@@ -29,15 +29,20 @@ import static com.catenax.dft.gateways.file.CsvGateway.SEPARATOR;
 @Slf4j
 public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<String, Aspect> {
 
+    private final int ROW_LENGTH = 9;
     public MapToAspectCsvHandlerUseCase(GenerateUuIdCsvHandlerUseCase nextUseCase) {
         super(nextUseCase);
     }
 
     @SneakyThrows
-    public Aspect executeUseCase(String rowData) {
+    public Aspect executeUseCase(String rowData, String processId) {
         String[] rowDataFields = rowData.split(SEPARATOR);
 
+        if (rowDataFields.length != ROW_LENGTH){
+            throw new MapToAspectException("This row has wrong amount of fields");
+        }
         return Aspect.builder()
+                .processId(processId)
                 .localIdentifiersKey(rowDataFields[0])
                 .localIdentifiersValue(rowDataFields[1])
                 .manufacturingDate(rowDataFields[2])

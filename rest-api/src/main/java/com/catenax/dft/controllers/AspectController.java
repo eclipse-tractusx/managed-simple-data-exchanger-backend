@@ -18,7 +18,6 @@
 package com.catenax.dft.controllers;
 
 import com.catenax.dft.entities.database.AspectEntity;
-import com.catenax.dft.gateways.external.DigitalTwinGateway;
 import com.catenax.dft.usecases.aspects.GetAspectsUseCase;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -35,20 +34,16 @@ import static org.springframework.http.ResponseEntity.ok;
 public class AspectController {
 
     private final GetAspectsUseCase useCase;
-    private final DigitalTwinGateway gateway;
 
-
-    public AspectController(GetAspectsUseCase useCase, DigitalTwinGateway gateway) {
+    public AspectController(GetAspectsUseCase useCase) {
         this.useCase = useCase;
-        this.gateway = gateway;
     }
 
     @GetMapping(path = "/aspect")
     public ResponseEntity<Page<AspectEntity>> getAspects(@Param("page") Integer page, @Param("pageSize") Integer pageSize) {
-
-        gateway.getDigitalTwins(null);
         page = page == null ? 0 : page;
         pageSize = pageSize == null ? 10 : pageSize;
         return ok().body(useCase.fetchAllAspects(page, pageSize));
     }
+
 }

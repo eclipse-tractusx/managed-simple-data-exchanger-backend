@@ -13,6 +13,9 @@ import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutli
 import CloseIcon from '@mui/icons-material/Close';
 import StickyHeadTable from '../components/Table';
 import CircularProgress from '@mui/material/CircularProgress';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import { Refresh } from '@mui/icons-material';
 
 const Dashboard: React.FC = () => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -23,17 +26,21 @@ const Dashboard: React.FC = () => {
   const [uploadStatus, setUploadStatus] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [tableData, setTableData] = useState<HistoricData[]>([]);
-  const [rowsPerPage, setRowsPerPage] = useState<number>(15);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(10);
   const [page, setPage] = useState<number>(0);
   const [totalElements, setTotalElements] = useState<number>(0);
   let dragCounter = 0;
 
+  const refreshTable = () => {
+    dft.get(`/processing-report?page=${page}&pageSize=${rowsPerPage}`).then(response => {
+      setTableData(response.data.items);
+      setTotalElements(response.data.totalItems);
+    });
+  };
+
   useEffect(() => {
     (async () => {
-      dft.get(`/processing-report?page=${page}&pageSize=${rowsPerPage}`).then(response => {
-        setTableData(response.data.items);
-        setTotalElements(response.data.totalItems);
-      });
+      refreshTable();
     })();
   }, [page, rowsPerPage]);
 
@@ -176,7 +183,19 @@ const Dashboard: React.FC = () => {
     } else {
       return (
         <div className="flex-1 py-6 px-20">
-          <h1 className="flex flex-row text-bold text-3xl">Upload History</h1>
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <h1 className="flex flex-row text-bold text-3xl">Upload History</h1>
+            </Grid>
+            <Grid item xs={6} className="text-right">
+              <Button variant="contained" onClick={() => refreshTable()}>
+                <span>
+                  <Refresh />
+                  &nbsp; Refresh
+                </span>
+              </Button>
+            </Grid>
+          </Grid>
           <div className="mt-8">
             <StickyHeadTable
               rows={tableData}

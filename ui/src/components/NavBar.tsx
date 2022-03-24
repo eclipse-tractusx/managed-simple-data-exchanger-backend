@@ -6,6 +6,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
+import { Logout } from '@mui/icons-material';
 
 const Nav = (props: any) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -67,7 +68,11 @@ const Nav = (props: any) => {
           open={Boolean(anchorEl)}
           onClose={handleClose}
         >
-          <MenuItem onClick={logout}>Logout</MenuItem>
+          <MenuItem onClick={logout}>
+            <span>
+              <Logout /> &nbsp; Logout
+            </span>
+          </MenuItem>
         </Menu>
       </div>
     </div>

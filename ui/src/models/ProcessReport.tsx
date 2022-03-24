@@ -1,4 +1,4 @@
-export interface HistoricData {
+export interface ProcessReport {
   processId: string;
   csvType: CsvTypes;
   numberOfItems: number;

@@ -5,7 +5,7 @@ import Timer from '../components/Timer';
 import UploadForm from '../components/UploadForm';
 import { FileType } from '../models/FileType';
 import { File } from '../models/File';
-import { CsvTypes, HistoricData, Status } from '../models/HistoricData';
+import { CsvTypes, ProcessReport, Status } from '../models/ProcessReport';
 
 import UploadFileOutlinedIcon from '@mui/icons-material/UploadFileOutlined';
 import Notification from '../components/Notification';
@@ -27,11 +27,11 @@ const Dashboard: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [uploadStatus, setUploadStatus] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [tableData, setTableData] = useState<HistoricData[]>([]);
+  const [tableData, setTableData] = useState<ProcessReport[]>([]);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
   const [page, setPage] = useState<number>(0);
   const [totalElements, setTotalElements] = useState<number>(0);
-  const [currentUploadData, setUploadData] = useState<HistoricData>({
+  const [currentUploadData, setUploadData] = useState<ProcessReport>({
     processId: '',
     csvType: CsvTypes.unknown,
     numberOfItems: 0,

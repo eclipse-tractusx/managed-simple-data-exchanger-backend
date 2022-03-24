@@ -9,7 +9,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
-import { HistoricData, CsvTypes, Status } from '../models/HistoricData';
+import { ProcessReport, CsvTypes, Status } from '../models/ProcessReport';
 import { formatDate } from '../utils/utils';
 
 interface Column {
@@ -71,7 +71,7 @@ const columns: readonly Column[] = [
   },
 ];
 
-const rowsData: HistoricData[] = [];
+const rowsData: ProcessReport[] = [];
 
 export default function StickyHeadTable({
   rows = rowsData,

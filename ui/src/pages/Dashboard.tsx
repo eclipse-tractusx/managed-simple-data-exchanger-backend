@@ -1,17 +1,23 @@
-import React, { SyntheticEvent, useState } from 'react';
+import React, { SyntheticEvent, useEffect, useState } from 'react';
 import Nav from '../components/NavBar';
 import Sidebar from '../components/Sidebar';
+import Timer from '../components/Timer';
 import UploadForm from '../components/UploadForm';
 import { FileType } from '../models/FileType';
 import { File } from '../models/File';
+import { CsvTypes, ProcessReport, Status } from '../models/ProcessReport';
 
 import UploadFileOutlinedIcon from '@mui/icons-material/UploadFileOutlined';
 import Notification from '../components/Notification';
 import dft from '../api/dft';
-import UploadProgressBar from '../components/UploadProgressBar';
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 import CloseIcon from '@mui/icons-material/Close';
 import StickyHeadTable from '../components/Table';
+import CircularProgress from '@mui/material/CircularProgress';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import { Refresh } from '@mui/icons-material';
+import { formatDate } from '../utils/utils';
 
 const Dashboard: React.FC = () => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -19,10 +25,36 @@ const Dashboard: React.FC = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [uploadProgress, updateUploadProgress] = useState(0);
   const [uploadStatus, setUploadStatus] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [tableData, setTableData] = useState<ProcessReport[]>([]);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(10);
+  const [page, setPage] = useState<number>(0);
+  const [totalElements, setTotalElements] = useState<number>(0);
+  const [currentUploadData, setUploadData] = useState<ProcessReport>({
+    processId: '',
+    csvType: CsvTypes.unknown,
+    numberOfItems: 0,
+    numberOfFailedItems: 0,
+    numberOfSucceededItems: 0,
+    status: Status.inProgress,
+    startDate: '',
+    endDate: undefined,
+  });
   let dragCounter = 0;
+
+  const refreshTable = () => {
+    dft.get(`/processing-report?page=${page}&pageSize=${rowsPerPage}`).then(response => {
+      setTableData(response.data.items);
+      setTotalElements(response.data.totalItems);
+    });
+  };
+
+  useEffect(() => {
+    (async () => {
+      refreshTable();
+    })();
+  }, [page, rowsPerPage]);
 
   const handleExpanded = (expanded: boolean) => {
     setIsExpanded(expanded);
@@ -35,9 +67,11 @@ const Dashboard: React.FC = () => {
   };
 
   const handleFiles = (file: File) => {
+    setUploadStatus(false);
+    setUploading(false);
     const maxFileSize = window._env_.FILESIZE;
     if (validateFile(file) && file.size < maxFileSize) {
-      setSelectedFiles([...selectedFiles, file]);
+      setSelectedFiles([file]);
     } else {
       file.invalid = true;
       setErrorMessage('File not permitted');
@@ -61,44 +95,88 @@ const Dashboard: React.FC = () => {
     setIsDragging(false);
   };
 
+  const removeSelectedFiles = (clearState: boolean) => {
+    if (clearState) setSelectedFiles([]);
+    setUploadStatus(false);
+    setUploading(false);
+  };
+
   const fileDrop = (e: any) => {
     e.preventDefault();
     const files = e.dataTransfer.files;
     if (files.length && files.length < 2 && selectedFiles.length === 0) {
       handleFiles(files[0]);
+      setUploadStatus(false);
+      setUploading(false);
+    } else if (files.length && files.length < 2 && selectedFiles.length > 0) {
+      setSelectedFiles([files[0]]);
+      setUploadStatus(false);
+      setUploading(false);
     } else {
       setErrorMessage('Only one file is permitted');
     }
     setIsDragging(false);
   };
 
-  const removeSelectedFiles = (clearState: boolean) => {
-    if (clearState) setSelectedFiles([]);
-  };
-
   const getMenuIndex = (index = 0) => {
     setMenuIndex(index);
+    if (index === 1) {
+      refreshTable();
+    }
+  };
+
+  const clearUpload = () => {
+    setTimeout(() => {
+      setUploading(false);
+      setUploadStatus(true);
+    }, 1000);
   };
 
   const uploadFile = (e: any) => {
     e.preventDefault();
     setUploading(true);
+    setUploadData({
+      processId: '',
+      csvType: CsvTypes.unknown,
+      numberOfItems: 0,
+      numberOfFailedItems: 0,
+      numberOfSucceededItems: 0,
+      status: Status.inProgress,
+      startDate: '',
+      endDate: undefined,
+    });
     const formData = new FormData();
     formData.append('file', selectedFiles[0] as any);
 
     dft
-      .post('/upload', formData, {
-        onUploadProgress: (ev: ProgressEvent) => {
-          const progress = (ev.loaded / ev.total) * 100;
-          updateUploadProgress(Math.round(progress));
-        },
-      })
+      .post('/upload', formData)
       .then(resp => {
-        console.log(resp.data);
-        setTimeout(() => {
-          setUploading(false);
-          setUploadStatus(true);
-        }, 1000);
+        const processId = resp.data;
+
+        // first call
+        dft.get(`/processing-report/${processId}`).then(r => {
+          setUploadData(r.data);
+          if (r && r.data && r.data.status !== Status.completed && r.data.status !== Status.failed) {
+            // if status !== 'COMPLETED' && status !== 'FAILED' -> set interval with 10 seconds to refresh data
+            const interval = setInterval(
+              () =>
+                dft.get(`/processing-report/${processId}`).then(result => {
+                  setUploadData(result.data);
+                  if (
+                    result &&
+                    result.data &&
+                    (result.data.status === Status.completed || result.data.status === Status.failed)
+                  ) {
+                    clearInterval(interval);
+                    clearUpload();
+                  }
+                }),
+              10000,
+            );
+          } else {
+            clearUpload();
+          }
+        });
       })
       .catch(err => console.error(err));
   };
@@ -110,7 +188,15 @@ const Dashboard: React.FC = () => {
         <div className="flex flex-1 flex-col items-center justify-center min-w-0 relative">
           <div className="flex-[1_0_0%] flex order-1">
             <div className="flex flex-col items-center justify-center">
-              {uploading ? <UploadProgressBar uploadProgress={uploadProgress} /> : null}
+              {uploading ? (
+                <div className="text-center">
+                  <CircularProgress size={100} />
+                  <Timer />
+                  <span>
+                    Upload started at: {currentUploadData.startDate ? formatDate(currentUploadData.startDate) : '-'}
+                  </span>
+                </div>
+              ) : null}
               {!uploading && (
                 <UploadForm
                   getSelectedFiles={(files: any) => handleFiles(files)}
@@ -138,9 +224,28 @@ const Dashboard: React.FC = () => {
     } else {
       return (
         <div className="flex-1 py-6 px-20">
-          <h1 className="flex flex-row text-bold text-3xl">Upload History</h1>
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <h1 className="flex flex-row text-bold text-3xl">Upload History</h1>
+            </Grid>
+            <Grid item xs={6} className="text-right">
+              <Button variant="contained" onClick={() => refreshTable()}>
+                <span>
+                  <Refresh />
+                  &nbsp; Refresh
+                </span>
+              </Button>
+            </Grid>
+          </Grid>
           <div className="mt-8">
-            <StickyHeadTable />
+            <StickyHeadTable
+              rows={tableData}
+              page={page}
+              rowsPerPage={rowsPerPage}
+              totalElements={totalElements}
+              setPage={setPage}
+              setRowsPerPage={setRowsPerPage}
+            />
           </div>
         </div>
       );

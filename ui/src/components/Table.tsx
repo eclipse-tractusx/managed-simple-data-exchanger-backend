@@ -1,82 +1,86 @@
 import * as React from 'react';
+import { styled } from '@mui/material/styles';
+import { AccessTime, CheckBox, HighlightOff, Pending } from '@mui/icons-material';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
+import TableCell, { tableCellClasses } from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
+import { ProcessReport, CsvTypes, Status } from '../models/ProcessReport';
+import { formatDate } from '../utils/utils';
 
 interface Column {
-  id: 'name' | 'code' | 'population' | 'size' | 'density';
+  id:
+    | 'processId'
+    | 'csvType'
+    | 'numberOfItems'
+    | 'numberOfFailedItems'
+    | 'numberOfSucceededItems'
+    | 'status'
+    | 'startDate'
+    | 'endDate';
   label: string;
   minWidth?: number;
-  align?: 'right';
-  format?: (value: number) => string;
+  align?: 'right' | 'left' | 'center';
+  format?: (value: string) => string;
 }
 
 const columns: readonly Column[] = [
-  { id: 'name', label: 'Name', minWidth: 170 },
-  { id: 'code', label: 'ISO\u00a0Code', minWidth: 100 },
+  { id: 'processId', label: 'Process Id', minWidth: 170 },
+  { id: 'csvType', label: 'CSV Type', minWidth: 100 },
   {
-    id: 'population',
-    label: 'Population',
+    id: 'numberOfItems',
+    label: 'Number of Items',
     minWidth: 170,
-    align: 'right',
-    format: (value: number) => value.toLocaleString('en-US'),
+    align: 'center',
   },
   {
-    id: 'size',
-    label: 'Size\u00a0(km\u00b2)',
+    id: 'numberOfFailedItems',
+    label: 'Number of Failed Items',
     minWidth: 170,
-    align: 'right',
-    format: (value: number) => value.toLocaleString('en-US'),
+    align: 'center',
   },
   {
-    id: 'density',
-    label: 'Density',
+    id: 'numberOfSucceededItems',
+    label: 'Number of Succeeded Items',
     minWidth: 170,
-    align: 'right',
-    format: (value: number) => value.toFixed(2),
+    align: 'center',
+  },
+  {
+    id: 'status',
+    label: 'Status',
+    minWidth: 100,
+    align: 'center',
+  },
+  {
+    id: 'startDate',
+    label: 'Start Date',
+    minWidth: 170,
+    align: 'center',
+    format: (value: string) => formatDate(value),
+  },
+  {
+    id: 'endDate',
+    label: 'End Date',
+    minWidth: 170,
+    align: 'center',
+    format: (value: string) => formatDate(value),
   },
 ];
 
-interface Data {
-  name: string;
-  code: string;
-  population: number;
-  size: number;
-  density: number;
-}
+const rowsData: ProcessReport[] = [];
 
-function createData(name: string, code: string, population: number, size: number): Data {
-  const density = population / size;
-  return { name, code, population, size, density };
-}
-
-const rows = [
-  createData('India', 'IN', 1324171354, 3287263),
-  createData('China', 'CN', 1403500365, 9596961),
-  createData('Italy', 'IT', 60483973, 301340),
-  createData('United States', 'US', 327167434, 9833520),
-  createData('Canada', 'CA', 37602103, 9984670),
-  createData('Australia', 'AU', 25475400, 7692024),
-  createData('Germany', 'DE', 83019200, 357578),
-  createData('Ireland', 'IE', 4857000, 70273),
-  createData('Mexico', 'MX', 126577691, 1972550),
-  createData('Japan', 'JP', 126317000, 377973),
-  createData('France', 'FR', 67022000, 640679),
-  createData('United Kingdom', 'GB', 67545757, 242495),
-  createData('Russia', 'RU', 146793744, 17098246),
-  createData('Nigeria', 'NG', 200962417, 923768),
-  createData('Brazil', 'BR', 210147125, 8515767),
-];
-
-export default function StickyHeadTable() {
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
-
+export default function StickyHeadTable({
+  rows = rowsData,
+  page = 0,
+  rowsPerPage = 10,
+  totalElements = 0,
+  setPage = (p: number) => {},
+  setRowsPerPage = (r: number) => {},
+}) {
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
   };
@@ -86,6 +90,22 @@ export default function StickyHeadTable() {
     setPage(0);
   };
 
+  const StyledTableCell = styled(TableCell)(({ theme }) => ({
+    [`&.${tableCellClasses.head}`]: {
+      backgroundColor: theme.palette.common.black,
+      color: theme.palette.common.white,
+    },
+    [`&.${tableCellClasses.body}`]: {
+      fontSize: 14,
+    },
+  }));
+
+  const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    '&:nth-of-type(odd)': {
+      backgroundColor: theme.palette.action.hover,
+    },
+  }));
+
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
       <TableContainer sx={{ maxHeight: 640 }}>
@@ -93,34 +113,66 @@ export default function StickyHeadTable() {
           <TableHead>
             <TableRow>
               {columns.map(column => (
-                <TableCell key={column.id} align={column.align} style={{ minWidth: column.minWidth }}>
+                <StyledTableCell key={column.id} align={column.align} style={{ minWidth: column.minWidth }}>
                   {column.label}
-                </TableCell>
+                </StyledTableCell>
               ))}
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
+            {rows.map(row => {
               return (
-                <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
+                <StyledTableRow hover role="checkbox" tabIndex={-1} key={row.processId}>
                   {columns.map(column => {
                     const value = row[column.id];
                     return (
-                      <TableCell key={column.id} align={column.align}>
-                        {column.format && typeof value === 'number' ? column.format(value) : value}
-                      </TableCell>
+                      <StyledTableCell key={column.id} align={column.align}>
+                        {(column.id === 'startDate' || column.id === 'endDate') && (
+                          <span>
+                            <AccessTime fontSize="small" sx={{ color: '#000000' }} /> &nbsp;
+                          </span>
+                        )}
+                        {column.id === 'endDate' && !value && '-'}
+                        {column.id === 'csvType' && value === CsvTypes.aspect && <b> ASPECT </b>}
+                        {column.id === 'csvType' && value === CsvTypes.childAspect && <b> CHILD ASPECT </b>}
+                        {column.id === 'csvType' && value === CsvTypes.unknown && <b> UNKNOWN </b>}
+                        {column.id !== 'status' &&
+                          column.id !== 'csvType' &&
+                          column.format &&
+                          typeof value === 'string' &&
+                          column.format(value)}
+                        {column.id !== 'status' &&
+                          column.id !== 'csvType' &&
+                          (!column.format || typeof value !== 'string') &&
+                          value}
+                        {column.id === 'status' && value === Status.completed && (
+                          <span title={Status.completed}>
+                            <CheckBox fontSize="small" sx={{ color: '#8bc34a' }} />{' '}
+                          </span>
+                        )}
+                        {column.id === 'status' && value === Status.failed && (
+                          <span title={Status.failed}>
+                            <HighlightOff fontSize="small" sx={{ color: '#f44336' }} />{' '}
+                          </span>
+                        )}
+                        {column.id === 'status' && value === Status.inProgress && (
+                          <span title={Status.inProgress}>
+                            <Pending fontSize="small" sx={{ color: '#2196f3' }} />{' '}
+                          </span>
+                        )}
+                      </StyledTableCell>
                     );
                   })}
-                </TableRow>
+                </StyledTableRow>
               );
             })}
           </TableBody>
         </Table>
       </TableContainer>
       <TablePagination
-        rowsPerPageOptions={[15, 25, 30]}
+        rowsPerPageOptions={[10, 15, 20]}
         component="div"
-        count={rows.length}
+        count={totalElements}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}

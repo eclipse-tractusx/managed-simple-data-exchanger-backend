@@ -1,7 +1,7 @@
 import Login from './pages/Login';
 import { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import ProtectedRoute from './modules/ProtectedRoutes';
+import { ProtectedRoute, AuthRoute } from './modules/ProtectedRoutes';
 import Dashboard from './pages/Dashboard';
 
 import { useLocalStorage } from './modules/LocalStorage';
@@ -19,9 +19,10 @@ function App() {
     <Router>
       <Routes>
         <Route
-          path="/"
+          path="/login"
           element={<Login setIsAuth={setIsAuth} setIsAuthError={setIsAuthError} isAuthError={isAuthError} />}
         />
+        <Route path="/" element={<AuthRoute isAuth={isAuth} />}></Route>
         <Route element={<ProtectedRoute isAuth={isAuth} />}>
           <Route path="/dashboard" element={<Dashboard />} />
         </Route>

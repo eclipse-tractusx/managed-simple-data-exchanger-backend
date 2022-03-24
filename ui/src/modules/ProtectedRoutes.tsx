@@ -1,12 +1,13 @@
-import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 
 interface Props {
   isAuth: boolean;
 }
 
-const ProtectedRoute = ({ isAuth }: Props) => {
+export const ProtectedRoute = ({ isAuth }: Props) => {
   return isAuth ? <Outlet /> : <Navigate to="/" />;
 };
 
-export default ProtectedRoute;
+export const AuthRoute = ({ isAuth }: Props) => {
+  return isAuth ? <Navigate to="/dashboard" /> : <Navigate to="/login" />;
+};

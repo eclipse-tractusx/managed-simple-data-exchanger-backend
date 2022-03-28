@@ -24,8 +24,15 @@ import com.catenax.dft.enums.CsvTypeEnum;
 import com.catenax.dft.usecases.csvHandler.aspects.MapToAspectException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.TransactionSystemException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import javax.persistence.RollbackException;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -56,7 +63,8 @@ public abstract class AbstractCsvHandlerUseCase<I, T> implements CsvHandlerUseCa
                 log.info(String.format("[%s] is running now", this.getClass().getCanonicalName()));
                 nextUseCase.run(result, processId);
             }
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
+
 
             FailureLogEntity entity = FailureLogEntity.builder()
                     .uuid(UUID.randomUUID().toString())

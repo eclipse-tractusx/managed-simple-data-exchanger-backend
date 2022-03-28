@@ -29,29 +29,66 @@ import static com.catenax.dft.gateways.file.CsvGateway.SEPARATOR;
 @Slf4j
 public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<String, Aspect> {
 
-    private final int ROW_LENGTH = 9;
+    private final int ROW_LENGTH = 10;
+
     public MapToAspectCsvHandlerUseCase(GenerateUuIdCsvHandlerUseCase nextUseCase) {
         super(nextUseCase);
     }
 
     @SneakyThrows
     public Aspect executeUseCase(String rowData, String processId) {
-        String[] rowDataFields = rowData.split(SEPARATOR);
 
-        if (rowDataFields.length != ROW_LENGTH){
-            throw new MapToAspectException("This row has wrong amount of fields");
+        String[] rowDataFields = rowData.split(SEPARATOR, -1);
+        if (rowDataFields.length != ROW_LENGTH) {
+            throw new MapToAspectException("This row has the wrong amount of fields");
         }
+
+        validateAspectData(rowDataFields);
+
         return Aspect.builder()
                 .processId(processId)
-                .localIdentifiersKey(rowDataFields[0])
-                .localIdentifiersValue(rowDataFields[1])
-                .manufacturingDate(rowDataFields[2])
-                .manufacturingCountry(rowDataFields[3])
-                .manufacturerPartId(rowDataFields[4])
-                .customerPartId(rowDataFields[5])
-                .classification(rowDataFields[6])
-                .nameAtManufacturer(rowDataFields[7])
-                .nameAtCustomer(rowDataFields[8])
+                .localIdentifiersKey(rowDataFields[1])
+                .localIdentifiersValue(rowDataFields[2])
+                .manufacturingDate(rowDataFields[3])
+                .manufacturingCountry(rowDataFields[4])
+                .manufacturerPartId(rowDataFields[5])
+                .customerPartId(rowDataFields[6])
+                .classification(rowDataFields[7])
+                .nameAtManufacturer(rowDataFields[8])
+                .nameAtCustomer(rowDataFields[9])
                 .build();
+    }
+
+    private void validateAspectData(String[] rowDataFields) {
+        String errorMessage = "";
+        if (isBlank(rowDataFields[1])) {
+            errorMessage = add(errorMessage, "local_identifier_key");
+        }
+        if (isBlank(rowDataFields[2])) {
+            errorMessage = add(errorMessage, "local_identifier_value");
+        }
+        if (isBlank(rowDataFields[3])) {
+            errorMessage = add(errorMessage, "manufacturing_date");
+        }
+        if (isBlank(rowDataFields[5])) {
+            errorMessage = add(errorMessage, "manufacturer_part_id");
+        }
+        if (isBlank(rowDataFields[7])) {
+            errorMessage = add(errorMessage, "classification");
+        }
+        if (isBlank(rowDataFields[8])) {
+            errorMessage = add(errorMessage, "name_at_manufacturer");
+        }
+        if (!isBlank(errorMessage)) {
+            throw new RuntimeException(errorMessage);
+        }
+    }
+
+    private boolean isBlank(String field) {
+        return field.trim().length() == 0;
+    }
+
+    private String add(String errorMessage, String newMessage) {
+        return isBlank(errorMessage) ? "Not allowed empty fields: " + newMessage : errorMessage + ", " + newMessage;
     }
 }

@@ -20,7 +20,6 @@ package com.catenax.dft.usecases.csvHandler.childAspects;
 import com.catenax.dft.entities.usecases.ChildAspect;
 import com.catenax.dft.usecases.csvHandler.AbstractCsvHandlerUseCase;
 import com.catenax.dft.usecases.csvHandler.CsvHandlerUseCase;
-import com.catenax.dft.usecases.csvHandler.aspects.MapToAspectException;
 import org.springframework.stereotype.Service;
 
 import static com.catenax.dft.gateways.file.CsvGateway.SEPARATOR;
@@ -37,11 +36,13 @@ public class MapToChildAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase
 
     @Override
     protected ChildAspect executeUseCase(String rowData, String processId) {
-        String[] rowDataFields = rowData.split(SEPARATOR);
+        String[] rowDataFields = rowData.split(SEPARATOR, -1);
 
         if (rowDataFields.length != ROW_LENGTH) {
             throw new MapToChildAspectException("This row has wrong amount of fields");
         }
+
+        validateChildAspectDAta(rowDataFields);
 
         return ChildAspect.builder()
                 .processId(processId)
@@ -51,5 +52,35 @@ public class MapToChildAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase
                 .quantityNumber(Integer.parseInt(rowDataFields[3]))
                 .measurementUnitLexicalValue(rowDataFields[4])
                 .build();
+    }
+
+    private void validateChildAspectDAta(String[] rowDataFields) {
+        String errorMessage = "";
+        if (isBlank(rowDataFields[0])) {
+            errorMessage = add(errorMessage, "parent_identifier_key");
+        }
+        if (isBlank(rowDataFields[1])) {
+            errorMessage = add(errorMessage, "parent_identifier_value");
+        }
+        if (isBlank(rowDataFields[2])) {
+            errorMessage = add(errorMessage, "licycle_context");
+        }
+        if (isBlank(rowDataFields[3])) {
+            errorMessage = add(errorMessage, "quantity_number");
+        }
+        if (isBlank(rowDataFields[4])) {
+            errorMessage = add(errorMessage, "measurement_unit_lexical_value");
+        }
+        if (!isBlank(errorMessage)) {
+            throw new RuntimeException(errorMessage);
+        }
+    }
+
+    private boolean isBlank(String field) {
+        return field.trim().length() == 0;
+    }
+
+    private String add(String errorMessage, String newMessage) {
+        return isBlank(errorMessage) ? "Not allowed empty fields: " + newMessage : errorMessage + ", " + newMessage;
     }
 }

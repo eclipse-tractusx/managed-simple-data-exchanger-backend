@@ -15,30 +15,15 @@
  *
  */
 
-package com.catenax.dft.entities.digitalTwins;
+package com.catenax.dft.entities.digitalTwins.common;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-
-import java.util.ArrayList;
-import java.util.List;
+import lombok.*;
 
 @Getter
-public class LookupRequest {
-
-    @JsonProperty
-    private List<LocalIdentifier> assetIds;
-
-    public LookupRequest() {
-        this.assetIds = new ArrayList<>();
-    }
-
-    public void addLocalIdentifier(String key, String vale) {
-        assetIds.add(LocalIdentifier
-                .builder()
-                .key(key)
-                .value(vale)
-                .build()
-        );
-    }
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class LocalIdentifier {
+    private String key;
+    private String value;
 }

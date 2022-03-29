@@ -15,14 +15,18 @@
  *
  */
 
-package com.catenax.dft.entities.digitalTwins;
+package com.catenax.dft.entities.digitalTwins.common;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Data
 @Builder
-public class LocalIdentifier {
-    private String key;
-    private String value;
+@NoArgsConstructor
+@AllArgsConstructor
+public class ProtocolInformation {
+    public String endpointAddress;
+    public String endpointProtocol;
+    public String endpointProtocolVersion;
+
 }

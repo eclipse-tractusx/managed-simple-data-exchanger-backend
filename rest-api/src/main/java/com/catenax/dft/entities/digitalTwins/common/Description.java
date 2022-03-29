@@ -15,15 +15,18 @@
  *
  */
 
-package com.catenax.dft.entities.digitalTwins;
+package com.catenax.dft.entities.digitalTwins.common;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Builder
-@Data
-public class AssetAdministrationShellDescriptor {
+@NoArgsConstructor
+@AllArgsConstructor
+public class Description {
 
-    private final String idShort;
-    private final String identification;
+    public String language;
+    public String text;
+
 }

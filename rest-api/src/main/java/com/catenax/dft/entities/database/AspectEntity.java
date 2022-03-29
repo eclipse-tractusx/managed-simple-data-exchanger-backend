@@ -40,7 +40,7 @@ public class AspectEntity {
     private String classification;
     private String nameAtManufacturer;
     private String nameAtCustomer;
-    @Enumerated(EnumType.STRING)
+    @Convert(attributeName = "prettyName")
     private OptionalIdentifierKeyEnum optionalIdentifierKey;
     private String optionalIdentifierValue;
 }

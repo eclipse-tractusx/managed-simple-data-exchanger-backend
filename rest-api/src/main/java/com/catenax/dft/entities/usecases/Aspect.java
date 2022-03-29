@@ -17,6 +17,7 @@
 
 package com.catenax.dft.entities.usecases;
 
+import com.catenax.dft.enums.OptionalIdentifierKeyEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -38,6 +39,6 @@ public class Aspect {
     private String classification;
     private String nameAtManufacturer;
     private String nameAtCustomer;
-    private String optionalIdentifierKey;
+    private OptionalIdentifierKeyEnum optionalIdentifierKey;
     private String optionalIdentifierValue;
 }

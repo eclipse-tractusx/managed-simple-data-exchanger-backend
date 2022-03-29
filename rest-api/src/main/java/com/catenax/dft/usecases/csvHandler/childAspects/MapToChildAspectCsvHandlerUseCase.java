@@ -56,31 +56,27 @@ public class MapToChildAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase
 
     private void validateChildAspectDAta(String[] rowDataFields) {
         String errorMessage = "";
-        if (isBlank(rowDataFields[0])) {
+        if (rowDataFields[0].isBlank()) {
             errorMessage = add(errorMessage, "parent_identifier_key");
         }
-        if (isBlank(rowDataFields[1])) {
+        if (rowDataFields[1].isBlank()) {
             errorMessage = add(errorMessage, "parent_identifier_value");
         }
-        if (isBlank(rowDataFields[2])) {
+        if (rowDataFields[2].isBlank()) {
             errorMessage = add(errorMessage, "licycle_context");
         }
-        if (isBlank(rowDataFields[3])) {
+        if (rowDataFields[3].isBlank()) {
             errorMessage = add(errorMessage, "quantity_number");
         }
-        if (isBlank(rowDataFields[4])) {
+        if (rowDataFields[4].isBlank()) {
             errorMessage = add(errorMessage, "measurement_unit_lexical_value");
         }
-        if (!isBlank(errorMessage)) {
+        if (!errorMessage.isBlank()) {
             throw new RuntimeException(errorMessage);
         }
     }
 
-    private boolean isBlank(String field) {
-        return field.trim().length() == 0;
-    }
-
     private String add(String errorMessage, String newMessage) {
-        return isBlank(errorMessage) ? "Not allowed empty fields: " + newMessage : errorMessage + ", " + newMessage;
+        return errorMessage.isBlank() ? "Not allowed empty fields: " + newMessage : errorMessage + ", " + newMessage;
     }
 }

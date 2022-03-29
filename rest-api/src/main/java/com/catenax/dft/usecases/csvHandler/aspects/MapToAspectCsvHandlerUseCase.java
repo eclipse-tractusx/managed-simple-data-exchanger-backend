@@ -61,34 +61,30 @@ public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<Stri
 
     private void validateAspectData(String[] rowDataFields) {
         String errorMessage = "";
-        if (isBlank(rowDataFields[1])) {
+        if (rowDataFields[1].isBlank()) {
             errorMessage = add(errorMessage, "local_identifier_key");
         }
-        if (isBlank(rowDataFields[2])) {
+        if (rowDataFields[2].isBlank()) {
             errorMessage = add(errorMessage, "local_identifier_value");
         }
-        if (isBlank(rowDataFields[3])) {
+        if (rowDataFields[3].isBlank()) {
             errorMessage = add(errorMessage, "manufacturing_date");
         }
-        if (isBlank(rowDataFields[5])) {
+        if (rowDataFields[5].isBlank()) {
             errorMessage = add(errorMessage, "manufacturer_part_id");
         }
-        if (isBlank(rowDataFields[7])) {
+        if (rowDataFields[7].isBlank()) {
             errorMessage = add(errorMessage, "classification");
         }
-        if (isBlank(rowDataFields[8])) {
+        if (rowDataFields[8].isBlank()) {
             errorMessage = add(errorMessage, "name_at_manufacturer");
         }
-        if (!isBlank(errorMessage)) {
+        if (!errorMessage.isBlank()) {
             throw new RuntimeException(errorMessage);
         }
     }
 
-    private boolean isBlank(String field) {
-        return field.trim().length() == 0;
-    }
-
     private String add(String errorMessage, String newMessage) {
-        return isBlank(errorMessage) ? "Not allowed empty fields: " + newMessage : errorMessage + ", " + newMessage;
+        return errorMessage.isBlank() ? "Not allowed empty fields: " + newMessage : errorMessage + ", " + newMessage;
     }
 }

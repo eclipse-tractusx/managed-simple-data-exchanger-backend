@@ -61,7 +61,7 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
 
     @Override
     @SneakyThrows
-    protected Aspect executeUseCase(Aspect aspect) {
+    protected Aspect executeUseCase(Aspect aspect,String processId) {
         ShellLookupRequest shellLookupRequest = createLookupRequest(aspect);
         ShellLookupResponse shellIds = gateway.shellLookup(shellLookupRequest);
 

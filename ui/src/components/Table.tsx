@@ -1,3 +1,17 @@
+// Copyright 2022 Catena-X
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 import * as React from 'react';
 import { styled } from '@mui/material/styles';
 import { AccessTime, CheckBox, HighlightOff, Pending } from '@mui/icons-material';
@@ -147,17 +161,17 @@ export default function StickyHeadTable({
                           value}
                         {column.id === 'status' && value === Status.completed && (
                           <span title={Status.completed}>
-                            <CheckBox fontSize="small" sx={{ color: '#8bc34a' }} />{' '}
+                            <CheckBox fontSize="small" sx={{ color: '#8bc34a' }} />
                           </span>
                         )}
                         {column.id === 'status' && value === Status.failed && (
                           <span title={Status.failed}>
-                            <HighlightOff fontSize="small" sx={{ color: '#f44336' }} />{' '}
+                            <HighlightOff fontSize="small" sx={{ color: '#f44336' }} />
                           </span>
                         )}
                         {column.id === 'status' && value === Status.inProgress && (
                           <span title={Status.inProgress}>
-                            <Pending fontSize="small" sx={{ color: '#2196f3' }} />{' '}
+                            <Pending fontSize="small" sx={{ color: '#2196f3' }} />
                           </span>
                         )}
                       </StyledTableCell>

@@ -29,7 +29,7 @@ import static com.catenax.dft.gateways.file.CsvGateway.SEPARATOR;
 @Slf4j
 public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<String, Aspect> {
 
-    private final int ROW_LENGTH = 10;
+    private final int ROW_LENGTH = 11;
 
     public MapToAspectCsvHandlerUseCase(GenerateUuIdCsvHandlerUseCase nextUseCase) {
         super(nextUseCase);
@@ -47,48 +47,52 @@ public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<Stri
 
         return Aspect.builder()
                 .processId(processId)
-                .localIdentifiersKey(rowDataFields[1].trim())
-                .localIdentifiersValue(rowDataFields[2].trim())
-                .manufacturingDate(rowDataFields[3].trim())
-                .manufacturingCountry(rowDataFields[4].trim())
-                .manufacturerPartId(rowDataFields[5].trim())
-                .customerPartId(rowDataFields[6].trim())
-                .classification(rowDataFields[7].trim())
-                .nameAtManufacturer(rowDataFields[8].trim())
-                .nameAtCustomer(rowDataFields[9].trim())
+                .partInstanceId(rowDataFields[1].trim())
+                .manufacturingDate(rowDataFields[2].trim())
+                .manufacturingCountry(rowDataFields[3].trim())
+                .manufacturerPartId(rowDataFields[4].trim())
+                .customerPartId(rowDataFields[5].trim())
+                .classification(rowDataFields[6].trim())
+                .nameAtManufacturer(rowDataFields[7].trim())
+                .nameAtCustomer(rowDataFields[8].trim())
+                .optionalIdentifierKey(rowDataFields[9].isBlank() ? null : rowDataFields[9])
+                .optionalIdentifierValue(rowDataFields[10].isBlank() ? null : rowDataFields[10])
                 .build();
     }
 
     private void validateAspectData(String[] rowDataFields) {
         String errorMessage = "";
-        if (isBlank(rowDataFields[1])) {
-            errorMessage = add(errorMessage, "local_identifier_key");
+        if (rowDataFields[1].isBlank()) {
+            errorMessage = addEmptyFieldMessage(errorMessage, "part_instance_id");
         }
-        if (isBlank(rowDataFields[2])) {
-            errorMessage = add(errorMessage, "local_identifier_value");
+        if (rowDataFields[2].isBlank()) {
+            errorMessage = addEmptyFieldMessage(errorMessage, "manufacturing_date");
         }
-        if (isBlank(rowDataFields[3])) {
-            errorMessage = add(errorMessage, "manufacturing_date");
+        if (rowDataFields[4].isBlank()) {
+            errorMessage = addEmptyFieldMessage(errorMessage, "manufacturer_part_id");
         }
-        if (isBlank(rowDataFields[5])) {
-            errorMessage = add(errorMessage, "manufacturer_part_id");
+        if (rowDataFields[6].isBlank()) {
+            errorMessage = addEmptyFieldMessage(errorMessage, "classification");
         }
-        if (isBlank(rowDataFields[7])) {
-            errorMessage = add(errorMessage, "classification");
+        if (rowDataFields[7].isBlank()) {
+            errorMessage = addEmptyFieldMessage(errorMessage, "name_at_manufacturer");
         }
-        if (isBlank(rowDataFields[8])) {
-            errorMessage = add(errorMessage, "name_at_manufacturer");
+        if (rowDataFields[9].isBlank() && !rowDataFields[10].isBlank()
+                || !rowDataFields[9].isBlank() && rowDataFields[10].isBlank()) {
+            errorMessage = addOptionalIdentifierMessage(errorMessage);
         }
-        if (!isBlank(errorMessage)) {
+
+        if (!errorMessage.isBlank()) {
             throw new RuntimeException(errorMessage);
         }
     }
 
-    private boolean isBlank(String field) {
-        return field.trim().length() == 0;
+    private String addEmptyFieldMessage(String errorMessage, String newMessage) {
+        return errorMessage.isBlank() ? "Not allowed empty fields: " + newMessage : errorMessage + ", " + newMessage;
     }
 
-    private String add(String errorMessage, String newMessage) {
-        return isBlank(errorMessage) ? "Not allowed empty fields: " + newMessage : errorMessage + ", " + newMessage;
+    private String addOptionalIdentifierMessage(String errorMessage) {
+        String newMessage = "optional_identifier_key and optional_identifier_value have to be either both null or both filled";
+        return errorMessage.isBlank() ? newMessage : "\n" + newMessage;
     }
 }

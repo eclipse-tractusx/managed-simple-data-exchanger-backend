@@ -21,6 +21,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
+import javax.persistence.Id;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -28,8 +30,7 @@ public class Aspect {
 
     private String uuid;
     private String processId;
-    private String localIdentifiersKey;
-    private String localIdentifiersValue;
+    private String partInstanceId;
     private String manufacturingDate;
     private String manufacturingCountry;
     private String manufacturerPartId;
@@ -37,4 +38,6 @@ public class Aspect {
     private String classification;
     private String nameAtManufacturer;
     private String nameAtCustomer;
+    private String optionalIdentifierKey;
+    private String optionalIdentifierValue;
 }

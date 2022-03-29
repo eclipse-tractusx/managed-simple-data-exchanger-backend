@@ -47,15 +47,15 @@ public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<Stri
 
         return Aspect.builder()
                 .processId(processId)
-                .localIdentifiersKey(rowDataFields[1])
-                .localIdentifiersValue(rowDataFields[2])
-                .manufacturingDate(rowDataFields[3])
-                .manufacturingCountry(rowDataFields[4])
-                .manufacturerPartId(rowDataFields[5])
-                .customerPartId(rowDataFields[6])
-                .classification(rowDataFields[7])
-                .nameAtManufacturer(rowDataFields[8])
-                .nameAtCustomer(rowDataFields[9])
+                .localIdentifiersKey(rowDataFields[1].trim())
+                .localIdentifiersValue(rowDataFields[2].trim())
+                .manufacturingDate(rowDataFields[3].trim())
+                .manufacturingCountry(rowDataFields[4].trim())
+                .manufacturerPartId(rowDataFields[5].trim())
+                .customerPartId(rowDataFields[6].trim())
+                .classification(rowDataFields[7].trim())
+                .nameAtManufacturer(rowDataFields[8].trim())
+                .nameAtCustomer(rowDataFields[9].trim())
                 .build();
     }
 

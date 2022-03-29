@@ -46,11 +46,11 @@ public class MapToChildAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase
 
         return ChildAspect.builder()
                 .processId(processId)
-                .parentIdentifierKey(rowDataFields[0])
-                .parentIdentifierValue(rowDataFields[1])
-                .lifecycleContext(rowDataFields[2])
-                .quantityNumber(Integer.parseInt(rowDataFields[3]))
-                .measurementUnitLexicalValue(rowDataFields[4])
+                .parentIdentifierKey(rowDataFields[0].trim())
+                .parentIdentifierValue(rowDataFields[1].trim())
+                .lifecycleContext(rowDataFields[2].trim())
+                .quantityNumber(Integer.parseInt(rowDataFields[3].trim()))
+                .measurementUnitLexicalValue(rowDataFields[4].trim())
                 .build();
     }
 

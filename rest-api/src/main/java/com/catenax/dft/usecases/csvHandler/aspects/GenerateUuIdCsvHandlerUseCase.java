@@ -32,7 +32,7 @@ public class GenerateUuIdCsvHandlerUseCase extends AbstractCsvHandlerUseCase<Asp
 
     @Override
     protected Aspect executeUseCase(Aspect input, String processId) {
-        input.setUuid(UUID.randomUUID().toString());
+        input.setUuid("urn:uuid:"+UUID.randomUUID().toString());
 
         return input;
     }

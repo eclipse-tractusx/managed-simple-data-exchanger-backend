@@ -30,7 +30,7 @@
     "web-vitals": "^2.1.0"
   },
   "scripts": {
-    "start": "npm run format && npm run lint && react-scripts start",
+    "start": "chmod +x ./env.sh && ./env.sh && cp env-config.js ./public/ && npm run format && npm run lint && export HTTPS=true&&SSL_CRT_FILE=cert.pem&&SSL_KEY_FILE=key.pem react-scripts start ",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",

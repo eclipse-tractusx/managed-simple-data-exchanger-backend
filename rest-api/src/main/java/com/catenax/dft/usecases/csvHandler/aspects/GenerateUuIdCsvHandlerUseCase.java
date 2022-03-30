@@ -26,7 +26,7 @@ import java.util.UUID;
 @Component
 public class GenerateUuIdCsvHandlerUseCase extends AbstractCsvHandlerUseCase<Aspect, Aspect> {
 
-    public GenerateUuIdCsvHandlerUseCase(StoreAspectCsvHandlerUseCase nextUseCase) {
+    public GenerateUuIdCsvHandlerUseCase(DigitalTwinsAspectCsvHandlerUseCase nextUseCase) {
         super(nextUseCase);
     }
 

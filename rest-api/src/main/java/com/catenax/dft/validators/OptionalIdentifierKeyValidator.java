@@ -27,10 +27,10 @@ public class OptionalIdentifierKeyValidator implements ConstraintValidator<Optio
     @Override
     public boolean isValid(String input, ConstraintValidatorContext cxt) {
         try {
-            return input.isBlank()
+            return input == null
                     || Stream.of(OptionalIdentifierKeyEnum.values())
                     .anyMatch(e -> e.getPrettyName().equalsIgnoreCase(input));
-        }catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
     }

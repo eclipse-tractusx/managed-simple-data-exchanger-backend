@@ -18,7 +18,9 @@
 package com.catenax.dft.usecases.csvHandler.aspects;
 
 import com.catenax.dft.entities.digitalTwins.common.*;
-import com.catenax.dft.entities.digitalTwins.request.*;
+import com.catenax.dft.entities.digitalTwins.request.CreateSubModelRequest;
+import com.catenax.dft.entities.digitalTwins.request.ShellDescriptorRequest;
+import com.catenax.dft.entities.digitalTwins.request.ShellLookupRequest;
 import com.catenax.dft.entities.digitalTwins.response.ShellDescriptorResponse;
 import com.catenax.dft.entities.digitalTwins.response.ShellLookupResponse;
 import com.catenax.dft.entities.digitalTwins.response.SubModelListResponse;
@@ -61,8 +63,8 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
 
     @Override
     @SneakyThrows
-    protected Aspect executeUseCase(Aspect aspect,String processId) {
-        ShellLookupRequest shellLookupRequest = createLookupRequest(aspect);
+    protected Aspect executeUseCase(Aspect aspect, String processId) {
+        ShellLookupRequest shellLookupRequest = getShellLookupRequest(aspect);
         ShellLookupResponse shellIds = gateway.shellLookup(shellLookupRequest);
 
         String shellId;
@@ -70,7 +72,7 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
         if (shellIds.isEmpty()) {
             log.info(String.format("[DigitalTwinsAspectCsvHandlerUseCase] No shell id for '%s'", shellLookupRequest.toJsonString()));
 
-            ShellDescriptorRequest aasDescriptorRequest = createShellDescriptorRequest(aspect);
+            ShellDescriptorRequest aasDescriptorRequest = getShellDescriptorRequest(aspect);
             ShellDescriptorResponse result = gateway.createShellDescriptor(aasDescriptorRequest);
             shellId = result.getIdentification();
 
@@ -83,12 +85,14 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
 
             log.info(String.format("[DigitalTwinsAspectCsvHandlerUseCase] Shell id '%s'", shellId));
         } else {
-            throw new Exception(String.format("Multiple ids found on aspect %s - %s", aspect.getLocalIdentifiersKey(), aspect.getLocalIdentifiersValue()));
+            throw new Exception(String.format("Multiple ids found on aspect %s", shellLookupRequest.toJsonString()));
         }
 
         SubModelListResponse subModelResponse = gateway.getSubModel(shellId);
 
-        if (subModelResponse == null || subModelResponse.isEmpty()) {
+        if (subModelResponse == null || subModelResponse
+                .stream()
+                .noneMatch(x -> SERIAL_PART_TYPIZATION_ID_SHORT.equals(x.getIdShort()))) {
             log.info(String.format("[DigitalTwinsAspectCsvHandlerUseCase] No submodels for '%s'", shellId));
             CreateSubModelRequest createSubModelRequest = getCreateSubModelRequest(aspect);
             gateway.createSubModel(shellId, createSubModelRequest);
@@ -97,7 +101,7 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
         return aspect;
     }
 
-    private ShellLookupRequest createLookupRequest(Aspect aspect) {
+    private ShellLookupRequest getShellLookupRequest(Aspect aspect) {
         ShellLookupRequest shellLookupRequest = new ShellLookupRequest();
         shellLookupRequest.addLocalIdentifier(PART_INSTANCE_ID, aspect.getLocalIdentifiersValue());
         shellLookupRequest.addLocalIdentifier(MANUFACTURER_PART_ID, aspect.getManufacturerPartId());
@@ -106,12 +110,6 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
     }
 
     private CreateSubModelRequest getCreateSubModelRequest(Aspect aspect) {
-        List<Description> descriptions = new ArrayList<>();
-        descriptions.add(Description.builder()
-                .language("en")
-                .text("provides base information")
-                .build());
-
         ArrayList<String> value = new ArrayList<>();
         value.add(SERIAL_PART_TYPIZATION_1_0_0);
         SemanticId semanticId = new SemanticId();
@@ -127,7 +125,6 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
                         .build())
                 .build());
         return CreateSubModelRequest.builder()
-                .description(descriptions)
                 .idShort(SERIAL_PART_TYPIZATION_ID_SHORT)
                 .identification(aspect.getUuid())
                 .semanticId(semanticId)
@@ -135,7 +132,7 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
                 .build();
     }
 
-    private ShellDescriptorRequest createShellDescriptorRequest(Aspect aspect) {
+    private ShellDescriptorRequest getShellDescriptorRequest(Aspect aspect) {
         ArrayList<KeyValuePair> specificIdentifiers = new ArrayList<>();
         specificIdentifiers.add(new KeyValuePair(PART_INSTANCE_ID, aspect.getLocalIdentifiersValue()));
         specificIdentifiers.add(new KeyValuePair(MANUFACTURER_PART_ID, aspect.getManufacturerPartId()));
@@ -145,16 +142,9 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
         values.add(aspect.getUuid());
         GlobalAssetId globalIdentifier = new GlobalAssetId(values);
 
-        List<Description> descriptions = new ArrayList<>();
-        descriptions.add(Description.builder()
-                .language("en")
-                .text("provides base information")
-                .build());
-
         return ShellDescriptorRequest
                 .builder()
-                .idShort("1")
-                .description(descriptions)
+                .idShort(String.format("%s_%s_%s", aspect.getNameAtManufacturer(), manufacturerId, aspect.getManufacturerPartId()))
                 .globalAssetId(globalIdentifier)
                 .specificAssetIds(specificIdentifiers)
                 .identification(UUID.randomUUID().toString())

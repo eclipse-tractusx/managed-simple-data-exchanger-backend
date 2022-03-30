@@ -1,10 +1,32 @@
+// Copyright 2022 Catena-X
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 import React, { useState } from 'react';
+
+import { useNavigate } from 'react-router-dom';
 
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
+import MenuItem from '@mui/material/MenuItem';
+import Menu from '@mui/material/Menu';
+import { Logout } from '@mui/icons-material';
 
 const Nav = (props: any) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const navigate = useNavigate();
+
   const handleExpanded = () => {
     if (isExpanded) {
       setIsExpanded(false);
@@ -13,6 +35,19 @@ const Nav = (props: any) => {
     }
     setIsExpanded(true);
     props.getIsExpanded(true);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const logout = () => {
+    localStorage.clear();
+    navigate('/login');
   };
 
   return (
@@ -29,7 +64,30 @@ const Nav = (props: any) => {
         <div className="font-bold text-2xl cursor-pointer flex items-center text-[#fbfcfa] ">
           Data Format Transformation
         </div>
-        <AccountCircleIcon sx={{ color: '#ffffff' }} />
+        <span className="cursor-pointer" onClick={handleMenu}>
+          <AccountCircleIcon sx={{ color: '#ffffff' }} />
+        </span>
+        <Menu
+          id="menu-appbar"
+          anchorEl={anchorEl}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+          keepMounted
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
+        >
+          <MenuItem onClick={logout}>
+            <span>
+              <Logout /> &nbsp; Logout
+            </span>
+          </MenuItem>
+        </Menu>
       </div>
     </div>
   );

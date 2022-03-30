@@ -12,14 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
+export interface ProcessReport {
+  processId: string;
+  csvType: CsvTypes;
+  numberOfItems: number;
+  numberOfFailedItems: number;
+  numberOfSucceededItems: number;
+  status: Status;
+  startDate: string;
+  endDate?: string;
+}
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root'),
-);
+export enum Status {
+  completed = 'COMPLETED',
+  failed = 'FAILED',
+  inProgress = 'IN_PROGRESS',
+}
+
+export enum CsvTypes {
+  aspect = 'ASPECT',
+  childAspect = 'CHILD_ASPECT',
+  unknown = 'UNKNOWN',
+}

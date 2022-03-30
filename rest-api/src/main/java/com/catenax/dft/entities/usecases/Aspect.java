@@ -18,27 +18,49 @@
 package com.catenax.dft.entities.usecases;
 
 import com.catenax.dft.enums.OptionalIdentifierKeyEnum;
+import com.catenax.dft.validators.AspectValidation;
+import com.catenax.dft.validators.OptionalIdentifierKeyValidation;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+
+import javax.validation.constraints.NotBlank;
 
 import javax.persistence.Id;
 
 @Data
 @Builder
 @AllArgsConstructor
+@AspectValidation
 public class Aspect {
 
     private String uuid;
+
     private String processId;
+
+    @NotBlank(message = "part_instance_id cannot be empty")
     private String partInstanceId;
+
+    @NotBlank(message = "manufacturing_date cannot be empty")
     private String manufacturingDate;
+
     private String manufacturingCountry;
+
+    @NotBlank(message = "manufacturing_part_id cannot be empty")
     private String manufacturerPartId;
+
     private String customerPartId;
+
+    @NotBlank(message = "classification cannot be empty")
     private String classification;
+
+    @NotBlank(message = "name_at_manufacturer cannot be empty")
     private String nameAtManufacturer;
+
     private String nameAtCustomer;
-    private OptionalIdentifierKeyEnum optionalIdentifierKey;
+
+    @OptionalIdentifierKeyValidation
+    private String optionalIdentifierKey;
+
     private String optionalIdentifierValue;
 }

@@ -17,8 +17,15 @@
 
 package com.catenax.dft.entities.usecases;
 
+import com.catenax.dft.validators.QuantityNumberValidation;
 import lombok.Builder;
 import lombok.Data;
+import org.springframework.lang.Nullable;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 
 @Builder
 @Data
@@ -26,8 +33,16 @@ public class ChildAspect {
 
     private String uuid;
     private String processId;
+
+    @NotBlank(message = "parent_part_instance_id cannot be empty")
     private String parentPartInstanceId;
+
+    @NotBlank(message = "lifecycle_context cannot be empty")
     private String lifecycleContext;
-    private int quantityNumber;
+
+    @QuantityNumberValidation
+    private String quantityNumber;
+
+    @NotBlank(message = "measurement_unit_lexical_value cannot be empty")
     private String measurementUnitLexicalValue;
 }

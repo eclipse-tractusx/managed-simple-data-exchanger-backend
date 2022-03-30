@@ -42,7 +42,7 @@ public class CsvHandlerOrchestrator {
 
 
     private final List<String> ASPECT_COLUMNS = Stream.of(
-                    "UUID",
+                    "uuid",
                     "part_instance_id",
                     "manufacturing_date",
                     "manufacturing_country",
@@ -55,8 +55,7 @@ public class CsvHandlerOrchestrator {
                     "optional_identifier_value")
             .collect(Collectors.toList());
     private final List<String> CHILD_ASPECT_COLUMNS = Stream.of(
-                    "parent_identifier_key",
-                    "parent_identifier_value",
+                    "parent_part_instance_id",
                     "lifecycle_context",
                     "quantity_number",
                     "measurement_unit_lexical_value")

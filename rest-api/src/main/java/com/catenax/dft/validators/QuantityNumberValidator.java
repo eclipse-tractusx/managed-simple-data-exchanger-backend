@@ -14,11 +14,19 @@
  *  limitations under the License.
  */
 
-package com.catenax.dft.usecases.csvHandler.childAspects;
+package com.catenax.dft.validators;
 
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
 
-import org.springframework.stereotype.Component;
+public class QuantityNumberValidator implements ConstraintValidator<QuantityNumberValidation, String> {
 
-@Component
-public class MapToChildAspectDataValidator {
+    @Override
+    public boolean isValid(String input, ConstraintValidatorContext cxt) {
+        try {
+            return Integer.parseInt(input) > 0;
+        }catch (Exception e){
+            return false;
+        }
+    }
 }

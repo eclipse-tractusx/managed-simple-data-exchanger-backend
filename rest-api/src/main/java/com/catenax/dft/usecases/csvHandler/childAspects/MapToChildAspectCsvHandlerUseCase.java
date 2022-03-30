@@ -20,14 +20,22 @@ package com.catenax.dft.usecases.csvHandler.childAspects;
 import com.catenax.dft.entities.usecases.ChildAspect;
 import com.catenax.dft.usecases.csvHandler.AbstractCsvHandlerUseCase;
 import com.catenax.dft.usecases.csvHandler.CsvHandlerUseCase;
+import com.catenax.dft.usecases.csvHandler.exceptions.MapToChildAspectException;
 import org.springframework.stereotype.Service;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.catenax.dft.gateways.file.CsvGateway.SEPARATOR;
 
 @Service
 public class MapToChildAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<String, ChildAspect> {
 
-    private final int ROW_LENGTH = 5;
+    private final int ROW_LENGTH = 4;
 
     public MapToChildAspectCsvHandlerUseCase(CsvHandlerUseCase<ChildAspect> nextUseCase) {
         super(nextUseCase);
@@ -42,41 +50,29 @@ public class MapToChildAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase
             throw new MapToChildAspectException("This row has wrong amount of fields");
         }
 
-        validateChildAspectDAta(rowDataFields);
 
-        return ChildAspect.builder()
+        ChildAspect childAspect = ChildAspect.builder()
                 .processId(processId)
-
-                .lifecycleContext(rowDataFields[2].trim())
-                .quantityNumber(Integer.parseInt(rowDataFields[3].trim()))
-                .measurementUnitLexicalValue(rowDataFields[4].trim())
+                .parentPartInstanceId(rowDataFields[0].trim())
+                .lifecycleContext(rowDataFields[1].trim())
+                .quantityNumber(rowDataFields[2].trim())
+                .measurementUnitLexicalValue(rowDataFields[3].trim())
                 .build();
+
+        List<String> errorMessages = validateAsset(childAspect);
+        if (errorMessages.size() != 0) {
+            throw new MapToChildAspectException(errorMessages.toString());
+        }
+
+        return childAspect;
     }
 
-    private void validateChildAspectDAta(String[] rowDataFields) {
-        String errorMessage = "";
-        if (rowDataFields[0].isBlank()) {
-            errorMessage = add(errorMessage, "parent_identifier_key");
-        }
-        if (rowDataFields[1].isBlank()) {
-            errorMessage = add(errorMessage, "parent_identifier_value");
-        }
-        if (rowDataFields[2].isBlank()) {
-            errorMessage = add(errorMessage, "licycle_context");
-        }
-        if (rowDataFields[3].isBlank()) {
-            errorMessage = add(errorMessage, "quantity_number");
-        }
-        if (rowDataFields[4].isBlank()) {
-            errorMessage = add(errorMessage, "measurement_unit_lexical_value");
-        }
-        if (!errorMessage.isBlank()) {
-            throw new RuntimeException(errorMessage);
-        }
-    }
-
-
-    private String add(String errorMessage, String newMessage) {
-        return errorMessage.isBlank() ? "Not allowed empty fields: " + newMessage : errorMessage + ", " + newMessage;
+    private List<String> validateAsset(ChildAspect asset) {
+        Validator validator = Validation.buildDefaultValidatorFactory()
+                .getValidator();
+        Set<ConstraintViolation<ChildAspect>> violations = validator.validate(asset);
+        return violations.stream()
+                .map(ConstraintViolation::getMessage)
+                .collect(Collectors.toList());
     }
 }

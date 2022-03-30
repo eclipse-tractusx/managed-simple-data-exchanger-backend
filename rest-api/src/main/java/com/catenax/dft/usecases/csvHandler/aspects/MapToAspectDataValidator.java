@@ -14,9 +14,10 @@
  *  limitations under the License.
  */
 
-package com.catenax.dft.usecases.csvHandler.aspects;
+/*package com.catenax.dft.usecases.csvHandler.aspects;
 
 import com.catenax.dft.enums.OptionalIdentifierKeyEnum;
+import com.catenax.dft.usecases.csvHandler.exceptions.MapToAspectException;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Stream;
@@ -79,4 +80,4 @@ public class MapToAspectDataValidator {
         String newMessage = "illegal value for optional_identifier_key";
         return errorMessage.isBlank() ? newMessage : errorMessage + " | " + newMessage;
     }
-}
+}*/

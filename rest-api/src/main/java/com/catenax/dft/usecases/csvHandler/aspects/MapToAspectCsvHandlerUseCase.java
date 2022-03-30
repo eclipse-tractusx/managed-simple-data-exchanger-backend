@@ -33,7 +33,6 @@ import static com.catenax.dft.gateways.file.CsvGateway.SEPARATOR;
 @Slf4j
 public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<String, Aspect> {
 
-    private final int ROW_LENGTH = 11;
     @Autowired
     MapToAspectDataValidator validator;
 
@@ -45,10 +44,8 @@ public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<Stri
     public Aspect executeUseCase(String rowData, String processId) {
 
         String[] rowDataFields = rowData.split(SEPARATOR, -1);
-        if (rowDataFields.length != ROW_LENGTH) {
-            throw new MapToAspectException("This row has the wrong amount of fields");
-        }
 
+        validator.validateAspectRowLength(rowDataFields);
         validator.validateAspectData(rowDataFields);
 
         return Aspect.builder()

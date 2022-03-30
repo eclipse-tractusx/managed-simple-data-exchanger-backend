@@ -36,8 +36,7 @@ public class ChildAspectEntity {
     @Nullable
     private String uuid;
     private String processId;
-    private String parentIdentifierKey;
-    private String parentIdentifierValue;
+    private String parentPartInstanceId;
     private String lifecycleContext;
     private int quantityNumber;
     private String measurementUnitLexicalValue;

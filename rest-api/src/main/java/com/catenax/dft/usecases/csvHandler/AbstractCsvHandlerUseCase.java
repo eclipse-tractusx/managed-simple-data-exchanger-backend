@@ -19,7 +19,7 @@ package com.catenax.dft.usecases.csvHandler;
 
 import com.catenax.dft.entities.database.FailureLogEntity;
 import com.catenax.dft.enums.CsvTypeEnum;
-import com.catenax.dft.usecases.csvHandler.aspects.MapToAspectException;
+import com.catenax.dft.usecases.csvHandler.exceptions.MapToAspectException;
 import com.catenax.dft.usecases.logs.FailureLogsUseCase;
 import com.catenax.dft.usecases.processReport.ProcessReportUseCase;
 import lombok.extern.slf4j.Slf4j;
@@ -54,6 +54,7 @@ public abstract class AbstractCsvHandlerUseCase<I, T> implements CsvHandlerUseCa
                 nextUseCase.run(result, processId);
             }
         } catch (RuntimeException e) {
+
             FailureLogEntity entity = FailureLogEntity.builder()
                     .uuid(UUID.randomUUID().toString())
                     .processId(processId)

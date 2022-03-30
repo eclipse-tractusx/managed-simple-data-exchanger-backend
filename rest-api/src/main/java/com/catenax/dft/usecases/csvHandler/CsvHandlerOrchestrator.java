@@ -42,6 +42,7 @@ public class CsvHandlerOrchestrator {
 
 
     private final List<String> ASPECT_COLUMNS = Stream.of(
+                    "uuid",
                     "local_identifiers_key",
                     "local_identifiers_value",
                     "manufacturing_date",

@@ -23,6 +23,8 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 import static com.catenax.dft.gateways.file.CsvGateway.SEPARATOR;
 
 @Component
@@ -30,7 +32,7 @@ import static com.catenax.dft.gateways.file.CsvGateway.SEPARATOR;
 public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<String, Aspect> {
 
     private final int ROW_LENGTH = 9;
-    public MapToAspectCsvHandlerUseCase(GenerateUuIdCsvHandlerUseCase nextUseCase) {
+    public MapToAspectCsvHandlerUseCase(StoreAspectCsvHandlerUseCase nextUseCase) {
         super(nextUseCase);
     }
 
@@ -42,6 +44,7 @@ public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<Stri
             throw new MapToAspectException("This row has wrong amount of fields");
         }
         return Aspect.builder()
+                .uuid(rowDataFields[0].isEmpty() ? "urn:uuid:"+UUID.randomUUID().toString() : rowDataFields[0])
                 .processId(processId)
                 .localIdentifiersKey(rowDataFields[0])
                 .localIdentifiersValue(rowDataFields[1])

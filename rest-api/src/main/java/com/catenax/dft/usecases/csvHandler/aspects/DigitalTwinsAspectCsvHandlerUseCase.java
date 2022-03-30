@@ -156,7 +156,7 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
                 .description(descriptions)
                 .globalAssetId(globalIdentifier)
                 .specificAssetIds(specificIdentifiers)
-                .identification(UUID.randomUUID().toString())
+                .identification("urn:uuid:"+UUID.randomUUID())
                 .build();
     }
 }

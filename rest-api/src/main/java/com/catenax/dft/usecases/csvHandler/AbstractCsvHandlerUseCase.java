@@ -21,18 +21,11 @@ import com.catenax.dft.usecases.processReport.ProcessReportUseCase;
 import com.catenax.dft.usecases.logs.FailureLogsUseCase;
 import com.catenax.dft.entities.database.FailureLogEntity;
 import com.catenax.dft.enums.CsvTypeEnum;
-import com.catenax.dft.usecases.csvHandler.aspects.MapToAspectException;
+import com.catenax.dft.usecases.csvHandler.exceptions.MapToAspectException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.TransactionSystemException;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import javax.persistence.RollbackException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 @Slf4j

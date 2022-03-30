@@ -83,8 +83,8 @@ public class DigitalTwinGateway {
                 ShellLookupResponse.class,
                 queryParameters);
 
-        log.debug("[DigitalTwinGateway][Shell LookUp] Url: " + urlTemplate);
-        log.debug("[DigitalTwinGateway][Shell LookUp] Request: " + request.toJsonString());
+        log.info("[DigitalTwinGateway][Shell LookUp] Url: " + urlTemplate);
+        log.info("[DigitalTwinGateway][Shell LookUp] Request: " + request.toJsonString());
 
         ShellLookupResponse responseBody;
         if (response.getStatusCode() != HttpStatus.OK) {
@@ -104,8 +104,8 @@ public class DigitalTwinGateway {
 
         String url = digitalTwinsUrl + "/registry/shell-descriptors";
         ResponseEntity<ShellDescriptorResponse> response = restTemplate.postForEntity(url, entity, ShellDescriptorResponse.class);
-        log.debug("[DigitalTwinGateway][Create Shell Descriptor] Url: " + url);
-        log.debug("[DigitalTwinGateway][Create Shell Descriptor] Request: " + request.toJsonString());
+        log.info("[DigitalTwinGateway][Create Shell Descriptor] Url: " + url);
+        log.info("[DigitalTwinGateway][Create Shell Descriptor] Request: " + request.toJsonString());
 
         ShellDescriptorResponse responseBody;
         if (response.getStatusCode() != HttpStatus.CREATED) {
@@ -125,8 +125,8 @@ public class DigitalTwinGateway {
 
         String url = String.format(digitalTwinsUrl + "/registry/shell-descriptors/%s/submodel-descriptors", shellId);
         ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
-        log.debug("[DigitalTwinGateway][Create SubModel] Url: " + url);
-        log.debug("[DigitalTwinGateway][Create SubModel] Request: " + request.toJsonString());
+        log.info("[DigitalTwinGateway][Create SubModel] Url: " + url);
+        log.info("[DigitalTwinGateway][Create SubModel] Request: " + request.toJsonString());
 
         if (response.getStatusCode() != HttpStatus.CREATED) {
             log.error("Unable to create shell descriptor");

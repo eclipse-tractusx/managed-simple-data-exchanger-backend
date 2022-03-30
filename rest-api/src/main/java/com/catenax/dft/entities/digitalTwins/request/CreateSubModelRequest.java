@@ -21,16 +21,14 @@ import com.catenax.dft.entities.digitalTwins.common.Description;
 import com.catenax.dft.entities.digitalTwins.common.Endpoint;
 import com.catenax.dft.entities.digitalTwins.common.SemanticId;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
-import lombok.SneakyThrows;
+import lombok.*;
 
 import java.util.List;
 
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
 public class CreateSubModelRequest {
 
     private List<Description> description;

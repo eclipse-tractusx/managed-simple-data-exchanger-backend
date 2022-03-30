@@ -28,6 +28,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
 public class ShellDescriptorRequest {
 
     private String idShort;

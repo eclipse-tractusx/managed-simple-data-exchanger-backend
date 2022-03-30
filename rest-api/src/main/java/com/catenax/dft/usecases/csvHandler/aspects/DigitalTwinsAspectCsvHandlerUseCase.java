@@ -68,27 +68,28 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
         String shellId;
 
         if (shellIds.isEmpty()) {
-            log.debug(String.format("[DigitalTwinsAspectCsvHandlerUseCase] No shell id for '%s'", shellLookupRequest.toJsonString()));
+            log.info(String.format("[DigitalTwinsAspectCsvHandlerUseCase] No shell id for '%s'", shellLookupRequest.toJsonString()));
 
             ShellDescriptorRequest aasDescriptorRequest = createShellDescriptorRequest(aspect);
             ShellDescriptorResponse result = gateway.createShellDescriptor(aasDescriptorRequest);
             shellId = result.getIdentification();
 
-            log.debug(String.format("[DigitalTwinsAspectCsvHandlerUseCase] Shell created with id '%s'", shellId));
+            log.info(String.format("[DigitalTwinsAspectCsvHandlerUseCase] Shell created with id '%s'", shellId));
 
         } else if (shellIds.size() == 1) {
-            log.debug(String.format("[DigitalTwinsAspectCsvHandlerUseCase] Shell id found for '%s'", shellLookupRequest.toJsonString()));
+            log.info(String.format("[DigitalTwinsAspectCsvHandlerUseCase] Shell id found for '%s'", shellLookupRequest.toJsonString()));
 
             shellId = shellIds.stream().findFirst().orElse(null);
 
-            log.debug(String.format("[DigitalTwinsAspectCsvHandlerUseCase] Shell id '%s'", shellId));
+            log.info(String.format("[DigitalTwinsAspectCsvHandlerUseCase] Shell id '%s'", shellId));
         } else {
             throw new Exception(String.format("Multiple ids found on aspect %s - %s", aspect.getLocalIdentifiersKey(), aspect.getLocalIdentifiersValue()));
         }
 
         SubModelListResponse subModelResponse = gateway.getSubModel(shellId);
 
-        if (subModelResponse == null) {
+        if (subModelResponse == null || subModelResponse.isEmpty()) {
+            log.info(String.format("[DigitalTwinsAspectCsvHandlerUseCase] No submodels for '%s'", shellId));
             CreateSubModelRequest createSubModelRequest = getCreateSubModelRequest(aspect);
             gateway.createSubModel(shellId, createSubModelRequest);
         }

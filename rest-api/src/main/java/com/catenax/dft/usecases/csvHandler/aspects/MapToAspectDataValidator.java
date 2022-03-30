@@ -24,6 +24,14 @@ import java.util.stream.Stream;
 @Component
 public class MapToAspectDataValidator {
 
+    protected final int ROW_LENGTH = 11;
+
+    protected void validateAspectRowLength(String[] rowDataFields) {
+        if (rowDataFields.length != ROW_LENGTH) {
+            throw new MapToAspectException("This row has the wrong amount of fields");
+        }
+    }
+
     protected void validateAspectData(String[] rowDataFields) {
         String errorMessage = "";
         if (rowDataFields[1].isBlank()) {

@@ -21,6 +21,7 @@ import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import { Logout } from '@mui/icons-material';
+import { COLORS } from '../constants';
 
 const Nav = (props: any) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -55,7 +56,7 @@ const Nav = (props: any) => {
       <div className="md:flex items-center justify-between py-1 md:px-4">
         <div className="flex flex-row items-center gap-x-8">
           <span className="cursor-pointer" onClick={handleExpanded}>
-            <MenuOutlinedIcon fontSize="medium" sx={{ color: '#ffffff' }} />
+            <MenuOutlinedIcon fontSize="medium" sx={{ color: COLORS.white }} />
           </span>
 
           <img src="images/logo-dft.svg" alt="DFT logo" className="w-14 h-14 fill-white  hover:fill-teal-600" />
@@ -65,7 +66,7 @@ const Nav = (props: any) => {
           Data Format Transformation
         </div>
         <span className="cursor-pointer" onClick={handleMenu}>
-          <AccountCircleIcon sx={{ color: '#ffffff' }} />
+          <AccountCircleIcon sx={{ color: COLORS.white }} />
         </span>
         <Menu
           id="menu-appbar"

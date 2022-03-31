@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+
 import static com.catenax.dft.gateways.file.CsvGateway.SEPARATOR;
 
 @Component
@@ -53,6 +54,7 @@ public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<Stri
         }
 
         Aspect aspect = Aspect.builder()
+                .uuid(rowDataFields[0].trim())
                 .processId(processId)
                 .localIdentifiersKey(rowDataFields[1].trim())
                 .localIdentifiersValue(rowDataFields[2].trim())

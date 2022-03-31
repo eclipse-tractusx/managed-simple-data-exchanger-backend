@@ -23,6 +23,14 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import java.util.UUID;
 
 import static com.catenax.dft.gateways.file.CsvGateway.SEPARATOR;
@@ -31,29 +39,47 @@ import static com.catenax.dft.gateways.file.CsvGateway.SEPARATOR;
 @Slf4j
 public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<String, Aspect> {
 
-    private final int ROW_LENGTH = 9;
+    private final int ROW_LENGTH = 10;
+
     public MapToAspectCsvHandlerUseCase(GenerateUuIdCsvHandlerUseCase nextUseCase) {
         super(nextUseCase);
     }
 
     @SneakyThrows
     public Aspect executeUseCase(String rowData, String processId) {
-        String[] rowDataFields = rowData.split(SEPARATOR);
 
-        if (rowDataFields.length != ROW_LENGTH){
-            throw new MapToAspectException("This row has wrong amount of fields");
+        String[] rowDataFields = rowData.split(SEPARATOR, -1);
+        if (rowDataFields.length != ROW_LENGTH) {
+            throw new MapToAspectException("This row has the wrong amount of fields");
         }
-        return Aspect.builder()
+
+        Aspect aspect = Aspect.builder()
                 .processId(processId)
-                .localIdentifiersKey(rowDataFields[0])
-                .localIdentifiersValue(rowDataFields[1])
-                .manufacturingDate(rowDataFields[2])
-                .manufacturingCountry(rowDataFields[3])
-                .manufacturerPartId(rowDataFields[4])
-                .customerPartId(rowDataFields[5])
-                .classification(rowDataFields[6])
-                .nameAtManufacturer(rowDataFields[7])
-                .nameAtCustomer(rowDataFields[8])
+                .localIdentifiersKey(rowDataFields[1].trim())
+                .localIdentifiersValue(rowDataFields[2].trim())
+                .manufacturingDate(rowDataFields[3].trim())
+                .manufacturingCountry(rowDataFields[4].trim().isBlank() ? null : rowDataFields[4].trim())
+                .manufacturerPartId(rowDataFields[5].trim())
+                .customerPartId(rowDataFields[6].trim().isBlank() ? null : rowDataFields[6].trim())
+                .classification(rowDataFields[7].trim())
+                .nameAtManufacturer(rowDataFields[8].trim())
+                .nameAtCustomer(rowDataFields[9].trim().isBlank() ? null : rowDataFields[9].trim())
                 .build();
+
+        List<String> errorMessages = validateAsset(aspect);
+        if (errorMessages.size() != 0) {
+            throw new MapToAspectException(errorMessages.toString());
+        }
+
+        return aspect;
+    }
+
+    private List<String> validateAsset(Aspect asset) {
+        Validator validator = Validation.buildDefaultValidatorFactory()
+                .getValidator();
+        Set<ConstraintViolation<Aspect>> violations = validator.validate(asset);
+        return violations.stream()
+                .map(ConstraintViolation::getMessage)
+                .collect(Collectors.toList());
     }
 }

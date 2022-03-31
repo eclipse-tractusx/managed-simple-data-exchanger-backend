@@ -20,8 +20,15 @@ package com.catenax.dft.usecases.csvHandler.childAspects;
 import com.catenax.dft.entities.usecases.ChildAspect;
 import com.catenax.dft.usecases.csvHandler.AbstractCsvHandlerUseCase;
 import com.catenax.dft.usecases.csvHandler.CsvHandlerUseCase;
-import com.catenax.dft.usecases.csvHandler.aspects.MapToAspectException;
+import com.catenax.dft.usecases.csvHandler.exceptions.MapToChildAspectException;
 import org.springframework.stereotype.Service;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.catenax.dft.gateways.file.CsvGateway.SEPARATOR;
 
@@ -37,19 +44,36 @@ public class MapToChildAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase
 
     @Override
     protected ChildAspect executeUseCase(String rowData, String processId) {
-        String[] rowDataFields = rowData.split(SEPARATOR);
+        String[] rowDataFields = rowData.split(SEPARATOR, -1);
 
         if (rowDataFields.length != ROW_LENGTH) {
             throw new MapToChildAspectException("This row has wrong amount of fields");
         }
 
-        return ChildAspect.builder()
+
+        ChildAspect childAspect = ChildAspect.builder()
                 .processId(processId)
-                .parentIdentifierKey(rowDataFields[0])
-                .parentIdentifierValue(rowDataFields[1])
-                .lifecycleContext(rowDataFields[2])
-                .quantityNumber(Integer.parseInt(rowDataFields[3]))
-                .measurementUnitLexicalValue(rowDataFields[4])
+                .parentIdentifierKey(rowDataFields[0].trim())
+                .parentIdentifierValue(rowDataFields[1].trim())
+                .lifecycleContext(rowDataFields[2].trim())
+                .quantityNumber(rowDataFields[3].trim())
+                .measurementUnitLexicalValue(rowDataFields[4].trim())
                 .build();
+
+        List<String> errorMessages = validateAsset(childAspect);
+        if (errorMessages.size() != 0) {
+            throw new MapToChildAspectException(errorMessages.toString());
+        }
+
+        return childAspect;
+    }
+
+    private List<String> validateAsset(ChildAspect asset) {
+        Validator validator = Validation.buildDefaultValidatorFactory()
+                .getValidator();
+        Set<ConstraintViolation<ChildAspect>> violations = validator.validate(asset);
+        return violations.stream()
+                .map(ConstraintViolation::getMessage)
+                .collect(Collectors.toList());
     }
 }

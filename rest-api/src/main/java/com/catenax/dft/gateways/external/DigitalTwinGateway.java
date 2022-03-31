@@ -60,7 +60,6 @@ public class DigitalTwinGateway {
     @Value(value = "${digital-twins.authentication.url}")
     private String tokenUrl;
 
-    @SneakyThrows
     public ShellLookupResponse shellLookup(ShellLookupRequest request) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
@@ -133,7 +132,6 @@ public class DigitalTwinGateway {
         }
     }
 
-    @SneakyThrows
     public SubModelListResponse getSubModel(String shellId) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
@@ -148,7 +146,7 @@ public class DigitalTwinGateway {
                 entity,
                 SubModelListResponse.class);
 
-        log.debug("[DigitalTwinGateway][Get SubModel] Url: " + url);
+        log.info("[DigitalTwinGateway][Get SubModel] Url: " + url);
 
         SubModelListResponse responseBody = null;
         if (response.getStatusCode() == HttpStatus.OK) {

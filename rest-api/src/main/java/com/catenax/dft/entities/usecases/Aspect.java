@@ -21,20 +21,38 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
+
 @Data
 @Builder
 @AllArgsConstructor
 public class Aspect {
 
     private String uuid;
+
     private String processId;
+
+    @NotBlank(message = "local_identifiers_key cannot be empty")
     private String localIdentifiersKey;
+
+    @NotBlank(message = "local_identifiers_value cannot be empty")
     private String localIdentifiersValue;
+
+    @NotBlank(message = "manufacturing_date cannot be empty")
     private String manufacturingDate;
+
     private String manufacturingCountry;
+
+    @NotBlank(message = "manufacturing_part_id cannot be empty")
     private String manufacturerPartId;
+
     private String customerPartId;
+
+    @NotBlank(message = "classification cannot be empty")
     private String classification;
+
+    @NotBlank(message = "name_at_manufacturer cannot be empty")
     private String nameAtManufacturer;
+
     private String nameAtCustomer;
 }

@@ -19,6 +19,7 @@ package com.catenax.dft.usecases.csvHandler.aspects;
 
 import com.catenax.dft.entities.usecases.Aspect;
 import com.catenax.dft.usecases.csvHandler.AbstractCsvHandlerUseCase;
+import com.catenax.dft.usecases.csvHandler.exceptions.MapToAspectException;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -31,7 +32,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import java.util.UUID;
 
 import static com.catenax.dft.gateways.file.CsvGateway.SEPARATOR;
 
@@ -54,6 +54,7 @@ public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<Stri
         }
 
         Aspect aspect = Aspect.builder()
+                .uuid(rowDataFields[0].trim())
                 .processId(processId)
                 .localIdentifiersKey(rowDataFields[1].trim())
                 .localIdentifiersValue(rowDataFields[2].trim())

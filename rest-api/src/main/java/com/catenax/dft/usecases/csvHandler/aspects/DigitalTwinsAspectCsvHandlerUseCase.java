@@ -46,6 +46,8 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
     public static final String SERIAL_PART_TYPIZATION_1_0_0 = "urn:bamm:com.catenax.serial_part_typization:1.0.0";
     public static final String SERIAL_PART_TYPIZATION_ID_SHORT = "serialPartTypization";
     public static final String ENDPOINT_PROTOCOL_VERSION = "1.0";
+    public static final String PREFIX = "urn:uuid:";
+
 
     private final DigitalTwinGateway gateway;
 
@@ -156,7 +158,7 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
                 .description(descriptions)
                 .globalAssetId(globalIdentifier)
                 .specificAssetIds(specificIdentifiers)
-                .identification("urn:uuid:"+UUID.randomUUID())
+                .identification(PREFIX+UUID.randomUUID())
                 .build();
     }
 }

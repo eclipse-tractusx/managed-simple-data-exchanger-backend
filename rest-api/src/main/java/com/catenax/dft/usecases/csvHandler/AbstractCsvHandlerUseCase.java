@@ -59,7 +59,7 @@ public abstract class AbstractCsvHandlerUseCase<I, T> implements CsvHandlerUseCa
         } catch (RuntimeException e) {
 
             FailureLogEntity entity = FailureLogEntity.builder()
-                    .uuid("urn:uuid:"+UUID.randomUUID())
+                    .uuid(UUID.randomUUID().toString())
                     .processId(processId)
                     .log(e.getMessage())
                     .dateTime(LocalDateTime.now())

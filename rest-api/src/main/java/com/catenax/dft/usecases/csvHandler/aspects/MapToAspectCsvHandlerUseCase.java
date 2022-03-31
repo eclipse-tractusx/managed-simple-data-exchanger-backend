@@ -32,7 +32,7 @@ import static com.catenax.dft.gateways.file.CsvGateway.SEPARATOR;
 public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<String, Aspect> {
 
     private final int ROW_LENGTH = 9;
-    public MapToAspectCsvHandlerUseCase(StoreAspectCsvHandlerUseCase nextUseCase) {
+    public MapToAspectCsvHandlerUseCase(GenerateUuIdCsvHandlerUseCase nextUseCase) {
         super(nextUseCase);
     }
 
@@ -44,7 +44,6 @@ public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<Stri
             throw new MapToAspectException("This row has wrong amount of fields");
         }
         return Aspect.builder()
-                .uuid(rowDataFields[0].isEmpty() ? "urn:uuid:"+UUID.randomUUID().toString() : rowDataFields[0])
                 .processId(processId)
                 .localIdentifiersKey(rowDataFields[0])
                 .localIdentifiersValue(rowDataFields[1])

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import React, { SyntheticEvent, useEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import Nav from '../components/NavBar';
 import Sidebar from '../components/Sidebar';
 import Timer from '../components/Timer';
@@ -29,9 +30,10 @@ import CloseIcon from '@mui/icons-material/Close';
 import StickyHeadTable from '../components/Table';
 import CircularProgress from '@mui/material/CircularProgress';
 import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
-import { Refresh } from '@mui/icons-material';
+import Button, { ButtonProps } from '@mui/material/Button';
+import { HighlightOffOutlined, Refresh, ReportGmailerrorredOutlined } from '@mui/icons-material';
 import { formatDate } from '../utils/utils';
+import { COLORS } from '../constants';
 
 const Dashboard: React.FC = () => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -194,6 +196,15 @@ const Dashboard: React.FC = () => {
       .catch(err => console.error(err));
   };
 
+  const ColorButton = styled(Button)<ButtonProps>(() => ({
+    color: COLORS.white,
+    backgroundColor: COLORS.blue,
+    '&:hover': {
+      backgroundColor: COLORS.white,
+      color: COLORS.blue,
+    },
+  }));
+
   // TODO: Replace this logic with routes
   const layout = () => {
     if (menuIndex === 0) {
@@ -219,10 +230,12 @@ const Dashboard: React.FC = () => {
                   emitFileUpload={(e: any) => uploadFile(e)}
                 />
               )}
-              {uploadStatus && (
-                <div className="flex justify-between bg-[#e0eee0] p-4 w-full mt-4">
+              {uploadStatus && currentUploadData.status === Status.failed && (
+                <div className={'flex justify-between bg-red-100 p-4 w-full mt-4'}>
                   <div className="flex items-center gap-x-2">
-                    <CheckCircleOutlineOutlinedIcon sx={{ color: 'rgb(34 197 94)' }} />
+                    <span title="Failed">
+                      <HighlightOffOutlined sx={{ color: COLORS.danger }} />
+                    </span>
                     <p className="text-md">{selectedFiles[0].name}</p>
                   </div>
                   <span className="cursor-pointer" onClick={() => setUploadStatus(false)}>
@@ -230,6 +243,36 @@ const Dashboard: React.FC = () => {
                   </span>
                 </div>
               )}
+              {uploadStatus &&
+                currentUploadData.status === Status.completed &&
+                currentUploadData.numberOfFailedItems === 0 && (
+                  <div className={'flex justify-between bg-lime-200 p-4 w-full mt-4'}>
+                    <div className="flex items-center gap-x-2">
+                      <span title="Completed">
+                        <CheckCircleOutlineOutlinedIcon sx={{ color: COLORS.success }} />
+                      </span>
+                      <p className="text-md">{selectedFiles[0].name}</p>
+                    </div>
+                    <span className="cursor-pointer" onClick={() => setUploadStatus(false)}>
+                      <CloseIcon />
+                    </span>
+                  </div>
+                )}
+              {uploadStatus &&
+                currentUploadData.status === Status.completed &&
+                currentUploadData.numberOfFailedItems > 0 && (
+                  <div className={'flex justify-between bg-orange-100 p-4 w-full mt-4'}>
+                    <div className="flex items-center gap-x-2">
+                      <span title="Completed with warnings">
+                        <ReportGmailerrorredOutlined sx={{ color: COLORS.warning }} />
+                      </span>
+                      <p className="text-md">{selectedFiles[0].name}</p>
+                    </div>
+                    <span className="cursor-pointer" onClick={() => setUploadStatus(false)}>
+                      <CloseIcon />
+                    </span>
+                  </div>
+                )}
             </div>
           </div>
         </div>
@@ -242,12 +285,12 @@ const Dashboard: React.FC = () => {
               <h1 className="flex flex-row text-bold text-3xl">Upload History</h1>
             </Grid>
             <Grid item xs={6} className="text-right">
-              <Button variant="contained" onClick={() => refreshTable()}>
+              <ColorButton variant="contained" onClick={() => refreshTable()}>
                 <span>
                   <Refresh />
                   &nbsp; Refresh
                 </span>
-              </Button>
+              </ColorButton>
             </Grid>
           </Grid>
           <div className="mt-8">
@@ -293,7 +336,7 @@ const Dashboard: React.FC = () => {
         <div className="relative w-full h-full bg-[#03a9f4]">
           <div className="inset-x-0 inset-y-1/2 absolute z-5 flex flex-col justify-center gap-y-2 text-center">
             <span>
-              <UploadFileOutlinedIcon style={{ fontSize: 60 }} sx={{ color: '#fff' }} />
+              <UploadFileOutlinedIcon style={{ fontSize: 60 }} sx={{ color: COLORS.white }} />
             </span>
             <h1 className="text-4xl text-white">Drop it like it's hot :)</h1>
             <p className="text-lg text-white">Upload your file by dropping it in this window</p>

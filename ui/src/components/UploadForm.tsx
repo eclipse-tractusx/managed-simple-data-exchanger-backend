@@ -17,6 +17,7 @@ import { FileSize } from '../models/FileSize';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CloseIcon from '@mui/icons-material/Close';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
+import { COLORS } from '../constants';
 
 const UploadForm = (props: any) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -58,7 +59,7 @@ const UploadForm = (props: any) => {
               onChange={filesSelected}
               className="hidden"
             />
-            <CloudUploadIcon sx={{ fontSize: 40, color: '#444' }} />
+            <CloudUploadIcon sx={{ fontSize: 40, color: COLORS.grey }} />
             <h2 className=" my-1">Drag and drop your file on this page</h2>
             <h2 className=" my-1">or</h2>
 

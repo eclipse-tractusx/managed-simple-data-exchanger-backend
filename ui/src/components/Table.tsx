@@ -14,7 +14,13 @@
 
 import * as React from 'react';
 import { styled } from '@mui/material/styles';
-import { AccessTime, CheckBox, HighlightOff, Pending } from '@mui/icons-material';
+import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
+import {
+  AccessTime,
+  HighlightOffOutlined,
+  HourglassEmptyOutlined,
+  ReportGmailerrorredOutlined,
+} from '@mui/icons-material';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -25,17 +31,10 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { ProcessReport, CsvTypes, Status } from '../models/ProcessReport';
 import { formatDate } from '../utils/utils';
+import { COLORS } from '../constants';
 
 interface Column {
-  id:
-    | 'processId'
-    | 'csvType'
-    | 'numberOfItems'
-    | 'numberOfFailedItems'
-    | 'numberOfSucceededItems'
-    | 'status'
-    | 'startDate'
-    | 'endDate';
+  id: 'processId' | 'csvType' | 'numberOfItems' | 'numberOfFailedItems' | 'status' | 'startDate' | 'duration';
   label: string;
   minWidth?: number;
   align?: 'right' | 'left' | 'center';
@@ -58,12 +57,6 @@ const columns: readonly Column[] = [
     align: 'center',
   },
   {
-    id: 'numberOfSucceededItems',
-    label: 'Number of Succeeded Items',
-    minWidth: 170,
-    align: 'center',
-  },
-  {
     id: 'status',
     label: 'Status',
     minWidth: 100,
@@ -77,11 +70,10 @@ const columns: readonly Column[] = [
     format: (value: string) => formatDate(value),
   },
   {
-    id: 'endDate',
-    label: 'End Date',
+    id: 'duration',
+    label: 'Duration',
     minWidth: 170,
     align: 'center',
-    format: (value: string) => formatDate(value),
   },
 ];
 
@@ -104,10 +96,10 @@ export default function StickyHeadTable({
     setPage(0);
   };
 
-  const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  const StyledTableCell = styled(TableCell)(() => ({
     [`&.${tableCellClasses.head}`]: {
-      backgroundColor: theme.palette.common.black,
-      color: theme.palette.common.white,
+      backgroundColor: COLORS.blue,
+      color: COLORS.white,
     },
     [`&.${tableCellClasses.body}`]: {
       fontSize: 14,
@@ -119,6 +111,22 @@ export default function StickyHeadTable({
       backgroundColor: theme.palette.action.hover,
     },
   }));
+
+  const caclDuration = (row: ProcessReport) => {
+    if (row.startDate && row.endDate) {
+      const time = new Date(row.endDate).getTime() - new Date(row.startDate).getTime();
+
+      const minutes = Math.floor(time / 60000);
+      let seconds = Number(((time % 60000) / 1000).toFixed(0));
+
+      if (minutes === 0 && seconds === 0) {
+        seconds = 1;
+      }
+
+      return (minutes < 10 ? '0' : '') + minutes + 'm:' + (seconds < 10 ? '0' : '') + seconds + 's';
+    }
+    return '-';
+  };
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
@@ -141,12 +149,6 @@ export default function StickyHeadTable({
                     const value = row[column.id];
                     return (
                       <StyledTableCell key={column.id} align={column.align}>
-                        {(column.id === 'startDate' || column.id === 'endDate') && (
-                          <span>
-                            <AccessTime fontSize="small" sx={{ color: '#000000' }} /> &nbsp;
-                          </span>
-                        )}
-                        {column.id === 'endDate' && !value && '-'}
                         {column.id === 'csvType' && value === CsvTypes.aspect && <b> ASPECT </b>}
                         {column.id === 'csvType' && value === CsvTypes.childAspect && <b> CHILD ASPECT </b>}
                         {column.id === 'csvType' && value === CsvTypes.unknown && <b> UNKNOWN </b>}
@@ -159,19 +161,31 @@ export default function StickyHeadTable({
                           column.id !== 'csvType' &&
                           (!column.format || typeof value !== 'string') &&
                           value}
-                        {column.id === 'status' && value === Status.completed && (
-                          <span title={Status.completed}>
-                            <CheckBox fontSize="small" sx={{ color: '#8bc34a' }} />
+                        {column.id === 'status' && value === Status.completed && row.numberOfFailedItems === 0 && (
+                          <span title="Completed">
+                            <CheckCircleOutlineOutlinedIcon fontSize="small" sx={{ color: COLORS.success }} />
+                          </span>
+                        )}
+                        {column.id === 'status' && value === Status.completed && row.numberOfFailedItems > 0 && (
+                          <span title="Completed with warnings">
+                            <ReportGmailerrorredOutlined fontSize="small" sx={{ color: COLORS.warning }} />
                           </span>
                         )}
                         {column.id === 'status' && value === Status.failed && (
-                          <span title={Status.failed}>
-                            <HighlightOff fontSize="small" sx={{ color: '#f44336' }} />
+                          <span title="Failed">
+                            <HighlightOffOutlined fontSize="small" sx={{ color: COLORS.danger }} />
                           </span>
                         )}
                         {column.id === 'status' && value === Status.inProgress && (
-                          <span title={Status.inProgress}>
-                            <Pending fontSize="small" sx={{ color: '#2196f3' }} />
+                          <span title="In progress">
+                            <HourglassEmptyOutlined fontSize="small" sx={{ color: COLORS.primary }} />
+                          </span>
+                        )}
+                        {column.id === 'duration' && (
+                          <span>
+                            <AccessTime fontSize="small"> </AccessTime>
+                            &nbsp;
+                            {caclDuration(row)}
                           </span>
                         )}
                       </StyledTableCell>

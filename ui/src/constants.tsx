@@ -12,26 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export interface ProcessReport {
-  processId: string;
-  csvType: CsvTypes;
-  numberOfItems: number;
-  numberOfFailedItems: number;
-  numberOfSucceededItems: number;
-  status: Status;
-  startDate: string;
-  endDate?: string;
-  duration?: string;
-}
-
-export enum Status {
-  completed = 'COMPLETED',
-  failed = 'FAILED',
-  inProgress = 'IN_PROGRESS',
-}
-
-export enum CsvTypes {
-  aspect = 'ASPECT',
-  childAspect = 'CHILD_ASPECT',
-  unknown = 'UNKNOWN',
-}
+export const COLORS = {
+  black: '#000000',
+  blue: '#01579b',
+  danger: '#f44336',
+  grey: '#444444',
+  primary: '#2196f3',
+  success: '#8bc34a',
+  warning: '#FF9900',
+  white: '#FFFFFF',
+};

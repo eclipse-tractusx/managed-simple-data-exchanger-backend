@@ -15,6 +15,7 @@
 import React, { useState } from 'react';
 import BackupOutlinedIcon from '@mui/icons-material/BackupOutlined';
 import HistoryOutlinedIcon from '@mui/icons-material/HistoryOutlined';
+import { COLORS } from '../constants';
 
 const Sidebar = (props: any) => {
   const [menuIndex, setMenuIndex] = useState(0);
@@ -37,7 +38,7 @@ const Sidebar = (props: any) => {
               className="flex gap-x-2 p-4 cursor-pointer items-center relative hover:bg-[#efefef]"
               onClick={() => getMenuIndex(0)}
             >
-              <BackupOutlinedIcon fontSize="small" sx={{ color: `${menuIndex === 0 ? '#03a9f4' : '#000000'}` }} />
+              <BackupOutlinedIcon fontSize="small" sx={{ color: `${menuIndex === 0 ? COLORS.blue : COLORS.black}` }} />
               <p
                 className={`${
                   !isExpanded ? 'hidden' : 'flex'
@@ -50,7 +51,7 @@ const Sidebar = (props: any) => {
               className="flex gap-x-2 p-4 cursor-pointer items-center relative hover:bg-[#efefef]"
               onClick={() => getMenuIndex(1)}
             >
-              <HistoryOutlinedIcon fontSize="small" sx={{ color: `${menuIndex === 1 ? '#03a9f4' : '#000000'}` }} />
+              <HistoryOutlinedIcon fontSize="small" sx={{ color: `${menuIndex === 1 ? COLORS.blue : COLORS.black}` }} />
               <p
                 className={`${
                   !isExpanded ? 'hidden' : 'flex'

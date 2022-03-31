@@ -26,7 +26,7 @@ import java.util.UUID;
 @Component
 public class GenerateUuIdCsvHandlerUseCase extends AbstractCsvHandlerUseCase<Aspect, Aspect> {
 
-    public static final String PREFIX = "urn:uuid:";
+    private static final String PREFIX = "urn:uuid:";
 
     public GenerateUuIdCsvHandlerUseCase(DigitalTwinsAspectCsvHandlerUseCase nextUseCase) {
         super(nextUseCase);
@@ -38,6 +38,6 @@ public class GenerateUuIdCsvHandlerUseCase extends AbstractCsvHandlerUseCase<Asp
             input.setUuid(PREFIX +UUID.randomUUID());
         }
 
-        return input;
+      return input;
     }
 }

@@ -21,7 +21,6 @@ import com.catenax.dft.entities.database.AspectEntity;
 import com.catenax.dft.entities.usecases.Aspect;
 import com.catenax.dft.gateways.database.AspectRepository;
 import com.catenax.dft.mapper.AspectMapper;
-import com.catenax.dft.mapper.ChildAspectMapper;
 import com.catenax.dft.usecases.csvHandler.AbstractCsvHandlerUseCase;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

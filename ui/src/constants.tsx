@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root'),
-);
+export const COLORS = {
+  black: '#000000',
+  blue: '#01579b',
+  danger: '#f44336',
+  grey: '#444444',
+  primary: '#2196f3',
+  success: '#8bc34a',
+  warning: '#FF9900',
+  white: '#FFFFFF',
+};

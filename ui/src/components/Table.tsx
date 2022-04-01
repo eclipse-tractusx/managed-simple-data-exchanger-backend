@@ -1,82 +1,92 @@
+// Copyright 2022 Catena-X
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 import * as React from 'react';
+import { styled } from '@mui/material/styles';
+import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
+import {
+  AccessTime,
+  HighlightOffOutlined,
+  HourglassEmptyOutlined,
+  ReportGmailerrorredOutlined,
+} from '@mui/icons-material';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
+import TableCell, { tableCellClasses } from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
+import { ProcessReport, CsvTypes, Status } from '../models/ProcessReport';
+import { formatDate } from '../utils/utils';
+import { COLORS } from '../constants';
 
 interface Column {
-  id: 'name' | 'code' | 'population' | 'size' | 'density';
+  id: 'processId' | 'csvType' | 'numberOfItems' | 'numberOfFailedItems' | 'status' | 'startDate' | 'duration';
   label: string;
   minWidth?: number;
-  align?: 'right';
-  format?: (value: number) => string;
+  align?: 'right' | 'left' | 'center';
+  format?: (value: string) => string;
 }
 
 const columns: readonly Column[] = [
-  { id: 'name', label: 'Name', minWidth: 170 },
-  { id: 'code', label: 'ISO\u00a0Code', minWidth: 100 },
+  { id: 'processId', label: 'Process Id', minWidth: 170 },
+  { id: 'csvType', label: 'CSV Type', minWidth: 100 },
   {
-    id: 'population',
-    label: 'Population',
+    id: 'numberOfItems',
+    label: 'Number of Items',
     minWidth: 170,
-    align: 'right',
-    format: (value: number) => value.toLocaleString('en-US'),
+    align: 'center',
   },
   {
-    id: 'size',
-    label: 'Size\u00a0(km\u00b2)',
+    id: 'numberOfFailedItems',
+    label: 'Number of Failed Items',
     minWidth: 170,
-    align: 'right',
-    format: (value: number) => value.toLocaleString('en-US'),
+    align: 'center',
   },
   {
-    id: 'density',
-    label: 'Density',
+    id: 'status',
+    label: 'Status',
+    minWidth: 100,
+    align: 'center',
+  },
+  {
+    id: 'startDate',
+    label: 'Start Date',
     minWidth: 170,
-    align: 'right',
-    format: (value: number) => value.toFixed(2),
+    align: 'center',
+    format: (value: string) => formatDate(value),
+  },
+  {
+    id: 'duration',
+    label: 'Duration',
+    minWidth: 170,
+    align: 'center',
   },
 ];
 
-interface Data {
-  name: string;
-  code: string;
-  population: number;
-  size: number;
-  density: number;
-}
+const rowsData: ProcessReport[] = [];
 
-function createData(name: string, code: string, population: number, size: number): Data {
-  const density = population / size;
-  return { name, code, population, size, density };
-}
-
-const rows = [
-  createData('India', 'IN', 1324171354, 3287263),
-  createData('China', 'CN', 1403500365, 9596961),
-  createData('Italy', 'IT', 60483973, 301340),
-  createData('United States', 'US', 327167434, 9833520),
-  createData('Canada', 'CA', 37602103, 9984670),
-  createData('Australia', 'AU', 25475400, 7692024),
-  createData('Germany', 'DE', 83019200, 357578),
-  createData('Ireland', 'IE', 4857000, 70273),
-  createData('Mexico', 'MX', 126577691, 1972550),
-  createData('Japan', 'JP', 126317000, 377973),
-  createData('France', 'FR', 67022000, 640679),
-  createData('United Kingdom', 'GB', 67545757, 242495),
-  createData('Russia', 'RU', 146793744, 17098246),
-  createData('Nigeria', 'NG', 200962417, 923768),
-  createData('Brazil', 'BR', 210147125, 8515767),
-];
-
-export default function StickyHeadTable() {
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
-
+export default function StickyHeadTable({
+  rows = rowsData,
+  page = 0,
+  rowsPerPage = 10,
+  totalElements = 0,
+  setPage = (p: number) => {},
+  setRowsPerPage = (r: number) => {},
+}) {
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
   };
@@ -86,6 +96,38 @@ export default function StickyHeadTable() {
     setPage(0);
   };
 
+  const StyledTableCell = styled(TableCell)(() => ({
+    [`&.${tableCellClasses.head}`]: {
+      backgroundColor: COLORS.blue,
+      color: COLORS.white,
+    },
+    [`&.${tableCellClasses.body}`]: {
+      fontSize: 14,
+    },
+  }));
+
+  const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    '&:nth-of-type(odd)': {
+      backgroundColor: theme.palette.action.hover,
+    },
+  }));
+
+  const caclDuration = (row: ProcessReport) => {
+    if (row.startDate && row.endDate) {
+      const time = new Date(row.endDate).getTime() - new Date(row.startDate).getTime();
+
+      const minutes = Math.floor(time / 60000);
+      let seconds = Number(((time % 60000) / 1000).toFixed(0));
+
+      if (minutes === 0 && seconds === 0) {
+        seconds = 1;
+      }
+
+      return (minutes < 10 ? '0' : '') + minutes + 'm:' + (seconds < 10 ? '0' : '') + seconds + 's';
+    }
+    return '-';
+  };
+
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
       <TableContainer sx={{ maxHeight: 640 }}>
@@ -93,34 +135,72 @@ export default function StickyHeadTable() {
           <TableHead>
             <TableRow>
               {columns.map(column => (
-                <TableCell key={column.id} align={column.align} style={{ minWidth: column.minWidth }}>
+                <StyledTableCell key={column.id} align={column.align} style={{ minWidth: column.minWidth }}>
                   {column.label}
-                </TableCell>
+                </StyledTableCell>
               ))}
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
+            {rows.map(row => {
               return (
-                <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
+                <StyledTableRow hover role="checkbox" tabIndex={-1} key={row.processId}>
                   {columns.map(column => {
                     const value = row[column.id];
                     return (
-                      <TableCell key={column.id} align={column.align}>
-                        {column.format && typeof value === 'number' ? column.format(value) : value}
-                      </TableCell>
+                      <StyledTableCell key={column.id} align={column.align}>
+                        {column.id === 'csvType' && value === CsvTypes.aspect && <b> ASPECT </b>}
+                        {column.id === 'csvType' && value === CsvTypes.childAspect && <b> CHILD ASPECT </b>}
+                        {column.id === 'csvType' && value === CsvTypes.unknown && <b> UNKNOWN </b>}
+                        {column.id !== 'status' &&
+                          column.id !== 'csvType' &&
+                          column.format &&
+                          typeof value === 'string' &&
+                          column.format(value)}
+                        {column.id !== 'status' &&
+                          column.id !== 'csvType' &&
+                          (!column.format || typeof value !== 'string') &&
+                          value}
+                        {column.id === 'status' && value === Status.completed && row.numberOfFailedItems === 0 && (
+                          <span title="Completed">
+                            <CheckCircleOutlineOutlinedIcon fontSize="small" sx={{ color: COLORS.success }} />
+                          </span>
+                        )}
+                        {column.id === 'status' && value === Status.completed && row.numberOfFailedItems > 0 && (
+                          <span title="Completed with warnings">
+                            <ReportGmailerrorredOutlined fontSize="small" sx={{ color: COLORS.warning }} />
+                          </span>
+                        )}
+                        {column.id === 'status' && value === Status.failed && (
+                          <span title="Failed">
+                            <HighlightOffOutlined fontSize="small" sx={{ color: COLORS.danger }} />
+                          </span>
+                        )}
+                        {column.id === 'status' && value === Status.inProgress && (
+                          <span title="In progress">
+                            <HourglassEmptyOutlined fontSize="small" sx={{ color: COLORS.primary }} />
+                          </span>
+                        )}
+                        {column.id === 'duration' && (
+                          <span>
+                            <AccessTime fontSize="small"> </AccessTime>
+                            &nbsp;
+                            {caclDuration(row)}
+                          </span>
+                        )}
+                      </StyledTableCell>
                     );
                   })}
-                </TableRow>
+                </StyledTableRow>
               );
             })}
           </TableBody>
         </Table>
       </TableContainer>
       <TablePagination
-        rowsPerPageOptions={[15, 25, 30]}
+        rowsPerPageOptions={[10, 15, 20]}
         component="div"
-        count={rows.length}
+        count={totalElements}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}

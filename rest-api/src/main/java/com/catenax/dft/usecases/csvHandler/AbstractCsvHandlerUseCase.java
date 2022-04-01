@@ -17,11 +17,11 @@
 
 package com.catenax.dft.usecases.csvHandler;
 
-import com.catenax.dft.usecases.processReport.ProcessReportUseCase;
-import com.catenax.dft.usecases.logs.FailureLogsUseCase;
 import com.catenax.dft.entities.database.FailureLogEntity;
 import com.catenax.dft.enums.CsvTypeEnum;
 import com.catenax.dft.usecases.csvHandler.exceptions.MapToAspectException;
+import com.catenax.dft.usecases.logs.FailureLogsUseCase;
+import com.catenax.dft.usecases.processReport.ProcessReportUseCase;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -32,6 +32,10 @@ import java.util.UUID;
 public abstract class AbstractCsvHandlerUseCase<I, T> implements CsvHandlerUseCase<I> {
 
     protected CsvHandlerUseCase<T> nextUseCase;
+    @Autowired
+    protected ProcessReportUseCase processReportUseCase;
+    @Autowired
+    private FailureLogsUseCase failureLogsUseCase;
 
     public AbstractCsvHandlerUseCase(CsvHandlerUseCase<T> nextUseCase) {
         this.nextUseCase = nextUseCase;
@@ -39,21 +43,14 @@ public abstract class AbstractCsvHandlerUseCase<I, T> implements CsvHandlerUseCa
 
     protected abstract T executeUseCase(I input, String processId);
 
-    @Autowired
-    protected ProcessReportUseCase historicFilesUseCase;
-
-    @Autowired
-    FailureLogsUseCase failureLogsUseCase;
-
     @Override
     public void run(I input, String processId) {
 
         try {
-
             T result = executeUseCase(input, processId);
 
             if (nextUseCase != null) {
-                log.info(String.format("[%s] is running now", this.getClass().getCanonicalName()));
+                log.info(String.format("[%s] is running now", this.getClass().getSimpleName()));
                 nextUseCase.run(result, processId);
             }
         } catch (RuntimeException e) {
@@ -63,10 +60,9 @@ public abstract class AbstractCsvHandlerUseCase<I, T> implements CsvHandlerUseCa
                     .processId(processId)
                     .log(e.getMessage())
                     .dateTime(LocalDateTime.now())
-                    .type(e instanceof MapToAspectException ? CsvTypeEnum.ASPECT :CsvTypeEnum.CHILD_ASPECT)
+                    .type(e instanceof MapToAspectException ? CsvTypeEnum.ASPECT : CsvTypeEnum.CHILD_ASPECT)
                     .build();
             failureLogsUseCase.saveLog(entity);
-            System.out.println(e);
             log.debug(String.valueOf(e));
         }
     }

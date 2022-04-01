@@ -18,6 +18,7 @@
 package com.catenax.dft.usecases.csvHandler.aspects;
 
 import com.catenax.dft.entities.usecases.Aspect;
+import com.catenax.dft.enums.OptionalIdentifierKeyEnum;
 import com.catenax.dft.usecases.csvHandler.AbstractCsvHandlerUseCase;
 import com.catenax.dft.usecases.csvHandler.exceptions.MapToAspectException;
 import lombok.SneakyThrows;
@@ -74,7 +75,6 @@ public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<Stri
         if (errorMessages.size() != 0) {
             throw new MapToAspectException(errorMessages.toString());
         }
-
         return aspect;
     }
 
@@ -86,4 +86,5 @@ public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<Stri
                 .map(ConstraintViolation::getMessage)
                 .collect(Collectors.toList());
     }
+
 }

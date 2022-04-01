@@ -19,9 +19,8 @@ package com.catenax.dft.gateways.database;
 
 import com.catenax.dft.entities.database.FailureLogEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 
-public interface FailureLogsRepository extends JpaRepository<FailureLogEntity, String> {
+public interface FailureLogRepository extends JpaRepository<FailureLogEntity, String> {
 
 }

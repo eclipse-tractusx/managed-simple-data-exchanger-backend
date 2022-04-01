@@ -37,8 +37,7 @@ ProcessReportRepository extends JpaRepository<ProcessReportEntity, String> {
             "status = :status, " +
             "numberOfSucceededItems = " +
             "(SELECT COUNT(a) FROM AspectEntity a WHERE a.processId = :processId), " +
-            "numberOfFailedItems = numberOfItems - " +
-            "(SELECT COUNT(a) FROM AspectEntity a WHERE a.processId = :processId) " +
+            "numberOfFailedItems = (SELECT COUNT(f) FROM FailureLogEntity f WHERE f.processId = :processId) " +
             "WHERE processId = :processId")
     void finalizeAspectProgressReport(String processId, LocalDateTime endDate, ProgressStatusEnum status);
 
@@ -49,8 +48,7 @@ ProcessReportRepository extends JpaRepository<ProcessReportEntity, String> {
             "status = :status, " +
             "numberOfSucceededItems = " +
             "(SELECT COUNT(c) FROM ChildAspectEntity c WHERE c.processId = :processId), " +
-            "numberOfFailedItems = numberOfItems - " +
-            "(SELECT COUNT(c) FROM ChildAspectEntity c WHERE c.processId = :processId) " +
+            "numberOfFailedItems = (SELECT COUNT(f) FROM FailureLogEntity f WHERE f.processId = :processId) " +
             "WHERE processId = :processId")
     void finalizeChildAspectProgressReport(String processId, LocalDateTime endDate, ProgressStatusEnum status);
 }

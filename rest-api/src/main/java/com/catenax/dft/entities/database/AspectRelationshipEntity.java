@@ -18,30 +18,35 @@
 package com.catenax.dft.entities.database;
 
 import lombok.Data;
-import org.springframework.lang.Nullable;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
-import java.time.LocalDateTime;
+import java.io.Serializable;
 
 @Entity
-@Table(name = "childAspect")
+@Table(name = "aspect_relationship")
 @Data
-public class ChildAspectEntity {
+@IdClass(AspectRelationshipPrimaryKey.class)
+public class AspectRelationshipEntity {
 
     @Id
-    @GeneratedValue
-    private Long Id;
-    @Nullable
-    private String uuid;
+    private String parentCatenaXId;
+    @Id
     private String processId;
-    private String parentIdentifierKey;
-    private String parentIdentifierValue;
+    private String childCatenaXId;
     private String lifecycleContext;
-    private int quantityNumber;
+    private String assembledOn;
+    private String quantityNumber;
     private String measurementUnitLexicalValue;
+}
+
+@Data
+class AspectRelationshipPrimaryKey implements Serializable {
+
+    private String parentCatenaXId;
+    private String childCatenaXId;
 }
 
 

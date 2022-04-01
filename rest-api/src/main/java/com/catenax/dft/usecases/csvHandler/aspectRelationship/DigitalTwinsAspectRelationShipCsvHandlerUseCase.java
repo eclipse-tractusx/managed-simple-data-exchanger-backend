@@ -15,7 +15,7 @@
  *
  */
 
-package com.catenax.dft.usecases.csvHandler.aspects;
+package com.catenax.dft.usecases.csvHandler.aspectRelationship;
 
 import com.catenax.dft.entities.digitalTwins.common.*;
 import com.catenax.dft.entities.digitalTwins.request.CreateSubModelRequest;
@@ -25,6 +25,7 @@ import com.catenax.dft.entities.digitalTwins.response.ShellDescriptorResponse;
 import com.catenax.dft.entities.digitalTwins.response.ShellLookupResponse;
 import com.catenax.dft.entities.digitalTwins.response.SubModelListResponse;
 import com.catenax.dft.entities.usecases.Aspect;
+import com.catenax.dft.entities.usecases.AspectRelationship;
 import com.catenax.dft.gateways.external.DigitalTwinGateway;
 import com.catenax.dft.usecases.csvHandler.AbstractCsvHandlerUseCase;
 import lombok.SneakyThrows;
@@ -38,55 +39,55 @@ import java.util.UUID;
 
 @Slf4j
 @Component
-public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<Aspect, Aspect> {
+public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends AbstractCsvHandlerUseCase<AspectRelationship, AspectRelationship> {
 
     private static final String PART_INSTANCE_ID = "PartInstanceID";
     private static final String MANUFACTURER_PART_ID = "ManufacturerPartID";
     private static final String MANUFACTURER_ID = "ManufacturerID";
     private static final String HTTP = "HTTP";
     private static final String HTTPS = "HTTPS";
-    private static final String SEMANTIC_ID = "urn:bamm:com.catenax.serial_part_typization:1.0.0";
-    private static final String ID_SHORT = "serialPartTypization";
+    private static final String SEMANTIC_ID = " urn:bamm:com.catenax.assembly_part_relationship:1.0.0";
+    private static final String ID_SHORT = "assemblyPartRelationship";
     private static final String ENDPOINT_PROTOCOL_VERSION = "1.0";
     private static final String PREFIX = "urn:uuid:";
 
-    @Value(value = "${manufacturerId}")
-    private String manufacturerId;
-    @Value(value = "${edc.aspect.url}")
-    private String edcEndpoint;
-
     private final DigitalTwinGateway gateway;
 
-    public DigitalTwinsAspectCsvHandlerUseCase(DigitalTwinGateway gateway, StoreAspectCsvHandlerUseCase nextUseCase) {
+    @Value(value = "${manufacturerId}")
+    private String manufacturerId;
+    @Value(value = "${edc.child.aspect.url}")
+    private String edcEndpointChildren;
+
+    public DigitalTwinsAspectRelationShipCsvHandlerUseCase(DigitalTwinGateway gateway, StoreChildAspectCsvHandlerUseCase nextUseCase) {
         super(nextUseCase);
         this.gateway = gateway;
     }
 
     @Override
     @SneakyThrows
-    protected Aspect executeUseCase(Aspect aspect, String processId) {
-        ShellLookupRequest shellLookupRequest = getShellLookupRequest(aspect);
+    protected AspectRelationship executeUseCase(AspectRelationship aspectRelationShip, String processId) {
+        ShellLookupRequest shellLookupRequest = getShellLookupRequest(aspectRelationShip);
         ShellLookupResponse shellIds = gateway.shellLookup(shellLookupRequest);
 
         String shellId;
 
         if (shellIds.isEmpty()) {
-            log.info(String.format("[DigitalTwinsAspectCsvHandlerUseCase] No shell id for '%s'", shellLookupRequest.toJsonString()));
+            log.info(String.format("[DigitalTwinsAspectRelationShipCsvHandlerUseCase] No shell id for '%s'", shellLookupRequest.toJsonString()));
 
-            ShellDescriptorRequest aasDescriptorRequest = getShellDescriptorRequest(aspect);
+            ShellDescriptorRequest aasDescriptorRequest = getShellDescriptorRequest(Aspect.builder().build());
             ShellDescriptorResponse result = gateway.createShellDescriptor(aasDescriptorRequest);
             shellId = result.getIdentification();
 
-            log.info(String.format("[DigitalTwinsAspectCsvHandlerUseCase] Shell created with id '%s'", shellId));
+            log.info(String.format("[DigitalTwinsAspectRelationShipCsvHandlerUseCase] Shell created with id '%s'", shellId));
 
         } else if (shellIds.size() == 1) {
-            log.info(String.format("[DigitalTwinsAspectCsvHandlerUseCase] Shell id found for '%s'", shellLookupRequest.toJsonString()));
+            log.info(String.format("[DigitalTwinsAspectRelationShipCsvHandlerUseCase] Shell id found for '%s'", shellLookupRequest.toJsonString()));
 
             shellId = shellIds.stream().findFirst().orElse(null);
 
-            log.info(String.format("[DigitalTwinsAspectCsvHandlerUseCase] Shell id '%s'", shellId));
+            log.info(String.format("[DigitalTwinsAspectRelationShipCsvHandlerUseCase] Shell id '%s'", shellId));
         } else {
-            throw new Exception(String.format("Multiple ids found on aspect %s", shellLookupRequest.toJsonString()));
+            throw new Exception(String.format("Multiple ids found on childAspect %s", shellLookupRequest.toJsonString()));
         }
 
         SubModelListResponse subModelResponse = gateway.getSubModels(shellId);
@@ -94,23 +95,29 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
         if (subModelResponse == null || subModelResponse
                 .stream()
                 .noneMatch(x -> ID_SHORT.equals(x.getIdShort()))) {
-            log.info(String.format("[DigitalTwinsAspectCsvHandlerUseCase] No submodels for '%s'", shellId));
-            CreateSubModelRequest createSubModelRequest = getCreateSubModelRequest(aspect);
+            log.info(String.format("[DigitalTwinsAspectRelationShipCsvHandlerUseCase] No submodels for '%s'", shellId));
+            CreateSubModelRequest createSubModelRequest = getCreateSubModelRequest(aspectRelationShip);
             gateway.createSubModel(shellId, createSubModelRequest);
         }
 
-        return aspect;
+        return aspectRelationShip;
     }
 
-    private ShellLookupRequest getShellLookupRequest(Aspect aspect) {
+    private ShellLookupRequest getShellLookupRequest(AspectRelationship aspectRelationShip) {
         ShellLookupRequest shellLookupRequest = new ShellLookupRequest();
-        shellLookupRequest.addLocalIdentifier(PART_INSTANCE_ID, aspect.getLocalIdentifiersValue());
-        shellLookupRequest.addLocalIdentifier(MANUFACTURER_PART_ID, aspect.getManufacturerPartId());
+        shellLookupRequest.addLocalIdentifier(PART_INSTANCE_ID, aspectRelationShip.getParentPartInstanceId());
+        shellLookupRequest.addLocalIdentifier(MANUFACTURER_PART_ID, aspectRelationShip.getParentManufactorerPartId());
         shellLookupRequest.addLocalIdentifier(MANUFACTURER_ID, manufacturerId);
+        if (aspectRelationShip.hasOptionalParentIdentifier()) {
+            shellLookupRequest.addLocalIdentifier(aspectRelationShip.getParentOptionalIdentifierKey(), aspectRelationShip.getParentOptionalIdentifierValue());
+        }
+
         return shellLookupRequest;
     }
 
-    private CreateSubModelRequest getCreateSubModelRequest(Aspect aspect) {
+
+
+    private CreateSubModelRequest getCreateSubModelRequest(AspectRelationship aspectRelationShip) {
         ArrayList<String> value = new ArrayList<>();
         value.add(SEMANTIC_ID);
         SemanticId semanticId = new SemanticId();
@@ -120,7 +127,7 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
         endpoints.add(Endpoint.builder()
                 .endpointInterface(HTTP)
                 .protocolInformation(ProtocolInformation.builder()
-                        .endpointAddress(String.format("%s%s", edcEndpoint, aspect.getUuid()))
+                        .endpointAddress(String.format(edcEndpointChildren, aspectRelationShip.getParentUuid()))
                         .endpointProtocol(HTTPS)
                         .endpointProtocolVersion(ENDPOINT_PROTOCOL_VERSION)
                         .build())
@@ -148,7 +155,7 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
                 .idShort(String.format("%s_%s_%s", aspect.getNameAtManufacturer(), manufacturerId, aspect.getManufacturerPartId()))
                 .globalAssetId(globalIdentifier)
                 .specificAssetIds(specificIdentifiers)
-                .identification(PREFIX+UUID.randomUUID())
+                .identification(PREFIX + UUID.randomUUID())
                 .build();
     }
 }

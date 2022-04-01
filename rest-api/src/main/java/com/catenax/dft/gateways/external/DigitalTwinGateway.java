@@ -23,7 +23,6 @@ import com.catenax.dft.entities.digitalTwins.request.ShellLookupRequest;
 import com.catenax.dft.entities.digitalTwins.response.ShellDescriptorResponse;
 import com.catenax.dft.entities.digitalTwins.response.ShellLookupResponse;
 import com.catenax.dft.entities.digitalTwins.response.SubModelListResponse;
-import com.catenax.dft.entities.digitalTwins.response.SubModelResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
@@ -123,16 +122,21 @@ public class DigitalTwinGateway {
         HttpEntity<CreateSubModelRequest> entity = new HttpEntity<>(request, headers);
 
         String url = String.format(digitalTwinsUrl + "/registry/shell-descriptors/%s/submodel-descriptors", shellId);
-        ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
-        log.info("[DigitalTwinGateway][Create SubModel] Url: " + url);
-        log.info("[DigitalTwinGateway][Create SubModel] Request: " + request.toJsonString());
+        try {
 
-        if (response.getStatusCode() != HttpStatus.CREATED) {
-            log.error("Unable to create shell descriptor");
+            log.info("[DigitalTwinGateway][Create SubModel] Url: " + url);
+            log.info("[DigitalTwinGateway][Create SubModel] Request: " + request.toJsonString());
+            ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
+
+            if (response.getStatusCode() != HttpStatus.CREATED) {
+                log.error("Unable to create shell descriptor");
+            }
+        } catch (Exception e) {
+            log.debug(e.getMessage());
         }
     }
 
-    public SubModelListResponse getSubModel(String shellId) {
+    public SubModelListResponse getSubModels(String shellId) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.add(AUTHORIZATION, getBearerToken());

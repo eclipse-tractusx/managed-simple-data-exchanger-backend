@@ -16,8 +16,8 @@
 
 package com.catenax.dft.usecases.csvHandler.exceptions;
 
-public class MapToChildAspectException extends RuntimeException{
-    public MapToChildAspectException(String message) {
+public class MapToAspectRelationshipException extends RuntimeException{
+    public MapToAspectRelationshipException(String message) {
         super(message);
     }
 }

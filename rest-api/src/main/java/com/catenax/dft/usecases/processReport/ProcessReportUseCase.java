@@ -40,7 +40,6 @@ public class ProcessReportUseCase {
     private final ProcessReportRepository repository;
     private final ProcessReportMapper mapper;
 
-
     public ProcessReportUseCase(ProcessReportRepository repository, ProcessReportMapper mapper) {
         this.repository = repository;
         this.mapper = mapper;
@@ -63,7 +62,6 @@ public class ProcessReportUseCase {
     public void finishBuildChildAspectProgressReport(String processId) {
         repository.finalizeChildAspectProgressReport(processId, LocalDateTime.now(), ProgressStatusEnum.COMPLETED);
     }
-
 
     public void unknownProcessReport(String processId, LocalDateTime now) {
         saveProcessReport(ProcessReport.builder()
@@ -94,11 +92,6 @@ public class ProcessReportUseCase {
 
     public ProcessReport getProcessReportById(String id){
         Optional<ProcessReportEntity> result = repository.findById(id);
-        if( result.isPresent()){
-            return mapper.mapFrom(result.get());
-        }
-        return null;
-
+        return result.map(mapper::mapFrom).orElse(null);
     }
-
 }

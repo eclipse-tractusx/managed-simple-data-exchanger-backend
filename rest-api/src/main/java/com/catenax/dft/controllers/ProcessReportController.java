@@ -18,11 +18,12 @@ package com.catenax.dft.controllers;
 
 import com.catenax.dft.entities.usecases.ProcessReport;
 import com.catenax.dft.entities.usecases.ProcessReportPageResponse;
-import com.catenax.dft.mapper.ProcessReportMapper;
 import com.catenax.dft.usecases.processReport.ProcessReportUseCase;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
 
 import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.ok;
@@ -31,30 +32,26 @@ import static org.springframework.http.ResponseEntity.ok;
 public class ProcessReportController {
 
     private final ProcessReportUseCase processReportUseCase;
-    private final ProcessReportMapper mapper;
 
-    public ProcessReportController(ProcessReportUseCase processReportUseCase, ProcessReportMapper mapper){
+    public ProcessReportController(ProcessReportUseCase processReportUseCase) {
         this.processReportUseCase = processReportUseCase;
-        this.mapper=mapper;
     }
 
     @GetMapping(path = "/processing-report")
-    public ResponseEntity<ProcessReportPageResponse> getProcessingReportsByDateDesc(@Param("page") Integer page, @Param("pageSize") Integer pageSize){
+    public ResponseEntity<ProcessReportPageResponse> getProcessingReportsByDateDesc(@Param("page") Integer page, @Param("pageSize") Integer pageSize) {
 
         page = page == null ? 0 : page;
         pageSize = pageSize == null ? 10 : pageSize;
 
         return ok().body(processReportUseCase.listAllProcessReports(page, pageSize));
-
     }
 
     @GetMapping(value = "/processing-report/{id}")
-    public ResponseEntity<ProcessReport> getProcessReportById(@PathVariable("id") String id){
+    public ResponseEntity<ProcessReport> getProcessReportById(@PathVariable("id") String id) {
         ProcessReport processReportById = processReportUseCase.getProcessReportById(id);
-        if(processReportById == null){
+        if (processReportById == null) {
             return notFound().build();
         }
         return ok().body(processReportById);
     }
-
 }

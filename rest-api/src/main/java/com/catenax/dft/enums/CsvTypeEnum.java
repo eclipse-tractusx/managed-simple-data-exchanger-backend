@@ -18,6 +18,6 @@ package com.catenax.dft.enums;
 
 public enum CsvTypeEnum {
     ASPECT,
-    CHILD_ASPECT,
+    ASPECT_RELATIONSHIP,
     UNKNOWN
 }

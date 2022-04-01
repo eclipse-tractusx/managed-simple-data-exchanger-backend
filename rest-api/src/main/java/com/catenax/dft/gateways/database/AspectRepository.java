@@ -25,4 +25,6 @@ import java.util.List;
 
 @Repository
 public interface AspectRepository extends JpaRepository<AspectEntity, String> {
+
+    AspectEntity findByLocalIdentifiersValueAndManufacturerPartId(String partInstanceId, String manufactorerPartId);
 }

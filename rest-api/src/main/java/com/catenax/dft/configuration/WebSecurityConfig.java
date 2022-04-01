@@ -31,11 +31,9 @@ import java.util.Arrays;
 
 
 @EnableWebSecurity
-@Slf4j
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        log.debug("WebSecurityConfig ENGAGED");
         http
                 .csrf()
                 .disable()
@@ -48,8 +46,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        log.debug("CORS ENGAGED");
-
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("*"));
         configuration.setAllowedMethods(Arrays.asList(HttpMethod.OPTIONS.name(), "GET", "POST"));

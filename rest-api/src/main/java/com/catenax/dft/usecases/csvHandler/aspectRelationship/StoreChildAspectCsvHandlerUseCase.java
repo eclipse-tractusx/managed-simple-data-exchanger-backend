@@ -15,31 +15,31 @@
  *
  */
 
-package com.catenax.dft.usecases.csvHandler.childAspects;
+package com.catenax.dft.usecases.csvHandler.aspectRelationship;
 
-import com.catenax.dft.entities.database.ChildAspectEntity;
-import com.catenax.dft.entities.usecases.ChildAspect;
-import com.catenax.dft.gateways.database.ChildAspectRepository;
-import com.catenax.dft.mapper.ChildAspectMapper;
+import com.catenax.dft.entities.database.AspectRelationshipEntity;
+import com.catenax.dft.entities.usecases.AspectRelationship;
+import com.catenax.dft.gateways.database.AspectRelationshipRepository;
+import com.catenax.dft.mapper.AspectRelationshipMapper;
 import com.catenax.dft.usecases.csvHandler.AbstractCsvHandlerUseCase;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class StoreChildAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<ChildAspect, ChildAspect> {
+public class StoreChildAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<AspectRelationship, AspectRelationship> {
 
-    private final ChildAspectRepository repository;
-    private final ChildAspectMapper mapper;
+    private final AspectRelationshipRepository repository;
+    private final AspectRelationshipMapper mapper;
 
-    public StoreChildAspectCsvHandlerUseCase(ChildAspectRepository childAspectRepository, ChildAspectMapper mapper) {
+    public StoreChildAspectCsvHandlerUseCase(AspectRelationshipRepository aspectRelationshipRepository, AspectRelationshipMapper mapper) {
         super(null);
-        this.repository = childAspectRepository;
+        this.repository = aspectRelationshipRepository;
         this.mapper = mapper;
     }
 
-    protected ChildAspect executeUseCase(ChildAspect input, String processId) {
-        ChildAspectEntity entity = mapper.mapFrom(input);
+    protected AspectRelationship executeUseCase(AspectRelationship input, String processId) {
+        AspectRelationshipEntity entity = mapper.mapFrom(input);
         repository.save(entity);
         log.debug("Aspect store successfully");
         return input;

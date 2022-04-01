@@ -60,7 +60,7 @@ public abstract class AbstractCsvHandlerUseCase<I, T> implements CsvHandlerUseCa
                     .processId(processId)
                     .log(e.getMessage())
                     .dateTime(LocalDateTime.now())
-                    .type(e instanceof MapToAspectException ? CsvTypeEnum.ASPECT : CsvTypeEnum.CHILD_ASPECT)
+                    .type(e instanceof MapToAspectException ? CsvTypeEnum.ASPECT : CsvTypeEnum.ASPECT_RELATIONSHIP)
                     .build();
             failureLogsUseCase.saveLog(entity);
             log.debug(String.valueOf(e));

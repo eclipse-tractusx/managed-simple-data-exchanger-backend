@@ -12,16 +12,22 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
-package com.catenax.dft.gateways.database;
+package com.catenax.dft.usecases.common;
 
+import java.util.UUID;
 
-import com.catenax.dft.entities.database.FailureLogEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+public class UUIdGenerator {
 
-@Repository
-public interface FailureLogRepository extends JpaRepository<FailureLogEntity, String> {
+    public static final String URN_UUID_PREFIX = "urn:uuid:";
 
+    public static String getUrnUuid() {
+        return getPrefixedUuid(URN_UUID_PREFIX);
+    }
+
+    private static String getPrefixedUuid(String prefix) {
+        return String.format("%s%s", prefix, UUID.randomUUID());
+    }
 }

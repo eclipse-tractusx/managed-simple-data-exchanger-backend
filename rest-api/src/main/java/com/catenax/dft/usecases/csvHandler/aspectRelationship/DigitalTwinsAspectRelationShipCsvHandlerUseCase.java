@@ -27,6 +27,7 @@ import com.catenax.dft.entities.digitalTwins.response.SubModelListResponse;
 import com.catenax.dft.entities.usecases.Aspect;
 import com.catenax.dft.entities.usecases.AspectRelationship;
 import com.catenax.dft.gateways.external.DigitalTwinGateway;
+import com.catenax.dft.usecases.common.UUIdGenerator;
 import com.catenax.dft.usecases.csvHandler.AbstractCsvHandlerUseCase;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +36,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Slf4j
 @Component
@@ -49,7 +49,6 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends AbstractCsv
     private static final String SEMANTIC_ID = " urn:bamm:com.catenax.assembly_part_relationship:1.0.0";
     private static final String ID_SHORT = "assemblyPartRelationship";
     private static final String ENDPOINT_PROTOCOL_VERSION = "1.0";
-    private static final String PREFIX = "urn:uuid:";
 
     private final DigitalTwinGateway gateway;
 
@@ -73,18 +72,14 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends AbstractCsv
 
         if (shellIds.isEmpty()) {
             log.info(String.format("[DigitalTwinsAspectRelationShipCsvHandlerUseCase] No shell id for '%s'", shellLookupRequest.toJsonString()));
-
             ShellDescriptorRequest aasDescriptorRequest = getShellDescriptorRequest(Aspect.builder().build());
             ShellDescriptorResponse result = gateway.createShellDescriptor(aasDescriptorRequest);
             shellId = result.getIdentification();
-
             log.info(String.format("[DigitalTwinsAspectRelationShipCsvHandlerUseCase] Shell created with id '%s'", shellId));
 
         } else if (shellIds.size() == 1) {
             log.info(String.format("[DigitalTwinsAspectRelationShipCsvHandlerUseCase] Shell id found for '%s'", shellLookupRequest.toJsonString()));
-
             shellId = shellIds.stream().findFirst().orElse(null);
-
             log.info(String.format("[DigitalTwinsAspectRelationShipCsvHandlerUseCase] Shell id '%s'", shellId));
         } else {
             throw new Exception(String.format("Multiple ids found on childAspect %s", shellLookupRequest.toJsonString()));
@@ -115,8 +110,6 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends AbstractCsv
         return shellLookupRequest;
     }
 
-
-
     private CreateSubModelRequest getCreateSubModelRequest(AspectRelationship aspectRelationShip) {
         ArrayList<String> value = new ArrayList<>();
         value.add(SEMANTIC_ID);
@@ -132,9 +125,10 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends AbstractCsv
                         .endpointProtocolVersion(ENDPOINT_PROTOCOL_VERSION)
                         .build())
                 .build());
+
         return CreateSubModelRequest.builder()
                 .idShort(ID_SHORT)
-                .identification(PREFIX + UUID.randomUUID())
+                .identification(UUIdGenerator.getUrnUuid())
                 .semanticId(semanticId)
                 .endpoints(endpoints)
                 .build();
@@ -142,7 +136,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends AbstractCsv
 
     private ShellDescriptorRequest getShellDescriptorRequest(Aspect aspect) {
         ArrayList<KeyValuePair> specificIdentifiers = new ArrayList<>();
-        specificIdentifiers.add(new KeyValuePair(PART_INSTANCE_ID, aspect.getLocalIdentifiersValue()));
+        specificIdentifiers.add(new KeyValuePair(PART_INSTANCE_ID, aspect.getPartInstanceId()));
         specificIdentifiers.add(new KeyValuePair(MANUFACTURER_PART_ID, aspect.getManufacturerPartId()));
         specificIdentifiers.add(new KeyValuePair(MANUFACTURER_ID, manufacturerId));
 
@@ -155,7 +149,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends AbstractCsv
                 .idShort(String.format("%s_%s_%s", aspect.getNameAtManufacturer(), manufacturerId, aspect.getManufacturerPartId()))
                 .globalAssetId(globalIdentifier)
                 .specificAssetIds(specificIdentifiers)
-                .identification(PREFIX + UUID.randomUUID())
+                .identification(UUIdGenerator.getUrnUuid())
                 .build();
     }
 }

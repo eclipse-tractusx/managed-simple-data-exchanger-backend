@@ -38,8 +38,8 @@ public class FetchCatenaXIdCsvHandlerUseCase extends AbstractCsvHandlerUseCase<A
     @Override
     protected AspectRelationship executeUseCase(AspectRelationship input, String processId) {
 
-        AspectEntity parentAspect = repository.findByLocalIdentifiersValueAndManufacturerPartId(input.getParentPartInstanceId(), input.getParentManufactorerPartId());
-        AspectEntity childAspect = repository.findByLocalIdentifiersValueAndManufacturerPartId(input.getChildPartInstanceId(), input.getChildManufactorerPartId());
+        AspectEntity parentAspect = repository.findByPartInstanceIdAndManufacturerPartId(input.getParentPartInstanceId(), input.getParentManufactorerPartId());
+        AspectEntity childAspect = repository.findByPartInstanceIdAndManufacturerPartId(input.getChildPartInstanceId(), input.getChildManufactorerPartId());
 
         if (parentAspect == null || childAspect == null) {
             throw new Exception("There is no aspect registred");

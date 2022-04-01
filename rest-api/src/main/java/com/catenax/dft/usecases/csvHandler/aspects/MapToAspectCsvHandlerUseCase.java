@@ -18,10 +18,12 @@
 package com.catenax.dft.usecases.csvHandler.aspects;
 
 import com.catenax.dft.entities.usecases.Aspect;
+import com.catenax.dft.enums.OptionalIdentifierKeyEnum;
 import com.catenax.dft.usecases.csvHandler.AbstractCsvHandlerUseCase;
 import com.catenax.dft.usecases.csvHandler.exceptions.MapToAspectException;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 
@@ -32,6 +34,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import java.util.stream.Stream;
 
 import static com.catenax.dft.gateways.file.CsvGateway.SEPARATOR;
 
@@ -39,7 +42,7 @@ import static com.catenax.dft.gateways.file.CsvGateway.SEPARATOR;
 @Slf4j
 public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<String, Aspect> {
 
-    private final int ROW_LENGTH = 10;
+    private final int ROW_LENGTH = 11;
 
     public MapToAspectCsvHandlerUseCase(GenerateUuIdCsvHandlerUseCase nextUseCase) {
         super(nextUseCase);
@@ -56,22 +59,22 @@ public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<Stri
         Aspect aspect = Aspect.builder()
                 .uuid(rowDataFields[0].trim())
                 .processId(processId)
-                .localIdentifiersKey(rowDataFields[1].trim())
-                .localIdentifiersValue(rowDataFields[2].trim())
-                .manufacturingDate(rowDataFields[3].trim())
-                .manufacturingCountry(rowDataFields[4].trim().isBlank() ? null : rowDataFields[4].trim())
-                .manufacturerPartId(rowDataFields[5].trim())
-                .customerPartId(rowDataFields[6].trim().isBlank() ? null : rowDataFields[6].trim())
-                .classification(rowDataFields[7].trim())
-                .nameAtManufacturer(rowDataFields[8].trim())
-                .nameAtCustomer(rowDataFields[9].trim().isBlank() ? null : rowDataFields[9].trim())
+                .partInstanceId(rowDataFields[1].trim())
+                .manufacturingDate(rowDataFields[2].trim())
+                .manufacturingCountry(rowDataFields[3].trim().isBlank() ? null : rowDataFields[3])
+                .manufacturerPartId(rowDataFields[4].trim())
+                .customerPartId(rowDataFields[5].trim().isBlank() ? null : rowDataFields[5])
+                .classification(rowDataFields[6].trim())
+                .nameAtManufacturer(rowDataFields[7].trim())
+                .nameAtCustomer(rowDataFields[8].trim().isBlank() ? null : rowDataFields[8])
+                .optionalIdentifierKey(rowDataFields[9].isBlank() ? null : rowDataFields[9])
+                .optionalIdentifierValue(rowDataFields[10].isBlank() ? null : rowDataFields[10])
                 .build();
 
         List<String> errorMessages = validateAsset(aspect);
         if (errorMessages.size() != 0) {
             throw new MapToAspectException(errorMessages.toString());
         }
-
         return aspect;
     }
 
@@ -83,4 +86,5 @@ public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<Stri
                 .map(ConstraintViolation::getMessage)
                 .collect(Collectors.toList());
     }
+
 }

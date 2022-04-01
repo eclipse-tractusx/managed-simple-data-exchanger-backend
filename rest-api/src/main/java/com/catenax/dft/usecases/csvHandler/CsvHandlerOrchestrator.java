@@ -20,8 +20,8 @@ package com.catenax.dft.usecases.csvHandler;
 
 import com.catenax.dft.entities.csv.CsvContent;
 import com.catenax.dft.enums.CsvTypeEnum;
-import com.catenax.dft.usecases.csvHandler.aspects.MapToAspectCsvHandlerUseCase;
 import com.catenax.dft.usecases.csvHandler.aspectRelationship.MapToAspectRelationshipCsvHandlerUseCase;
+import com.catenax.dft.usecases.csvHandler.aspects.MapToAspectCsvHandlerUseCase;
 import com.catenax.dft.usecases.processReport.ProcessReportUseCase;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -41,16 +41,18 @@ public class CsvHandlerOrchestrator {
     private final ProcessReportUseCase processReportUseCase;
 
     private final List<String> ASPECT_COLUMNS = Stream.of(
-                    "uuid",
-                    "local_identifiers_key",
-                    "local_identifiers_value",
-                    "manufacturing_date",
-                    "manufacturing_country",
-                    "manufacturer_part_id",
-                    "customer_part_id",
-                    "classification",
-                    "name_at_manufacturer",
-                    "name_at_customer")
+            "uuid",
+            "part_instance_id",
+            "manufacturing_date",
+            "manufacturing_country",
+            "manufacturer_part_id",
+            "customer_part_id",
+            "classification",
+            "name_at_manufacturer",
+            "name_at_customer",
+            "optional_identifier_key",
+            "optional_identifier_value"
+    )
             .collect(Collectors.toList());
     private final List<String> ASPECT_RELATIONSHIP_COLUMNS = Stream.of(
             "parent_part_instance_id",

@@ -18,15 +18,12 @@
 package com.catenax.dft.usecases.csvHandler.aspects;
 
 import com.catenax.dft.entities.usecases.Aspect;
+import com.catenax.dft.usecases.common.UUIdGenerator;
 import com.catenax.dft.usecases.csvHandler.AbstractCsvHandlerUseCase;
 import org.springframework.stereotype.Component;
 
-import java.util.UUID;
-
 @Component
 public class GenerateUuIdCsvHandlerUseCase extends AbstractCsvHandlerUseCase<Aspect, Aspect> {
-
-    private static final String PREFIX = "urn:uuid:";
 
     public GenerateUuIdCsvHandlerUseCase(DigitalTwinsAspectCsvHandlerUseCase nextUseCase) {
         super(nextUseCase);
@@ -34,10 +31,10 @@ public class GenerateUuIdCsvHandlerUseCase extends AbstractCsvHandlerUseCase<Asp
 
     @Override
     protected Aspect executeUseCase(Aspect input, String processId) {
-        if(input.getUuid()==null || input.getUuid().isBlank()){
-            input.setUuid(PREFIX +UUID.randomUUID());
+        if (input.getUuid() == null || input.getUuid().isBlank()) {
+            input.setUuid(UUIdGenerator.getUrnUuid());
         }
 
-      return input;
+        return input;
     }
 }

@@ -12,14 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
+import { useStopwatch } from 'react-timer-hook';
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root'),
-);
+const Timer = () => {
+  const { seconds, minutes } = useStopwatch({ autoStart: true });
+
+  return (
+    <div style={{ textAlign: 'center' }}>
+      <div style={{ fontSize: '50px' }}>
+        <span>{minutes < 10 ? `0${minutes}` : minutes}</span>:<span>{seconds < 10 ? `0${seconds}` : seconds}</span>
+      </div>
+    </div>
+  );
+};
+export default Timer;

@@ -1,6 +1,21 @@
+// Copyright 2022 Catena-X
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 import React, { useState } from 'react';
 import BackupOutlinedIcon from '@mui/icons-material/BackupOutlined';
 import HistoryOutlinedIcon from '@mui/icons-material/HistoryOutlined';
+import { COLORS } from '../constants';
 
 const Sidebar = (props: any) => {
   const [menuIndex, setMenuIndex] = useState(0);
@@ -23,7 +38,7 @@ const Sidebar = (props: any) => {
               className="flex gap-x-2 p-4 cursor-pointer items-center relative hover:bg-[#efefef]"
               onClick={() => getMenuIndex(0)}
             >
-              <BackupOutlinedIcon fontSize="small" sx={{ color: `${menuIndex === 0 ? '#03a9f4' : '#000000'}` }} />
+              <BackupOutlinedIcon fontSize="small" sx={{ color: `${menuIndex === 0 ? COLORS.blue : COLORS.black}` }} />
               <p
                 className={`${
                   !isExpanded ? 'hidden' : 'flex'
@@ -36,7 +51,7 @@ const Sidebar = (props: any) => {
               className="flex gap-x-2 p-4 cursor-pointer items-center relative hover:bg-[#efefef]"
               onClick={() => getMenuIndex(1)}
             >
-              <HistoryOutlinedIcon fontSize="small" sx={{ color: `${menuIndex === 1 ? '#03a9f4' : '#000000'}` }} />
+              <HistoryOutlinedIcon fontSize="small" sx={{ color: `${menuIndex === 1 ? COLORS.blue : COLORS.black}` }} />
               <p
                 className={`${
                   !isExpanded ? 'hidden' : 'flex'

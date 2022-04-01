@@ -31,16 +31,11 @@ import javax.validation.constraints.Positive;
 @Data
 public class ChildAspect {
 
-    @Nullable
     private String uuid;
-
     private String processId;
 
-    @NotBlank(message = "parent_identifier_key cannot be empty")
-    private String parentIdentifierKey;
-
-    @NotBlank(message = "parent_identifier_value cannot be empty")
-    private String parentIdentifierValue;
+    @NotBlank(message = "parent_part_instance_id cannot be empty")
+    private String parentPartInstanceId;
 
     @NotBlank(message = "lifecycle_context cannot be empty")
     private String lifecycleContext;

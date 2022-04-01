@@ -36,6 +36,7 @@ public class FailureLogEntity {
     @Id
     private String uuid;
     private String processId;
+    @Column(columnDefinition = "VARCHAR(300)")
     private String log;
     private LocalDateTime dateTime;
     @Enumerated(EnumType.STRING)

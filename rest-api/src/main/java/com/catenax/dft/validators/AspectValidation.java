@@ -18,23 +18,17 @@ package com.catenax.dft.validators;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.PARAMETER;
-
-@Target({FIELD, PARAMETER})
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Constraint(validatedBy = QuantityNumberValidator.class)
-public @interface QuantityNumberValidation {
+@Constraint(validatedBy = AspectValidator.class)
+public @interface AspectValidation {
 
-    public String message() default "quantity_number must be a positive integer number";
+    String message() default "optional_identifier_key and optional_identifier_value have to be either both null or both filled";
 
-    public Class<?>[] groups() default {};
+    Class<?>[] groups() default {};
 
-    public Class<? extends Payload>[] payload() default {};
+    Class<? extends Payload>[] payload() default {};
 }

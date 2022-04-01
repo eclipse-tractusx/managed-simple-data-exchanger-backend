@@ -105,7 +105,7 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
 
     private ShellLookupRequest getShellLookupRequest(Aspect aspect) {
         ShellLookupRequest shellLookupRequest = new ShellLookupRequest();
-        shellLookupRequest.addLocalIdentifier(PART_INSTANCE_ID, aspect.getLocalIdentifiersValue());
+        shellLookupRequest.addLocalIdentifier(PART_INSTANCE_ID, aspect.getPartInstanceId());
         shellLookupRequest.addLocalIdentifier(MANUFACTURER_PART_ID, aspect.getManufacturerPartId());
         shellLookupRequest.addLocalIdentifier(MANUFACTURER_ID, manufacturerId);
         return shellLookupRequest;
@@ -136,7 +136,7 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
 
     private ShellDescriptorRequest getShellDescriptorRequest(Aspect aspect) {
         ArrayList<KeyValuePair> specificIdentifiers = new ArrayList<>();
-        specificIdentifiers.add(new KeyValuePair(PART_INSTANCE_ID, aspect.getLocalIdentifiersValue()));
+        specificIdentifiers.add(new KeyValuePair(PART_INSTANCE_ID, aspect.getPartInstanceId()));
         specificIdentifiers.add(new KeyValuePair(MANUFACTURER_PART_ID, aspect.getManufacturerPartId()));
         specificIdentifiers.add(new KeyValuePair(MANUFACTURER_ID, manufacturerId));
 

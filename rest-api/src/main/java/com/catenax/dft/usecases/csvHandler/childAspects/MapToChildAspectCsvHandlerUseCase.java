@@ -35,7 +35,7 @@ import static com.catenax.dft.gateways.file.CsvGateway.SEPARATOR;
 @Service
 public class MapToChildAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<String, ChildAspect> {
 
-    private final int ROW_LENGTH = 5;
+    private final int ROW_LENGTH = 4;
 
     public MapToChildAspectCsvHandlerUseCase(CsvHandlerUseCase<ChildAspect> nextUseCase) {
         super(nextUseCase);
@@ -53,11 +53,10 @@ public class MapToChildAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase
 
         ChildAspect childAspect = ChildAspect.builder()
                 .processId(processId)
-                .parentIdentifierKey(rowDataFields[0].trim())
-                .parentIdentifierValue(rowDataFields[1].trim())
-                .lifecycleContext(rowDataFields[2].trim())
-                .quantityNumber(rowDataFields[3].trim())
-                .measurementUnitLexicalValue(rowDataFields[4].trim())
+                .parentPartInstanceId(rowDataFields[0].trim())
+                .lifecycleContext(rowDataFields[1].trim())
+                .quantityNumber(rowDataFields[2].trim())
+                .measurementUnitLexicalValue(rowDataFields[3].trim())
                 .build();
 
         List<String> errorMessages = validateAsset(childAspect);

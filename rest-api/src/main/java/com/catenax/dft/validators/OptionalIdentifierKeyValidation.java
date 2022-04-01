@@ -16,6 +16,7 @@
 
 package com.catenax.dft.validators;
 
+
 import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.Documented;
@@ -29,12 +30,12 @@ import static java.lang.annotation.ElementType.PARAMETER;
 @Target({FIELD, PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Constraint(validatedBy = QuantityNumberValidator.class)
-public @interface QuantityNumberValidation {
+@Constraint(validatedBy = OptionalIdentifierKeyValidator.class)
+public @interface OptionalIdentifierKeyValidation {
 
-    public String message() default "quantity_number must be a positive integer number";
+    public String message() default "illegal value for optional_identifier_key";
 
     public Class<?>[] groups() default {};
 
-    public Class<? extends Payload>[] payload() default {};
+    public Class<? extends Payload> [] payload() default {};
 }

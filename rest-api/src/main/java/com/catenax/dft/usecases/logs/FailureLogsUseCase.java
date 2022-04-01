@@ -17,7 +17,7 @@
 package com.catenax.dft.usecases.logs;
 
 import com.catenax.dft.entities.database.FailureLogEntity;
-import com.catenax.dft.gateways.database.FailureLogsRepository;
+import com.catenax.dft.gateways.database.FailureLogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
 public class FailureLogsUseCase {
 
     @Autowired
-    private FailureLogsRepository repository;
+    private FailureLogRepository repository;
 
     public void saveLog(FailureLogEntity entity) {
         repository.save(entity);

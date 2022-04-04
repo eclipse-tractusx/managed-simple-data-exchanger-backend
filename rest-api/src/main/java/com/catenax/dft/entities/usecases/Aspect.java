@@ -18,7 +18,6 @@
 package com.catenax.dft.entities.usecases;
 
 import com.catenax.dft.enums.OptionalIdentifierKeyEnum;
-import com.catenax.dft.validators.AspectValidation;
 import com.catenax.dft.validators.OptionalIdentifierKeyValidation;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,16 +25,13 @@ import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 
-import javax.persistence.Id;
-
 @Data
 @Builder
 @AllArgsConstructor
-@AspectValidation
 public class Aspect {
 
+    private int rowNumber;
     private String uuid;
-
     private String processId;
 
     @NotBlank(message = "part_instance_id cannot be empty")
@@ -61,7 +57,6 @@ public class Aspect {
 
     @OptionalIdentifierKeyValidation
     private String optionalIdentifierKey;
-
     private String optionalIdentifierValue;
 
     public boolean hasOptionalIdentifier() {

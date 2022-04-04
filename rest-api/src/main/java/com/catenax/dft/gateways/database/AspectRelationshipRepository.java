@@ -15,17 +15,12 @@
  *
  */
 
-package com.catenax.dft.mapper;
+package com.catenax.dft.gateways.database;
 
-import com.catenax.dft.entities.database.ChildAspectEntity;
-import com.catenax.dft.entities.usecases.ChildAspect;
-import org.mapstruct.Mapper;
-import org.springframework.stereotype.Component;
+import com.catenax.dft.entities.database.AspectRelationshipEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-@Component
-@Mapper(componentModel = "spring")
-
-public interface ChildAspectMapper {
-
-    ChildAspectEntity mapFrom(ChildAspect childAspect);
+@Repository
+public interface AspectRelationshipRepository extends JpaRepository<AspectRelationshipEntity, Long> {
 }

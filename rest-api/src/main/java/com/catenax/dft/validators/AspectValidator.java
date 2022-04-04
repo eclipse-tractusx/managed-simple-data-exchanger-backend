@@ -17,7 +17,6 @@
 package com.catenax.dft.validators;
 
 import com.catenax.dft.entities.usecases.Aspect;
-import com.catenax.dft.enums.OptionalIdentifierKeyEnum;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -30,7 +29,7 @@ public class AspectValidator implements ConstraintValidator<AspectValidation, As
 
     @Override
     public boolean isValid(Aspect aspect, ConstraintValidatorContext constraintValidatorContext) {
-        if (!(aspect instanceof Aspect)){
+        if (!(aspect instanceof Aspect)) {
             throw new IllegalArgumentException("@AspectValidation only applies to Aspect objects");
         }
 

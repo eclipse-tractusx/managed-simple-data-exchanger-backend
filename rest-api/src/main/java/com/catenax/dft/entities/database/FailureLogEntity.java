@@ -16,20 +16,22 @@
 
 package com.catenax.dft.entities.database;
 
-import com.catenax.dft.enums.CsvTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
 
-@Getter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@Data
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "failure_log")
 public class FailureLogEntity {
 
@@ -39,6 +41,4 @@ public class FailureLogEntity {
     @Column(columnDefinition = "VARCHAR(300)")
     private String log;
     private LocalDateTime dateTime;
-    @Enumerated(EnumType.STRING)
-    private CsvTypeEnum type;
 }

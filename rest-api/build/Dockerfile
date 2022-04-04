@@ -1,5 +1,5 @@
 # our base build image
-FROM maven:3.5-jdk-11 as build
+FROM 3.8.4-openjdk-17-slim as build
 
 # copy the project files
 COPY ./rest-api/pom.xml /pom.xml
@@ -14,7 +14,7 @@ COPY ./rest-api/src ./src
 RUN mvn package
 
 # our final base image
-FROM openjdk:11
+FROM openjdk:18-alpine
 
 # set deployment directory
 WORKDIR /dft

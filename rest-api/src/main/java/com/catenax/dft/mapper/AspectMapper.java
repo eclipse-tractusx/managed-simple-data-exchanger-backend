@@ -19,32 +19,16 @@ package com.catenax.dft.mapper;
 
 import com.catenax.dft.entities.database.AspectEntity;
 import com.catenax.dft.entities.usecases.Aspect;
-import com.catenax.dft.enums.OptionalIdentifierKeyEnum;
-import com.catenax.dft.usecases.csvHandler.exceptions.MapToAspectException;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.stereotype.Component;
 
-import java.util.Locale;
-
 @Component
 @Mapper(componentModel = "spring")
-public abstract class AspectMapper {
+public interface AspectMapper {
 
+    @Mapping(target = "rowNumber", ignore = true)
+     Aspect mapFrom(AspectEntity aspect);
 
-    @Mapping(target = "optionalIdentifierKey", expression = "java(convertToEnum(aspect.getOptionalIdentifierKey()))")
-    public abstract AspectEntity mapFrom(Aspect aspect);
-
-    protected OptionalIdentifierKeyEnum convertToEnum(String string) {
-
-        if (string == null) return null;
-        switch (string.toUpperCase()) {
-            case "VAN":
-                return OptionalIdentifierKeyEnum.VAN;
-            case "BATCHID":
-                return OptionalIdentifierKeyEnum.BATCH_ID;
-            default:
-                throw new MapToAspectException("illegal value for optional_identifier_key");
-        }
-    }
+     AspectEntity mapFrom(Aspect aspect);
 }

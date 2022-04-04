@@ -19,15 +19,15 @@ package com.catenax.dft.usecases.processReport;
 import com.catenax.dft.entities.database.ProcessReportEntity;
 import com.catenax.dft.entities.usecases.ProcessReport;
 import com.catenax.dft.entities.usecases.ProcessReportPageResponse;
-import com.catenax.dft.enums.ProgressStatusEnum;
 import com.catenax.dft.enums.CsvTypeEnum;
+import com.catenax.dft.enums.ProgressStatusEnum;
 import com.catenax.dft.gateways.database.ProcessReportRepository;
 import com.catenax.dft.mapper.ProcessReportMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
-import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -39,7 +39,6 @@ import java.util.stream.Collectors;
 public class ProcessReportUseCase {
     private final ProcessReportRepository repository;
     private final ProcessReportMapper mapper;
-
 
     public ProcessReportUseCase(ProcessReportRepository repository, ProcessReportMapper mapper) {
         this.repository = repository;
@@ -63,7 +62,6 @@ public class ProcessReportUseCase {
     public void finishBuildChildAspectProgressReport(String processId) {
         repository.finalizeChildAspectProgressReport(processId, LocalDateTime.now(), ProgressStatusEnum.COMPLETED);
     }
-
 
     public void unknownProcessReport(String processId, LocalDateTime now) {
         saveProcessReport(ProcessReport.builder()
@@ -92,13 +90,8 @@ public class ProcessReportUseCase {
                 .build();
     }
 
-    public ProcessReport getProcessReportById(String id){
+    public ProcessReport getProcessReportById(String id) {
         Optional<ProcessReportEntity> result = repository.findById(id);
-        if( result.isPresent()){
-            return mapper.mapFrom(result.get());
-        }
-        return null;
-
+        return result.map(mapper::mapFrom).orElse(null);
     }
-
 }

@@ -18,8 +18,6 @@
 package com.catenax.dft.usecases.csvHandler;
 
 import com.catenax.dft.entities.database.FailureLogEntity;
-import com.catenax.dft.enums.CsvTypeEnum;
-import com.catenax.dft.usecases.csvHandler.exceptions.MapToAspectException;
 import com.catenax.dft.usecases.logs.FailureLogsUseCase;
 import com.catenax.dft.usecases.processReport.ProcessReportUseCase;
 import lombok.extern.slf4j.Slf4j;
@@ -50,20 +48,22 @@ public abstract class AbstractCsvHandlerUseCase<I, T> implements CsvHandlerUseCa
             T result = executeUseCase(input, processId);
 
             if (nextUseCase != null) {
-                log.info(String.format("[%s] is running now", this.getClass().getSimpleName()));
                 nextUseCase.run(result, processId);
             }
-        } catch (RuntimeException e) {
 
+        } catch (Exception e) {
             FailureLogEntity entity = FailureLogEntity.builder()
                     .uuid(UUID.randomUUID().toString())
                     .processId(processId)
                     .log(e.getMessage())
                     .dateTime(LocalDateTime.now())
-                    .type(e instanceof MapToAspectException ? CsvTypeEnum.ASPECT : CsvTypeEnum.CHILD_ASPECT)
                     .build();
             failureLogsUseCase.saveLog(entity);
             log.debug(String.valueOf(e));
         }
+    }
+
+    protected void logInfo(String message){
+        log.info(String.format("[%s] %s",this.getClass().getSimpleName(), message));
     }
 }

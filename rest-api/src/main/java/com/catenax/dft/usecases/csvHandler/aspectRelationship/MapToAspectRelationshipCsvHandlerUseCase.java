@@ -15,14 +15,13 @@
  *
  */
 
-package com.catenax.dft.usecases.csvHandler.aspects;
+package com.catenax.dft.usecases.csvHandler.aspectRelationship;
 
 import com.catenax.dft.entities.csv.RowData;
-import com.catenax.dft.entities.usecases.Aspect;
+import com.catenax.dft.entities.usecases.AspectRelationship;
 import com.catenax.dft.usecases.csvHandler.AbstractCsvHandlerUseCase;
 import com.catenax.dft.usecases.csvHandler.exceptions.CsvHandlerUseCaseException;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.validation.ConstraintViolation;
@@ -35,50 +34,55 @@ import java.util.stream.Collectors;
 import static com.catenax.dft.gateways.file.CsvGateway.SEPARATOR;
 
 @Component
-@Slf4j
-public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<RowData, Aspect> {
+public class MapToAspectRelationshipCsvHandlerUseCase extends AbstractCsvHandlerUseCase<RowData, AspectRelationship> {
 
-    private final int ROW_LENGTH = 11;
+    private final int ROW_LENGTH = 14;
 
-    public MapToAspectCsvHandlerUseCase(GenerateUuIdCsvHandlerUseCase nextUseCase) {
+    public MapToAspectRelationshipCsvHandlerUseCase(FetchCatenaXIdCsvHandlerUseCase nextUseCase) {
         super(nextUseCase);
+
     }
 
+    @Override
     @SneakyThrows
-    public Aspect executeUseCase(RowData rowData, String processId) {
-
+    protected AspectRelationship executeUseCase(RowData rowData, String processId) {
         String[] rowDataFields = rowData.content().split(SEPARATOR, -1);
+
         if (rowDataFields.length != ROW_LENGTH) {
-            throw new CsvHandlerUseCaseException(rowData.position(), "This row has the wrong amount of fields");
+            throw new CsvHandlerUseCaseException(rowData.position(), "This row has wrong amount of fields");
         }
 
-        Aspect aspect = Aspect.builder()
+        AspectRelationship aspectRelationShip = AspectRelationship.builder()
                 .rowNumber(rowData.position())
-                .uuid(rowDataFields[0].trim())
                 .processId(processId)
-                .partInstanceId(rowDataFields[1].trim())
-                .manufacturingDate(rowDataFields[2].trim())
-                .manufacturingCountry(rowDataFields[3].trim().isBlank() ? null : rowDataFields[3])
-                .manufacturerPartId(rowDataFields[4].trim())
-                .customerPartId(rowDataFields[5].trim().isBlank() ? null : rowDataFields[5])
-                .classification(rowDataFields[6].trim())
-                .nameAtManufacturer(rowDataFields[7].trim())
-                .nameAtCustomer(rowDataFields[8].trim().isBlank() ? null : rowDataFields[8])
-                .optionalIdentifierKey(rowDataFields[9].isBlank() ? null : rowDataFields[9])
-                .optionalIdentifierValue(rowDataFields[10].isBlank() ? null : rowDataFields[10])
+                .parentUuid(rowDataFields[0].trim())
+                .parentPartInstanceId(rowDataFields[1].trim())
+                .parentManufactorerPartId(rowDataFields[2].trim())
+                .parentOptionalIdentifierKey(rowDataFields[3].trim())
+                .parentOptionalIdentifierValue(rowDataFields[4].trim())
+                .childUuid(rowDataFields[5].trim())
+                .childPartInstanceId(rowDataFields[6].trim())
+                .childManufactorerPartId(rowDataFields[7].trim())
+                .childOptionalIdentifierKey(rowDataFields[8].trim())
+                .childOptionalIdentifierValue(rowDataFields[9].trim())
+                .lifecycleContext(rowDataFields[10].trim())
+                .quantityNumber(rowDataFields[11].trim())
+                .measurementUnitLexicalValue(rowDataFields[12].trim())
+                .assembledOn(rowDataFields[13].trim())
                 .build();
 
-        List<String> errorMessages = validateAsset(aspect);
+        List<String> errorMessages = validateAsset(aspectRelationShip);
         if (errorMessages.size() != 0) {
             throw new CsvHandlerUseCaseException(rowData.position(), errorMessages.toString());
         }
-        return aspect;
+
+        return aspectRelationShip;
     }
 
-    private List<String> validateAsset(Aspect asset) {
+    private List<String> validateAsset(AspectRelationship asset) {
         Validator validator = Validation.buildDefaultValidatorFactory()
                 .getValidator();
-        Set<ConstraintViolation<Aspect>> violations = validator.validate(asset);
+        Set<ConstraintViolation<AspectRelationship>> violations = validator.validate(asset);
         return violations.stream()
                 .map(ConstraintViolation::getMessage)
                 .collect(Collectors.toList());

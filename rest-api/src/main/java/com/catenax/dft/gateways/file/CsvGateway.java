@@ -18,6 +18,7 @@
 package com.catenax.dft.gateways.file;
 
 import com.catenax.dft.entities.csv.CsvContent;
+import com.catenax.dft.entities.csv.RowData;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,7 +93,7 @@ public class CsvGateway {
 
         int numberOfRows = 0;
         List<String> fileColumns;
-        ArrayList<String> rows = new ArrayList<>();
+        ArrayList<RowData> rows = new ArrayList<>();
         CsvContent csvContent = new CsvContent();
 
         Scanner scanner = new Scanner(file);
@@ -105,7 +106,7 @@ public class CsvGateway {
                 csvContent.setColumns(fileColumns);
 
             } else {
-                rows.add(row);
+                rows.add(new RowData(numberOfRows + 1, row));
             }
             numberOfRows++;
         }

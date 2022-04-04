@@ -15,34 +15,38 @@
  *
  */
 
-package com.catenax.dft.entities.usecases;
+package com.catenax.dft.entities.database;
 
-import com.catenax.dft.validators.QuantityNumberValidation;
-import lombok.Builder;
 import lombok.Data;
-import org.springframework.lang.Nullable;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Table;
+import java.io.Serializable;
 
-@Builder
+@Entity
+@Table(name = "aspect_relationship")
 @Data
-public class ChildAspect {
+@IdClass(AspectRelationshipPrimaryKey.class)
+public class AspectRelationshipEntity {
 
-    private String uuid;
+    @Id
+    private String parentCatenaXId;
+    @Id
     private String processId;
-
-    @NotBlank(message = "parent_part_instance_id cannot be empty")
-    private String parentPartInstanceId;
-
-    @NotBlank(message = "lifecycle_context cannot be empty")
+    private String childCatenaXId;
     private String lifecycleContext;
-
-    @QuantityNumberValidation
+    private String assembledOn;
     private String quantityNumber;
-
-    @NotBlank(message = "measurement_unit_lexical_value cannot be empty")
     private String measurementUnitLexicalValue;
 }
+
+@Data
+class AspectRelationshipPrimaryKey implements Serializable {
+
+    private String parentCatenaXId;
+    private String childCatenaXId;
+}
+
+

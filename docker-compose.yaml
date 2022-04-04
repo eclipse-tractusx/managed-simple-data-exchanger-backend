@@ -18,7 +18,9 @@ services:
     image: 460700981334.dkr.ecr.eu-central-1.amazonaws.com/dft-ui:latest
     ports:
       - "3000:80"
-      - "3000:443"
+      - "3001:443"
+    DOMAINS:
+      - 'catenax.ddns.net'
 
   rest-api:
     depends_on:      

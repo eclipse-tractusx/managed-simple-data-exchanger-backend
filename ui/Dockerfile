@@ -21,6 +21,7 @@ COPY --from=builder /app/build /usr/share/nginx/html/
 
 # Default port exposure
 EXPOSE 80
+EXPOSE 443
 
 # Copy .env file and shell script to container
 WORKDIR /usr/share/nginx/html

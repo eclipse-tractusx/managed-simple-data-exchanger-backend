@@ -17,6 +17,8 @@
 
 package com.catenax.dft.entities.usecases;
 
+import com.catenax.dft.enums.OptionalIdentifierKeyEnum;
+import com.catenax.dft.validators.OptionalIdentifierKeyValidation;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -53,6 +55,7 @@ public class Aspect {
 
     private String nameAtCustomer;
 
+    @OptionalIdentifierKeyValidation
     private String optionalIdentifierKey;
     private String optionalIdentifierValue;
 }

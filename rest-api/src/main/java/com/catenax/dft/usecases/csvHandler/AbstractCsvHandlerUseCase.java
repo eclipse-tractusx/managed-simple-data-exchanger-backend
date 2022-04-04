@@ -62,4 +62,8 @@ public abstract class AbstractCsvHandlerUseCase<I, T> implements CsvHandlerUseCa
             log.debug(String.valueOf(e));
         }
     }
+
+    protected void logInfo(String message){
+        log.info(String.format("[%s] %s",this.getClass().getSimpleName(), message));
+    }
 }

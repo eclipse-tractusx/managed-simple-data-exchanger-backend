@@ -78,47 +78,59 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends AbstractCsv
     @SneakyThrows
     protected AspectRelationship executeUseCase(AspectRelationship aspectRelationShip, String processId) {
         try {
-            ShellLookupRequest shellLookupRequest = getShellLookupRequest(aspectRelationShip);
-            ShellLookupResponse shellIds = gateway.shellLookup(shellLookupRequest);
-
-            String shellId;
-
-            if (shellIds.isEmpty()) {
-                log.info(String.format("[DigitalTwinsAspectRelationShipCsvHandlerUseCase] No shell id for '%s'", shellLookupRequest.toJsonString()));
-                AspectEntity aspectEntity = aspectRepository.findByIdentifiers(
-                        aspectRelationShip.getParentPartInstanceId(),
-                        aspectRelationShip.getParentManufactorerPartId(),
-                        aspectRelationShip.getParentOptionalIdentifierKey(),
-                        aspectRelationShip.getParentOptionalIdentifierValue());
-
-                if (aspectEntity == null) {
-                    throw new CsvHandlerUseCaseException(aspectRelationShip.getRowNumber(), "No parent aspect found");
-                }
-                ShellDescriptorRequest aasDescriptorRequest = getShellDescriptorRequest(aspectMapper.mapFrom(aspectEntity));
-                ShellDescriptorResponse result = gateway.createShellDescriptor(aasDescriptorRequest);
-                shellId = result.getIdentification();
-                log.info(String.format("[DigitalTwinsAspectRelationShipCsvHandlerUseCase] Shell created with id '%s'", shellId));
-            } else if (shellIds.size() == 1) {
-                log.info(String.format("[DigitalTwinsAspectRelationShipCsvHandlerUseCase] Shell id found for '%s'", shellLookupRequest.toJsonString()));
-                shellId = shellIds.stream().findFirst().orElse(null);
-                log.info(String.format("[DigitalTwinsAspectRelationShipCsvHandlerUseCase] Shell id '%s'", shellId));
-            } else {
-                throw new CsvHandlerUseCaseException(aspectRelationShip.getRowNumber(), String.format("Multiple id's found on childAspect %s", shellLookupRequest.toJsonString()));
-            }
-
-            SubModelListResponse subModelResponse = gateway.getSubModels(shellId);
-
-            if (subModelResponse == null || subModelResponse
-                    .stream()
-                    .noneMatch(x -> ID_SHORT.equals(x.getIdShort()))) {
-                log.info(String.format("[DigitalTwinsAspectRelationShipCsvHandlerUseCase] No submodels for '%s'", shellId));
-                CreateSubModelRequest createSubModelRequest = getCreateSubModelRequest(aspectRelationShip);
-                gateway.createSubModel(shellId, createSubModelRequest);
-            }
-            return aspectRelationShip;
+            return doUseCase(aspectRelationShip);
         } catch (HttpClientErrorException e) {
             throw new CsvHandlerUseCaseException(aspectRelationShip.getRowNumber(), e.getMessage());
         }
+    }
+
+    private AspectRelationship doUseCase(AspectRelationship aspectRelationShip) throws CsvHandlerUseCaseException {
+        ShellLookupRequest shellLookupRequest = getShellLookupRequest(aspectRelationShip);
+        ShellLookupResponse shellIds = gateway.shellLookup(shellLookupRequest);
+
+        String shellId;
+
+        if (shellIds.isEmpty()) {
+            shellId = createShellDescriptor(aspectRelationShip, shellLookupRequest);
+        } else if (shellIds.size() == 1) {
+            logInfo(String.format("Shell id found for '%s'", shellLookupRequest.toJsonString()));
+            shellId = shellIds.stream().findFirst().orElse(null);
+            logInfo(String.format("Shell id '%s'", shellId));
+        } else {
+            throw new CsvHandlerUseCaseException(aspectRelationShip.getRowNumber(), String.format("Multiple id's found on childAspect %s", shellLookupRequest.toJsonString()));
+        }
+
+        SubModelListResponse subModelResponse = gateway.getSubModels(shellId);
+
+        if (subModelResponse == null || subModelResponse
+                .stream()
+                .noneMatch(x -> ID_SHORT.equals(x.getIdShort()))) {
+            logInfo(String.format("No submodels for '%s'", shellId));
+            CreateSubModelRequest createSubModelRequest = getCreateSubModelRequest(aspectRelationShip);
+            gateway.createSubModel(shellId, createSubModelRequest);
+        }
+        return aspectRelationShip;
+    }
+
+    private String createShellDescriptor(AspectRelationship aspectRelationShip, ShellLookupRequest shellLookupRequest) throws CsvHandlerUseCaseException {
+        String shellId;
+        logInfo(String.format("No shell id for '%s'", shellLookupRequest.toJsonString()));
+        AspectEntity aspectEntity = aspectRepository.findByIdentifiers(
+                aspectRelationShip.getParentPartInstanceId(),
+                aspectRelationShip.getParentManufactorerPartId(),
+                aspectRelationShip.getParentOptionalIdentifierKey(),
+                aspectRelationShip.getParentOptionalIdentifierValue());
+
+        if (aspectEntity == null) {
+            throw new CsvHandlerUseCaseException(aspectRelationShip.getRowNumber(), "No parent aspect found");
+        }
+
+        ShellDescriptorRequest aasDescriptorRequest = getShellDescriptorRequest(aspectMapper.mapFrom(aspectEntity));
+        ShellDescriptorResponse result = gateway.createShellDescriptor(aasDescriptorRequest);
+        shellId = result.getIdentification();
+        logInfo(String.format("Shell created with id '%s'", shellId));
+
+        return shellId;
     }
 
     private ShellLookupRequest getShellLookupRequest(AspectRelationship aspectRelationShip) {
@@ -126,6 +138,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends AbstractCsv
         shellLookupRequest.addLocalIdentifier(PART_INSTANCE_ID, aspectRelationShip.getParentPartInstanceId());
         shellLookupRequest.addLocalIdentifier(MANUFACTURER_PART_ID, aspectRelationShip.getParentManufactorerPartId());
         shellLookupRequest.addLocalIdentifier(MANUFACTURER_ID, manufacturerId);
+
         if (aspectRelationShip.hasOptionalParentIdentifier()) {
             shellLookupRequest.addLocalIdentifier(aspectRelationShip.getParentOptionalIdentifierKey(), aspectRelationShip.getParentOptionalIdentifierValue());
         }

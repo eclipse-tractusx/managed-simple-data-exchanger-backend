@@ -32,6 +32,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,21 +65,29 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
     @Override
     @SneakyThrows
     protected Aspect executeUseCase(Aspect aspect, String processId) {
+        try {
+            return doUseCase(aspect);
+        } catch (HttpClientErrorException e) {
+            throw new CsvHandlerUseCaseException(aspect.getRowNumber(), e.getMessage());
+        }
+    }
+
+    private Aspect doUseCase(Aspect aspect) throws CsvHandlerUseCaseException {
         ShellLookupRequest shellLookupRequest = getShellLookupRequest(aspect);
         ShellLookupResponse shellIds = gateway.shellLookup(shellLookupRequest);
 
         String shellId;
 
         if (shellIds.isEmpty()) {
-            log.info(String.format("[DigitalTwinsAspectCsvHandlerUseCase] No shell id for '%s'", shellLookupRequest.toJsonString()));
+            logInfo(String.format("No shell id for '%s'", shellLookupRequest.toJsonString()));
             ShellDescriptorRequest aasDescriptorRequest = getShellDescriptorRequest(aspect);
             ShellDescriptorResponse result = gateway.createShellDescriptor(aasDescriptorRequest);
             shellId = result.getIdentification();
-            log.info(String.format("[DigitalTwinsAspectCsvHandlerUseCase] Shell created with id '%s'", shellId));
+            logInfo(String.format("Shell created with id '%s'", shellId));
         } else if (shellIds.size() == 1) {
-            log.info(String.format("[DigitalTwinsAspectCsvHandlerUseCase] Shell id found for '%s'", shellLookupRequest.toJsonString()));
+            logInfo(String.format("Shell id found for '%s'", shellLookupRequest.toJsonString()));
             shellId = shellIds.stream().findFirst().orElse(null);
-            log.info(String.format("[DigitalTwinsAspectCsvHandlerUseCase] Shell id '%s'", shellId));
+            logInfo(String.format("Shell id '%s'", shellId));
         } else {
             throw new CsvHandlerUseCaseException(aspect.getRowNumber(), String.format("Multiple ids found on aspect %s", shellLookupRequest.toJsonString()));
         }
@@ -88,10 +97,11 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
         if (subModelResponse == null || subModelResponse
                 .stream()
                 .noneMatch(x -> ID_SHORT.equals(x.getIdShort()))) {
-            log.info(String.format("[DigitalTwinsAspectCsvHandlerUseCase] No submodels for '%s'", shellId));
+            logInfo(String.format("No submodels for '%s'", shellId));
             CreateSubModelRequest createSubModelRequest = getCreateSubModelRequest(aspect);
             gateway.createSubModel(shellId, createSubModelRequest);
         }
+
         return aspect;
     }
 
@@ -100,6 +110,7 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
         shellLookupRequest.addLocalIdentifier(PART_INSTANCE_ID, aspect.getPartInstanceId());
         shellLookupRequest.addLocalIdentifier(MANUFACTURER_PART_ID, aspect.getManufacturerPartId());
         shellLookupRequest.addLocalIdentifier(MANUFACTURER_ID, manufacturerId);
+
         return shellLookupRequest;
     }
 
@@ -118,6 +129,7 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
                         .endpointProtocolVersion(ENDPOINT_PROTOCOL_VERSION)
                         .build())
                 .build());
+
         return CreateSubModelRequest.builder()
                 .idShort(ID_SHORT)
                 .identification(PREFIX + UUID.randomUUID())

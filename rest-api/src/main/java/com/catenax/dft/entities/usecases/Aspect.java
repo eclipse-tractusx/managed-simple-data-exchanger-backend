@@ -58,4 +58,11 @@ public class Aspect {
     @OptionalIdentifierKeyValidation
     private String optionalIdentifierKey;
     private String optionalIdentifierValue;
+
+    public boolean hasOptionalIdentifier() {
+        boolean hasKey = this.getOptionalIdentifierKey() != null && !this.getOptionalIdentifierKey().isBlank();
+        boolean hasValue = this.getOptionalIdentifierValue() != null && !this.getOptionalIdentifierValue().isBlank();
+
+        return hasKey && hasValue;
+    }
 }

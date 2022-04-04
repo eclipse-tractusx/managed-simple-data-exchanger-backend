@@ -51,11 +51,13 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
     private static final String ID_SHORT = "serialPartTypization";
     private static final String ENDPOINT_PROTOCOL_VERSION = "1.0";
     private static final String PREFIX = "urn:uuid:";
-    private final DigitalTwinGateway gateway;
+
     @Value(value = "${manufacturerId}")
     private String manufacturerId;
     @Value(value = "${edc.aspect.url}")
     private String edcEndpoint;
+
+    private final DigitalTwinGateway gateway;
 
     public DigitalTwinsAspectCsvHandlerUseCase(DigitalTwinGateway gateway, StoreAspectCsvHandlerUseCase nextUseCase) {
         super(nextUseCase);
@@ -110,7 +112,9 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
         shellLookupRequest.addLocalIdentifier(PART_INSTANCE_ID, aspect.getPartInstanceId());
         shellLookupRequest.addLocalIdentifier(MANUFACTURER_PART_ID, aspect.getManufacturerPartId());
         shellLookupRequest.addLocalIdentifier(MANUFACTURER_ID, manufacturerId);
-
+        if(aspect.hasOptionalIdentifier()) {
+            shellLookupRequest.addLocalIdentifier(aspect.getOptionalIdentifierKey(), aspect.getOptionalIdentifierValue());
+        }
         return shellLookupRequest;
     }
 
@@ -143,7 +147,9 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
         specificIdentifiers.add(new KeyValuePair(PART_INSTANCE_ID, aspect.getPartInstanceId()));
         specificIdentifiers.add(new KeyValuePair(MANUFACTURER_PART_ID, aspect.getManufacturerPartId()));
         specificIdentifiers.add(new KeyValuePair(MANUFACTURER_ID, manufacturerId));
-
+        if(aspect.hasOptionalIdentifier()) {
+            specificIdentifiers.add(new KeyValuePair(aspect.getOptionalIdentifierKey(), aspect.getOptionalIdentifierValue()));
+        }
         List<String> values = new ArrayList<>();
         values.add(aspect.getUuid());
         GlobalAssetId globalIdentifier = new GlobalAssetId(values);

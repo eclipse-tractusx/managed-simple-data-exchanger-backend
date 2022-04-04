@@ -13,12 +13,15 @@ FROM nginx:1.21.6-alpine
 # Nginx config
 RUN rm -rf /etc/nginx/conf.d
 COPY ui/conf /etc/nginx
+COPY ui/cert.pem /etc/nginx
+COPY ui/key.pem /etc/nginx
 
 # Static build
 COPY --from=builder /app/build /usr/share/nginx/html/
 
 # Default port exposure
 EXPOSE 80
+EXPOSE 443
 
 # Copy .env file and shell script to container
 WORKDIR /usr/share/nginx/html

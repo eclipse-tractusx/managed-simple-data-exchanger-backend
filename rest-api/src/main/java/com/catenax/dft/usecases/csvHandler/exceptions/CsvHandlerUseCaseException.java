@@ -14,19 +14,19 @@
  *  limitations under the License.
  */
 
-package com.catenax.dft.validators;
+package com.catenax.dft.usecases.csvHandler.exceptions;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+public class CsvHandlerUseCaseException extends Exception {
 
-public class QuantityNumberValidator implements ConstraintValidator<QuantityNumberValidation, String> {
+    private int rowPosition;
+
+    public CsvHandlerUseCaseException(int rowPosition, String message) {
+        super(message);
+        this.rowPosition = rowPosition;
+    }
 
     @Override
-    public boolean isValid(String input, ConstraintValidatorContext cxt) {
-        try {
-            return Integer.parseInt(input) > 0;
-        }catch (Exception e){
-            return false;
-        }
+    public String getMessage() {
+        return String.format("RowPosition: %s | Description: %s", rowPosition, super.getMessage());
     }
 }

@@ -101,9 +101,9 @@ public class DigitalTwinGateway {
         HttpEntity<ShellDescriptorRequest> entity = new HttpEntity<>(request, headers);
 
         String url = digitalTwinsUrl + "/registry/shell-descriptors";
-        ResponseEntity<ShellDescriptorResponse> response = restTemplate.postForEntity(url, entity, ShellDescriptorResponse.class);
         log.info("[DigitalTwinGateway][Create Shell Descriptor] Url: " + url);
         log.info("[DigitalTwinGateway][Create Shell Descriptor] Request: " + request.toJsonString());
+        ResponseEntity<ShellDescriptorResponse> response = restTemplate.postForEntity(url, entity, ShellDescriptorResponse.class);
 
         ShellDescriptorResponse responseBody;
         if (response.getStatusCode() != HttpStatus.CREATED) {
@@ -122,17 +122,13 @@ public class DigitalTwinGateway {
         HttpEntity<CreateSubModelRequest> entity = new HttpEntity<>(request, headers);
 
         String url = String.format(digitalTwinsUrl + "/registry/shell-descriptors/%s/submodel-descriptors", shellId);
-        try {
 
-            log.info("[DigitalTwinGateway][Create SubModel] Url: " + url);
-            log.info("[DigitalTwinGateway][Create SubModel] Request: " + request.toJsonString());
-            ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
+        log.info("[DigitalTwinGateway][Create SubModel] Url: " + url);
+        log.info("[DigitalTwinGateway][Create SubModel] Request: " + request.toJsonString());
+        ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
 
-            if (response.getStatusCode() != HttpStatus.CREATED) {
-                log.error("Unable to create shell descriptor");
-            }
-        } catch (Exception e) {
-            log.debug(e.getMessage());
+        if (response.getStatusCode() != HttpStatus.CREATED) {
+            log.error("Unable to create shell descriptor");
         }
     }
 

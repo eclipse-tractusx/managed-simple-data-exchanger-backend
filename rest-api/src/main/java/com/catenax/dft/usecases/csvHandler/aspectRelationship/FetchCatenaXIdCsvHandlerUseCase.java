@@ -21,10 +21,13 @@ import com.catenax.dft.entities.database.AspectEntity;
 import com.catenax.dft.entities.usecases.AspectRelationship;
 import com.catenax.dft.gateways.database.AspectRepository;
 import com.catenax.dft.usecases.csvHandler.AbstractCsvHandlerUseCase;
+import com.catenax.dft.usecases.csvHandler.exceptions.CsvHandlerUseCaseException;
 import lombok.SneakyThrows;
-import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
-@Service
+@Slf4j
+@Component
 public class FetchCatenaXIdCsvHandlerUseCase extends AbstractCsvHandlerUseCase<AspectRelationship, AspectRelationship> {
 
     private AspectRepository repository;
@@ -37,17 +40,38 @@ public class FetchCatenaXIdCsvHandlerUseCase extends AbstractCsvHandlerUseCase<A
     @SneakyThrows
     @Override
     protected AspectRelationship executeUseCase(AspectRelationship input, String processId) {
+        if (input.getParentUuid() == null || input.getParentUuid().isBlank()) {
+            AspectEntity parentAspect = repository.findByIdentifiers(
+                    input.getParentPartInstanceId(),
+                    input.getParentManufactorerPartId(),
+                    input.getParentOptionalIdentifierKey(),
+                    input.getParentOptionalIdentifierValue());
 
-        AspectEntity parentAspect = repository.findByPartInstanceIdAndManufacturerPartId(input.getParentPartInstanceId(), input.getParentManufactorerPartId());
-        AspectEntity childAspect = repository.findByPartInstanceIdAndManufacturerPartId(input.getChildPartInstanceId(), input.getChildManufactorerPartId());
+            if (parentAspect == null) {
+                throw new CsvHandlerUseCaseException(input.getRowNumber(), String.format("Missing parent aspect for the given Identifier: PartInstanceID: %s | ManufactorerId: %s | %s: %s", input.getParentPartInstanceId(),
+                        input.getParentManufactorerPartId(),
+                        input.getParentOptionalIdentifierKey(),
+                        input.getParentOptionalIdentifierValue()));
+            }
 
-        if (parentAspect == null || childAspect == null) {
-            throw new Exception("There is no aspect registred");
+            input.setChildUuid(parentAspect.getUuid());
         }
 
-        input.setChildUuid(childAspect.getUuid());
-        input.setParentUuid(parentAspect.getUuid());
+        if (input.getChildUuid() == null || input.getChildUuid().isBlank()) {
+            AspectEntity childAspect = repository.findByIdentifiers(
+                    input.getParentPartInstanceId(),
+                    input.getParentManufactorerPartId(),
+                    input.getParentOptionalIdentifierKey(),
+                    input.getParentOptionalIdentifierValue());
 
+            if (childAspect == null) {
+                throw new CsvHandlerUseCaseException(input.getRowNumber(), String.format("Missing child aspect for the given Identifier: PartInstanceID: %s | ManufactorerId: %s | %s: %s", input.getParentPartInstanceId(),
+                        input.getChildManufactorerPartId(),
+                        input.getChildOptionalIdentifierKey(),
+                        input.getChildOptionalIdentifierValue()));
+            }
+            input.setChildUuid(childAspect.getUuid());
+        }
         return input;
     }
 }

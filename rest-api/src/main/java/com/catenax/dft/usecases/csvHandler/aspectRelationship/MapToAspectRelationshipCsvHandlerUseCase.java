@@ -17,10 +17,12 @@
 
 package com.catenax.dft.usecases.csvHandler.aspectRelationship;
 
+import com.catenax.dft.entities.csv.RowData;
 import com.catenax.dft.entities.usecases.AspectRelationship;
 import com.catenax.dft.usecases.csvHandler.AbstractCsvHandlerUseCase;
-import com.catenax.dft.usecases.csvHandler.exceptions.MapToAspectRelationshipException;
-import org.springframework.stereotype.Service;
+import com.catenax.dft.usecases.csvHandler.exceptions.CsvHandlerUseCaseException;
+import lombok.SneakyThrows;
+import org.springframework.stereotype.Component;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -31,10 +33,10 @@ import java.util.stream.Collectors;
 
 import static com.catenax.dft.gateways.file.CsvGateway.SEPARATOR;
 
-@Service
-public class MapToAspectRelationshipCsvHandlerUseCase extends AbstractCsvHandlerUseCase<String, AspectRelationship> {
+@Component
+public class MapToAspectRelationshipCsvHandlerUseCase extends AbstractCsvHandlerUseCase<RowData, AspectRelationship> {
 
-    private final int ROW_LENGTH = 12;
+    private final int ROW_LENGTH = 14;
 
     public MapToAspectRelationshipCsvHandlerUseCase(FetchCatenaXIdCsvHandlerUseCase nextUseCase) {
         super(nextUseCase);
@@ -42,32 +44,36 @@ public class MapToAspectRelationshipCsvHandlerUseCase extends AbstractCsvHandler
     }
 
     @Override
-    protected AspectRelationship executeUseCase(String rowData, String processId) {
-        String[] rowDataFields = rowData.split(SEPARATOR, -1);
+    @SneakyThrows
+    protected AspectRelationship executeUseCase(RowData rowData, String processId) {
+        String[] rowDataFields = rowData.content().split(SEPARATOR, -1);
 
         if (rowDataFields.length != ROW_LENGTH) {
-            throw new MapToAspectRelationshipException("This row has wrong amount of fields");
+            throw new CsvHandlerUseCaseException(rowData.position(), "This row has wrong amount of fields");
         }
 
         AspectRelationship aspectRelationShip = AspectRelationship.builder()
+                .rowNumber(rowData.position())
                 .processId(processId)
-                .parentPartInstanceId(rowDataFields[0].trim())
-                .parentManufactorerPartId(rowDataFields[1].trim())
-                .parentOptionalIdentifierKey(rowDataFields[2].trim())
-                .parentOptionalIdentifierValue(rowDataFields[3].trim())
-                .childPartInstanceId(rowDataFields[4].trim())
-                .childManufactorerPartId(rowDataFields[5].trim())
-                .childOptionalIdentifierKey(rowDataFields[6].trim())
-                .childOptionalIdentifierValue(rowDataFields[7].trim())
-                .lifecycleContext(rowDataFields[8].trim())
-                .quantityNumber(rowDataFields[9].trim())
-                .measurementUnitLexicalValue(rowDataFields[10].trim())
-                .assembledOn(rowDataFields[11].trim())
+                .parentUuid(rowDataFields[0].trim())
+                .parentPartInstanceId(rowDataFields[1].trim())
+                .parentManufactorerPartId(rowDataFields[2].trim())
+                .parentOptionalIdentifierKey(rowDataFields[3].trim())
+                .parentOptionalIdentifierValue(rowDataFields[4].trim())
+                .childUuid(rowDataFields[5].trim())
+                .childPartInstanceId(rowDataFields[6].trim())
+                .childManufactorerPartId(rowDataFields[7].trim())
+                .childOptionalIdentifierKey(rowDataFields[8].trim())
+                .childOptionalIdentifierValue(rowDataFields[9].trim())
+                .lifecycleContext(rowDataFields[10].trim())
+                .quantityNumber(rowDataFields[11].trim())
+                .measurementUnitLexicalValue(rowDataFields[12].trim())
+                .assembledOn(rowDataFields[13].trim())
                 .build();
 
         List<String> errorMessages = validateAsset(aspectRelationShip);
         if (errorMessages.size() != 0) {
-            throw new MapToAspectRelationshipException(errorMessages.toString());
+            throw new CsvHandlerUseCaseException(rowData.position(), errorMessages.toString());
         }
 
         return aspectRelationShip;

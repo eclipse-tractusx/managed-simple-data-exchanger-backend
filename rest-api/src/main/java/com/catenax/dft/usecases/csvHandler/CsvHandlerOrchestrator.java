@@ -41,7 +41,7 @@ public class CsvHandlerOrchestrator {
     private final ProcessReportUseCase processReportUseCase;
 
     private final List<String> ASPECT_COLUMNS = Stream.of(
-            "uuid",
+            "UUID",
             "part_instance_id",
             "manufacturing_date",
             "manufacturing_country",
@@ -51,16 +51,17 @@ public class CsvHandlerOrchestrator {
             "name_at_manufacturer",
             "name_at_customer",
             "optional_identifier_key",
-            "optional_identifier_value"
-    )
+            "optional_identifier_value")
             .collect(Collectors.toList());
     private final List<String> ASPECT_RELATIONSHIP_COLUMNS = Stream.of(
+            "parent_UUID",
             "parent_part_instance_id",
             "parent_manufactorer_part_id",
             "parent_optional_identifier_key",
             "parent_optional_identifier_value",
+            "UUID",
             "part_instance_id",
-            "parent_manufactorer_part_id",
+            "manufactorer_part_id",
             "optional_identifier_key",
             "optional_identifier_value",
             "lifecycle_context",

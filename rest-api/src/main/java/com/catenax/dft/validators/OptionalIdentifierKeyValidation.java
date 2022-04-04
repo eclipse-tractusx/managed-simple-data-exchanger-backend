@@ -10,11 +10,13 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 package com.catenax.dft.validators;
+
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -26,15 +28,15 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.PARAMETER;
 
-@Target( { FIELD, PARAMETER })
+@Target({FIELD, PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Constraint(validatedBy = QuantityNumberValidator.class)
-public @interface QuantityNumberValidation {
+@Constraint(validatedBy = OptionalIdentifierKeyValidator.class)
+public @interface OptionalIdentifierKeyValidation {
 
-    public String message() default "quantity_number must be a positive integer number";
+    public String message() default "illegal value for optional_identifier_key";
 
-    public Class<?>[] groups() default{};
+    public Class<?>[] groups() default {};
 
     public Class<? extends Payload>[] payload() default {};
 }

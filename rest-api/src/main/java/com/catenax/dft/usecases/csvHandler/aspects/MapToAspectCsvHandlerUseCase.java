@@ -17,15 +17,13 @@
 
 package com.catenax.dft.usecases.csvHandler.aspects;
 
+import com.catenax.dft.entities.csv.RowData;
 import com.catenax.dft.entities.usecases.Aspect;
-import com.catenax.dft.enums.OptionalIdentifierKeyEnum;
 import com.catenax.dft.usecases.csvHandler.AbstractCsvHandlerUseCase;
-import com.catenax.dft.usecases.csvHandler.exceptions.MapToAspectException;
+import com.catenax.dft.usecases.csvHandler.exceptions.CsvHandlerUseCaseException;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -34,13 +32,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import java.util.stream.Stream;
-
 import static com.catenax.dft.gateways.file.CsvGateway.SEPARATOR;
 
 @Component
 @Slf4j
-public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<String, Aspect> {
+public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<RowData, Aspect> {
 
     private final int ROW_LENGTH = 11;
 
@@ -49,14 +45,15 @@ public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<Stri
     }
 
     @SneakyThrows
-    public Aspect executeUseCase(String rowData, String processId) {
+    public Aspect executeUseCase(RowData rowData, String processId) {
 
-        String[] rowDataFields = rowData.split(SEPARATOR, -1);
+        String[] rowDataFields = rowData.content().split(SEPARATOR, -1);
         if (rowDataFields.length != ROW_LENGTH) {
-            throw new MapToAspectException("This row has the wrong amount of fields");
+            throw new CsvHandlerUseCaseException(rowData.position(), "This row has the wrong amount of fields");
         }
 
         Aspect aspect = Aspect.builder()
+                .rowNumber(rowData.position())
                 .uuid(rowDataFields[0].trim())
                 .processId(processId)
                 .partInstanceId(rowDataFields[1].trim())
@@ -73,7 +70,7 @@ public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<Stri
 
         List<String> errorMessages = validateAsset(aspect);
         if (errorMessages.size() != 0) {
-            throw new MapToAspectException(errorMessages.toString());
+            throw new CsvHandlerUseCaseException(rowData.position(), errorMessages.toString());
         }
         return aspect;
     }
@@ -86,5 +83,4 @@ public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<Stri
                 .map(ConstraintViolation::getMessage)
                 .collect(Collectors.toList());
     }
-
 }

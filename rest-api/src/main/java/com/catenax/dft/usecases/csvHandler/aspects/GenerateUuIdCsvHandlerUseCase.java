@@ -34,7 +34,6 @@ public class GenerateUuIdCsvHandlerUseCase extends AbstractCsvHandlerUseCase<Asp
         if (input.getUuid() == null || input.getUuid().isBlank()) {
             input.setUuid(UUIdGenerator.getUrnUuid());
         }
-
         return input;
     }
 }

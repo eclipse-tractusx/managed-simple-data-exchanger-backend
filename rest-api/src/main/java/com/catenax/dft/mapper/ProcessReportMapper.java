@@ -26,5 +26,6 @@ import org.springframework.stereotype.Component;
 public interface ProcessReportMapper {
 
     ProcessReportEntity mapFrom(ProcessReport processReport);
+
     ProcessReport mapFrom(ProcessReportEntity processReportEntity);
 }

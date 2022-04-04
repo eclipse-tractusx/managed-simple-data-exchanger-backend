@@ -17,16 +17,17 @@
 
 package com.catenax.dft.entities.usecases;
 
-import com.catenax.dft.validators.QuantityNumberValidation;
 import lombok.Builder;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
 
 @Builder
 @Data
 public class AspectRelationship {
 
+    private int rowNumber;
     private String processId;
     private String childUuid;
     private String parentUuid;
@@ -55,7 +56,7 @@ public class AspectRelationship {
     @NotBlank(message = "assembled_on cannot be empty")
     private String assembledOn;
 
-    @QuantityNumberValidation
+    @Positive(message = "quantity_number cannot be empty")
     private String quantityNumber;
 
     @NotBlank(message = "measurement_unit_lexical_value cannot be empty")

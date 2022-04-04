@@ -16,8 +16,8 @@
 
 package com.catenax.dft.entities.usecases;
 
-import com.catenax.dft.enums.ProgressStatusEnum;
 import com.catenax.dft.enums.CsvTypeEnum;
+import com.catenax.dft.enums.ProgressStatusEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

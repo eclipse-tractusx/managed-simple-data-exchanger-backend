@@ -28,15 +28,12 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 public class Aspect {
 
+    private int rowNumber;
     private String uuid;
-
     private String processId;
 
-    @NotBlank(message = "local_identifiers_key cannot be empty")
-    private String localIdentifiersKey;
-
-    @NotBlank(message = "local_identifiers_value cannot be empty")
-    private String localIdentifiersValue;
+    @NotBlank(message = "part_instance_id cannot be empty")
+    private String partInstanceId;
 
     @NotBlank(message = "manufacturing_date cannot be empty")
     private String manufacturingDate;
@@ -55,4 +52,7 @@ public class Aspect {
     private String nameAtManufacturer;
 
     private String nameAtCustomer;
+
+    private String optionalIdentifierKey;
+    private String optionalIdentifierValue;
 }

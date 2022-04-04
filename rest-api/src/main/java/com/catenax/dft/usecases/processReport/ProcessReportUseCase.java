@@ -19,15 +19,15 @@ package com.catenax.dft.usecases.processReport;
 import com.catenax.dft.entities.database.ProcessReportEntity;
 import com.catenax.dft.entities.usecases.ProcessReport;
 import com.catenax.dft.entities.usecases.ProcessReportPageResponse;
-import com.catenax.dft.enums.ProgressStatusEnum;
 import com.catenax.dft.enums.CsvTypeEnum;
+import com.catenax.dft.enums.ProgressStatusEnum;
 import com.catenax.dft.gateways.database.ProcessReportRepository;
 import com.catenax.dft.mapper.ProcessReportMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
-import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -90,7 +90,7 @@ public class ProcessReportUseCase {
                 .build();
     }
 
-    public ProcessReport getProcessReportById(String id){
+    public ProcessReport getProcessReportById(String id) {
         Optional<ProcessReportEntity> result = repository.findById(id);
         return result.map(mapper::mapFrom).orElse(null);
     }

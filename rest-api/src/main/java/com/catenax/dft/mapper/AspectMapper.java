@@ -20,6 +20,7 @@ package com.catenax.dft.mapper;
 import com.catenax.dft.entities.database.AspectEntity;
 import com.catenax.dft.entities.usecases.Aspect;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -27,4 +28,7 @@ import org.springframework.stereotype.Component;
 public interface AspectMapper {
 
     AspectEntity mapFrom(Aspect aspect);
+
+    @Mapping(target = "rowNumber", ignore = true)
+    Aspect mapFrom(AspectEntity aspect);
 }

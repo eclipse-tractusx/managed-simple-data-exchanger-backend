@@ -20,8 +20,10 @@ package com.catenax.dft.entities.database;
 import com.catenax.dft.enums.OptionalIdentifierKeyEnum;
 import lombok.Data;
 
-
-import javax.persistence.*;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 
 @Table(name = "aspect")

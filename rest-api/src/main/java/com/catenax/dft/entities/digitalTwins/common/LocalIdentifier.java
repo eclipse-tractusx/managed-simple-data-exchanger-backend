@@ -17,7 +17,10 @@
 
 package com.catenax.dft.entities.digitalTwins.common;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder

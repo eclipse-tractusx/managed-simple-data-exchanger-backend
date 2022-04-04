@@ -27,12 +27,12 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class StoreChildAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<AspectRelationship, AspectRelationship> {
+public class StoreAspectRelationshipCsvHandlerUseCase extends AbstractCsvHandlerUseCase<AspectRelationship, AspectRelationship> {
 
     private final AspectRelationshipRepository repository;
     private final AspectRelationshipMapper mapper;
 
-    public StoreChildAspectCsvHandlerUseCase(AspectRelationshipRepository aspectRelationshipRepository, AspectRelationshipMapper mapper) {
+    public StoreAspectRelationshipCsvHandlerUseCase(AspectRelationshipRepository aspectRelationshipRepository, AspectRelationshipMapper mapper) {
         super(null);
         this.repository = aspectRelationshipRepository;
         this.mapper = mapper;
@@ -41,7 +41,6 @@ public class StoreChildAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase
     protected AspectRelationship executeUseCase(AspectRelationship input, String processId) {
         AspectRelationshipEntity entity = mapper.mapFrom(input);
         repository.save(entity);
-        log.debug("Aspect store successfully");
         return input;
     }
 }

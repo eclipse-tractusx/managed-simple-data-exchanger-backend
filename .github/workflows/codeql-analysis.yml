@@ -15,13 +15,13 @@ on:
     
   push:
     branches: [ main ]
-#    paths:
- #     - 'rest-api/**'
+    paths:
+      - 'rest-api/**'
   pull_request:
     # The branches below must be a subset of the branches above
     branches: [ main ]
-  #  paths:
-   #   - 'rest-api/**'
+    paths:
+      - 'rest-api/**'
  # schedule:
 #    - cron: '26 7 * * 2'
 
@@ -42,6 +42,11 @@ jobs:
         # Learn more about CodeQL language support at https://git.io/codeql-language-support
 
     steps:
+    - name: Setup environment
+    - uses: actions/setup-java@v1
+      with:
+        java-version: 17
+          
     - name: Checkout repository
       uses: actions/checkout@v2
 

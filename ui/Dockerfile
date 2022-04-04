@@ -13,8 +13,8 @@ FROM nginx:1.21.6-alpine
 # Nginx config
 RUN rm -rf /etc/nginx/conf.d
 COPY ui/conf /etc/nginx
-ADD ui/cert.pem /etc/nginx/certs/cert.pem
-ADD ui/key.pem /etc/nginx/certs/key.pem
+COPY ui/cert.pem /etc/nginx/certs/
+COPY ui/key.pem /etc/nginx/certs/
 
 # Static build
 COPY --from=builder /app/build /usr/share/nginx/html/

@@ -39,4 +39,7 @@ public interface AspectRepository extends JpaRepository<AspectEntity, String> {
                 OptionalIdentifierKeyEnum.valueOf(optionalIdentifierKey),
                 optionalIdentifierValue);
     }
+
+
+    AspectEntity findByUuid(String uuid);
 }

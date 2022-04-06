@@ -15,5 +15,5 @@
 import axios from 'axios';
 
 export default axios.create({
-  baseURL: 'https://catenax.tracefoss.com:8080/api',
+  baseURL: 'http://3.66.97.83:8080/api',
 });

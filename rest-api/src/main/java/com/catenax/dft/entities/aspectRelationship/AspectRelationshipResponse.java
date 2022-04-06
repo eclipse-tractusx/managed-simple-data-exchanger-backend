@@ -15,17 +15,18 @@
  *
  */
 
-package com.catenax.dft.gateways.database;
+package com.catenax.dft.entities.aspectRelationship;
 
-import com.catenax.dft.entities.database.AspectRelationshipEntity;
-import com.catenax.dft.entities.usecases.AspectRelationship;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 
 import java.util.List;
 
-@Repository
-public interface AspectRelationshipRepository extends JpaRepository<AspectRelationshipEntity, Long> {
-
-    List<AspectRelationshipEntity> findByParentCatenaXId(String parentCantenaXId);
+@Data
+@Builder
+@AllArgsConstructor
+public class AspectRelationshipResponse {
+    private String catenaXId;
+    private List<ChildPart> childParts;
 }

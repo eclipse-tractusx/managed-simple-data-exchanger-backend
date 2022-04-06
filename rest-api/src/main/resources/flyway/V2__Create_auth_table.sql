@@ -15,17 +15,11 @@
  *
  */
 
-package com.catenax.dft.gateways.database;
+CREATE TABLE auth
+(
+    api_key UUID PRIMARY KEY,
+    user_id VARCHAR(50) NOT NULL
+);
 
-import com.catenax.dft.entities.database.AspectRelationshipEntity;
-import com.catenax.dft.entities.usecases.AspectRelationship;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
-import java.util.List;
-
-@Repository
-public interface AspectRelationshipRepository extends JpaRepository<AspectRelationshipEntity, Long> {
-
-    List<AspectRelationshipEntity> findByParentCatenaXId(String parentCantenaXId);
-}
+INSERT INTO auth(api_key, user_id)
+VALUES ('aec093c2-c981-44f9-9a4a-365ad1d2f05e', 'testuser@gmail.com');

@@ -1,5 +1,5 @@
 # our base build image
-FROM 3.8.4-openjdk-17-slim as build
+FROM maven:3.8.5-openjdk-18-slim as build
 
 # copy the project files
 COPY ./rest-api/pom.xml /pom.xml

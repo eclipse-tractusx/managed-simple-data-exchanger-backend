@@ -14,6 +14,8 @@
 
 import axios from 'axios';
 
+axios.defaults.headers.common.API_KEY = 'aec093c2c98144f99a4a365ad1d2f05e';
+
 export default axios.create({
   baseURL: 'https://dft.tracefoss.com:8080/api',
 });

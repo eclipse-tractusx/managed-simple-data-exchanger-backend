@@ -15,5 +15,5 @@
 import axios from 'axios';
 
 export default axios.create({
-  baseURL: 'http://3.66.97.83:8080/api',
+  baseURL: 'https://dft.tracefoss.com:8080/api',
 });

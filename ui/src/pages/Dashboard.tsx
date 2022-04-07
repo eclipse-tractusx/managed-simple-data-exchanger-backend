@@ -186,7 +186,7 @@ const Dashboard: React.FC = () => {
                     clearUpload();
                   }
                 }),
-              10000,
+              2000,
             );
           } else {
             clearUpload();

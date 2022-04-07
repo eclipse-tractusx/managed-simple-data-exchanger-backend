@@ -150,7 +150,7 @@ export default function StickyHeadTable({
                     return (
                       <StyledTableCell key={column.id} align={column.align}>
                         {column.id === 'csvType' && value === CsvTypes.aspect && <b> ASPECT </b>}
-                        {column.id === 'csvType' && value === CsvTypes.childAspect && <b> CHILD ASPECT </b>}
+                        {column.id === 'csvType' && value === CsvTypes.aspectRelationship && <b> ASPECT RELATIONSHIP </b>}
                         {column.id === 'csvType' && value === CsvTypes.unknown && <b> UNKNOWN </b>}
                         {column.id !== 'status' &&
                           column.id !== 'csvType' &&

@@ -32,6 +32,6 @@ export enum Status {
 
 export enum CsvTypes {
   aspect = 'ASPECT',
-  childAspect = 'CHILD_ASPECT',
+  aspectRelationship = 'ASPECT_RELATIONSHIP',
   unknown = 'UNKNOWN',
 }

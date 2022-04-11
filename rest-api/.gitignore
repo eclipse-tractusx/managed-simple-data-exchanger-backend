@@ -21,3 +21,6 @@ temp/
 
 ##TEST FILES
 *.csv
+
+##FrontEnd Folder
+../ui/

@@ -2,13 +2,13 @@
 FROM maven:3.8.5-openjdk-18-slim as build
 
 # copy the project files
-COPY ./rest-api/pom.xml /pom.xml
+COPY ./pom.xml /pom.xml
 
 # build all dependencies
 RUN mvn dependency:go-offline -B
 
 # copy your other files
-COPY ./rest-api/src ./src
+COPY ./src ./src
 
 # build for release
 RUN mvn package

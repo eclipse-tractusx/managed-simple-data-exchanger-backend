@@ -1,5 +1,5 @@
 version: "3.2"
-services: 
+services:
   db:
     image: postgres
     restart: always
@@ -11,11 +11,11 @@ services:
     environment:
       POSTGRES_PASSWORD: mysecretpassword
       POSTGRES_USER: user
-    volumes: 
+    volumes:
       - ./postgres-data:/var/lib/postgresql/data
 
   rest-api:
-    depends_on:      
+    depends_on:
       - db
     image: 460700981334.dkr.ecr.eu-central-1.amazonaws.com/dft-api:latest
     network_mode: host

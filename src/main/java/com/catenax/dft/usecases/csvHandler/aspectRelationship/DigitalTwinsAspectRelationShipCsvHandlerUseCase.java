@@ -117,7 +117,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends AbstractCsv
         logDebug(String.format("No shell id for '%s'", shellLookupRequest.toJsonString()));
         AspectEntity aspectEntity = aspectRepository.findByIdentifiers(
                 aspectRelationShip.getParentPartInstanceId(),
-                aspectRelationShip.getParentManufactorerPartId(),
+                aspectRelationShip.getParentManufacturerPartId(),
                 aspectRelationShip.getParentOptionalIdentifierKey(),
                 aspectRelationShip.getParentOptionalIdentifierValue());
 
@@ -136,7 +136,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends AbstractCsv
     private ShellLookupRequest getShellLookupRequest(AspectRelationship aspectRelationShip) {
         ShellLookupRequest shellLookupRequest = new ShellLookupRequest();
         shellLookupRequest.addLocalIdentifier(PART_INSTANCE_ID, aspectRelationShip.getParentPartInstanceId());
-        shellLookupRequest.addLocalIdentifier(MANUFACTURER_PART_ID, aspectRelationShip.getParentManufactorerPartId());
+        shellLookupRequest.addLocalIdentifier(MANUFACTURER_PART_ID, aspectRelationShip.getParentManufacturerPartId());
         shellLookupRequest.addLocalIdentifier(MANUFACTURER_ID, manufacturerId);
 
         if (aspectRelationShip.hasOptionalParentIdentifier()) {

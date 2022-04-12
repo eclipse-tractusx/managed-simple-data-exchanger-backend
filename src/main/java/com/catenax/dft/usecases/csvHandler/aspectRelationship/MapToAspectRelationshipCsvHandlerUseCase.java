@@ -22,7 +22,7 @@ import com.catenax.dft.entities.usecases.AspectRelationship;
 import com.catenax.dft.usecases.csvHandler.AbstractCsvHandlerUseCase;
 import com.catenax.dft.usecases.csvHandler.exceptions.CsvHandlerUseCaseException;
 import lombok.SneakyThrows;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -33,14 +33,13 @@ import java.util.stream.Collectors;
 
 import static com.catenax.dft.gateways.file.CsvGateway.SEPARATOR;
 
-@Component
+@Service
 public class MapToAspectRelationshipCsvHandlerUseCase extends AbstractCsvHandlerUseCase<RowData, AspectRelationship> {
 
     private final int ROW_LENGTH = 14;
 
     public MapToAspectRelationshipCsvHandlerUseCase(FetchCatenaXIdCsvHandlerUseCase nextUseCase) {
         super(nextUseCase);
-
     }
 
     @Override

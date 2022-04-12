@@ -29,7 +29,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -38,8 +38,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.HashMap;
 import java.util.Map;
 
-@Component
 @Slf4j
+@Service
 public class DigitalTwinGateway {
 
     public static final String AUTHORIZATION = "Authorization";
@@ -81,12 +81,8 @@ public class DigitalTwinGateway {
                 ShellLookupResponse.class,
                 queryParameters);
 
-        log.info("[DigitalTwinGateway][Shell LookUp] Url: " + urlTemplate);
-        log.info("[DigitalTwinGateway][Shell LookUp] Request: " + request.toJsonString());
-
         ShellLookupResponse responseBody;
         if (response.getStatusCode() != HttpStatus.OK) {
-            log.error("Unable to find shells");
             responseBody = new ShellLookupResponse();
         } else {
             responseBody = response.getBody();
@@ -101,13 +97,10 @@ public class DigitalTwinGateway {
         HttpEntity<ShellDescriptorRequest> entity = new HttpEntity<>(request, headers);
 
         String url = digitalTwinsUrl + "/registry/shell-descriptors";
-        log.info("[DigitalTwinGateway][Create Shell Descriptor] Url: " + url);
-        log.info("[DigitalTwinGateway][Create Shell Descriptor] Request: " + request.toJsonString());
         ResponseEntity<ShellDescriptorResponse> response = restTemplate.postForEntity(url, entity, ShellDescriptorResponse.class);
 
         ShellDescriptorResponse responseBody;
         if (response.getStatusCode() != HttpStatus.CREATED) {
-            log.error("Unable to create shell descriptor");
             responseBody = null;
         } else {
             responseBody = response.getBody();
@@ -123,8 +116,6 @@ public class DigitalTwinGateway {
 
         String url = String.format(digitalTwinsUrl + "/registry/shell-descriptors/%s/submodel-descriptors", shellId);
 
-        log.info("[DigitalTwinGateway][Create SubModel] Url: " + url);
-        log.info("[DigitalTwinGateway][Create SubModel] Request: " + request.toJsonString());
         ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
 
         if (response.getStatusCode() != HttpStatus.CREATED) {
@@ -145,8 +136,6 @@ public class DigitalTwinGateway {
                 HttpMethod.GET,
                 entity,
                 SubModelListResponse.class);
-
-        log.info("[DigitalTwinGateway][Get SubModel] Url: " + url);
 
         SubModelListResponse responseBody = null;
         if (response.getStatusCode() == HttpStatus.OK) {
@@ -175,5 +164,4 @@ public class DigitalTwinGateway {
         String accessToken = node.path(ACCESS_TOKEN).asText();
         return String.format("Bearer %s", accessToken);
     }
-
 }

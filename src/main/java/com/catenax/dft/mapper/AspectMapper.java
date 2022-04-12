@@ -30,7 +30,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 
-@Component
 @Mapper(componentModel = "spring")
 public abstract class AspectMapper {
     @Value(value = "${manufacturerId}")
@@ -43,7 +42,7 @@ public abstract class AspectMapper {
 
     public AspectResponse mapToResponse(AspectEntity entity) {
 
-        if (entity==null) {
+        if (entity == null) {
             return null;
         }
 

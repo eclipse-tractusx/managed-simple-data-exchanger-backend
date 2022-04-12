@@ -20,8 +20,9 @@ import com.catenax.dft.entities.database.ProcessReportEntity;
 import com.catenax.dft.entities.usecases.ProcessReport;
 import org.mapstruct.Mapper;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
+
 @Mapper(componentModel = "spring")
 public interface ProcessReportMapper {
 

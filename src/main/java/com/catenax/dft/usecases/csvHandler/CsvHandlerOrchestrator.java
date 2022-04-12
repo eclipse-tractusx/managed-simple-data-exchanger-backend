@@ -32,8 +32,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Service
 @Slf4j
+@Service
 public class CsvHandlerOrchestrator {
 
     private final MapToAspectCsvHandlerUseCase aspectStarterUseCase;

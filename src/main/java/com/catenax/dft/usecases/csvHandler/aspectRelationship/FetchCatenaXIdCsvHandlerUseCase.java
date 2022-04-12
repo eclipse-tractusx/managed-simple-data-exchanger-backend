@@ -24,10 +24,10 @@ import com.catenax.dft.usecases.csvHandler.AbstractCsvHandlerUseCase;
 import com.catenax.dft.usecases.csvHandler.exceptions.CsvHandlerUseCaseException;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 @Slf4j
-@Component
+@Service
 public class FetchCatenaXIdCsvHandlerUseCase extends AbstractCsvHandlerUseCase<AspectRelationship, AspectRelationship> {
 
     private final AspectRepository repository;
@@ -39,7 +39,6 @@ public class FetchCatenaXIdCsvHandlerUseCase extends AbstractCsvHandlerUseCase<A
 
     @Override
     protected AspectRelationship executeUseCase(AspectRelationship input, String processId) {
-
         if (input.getParentUuid() == null || input.getParentUuid().isBlank()) {
             String parentUuid = getUuidIfAspectExists(input.getRowNumber(),
                     input.getParentPartInstanceId(),
@@ -78,6 +77,7 @@ public class FetchCatenaXIdCsvHandlerUseCase extends AbstractCsvHandlerUseCase<A
                             optionalIdentifierValue)
             );
         }
+
         return aspect.getUuid();
     }
 }

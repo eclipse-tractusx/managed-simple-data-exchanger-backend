@@ -23,10 +23,10 @@ import com.catenax.dft.gateways.database.AspectRelationshipRepository;
 import com.catenax.dft.mapper.AspectRelationshipMapper;
 import com.catenax.dft.usecases.csvHandler.AbstractCsvHandlerUseCase;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 @Slf4j
-@Component
+@Service
 public class StoreAspectRelationshipCsvHandlerUseCase extends AbstractCsvHandlerUseCase<AspectRelationship, AspectRelationship> {
 
     private final AspectRelationshipRepository repository;
@@ -41,6 +41,7 @@ public class StoreAspectRelationshipCsvHandlerUseCase extends AbstractCsvHandler
     protected AspectRelationship executeUseCase(AspectRelationship input, String processId) {
         AspectRelationshipEntity entity = mapper.mapFrom(input);
         repository.save(entity);
+
         return input;
     }
 }

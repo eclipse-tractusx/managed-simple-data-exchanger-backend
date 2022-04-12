@@ -20,9 +20,9 @@ package com.catenax.dft.usecases.aspects;
 import com.catenax.dft.entities.aspect.AspectResponse;
 import com.catenax.dft.gateways.database.AspectRepository;
 import com.catenax.dft.mapper.AspectMapper;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
 public class GetAspectsUseCase {
 
     private final AspectRepository repository;

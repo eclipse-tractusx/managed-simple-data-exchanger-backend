@@ -31,7 +31,7 @@ import com.catenax.dft.usecases.csvHandler.exceptions.CsvHandlerUseCaseException
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.ArrayList;
@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Slf4j
-@Component
+@Service
 public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<Aspect, Aspect> {
 
     private static final String PART_INSTANCE_ID = "PartInstanceID";
@@ -52,12 +52,12 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
     private static final String ENDPOINT_PROTOCOL_VERSION = "1.0";
     private static final String PREFIX = "urn:uuid:";
 
+    private final DigitalTwinGateway gateway;
+
     @Value(value = "${manufacturerId}")
     private String manufacturerId;
     @Value(value = "${edc.aspect.url}")
     private String edcEndpoint;
-
-    private final DigitalTwinGateway gateway;
 
     public DigitalTwinsAspectCsvHandlerUseCase(DigitalTwinGateway gateway, StoreAspectCsvHandlerUseCase nextUseCase) {
         super(nextUseCase);
@@ -81,15 +81,15 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
         String shellId;
 
         if (shellIds.isEmpty()) {
-            logInfo(String.format("No shell id for '%s'", shellLookupRequest.toJsonString()));
+            logDebug(String.format("No shell id for '%s'", shellLookupRequest.toJsonString()));
             ShellDescriptorRequest aasDescriptorRequest = getShellDescriptorRequest(aspect);
             ShellDescriptorResponse result = gateway.createShellDescriptor(aasDescriptorRequest);
             shellId = result.getIdentification();
-            logInfo(String.format("Shell created with id '%s'", shellId));
+            logDebug(String.format("Shell created with id '%s'", shellId));
         } else if (shellIds.size() == 1) {
-            logInfo(String.format("Shell id found for '%s'", shellLookupRequest.toJsonString()));
+            logDebug(String.format("Shell id found for '%s'", shellLookupRequest.toJsonString()));
             shellId = shellIds.stream().findFirst().orElse(null);
-            logInfo(String.format("Shell id '%s'", shellId));
+            logDebug(String.format("Shell id '%s'", shellId));
         } else {
             throw new CsvHandlerUseCaseException(aspect.getRowNumber(), String.format("Multiple ids found on aspect %s", shellLookupRequest.toJsonString()));
         }
@@ -99,7 +99,7 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
         if (subModelResponse == null || subModelResponse
                 .stream()
                 .noneMatch(x -> ID_SHORT.equals(x.getIdShort()))) {
-            logInfo(String.format("No submodels for '%s'", shellId));
+            logDebug(String.format("No submodels for '%s'", shellId));
             CreateSubModelRequest createSubModelRequest = getCreateSubModelRequest(aspect);
             gateway.createSubModel(shellId, createSubModelRequest);
         }
@@ -112,7 +112,7 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
         shellLookupRequest.addLocalIdentifier(PART_INSTANCE_ID, aspect.getPartInstanceId());
         shellLookupRequest.addLocalIdentifier(MANUFACTURER_PART_ID, aspect.getManufacturerPartId());
         shellLookupRequest.addLocalIdentifier(MANUFACTURER_ID, manufacturerId);
-        if(aspect.hasOptionalIdentifier()) {
+        if (aspect.hasOptionalIdentifier()) {
             shellLookupRequest.addLocalIdentifier(aspect.getOptionalIdentifierKey(), aspect.getOptionalIdentifierValue());
         }
         return shellLookupRequest;
@@ -147,7 +147,7 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
         specificIdentifiers.add(new KeyValuePair(PART_INSTANCE_ID, aspect.getPartInstanceId()));
         specificIdentifiers.add(new KeyValuePair(MANUFACTURER_PART_ID, aspect.getManufacturerPartId()));
         specificIdentifiers.add(new KeyValuePair(MANUFACTURER_ID, manufacturerId));
-        if(aspect.hasOptionalIdentifier()) {
+        if (aspect.hasOptionalIdentifier()) {
             specificIdentifiers.add(new KeyValuePair(aspect.getOptionalIdentifierKey(), aspect.getOptionalIdentifierValue()));
         }
         List<String> values = new ArrayList<>();

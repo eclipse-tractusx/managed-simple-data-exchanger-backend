@@ -36,14 +36,14 @@ import com.catenax.dft.usecases.csvHandler.exceptions.CsvHandlerUseCaseException
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-@Component
+@Service
 public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends AbstractCsvHandlerUseCase<AspectRelationship, AspectRelationship> {
 
     private static final String PART_INSTANCE_ID = "PartInstanceID";
@@ -93,9 +93,9 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends AbstractCsv
         if (shellIds.isEmpty()) {
             shellId = createShellDescriptor(aspectRelationShip, shellLookupRequest);
         } else if (shellIds.size() == 1) {
-            logInfo(String.format("Shell id found for '%s'", shellLookupRequest.toJsonString()));
+            logDebug(String.format("Shell id found for '%s'", shellLookupRequest.toJsonString()));
             shellId = shellIds.stream().findFirst().orElse(null);
-            logInfo(String.format("Shell id '%s'", shellId));
+            logDebug(String.format("Shell id '%s'", shellId));
         } else {
             throw new CsvHandlerUseCaseException(aspectRelationShip.getRowNumber(), String.format("Multiple id's found on childAspect %s", shellLookupRequest.toJsonString()));
         }
@@ -105,7 +105,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends AbstractCsv
         if (subModelResponse == null || subModelResponse
                 .stream()
                 .noneMatch(x -> ID_SHORT.equals(x.getIdShort()))) {
-            logInfo(String.format("No submodels for '%s'", shellId));
+            logDebug(String.format("No submodels for '%s'", shellId));
             CreateSubModelRequest createSubModelRequest = getCreateSubModelRequest(aspectRelationShip);
             gateway.createSubModel(shellId, createSubModelRequest);
         }
@@ -114,7 +114,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends AbstractCsv
 
     private String createShellDescriptor(AspectRelationship aspectRelationShip, ShellLookupRequest shellLookupRequest) throws CsvHandlerUseCaseException {
         String shellId;
-        logInfo(String.format("No shell id for '%s'", shellLookupRequest.toJsonString()));
+        logDebug(String.format("No shell id for '%s'", shellLookupRequest.toJsonString()));
         AspectEntity aspectEntity = aspectRepository.findByIdentifiers(
                 aspectRelationShip.getParentPartInstanceId(),
                 aspectRelationShip.getParentManufactorerPartId(),
@@ -128,7 +128,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends AbstractCsv
         ShellDescriptorRequest aasDescriptorRequest = getShellDescriptorRequest(aspectMapper.mapFrom(aspectEntity));
         ShellDescriptorResponse result = gateway.createShellDescriptor(aasDescriptorRequest);
         shellId = result.getIdentification();
-        logInfo(String.format("Shell created with id '%s'", shellId));
+        logDebug(String.format("Shell created with id '%s'", shellId));
 
         return shellId;
     }

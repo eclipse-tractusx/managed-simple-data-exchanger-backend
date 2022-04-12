@@ -21,11 +21,11 @@ import com.catenax.dft.entities.aspectRelationship.AspectRelationshipResponse;
 import com.catenax.dft.entities.database.AspectRelationshipEntity;
 import com.catenax.dft.gateways.database.AspectRelationshipRepository;
 import com.catenax.dft.mapper.AspectRelationshipMapper;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Component
+@Service
 public class GetAspectsRelationshipUseCase {
 
     private final AspectRelationshipRepository repository;

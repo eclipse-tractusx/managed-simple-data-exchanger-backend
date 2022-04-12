@@ -35,17 +35,17 @@ public class AspectRelationship {
     @NotBlank(message = "parent_part_instance_id cannot be empty")
     private String parentPartInstanceId;
 
-    @NotBlank(message = "parent_manufactorer_part_Id cannot be empty")
-    private String parentManufactorerPartId;
+    @NotBlank(message = "parent_manufacturer_part_Id cannot be empty")
+    private String parentManufacturerPartId;
 
     private String parentOptionalIdentifierKey;
     private String parentOptionalIdentifierValue;
 
-    @NotBlank(message = "child_part_instance_id cannot be empty")
+    @NotBlank(message = "part_instance_id cannot be empty")
     private String childPartInstanceId;
 
-    @NotBlank(message = "child_manufactorer_part_Id cannot be empty")
-    private String childManufactorerPartId;
+    @NotBlank(message = "manufacturer_part_Id cannot be empty")
+    private String childManufacturerPartId;
 
     private String childOptionalIdentifierKey;
     private String childOptionalIdentifierValue;
@@ -53,14 +53,17 @@ public class AspectRelationship {
     @NotBlank(message = "lifecycle_context cannot be empty")
     private String lifecycleContext;
 
-    @NotBlank(message = "assembled_on cannot be empty")
-    private String assembledOn;
-
     @Positive(message = "quantity_number cannot be empty")
     private String quantityNumber;
 
     @NotBlank(message = "measurement_unit_lexical_value cannot be empty")
     private String measurementUnitLexicalValue;
+
+    @NotBlank(message = "datatype_URI cannot be empty")
+    private String dataTypeUri;
+
+    @NotBlank(message = "assembled_on cannot be empty")
+    private String assembledOn;
 
     public boolean hasOptionalParentIdentifier() {
         boolean hasKey = this.getParentOptionalIdentifierKey() != null && !this.getParentOptionalIdentifierKey().isBlank();

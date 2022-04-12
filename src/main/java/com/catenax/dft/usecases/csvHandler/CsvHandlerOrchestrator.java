@@ -40,7 +40,7 @@ public class CsvHandlerOrchestrator {
     private final MapToAspectRelationshipCsvHandlerUseCase aspectRelationshipStarterUseCase;
     private final ProcessReportUseCase processReportUseCase;
 
-    private final List<String> ASPECT_COLUMNS = Stream.of(
+    public static final List<String> ASPECT_COLUMNS = Stream.of(
             "UUID",
             "part_instance_id",
             "manufacturing_date",
@@ -53,20 +53,21 @@ public class CsvHandlerOrchestrator {
             "optional_identifier_key",
             "optional_identifier_value")
             .collect(Collectors.toList());
-    private final List<String> ASPECT_RELATIONSHIP_COLUMNS = Stream.of(
+    public static final List<String> ASPECT_RELATIONSHIP_COLUMNS = Stream.of(
             "parent_UUID",
             "parent_part_instance_id",
-            "parent_manufactorer_part_id",
+            "parent_manufacturer_part_id",
             "parent_optional_identifier_key",
             "parent_optional_identifier_value",
             "UUID",
             "part_instance_id",
-            "manufactorer_part_id",
+            "manufacturer_part_id",
             "optional_identifier_key",
             "optional_identifier_value",
             "lifecycle_context",
             "quantity_number",
             "measurement_unit_lexical_value",
+            "datatype_URI",
             "assembled_on")
             .collect(Collectors.toList());
 
@@ -81,18 +82,18 @@ public class CsvHandlerOrchestrator {
     @SneakyThrows
     public void execute(CsvContent csvContent, String processId) {
         if (ASPECT_COLUMNS.equals(csvContent.getColumns())) {
-            processReportUseCase.startBuildProcessReport(processId, CsvTypeEnum.ASPECT, csvContent.getRows().size(), LocalDateTime.now());
-            log.info("I'm an ASPECT file. Unpacked and ready to be processed.");
+            processReportUseCase.startBuildProcessReport(processId, CsvTypeEnum.ASPECT, csvContent.getRows().size());
+            log.debug("I'm an ASPECT file. Unpacked and ready to be processed.");
             csvContent.getRows().parallelStream().forEach(input -> aspectStarterUseCase.run(input, processId));
             processReportUseCase.finishBuildAspectProgressReport(processId);
         } else if (ASPECT_RELATIONSHIP_COLUMNS.equals(csvContent.getColumns())) {
-            processReportUseCase.startBuildProcessReport(processId, CsvTypeEnum.ASPECT_RELATIONSHIP, csvContent.getRows().size(), LocalDateTime.now());
-            log.info("I'm an ASPECT RELATIONSHIP file. Unpacked and ready to be processed.");
+            processReportUseCase.startBuildProcessReport(processId, CsvTypeEnum.ASPECT_RELATIONSHIP, csvContent.getRows().size());
+            log.debug("I'm an ASPECT RELATIONSHIP file. Unpacked and ready to be processed.");
             csvContent.getRows().parallelStream().forEach(input -> aspectRelationshipStarterUseCase.run(input, processId));
             processReportUseCase.finishBuildChildAspectProgressReport(processId);
         } else {
-            processReportUseCase.unknownProcessReport(processId, LocalDateTime.now());
-            throw new Exception("I don't know what to do with you");
+            processReportUseCase.unknownProcessReport(processId);
+            throw new Exception("Unrecognized CSV content. I don't know what to do with you");
         }
     }
 }

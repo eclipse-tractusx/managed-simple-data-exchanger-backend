@@ -32,11 +32,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.catenax.dft.gateways.file.CsvGateway.SEPARATOR;
+import static com.catenax.dft.usecases.csvHandler.CsvHandlerOrchestrator.ASPECT_RELATIONSHIP_COLUMNS;
 
 @Service
 public class MapToAspectRelationshipCsvHandlerUseCase extends AbstractCsvHandlerUseCase<RowData, AspectRelationship> {
-
-    private final int ROW_LENGTH = 14;
 
     public MapToAspectRelationshipCsvHandlerUseCase(FetchCatenaXIdCsvHandlerUseCase nextUseCase) {
         super(nextUseCase);
@@ -47,7 +46,7 @@ public class MapToAspectRelationshipCsvHandlerUseCase extends AbstractCsvHandler
     protected AspectRelationship executeUseCase(RowData rowData, String processId) {
         String[] rowDataFields = rowData.content().split(SEPARATOR, -1);
 
-        if (rowDataFields.length != ROW_LENGTH) {
+        if (rowDataFields.length != ASPECT_RELATIONSHIP_COLUMNS.size()) {
             throw new CsvHandlerUseCaseException(rowData.position(), "This row has wrong amount of fields");
         }
 
@@ -56,18 +55,19 @@ public class MapToAspectRelationshipCsvHandlerUseCase extends AbstractCsvHandler
                 .processId(processId)
                 .parentUuid(rowDataFields[0].trim())
                 .parentPartInstanceId(rowDataFields[1].trim())
-                .parentManufactorerPartId(rowDataFields[2].trim())
+                .parentManufacturerPartId(rowDataFields[2].trim())
                 .parentOptionalIdentifierKey(rowDataFields[3].trim())
                 .parentOptionalIdentifierValue(rowDataFields[4].trim())
                 .childUuid(rowDataFields[5].trim())
                 .childPartInstanceId(rowDataFields[6].trim())
-                .childManufactorerPartId(rowDataFields[7].trim())
+                .childManufacturerPartId(rowDataFields[7].trim())
                 .childOptionalIdentifierKey(rowDataFields[8].trim())
                 .childOptionalIdentifierValue(rowDataFields[9].trim())
                 .lifecycleContext(rowDataFields[10].trim())
                 .quantityNumber(rowDataFields[11].trim())
                 .measurementUnitLexicalValue(rowDataFields[12].trim())
-                .assembledOn(rowDataFields[13].trim())
+                .dataTypeUri(rowDataFields[13].trim())
+                .assembledOn(rowDataFields[14].trim())
                 .build();
 
         List<String> errorMessages = validateAsset(aspectRelationShip);
@@ -82,6 +82,7 @@ public class MapToAspectRelationshipCsvHandlerUseCase extends AbstractCsvHandler
         Validator validator = Validation.buildDefaultValidatorFactory()
                 .getValidator();
         Set<ConstraintViolation<AspectRelationship>> violations = validator.validate(asset);
+
         return violations.stream()
                 .map(ConstraintViolation::getMessage)
                 .collect(Collectors.toList());

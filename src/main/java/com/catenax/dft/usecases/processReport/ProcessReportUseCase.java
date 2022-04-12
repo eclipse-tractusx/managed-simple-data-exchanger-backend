@@ -45,13 +45,13 @@ public class ProcessReportUseCase {
         this.mapper = mapper;
     }
 
-    public void startBuildProcessReport(String processId, CsvTypeEnum type, int size, LocalDateTime now) {
+    public void startBuildProcessReport(String processId, CsvTypeEnum type, int size) {
         saveProcessReport(ProcessReport.builder()
                 .processId(processId)
                 .csvType(type)
                 .status(ProgressStatusEnum.IN_PROGRESS)
                 .numberOfItems(size)
-                .startDate(now)
+                .startDate(LocalDateTime.now())
                 .build());
     }
 
@@ -63,7 +63,8 @@ public class ProcessReportUseCase {
         repository.finalizeChildAspectProgressReport(processId, LocalDateTime.now(), ProgressStatusEnum.COMPLETED);
     }
 
-    public void unknownProcessReport(String processId, LocalDateTime now) {
+    public void unknownProcessReport(String processId) {
+        LocalDateTime now = LocalDateTime.now();
         saveProcessReport(ProcessReport.builder()
                 .processId(processId)
                 .csvType(CsvTypeEnum.UNKNOWN)
@@ -76,7 +77,6 @@ public class ProcessReportUseCase {
     private void saveProcessReport(ProcessReport input) {
         ProcessReportEntity entity = mapper.mapFrom(input);
         repository.save(entity);
-        log.debug("Process report stored successfully");
     }
 
     public ProcessReportPageResponse listAllProcessReports(int page, int size) {

@@ -58,6 +58,9 @@ public class Aspect {
     private String optionalIdentifierKey;
     private String optionalIdentifierValue;
 
+    private String shellId;
+    private String subModelId;
+
     public boolean hasOptionalIdentifier() {
         boolean hasKey = this.getOptionalIdentifierKey() != null && !this.getOptionalIdentifierKey().isBlank();
         boolean hasValue = this.getOptionalIdentifierValue() != null && !this.getOptionalIdentifierValue().isBlank();

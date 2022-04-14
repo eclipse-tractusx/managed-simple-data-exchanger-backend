@@ -40,6 +40,7 @@ public class AspectRelationshipEntity {
     private String assembledOn;
     private String quantityNumber;
     private String measurementUnitLexicalValue;
+    private String shellId;
 }
 
 @Data

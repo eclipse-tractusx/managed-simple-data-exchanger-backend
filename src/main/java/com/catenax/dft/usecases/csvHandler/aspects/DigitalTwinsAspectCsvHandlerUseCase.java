@@ -59,7 +59,7 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
     @Value(value = "${edc.aspect.url}")
     private String edcEndpoint;
 
-    public DigitalTwinsAspectCsvHandlerUseCase(DigitalTwinGateway gateway, StoreAspectCsvHandlerUseCase nextUseCase) {
+    public DigitalTwinsAspectCsvHandlerUseCase(DigitalTwinGateway gateway, EDCAspectHandlerUseCase nextUseCase) {
         super(nextUseCase);
         this.gateway = gateway;
     }
@@ -94,6 +94,7 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
             throw new CsvHandlerUseCaseException(aspect.getRowNumber(), String.format("Multiple ids found on aspect %s", shellLookupRequest.toJsonString()));
         }
 
+        aspect.setShellId(shellId);
         SubModelListResponse subModelResponse = gateway.getSubModels(shellId);
 
         if (subModelResponse == null || subModelResponse
@@ -102,6 +103,11 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
             logDebug(String.format("No submodels for '%s'", shellId));
             CreateSubModelRequest createSubModelRequest = getCreateSubModelRequest(aspect);
             gateway.createSubModel(shellId, createSubModelRequest);
+            aspect.setSubModelId(createSubModelRequest.getIdentification());
+        } else {
+            aspect.setSubModelId(subModelResponse.stream()
+                    .filter(x -> x.getIdShort().equals(ID_SHORT)).findFirst()
+                    .get().getIdentification());
         }
 
         return aspect;

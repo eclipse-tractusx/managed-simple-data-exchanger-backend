@@ -45,4 +45,5 @@ public class AspectEntity {
     @Convert(attributeName = "prettyName")
     private OptionalIdentifierKeyEnum optionalIdentifierKey;
     private String optionalIdentifierValue;
+    private String shellId;
 }

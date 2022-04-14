@@ -62,6 +62,8 @@ public class AspectRelationship {
     @NotBlank(message = "measurement_unit_lexical_value cannot be empty")
     private String measurementUnitLexicalValue;
 
+    private String shellId;
+
     public boolean hasOptionalParentIdentifier() {
         boolean hasKey = this.getParentOptionalIdentifierKey() != null && !this.getParentOptionalIdentifierKey().isBlank();
         boolean hasValue = this.getParentOptionalIdentifierValue() != null && !this.getParentOptionalIdentifierValue().isBlank();

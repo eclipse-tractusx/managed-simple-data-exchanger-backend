@@ -30,4 +30,8 @@ public class UUIdGenerator {
     private static String getPrefixedUuid(String prefix) {
         return String.format("%s%s", prefix, UUID.randomUUID());
     }
+
+    public static String getUuid() {
+        return getPrefixedUuid(null);
+    }
 }

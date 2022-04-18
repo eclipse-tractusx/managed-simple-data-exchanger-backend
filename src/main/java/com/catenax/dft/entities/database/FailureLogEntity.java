@@ -38,7 +38,7 @@ public class FailureLogEntity {
     @Id
     private String uuid;
     private String processId;
-    @Column(columnDefinition = "VARCHAR(300)")
+    @Column(columnDefinition = "VARCHAR(500)")
     private String log;
     private LocalDateTime dateTime;
 }

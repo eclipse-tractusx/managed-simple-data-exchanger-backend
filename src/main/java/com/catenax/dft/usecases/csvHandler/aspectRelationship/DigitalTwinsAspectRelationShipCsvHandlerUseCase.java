@@ -100,6 +100,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends AbstractCsv
             throw new CsvHandlerUseCaseException(aspectRelationShip.getRowNumber(), String.format("Multiple id's found on childAspect %s", shellLookupRequest.toJsonString()));
         }
 
+        aspectRelationShip.setShellId(shellId);
         SubModelListResponse subModelResponse = gateway.getSubModels(shellId);
 
         if (subModelResponse == null || subModelResponse

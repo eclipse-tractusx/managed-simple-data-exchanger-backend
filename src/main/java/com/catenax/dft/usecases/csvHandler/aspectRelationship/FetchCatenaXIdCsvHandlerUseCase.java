@@ -42,7 +42,7 @@ public class FetchCatenaXIdCsvHandlerUseCase extends AbstractCsvHandlerUseCase<A
         if (input.getParentUuid() == null || input.getParentUuid().isBlank()) {
             String parentUuid = getUuidIfAspectExists(input.getRowNumber(),
                     input.getParentPartInstanceId(),
-                    input.getParentManufactorerPartId(),
+                    input.getParentManufacturerPartId(),
                     input.getParentOptionalIdentifierKey(),
                     input.getParentOptionalIdentifierValue());
             input.setParentUuid(parentUuid);
@@ -51,7 +51,7 @@ public class FetchCatenaXIdCsvHandlerUseCase extends AbstractCsvHandlerUseCase<A
         if (input.getChildUuid() == null || input.getChildUuid().isBlank()) {
             String childUuid = getUuidIfAspectExists(input.getRowNumber(),
                     input.getChildPartInstanceId(),
-                    input.getChildManufactorerPartId(),
+                    input.getChildManufacturerPartId(),
                     input.getChildOptionalIdentifierKey(),
                     input.getChildOptionalIdentifierValue());
             input.setChildUuid(childUuid);

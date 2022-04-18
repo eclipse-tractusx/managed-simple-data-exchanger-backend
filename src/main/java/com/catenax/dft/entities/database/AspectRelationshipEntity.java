@@ -41,6 +41,7 @@ public class AspectRelationshipEntity {
     private String quantityNumber;
     private String measurementUnitLexicalValue;
     private String shellId;
+    private String dataTypeUri;
 }
 
 @Data

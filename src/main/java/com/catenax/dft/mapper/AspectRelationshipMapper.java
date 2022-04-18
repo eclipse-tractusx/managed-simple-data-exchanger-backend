@@ -54,7 +54,7 @@ public abstract class AspectRelationshipMapper {
     private ChildPart toChildPart(AspectRelationshipEntity entity) {
         Quantity quantity = Quantity.builder()
                 .quantityNumber(Double.parseDouble(entity.getQuantityNumber()))
-                .measurementUnit(new MeasurementUnit(entity.getMeasurementUnitLexicalValue(), "urn:bamm:io.openmanufacturing:meta-model:1.0.0#curie"))
+                .measurementUnit(new MeasurementUnit(entity.getMeasurementUnitLexicalValue(), entity.getDataTypeUri()))
                 .build();
 
         return ChildPart.builder()

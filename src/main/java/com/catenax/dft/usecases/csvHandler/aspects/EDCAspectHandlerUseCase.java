@@ -20,9 +20,11 @@ package com.catenax.dft.usecases.csvHandler.aspects;
 import com.catenax.dft.entities.edc.request.asset.AssetEntryRequest;
 import com.catenax.dft.entities.edc.request.contractDefinition.CreateContractDefinitionRequest;
 import com.catenax.dft.entities.edc.request.contractDefinition.Criterion;
+import com.catenax.dft.entities.edc.request.policies.PolicyDefinitionRequest;
 import com.catenax.dft.entities.usecases.Aspect;
 import com.catenax.dft.gateways.external.EDCGateway;
-import com.catenax.dft.mapper.AssetEntryRequestMapper;
+import com.catenax.dft.entities.edc.request.asset.AssetEntryRequestFactory;
+import com.catenax.dft.entities.edc.request.policies.PolicyRequestFactory;
 import com.catenax.dft.usecases.common.UUIdGenerator;
 import com.catenax.dft.usecases.csvHandler.AbstractCsvHandlerUseCase;
 import lombok.SneakyThrows;
@@ -38,9 +40,12 @@ import java.util.List;
 public class EDCAspectHandlerUseCase extends AbstractCsvHandlerUseCase<Aspect, Aspect> {
 
     @Autowired
-    private AssetEntryRequestMapper assetMapper;
+    private AssetEntryRequestFactory assetMapper;
     @Autowired
     private EDCGateway edcGateway;
+
+    @Autowired
+    private PolicyRequestFactory policyMapper;
 
 
     public EDCAspectHandlerUseCase(StoreAspectCsvHandlerUseCase nextUseCase) {
@@ -51,9 +56,14 @@ public class EDCAspectHandlerUseCase extends AbstractCsvHandlerUseCase<Aspect, A
     @Override
     protected Aspect executeUseCase(Aspect input, String processId) {
 
-        AssetEntryRequest assetEntryRequest = assetMapper.getAsset(input.getShellId() + "-" + input.getSubModelId());
+        //create asset
+        String propId = input.getShellId() + "-" + input.getSubModelId();
+        AssetEntryRequest assetEntryRequest = assetMapper.getAsset(propId);
         edcGateway.createAsset(assetEntryRequest);
+
         //create policies
+        PolicyDefinitionRequest policyDefinitionRequest = policyMapper.getPolicy(propId);
+        edcGateway.createPolicyDefinition(policyDefinitionRequest);
 
         //create contractDefinitions
         List<Criterion> criterias = new ArrayList<>();

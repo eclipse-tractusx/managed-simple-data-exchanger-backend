@@ -19,6 +19,7 @@ package com.catenax.dft.gateways.external;
 
 import com.catenax.dft.entities.edc.request.asset.AssetEntryRequest;
 import com.catenax.dft.entities.edc.request.contractDefinition.CreateContractDefinitionRequest;
+import com.catenax.dft.entities.edc.request.policies.PolicyDefinitionRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -44,6 +45,16 @@ public class EDCGateway {
         HttpEntity<AssetEntryRequest> entity = new HttpEntity<>(request, headers);
         restTemplate.postForEntity(edcEndpoint + assetResource, entity, String.class);
 
+    }
+
+    public  void createPolicyDefinition(PolicyDefinitionRequest request) {
+        final String policyResource = "/policies";
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(API_KEY, API_VALUE);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<PolicyDefinitionRequest> entity = new HttpEntity<>(request, headers);
+        restTemplate.postForEntity(edcEndpoint + policyResource, entity, String.class);
     }
 
     public void createContractDefinition(CreateContractDefinitionRequest request) {

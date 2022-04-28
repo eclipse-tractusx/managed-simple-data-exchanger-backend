@@ -34,6 +34,7 @@ public class PermissionRequest {
     private String assigner;
     private ArrayList<ConstraintRequest> constraints;
     private ArrayList<DutyRequest> duties;
+    private String edctype;
 
     @SneakyThrows
     public String toJsonString() {

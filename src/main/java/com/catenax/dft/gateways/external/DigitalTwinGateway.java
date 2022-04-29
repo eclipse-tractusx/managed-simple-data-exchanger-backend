@@ -43,12 +43,6 @@ import java.util.Map;
 public class DigitalTwinGateway {
 
     public static final String AUTHORIZATION = "Authorization";
-    public static final String ASSET_IDS_QUERY_PARAMETER = "assetIds";
-    public static final String CLIENT_ID_TOKEN_QUERY_PARAMETER = "client_id";
-    public static final String CLIENT_SECRET_TOKEN_QUERY_PARAMETER = "client_secret";
-    public static final String GRANT_TYPE_TOKEN_QUERY_PARAMETER = "grant_type";
-    public static final String CLIENT_CREDENTIALS_TOKEN_QUERY_PARAMETER_VALUE = "client_credentials";
-    public static final String ACCESS_TOKEN = "access_token";
 
     @Value(value = "${digital-twins.authentication.clientSecret}")
     private String clientSecret;
@@ -60,6 +54,8 @@ public class DigitalTwinGateway {
     private String tokenUrl;
 
     public ShellLookupResponse shellLookup(ShellLookupRequest request) {
+        final String ASSET_IDS_QUERY_PARAMETER = "assetIds";
+
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.add(AUTHORIZATION, getBearerToken());
@@ -151,9 +147,9 @@ public class DigitalTwinGateway {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add(CLIENT_ID_TOKEN_QUERY_PARAMETER, clientId);
-        map.add(CLIENT_SECRET_TOKEN_QUERY_PARAMETER, clientSecret);
-        map.add(GRANT_TYPE_TOKEN_QUERY_PARAMETER, CLIENT_CREDENTIALS_TOKEN_QUERY_PARAMETER_VALUE);
+        map.add("client_id", clientId);
+        map.add("client_secret", clientSecret);
+        map.add("grant_type", "client_credentials");
 
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
         ResponseEntity<String> response = restTemplate.exchange(tokenUrl, HttpMethod.POST, entity, String.class);
@@ -161,7 +157,7 @@ public class DigitalTwinGateway {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper.readTree(response.getBody());
 
-        String accessToken = node.path(ACCESS_TOKEN).asText();
+        String accessToken = node.path("access_token").asText();
         return String.format("Bearer %s", accessToken);
     }
 }

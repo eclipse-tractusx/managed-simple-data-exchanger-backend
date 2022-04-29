@@ -152,10 +152,9 @@ public class DigitalTwinGateway {
     @SneakyThrows
     private String getBearerToken() {
 
-        if(accessToken!=null && isTokenValid(accessToken)){
+        if(accessToken!=null && isTokenValid()) {
             return accessToken;
         }
-        else{
             RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -172,28 +171,25 @@ public class DigitalTwinGateway {
             JsonNode node = mapper.readTree(response.getBody());
 
             accessToken = node.path(ACCESS_TOKEN).asText();
-            //JsonNode json = node.get("exp");
-            //long time = json.longValue();
-            //System.out.println("### TIME ###" + time);
+
             return String.format("Bearer %s", accessToken);
-        }
+
 
 
 
     }
 
-
-    private boolean isTokenValid(String accessToken) throws JsonProcessingException {
+    @SneakyThrows
+    private boolean isTokenValid() throws JsonProcessingException {
         String[] str = accessToken.split("\\.");
         Base64.Decoder decoder = Base64.getUrlDecoder();
         String body = new String(decoder.decode(str[1]));
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode actualObj = mapper.readTree(body);
-        String exp = actualObj.get("exp").asText();
-        long expLong = Long.parseLong(exp) * 1000;
+        long tokenExpirationTime = actualObj.get("exp").asLong()*1000;
         long currentTime = System.currentTimeMillis();
-        return expLong - 20000 > currentTime;
+        return tokenExpirationTime - 20000 > currentTime;
     }
 
 }

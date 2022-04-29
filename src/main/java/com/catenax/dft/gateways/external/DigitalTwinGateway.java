@@ -151,28 +151,28 @@ public class DigitalTwinGateway {
 
     @SneakyThrows
     private String getBearerToken() {
-
-        if(accessToken!=null && isTokenValid()) {
+        if (accessToken != null && isTokenValid()) {
             return accessToken;
         }
-            RestTemplate restTemplate = new RestTemplate();
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-            MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-            map.add(CLIENT_ID_TOKEN_QUERY_PARAMETER, clientId);
-            map.add(CLIENT_SECRET_TOKEN_QUERY_PARAMETER, clientSecret);
-            map.add(GRANT_TYPE_TOKEN_QUERY_PARAMETER, CLIENT_CREDENTIALS_TOKEN_QUERY_PARAMETER_VALUE);
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-            HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
-            ResponseEntity<String> response = restTemplate.exchange(tokenUrl, HttpMethod.POST, entity, String.class);
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        map.add(CLIENT_ID_TOKEN_QUERY_PARAMETER, clientId);
+        map.add(CLIENT_SECRET_TOKEN_QUERY_PARAMETER, clientSecret);
+        map.add(GRANT_TYPE_TOKEN_QUERY_PARAMETER, CLIENT_CREDENTIALS_TOKEN_QUERY_PARAMETER_VALUE);
 
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode node = mapper.readTree(response.getBody());
+        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
+        ResponseEntity<String> response = restTemplate.exchange(tokenUrl, HttpMethod.POST, entity, String.class);
 
-            accessToken = node.path(ACCESS_TOKEN).asText();
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node = mapper.readTree(response.getBody());
 
-            return String.format("Bearer %s", accessToken);
+        accessToken = node.path(ACCESS_TOKEN).asText();
+
+        return String.format("Bearer %s", accessToken);
     }
 
     @SneakyThrows
@@ -183,7 +183,7 @@ public class DigitalTwinGateway {
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode actualObj = mapper.readTree(body);
-        long tokenExpirationTime = actualObj.get("exp").asLong()*1000;
+        long tokenExpirationTime = actualObj.get("exp").asLong() * 1000;
         long currentTime = System.currentTimeMillis();
         return tokenExpirationTime - 20000 > currentTime;
     }

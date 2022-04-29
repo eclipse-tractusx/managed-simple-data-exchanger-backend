@@ -23,6 +23,7 @@ import com.catenax.dft.entities.digitalTwins.request.ShellLookupRequest;
 import com.catenax.dft.entities.digitalTwins.response.ShellDescriptorResponse;
 import com.catenax.dft.entities.digitalTwins.response.ShellLookupResponse;
 import com.catenax.dft.entities.digitalTwins.response.SubModelListResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
@@ -35,14 +36,24 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+
 
 @Slf4j
 @Service
 public class DigitalTwinGateway {
 
     public static final String AUTHORIZATION = "Authorization";
+    public static final String ASSET_IDS_QUERY_PARAMETER = "assetIds";
+    public static final String CLIENT_ID_TOKEN_QUERY_PARAMETER = "client_id";
+    public static final String CLIENT_SECRET_TOKEN_QUERY_PARAMETER = "client_secret";
+    public static final String GRANT_TYPE_TOKEN_QUERY_PARAMETER = "grant_type";
+    public static final String CLIENT_CREDENTIALS_TOKEN_QUERY_PARAMETER_VALUE = "client_credentials";
+    public static final String ACCESS_TOKEN = "access_token";
+
+    private String accessToken;
 
     @Value(value = "${digital-twins.authentication.clientSecret}")
     private String clientSecret;
@@ -54,8 +65,6 @@ public class DigitalTwinGateway {
     private String tokenUrl;
 
     public ShellLookupResponse shellLookup(ShellLookupRequest request) {
-        final String ASSET_IDS_QUERY_PARAMETER = "assetIds";
-
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.add(AUTHORIZATION, getBearerToken());
@@ -142,14 +151,18 @@ public class DigitalTwinGateway {
 
     @SneakyThrows
     private String getBearerToken() {
+        if (accessToken != null && isTokenValid()) {
+            return accessToken;
+        }
+
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add("client_id", clientId);
-        map.add("client_secret", clientSecret);
-        map.add("grant_type", "client_credentials");
+        map.add(CLIENT_ID_TOKEN_QUERY_PARAMETER, clientId);
+        map.add(CLIENT_SECRET_TOKEN_QUERY_PARAMETER, clientSecret);
+        map.add(GRANT_TYPE_TOKEN_QUERY_PARAMETER, CLIENT_CREDENTIALS_TOKEN_QUERY_PARAMETER_VALUE);
 
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
         ResponseEntity<String> response = restTemplate.exchange(tokenUrl, HttpMethod.POST, entity, String.class);
@@ -157,7 +170,22 @@ public class DigitalTwinGateway {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper.readTree(response.getBody());
 
-        String accessToken = node.path("access_token").asText();
+        accessToken = node.path(ACCESS_TOKEN).asText();
+
         return String.format("Bearer %s", accessToken);
     }
+
+    @SneakyThrows
+    private boolean isTokenValid() throws JsonProcessingException {
+        String[] str = accessToken.split("\\.");
+        Base64.Decoder decoder = Base64.getUrlDecoder();
+        String body = new String(decoder.decode(str[1]));
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode actualObj = mapper.readTree(body);
+        long tokenExpirationTime = actualObj.get("exp").asLong() * 1000;
+        long currentTime = System.currentTimeMillis();
+        return tokenExpirationTime - 20000 > currentTime;
+    }
+
 }

@@ -25,10 +25,13 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Repository
 public interface
 ProcessReportRepository extends JpaRepository<ProcessReportEntity, String> {
+
+    Optional<ProcessReportEntity> findByProcessId(String processId);
 
     @Modifying
     @Transactional

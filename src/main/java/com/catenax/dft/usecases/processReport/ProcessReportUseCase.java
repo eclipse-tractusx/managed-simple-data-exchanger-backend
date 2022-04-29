@@ -91,7 +91,7 @@ public class ProcessReportUseCase {
     }
 
     public ProcessReport getProcessReportById(String id) {
-        Optional<ProcessReportEntity> result = repository.findById(id);
+        Optional<ProcessReportEntity> result = repository.findByProcessId(id);
         return result.map(mapper::mapFrom).orElse(null);
     }
 }

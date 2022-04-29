@@ -46,12 +46,6 @@ import java.util.Map;
 public class DigitalTwinGateway {
 
     public static final String AUTHORIZATION = "Authorization";
-    public static final String ASSET_IDS_QUERY_PARAMETER = "assetIds";
-    public static final String CLIENT_ID_TOKEN_QUERY_PARAMETER = "client_id";
-    public static final String CLIENT_SECRET_TOKEN_QUERY_PARAMETER = "client_secret";
-    public static final String GRANT_TYPE_TOKEN_QUERY_PARAMETER = "grant_type";
-    public static final String CLIENT_CREDENTIALS_TOKEN_QUERY_PARAMETER_VALUE = "client_credentials";
-    public static final String ACCESS_TOKEN = "access_token";
 
     private String accessToken;
 
@@ -65,6 +59,8 @@ public class DigitalTwinGateway {
     private String tokenUrl;
 
     public ShellLookupResponse shellLookup(ShellLookupRequest request) {
+        final String ASSET_IDS_QUERY_PARAMETER = "assetIds";
+
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.add(AUTHORIZATION, getBearerToken());
@@ -172,14 +168,9 @@ public class DigitalTwinGateway {
             JsonNode node = mapper.readTree(response.getBody());
 
             accessToken = node.path(ACCESS_TOKEN).asText();
-            //JsonNode json = node.get("exp");
-            //long time = json.longValue();
-            //System.out.println("### TIME ###" + time);
+            
             return String.format("Bearer %s", accessToken);
         }
-
-
-
     }
 
 

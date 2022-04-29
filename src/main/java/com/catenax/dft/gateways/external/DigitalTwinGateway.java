@@ -173,10 +173,6 @@ public class DigitalTwinGateway {
             accessToken = node.path(ACCESS_TOKEN).asText();
 
             return String.format("Bearer %s", accessToken);
-
-
-
-
     }
 
     @SneakyThrows

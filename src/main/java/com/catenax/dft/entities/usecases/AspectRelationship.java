@@ -26,7 +26,8 @@ import javax.validation.constraints.Positive;
 @Builder
 @Data
 public class AspectRelationship {
-
+    private String shellId;
+    private String subModelId;
     private int rowNumber;
     private String processId;
     private String childUuid;
@@ -59,7 +60,7 @@ public class AspectRelationship {
     @NotBlank(message = "measurement_unit_lexical_value cannot be empty")
     private String measurementUnitLexicalValue;
   
-    private String shellId;
+
 
     @NotBlank(message = "datatype_URI cannot be empty")
     private String dataTypeUri;

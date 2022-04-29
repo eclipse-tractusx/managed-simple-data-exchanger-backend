@@ -26,16 +26,16 @@ import org.springframework.stereotype.Repository;
 public interface AspectRepository extends JpaRepository<AspectEntity, String> {
 
     AspectEntity findByPartInstanceIdAndManufacturerPartIdAndOptionalIdentifierKeyAndOptionalIdentifierValue(String partInstanceId,
-                                                                                                             String manufactorerPartId,
+                                                                                                             String manufacturerPartId,
                                                                                                              OptionalIdentifierKeyEnum optionalIdentifierKey,
                                                                                                              String optionalIdentifierValue);
 
     default AspectEntity findByIdentifiers(String partInstanceId,
-                                           String manufactorerPartId,
+                                           String manufacturerPartId,
                                            String optionalIdentifierKey,
                                            String optionalIdentifierValue) {
         return findByPartInstanceIdAndManufacturerPartIdAndOptionalIdentifierKeyAndOptionalIdentifierValue(partInstanceId,
-                manufactorerPartId,
+                manufacturerPartId,
                 OptionalIdentifierKeyEnum.valueOf(optionalIdentifierKey),
                 optionalIdentifierValue);
     }

@@ -67,7 +67,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends AbstractCsv
     public DigitalTwinsAspectRelationShipCsvHandlerUseCase(DigitalTwinGateway gateway,
                                                            AspectRepository aspectRepository,
                                                            AspectMapper aspectMapper,
-                                                           StoreAspectRelationshipCsvHandlerUseCase nextUseCase) {
+                                                           EDCAspectRelationshipHandlerUseCase nextUseCase) {
         super(nextUseCase);
         this.gateway = gateway;
         this.aspectRepository = aspectRepository;
@@ -109,6 +109,11 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends AbstractCsv
             logDebug(String.format("No submodels for '%s'", shellId));
             CreateSubModelRequest createSubModelRequest = getCreateSubModelRequest(aspectRelationShip);
             gateway.createSubModel(shellId, createSubModelRequest);
+            aspectRelationShip.setSubModelId(createSubModelRequest.getIdentification());
+        } else {
+            aspectRelationShip.setSubModelId(subModelResponse.stream()
+                    .filter(x -> x.getIdShort().equals(ID_SHORT)).findFirst()
+                    .get().getIdentification());
         }
         return aspectRelationShip;
     }

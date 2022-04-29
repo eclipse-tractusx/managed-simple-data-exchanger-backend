@@ -16,6 +16,8 @@
 
 package com.catenax.dft.entities.edc.request.policies;
 
+import com.catenax.dft.entities.usecases.Aspect;
+import com.catenax.dft.entities.usecases.AspectRelationship;
 import com.catenax.dft.usecases.common.UUIdGenerator;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +27,31 @@ import java.util.HashMap;
 @Service
 public class PolicyRequestFactory {
 
-    public PolicyDefinitionRequest getPolicy(String assetId) {
+    public PolicyDefinitionRequest getPolicy(Aspect input) {
+        String assetId = input.getShellId() + "-" + input.getSubModelId();
+        return buildPolicy(assetId);
+    }
+
+    public PolicyDefinitionRequest getPolicy(AspectRelationship input) {
+        String assetId = input.getShellId() + "-" + input.getSubModelId();
+        return buildPolicy(assetId);
+    }
+
+    private ArrayList<PermissionRequest> getPermissions(String assetId) {
+        ArrayList<PermissionRequest> permissions = new ArrayList<>();
+
+
+        ActionRequest action = ActionRequest.builder().type("USE").includedIn(null)
+                .constraint(null).build();
+
+        PermissionRequest permissionRequest = PermissionRequest.builder().uid("Perm_1").target(assetId)
+                .action(action).assignee(null).assigner(null)
+                .constraints(new ArrayList<>()).duties(new ArrayList<>()).edctype("dataspaceconnector:permission").build();
+        permissions.add(permissionRequest);
+        return permissions;
+    }
+
+    private PolicyDefinitionRequest buildPolicy(String assetId) {
         ArrayList<PermissionRequest> permissions = getPermissions(assetId);
         HashMap<String, String> extensibleProperties = new HashMap<>();
         HashMap<String, String> type = new HashMap<>();
@@ -45,19 +71,5 @@ public class PolicyRequestFactory {
                 .target(assetId)
                 .type(type)
                 .build();
-    }
-
-    private ArrayList<PermissionRequest> getPermissions(String assetId) {
-        ArrayList<PermissionRequest> permissions = new ArrayList<>();
-
-
-        ActionRequest action = ActionRequest.builder().type("USE").includedIn(null)
-                .constraint(null).build();
-
-        PermissionRequest permissionRequest = PermissionRequest.builder().uid("Perm_1").target(assetId)
-                .action(action).assignee(null).assigner(null)
-                .constraints(new ArrayList<>()).duties(new ArrayList<>()).edctype("dataspaceconnector:permission").build();
-        permissions.add(permissionRequest);
-        return permissions;
     }
 }

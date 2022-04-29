@@ -39,7 +39,6 @@ import static com.catenax.dft.usecases.csvHandler.CsvHandlerOrchestrator.ASPECT_
 @Service
 public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<RowData, Aspect> {
 
-    private final int ROW_LENGTH = 11;
 
     public MapToAspectCsvHandlerUseCase(GenerateUuIdCsvHandlerUseCase nextUseCase) {
         super(nextUseCase);

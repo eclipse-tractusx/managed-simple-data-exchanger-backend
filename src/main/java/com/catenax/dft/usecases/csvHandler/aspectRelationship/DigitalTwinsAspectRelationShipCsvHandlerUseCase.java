@@ -160,12 +160,13 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends AbstractCsv
         value.add(SEMANTIC_ID);
         SemanticId semanticId = new SemanticId();
         semanticId.value = value;
+        String encodedId = URLEncoder.encode(aspectRelationShip.getParentUuid(), StandardCharsets.UTF_8.toString());
 
         List<Endpoint> endpoints = new ArrayList<>();
         endpoints.add(Endpoint.builder()
                 .endpointInterface(HTTP)
                 .protocolInformation(ProtocolInformation.builder()
-                        .endpointAddress(String.format(edcEndpointChildren, URLEncoder.encode(aspectRelationShip.getParentUuid(), StandardCharsets.UTF_8.toString())))
+                        .endpointAddress(String.format(edcEndpointChildren, encodedId))
                         .endpointProtocol(HTTPS)
                         .endpointProtocolVersion(ENDPOINT_PROTOCOL_VERSION)
                         .build())

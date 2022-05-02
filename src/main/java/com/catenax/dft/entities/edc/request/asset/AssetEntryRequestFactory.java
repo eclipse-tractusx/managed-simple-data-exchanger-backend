@@ -30,10 +30,11 @@ public class AssetEntryRequestFactory {
     private final String ASSET_PROP_DESCRIPTION = "...";
     private final String ASSET_PROP_VERSION = "1.0.0";
     private final String NAME = "Backend Data Service - AAS Server";
-    private final String AUTH_KEY = "";
-    private final String AUTH_CODE = "";
+    @Value(value = "${edc.asset.payload.url.auth.key}")
+    private String AUTH_KEY;
+    @Value(value = "${edc.asset.payload.url.auth.code}")
+    private String AUTH_CODE;
     private final String TYPE = "AzureStorage";
-    //TODO:encode Url
     @Value(value = "${edc.asset.payload.url}")
     private String END_POINT;
 

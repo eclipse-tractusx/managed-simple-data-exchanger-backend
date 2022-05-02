@@ -131,7 +131,8 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends AbstractCsv
                     aspectRelationShip.getParentOptionalIdentifierKey(),
                     aspectRelationShip.getParentOptionalIdentifierValue());
         } else {
-            aspectRepository.findByIdentifiers(aspectRelationShip.getParentPartInstanceId(),
+            aspectRepository.findByIdentifiers(
+                    aspectRelationShip.getParentPartInstanceId(),
                     aspectRelationShip.getParentManufacturerPartId());
         }
 

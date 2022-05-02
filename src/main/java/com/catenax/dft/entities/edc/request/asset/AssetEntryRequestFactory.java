@@ -16,8 +16,7 @@
 
 package com.catenax.dft.entities.edc.request.asset;
 
-import com.catenax.dft.entities.usecases.Aspect;
-import com.catenax.dft.entities.usecases.AspectRelationship;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -34,53 +33,47 @@ public class AssetEntryRequestFactory {
     private final String AUTH_KEY = "";
     private final String AUTH_CODE = "";
     private final String TYPE = "AzureStorage";
-    private final String END_POINT = "http://aas-server:port/shells/" +
-            "urn%3Auuid%3Ad60b99b0-f269-42f5-94d0-64fe0946ed04/aas/" +
-            "submodels/urn%3Auuid%3A53125dc3-5e6f-4f4b-838d-447432b97918/" +
-            "submodel&content=value&extent=WithBLOBValue";
+    //TODO:encode Url
+    @Value(value = "${edc.asset.payload.url}")
+    private String END_POINT;
 
-    public AssetEntryRequest getAsset(Aspect input) {
-        String propId = input.getShellId() + "-" + input.getSubModelId();
-
-        HashMap<String, String> assetProperties = getAssetProperties(propId);
-        assetProperties.put("asset:prop:name", ASSET_PROP_NAME_ASPECT_RELATIONSHIP);
-        AssetRequest assetRequest = AssetRequest.builder().properties(assetProperties).build();
-
-        HashMap<String, String> dataAddressProperties = getDataAddressProperties();
-        DataAddressRequest dataAddressRequest = DataAddressRequest.builder().properties(dataAddressProperties).build();
-
-        return AssetEntryRequest.builder().asset(assetRequest)
-                .dataAddress(dataAddressRequest).build();
+    public AssetEntryRequest getAspectRelationshipAssetRequest(String shellId, String subModelId) {
+        return buildAsset(shellId, subModelId, ASSET_PROP_NAME_ASPECT_RELATIONSHIP);
     }
 
-    public AssetEntryRequest getAsset(AspectRelationship input) {
-        String propId = input.getShellId() + "-" + input.getSubModelId();
-
-        HashMap<String, String> assetProperties = getAssetProperties(propId);
-        assetProperties.put("asset:prop:name", ASSET_PROP_NAME_ASPECT);
-        AssetRequest assetRequest = AssetRequest.builder().properties(assetProperties).build();
-
-        HashMap<String, String> dataAddressProperties = getDataAddressProperties();
-        DataAddressRequest dataAddressRequest = DataAddressRequest.builder().properties(dataAddressProperties).build();
-
-        return AssetEntryRequest.builder().asset(assetRequest)
-                .dataAddress(dataAddressRequest).build();
+    public AssetEntryRequest getAspectAssetRequest(String shellId, String subModelId) {
+        return buildAsset(shellId, subModelId, ASSET_PROP_NAME_ASPECT);
     }
 
-    private HashMap<String, String> getAssetProperties(String propId) {
+    private AssetEntryRequest buildAsset(String shellId, String subModelId, String assetName) {
+        String assetId = shellId + "-" + subModelId;
+
+        HashMap<String, String> assetProperties = getAssetProperties(assetId, assetName);
+        AssetRequest assetRequest = AssetRequest.builder().properties(assetProperties).build();
+
+        HashMap<String, String> dataAddressProperties = getDataAddressProperties(shellId, subModelId);
+        DataAddressRequest dataAddressRequest = DataAddressRequest.builder().properties(dataAddressProperties).build();
+
+        return AssetEntryRequest.builder()
+                .asset(assetRequest)
+                .dataAddress(dataAddressRequest)
+                .build();
+    }
+
+    private HashMap<String, String> getAssetProperties(String assetId, String assetName) {
         HashMap<String, String> assetProperties = new HashMap<>();
-        assetProperties.put("asset:prop:id", propId);
+        assetProperties.put("asset:prop:id", assetId);
+        assetProperties.put("asset:prop:name", assetName);
         assetProperties.put("asset:prop:contenttype", ASSET_PROP_CONTENT_TYPE);
-        assetProperties.put("asset:prop:name", ASSET_PROP_NAME_ASPECT);
         assetProperties.put("asset:prop:description", ASSET_PROP_DESCRIPTION);
         assetProperties.put("asset:prop:version", ASSET_PROP_VERSION);
         return assetProperties;
     }
 
-    private HashMap<String, String> getDataAddressProperties(){
+    private HashMap<String, String> getDataAddressProperties(String shellId, String subModelId){
         HashMap<String, String> dataAddressProperties = new HashMap<>();
         dataAddressProperties.put("type", TYPE);
-        dataAddressProperties.put("endpoint", END_POINT);
+        dataAddressProperties.put("endpoint", String.format(END_POINT, shellId, subModelId));
         dataAddressProperties.put("name", NAME);
         dataAddressProperties.put("authKey", AUTH_KEY);
         dataAddressProperties.put("authCode", AUTH_CODE);

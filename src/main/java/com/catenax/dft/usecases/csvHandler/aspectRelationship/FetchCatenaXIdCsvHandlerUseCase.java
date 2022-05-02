@@ -77,7 +77,6 @@ public class FetchCatenaXIdCsvHandlerUseCase extends AbstractCsvHandlerUseCase<A
                             optionalIdentifierValue)
             );
         }
-
         return aspect.getUuid();
     }
 }

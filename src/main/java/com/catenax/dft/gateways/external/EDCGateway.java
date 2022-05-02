@@ -18,12 +18,14 @@ package com.catenax.dft.gateways.external;
 
 
 import com.catenax.dft.entities.edc.request.asset.AssetEntryRequest;
-import com.catenax.dft.entities.edc.request.contractDefinition.CreateContractDefinitionRequest;
+import com.catenax.dft.entities.edc.request.contractDefinition.ContractDefinitionRequest;
 import com.catenax.dft.entities.edc.request.policies.PolicyDefinitionRequest;
+import com.catenax.dft.gateways.exceptions.EDCGatewayException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 
@@ -43,27 +45,39 @@ public class EDCGateway {
         headers.add(API_KEY, API_VALUE);
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<AssetEntryRequest> entity = new HttpEntity<>(request, headers);
-        restTemplate.postForEntity(edcEndpoint + assetResource, entity, String.class);
-
+        try {
+            restTemplate.postForEntity(edcEndpoint + assetResource, entity, String.class);
+        } catch (HttpClientErrorException e) {
+            throw new EDCGatewayException(e.getStatusCode().toString());
+        }
     }
 
-    public  void createPolicyDefinition(PolicyDefinitionRequest request) {
+    public void createPolicyDefinition(PolicyDefinitionRequest request) {
         final String policyResource = "/policies";
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.add(API_KEY, API_VALUE);
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<PolicyDefinitionRequest> entity = new HttpEntity<>(request, headers);
-        restTemplate.postForEntity(edcEndpoint + policyResource, entity, String.class);
+        try {
+            restTemplate.postForEntity(edcEndpoint + policyResource, entity, String.class);
+        } catch (HttpClientErrorException e) {
+            throw new EDCGatewayException(e.getStatusCode().toString());
+        }
     }
 
-    public void createContractDefinition(CreateContractDefinitionRequest request) {
+    public void createContractDefinition(ContractDefinitionRequest request) {
         final String contractDefinitionResource = "/contractdefinitions";
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.add(API_KEY, API_VALUE);
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<CreateContractDefinitionRequest> entity = new HttpEntity<>(request, headers);
-        restTemplate.postForEntity(edcEndpoint + contractDefinitionResource, entity, String.class);
+        HttpEntity<ContractDefinitionRequest> entity = new HttpEntity<>(request, headers);
+        try {
+            restTemplate.postForEntity(edcEndpoint + contractDefinitionResource, entity, String.class);
+        } catch (HttpClientErrorException e) {
+            throw new EDCGatewayException(e.getStatusCode().toString());
+        }
+
     }
 }

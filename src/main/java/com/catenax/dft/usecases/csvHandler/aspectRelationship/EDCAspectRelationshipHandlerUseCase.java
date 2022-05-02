@@ -18,20 +18,16 @@ package com.catenax.dft.usecases.csvHandler.aspectRelationship;
 
 import com.catenax.dft.entities.edc.request.asset.AssetEntryRequest;
 import com.catenax.dft.entities.edc.request.asset.AssetEntryRequestFactory;
-import com.catenax.dft.entities.edc.request.contractDefinition.CreateContractDefinitionRequest;
-import com.catenax.dft.entities.edc.request.contractDefinition.Criterion;
+import com.catenax.dft.entities.edc.request.contractDefinition.ContractDefinitionRequest;
+import com.catenax.dft.entities.edc.request.contractDefinition.ContractDefinitionRequestFactory;
 import com.catenax.dft.entities.edc.request.policies.PolicyDefinitionRequest;
 import com.catenax.dft.entities.edc.request.policies.PolicyRequestFactory;
 import com.catenax.dft.entities.usecases.AspectRelationship;
 import com.catenax.dft.gateways.external.EDCGateway;
-import com.catenax.dft.usecases.common.UUIdGenerator;
 import com.catenax.dft.usecases.csvHandler.AbstractCsvHandlerUseCase;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -40,40 +36,37 @@ public class EDCAspectRelationshipHandlerUseCase extends AbstractCsvHandlerUseCa
     private AssetEntryRequestFactory assetFactory;
     private EDCGateway edcGateway;
     private PolicyRequestFactory policyFactory;
+    private ContractDefinitionRequestFactory contractFactory;
 
-    public EDCAspectRelationshipHandlerUseCase(StoreAspectRelationshipCsvHandlerUseCase nextUseCase, AssetEntryRequestFactory assetFactory, EDCGateway edcGateway, PolicyRequestFactory policyFactory) {
+    public EDCAspectRelationshipHandlerUseCase(StoreAspectRelationshipCsvHandlerUseCase nextUseCase,
+                                               EDCGateway edcGateway,
+                                               AssetEntryRequestFactory assetFactory,
+                                               PolicyRequestFactory policyFactory,
+                                               ContractDefinitionRequestFactory contractFactory) {
         super(nextUseCase);
         this.assetFactory = assetFactory;
         this.edcGateway = edcGateway;
         this.policyFactory = policyFactory;
+        this.contractFactory = contractFactory;
     }
 
     @SneakyThrows
     @Override
     protected AspectRelationship executeUseCase(AspectRelationship input, String processId) {
+        String shellId = input.getShellId();
+        String subModelId = input.getSubModelId();
 
         //Create asset
-        AssetEntryRequest assetEntryRequest = assetFactory.getAsset(input);
+        AssetEntryRequest assetEntryRequest = assetFactory.getAspectRelationshipAssetRequest(shellId, subModelId);
         edcGateway.createAsset(assetEntryRequest);
 
         //create policies
-        PolicyDefinitionRequest policyDefinitionRequest = policyFactory.getPolicy(input);
+        PolicyDefinitionRequest policyDefinitionRequest = policyFactory.getPolicy(shellId, subModelId);
         edcGateway.createPolicyDefinition(policyDefinitionRequest);
 
         //create contractDefinitions
-        List<Criterion> criterias = new ArrayList<>();
-        criterias.add(Criterion.builder()
-                .left("asset.prop.id")
-                .op("in")
-                .right(input.getChildUuid())
-                .build());
-        CreateContractDefinitionRequest createContractDefinitionRequest = CreateContractDefinitionRequest.builder()
-                .contractPolicyId("")
-                .accessPolicyId("")
-                .id(UUIdGenerator.getUuid())
-                .criteria(criterias)
-                .build();
-        edcGateway.createContractDefinition(createContractDefinitionRequest);
+        ContractDefinitionRequest contractDefinitionRequest = contractFactory.getContractDefinitionRequest(input.getChildUuid());
+        edcGateway.createContractDefinition(contractDefinitionRequest);
 
         return input;
     }

@@ -39,6 +39,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -152,6 +154,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends AbstractCsv
         return shellLookupRequest;
     }
 
+    @SneakyThrows
     private CreateSubModelRequest getCreateSubModelRequest(AspectRelationship aspectRelationShip) {
         ArrayList<String> value = new ArrayList<>();
         value.add(SEMANTIC_ID);
@@ -162,7 +165,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends AbstractCsv
         endpoints.add(Endpoint.builder()
                 .endpointInterface(HTTP)
                 .protocolInformation(ProtocolInformation.builder()
-                        .endpointAddress(String.format(edcEndpointChildren, aspectRelationShip.getParentUuid()))
+                        .endpointAddress(String.format(edcEndpointChildren, URLEncoder.encode(aspectRelationShip.getParentUuid(), StandardCharsets.UTF_8.toString())))
                         .endpointProtocol(HTTPS)
                         .endpointProtocolVersion(ENDPOINT_PROTOCOL_VERSION)
                         .build())

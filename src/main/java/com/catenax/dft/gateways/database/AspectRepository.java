@@ -36,10 +36,9 @@ public interface AspectRepository extends JpaRepository<AspectEntity, String> {
                                            String optionalIdentifierValue) {
         return findByPartInstanceIdAndManufacturerPartIdAndOptionalIdentifierKeyAndOptionalIdentifierValue(partInstanceId,
                 manufacturerPartId,
-                OptionalIdentifierKeyEnum.valueOf(optionalIdentifierKey),
+                optionalIdentifierKey == null ? null : OptionalIdentifierKeyEnum.valueOf(optionalIdentifierKey),
                 optionalIdentifierValue);
     }
-
 
     AspectEntity findByUuid(String uuid);
 }

@@ -123,11 +123,17 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends AbstractCsv
     private String createShellDescriptor(AspectRelationship aspectRelationShip, ShellLookupRequest shellLookupRequest) throws CsvHandlerUseCaseException {
         String shellId;
         logDebug(String.format("No shell id for '%s'", shellLookupRequest.toJsonString()));
-        AspectEntity aspectEntity = aspectRepository.findByIdentifiers(
-                aspectRelationShip.getParentPartInstanceId(),
-                aspectRelationShip.getParentManufacturerPartId(),
-                aspectRelationShip.getParentOptionalIdentifierKey(),
-                aspectRelationShip.getParentOptionalIdentifierValue());
+        AspectEntity aspectEntity = null;
+        if (aspectRelationShip.hasOptionalParentIdentifier()) {
+            aspectEntity = aspectRepository.findByIdentifiers(
+                    aspectRelationShip.getParentPartInstanceId(),
+                    aspectRelationShip.getParentManufacturerPartId(),
+                    aspectRelationShip.getParentOptionalIdentifierKey(),
+                    aspectRelationShip.getParentOptionalIdentifierValue());
+        } else {
+            aspectRepository.findByIdentifiers(aspectRelationShip.getParentPartInstanceId(),
+                    aspectRelationShip.getParentManufacturerPartId());
+        }
 
         if (aspectEntity == null) {
             throw new CsvHandlerUseCaseException(aspectRelationShip.getRowNumber(), "No parent aspect found");

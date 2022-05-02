@@ -30,14 +30,21 @@ public interface AspectRepository extends JpaRepository<AspectEntity, String> {
                                                                                                              OptionalIdentifierKeyEnum optionalIdentifierKey,
                                                                                                              String optionalIdentifierValue);
 
+    AspectEntity findByPartInstanceIdAndManufacturerPartIdAndOptionalIdentifierKeyIsNullAndOptionalIdentifierValueIsNull(String partInstanceId,
+                                                                                                                         String manufacturerId);
     default AspectEntity findByIdentifiers(String partInstanceId,
                                            String manufacturerPartId,
                                            String optionalIdentifierKey,
                                            String optionalIdentifierValue) {
         return findByPartInstanceIdAndManufacturerPartIdAndOptionalIdentifierKeyAndOptionalIdentifierValue(partInstanceId,
                 manufacturerPartId,
-                optionalIdentifierKey == null ? null : OptionalIdentifierKeyEnum.valueOf(optionalIdentifierKey),
+                OptionalIdentifierKeyEnum.valueOf(optionalIdentifierKey),
                 optionalIdentifierValue);
+    }
+
+    default AspectEntity findByIdentifiers(String partInstanceId, String manufacturerId) {
+        return findByPartInstanceIdAndManufacturerPartIdAndOptionalIdentifierKeyIsNullAndOptionalIdentifierValueIsNull(partInstanceId,
+                manufacturerId);
     }
 
     AspectEntity findByUuid(String uuid);

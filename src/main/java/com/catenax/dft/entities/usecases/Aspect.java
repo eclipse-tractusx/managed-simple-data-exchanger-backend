@@ -28,7 +28,8 @@ import javax.validation.constraints.NotBlank;
 @Builder
 @AllArgsConstructor
 public class Aspect {
-
+    private String shellId;
+    private String subModelId;
     private int rowNumber;
     private String uuid;
     private String processId;
@@ -58,8 +59,6 @@ public class Aspect {
     private String optionalIdentifierKey;
     private String optionalIdentifierValue;
 
-    private String shellId;
-    private String subModelId;
 
     public boolean hasOptionalIdentifier() {
         boolean hasKey = this.getOptionalIdentifierKey() != null && !this.getOptionalIdentifierKey().isBlank();

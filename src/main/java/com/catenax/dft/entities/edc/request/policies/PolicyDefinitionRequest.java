@@ -38,7 +38,7 @@ public class PolicyDefinitionRequest {
     private String assignee;
     private String target;
     @JsonProperty("@type")
-    private String type;
+    private HashMap<String, String> type;
 
     @SneakyThrows
     public String toJsonString() {

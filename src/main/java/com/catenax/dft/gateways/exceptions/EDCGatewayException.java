@@ -14,16 +14,17 @@
  *   limitations under the License.
  */
 
-package com.catenax.dft.mapper;
+package com.catenax.dft.gateways.exceptions;
 
-import com.catenax.dft.entities.edc.request.policies.PolicyDefinitionRequest;
-import org.springframework.stereotype.Service;
+public class EDCGatewayException extends RuntimeException{
 
-@Service
-public class PolicyRequestMapper {
 
-    public PolicyDefinitionRequest getPolicy(){
+    public EDCGatewayException(String message) {
+        super(message);
+    }
 
-        return null;
+    @Override
+    public String getMessage() {
+        return String.format("There was a problem communicating with the EDC : %s", super.getMessage());
     }
 }

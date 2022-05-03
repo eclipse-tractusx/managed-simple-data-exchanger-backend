@@ -25,7 +25,7 @@ import lombok.*;
 @Builder
 public class ConstraintRequest {
 
-    private String edcType;
+    private String edctype;
 
     @SneakyThrows
     public String toJsonString() {

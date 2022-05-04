@@ -48,6 +48,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http
                 .csrf()
+                .ignoringAntMatchers("/upload")
                 .and()
                 .cors()
                 .and()

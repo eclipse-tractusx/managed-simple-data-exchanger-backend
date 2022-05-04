@@ -152,7 +152,7 @@ public class DigitalTwinGateway {
     @SneakyThrows
     private String getBearerToken() {
         if (accessToken != null && isTokenValid()) {
-            return accessToken;
+            return String.format("Bearer %s", accessToken);
         }
 
         RestTemplate restTemplate = new RestTemplate();

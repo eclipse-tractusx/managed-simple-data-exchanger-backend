@@ -176,7 +176,7 @@ public class DigitalTwinGateway {
     }
 
     @SneakyThrows
-    private boolean isTokenValid() throws JsonProcessingException {
+    private boolean isTokenValid() {
         String[] str = accessToken.split("\\.");
         Base64.Decoder decoder = Base64.getUrlDecoder();
         String body = new String(decoder.decode(str[1]));

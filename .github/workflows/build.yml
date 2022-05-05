@@ -40,7 +40,6 @@ jobs:
         with:
           java-version: '18'
           distribution: 'temurin'
-          cache: maven
         
       - name: Build
       - run: mvn -B package

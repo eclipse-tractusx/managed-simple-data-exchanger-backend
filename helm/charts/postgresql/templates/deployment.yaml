@@ -36,7 +36,7 @@ spec:
               containerPort: 5432
           volumeMounts: 
             - mountPath: /var/lib/postgresql/data
-              name: "postgres"
+              name: {{ include "postgresql.fullname" . }}
           livenessProbe:
             httpGet:
               path: /
@@ -46,16 +46,9 @@ spec:
               path: /
               port: http
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-      {{- with .Values.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+            {{- toYaml .Values.resources | nindent 12 }}      
+      volumes:
+        - name: {{ include "postgresql.fullname" . }}
+          persistentVolumeClaim:
+            claimName: {{ include "postgresql.fullname" . }}
+      

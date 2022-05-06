@@ -35,9 +35,9 @@ spec:
             - name: http
               containerPort: 5432
           volumeMounts: 
-          - mountPath: /var/lib/postgresql/data
-            name : {{ include "postgresql.fullname" . }}
-            subPath: postgres
+            - mountPath: /var/lib/postgresql/data
+              name : {{ include "postgresql.fullname" . }}
+              subPath: postgres
           livenessProbe:
             httpGet:
               path: /

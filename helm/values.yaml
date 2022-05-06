@@ -6,13 +6,13 @@ replicaCount: 1
 
 image:
   repository: https://github.com/catenax-ng/product-dft-backend/pkgs/container/product-dft-backend
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "1.0.0"
 
 imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
+nameOverride: "prdouct-dft-backend"
+fullnameOverride: "dft"
 
 serviceAccount:
   # Specifies whether a service account should be created

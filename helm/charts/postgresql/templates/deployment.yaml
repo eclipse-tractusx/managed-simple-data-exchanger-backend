@@ -37,6 +37,7 @@ spec:
           volumeMounts: 
             - mountPath: /var/lib/postgresql/data
               name: {{ include "postgresql.fullname" . }}
+              subPath: postgres
           livenessProbe:
             httpGet:
               path: /

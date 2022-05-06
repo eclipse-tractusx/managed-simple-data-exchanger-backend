@@ -8,7 +8,7 @@ image:
   repository: ghcr.io/catenax-ng/product-dft-backend:main
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "1.0.0"
+  tag: ""
 
 imagePullSecrets: []
 nameOverride: "prdouct-dft-backend"

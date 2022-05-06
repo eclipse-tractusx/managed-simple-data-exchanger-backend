@@ -36,6 +36,7 @@ spec:
               containerPort: 5432
           volumeMounts: 
             - mountPath: /var/lib/postgresql/data
+            name: "postgres"
           livenessProbe:
             httpGet:
               path: /

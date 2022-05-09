@@ -35,16 +35,12 @@ spec:
           image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-            - name: DB_HOST
-              value: {{ printf "%s-%s" .Release.Name "postgres" }}
-            {{- $appSecretsName := .Values.applicationSecrets.name }}
-            {{- range $key, $val := .Values.applicationSecrets.mappings }}
-            - name: {{ $val }}
-              valueFrom:
-                secretKeyRef:
-                  name: {{ $appSecretsName }}
-                  key: {{ $key }}
-                      {{- end}}
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://postgresql:5432/postgres"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "myuser"
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: "rty_12345"
           ports:
             - name: http
               containerPort: 8080

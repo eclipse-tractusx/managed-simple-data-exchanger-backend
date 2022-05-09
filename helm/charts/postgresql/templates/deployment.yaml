@@ -28,11 +28,20 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: POSTGRES_DB
-              value: postgres
+              valueFrom:
+                secretKeyRef:
+                  name: {{.Values.applicationSecrets  }}
+                  key: db-name
             - name: POSTGRES_USER
-              value: user
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.applicationSecrets  }}
+                  key: db-user
             - name: POSTGRES_PASSWORD
-              value: mysecretpassword
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.applicationSecrets  }}
+                  key: db-pass
           ports:
             - containerPort: 5432
           volumeMounts: 

@@ -27,21 +27,12 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-            - name: POSTGRES_DB
-              valueFrom:
-                secretKeyRef:
-                  name: {{.Values.applicationSecrets  }}
-                  key: db-name
+            - name: POSTGRES_DB            
+              key: dft
             - name: POSTGRES_USER
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.applicationSecrets  }}
-                  key: db-user
+              key: myuser
             - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.applicationSecrets  }}
-                  key: db-pass
+              key: rty_12345
           ports:
             - containerPort: 5432
           volumeMounts: 

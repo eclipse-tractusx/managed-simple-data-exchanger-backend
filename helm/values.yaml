@@ -12,8 +12,6 @@ image:
   tag: "main"
 
 imagePullSecrets: []
-nameOverride: "product-dft-backend"
-fullnameOverride: "dft-backend"
 
 serviceAccount:
   # Specifies whether a service account should be created

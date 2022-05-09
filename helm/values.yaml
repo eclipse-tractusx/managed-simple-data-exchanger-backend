@@ -5,8 +5,9 @@
 replicaCount: 1
 
 image:
-  repository: ghcr.io/catenax-ng/product-dft-backend:main
+  repository: ghcr.io/catenax-ng/product-dft-backend
   pullPolicy: Always
+  tag: "main"
 
 imagePullSecrets: []
 

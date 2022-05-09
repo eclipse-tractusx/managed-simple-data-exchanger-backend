@@ -17,7 +17,7 @@ podSecurityContext: {}
 
 securityContext: {}
 
-applicationSecrets: dft
+# applicationSecrets: dft
 
 resources:
   limits:

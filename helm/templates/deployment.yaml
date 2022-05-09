@@ -36,7 +36,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:postgresql://product-dft-backend-postgres:5432/dft"
+              value: "jdbc:postgresql://product-dft-backend-postgres:5432/postgres"
             - name: SPRING_DATASOURCE_USERNAME
               value: "user"
             - name: SPRING_DATASOURCE_PASSWORD

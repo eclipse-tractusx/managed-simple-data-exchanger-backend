@@ -50,7 +50,7 @@ ingress:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
     nginx.ingress.kubernetes.io/affinity: "cookie"
     nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
-  host: dft.int.demo.catena-x.net
+  host: dft-api.int.demo.catena-x.net
 
 resources:
   limits:

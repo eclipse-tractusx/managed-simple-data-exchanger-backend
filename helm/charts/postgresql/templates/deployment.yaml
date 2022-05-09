@@ -27,29 +27,21 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
+            - name: POSTGRES_DB
+              value: postgres
             - name: POSTGRES_USER
               value: user
             - name: POSTGRES_PASSWORD
               value: mysecretpassword
           ports:
-            - name: http
-              containerPort: 5432
+            - containerPort: 5432
           volumeMounts: 
             - mountPath: /var/lib/postgresql/data
               name: {{ include "postgresql.fullname" . }}
               subPath: postgres
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}      
       volumes:
         - name: {{ include "postgresql.fullname" . }}
           persistentVolumeClaim:
             claimName: {{ include "postgresql.fullname" . }}
-      

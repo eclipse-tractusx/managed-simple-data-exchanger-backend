@@ -27,9 +27,9 @@ podSecurityContext:
 
 securityContext:
   allowPrivilegeEscalation: true
-  runAsNonRoot: false
-  runAsUser: 1000
-  runAsGroup: 3000
+  # runAsNonRoot: false
+  # runAsUser: 1000
+  #runAsGroup: 3000
   
 applicationSecrets:
   name: dft

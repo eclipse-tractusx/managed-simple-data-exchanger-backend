@@ -5,10 +5,8 @@
 replicaCount: 1
 
 image:
-  registry: ghcr.io
-  repository: catenax-ng/product-dft-backend
+  repository: ghcr.io/catenax-ng/product-dft-backend
   pullPolicy: Always
-  # Overrides the image tag whose default is the chart appVersion.
   tag: "main"
 
 imagePullSecrets: []

@@ -28,11 +28,11 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: POSTGRES_DB            
-              value: dft
+              value: "dft"
             - name: POSTGRES_USER
-              value: myuser
+              value: "myuser"
             - name: POSTGRES_PASSWORD
-              value: rty_12345
+              value: "rty_12345"
           ports:
             - containerPort: 5432
           volumeMounts: 

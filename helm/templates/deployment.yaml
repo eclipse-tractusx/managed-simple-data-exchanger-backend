@@ -38,9 +38,9 @@ spec:
             - name: SPRING_DATASOURCE_URL
               value: "jdbc:postgresql://product-dft-backend-postgres:5432/dft"
             - name: SPRING_DATASOURCE_USERNAME
-              value: "myuser"
+              value: "user"
             - name: SPRING_DATASOURCE_PASSWORD
-              value: "rty_12345"
+              value: "mysecretpassword"
           ports:
             - name: http
               containerPort: 8080

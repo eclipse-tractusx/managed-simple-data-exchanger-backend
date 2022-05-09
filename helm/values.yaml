@@ -24,15 +24,23 @@ serviceAccount:
 
 podAnnotations: {}
 
-podSecurityContext: {}
-  # fsGroup: 2000
+podSecurityContext:
+  fsGroup: 2000
 
 securityContext:
   allowPrivilegeEscalation: false
   runAsNonRoot: true
   runAsUser: 1000
   runAsGroup: 3000
-
+  
+applicationSecrets:
+  name: dft
+  mappings:
+    db-user: DB_USERNAME
+    db-pass: DB_PASSWORD
+    db-host: DB_HOST
+    db-name: DB_NAME
+    
 service:
   type: ClusterIP
   port: 8080

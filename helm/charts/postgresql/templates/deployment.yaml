@@ -26,17 +26,13 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          env:
-            - name: POSTGRES_DB            
-              value: "dft"
-            - name: POSTGRES_USER
-              value: "myuser"
-            - name: POSTGRES_PASSWORD
-              value: "rty_12345"
+          envFrom:
+            - configMapRef:
+                name: {{ include "postgresql.fullname" }}
           ports:
-            - containerPort: 5432
+            - containerPort: {{ .Values.service.port }}
           volumeMounts: 
-            - mountPath: /var/lib/postgresql/data
+            - mountPath: {{ .Values.service.volume }}
               name: {{ include "postgresql.fullname" . }}
               subPath: postgres
           resources:

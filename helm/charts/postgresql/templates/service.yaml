@@ -7,6 +7,6 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - port: 5432
+    - port: {{ .Values.service.port }}
   selector:
     {{- include "postgresql.selectorLabels" . | nindent 4 }}

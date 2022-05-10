@@ -24,7 +24,6 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      # @url: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/#use-the-default-service-account-to-access-the-api-server
       automountServiceAccountToken: false
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
@@ -34,22 +33,17 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          env:
-            - name: SPRING_DATASOURCE_URL
-              value: "jdbc:postgresql://product-dft-backend-postgres:5432/dft"
-            - name: SPRING_DATASOURCE_USERNAME
-              value: "myuser"
-            - name: SPRING_DATASOURCE_PASSWORD
-              value: "rty_12345"
+          envFrom:
+            - configMapRef:
+                name: {{ include "helm.fullname" }}
           ports:
             - name: http
               containerPort: 8080
               protocol: TCP
-          # @url: https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes
           livenessProbe:
             httpGet:
-              path: "/api/ping"
-              port: 8080
+              path: {{ .Values.probe.endpoint }}
+              port: {{ .Values.service.port }}
               scheme: HTTP
             initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
@@ -59,8 +53,8 @@ spec:
           # @url: https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes
           readinessProbe:
             httpGet:
-              path: "/api/ping"
-              port: 8080
+              path: {{ .Values.probe.endpoint }}
+              port: {{ .Values.service.port }}
               scheme: HTTP
             initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.readinessProbe.periodSeconds }}

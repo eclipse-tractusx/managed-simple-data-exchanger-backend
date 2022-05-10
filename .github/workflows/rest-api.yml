@@ -2,7 +2,7 @@ name: dtf_rest_api
 
 on:
   push:
-    branches: [ main ]
+    branches: [ none ]
     paths:
       - '**'
       - '.github/workflows/rest-api.yml'

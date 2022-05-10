@@ -89,4 +89,4 @@ postgres:
 config:
   SPRING_DATASOURCE_URL: "jdbc:postgresql://product-dft-backend-postgres:5432/dft"
   SPRING_DATASOURCE_USERNAME: "myuser"
-  SPRING_DATASOURCE_PASSWORD: <path:dft/postgres/DB_PASSWORD#version4>
+  SPRING_DATASOURCE_PASSWORD: "rty_12345"

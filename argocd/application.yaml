@@ -1,0 +1,16 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: dft-api
+spec:
+  destination:
+    name: ''
+    namespace: product-dft
+    server: 'https://kubernetes.default.svc'
+  source:
+    path: helm
+    plugin:
+      name: argocd-vault-plugin-heml
+    repoURL: https://github.com/catenax-ng/product-dft-backend
+    targetRevision: HEAD
+  project: default

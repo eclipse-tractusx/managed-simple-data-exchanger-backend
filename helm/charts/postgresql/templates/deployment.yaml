@@ -28,7 +28,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           envFrom:
             - configMapRef:
-                name: {{ include "postgresql.fullname" }}
+                name: {{ include "postgresql.fullname" . }}
           ports:
             - containerPort: {{ .Values.service.port }}
           volumeMounts: 

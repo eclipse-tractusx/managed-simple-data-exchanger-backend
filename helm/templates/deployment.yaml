@@ -35,7 +35,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           envFrom:
             - configMapRef:
-                name: {{ include "helm.fullname" }}
+                name: {{ include "helm.fullname" . }}
           ports:
             - name: http
               containerPort: 8080

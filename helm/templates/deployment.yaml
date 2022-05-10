@@ -34,14 +34,15 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-            - name: SPRING.DATASOURCE.PASSWORD
+            - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretRef:
-                    key: dbpassword
-                    name: dtf-postgres-secrets
-          envFrom:
-            - configMapRef:
-                name: {{ include "helm.fullname" . }}
+                  name: dtf-postgres-secrets
+                  key: dbpassword
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://product-dft-backend-postgres:5432/dft"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "myuser"
           ports:
             - name: http
               containerPort: 8080

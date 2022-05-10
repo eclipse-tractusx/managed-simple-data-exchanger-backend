@@ -86,7 +86,7 @@ readinessProbe:
 postgres:
   enabled: true
 
-config:
-  SPRING_DATASOURCE_URL: "jdbc:postgresql://product-dft-backend-postgres:5432/dft"
-  SPRING_DATASOURCE_USERNAME: "myuser"
+
+
+
 

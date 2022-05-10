@@ -44,9 +44,9 @@ spec:
                 secretKeyRef:
                   name: dtf-postgres-secrets
                   key: dbUser
-             - name: SPRING_DATASOURCE_PASSWORD
-               valueFrom:
-                 secretKeyRef:
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
                   name: dtf-postgres-secrets
                   key: dbPassword
           ports:

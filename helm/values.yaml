@@ -86,6 +86,9 @@ readinessProbe:
 postgres:
   enabled: true
 
+config:
+
+
 
 
 

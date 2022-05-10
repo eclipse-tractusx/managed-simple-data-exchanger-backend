@@ -30,14 +30,6 @@ securityContext:
 
 probe:
   endpoint: "/api/ping"
-
-applicationSecrets:
-  name: dft
-  mappings:
-    db-user: DB_USERNAME
-    db-pass: DB_PASSWORD
-    db-host: DB_HOST
-    db-name: DB_NAME
     
 service:
   type: ClusterIP
@@ -97,4 +89,4 @@ postgres:
 config:
   SPRING_DATASOURCE_URL: "jdbc:postgresql://product-dft-backend-postgres:5432/dft"
   SPRING_DATASOURCE_USERNAME: "myuser"
-  SPRING_DATASOURCE_PASSWORD: "rty_12345"
+  SPRING_DATASOURCE_PASSWORD: <path:dft/postgres/DB_PASSWORD#version4>

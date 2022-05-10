@@ -42,7 +42,10 @@ spec:
             - name: SPRING_DATASOURCE_URL
               value: "jdbc:postgresql://product-dft-backend-postgres:5432/dft"
             - name: SPRING_DATASOURCE_USERNAME
-              value: "myuser"
+              valueFrom:
+                secretKeyRef:
+                  name: dtf-postgres-secrets
+                  key: dbuser
           ports:
             - name: http
               containerPort: 8080

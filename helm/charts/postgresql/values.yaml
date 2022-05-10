@@ -25,11 +25,6 @@ resources:
     cpu: 500m
     memory: 1Gi
 
-config:
-  POSTGRES_DB: "dft"
-  POSTGRES_USER: "myuser"
-  POSTGRES_PASSWORD: "rty_12345"
-
 service:
   port: 5432
   volume: "/var/lib/postgresql/data"

@@ -37,17 +37,17 @@ spec:
             - name: SPRING_DATASOURCE_URL
               valueFrom:
                 secretKeyRef:
-                  name: dtf-postgres-secrets
+                  name: dft-postgres-secrets
                   key: dbUrl
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: dtf-postgres-secrets
+                  name: dft-postgres-secrets
                   key: dbUser
             - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: dtf-postgres-secrets
+                  name: dft-postgres-secrets
                   key: dbPassword
             - name: DIGITAL-TWINS_URL
               valueFrom:

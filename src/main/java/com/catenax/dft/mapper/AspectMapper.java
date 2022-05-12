@@ -26,7 +26,6 @@ import com.catenax.dft.entities.usecases.Aspect;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 
@@ -36,6 +35,7 @@ public abstract class AspectMapper {
     private String manufacturerId;
 
     @Mapping(target = "rowNumber", ignore = true)
+    @Mapping(target = "subModelId", ignore = true)
     public abstract Aspect mapFrom(AspectEntity aspect);
 
     public abstract AspectEntity mapFrom(Aspect aspect);

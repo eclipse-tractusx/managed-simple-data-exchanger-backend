@@ -45,7 +45,6 @@ public class MapToAspectRelationshipCsvHandlerUseCase extends AbstractCsvHandler
     @SneakyThrows
     protected AspectRelationship executeUseCase(RowData rowData, String processId) {
         String[] rowDataFields = rowData.content().split(SEPARATOR, -1);
-
         if (rowDataFields.length != ASPECT_RELATIONSHIP_COLUMNS.size()) {
             throw new CsvHandlerUseCaseException(rowData.position(), "This row has wrong amount of fields");
         }
@@ -85,6 +84,7 @@ public class MapToAspectRelationshipCsvHandlerUseCase extends AbstractCsvHandler
 
         return violations.stream()
                 .map(ConstraintViolation::getMessage)
+                .sorted()
                 .collect(Collectors.toList());
     }
 }

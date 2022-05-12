@@ -23,7 +23,6 @@ import com.catenax.dft.entities.digitalTwins.request.ShellLookupRequest;
 import com.catenax.dft.entities.digitalTwins.response.ShellDescriptorResponse;
 import com.catenax.dft.entities.digitalTwins.response.ShellLookupResponse;
 import com.catenax.dft.entities.digitalTwins.response.SubModelListResponse;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
@@ -39,7 +38,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
-
 
 @Slf4j
 @Service
@@ -187,5 +185,4 @@ public class DigitalTwinGateway {
         long currentTime = System.currentTimeMillis();
         return tokenExpirationTime - 20000 > currentTime;
     }
-
 }

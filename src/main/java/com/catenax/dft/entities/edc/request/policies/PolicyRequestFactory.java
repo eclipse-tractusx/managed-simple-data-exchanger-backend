@@ -16,8 +16,6 @@
 
 package com.catenax.dft.entities.edc.request.policies;
 
-import com.catenax.dft.entities.usecases.Aspect;
-import com.catenax.dft.entities.usecases.AspectRelationship;
 import com.catenax.dft.usecases.common.UUIdGenerator;
 import org.springframework.stereotype.Service;
 

@@ -39,14 +39,12 @@ import static com.catenax.dft.usecases.csvHandler.CsvHandlerOrchestrator.ASPECT_
 @Service
 public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<RowData, Aspect> {
 
-
     public MapToAspectCsvHandlerUseCase(GenerateUuIdCsvHandlerUseCase nextUseCase) {
         super(nextUseCase);
     }
 
     @SneakyThrows
     public Aspect executeUseCase(RowData rowData, String processId) {
-
         String[] rowDataFields = rowData.content().split(SEPARATOR, -1);
         if (rowDataFields.length != ASPECT_COLUMNS.size()) {
             throw new CsvHandlerUseCaseException(rowData.position(), "This row has the wrong amount of fields");
@@ -72,6 +70,7 @@ public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<RowD
         if (errorMessages.size() != 0) {
             throw new CsvHandlerUseCaseException(rowData.position(), errorMessages.toString());
         }
+
         return aspect;
     }
 
@@ -79,8 +78,10 @@ public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<RowD
         Validator validator = Validation.buildDefaultValidatorFactory()
                 .getValidator();
         Set<ConstraintViolation<Aspect>> violations = validator.validate(asset);
+
         return violations.stream()
                 .map(ConstraintViolation::getMessage)
+                .sorted()
                 .collect(Collectors.toList());
     }
 }

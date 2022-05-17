@@ -34,11 +34,13 @@ import org.springframework.web.client.RestTemplate;
 public class EDCGateway {
 
     @Value(value = "${edc.aspect.url}")
-    private String edcEndpoint;
+    private String edcAspectEndpoint;
+    @Value(value = "${edc.child.aspect.url}")
+    private String edcChildAspectEndpoint;
     private String API_KEY = "X-Api-Key";
     private String API_VALUE = "123456";
 
-    public void createAsset(AssetEntryRequest request) {
+    public void createAsset(AssetEntryRequest request, boolean isChild) {
         final String assetResource = "/assets";
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
@@ -46,13 +48,14 @@ public class EDCGateway {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<AssetEntryRequest> entity = new HttpEntity<>(request, headers);
         try {
-            restTemplate.postForEntity(edcEndpoint + assetResource, entity, String.class);
+            restTemplate.postForEntity((isChild ? edcChildAspectEndpoint : edcAspectEndpoint)
+                    + assetResource, entity, String.class);
         } catch (HttpClientErrorException e) {
             throw new EDCGatewayException(e.getStatusCode().toString());
         }
     }
 
-    public void createPolicyDefinition(PolicyDefinitionRequest request) {
+    public void createPolicyDefinition(PolicyDefinitionRequest request, boolean isChild) {
         final String policyResource = "/policies";
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
@@ -60,13 +63,14 @@ public class EDCGateway {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<PolicyDefinitionRequest> entity = new HttpEntity<>(request, headers);
         try {
-            restTemplate.postForEntity(edcEndpoint + policyResource, entity, String.class);
+            restTemplate.postForEntity((isChild ? edcChildAspectEndpoint : edcAspectEndpoint)
+                    + policyResource, entity, String.class);
         } catch (HttpClientErrorException e) {
             throw new EDCGatewayException(e.getStatusCode().toString());
         }
     }
 
-    public void createContractDefinition(ContractDefinitionRequest request) {
+    public void createContractDefinition(ContractDefinitionRequest request, boolean isChild) {
         final String contractDefinitionResource = "/contractdefinitions";
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
@@ -74,10 +78,10 @@ public class EDCGateway {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<ContractDefinitionRequest> entity = new HttpEntity<>(request, headers);
         try {
-            restTemplate.postForEntity(edcEndpoint + contractDefinitionResource, entity, String.class);
+            restTemplate.postForEntity((isChild ? edcChildAspectEndpoint : edcAspectEndpoint)
+                    + contractDefinitionResource, entity, String.class);
         } catch (HttpClientErrorException e) {
             throw new EDCGatewayException(e.getStatusCode().toString());
         }
-
     }
 }

@@ -59,15 +59,15 @@ public class EDCAspectHandlerUseCase extends AbstractCsvHandlerUseCase<Aspect, A
         String subModelId = input.getSubModelId();
         //create asset
         AssetEntryRequest assetEntryRequest = assetFactory.getAspectAssetRequest(shellId, subModelId);
-        edcGateway.createAsset(assetEntryRequest);
+        edcGateway.createAsset(assetEntryRequest, false);
 
         //create policies
         PolicyDefinitionRequest policyDefinitionRequest = policyFactory.getPolicy(shellId, subModelId);
-        edcGateway.createPolicyDefinition(policyDefinitionRequest);
+        edcGateway.createPolicyDefinition(policyDefinitionRequest, false);
 
         //create contractDefinitions
         ContractDefinitionRequest contractDefinitionRequest = contractFactory.getContractDefinitionRequest(input.getUuid());
-        edcGateway.createContractDefinition(contractDefinitionRequest);
+        edcGateway.createContractDefinition(contractDefinitionRequest, false);
 
         return input;
     }

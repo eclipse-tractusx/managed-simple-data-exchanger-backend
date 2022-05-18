@@ -32,6 +32,6 @@ public class UUIdGenerator {
     }
 
     public static String getUuid() {
-        return getPrefixedUuid(null);
+        return getPrefixedUuid("");
     }
 }

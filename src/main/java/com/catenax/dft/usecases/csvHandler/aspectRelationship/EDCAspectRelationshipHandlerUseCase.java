@@ -65,7 +65,9 @@ public class EDCAspectRelationshipHandlerUseCase extends AbstractCsvHandlerUseCa
         edcGateway.createPolicyDefinition(policyDefinitionRequest, true);
 
         //create contractDefinitions
-        ContractDefinitionRequest contractDefinitionRequest = contractFactory.getContractDefinitionRequest(input.getChildUuid());
+        ContractDefinitionRequest contractDefinitionRequest = contractFactory.getContractDefinitionRequest(
+                assetEntryRequest.getAsset().getProperties().get("asset:prop:id"),
+                policyDefinitionRequest.getUid());
         edcGateway.createContractDefinition(contractDefinitionRequest, true);
 
         return input;

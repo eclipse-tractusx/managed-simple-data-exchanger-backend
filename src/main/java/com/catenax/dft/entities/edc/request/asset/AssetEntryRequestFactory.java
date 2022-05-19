@@ -37,22 +37,27 @@ public class AssetEntryRequestFactory {
     private final String TYPE = "AzureStorage";
     @Value(value = "${edc.asset.payload.url}")
     private String END_POINT;
+    @Value(value = "${edc.asset.relationship.payload.url}")
+    private String END_POINT_RELATIONSHIP;
 
-    public AssetEntryRequest getAspectRelationshipAssetRequest(String shellId, String subModelId) {
-        return buildAsset(shellId, subModelId, ASSET_PROP_NAME_ASPECT_RELATIONSHIP);
+    public AssetEntryRequest getAspectRelationshipAssetRequest(String shellId, String subModelId, String parentUuid) {
+        return buildAsset(shellId, subModelId, ASSET_PROP_NAME_ASPECT_RELATIONSHIP, parentUuid);
     }
 
-    public AssetEntryRequest getAspectAssetRequest(String shellId, String subModelId) {
-        return buildAsset(shellId, subModelId, ASSET_PROP_NAME_ASPECT);
+    public AssetEntryRequest getAspectAssetRequest(String shellId, String subModelId, String uuid) {
+        return buildAsset(shellId, subModelId, ASSET_PROP_NAME_ASPECT, uuid);
     }
 
-    private AssetEntryRequest buildAsset(String shellId, String subModelId, String assetName) {
+    private AssetEntryRequest buildAsset(String shellId, String subModelId, String assetName, String uuid) {
         String assetId = shellId + "-" + subModelId;
 
         HashMap<String, String> assetProperties = getAssetProperties(assetId, assetName);
         AssetRequest assetRequest = AssetRequest.builder().properties(assetProperties).build();
 
-        HashMap<String, String> dataAddressProperties = getDataAddressProperties(shellId, subModelId);
+        String endpoint = assetName.equals(ASSET_PROP_NAME_ASPECT) ? String.format(END_POINT, uuid)
+                : String.format(END_POINT_RELATIONSHIP, uuid);
+
+        HashMap<String, String> dataAddressProperties = getDataAddressProperties(shellId, subModelId, endpoint);
         DataAddressRequest dataAddressRequest = DataAddressRequest.builder().properties(dataAddressProperties).build();
 
         return AssetEntryRequest.builder()
@@ -71,10 +76,10 @@ public class AssetEntryRequestFactory {
         return assetProperties;
     }
 
-    private HashMap<String, String> getDataAddressProperties(String shellId, String subModelId){
+    private HashMap<String, String> getDataAddressProperties(String shellId, String subModelId, String endpoint) {
         HashMap<String, String> dataAddressProperties = new HashMap<>();
         dataAddressProperties.put("type", TYPE);
-        dataAddressProperties.put("endpoint", String.format(END_POINT, shellId, subModelId));
+        dataAddressProperties.put("endpoint", String.format(endpoint, shellId, subModelId));
         dataAddressProperties.put("name", NAME);
         dataAddressProperties.put("authKey", AUTH_KEY);
         dataAddressProperties.put("authCode", AUTH_CODE);

@@ -57,7 +57,7 @@ public class EDCAspectRelationshipHandlerUseCase extends AbstractCsvHandlerUseCa
         String subModelId = input.getSubModelId();
 
         //Create asset
-        AssetEntryRequest assetEntryRequest = assetFactory.getAspectRelationshipAssetRequest(shellId, subModelId);
+        AssetEntryRequest assetEntryRequest = assetFactory.getAspectRelationshipAssetRequest(shellId, subModelId, input.getParentUuid());
         edcGateway.createAsset(assetEntryRequest, true);
 
         //create policies

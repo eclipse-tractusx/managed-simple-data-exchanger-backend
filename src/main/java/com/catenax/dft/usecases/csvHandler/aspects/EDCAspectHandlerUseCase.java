@@ -58,7 +58,7 @@ public class EDCAspectHandlerUseCase extends AbstractCsvHandlerUseCase<Aspect, A
         String shellId = input.getShellId();
         String subModelId = input.getSubModelId();
         //create asset
-        AssetEntryRequest assetEntryRequest = assetFactory.getAspectAssetRequest(shellId, subModelId);
+        AssetEntryRequest assetEntryRequest = assetFactory.getAspectAssetRequest(shellId, subModelId, input.getUuid());
         edcGateway.createAsset(assetEntryRequest, false);
 
         //create policies

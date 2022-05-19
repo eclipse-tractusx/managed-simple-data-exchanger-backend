@@ -51,6 +51,9 @@ public class EDCGateway {
             restTemplate.postForEntity((isChild ? edcChildAspectEndpoint : edcAspectEndpoint)
                     + assetResource, entity, String.class);
         } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.CONFLICT) {
+                throw new EDCGatewayException("Asset already exists");
+            }
             throw new EDCGatewayException(e.getStatusCode().toString());
         }
     }

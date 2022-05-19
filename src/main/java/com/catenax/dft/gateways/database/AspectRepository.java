@@ -19,11 +19,10 @@ package com.catenax.dft.gateways.database;
 
 import com.catenax.dft.entities.database.AspectEntity;
 import com.catenax.dft.enums.OptionalIdentifierKeyEnum;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public interface AspectRepository extends JpaRepository<AspectEntity, String> {
+public interface AspectRepository extends CrudRepository<AspectEntity, String> {
 
     AspectEntity findByPartInstanceIdAndManufacturerPartIdAndOptionalIdentifierKeyAndOptionalIdentifierValue(String partInstanceId,
                                                                                                              String manufacturerPartId,

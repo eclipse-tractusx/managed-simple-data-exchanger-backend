@@ -20,12 +20,13 @@ import com.catenax.dft.enums.ProgressStatusEnum;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Table(name = "process_report")
 @Entity
 @Data
-public class ProcessReportEntity {
+public class ProcessReportEntity implements Serializable {
     @Id
     private String processId;
     private String csvType;

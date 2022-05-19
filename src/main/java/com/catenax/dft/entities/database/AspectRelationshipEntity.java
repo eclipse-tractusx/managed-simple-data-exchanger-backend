@@ -17,7 +17,7 @@
 
 package com.catenax.dft.entities.database;
 
-import lombok.Data;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -29,7 +29,7 @@ import java.io.Serializable;
 @Table(name = "aspect_relationship")
 @Data
 @IdClass(AspectRelationshipPrimaryKey.class)
-public class AspectRelationshipEntity {
+public class AspectRelationshipEntity implements Serializable{
 
     @Id
     private String parentCatenaXId;

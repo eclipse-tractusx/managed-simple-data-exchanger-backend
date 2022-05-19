@@ -24,12 +24,12 @@ import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
+import java.io.Serializable;
 
 @Table(name = "aspect")
 @Entity
 @Data
-public class AspectEntity {
+public class AspectEntity implements Serializable {
 
     @Id
     private String uuid;

@@ -33,8 +33,8 @@ public class AspectRelationshipEntity implements Serializable{
 
     @Id
     private String parentCatenaXId;
-    @Id
     private String processId;
+    @Id
     private String childCatenaXId;
     private String lifecycleContext;
     private String assembledOn;

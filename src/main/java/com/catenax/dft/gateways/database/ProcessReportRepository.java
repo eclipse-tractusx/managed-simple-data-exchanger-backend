@@ -56,6 +56,7 @@ ProcessReportRepository extends CrudRepository<ProcessReportEntity, String> {
             "WHERE processId = :processId")
     void finalizeChildAspectProgressReport(String processId, LocalDateTime endDate, ProgressStatusEnum status);
 
-    @Query("SELECT p FROM process_report p ORDER BY :startDate DESC")
+
+    @Query("SELECT p FROM ProcessReportEntity p ORDER BY p.startDate DESC")
     Page<ProcessReportEntity> findAll(PageRequest startDate);
 }

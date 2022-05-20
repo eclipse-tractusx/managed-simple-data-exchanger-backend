@@ -42,7 +42,7 @@ public class AspectEntity implements Serializable {
     private String classification;
     private String nameAtManufacturer;
     private String nameAtCustomer;
-    @Convert(attributeName = "prettyName")
+    //@Convert(attributeName = "prettyName")
     private OptionalIdentifierKeyEnum optionalIdentifierKey;
     private String optionalIdentifierValue;
     private String shellId;

@@ -37,9 +37,12 @@ import java.time.LocalDateTime;
 public class FailureLogEntity implements Serializable {
 
     @Id
+    @Column(name = "uuid")
     private String uuid;
+    @Column(name = "process_id")
     private String processId;
-    @Column(columnDefinition = "VARCHAR(5000)")
+    @Column(name = "log")
     private String log;
+    @Column(name = "date_time")
     private LocalDateTime dateTime;
 }

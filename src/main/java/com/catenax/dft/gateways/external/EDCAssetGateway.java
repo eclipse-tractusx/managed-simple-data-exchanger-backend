@@ -7,25 +7,25 @@ import org.springframework.stereotype.Service;
 public class EDCAssetGateway extends EDCGateway {
 
     @Value(value = "${edc.aspect.url}")
-    private String edcEndpoint;
+    private String edcAspectEndpoint;
     @Value(value = "${edc.aspect.apiKey}")
-    private String apiKey;
+    private String aspectApiKey;
     @Value(value = "${edc.aspect.apiValue}")
-    private String apiValue;
+    private String aspectApiValue;
 
     @Override
     protected String getEndPoint() {
-        return edcEndpoint;
+        return edcAspectEndpoint;
     }
 
     @Override
     protected String getApiKey() {
-        return apiKey;
+        return aspectApiKey;
     }
 
     @Override
     protected String getApiValue() {
-        return apiValue;
+        return aspectApiValue;
     }
 
 }

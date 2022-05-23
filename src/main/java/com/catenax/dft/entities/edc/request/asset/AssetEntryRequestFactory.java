@@ -35,12 +35,10 @@ public class AssetEntryRequestFactory {
     private String authKey;
     @Value(value = "${edc.asset.payload.url.auth.code}")
     private String authCode;
-
     @Value(value = "${edc.asset.payload.url}")
-    private String endPoint;
+    private String endpoint;
     @Value(value = "${edc.asset.relationship.payload.url}")
-    private String endPointRelationship;
-
+    private String endpointRelationship;
     public AssetEntryRequest getAspectRelationshipAssetRequest(String shellId, String subModelId, String parentUuid) {
         return buildAsset(shellId, subModelId, ASSET_PROP_NAME_ASPECT_RELATIONSHIP, parentUuid);
     }
@@ -55,8 +53,8 @@ public class AssetEntryRequestFactory {
         HashMap<String, String> assetProperties = getAssetProperties(assetId, assetName);
         AssetRequest assetRequest = AssetRequest.builder().properties(assetProperties).build();
 
-        String endpoint = assetName.equals(ASSET_PROP_NAME_ASPECT) ? String.format(endPoint, uuid)
-                : String.format(endPointRelationship, uuid);
+        String endpoint = assetName.equals(ASSET_PROP_NAME_ASPECT) ? String.format(this.endpoint, uuid)
+                : String.format(endpointRelationship, uuid);
 
         HashMap<String, String> dataAddressProperties = getDataAddressProperties(shellId, subModelId, endpoint);
         DataAddressRequest dataAddressRequest = DataAddressRequest.builder().properties(dataAddressProperties).build();

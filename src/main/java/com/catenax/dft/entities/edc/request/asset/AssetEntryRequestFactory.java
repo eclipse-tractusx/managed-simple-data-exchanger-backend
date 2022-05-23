@@ -30,15 +30,16 @@ public class AssetEntryRequestFactory {
     private final String ASSET_PROP_DESCRIPTION = "...";
     private final String ASSET_PROP_VERSION = "1.0.0";
     private final String NAME = "Backend Data Service - AAS Server";
-    @Value(value = "${edc.asset.payload.url.auth.key}")
-    private String AUTH_KEY;
-    @Value(value = "${edc.asset.payload.url.auth.code}")
-    private String AUTH_CODE;
     private final String TYPE = "AzureStorage";
+    @Value(value = "${edc.asset.payload.url.auth.key}")
+    private String authKey;
+    @Value(value = "${edc.asset.payload.url.auth.code}")
+    private String authCode;
+
     @Value(value = "${edc.asset.payload.url}")
-    private String END_POINT;
+    private String endPoint;
     @Value(value = "${edc.asset.relationship.payload.url}")
-    private String END_POINT_RELATIONSHIP;
+    private String endPointRelationship;
 
     public AssetEntryRequest getAspectRelationshipAssetRequest(String shellId, String subModelId, String parentUuid) {
         return buildAsset(shellId, subModelId, ASSET_PROP_NAME_ASPECT_RELATIONSHIP, parentUuid);
@@ -54,8 +55,8 @@ public class AssetEntryRequestFactory {
         HashMap<String, String> assetProperties = getAssetProperties(assetId, assetName);
         AssetRequest assetRequest = AssetRequest.builder().properties(assetProperties).build();
 
-        String endpoint = assetName.equals(ASSET_PROP_NAME_ASPECT) ? String.format(END_POINT, uuid)
-                : String.format(END_POINT_RELATIONSHIP, uuid);
+        String endpoint = assetName.equals(ASSET_PROP_NAME_ASPECT) ? String.format(endPoint, uuid)
+                : String.format(endPointRelationship, uuid);
 
         HashMap<String, String> dataAddressProperties = getDataAddressProperties(shellId, subModelId, endpoint);
         DataAddressRequest dataAddressRequest = DataAddressRequest.builder().properties(dataAddressProperties).build();
@@ -81,8 +82,8 @@ public class AssetEntryRequestFactory {
         dataAddressProperties.put("type", TYPE);
         dataAddressProperties.put("endpoint", String.format(endpoint, shellId, subModelId));
         dataAddressProperties.put("name", NAME);
-        dataAddressProperties.put("authKey", AUTH_KEY);
-        dataAddressProperties.put("authCode", AUTH_CODE);
+        dataAddressProperties.put("authKey", authKey);
+        dataAddressProperties.put("authCode", authCode);
         return dataAddressProperties;
     }
 }

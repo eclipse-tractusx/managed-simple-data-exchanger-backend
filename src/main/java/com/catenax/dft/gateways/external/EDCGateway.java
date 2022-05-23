@@ -40,6 +40,24 @@ public class EDCGateway {
     private String API_KEY = "X-Api-Key";
     private String API_VALUE = "123456";
 
+    public boolean checkIfAssetExists(String id, boolean isChild) {
+        final String assetResource = "/assets/";
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(API_KEY, API_VALUE);
+
+        try {
+            restTemplate.getForEntity(
+                    (isChild ? edcChildAspectEndpoint : edcAspectEndpoint) + assetResource + id, Object.class, headers);
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                return false;
+            }
+            throw e;
+        }
+        return true;
+    }
+
     public void createAsset(AssetEntryRequest request, boolean isChild) {
         final String assetResource = "/assets";
         RestTemplate restTemplate = new RestTemplate();

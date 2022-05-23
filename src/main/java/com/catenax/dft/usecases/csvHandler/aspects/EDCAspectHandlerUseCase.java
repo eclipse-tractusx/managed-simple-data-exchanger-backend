@@ -57,19 +57,23 @@ public class EDCAspectHandlerUseCase extends AbstractCsvHandlerUseCase<Aspect, A
     protected Aspect executeUseCase(Aspect input, String processId) {
         String shellId = input.getShellId();
         String subModelId = input.getSubModelId();
+
         //create asset
         AssetEntryRequest assetEntryRequest = assetFactory.getAspectAssetRequest(shellId, subModelId, input.getUuid());
-        edcGateway.createAsset(assetEntryRequest, false);
+        if (!edcGateway.checkIfAssetExists(assetEntryRequest.getAsset().getProperties().get("asset:prop:id"), false)) {
+            edcGateway.createAsset(assetEntryRequest, false);
 
-        //create policies
-        PolicyDefinitionRequest policyDefinitionRequest = policyFactory.getPolicy(shellId, subModelId);
-        edcGateway.createPolicyDefinition(policyDefinitionRequest, false);
 
-        //create contractDefinitions
-        ContractDefinitionRequest contractDefinitionRequest = contractFactory.getContractDefinitionRequest(
-                assetEntryRequest.getAsset().getProperties().get("asset:prop:id"),
-                policyDefinitionRequest.getUid());
-        edcGateway.createContractDefinition(contractDefinitionRequest, false);
+            //create policies
+            PolicyDefinitionRequest policyDefinitionRequest = policyFactory.getPolicy(shellId, subModelId);
+            edcGateway.createPolicyDefinition(policyDefinitionRequest, false);
+
+            //create contractDefinitions
+            ContractDefinitionRequest contractDefinitionRequest = contractFactory.getContractDefinitionRequest(
+                    assetEntryRequest.getAsset().getProperties().get("asset:prop:id"),
+                    policyDefinitionRequest.getUid());
+            edcGateway.createContractDefinition(contractDefinitionRequest, false);
+        }
 
         return input;
     }

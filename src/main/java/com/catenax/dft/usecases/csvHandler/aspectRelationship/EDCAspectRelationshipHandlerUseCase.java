@@ -58,17 +58,19 @@ public class EDCAspectRelationshipHandlerUseCase extends AbstractCsvHandlerUseCa
 
         //Create asset
         AssetEntryRequest assetEntryRequest = assetFactory.getAspectRelationshipAssetRequest(shellId, subModelId, input.getParentUuid());
-        edcGateway.createAsset(assetEntryRequest, true);
+        if (!edcGateway.checkIfAssetExists(assetEntryRequest.getAsset().getProperties().get("asset:prop:id"), true)) {
+            edcGateway.createAsset(assetEntryRequest, true);
 
-        //create policies
-        PolicyDefinitionRequest policyDefinitionRequest = policyFactory.getPolicy(shellId, subModelId);
-        edcGateway.createPolicyDefinition(policyDefinitionRequest, true);
+            //create policies
+            PolicyDefinitionRequest policyDefinitionRequest = policyFactory.getPolicy(shellId, subModelId);
+            edcGateway.createPolicyDefinition(policyDefinitionRequest, true);
 
-        //create contractDefinitions
-        ContractDefinitionRequest contractDefinitionRequest = contractFactory.getContractDefinitionRequest(
-                assetEntryRequest.getAsset().getProperties().get("asset:prop:id"),
-                policyDefinitionRequest.getUid());
-        edcGateway.createContractDefinition(contractDefinitionRequest, true);
+            //create contractDefinitions
+            ContractDefinitionRequest contractDefinitionRequest = contractFactory.getContractDefinitionRequest(
+                    assetEntryRequest.getAsset().getProperties().get("asset:prop:id"),
+                    policyDefinitionRequest.getUid());
+            edcGateway.createContractDefinition(contractDefinitionRequest, true);
+        }
 
         return input;
     }

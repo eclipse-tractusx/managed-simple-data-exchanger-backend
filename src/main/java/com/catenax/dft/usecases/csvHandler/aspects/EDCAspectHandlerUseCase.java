@@ -25,7 +25,6 @@ import com.catenax.dft.entities.edc.request.policies.PolicyDefinitionRequest;
 import com.catenax.dft.entities.edc.request.policies.PolicyRequestFactory;
 import com.catenax.dft.entities.usecases.Aspect;
 import com.catenax.dft.gateways.external.EDCAssetGateway;
-import com.catenax.dft.gateways.external.EDCGateway;
 import com.catenax.dft.usecases.csvHandler.AbstractCsvHandlerUseCase;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -61,7 +60,7 @@ public class EDCAspectHandlerUseCase extends AbstractCsvHandlerUseCase<Aspect, A
 
         //create asset
         AssetEntryRequest assetEntryRequest = assetFactory.getAspectAssetRequest(shellId, subModelId, input.getUuid());
-        if (!edcGateway.assetLookup(assetEntryRequest.getAsset().getProperties().get("asset:prop:id"))) {
+        if (!edcGateway.assetExistsLookup(assetEntryRequest.getAsset().getProperties().get("asset:prop:id"))) {
             edcGateway.createAsset(assetEntryRequest);
 
             //create policies

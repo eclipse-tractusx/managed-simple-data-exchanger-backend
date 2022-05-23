@@ -24,6 +24,7 @@ import com.catenax.dft.entities.edc.request.contractDefinition.ContractDefinitio
 import com.catenax.dft.entities.edc.request.policies.PolicyDefinitionRequest;
 import com.catenax.dft.entities.edc.request.policies.PolicyRequestFactory;
 import com.catenax.dft.entities.usecases.Aspect;
+import com.catenax.dft.gateways.external.EDCAssetGateway;
 import com.catenax.dft.gateways.external.EDCGateway;
 import com.catenax.dft.usecases.csvHandler.AbstractCsvHandlerUseCase;
 import lombok.SneakyThrows;
@@ -35,13 +36,13 @@ import org.springframework.stereotype.Service;
 public class EDCAspectHandlerUseCase extends AbstractCsvHandlerUseCase<Aspect, Aspect> {
 
     private AssetEntryRequestFactory assetFactory;
-    private EDCGateway edcGateway;
+    private EDCAssetGateway edcGateway;
     private PolicyRequestFactory policyFactory;
     private ContractDefinitionRequestFactory contractFactory;
 
 
     public EDCAspectHandlerUseCase(StoreAspectCsvHandlerUseCase nextUseCase,
-                                   EDCGateway edcGateway,
+                                   EDCAssetGateway edcGateway,
                                    AssetEntryRequestFactory assetFactory,
                                    PolicyRequestFactory policyFactory,
                                    ContractDefinitionRequestFactory contractFactory) {
@@ -60,19 +61,18 @@ public class EDCAspectHandlerUseCase extends AbstractCsvHandlerUseCase<Aspect, A
 
         //create asset
         AssetEntryRequest assetEntryRequest = assetFactory.getAspectAssetRequest(shellId, subModelId, input.getUuid());
-        if (!edcGateway.checkIfAssetExists(assetEntryRequest.getAsset().getProperties().get("asset:prop:id"), false)) {
-            edcGateway.createAsset(assetEntryRequest, false);
-
+        if (!edcGateway.assetLookup(assetEntryRequest.getAsset().getProperties().get("asset:prop:id"))) {
+            edcGateway.createAsset(assetEntryRequest);
 
             //create policies
             PolicyDefinitionRequest policyDefinitionRequest = policyFactory.getPolicy(shellId, subModelId);
-            edcGateway.createPolicyDefinition(policyDefinitionRequest, false);
+            edcGateway.createPolicyDefinition(policyDefinitionRequest);
 
             //create contractDefinitions
             ContractDefinitionRequest contractDefinitionRequest = contractFactory.getContractDefinitionRequest(
                     assetEntryRequest.getAsset().getProperties().get("asset:prop:id"),
                     policyDefinitionRequest.getUid());
-            edcGateway.createContractDefinition(contractDefinitionRequest, false);
+            edcGateway.createContractDefinition(contractDefinitionRequest);
         }
 
         return input;

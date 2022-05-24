@@ -25,16 +25,16 @@ import java.util.List;
 @Service
 public class ContractDefinitionRequestFactory {
 
-    public ContractDefinitionRequest getContractDefinitionRequest(String uuid) {
+    public ContractDefinitionRequest getContractDefinitionRequest(String uuid, String policyId) {
         List<Criterion> criteria = new ArrayList<>();
         criteria.add(Criterion.builder()
-                .left("asset.prop.id")
-                .op("in")
+                .left("asset:prop:id")
+                .op("=")
                 .right(uuid)
                 .build());
         return ContractDefinitionRequest.builder()
-                .contractPolicyId("")
-                .accessPolicyId("")
+                .contractPolicyId(policyId)
+                .accessPolicyId(policyId)
                 .id(UUIdGenerator.getUuid())
                 .criteria(criteria)
                 .build();

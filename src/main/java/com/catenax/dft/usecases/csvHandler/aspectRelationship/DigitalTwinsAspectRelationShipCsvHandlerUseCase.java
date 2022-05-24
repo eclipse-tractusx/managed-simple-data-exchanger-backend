@@ -69,7 +69,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends AbstractCsv
     public DigitalTwinsAspectRelationShipCsvHandlerUseCase(DigitalTwinGateway gateway,
                                                            AspectRepository aspectRepository,
                                                            AspectMapper aspectMapper,
-                                                           StoreAspectRelationshipCsvHandlerUseCase nextUseCase) {
+                                                           EDCAspectRelationshipHandlerUseCase nextUseCase) {
         super(nextUseCase);
         this.gateway = gateway;
         this.aspectRepository = aspectRepository;

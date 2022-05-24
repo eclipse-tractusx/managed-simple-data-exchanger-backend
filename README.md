@@ -1,7 +1,7 @@
 #Description
 This repository is part of the overarching CatenaX project.
 
-DFT is a abreviation for Data Format Transform.
+DFT is an abbreviation for Data Format Transform.
 
 ##How to run
 DFT is a SpringBoot Java software project managed by Maven.
@@ -13,14 +13,15 @@ You can find the standard credentials as well as further database configurations
 
 ###Prerequisites
 - JDK18
-- Postgres 13.2^
+- Postgres 13.2
 - Docker
 
 ###Steps
-- 1 - Clone the Github Repository - https://github.com/catenax-ng/product-dft-backend
-- 2 - Get your instance of postgres running.
-- 3 - Setup your project environment to Java JDK 18
-- 4 - Start the application from your IDE.
+1. Clone the Github Repository - https://github.com/catenax-ng/product-dft-backend
+2. Get your instance of postgres running.
+3. Setup your project environment to Java JDK 18
+4. Start the application from your IDE.
+
 
 ##ArgoCD
 

@@ -30,7 +30,7 @@ CREATE TABLE aspect
     name_at_customer VARCHAR(50),
     optional_identifier_key VARCHAR(50),
     optional_identifier_value VARCHAR(50),
-    shellId VARCHAR(50)
+    shell_id VARCHAR(50)
 );
 
 CREATE TABLE aspect_relationship

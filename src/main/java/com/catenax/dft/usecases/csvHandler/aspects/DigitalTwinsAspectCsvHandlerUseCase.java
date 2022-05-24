@@ -59,7 +59,7 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
     @Value(value = "${edc.aspect.url}")
     private String edcEndpoint;
 
-    public DigitalTwinsAspectCsvHandlerUseCase(DigitalTwinGateway gateway, StoreAspectCsvHandlerUseCase nextUseCase) {
+    public DigitalTwinsAspectCsvHandlerUseCase(DigitalTwinGateway gateway, EDCAspectHandlerUseCase nextUseCase) {
         super(nextUseCase);
         this.gateway = gateway;
     }

@@ -16,70 +16,83 @@
 
 package com.catenax.dft.gateways.external;
 
-
 import com.catenax.dft.entities.edc.request.asset.AssetEntryRequest;
 import com.catenax.dft.entities.edc.request.contractDefinition.ContractDefinitionRequest;
 import com.catenax.dft.entities.edc.request.policies.PolicyDefinitionRequest;
 import com.catenax.dft.gateways.exceptions.EDCGatewayException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
-import org.springframework.stereotype.Service;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-
 @Slf4j
-@Service
-public class EDCGateway {
+public abstract class EDCGateway {
 
-    @Value(value = "${edc.aspect.url}")
-    private String edcAspectEndpoint;
-    @Value(value = "${edc.child.aspect.url}")
-    private String edcChildAspectEndpoint;
-    private String API_KEY = "X-Api-Key";
-    private String API_VALUE = "123456";
+    protected abstract String getEndPoint();
 
-    public void createAsset(AssetEntryRequest request, boolean isChild) {
-        final String assetResource = "/assets";
+    protected abstract String getApiKey();
+
+    protected abstract String getApiValue();
+
+    public boolean assetExistsLookup(String id) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
-        headers.add(API_KEY, API_VALUE);
+        headers.add(getApiKey(), getApiValue());
+
+        try {
+            restTemplate.getForEntity(getEndPoint() + "/assets/" + id, Object.class, headers);
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                return false;
+            }
+            throw e;
+        }
+        return true;
+    }
+
+    public void createAsset(AssetEntryRequest request) {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(getApiKey(), getApiValue());
         headers.setContentType(MediaType.APPLICATION_JSON);
+
         HttpEntity<AssetEntryRequest> entity = new HttpEntity<>(request, headers);
         try {
-            restTemplate.postForEntity((isChild ? edcChildAspectEndpoint : edcAspectEndpoint)
-                    + assetResource, entity, String.class);
+            restTemplate.postForEntity(getEndPoint() + "/assets", entity, String.class);
         } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.CONFLICT) {
+                throw new EDCGatewayException("Asset already exists");
+            }
             throw new EDCGatewayException(e.getStatusCode().toString());
         }
     }
 
-    public void createPolicyDefinition(PolicyDefinitionRequest request, boolean isChild) {
+    public void createPolicyDefinition(PolicyDefinitionRequest request) {
         final String policyResource = "/policies";
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
-        headers.add(API_KEY, API_VALUE);
+        headers.add(getApiKey(), getApiValue());
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<PolicyDefinitionRequest> entity = new HttpEntity<>(request, headers);
         try {
-            restTemplate.postForEntity((isChild ? edcChildAspectEndpoint : edcAspectEndpoint)
-                    + policyResource, entity, String.class);
+            restTemplate.postForEntity(getEndPoint() + policyResource, entity, String.class);
         } catch (HttpClientErrorException e) {
             throw new EDCGatewayException(e.getStatusCode().toString());
         }
     }
 
-    public void createContractDefinition(ContractDefinitionRequest request, boolean isChild) {
+    public void createContractDefinition(ContractDefinitionRequest request) {
         final String contractDefinitionResource = "/contractdefinitions";
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
-        headers.add(API_KEY, API_VALUE);
+        headers.add(getApiKey(), getApiValue());
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<ContractDefinitionRequest> entity = new HttpEntity<>(request, headers);
         try {
-            restTemplate.postForEntity((isChild ? edcChildAspectEndpoint : edcAspectEndpoint)
-                    + contractDefinitionResource, entity, String.class);
+            restTemplate.postForEntity(getEndPoint() + contractDefinitionResource, entity, String.class);
         } catch (HttpClientErrorException e) {
             throw new EDCGatewayException(e.getStatusCode().toString());
         }

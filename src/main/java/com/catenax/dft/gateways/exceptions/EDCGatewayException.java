@@ -25,6 +25,6 @@ public class EDCGatewayException extends RuntimeException{
 
     @Override
     public String getMessage() {
-        return String.format("There was a problem communicating with the EDC : %s", super.getMessage());
+        return String.format("Error from EDC : %s", super.getMessage());
     }
 }

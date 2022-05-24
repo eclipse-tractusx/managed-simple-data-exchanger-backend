@@ -19,7 +19,6 @@ package com.catenax.dft.gateways.database;
 
 import com.catenax.dft.entities.database.FailureLogEntity;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
 
 public interface FailureLogRepository extends CrudRepository<FailureLogEntity, String> {
 

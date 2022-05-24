@@ -17,30 +17,36 @@
 
 package com.catenax.dft.entities.database;
 
-import lombok.Data;
+import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
 @Table(name = "aspect_relationship")
 @Data
 @IdClass(AspectRelationshipPrimaryKey.class)
-public class AspectRelationshipEntity {
+public class AspectRelationshipEntity implements Serializable{
 
     @Id
+    @Column(name = "parent_catenax_id")
     private String parentCatenaXId;
-    @Id
+    @Column(name = "process_id")
     private String processId;
+    @Id
+    @Column(name = "child_catenax_id")
     private String childCatenaXId;
+    @Column(name = "lifecycle_context")
     private String lifecycleContext;
+    @Column(name = "assembled_on")
     private String assembledOn;
+    @Column(name = "quantity_number")
     private String quantityNumber;
+    @Column(name = "measurement_unit_lexical_value")
     private String measurementUnitLexicalValue;
+    @Column(name = "shell_id")
     private String shellId;
+    @Column(name = "data_type_uri")
     private String dataTypeUri;
 }
 

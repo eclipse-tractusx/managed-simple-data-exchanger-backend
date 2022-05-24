@@ -25,6 +25,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
@@ -33,12 +34,15 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "failure_log")
-public class FailureLogEntity {
+public class FailureLogEntity implements Serializable {
 
     @Id
+    @Column(name = "uuid")
     private String uuid;
+    @Column(name = "process_id")
     private String processId;
-    @Column(columnDefinition = "VARCHAR(5000)")
+    @Column(name = "log")
     private String log;
+    @Column(name = "date_time")
     private LocalDateTime dateTime;
 }

@@ -20,30 +20,39 @@ package com.catenax.dft.entities.database;
 import com.catenax.dft.enums.OptionalIdentifierKeyEnum;
 import lombok.Data;
 
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
+import javax.persistence.*;
+import java.io.Serializable;
 
 @Table(name = "aspect")
 @Entity
 @Data
-public class AspectEntity {
+public class AspectEntity implements Serializable {
 
     @Id
+    @Column(name = "uuid")
     private String uuid;
+    @Column(name = "process_id")
     private String processId;
+    @Column(name = "part_instance_id")
     private String partInstanceId;
+    @Column(name = "manufacturing_date")
     private String manufacturingDate;
+    @Column(name = "manufacturing_country")
     private String manufacturingCountry;
+    @Column(name = "manufacturer_part_id")
     private String manufacturerPartId;
+    @Column(name = "customer_part_id")
     private String customerPartId;
+    @Column(name = "classification")
     private String classification;
+    @Column(name = "name_at_manufacturer")
     private String nameAtManufacturer;
+    @Column(name = "name_at_customer")
     private String nameAtCustomer;
-    @Convert(attributeName = "prettyName")
+    @Column(name = "optional_identifier_key")
     private OptionalIdentifierKeyEnum optionalIdentifierKey;
+    @Column(name = "optional_identifier_value")
     private String optionalIdentifierValue;
+    @Column(name = "shell_id")
     private String shellId;
 }

@@ -18,18 +18,18 @@ package com.catenax.dft.gateways.database;
 
 import com.catenax.dft.entities.database.ProcessReportEntity;
 import com.catenax.dft.enums.ProgressStatusEnum;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-@Repository
 public interface
-ProcessReportRepository extends JpaRepository<ProcessReportEntity, String> {
+ProcessReportRepository extends CrudRepository<ProcessReportEntity, String> {
 
     Optional<ProcessReportEntity> findByProcessId(String processId);
 
@@ -54,4 +54,8 @@ ProcessReportRepository extends JpaRepository<ProcessReportEntity, String> {
             "numberOfFailedItems = (SELECT COUNT(f) FROM FailureLogEntity f WHERE f.processId = :processId) " +
             "WHERE processId = :processId")
     void finalizeChildAspectProgressReport(String processId, LocalDateTime endDate, ProgressStatusEnum status);
+
+
+    @Query("SELECT p FROM ProcessReportEntity p ORDER BY p.startDate DESC")
+    Page<ProcessReportEntity> findAll(PageRequest startDate);
 }

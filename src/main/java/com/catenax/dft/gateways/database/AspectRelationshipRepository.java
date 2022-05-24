@@ -18,13 +18,11 @@
 package com.catenax.dft.gateways.database;
 
 import com.catenax.dft.entities.database.AspectRelationshipEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 
-@Repository
-public interface AspectRelationshipRepository extends JpaRepository<AspectRelationshipEntity, Long> {
+public interface AspectRelationshipRepository extends CrudRepository<AspectRelationshipEntity, Long> {
 
     List<AspectRelationshipEntity> findByParentCatenaXId(String parentCantenaXId);
 }

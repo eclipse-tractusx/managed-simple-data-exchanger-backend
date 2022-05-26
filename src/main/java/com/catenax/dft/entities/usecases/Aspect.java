@@ -63,7 +63,7 @@ public class Aspect {
 
 
     public boolean hasOptionalIdentifier() {
-        boolean hasKey = this.getOptionalIdentifierKey() != null;
+        boolean hasKey = this.getOptionalIdentifierKey() != null && !this.getOptionalIdentifierKey().isBlank();
         boolean hasValue = this.getOptionalIdentifierValue() != null && !this.getOptionalIdentifierValue().isBlank();
 
         return hasKey && hasValue;

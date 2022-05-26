@@ -20,13 +20,16 @@ package com.catenax.dft.entities.digitalTwins.common;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Endpoint {
+
     @JsonProperty("interface")
-    public String endpointInterface;
-    public ProtocolInformation protocolInformation;
+    private String endpointInterface;
+    private ProtocolInformation protocolInformation;
 }

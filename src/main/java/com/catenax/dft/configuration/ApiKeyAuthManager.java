@@ -69,11 +69,7 @@ public class ApiKeyAuthManager implements AuthenticationManager {
                     ps.setObject(1, UUIDUtil.fromHex(key));
 
                     try (ResultSet rs = ps.executeQuery()) {
-                        if (rs.next()) {
-                            return true;
-                        } else {
-                            return false;
-                        }
+                        return rs.next();
                     }
                 }
             } catch (Exception e) {

@@ -25,6 +25,6 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class Quantity {
-    public double quantityNumber;
-    public MeasurementUnit measurementUnit;
+    private double quantityNumber;
+    private MeasurementUnit measurementUnit;
 }

@@ -24,13 +24,13 @@ import java.util.HashMap;
 @Service
 public class AssetEntryRequestFactory {
 
-    private final String ASSET_PROP_CONTENT_TYPE = "application/json";
-    private final String ASSET_PROP_NAME_ASPECT = "Serialized Part - Submodel SerialPartTypization";
-    private final String ASSET_PROP_NAME_ASPECT_RELATIONSHIP = "Serialized Part - Submodel AssemblyPartRelationship";
-    private final String ASSET_PROP_DESCRIPTION = "...";
-    private final String ASSET_PROP_VERSION = "1.0.0";
-    private final String NAME = "Backend Data Service - AAS Server";
-    private final String TYPE = "AzureStorage";
+    private static final String ASSET_PROP_CONTENT_TYPE = "application/json";
+    private static final String ASSET_PROP_NAME_ASPECT = "Serialized Part - Submodel SerialPartTypization";
+    private static final String ASSET_PROP_NAME_ASPECT_RELATIONSHIP = "Serialized Part - Submodel AssemblyPartRelationship";
+    private static final String ASSET_PROP_DESCRIPTION = "...";
+    private static final String ASSET_PROP_VERSION = "1.0.0";
+    private static final String NAME = "Backend Data Service - AAS Server";
+    private static final String TYPE = "AzureStorage";
     @Value(value = "${edc.asset.payload.url.auth.key}")
     private String authKey;
     @Value(value = "${edc.asset.payload.url.auth.code}")

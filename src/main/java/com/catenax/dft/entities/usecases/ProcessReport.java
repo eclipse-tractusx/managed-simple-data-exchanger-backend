@@ -30,6 +30,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProcessReport {
+
     private String processId;
     private CsvTypeEnum csvType;
     private int numberOfItems;

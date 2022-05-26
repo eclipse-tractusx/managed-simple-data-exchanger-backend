@@ -28,6 +28,7 @@ import java.util.List;
 @Data
 @Builder
 public class ContractDefinitionRequest {
+
     private String accessPolicyId;
     private String contractPolicyId;
     private List<Criterion> criteria;

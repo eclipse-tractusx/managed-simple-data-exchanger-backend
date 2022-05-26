@@ -30,7 +30,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ShellDescriptorResponse {
-
     private String idShort;
     private String identification;
     private List<Description> description;

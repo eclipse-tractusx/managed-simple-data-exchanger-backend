@@ -30,6 +30,7 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 @AspectValidation
 public class Aspect {
+
     private String shellId;
     private String subModelId;
     private int rowNumber;

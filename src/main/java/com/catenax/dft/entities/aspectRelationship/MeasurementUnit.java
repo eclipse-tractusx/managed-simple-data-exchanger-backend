@@ -23,6 +23,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class MeasurementUnit {
+
     private String lexicalValue;
     private String datatypeURI;
 }

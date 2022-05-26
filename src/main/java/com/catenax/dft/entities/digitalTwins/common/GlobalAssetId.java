@@ -27,5 +27,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GlobalAssetId {
+
     private List<String> value;
 }

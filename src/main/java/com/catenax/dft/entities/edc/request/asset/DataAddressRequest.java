@@ -21,11 +21,12 @@ import lombok.*;
 
 import java.util.HashMap;
 
-@NoArgsConstructor
-@AllArgsConstructor
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class DataAddressRequest {
+
     private HashMap<String, String> properties;
 
     @SneakyThrows

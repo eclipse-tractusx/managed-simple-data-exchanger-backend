@@ -25,6 +25,7 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class ManufacturingInformation {
-    public String date;
-    public String country;
+
+    private String date;
+    private String country;
 }

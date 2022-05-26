@@ -75,50 +75,50 @@ spec:
                   name: dft-edc-secrets
                   key: edcAspectUrl
             - name: EDC_ASPECT_URL
-                valueFrom:
-                  secretKeyRef:
-                    name: dft-edc-secrets
-                    key: edcAspectApiKey
+              valueFrom:
+                secretKeyRef:
+                  name: dft-edc-secrets
+                  key: edcAspectApiKey
             - name: EDC_ASPECT_API_VALUE
-                valueFrom:
-                  secretKeyRef:
-                    name: dft-edc-secrets
-                    key: edcAspectApiValue
+              valueFrom:
+                secretKeyRef:
+                  name: dft-edc-secrets
+                  key: edcAspectApiValue
             - name: EDC_CHILD_ASPECT_URL
-                valueFrom:
-                  secretKeyRef:
-                    name: dft-edc-secrets
-                    key: edcChildAspectUrl
+              valueFrom:
+                secretKeyRef:
+                  name: dft-edc-secrets
+                  key: edcChildAspectUrl
             - name: EDC_CHILD_ASPECT_API_KEY
-                valueFrom:
-                  secretKeyRef:
-                    name: dft-edc-secrets
-                    key: edcChildAspectApiKey
+              valueFrom:
+                secretKeyRef:
+                  name: dft-edc-secrets
+                  key: edcChildAspectApiKey
             - name: EDC_CHILD_ASPECT_API_VALUE
-                valueFrom:
-                  secretKeyRef:
-                    name: dft-edc-secrets
-                    key: edcChildAspectApiValue
+              valueFrom:
+                secretKeyRef:
+                  name: dft-edc-secrets
+                  key: edcChildAspectApiValue
             - name: EDC_ASSET_PAYLOAD_URL
-                valueFrom:
-                  secretKeyRef:
-                    name: dft-edc-secrets
-                    key: edcAssetPayloadUrl
+              valueFrom:
+                secretKeyRef:
+                  name: dft-edc-secrets
+                  key: edcAssetPayloadUrl
             - name: EDC_ASSET_RELATIONSHIP_PAYLOAD_URL
-                valueFrom:
-                  secretKeyRef:
-                    name: dft-edc-secrets
-                    key: edcAssetRelationshipPayloadUrl
+              valueFrom:
+                secretKeyRef:
+                  name: dft-edc-secrets
+                  key: edcAssetRelationshipPayloadUrl
             - name: EDC_ASSET_PAYLOAD_URL_AUTH_KEY
-                valueFrom:
-                  secretKeyRef:
-                    name: dft-edc-secrets
-                    key: edcAssetPayloadUrlAuthKey
+              valueFrom:
+                secretKeyRef:
+                  name: dft-edc-secrets
+                  key: edcAssetPayloadUrlAuthKey
             - name: EDC_ASSET_PAYLOAD_URL_AUTH_CODE
-                valueFrom:
-                  secretKeyRef:
-                    name: dft-edc-secrets
-                    key: edcAssetPayloadUrlAuthCode
+              valueFrom:
+                secretKeyRef:
+                  name: dft-edc-secrets
+                  key: edcAssetPayloadUrlAuthCode
           ports:
             - name: http
               containerPort: 8080

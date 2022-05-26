@@ -50,6 +50,7 @@ public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<RowD
             throw new CsvHandlerUseCaseException(rowData.position(), "This row has the wrong amount of fields");
         }
 
+
         Aspect aspect = Aspect.builder()
                 .rowNumber(rowData.position())
                 .uuid(rowDataFields[0].trim())

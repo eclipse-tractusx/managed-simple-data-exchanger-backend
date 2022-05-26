@@ -17,7 +17,7 @@
 
 package com.catenax.dft.entities.database;
 
-import lombok.*;
+import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -41,7 +41,7 @@ public class AspectRelationshipEntity implements Serializable{
     @Column(name = "assembled_on")
     private String assembledOn;
     @Column(name = "quantity_number")
-    private String quantityNumber;
+    private Double quantityNumber;
     @Column(name = "measurement_unit_lexical_value")
     private String measurementUnitLexicalValue;
     @Column(name = "shell_id")

@@ -17,6 +17,7 @@
 
 package com.catenax.dft.entities.usecases;
 
+import com.catenax.dft.validators.AspectValidation;
 import com.catenax.dft.validators.OptionalIdentifierKeyValidation;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,6 +28,7 @@ import javax.validation.constraints.NotBlank;
 @Data
 @Builder
 @AllArgsConstructor
+@AspectValidation
 public class Aspect {
     private String shellId;
     private String subModelId;

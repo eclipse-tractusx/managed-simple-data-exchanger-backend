@@ -23,11 +23,14 @@ import com.catenax.dft.entities.aspect.ManufacturingInformation;
 import com.catenax.dft.entities.aspect.PartTypeInformation;
 import com.catenax.dft.entities.database.AspectEntity;
 import com.catenax.dft.entities.usecases.Aspect;
+import com.catenax.dft.enums.OptionalIdentifierKeyEnum;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.ArrayList;
+import java.util.stream.Stream;
 
 @Mapper(componentModel = "spring")
 public abstract class AspectMapper {
@@ -38,6 +41,9 @@ public abstract class AspectMapper {
     @Mapping(target = "subModelId", ignore = true)
     public abstract Aspect mapFrom(AspectEntity aspect);
 
+    @Mapping(source = "optionalIdentifierKey",
+            target = "optionalIdentifierKey",
+            qualifiedByName = "prettyName")
     public abstract AspectEntity mapFrom(Aspect aspect);
 
     public AspectResponse mapToResponse(AspectEntity entity) {
@@ -51,7 +57,7 @@ public abstract class AspectMapper {
         localIdentifiers.add(new LocalIdentifier("ManufacturerPartID", entity.getManufacturerPartId()));
         localIdentifiers.add(new LocalIdentifier("ManufacturerID", manufacturerId));
         if (entity.getOptionalIdentifierKey() != null && entity.getOptionalIdentifierValue() != null) {
-            localIdentifiers.add(new LocalIdentifier(entity.getOptionalIdentifierKey().getPrettyName(), entity.getOptionalIdentifierValue()));
+            localIdentifiers.add(new LocalIdentifier(entity.getOptionalIdentifierKey(), entity.getOptionalIdentifierValue()));
         }
 
         ManufacturingInformation manufacturingInformation = ManufacturingInformation.builder()
@@ -73,5 +79,11 @@ public abstract class AspectMapper {
                 .partTypeInformation(partTypeInformation)
                 .catenaXId(entity.getUuid())
                 .build();
+    }
+
+    @Named("prettyName")
+    String getPrettyName(String optionalIdentifierKey) {
+        return optionalIdentifierKey == null ? null : Stream.of(OptionalIdentifierKeyEnum.values())
+                .filter(v -> v.getPrettyName().equalsIgnoreCase(optionalIdentifierKey)).findFirst().get().getPrettyName();
     }
 }

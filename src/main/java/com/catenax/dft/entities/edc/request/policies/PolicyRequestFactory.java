@@ -65,7 +65,7 @@ public class PolicyRequestFactory {
                 .assigner(null)
                 .constraints(new ArrayList<>())
                 .duties(new ArrayList<>())
-                .edctype("dataspaceconnector:permission")
+                .edcType("dataspaceconnector:permission")
                 .build();
         permissions.add(permissionRequest);
         return permissions;

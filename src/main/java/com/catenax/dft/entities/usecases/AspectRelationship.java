@@ -26,6 +26,7 @@ import javax.validation.constraints.Positive;
 @Builder
 @Data
 public class AspectRelationship {
+
     private String shellId;
     private String subModelId;
     private int rowNumber;

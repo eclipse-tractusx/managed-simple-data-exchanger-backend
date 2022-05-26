@@ -25,9 +25,10 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class PartTypeInformation {
-    public String manufacturerPartID;
-    public String customerPartId;
-    public String classification;
-    public String nameAtManufacturer;
-    public String nameAtCustomer;
+
+    private String manufacturerPartID;
+    private String customerPartId;
+    private String classification;
+    private String nameAtManufacturer;
+    private String nameAtCustomer;
 }

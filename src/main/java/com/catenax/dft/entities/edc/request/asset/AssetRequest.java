@@ -26,6 +26,7 @@ import java.util.HashMap;
 @Data
 @Builder
 public class AssetRequest {
+
     private HashMap<String, String> properties;
 
     @SneakyThrows

@@ -23,11 +23,12 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-@NoArgsConstructor
-@AllArgsConstructor
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PolicyDefinitionRequest {
+
     private String uid;
     private ArrayList<PermissionRequest> permissions;
     private ArrayList<ProhibitionRequest> prohibitions;

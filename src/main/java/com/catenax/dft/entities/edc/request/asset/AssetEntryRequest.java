@@ -25,6 +25,7 @@ import lombok.*;
 @Data
 @Builder
 public class AssetEntryRequest {
+
     private AssetRequest asset;
     private DataAddressRequest dataAddress;
 

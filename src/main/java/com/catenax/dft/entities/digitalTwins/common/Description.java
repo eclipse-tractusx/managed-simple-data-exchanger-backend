@@ -19,14 +19,15 @@ package com.catenax.dft.entities.digitalTwins.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Description {
 
-    public String language;
-    public String text;
-
+    private String language;
+    private String text;
 }

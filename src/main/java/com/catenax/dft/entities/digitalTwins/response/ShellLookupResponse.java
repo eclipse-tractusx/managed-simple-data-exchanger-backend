@@ -20,5 +20,4 @@ package com.catenax.dft.entities.digitalTwins.response;
 import java.util.ArrayList;
 
 public class ShellLookupResponse extends ArrayList<String> {
-
 }

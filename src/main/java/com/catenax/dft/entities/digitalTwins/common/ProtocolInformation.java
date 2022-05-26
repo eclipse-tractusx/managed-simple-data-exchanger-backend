@@ -19,14 +19,16 @@ package com.catenax.dft.entities.digitalTwins.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProtocolInformation {
-    public String endpointAddress;
-    public String endpointProtocol;
-    public String endpointProtocolVersion;
 
+    private String endpointAddress;
+    private String endpointProtocol;
+    private String endpointProtocolVersion;
 }

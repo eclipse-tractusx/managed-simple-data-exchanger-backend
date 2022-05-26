@@ -25,6 +25,7 @@ import lombok.Data;
 @AllArgsConstructor
 @Builder
 public class ChildPart {
+
     private String lifecycleContext;
     private Quantity quantity;
     private String assembledOn;

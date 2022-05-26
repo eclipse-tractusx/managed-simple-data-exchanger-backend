@@ -19,7 +19,6 @@ package com.catenax.dft.gateways.database;
 
 import com.catenax.dft.entities.database.AspectRelationshipEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 

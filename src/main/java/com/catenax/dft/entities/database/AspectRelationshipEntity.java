@@ -17,7 +17,7 @@
 
 package com.catenax.dft.entities.database;
 
-import lombok.*;
+import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;

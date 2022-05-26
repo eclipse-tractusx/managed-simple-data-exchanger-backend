@@ -17,10 +17,12 @@
 
 package com.catenax.dft.entities.database;
 
-import com.catenax.dft.enums.OptionalIdentifierKeyEnum;
 import lombok.Data;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.io.Serializable;
 
 @Table(name = "aspect")

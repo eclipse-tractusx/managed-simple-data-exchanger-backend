@@ -17,14 +17,11 @@
 package com.catenax.dft.gateways.database;
 
 import com.catenax.dft.entities.database.ProcessReportEntity;
-import com.catenax.dft.enums.ProgressStatusEnum;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;

@@ -40,7 +40,7 @@ CREATE TABLE aspect_relationship
     child_catenax_id VARCHAR(50),
     lifecycle_context VARCHAR(50),
     assembled_on VARCHAR(50),
-    quantity_number INTEGER,
+    quantity_number NUMERIC(10,5),
     measurement_unit_lexical_value VARCHAR(50),
     shell_id VARCHAR(50),
     data_type_uri VARCHAR(50),

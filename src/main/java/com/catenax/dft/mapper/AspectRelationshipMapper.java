@@ -52,7 +52,7 @@ public abstract class AspectRelationshipMapper {
 
     private ChildPart toChildPart(AspectRelationshipEntity entity) {
         Quantity quantity = Quantity.builder()
-                .quantityNumber(Double.parseDouble(entity.getQuantityNumber()))
+                .quantityNumber(entity.getQuantityNumber())
                 .measurementUnit(new MeasurementUnit(entity.getMeasurementUnitLexicalValue(), entity.getDataTypeUri()))
                 .build();
 

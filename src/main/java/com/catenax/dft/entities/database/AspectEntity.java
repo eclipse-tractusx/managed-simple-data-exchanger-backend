@@ -50,7 +50,7 @@ public class AspectEntity implements Serializable {
     @Column(name = "name_at_customer")
     private String nameAtCustomer;
     @Column(name = "optional_identifier_key")
-    private OptionalIdentifierKeyEnum optionalIdentifierKey;
+    private String optionalIdentifierKey;
     @Column(name = "optional_identifier_value")
     private String optionalIdentifierValue;
     @Column(name = "shell_id")

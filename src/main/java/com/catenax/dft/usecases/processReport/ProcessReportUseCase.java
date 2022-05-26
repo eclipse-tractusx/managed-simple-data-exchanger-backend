@@ -56,11 +56,11 @@ public class ProcessReportUseCase {
     }
 
     public void finishBuildAspectProgressReport(String processId) {
-        repository.finalizeAspectProgressReport(processId, LocalDateTime.now(), ProgressStatusEnum.COMPLETED);
+        repository.finalizeAspectProgressReport(processId, LocalDateTime.now(), ProgressStatusEnum.COMPLETED.toString());
     }
 
     public void finishBuildChildAspectProgressReport(String processId) {
-        repository.finalizeChildAspectProgressReport(processId, LocalDateTime.now(), ProgressStatusEnum.COMPLETED);
+        repository.finalizeChildAspectProgressReport(processId, LocalDateTime.now(), ProgressStatusEnum.COMPLETED.toString());
     }
 
     public void unknownProcessReport(String processId) {

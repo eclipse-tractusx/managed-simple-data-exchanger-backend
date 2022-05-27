@@ -26,6 +26,7 @@ import java.time.LocalDateTime;
 @Table(name = "process_report")
 @Entity
 @Data
+@Cacheable(value = false)
 public class ProcessReportEntity implements Serializable {
     @Id
     @Column(name = "process_id")

@@ -15,11 +15,11 @@
  *
  */
 
-package com.catenax.dft.usecases.csvHandler.aspects;
+package com.catenax.dft.usecases.csvhandler.aspects;
 
 import com.catenax.dft.entities.usecases.Aspect;
 import com.catenax.dft.usecases.common.UUIdGenerator;
-import com.catenax.dft.usecases.csvHandler.AbstractCsvHandlerUseCase;
+import com.catenax.dft.usecases.csvhandler.AbstractCsvHandlerUseCase;
 import org.springframework.stereotype.Service;
 
 @Service

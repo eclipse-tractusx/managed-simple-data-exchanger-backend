@@ -15,13 +15,13 @@
  *
  */
 
-package com.catenax.dft.usecases.csvHandler.aspects;
+package com.catenax.dft.usecases.csvhandler.aspects;
 
 import com.catenax.dft.entities.database.AspectEntity;
 import com.catenax.dft.entities.usecases.Aspect;
 import com.catenax.dft.gateways.database.AspectRepository;
 import com.catenax.dft.mapper.AspectMapper;
-import com.catenax.dft.usecases.csvHandler.AbstractCsvHandlerUseCase;
+import com.catenax.dft.usecases.csvhandler.AbstractCsvHandlerUseCase;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

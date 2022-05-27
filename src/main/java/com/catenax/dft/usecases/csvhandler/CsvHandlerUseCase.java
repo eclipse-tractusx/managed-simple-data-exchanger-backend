@@ -15,7 +15,7 @@
  *
  */
 
-package com.catenax.dft.usecases.csvHandler;
+package com.catenax.dft.usecases.csvhandler;
 
 public interface CsvHandlerUseCase<I> {
     void run(I input, String processId);

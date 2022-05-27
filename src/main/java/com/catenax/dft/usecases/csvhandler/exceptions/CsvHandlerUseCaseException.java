@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package com.catenax.dft.usecases.csvHandler.exceptions;
+package com.catenax.dft.usecases.csvhandler.exceptions;
 
 public class CsvHandlerUseCaseException extends Exception {
 

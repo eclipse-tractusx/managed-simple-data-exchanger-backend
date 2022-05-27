@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.catenax.dft.usecases.csvHandler.aspects;
+package com.catenax.dft.usecases.csvhandler.aspects;
 
 
 import com.catenax.dft.entities.edc.request.asset.AssetEntryRequest;
@@ -25,7 +25,7 @@ import com.catenax.dft.entities.edc.request.policies.PolicyDefinitionRequest;
 import com.catenax.dft.entities.edc.request.policies.PolicyRequestFactory;
 import com.catenax.dft.entities.usecases.Aspect;
 import com.catenax.dft.gateways.external.EDCAssetGateway;
-import com.catenax.dft.usecases.csvHandler.AbstractCsvHandlerUseCase;
+import com.catenax.dft.usecases.csvhandler.AbstractCsvHandlerUseCase;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

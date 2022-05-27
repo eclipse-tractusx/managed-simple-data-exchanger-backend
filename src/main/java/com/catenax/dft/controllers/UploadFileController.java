@@ -19,7 +19,7 @@ package com.catenax.dft.controllers;
 
 import com.catenax.dft.entities.csv.CsvContent;
 import com.catenax.dft.gateways.file.CsvGateway;
-import com.catenax.dft.usecases.csvHandler.CsvHandlerOrchestrator;
+import com.catenax.dft.usecases.csvhandler.CsvHandlerOrchestrator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

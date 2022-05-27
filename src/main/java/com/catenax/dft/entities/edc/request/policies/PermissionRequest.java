@@ -33,7 +33,7 @@ public class PermissionRequest {
     private String assignee;
     private String assigner;
     private ArrayList<ConstraintRequest> constraints;
-    private ArrayList<DutyRequest> duties;
+    private ArrayList<ObligationRequest> duties;
     private String edcType;
 
     @SneakyThrows

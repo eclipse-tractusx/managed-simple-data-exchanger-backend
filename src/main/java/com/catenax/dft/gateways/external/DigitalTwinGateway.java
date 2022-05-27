@@ -12,8 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
- */
+aed */
 
 package com.catenax.dft.gateways.external;
 
@@ -117,7 +116,7 @@ public class DigitalTwinGateway {
         headers.add(AUTHORIZATION, getBearerToken());
         HttpEntity<CreateSubModelRequest> entity = new HttpEntity<>(request, headers);
 
-        String baseUrl=digitalTwinsUrl + "/registry/shell-descriptors/%s/submodel-descriptors";
+        String baseUrl = digitalTwinsUrl + "/registry/shell-descriptors/%s/submodel-descriptors";
         String url = String.format(baseUrl, shellId);
 
         ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);

@@ -127,8 +127,7 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
     private CreateSubModelRequest getCreateSubModelRequest(Aspect aspect) {
         ArrayList<String> value = new ArrayList<>();
         value.add(SEMANTIC_ID);
-        SemanticId semanticId = new SemanticId();
-        semanticId.value = value;
+        SemanticId semanticId = new SemanticId(value);
 
         List<Endpoint> endpoints = new ArrayList<>();
         endpoints.add(Endpoint.builder()

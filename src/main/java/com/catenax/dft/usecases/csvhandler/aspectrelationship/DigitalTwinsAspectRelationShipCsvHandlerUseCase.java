@@ -166,8 +166,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase
     private CreateSubModelRequest getCreateSubModelRequest(AspectRelationship aspectRelationShip) {
         ArrayList<String> value = new ArrayList<>();
         value.add(SEMANTIC_ID);
-        SemanticId semanticId = new SemanticId();
-        semanticId.value = value;
+        SemanticId semanticId = new SemanticId(value);
         String encodedId = URLEncoder.encode(aspectRelationShip.getParentUuid(), StandardCharsets.UTF_8.toString());
 
         List<Endpoint> endpoints = new ArrayList<>();

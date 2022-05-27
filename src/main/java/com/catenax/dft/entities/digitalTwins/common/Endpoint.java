@@ -15,7 +15,7 @@
  *
  */
 
-package com.catenax.dft.entities.digitalTwins.common;
+package com.catenax.dft.entities.digitaltwins.common;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

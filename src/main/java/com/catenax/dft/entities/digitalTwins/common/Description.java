@@ -15,7 +15,7 @@
  *
  */
 
-package com.catenax.dft.entities.digitalTwins.common;
+package com.catenax.dft.entities.digitaltwins.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

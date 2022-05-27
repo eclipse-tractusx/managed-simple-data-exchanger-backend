@@ -15,11 +15,11 @@
  *
  */
 
-package com.catenax.dft.entities.digitalTwins.response;
+package com.catenax.dft.entities.digitaltwins.response;
 
-import com.catenax.dft.entities.digitalTwins.common.Description;
-import com.catenax.dft.entities.digitalTwins.common.GlobalAssetId;
-import com.catenax.dft.entities.digitalTwins.common.KeyValuePair;
+import com.catenax.dft.entities.digitaltwins.common.Description;
+import com.catenax.dft.entities.digitaltwins.common.GlobalAssetId;
+import com.catenax.dft.entities.digitaltwins.common.KeyValuePair;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

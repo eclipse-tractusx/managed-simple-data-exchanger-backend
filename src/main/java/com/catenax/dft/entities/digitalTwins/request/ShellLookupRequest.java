@@ -15,9 +15,9 @@
  *
  */
 
-package com.catenax.dft.entities.digitalTwins.request;
+package com.catenax.dft.entities.digitaltwins.request;
 
-import com.catenax.dft.entities.digitalTwins.common.LocalIdentifier;
+import com.catenax.dft.entities.digitaltwins.common.LocalIdentifier;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;

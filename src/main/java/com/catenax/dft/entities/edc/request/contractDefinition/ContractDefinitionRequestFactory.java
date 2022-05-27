@@ -14,7 +14,7 @@
  *   limitations under the License.
  */
 
-package com.catenax.dft.entities.edc.request.contractDefinition;
+package com.catenax.dft.entities.edc.request.contractdefinition;
 
 import com.catenax.dft.usecases.common.UUIdGenerator;
 import org.springframework.stereotype.Service;

@@ -20,6 +20,7 @@ package com.catenax.dft.usecases.csvhandler.aspects;
 import com.catenax.dft.entities.csv.RowData;
 import com.catenax.dft.entities.usecases.Aspect;
 import com.catenax.dft.usecases.csvhandler.AbstractCsvHandlerUseCase;
+import com.catenax.dft.usecases.csvhandler.CsvHandlerOrchestrator;
 import com.catenax.dft.usecases.csvhandler.exceptions.CsvHandlerUseCaseException;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +34,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.catenax.dft.gateways.file.CsvGateway.SEPARATOR;
-import static com.catenax.dft.usecases.csvhandler.CsvHandlerOrchestrator.ASPECT_COLUMNS;
 
 @Slf4j
 @Service
@@ -46,10 +46,9 @@ public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<RowD
     @SneakyThrows
     public Aspect executeUseCase(RowData rowData, String processId) {
         String[] rowDataFields = rowData.content().split(SEPARATOR, -1);
-        if (rowDataFields.length != ASPECT_COLUMNS.size()) {
+        if (rowDataFields.length != CsvHandlerOrchestrator.getAspectColumnSize()) {
             throw new CsvHandlerUseCaseException(rowData.position(), "This row has the wrong amount of fields");
         }
-
 
         Aspect aspect = Aspect.builder()
                 .rowNumber(rowData.position())

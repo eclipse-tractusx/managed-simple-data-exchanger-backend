@@ -36,7 +36,7 @@ import java.util.stream.Stream;
 @Service
 public class CsvHandlerOrchestrator {
 
-    public static final List<String> ASPECT_COLUMNS = Stream.of(
+    private static final List<String> ASPECT_COLUMNS = Stream.of(
             "UUID",
             "part_instance_id",
             "manufacturing_date",
@@ -49,7 +49,7 @@ public class CsvHandlerOrchestrator {
             "optional_identifier_key",
             "optional_identifier_value")
             .collect(Collectors.toList());
-    public static final List<String> ASPECT_RELATIONSHIP_COLUMNS = Stream.of(
+    private static final List<String> ASPECT_RELATIONSHIP_COLUMNS = Stream.of(
             "parent_UUID",
             "parent_part_instance_id",
             "parent_manufacturer_part_id",
@@ -66,6 +66,7 @@ public class CsvHandlerOrchestrator {
             "datatype_URI",
             "assembled_on")
             .collect(Collectors.toList());
+
     private final MapToAspectCsvHandlerUseCase aspectStarterUseCase;
     private final MapToAspectRelationshipCsvHandlerUseCase aspectRelationshipStarterUseCase;
     private final ProcessReportUseCase processReportUseCase;
@@ -76,6 +77,14 @@ public class CsvHandlerOrchestrator {
         this.aspectStarterUseCase = aspectStarterUseCase;
         this.aspectRelationshipStarterUseCase = aspectRelationshipStarterUseCase;
         this.processReportUseCase = processReportUseCase;
+    }
+
+    public static int getAspectColumnSize(){
+        return ASPECT_COLUMNS.size();
+    }
+
+    public static int getAspectRelationshipColumnSize(){
+        return ASPECT_RELATIONSHIP_COLUMNS.size();
     }
 
     @SneakyThrows

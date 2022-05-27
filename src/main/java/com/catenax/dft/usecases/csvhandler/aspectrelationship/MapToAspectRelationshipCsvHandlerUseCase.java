@@ -20,6 +20,7 @@ package com.catenax.dft.usecases.csvhandler.aspectrelationship;
 import com.catenax.dft.entities.csv.RowData;
 import com.catenax.dft.entities.usecases.AspectRelationship;
 import com.catenax.dft.usecases.csvhandler.AbstractCsvHandlerUseCase;
+import com.catenax.dft.usecases.csvhandler.CsvHandlerOrchestrator;
 import com.catenax.dft.usecases.csvhandler.exceptions.CsvHandlerUseCaseException;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.catenax.dft.gateways.file.CsvGateway.SEPARATOR;
-import static com.catenax.dft.usecases.csvhandler.CsvHandlerOrchestrator.ASPECT_RELATIONSHIP_COLUMNS;
 
 @Service
 public class MapToAspectRelationshipCsvHandlerUseCase
@@ -46,7 +46,7 @@ public class MapToAspectRelationshipCsvHandlerUseCase
     @SneakyThrows
     protected AspectRelationship executeUseCase(RowData rowData, String processId) {
         String[] rowDataFields = rowData.content().split(SEPARATOR, -1);
-        if (rowDataFields.length != ASPECT_RELATIONSHIP_COLUMNS.size()) {
+        if (rowDataFields.length != CsvHandlerOrchestrator.getAspectRelationshipColumnSize()) {
             throw new CsvHandlerUseCaseException(rowData.position(), "This row has wrong amount of fields");
         }
 

@@ -16,6 +16,7 @@
 
 package com.catenax.dft.entities.edc.request.policies;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.*;
 
@@ -34,6 +35,7 @@ public class PermissionRequest {
     private String assigner;
     private ArrayList<ConstraintRequest> constraints;
     private ArrayList<ObligationRequest> duties;
+    @JsonProperty("edctype")
     private String edcType;
 
     @SneakyThrows

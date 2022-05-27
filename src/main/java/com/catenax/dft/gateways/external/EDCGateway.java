@@ -43,7 +43,7 @@ public abstract class EDCGateway {
         headers.add(getApiKey(), getApiValue());
 
         try {
-            String url = String.format(getEndPoint() + "/assets/%s", id);
+            String url = getEndPoint() + "/assets/"+ id;
             restTemplate.getForEntity(url, Object.class, headers);
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.NOT_FOUND) {

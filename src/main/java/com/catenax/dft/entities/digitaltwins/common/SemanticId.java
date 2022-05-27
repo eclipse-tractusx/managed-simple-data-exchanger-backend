@@ -28,5 +28,5 @@ import java.util.List;
 @AllArgsConstructor
 public class SemanticId {
 
-    public List<String> value;
+    private List<String> value;
 }

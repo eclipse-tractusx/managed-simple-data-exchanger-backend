@@ -18,7 +18,7 @@ package com.catenax.dft.controllers;
 
 import com.catenax.dft.entities.usecases.ProcessReport;
 import com.catenax.dft.entities.usecases.ProcessReportPageResponse;
-import com.catenax.dft.usecases.processReport.ProcessReportUseCase;
+import com.catenax.dft.usecases.processreport.ProcessReportUseCase;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

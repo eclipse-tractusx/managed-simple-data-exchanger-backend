@@ -15,7 +15,7 @@
  *
  */
 
-package com.catenax.dft.entities.digitalTwins.response;
+package com.catenax.dft.entities.digitaltwins.response;
 
 import java.util.ArrayList;
 

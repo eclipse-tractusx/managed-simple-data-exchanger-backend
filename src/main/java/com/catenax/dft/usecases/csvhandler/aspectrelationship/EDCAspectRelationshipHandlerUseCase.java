@@ -14,24 +14,25 @@
  *   limitations under the License.
  */
 
-package com.catenax.dft.usecases.csvHandler.aspectrelationship;
+package com.catenax.dft.usecases.csvhandler.aspectrelationship;
 
 import com.catenax.dft.entities.edc.request.asset.AssetEntryRequest;
 import com.catenax.dft.entities.edc.request.asset.AssetEntryRequestFactory;
-import com.catenax.dft.entities.edc.request.contractDefinition.ContractDefinitionRequest;
-import com.catenax.dft.entities.edc.request.contractDefinition.ContractDefinitionRequestFactory;
+import com.catenax.dft.entities.edc.request.contractdefinition.ContractDefinitionRequestFactory;
+import com.catenax.dft.entities.edc.request.contractdefinition.ContractDefinitionRequest;
 import com.catenax.dft.entities.edc.request.policies.PolicyDefinitionRequest;
 import com.catenax.dft.entities.edc.request.policies.PolicyRequestFactory;
 import com.catenax.dft.entities.usecases.AspectRelationship;
 import com.catenax.dft.gateways.external.EDCAssetChildGateway;
-import com.catenax.dft.usecases.csvHandler.AbstractCsvHandlerUseCase;
+import com.catenax.dft.usecases.csvhandler.AbstractCsvHandlerUseCase;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class EDCAspectRelationshipHandlerUseCase extends AbstractCsvHandlerUseCase<AspectRelationship, AspectRelationship> {
+public class EDCAspectRelationshipHandlerUseCase
+        extends AbstractCsvHandlerUseCase<AspectRelationship, AspectRelationship> {
 
     private AssetEntryRequestFactory assetFactory;
     private EDCAssetChildGateway edcGateway;

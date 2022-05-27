@@ -15,7 +15,7 @@
  *
  */
 
-package com.catenax.dft.usecases.csvHandler;
+package com.catenax.dft.usecases.csvhandler;
 
 import com.catenax.dft.entities.database.FailureLogEntity;
 import com.catenax.dft.usecases.logs.FailureLogsUseCase;

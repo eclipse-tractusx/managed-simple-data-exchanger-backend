@@ -12,17 +12,16 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
- */
+aed */
 
 package com.catenax.dft.gateways.external;
 
-import com.catenax.dft.entities.digitalTwins.request.CreateSubModelRequest;
-import com.catenax.dft.entities.digitalTwins.request.ShellDescriptorRequest;
-import com.catenax.dft.entities.digitalTwins.request.ShellLookupRequest;
-import com.catenax.dft.entities.digitalTwins.response.ShellDescriptorResponse;
-import com.catenax.dft.entities.digitalTwins.response.ShellLookupResponse;
-import com.catenax.dft.entities.digitalTwins.response.SubModelListResponse;
+import com.catenax.dft.entities.digitaltwins.request.CreateSubModelRequest;
+import com.catenax.dft.entities.digitaltwins.request.ShellDescriptorRequest;
+import com.catenax.dft.entities.digitaltwins.request.ShellLookupRequest;
+import com.catenax.dft.entities.digitaltwins.response.ShellDescriptorResponse;
+import com.catenax.dft.entities.digitaltwins.response.ShellLookupResponse;
+import com.catenax.dft.entities.digitaltwins.response.SubModelListResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
@@ -117,7 +116,7 @@ public class DigitalTwinGateway {
         headers.add(AUTHORIZATION, getBearerToken());
         HttpEntity<CreateSubModelRequest> entity = new HttpEntity<>(request, headers);
 
-        String baseUrl=digitalTwinsUrl + "/registry/shell-descriptors/%s/submodel-descriptors";
+        String baseUrl = digitalTwinsUrl + "/registry/shell-descriptors/%s/submodel-descriptors";
         String url = String.format(baseUrl, shellId);
 
         ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);

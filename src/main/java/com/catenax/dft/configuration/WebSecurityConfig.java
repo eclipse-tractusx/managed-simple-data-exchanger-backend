@@ -33,7 +33,6 @@ import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collections;
 
-
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 

@@ -15,12 +15,12 @@
  *
  */
 
-package com.catenax.dft.usecases.csvHandler.aspects;
+package com.catenax.dft.usecases.csvhandler.aspects;
 
 import com.catenax.dft.entities.csv.RowData;
 import com.catenax.dft.entities.usecases.Aspect;
-import com.catenax.dft.usecases.csvHandler.AbstractCsvHandlerUseCase;
-import com.catenax.dft.usecases.csvHandler.exceptions.CsvHandlerUseCaseException;
+import com.catenax.dft.usecases.csvhandler.AbstractCsvHandlerUseCase;
+import com.catenax.dft.usecases.csvhandler.exceptions.CsvHandlerUseCaseException;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -33,7 +33,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.catenax.dft.gateways.file.CsvGateway.SEPARATOR;
-import static com.catenax.dft.usecases.csvHandler.CsvHandlerOrchestrator.ASPECT_COLUMNS;
+import static com.catenax.dft.usecases.csvhandler.CsvHandlerOrchestrator.ASPECT_COLUMNS;
 
 @Slf4j
 @Service

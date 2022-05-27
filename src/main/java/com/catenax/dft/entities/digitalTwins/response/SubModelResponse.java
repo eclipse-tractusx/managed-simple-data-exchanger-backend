@@ -15,11 +15,11 @@
  *
  */
 
-package com.catenax.dft.entities.digitalTwins.response;
+package com.catenax.dft.entities.digitaltwins.response;
 
-import com.catenax.dft.entities.digitalTwins.common.Description;
-import com.catenax.dft.entities.digitalTwins.common.Endpoint;
-import com.catenax.dft.entities.digitalTwins.common.SemanticId;
+import com.catenax.dft.entities.digitaltwins.common.Description;
+import com.catenax.dft.entities.digitaltwins.common.Endpoint;
+import com.catenax.dft.entities.digitaltwins.common.SemanticId;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.*;
 

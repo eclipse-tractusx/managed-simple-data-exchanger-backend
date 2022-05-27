@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.catenax.dft.usecases.processReport;
+package com.catenax.dft.usecases.processreport;
 
 import com.catenax.dft.entities.database.ProcessReportEntity;
 import com.catenax.dft.entities.usecases.ProcessReport;

@@ -17,7 +17,7 @@
 package com.catenax.dft.gateways.external;
 
 import com.catenax.dft.entities.edc.request.asset.AssetEntryRequest;
-import com.catenax.dft.entities.edc.request.contractDefinition.ContractDefinitionRequest;
+import com.catenax.dft.entities.edc.request.contractdefinition.ContractDefinitionRequest;
 import com.catenax.dft.entities.edc.request.policies.PolicyDefinitionRequest;
 import com.catenax.dft.gateways.exceptions.EDCGatewayException;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +43,8 @@ public abstract class EDCGateway {
         headers.add(getApiKey(), getApiValue());
 
         try {
-            restTemplate.getForEntity(getEndPoint() + "/assets/" + id, Object.class, headers);
+            String url = String.format(getEndPoint() + "/assets/%s", id);
+            restTemplate.getForEntity(url, Object.class, headers);
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
                 return false;

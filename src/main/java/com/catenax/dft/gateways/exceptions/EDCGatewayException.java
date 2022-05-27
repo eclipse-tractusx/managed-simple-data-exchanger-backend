@@ -16,7 +16,7 @@
 
 package com.catenax.dft.gateways.exceptions;
 
-public class EDCGatewayException extends RuntimeException{
+public class EDCGatewayException extends RuntimeException {
 
 
     public EDCGatewayException(String message) {

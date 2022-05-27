@@ -15,14 +15,14 @@
  *
  */
 
-package com.catenax.dft.usecases.csvHandler;
+package com.catenax.dft.usecases.csvhandler;
 
 
 import com.catenax.dft.entities.csv.CsvContent;
 import com.catenax.dft.enums.CsvTypeEnum;
-import com.catenax.dft.usecases.csvHandler.aspectrelationship.MapToAspectRelationshipCsvHandlerUseCase;
-import com.catenax.dft.usecases.csvHandler.aspects.MapToAspectCsvHandlerUseCase;
-import com.catenax.dft.usecases.processReport.ProcessReportUseCase;
+import com.catenax.dft.usecases.csvhandler.aspectrelationship.MapToAspectRelationshipCsvHandlerUseCase;
+import com.catenax.dft.usecases.csvhandler.aspects.MapToAspectCsvHandlerUseCase;
+import com.catenax.dft.usecases.processreport.ProcessReportUseCase;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -34,10 +34,6 @@ import java.util.stream.Stream;
 @Slf4j
 @Service
 public class CsvHandlerOrchestrator {
-
-    private final MapToAspectCsvHandlerUseCase aspectStarterUseCase;
-    private final MapToAspectRelationshipCsvHandlerUseCase aspectRelationshipStarterUseCase;
-    private final ProcessReportUseCase processReportUseCase;
 
     public static final List<String> ASPECT_COLUMNS = Stream.of(
             "UUID",
@@ -69,6 +65,9 @@ public class CsvHandlerOrchestrator {
             "datatype_URI",
             "assembled_on")
             .collect(Collectors.toList());
+    private final MapToAspectCsvHandlerUseCase aspectStarterUseCase;
+    private final MapToAspectRelationshipCsvHandlerUseCase aspectRelationshipStarterUseCase;
+    private final ProcessReportUseCase processReportUseCase;
 
     public CsvHandlerOrchestrator(MapToAspectCsvHandlerUseCase aspectStarterUseCase,
                                   MapToAspectRelationshipCsvHandlerUseCase aspectRelationshipStarterUseCase,

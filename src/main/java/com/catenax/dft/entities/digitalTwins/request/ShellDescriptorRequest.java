@@ -15,11 +15,11 @@
  *
  */
 
-package com.catenax.dft.entities.digitalTwins.request;
+package com.catenax.dft.entities.digitaltwins.request;
 
-import com.catenax.dft.entities.digitalTwins.common.Description;
-import com.catenax.dft.entities.digitalTwins.common.GlobalAssetId;
-import com.catenax.dft.entities.digitalTwins.common.KeyValuePair;
+import com.catenax.dft.entities.digitaltwins.common.Description;
+import com.catenax.dft.entities.digitaltwins.common.GlobalAssetId;
+import com.catenax.dft.entities.digitaltwins.common.KeyValuePair;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.*;
 

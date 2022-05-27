@@ -17,7 +17,6 @@
 
 package com.catenax.dft.configuration;
 
-
 import org.apache.commons.codec.binary.Hex;
 
 import java.nio.ByteBuffer;

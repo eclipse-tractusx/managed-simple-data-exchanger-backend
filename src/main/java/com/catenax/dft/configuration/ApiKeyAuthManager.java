@@ -31,7 +31,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.concurrent.TimeUnit;
 
-
 @Slf4j
 public class ApiKeyAuthManager implements AuthenticationManager {
 

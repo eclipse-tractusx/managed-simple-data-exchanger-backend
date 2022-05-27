@@ -17,7 +17,6 @@
 
 package com.catenax.dft.configuration;
 
-
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 
 import javax.servlet.http.HttpServletRequest;

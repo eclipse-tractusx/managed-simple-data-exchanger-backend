@@ -15,7 +15,7 @@
  *
  */
 
-package com.catenax.dft.usecases.csvHandler.aspectRelationship;
+package com.catenax.dft.usecases.csvHandler.aspectrelationship;
 
 import com.catenax.dft.entities.csv.RowData;
 import com.catenax.dft.entities.usecases.AspectRelationship;
@@ -70,7 +70,7 @@ public class MapToAspectRelationshipCsvHandlerUseCase extends AbstractCsvHandler
                 .build();
 
         List<String> errorMessages = validateAsset(aspectRelationShip);
-        if (errorMessages.size() != 0) {
+        if (!errorMessages.isEmpty()) {
             throw new CsvHandlerUseCaseException(rowData.position(), errorMessages.toString());
         }
 

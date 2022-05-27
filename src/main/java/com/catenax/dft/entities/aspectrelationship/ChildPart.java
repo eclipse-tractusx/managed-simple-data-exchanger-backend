@@ -15,15 +15,20 @@
  *
  */
 
-package com.catenax.dft.entities.aspectRelationship;
+package com.catenax.dft.entities.aspectrelationship;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class MeasurementUnit {
+@Builder
+public class ChildPart {
 
-    private String lexicalValue;
-    private String datatypeURI;
+    private String lifecycleContext;
+    private Quantity quantity;
+    private String assembledOn;
+    private String lastModifiedOn;
+    private String childCatenaXId;
 }

@@ -14,7 +14,7 @@
  *   limitations under the License.
  */
 
-package com.catenax.dft.usecases.csvHandler.aspectRelationship;
+package com.catenax.dft.usecases.csvHandler.aspectrelationship;
 
 import com.catenax.dft.entities.edc.request.asset.AssetEntryRequest;
 import com.catenax.dft.entities.edc.request.asset.AssetEntryRequestFactory;

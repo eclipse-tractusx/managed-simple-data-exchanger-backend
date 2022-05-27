@@ -15,16 +15,15 @@
  *
  */
 
-package com.catenax.dft.entities.aspectRelationship;
+package com.catenax.dft.entities.aspectrelationship;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 
 @Data
-@Builder
 @AllArgsConstructor
-public class Quantity {
-    private double quantityNumber;
-    private MeasurementUnit measurementUnit;
+public class MeasurementUnit {
+
+    private String lexicalValue;
+    private String datatypeURI;
 }

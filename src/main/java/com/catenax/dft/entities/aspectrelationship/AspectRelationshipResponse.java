@@ -15,7 +15,7 @@
  *
  */
 
-package com.catenax.dft.entities.aspectRelationship;
+package com.catenax.dft.entities.aspectrelationship;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

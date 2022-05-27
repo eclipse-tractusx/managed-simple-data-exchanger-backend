@@ -15,7 +15,7 @@
  *
  */
 
-package com.catenax.dft.usecases.csvHandler.aspectRelationship;
+package com.catenax.dft.usecases.csvHandler.aspectrelationship;
 
 import com.catenax.dft.entities.database.AspectEntity;
 import com.catenax.dft.entities.digitalTwins.common.*;

@@ -17,6 +17,7 @@
 
 package com.catenax.dft.configuration;
 
+import lombok.SneakyThrows;
 import org.apache.commons.codec.binary.Hex;
 
 import java.nio.ByteBuffer;
@@ -27,9 +28,9 @@ public final class UUIDUtil {
     private UUIDUtil() {
     }
 
-    public static UUID fromHex(String uuid) throws Exception {
+    @SneakyThrows
+    public static UUID fromHex(String uuid) {
         byte[] data = Hex.decodeHex(uuid.toCharArray());
         return new UUID(ByteBuffer.wrap(data, 0, 8).getLong(), ByteBuffer.wrap(data, 8, 8).getLong());
     }
-
 }

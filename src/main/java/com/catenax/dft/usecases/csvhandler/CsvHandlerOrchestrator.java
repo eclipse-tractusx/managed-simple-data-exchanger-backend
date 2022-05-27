@@ -20,6 +20,7 @@ package com.catenax.dft.usecases.csvhandler;
 
 import com.catenax.dft.entities.csv.CsvContent;
 import com.catenax.dft.enums.CsvTypeEnum;
+import com.catenax.dft.exceptions.DftException;
 import com.catenax.dft.usecases.csvhandler.aspectrelationship.MapToAspectRelationshipCsvHandlerUseCase;
 import com.catenax.dft.usecases.csvhandler.aspects.MapToAspectCsvHandlerUseCase;
 import com.catenax.dft.usecases.processreport.ProcessReportUseCase;
@@ -91,7 +92,7 @@ public class CsvHandlerOrchestrator {
             processReportUseCase.finishBuildChildAspectProgressReport(processId);
         } else {
             processReportUseCase.unknownProcessReport(processId);
-            throw new Exception("Unrecognized CSV content. I don't know what to do with you");
+            throw new DftException("Unrecognized CSV content. I don't know what to do with you");
         }
     }
 }

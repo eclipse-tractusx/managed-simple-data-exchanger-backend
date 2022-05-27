@@ -74,7 +74,7 @@ spec:
                 secretKeyRef:
                   name: dft-edc-secrets
                   key: edcAspectUrl
-            - name: EDC_ASPECT_URL
+            - name: EDC_ASPECT_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: dft-edc-secrets

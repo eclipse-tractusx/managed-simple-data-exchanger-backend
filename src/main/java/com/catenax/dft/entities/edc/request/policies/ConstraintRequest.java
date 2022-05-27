@@ -16,6 +16,7 @@
 
 package com.catenax.dft.entities.edc.request.policies;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.*;
 
@@ -25,7 +26,8 @@ import lombok.*;
 @Builder
 public class ConstraintRequest {
 
-    private String edctype;
+    @JsonProperty("edctype")
+    private String edcType;
 
     @SneakyThrows
     public String toJsonString() {

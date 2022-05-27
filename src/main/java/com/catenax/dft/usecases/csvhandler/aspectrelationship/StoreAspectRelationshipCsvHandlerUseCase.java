@@ -27,12 +27,14 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class StoreAspectRelationshipCsvHandlerUseCase extends AbstractCsvHandlerUseCase<AspectRelationship, AspectRelationship> {
+public class StoreAspectRelationshipCsvHandlerUseCase
+        extends AbstractCsvHandlerUseCase<AspectRelationship, AspectRelationship> {
 
     private final AspectRelationshipRepository repository;
     private final AspectRelationshipMapper mapper;
 
-    public StoreAspectRelationshipCsvHandlerUseCase(AspectRelationshipRepository aspectRelationshipRepository, AspectRelationshipMapper mapper) {
+    public StoreAspectRelationshipCsvHandlerUseCase(AspectRelationshipRepository aspectRelationshipRepository,
+                                                    AspectRelationshipMapper mapper) {
         super(null);
         this.repository = aspectRelationshipRepository;
         this.mapper = mapper;

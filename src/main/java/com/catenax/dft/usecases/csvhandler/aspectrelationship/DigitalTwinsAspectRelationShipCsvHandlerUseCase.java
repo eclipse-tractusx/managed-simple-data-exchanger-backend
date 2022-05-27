@@ -18,13 +18,13 @@
 package com.catenax.dft.usecases.csvhandler.aspectrelationship;
 
 import com.catenax.dft.entities.database.AspectEntity;
-import com.catenax.dft.entities.digitalTwins.common.*;
-import com.catenax.dft.entities.digitalTwins.request.CreateSubModelRequest;
-import com.catenax.dft.entities.digitalTwins.request.ShellDescriptorRequest;
-import com.catenax.dft.entities.digitalTwins.request.ShellLookupRequest;
-import com.catenax.dft.entities.digitalTwins.response.ShellDescriptorResponse;
-import com.catenax.dft.entities.digitalTwins.response.ShellLookupResponse;
-import com.catenax.dft.entities.digitalTwins.response.SubModelListResponse;
+import com.catenax.dft.entities.digitaltwins.common.*;
+import com.catenax.dft.entities.digitaltwins.request.CreateSubModelRequest;
+import com.catenax.dft.entities.digitaltwins.request.ShellDescriptorRequest;
+import com.catenax.dft.entities.digitaltwins.request.ShellLookupRequest;
+import com.catenax.dft.entities.digitaltwins.response.ShellDescriptorResponse;
+import com.catenax.dft.entities.digitaltwins.response.ShellLookupResponse;
+import com.catenax.dft.entities.digitaltwins.response.SubModelListResponse;
 import com.catenax.dft.entities.usecases.Aspect;
 import com.catenax.dft.entities.usecases.AspectRelationship;
 import com.catenax.dft.gateways.database.AspectRepository;
@@ -46,7 +46,8 @@ import java.util.List;
 
 @Slf4j
 @Service
-public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends AbstractCsvHandlerUseCase<AspectRelationship, AspectRelationship> {
+public class DigitalTwinsAspectRelationShipCsvHandlerUseCase
+        extends AbstractCsvHandlerUseCase<AspectRelationship, AspectRelationship> {
 
     private static final String PART_INSTANCE_ID = "PartInstanceID";
     private static final String MANUFACTURER_PART_ID = "ManufacturerPartID";

@@ -19,8 +19,8 @@ package com.catenax.dft.usecases.csvhandler.aspects;
 
 import com.catenax.dft.entities.edc.request.asset.AssetEntryRequest;
 import com.catenax.dft.entities.edc.request.asset.AssetEntryRequestFactory;
-import com.catenax.dft.entities.edc.request.contractDefinition.ContractDefinitionRequest;
-import com.catenax.dft.entities.edc.request.contractDefinition.ContractDefinitionRequestFactory;
+import com.catenax.dft.entities.edc.request.contractdefinition.ContractDefinitionRequest;
+import com.catenax.dft.entities.edc.request.contractdefinition.ContractDefinitionRequestFactory;
 import com.catenax.dft.entities.edc.request.policies.PolicyDefinitionRequest;
 import com.catenax.dft.entities.edc.request.policies.PolicyRequestFactory;
 import com.catenax.dft.entities.usecases.Aspect;
@@ -34,10 +34,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class EDCAspectHandlerUseCase extends AbstractCsvHandlerUseCase<Aspect, Aspect> {
 
-    private AssetEntryRequestFactory assetFactory;
-    private EDCAssetGateway edcGateway;
-    private PolicyRequestFactory policyFactory;
-    private ContractDefinitionRequestFactory contractFactory;
+    private final AssetEntryRequestFactory assetFactory;
+    private final EDCAssetGateway edcGateway;
+    private final PolicyRequestFactory policyFactory;
+    private final ContractDefinitionRequestFactory contractFactory;
 
 
     public EDCAspectHandlerUseCase(StoreAspectCsvHandlerUseCase nextUseCase,

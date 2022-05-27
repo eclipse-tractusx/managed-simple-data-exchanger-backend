@@ -28,11 +28,13 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class FetchCatenaXIdCsvHandlerUseCase extends AbstractCsvHandlerUseCase<AspectRelationship, AspectRelationship> {
+public class FetchCatenaXIdCsvHandlerUseCase
+        extends AbstractCsvHandlerUseCase<AspectRelationship, AspectRelationship> {
 
     private final AspectRepository repository;
 
-    public FetchCatenaXIdCsvHandlerUseCase(DigitalTwinsAspectRelationShipCsvHandlerUseCase nextUseCase, AspectRepository repository) {
+    public FetchCatenaXIdCsvHandlerUseCase(DigitalTwinsAspectRelationShipCsvHandlerUseCase nextUseCase,
+                                           AspectRepository repository) {
         super(nextUseCase);
         this.repository = repository;
     }

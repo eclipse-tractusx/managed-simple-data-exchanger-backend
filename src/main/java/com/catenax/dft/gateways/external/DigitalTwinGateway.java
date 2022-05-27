@@ -16,12 +16,12 @@ aed */
 
 package com.catenax.dft.gateways.external;
 
-import com.catenax.dft.entities.digitalTwins.request.CreateSubModelRequest;
-import com.catenax.dft.entities.digitalTwins.request.ShellDescriptorRequest;
-import com.catenax.dft.entities.digitalTwins.request.ShellLookupRequest;
-import com.catenax.dft.entities.digitalTwins.response.ShellDescriptorResponse;
-import com.catenax.dft.entities.digitalTwins.response.ShellLookupResponse;
-import com.catenax.dft.entities.digitalTwins.response.SubModelListResponse;
+import com.catenax.dft.entities.digitaltwins.request.CreateSubModelRequest;
+import com.catenax.dft.entities.digitaltwins.request.ShellDescriptorRequest;
+import com.catenax.dft.entities.digitaltwins.request.ShellLookupRequest;
+import com.catenax.dft.entities.digitaltwins.response.ShellDescriptorResponse;
+import com.catenax.dft.entities.digitaltwins.response.ShellLookupResponse;
+import com.catenax.dft.entities.digitaltwins.response.SubModelListResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;

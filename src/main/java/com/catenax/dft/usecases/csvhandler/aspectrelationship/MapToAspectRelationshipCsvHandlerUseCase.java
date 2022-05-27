@@ -35,7 +35,8 @@ import static com.catenax.dft.gateways.file.CsvGateway.SEPARATOR;
 import static com.catenax.dft.usecases.csvhandler.CsvHandlerOrchestrator.ASPECT_RELATIONSHIP_COLUMNS;
 
 @Service
-public class MapToAspectRelationshipCsvHandlerUseCase extends AbstractCsvHandlerUseCase<RowData, AspectRelationship> {
+public class MapToAspectRelationshipCsvHandlerUseCase
+        extends AbstractCsvHandlerUseCase<RowData, AspectRelationship> {
 
     public MapToAspectRelationshipCsvHandlerUseCase(FetchCatenaXIdCsvHandlerUseCase nextUseCase) {
         super(nextUseCase);

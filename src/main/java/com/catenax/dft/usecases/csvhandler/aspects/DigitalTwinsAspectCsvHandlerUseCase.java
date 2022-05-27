@@ -17,13 +17,13 @@
 
 package com.catenax.dft.usecases.csvhandler.aspects;
 
-import com.catenax.dft.entities.digitalTwins.common.*;
-import com.catenax.dft.entities.digitalTwins.request.CreateSubModelRequest;
-import com.catenax.dft.entities.digitalTwins.request.ShellDescriptorRequest;
-import com.catenax.dft.entities.digitalTwins.request.ShellLookupRequest;
-import com.catenax.dft.entities.digitalTwins.response.ShellDescriptorResponse;
-import com.catenax.dft.entities.digitalTwins.response.ShellLookupResponse;
-import com.catenax.dft.entities.digitalTwins.response.SubModelListResponse;
+import com.catenax.dft.entities.digitaltwins.common.*;
+import com.catenax.dft.entities.digitaltwins.request.CreateSubModelRequest;
+import com.catenax.dft.entities.digitaltwins.request.ShellDescriptorRequest;
+import com.catenax.dft.entities.digitaltwins.request.ShellLookupRequest;
+import com.catenax.dft.entities.digitaltwins.response.ShellDescriptorResponse;
+import com.catenax.dft.entities.digitaltwins.response.ShellLookupResponse;
+import com.catenax.dft.entities.digitaltwins.response.SubModelListResponse;
 import com.catenax.dft.entities.usecases.Aspect;
 import com.catenax.dft.gateways.external.DigitalTwinGateway;
 import com.catenax.dft.usecases.csvhandler.AbstractCsvHandlerUseCase;

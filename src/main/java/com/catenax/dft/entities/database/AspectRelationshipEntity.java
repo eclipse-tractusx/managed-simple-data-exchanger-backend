@@ -26,7 +26,7 @@ import java.io.Serializable;
 @Table(name = "aspect_relationship")
 @Data
 @IdClass(AspectRelationshipPrimaryKey.class)
-public class AspectRelationshipEntity implements Serializable{
+public class AspectRelationshipEntity implements Serializable {
 
     @Id
     @Column(name = "parent_catenax_id")

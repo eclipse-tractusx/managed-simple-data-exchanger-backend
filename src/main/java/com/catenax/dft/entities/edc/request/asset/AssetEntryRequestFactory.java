@@ -39,6 +39,7 @@ public class AssetEntryRequestFactory {
     private String edcAssetUrl;
     @Value(value = "${edc.asset.relationship.payload.url}")
     private String edcAssetRelationshipUrl;
+
     public AssetEntryRequest getAspectRelationshipAssetRequest(String shellId, String subModelId, String parentUuid) {
         return buildAsset(shellId, subModelId, ASSET_PROP_NAME_ASPECT_RELATIONSHIP, parentUuid);
     }

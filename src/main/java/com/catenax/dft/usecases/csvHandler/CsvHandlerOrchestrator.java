@@ -35,10 +35,6 @@ import java.util.stream.Stream;
 @Service
 public class CsvHandlerOrchestrator {
 
-    private final MapToAspectCsvHandlerUseCase aspectStarterUseCase;
-    private final MapToAspectRelationshipCsvHandlerUseCase aspectRelationshipStarterUseCase;
-    private final ProcessReportUseCase processReportUseCase;
-
     public static final List<String> ASPECT_COLUMNS = Stream.of(
             "UUID",
             "part_instance_id",
@@ -69,6 +65,9 @@ public class CsvHandlerOrchestrator {
             "datatype_URI",
             "assembled_on")
             .collect(Collectors.toList());
+    private final MapToAspectCsvHandlerUseCase aspectStarterUseCase;
+    private final MapToAspectRelationshipCsvHandlerUseCase aspectRelationshipStarterUseCase;
+    private final ProcessReportUseCase processReportUseCase;
 
     public CsvHandlerOrchestrator(MapToAspectCsvHandlerUseCase aspectStarterUseCase,
                                   MapToAspectRelationshipCsvHandlerUseCase aspectRelationshipStarterUseCase,

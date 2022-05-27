@@ -60,7 +60,6 @@ public class AspectRelationship {
 
     @NotBlank(message = "measurement_unit_lexical_value cannot be empty")
     private String measurementUnitLexicalValue;
-  
 
 
     @NotBlank(message = "datatype_URI cannot be empty")

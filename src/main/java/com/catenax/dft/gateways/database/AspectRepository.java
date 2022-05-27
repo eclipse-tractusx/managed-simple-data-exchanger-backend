@@ -30,6 +30,7 @@ public interface AspectRepository extends CrudRepository<AspectEntity, String> {
 
     AspectEntity findByPartInstanceIdAndManufacturerPartIdAndOptionalIdentifierKeyIsNullAndOptionalIdentifierValueIsNull(String partInstanceId,
                                                                                                                          String manufacturerId);
+
     default AspectEntity findByIdentifiers(String partInstanceId,
                                            String manufacturerPartId,
                                            String optionalIdentifierKey,

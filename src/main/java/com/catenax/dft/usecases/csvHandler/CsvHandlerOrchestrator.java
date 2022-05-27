@@ -20,7 +20,7 @@ package com.catenax.dft.usecases.csvHandler;
 
 import com.catenax.dft.entities.csv.CsvContent;
 import com.catenax.dft.enums.CsvTypeEnum;
-import com.catenax.dft.usecases.csvHandler.aspectRelationship.MapToAspectRelationshipCsvHandlerUseCase;
+import com.catenax.dft.usecases.csvHandler.aspectrelationship.MapToAspectRelationshipCsvHandlerUseCase;
 import com.catenax.dft.usecases.csvHandler.aspects.MapToAspectCsvHandlerUseCase;
 import com.catenax.dft.usecases.processReport.ProcessReportUseCase;
 import lombok.SneakyThrows;

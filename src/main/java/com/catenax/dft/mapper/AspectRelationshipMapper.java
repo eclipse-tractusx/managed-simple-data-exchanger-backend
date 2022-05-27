@@ -17,10 +17,10 @@
 
 package com.catenax.dft.mapper;
 
-import com.catenax.dft.entities.aspectRelationship.AspectRelationshipResponse;
-import com.catenax.dft.entities.aspectRelationship.ChildPart;
-import com.catenax.dft.entities.aspectRelationship.MeasurementUnit;
-import com.catenax.dft.entities.aspectRelationship.Quantity;
+import com.catenax.dft.entities.aspectrelationship.AspectRelationshipResponse;
+import com.catenax.dft.entities.aspectrelationship.ChildPart;
+import com.catenax.dft.entities.aspectrelationship.MeasurementUnit;
+import com.catenax.dft.entities.aspectrelationship.Quantity;
 import com.catenax.dft.entities.database.AspectRelationshipEntity;
 import com.catenax.dft.entities.usecases.AspectRelationship;
 import org.mapstruct.Mapper;

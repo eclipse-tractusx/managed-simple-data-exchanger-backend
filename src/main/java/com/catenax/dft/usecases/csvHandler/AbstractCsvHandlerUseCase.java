@@ -32,7 +32,7 @@ public abstract class AbstractCsvHandlerUseCase<I, O> implements CsvHandlerUseCa
     @Autowired
     private FailureLogsUseCase failureLogsUseCase;
 
-    public AbstractCsvHandlerUseCase(CsvHandlerUseCase<O> nextUseCase) {
+    protected AbstractCsvHandlerUseCase(CsvHandlerUseCase<O> nextUseCase) {
         this.nextUseCase = nextUseCase;
     }
 

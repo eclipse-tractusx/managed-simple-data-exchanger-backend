@@ -18,7 +18,7 @@
 package com.catenax.dft.controllers;
 
 import com.catenax.dft.entities.aspect.AspectResponse;
-import com.catenax.dft.entities.aspectRelationship.AspectRelationshipResponse;
+import com.catenax.dft.entities.aspectrelationship.AspectRelationshipResponse;
 import com.catenax.dft.usecases.aspectRelationship.GetAspectsRelationshipUseCase;
 import com.catenax.dft.usecases.aspects.GetAspectsUseCase;
 import lombok.extern.slf4j.Slf4j;

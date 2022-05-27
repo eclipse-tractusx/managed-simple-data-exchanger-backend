@@ -17,7 +17,7 @@
 
 package com.catenax.dft.usecases.aspectRelationship;
 
-import com.catenax.dft.entities.aspectRelationship.AspectRelationshipResponse;
+import com.catenax.dft.entities.aspectrelationship.AspectRelationshipResponse;
 import com.catenax.dft.entities.database.AspectRelationshipEntity;
 import com.catenax.dft.gateways.database.AspectRelationshipRepository;
 import com.catenax.dft.mapper.AspectRelationshipMapper;

@@ -68,7 +68,7 @@ public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<RowD
                 .build();
 
         List<String> errorMessages = validateAsset(aspect);
-        if (errorMessages.size() != 0) {
+        if (!errorMessages.isEmpty()) {
             throw new CsvHandlerUseCaseException(rowData.position(), errorMessages.toString());
         }
 

@@ -23,6 +23,9 @@ public class UUIdGenerator {
 
     public static final String URN_UUID_PREFIX = "urn:uuid:";
 
+    private UUIdGenerator() {
+    }
+
     public static String getUrnUuid() {
         return getPrefixedUuid(URN_UUID_PREFIX);
     }

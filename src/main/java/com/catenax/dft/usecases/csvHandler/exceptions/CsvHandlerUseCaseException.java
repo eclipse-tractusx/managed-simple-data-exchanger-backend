@@ -18,7 +18,7 @@ package com.catenax.dft.usecases.csvHandler.exceptions;
 
 public class CsvHandlerUseCaseException extends Exception {
 
-    private int rowPosition;
+    private final int rowPosition;
 
     public CsvHandlerUseCaseException(int rowPosition, String message) {
         super(message);

@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-aed */
+*/
 
 package com.catenax.dft.gateways.external;
 
@@ -42,13 +42,13 @@ import java.util.Map;
 @Service
 public class DigitalTwinGateway {
 
-    public static final String AUTHORIZATION = "Authorization";
-    public static final String ASSET_IDS_QUERY_PARAMETER = "assetIds";
-    public static final String CLIENT_ID_TOKEN_QUERY_PARAMETER = "client_id";
-    public static final String CLIENT_SECRET_TOKEN_QUERY_PARAMETER = "client_secret";
-    public static final String GRANT_TYPE_TOKEN_QUERY_PARAMETER = "grant_type";
-    public static final String CLIENT_CREDENTIALS_TOKEN_QUERY_PARAMETER_VALUE = "client_credentials";
-    public static final String ACCESS_TOKEN = "access_token";
+    private static final String AUTHORIZATION = "Authorization";
+    private static final String ASSET_IDS_QUERY_PARAMETER = "assetIds";
+    private static final String CLIENT_ID_TOKEN_QUERY_PARAMETER = "client_id";
+    private static final String CLIENT_SECRET_TOKEN_QUERY_PARAMETER = "client_secret";
+    private static final String GRANT_TYPE_TOKEN_QUERY_PARAMETER = "grant_type";
+    private static final String CLIENT_CREDENTIALS_TOKEN_QUERY_PARAMETER_VALUE = "client_credentials";
+    private static final String ACCESS_TOKEN = "access_token";
 
     private String accessToken;
 

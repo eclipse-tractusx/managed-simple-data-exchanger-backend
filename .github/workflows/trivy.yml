@@ -35,7 +35,7 @@ jobs:
         with:
           sarif_file: "trivy-results1.sarif"
 
-  analyze-<REPLACE-ME container name>:
+  analyze-product-dft-backend:
     runs-on: ubuntu-latest
     permissions:
       actions: read

@@ -1,20 +1,21 @@
-#Product DFT
-Install from the command line: <p>
+# Installation Guide
+## Product DFT
+Install from the command line:
 
 `docker pull ghcr.io/catenax-ng/product-dft-backend:main`
 
 
 It is necessary to inject the environment variables, credentials and URLs that can be found on application.properties file.
-####CatenaX variables
+#### CatenaX variables
     manufacturerId=catenaX
 
-####Digital Twins variables and endpoints:
+#### Digital Twins variables and endpoints:
     digital-twins.url=
     digital-twins.authentication.url=
     digital-twins.authentication.clientId=
     digital-twins.authentication.clientSecret=
 
-####EDC variables and endpoints:
+#### EDC variables and endpoints:
     edc.aspect.url=
     edc.child.aspect.url=
     edc.asset.payload.url=
@@ -27,9 +28,9 @@ It is necessary to inject the environment variables, credentials and URLs that c
     edc.asset.relationship.payload.url=
 
 
-##Upload a file:
+## Upload a file:
 When a file .csv is uploaded, the program checks whether the file is a SerialPartTypization or an AssemblyPartRelationship and there is a pipeline for each one.
-<p>
+
 <b>For Serial Part Typization:</b>
 
 1. Maps the content of the line with an Aspect.

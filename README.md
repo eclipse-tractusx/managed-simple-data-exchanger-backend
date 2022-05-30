@@ -10,7 +10,7 @@ It enables companies to provide their data in the Catena-X network via an EDC.
 Data is uploaded via two CSV-files. The DFT registers the data in the Digital Twin Registry and makes it accessible via an EDC.
 The DFT project has two dependencies: Digital Twins and EDC.
 
-##### For installation guide: see [InstallationGuide.md]()
+##### For installation guide: see [InstallationGuide.md](InstallationGuide.md)
 
 ## How to run
 

@@ -16,11 +16,16 @@ RUN mvn package
 # our final base image
 FROM openjdk:18-alpine
 
+ARG UID=1000
+ARG GID=1000
+
 # set deployment directory
 WORKDIR /dft
 
 # copy over the built artifact from the maven image
-COPY --from=build target/*.jar ./app.jar
+COPY --chown=${UID}:${GID} --from=build target/*.jar ./app.jar
+
+USER ${UID}:${GID}
 
 # set the startup command to run your binary
 CMD ["java", "-jar", "./app.jar"]

@@ -14,7 +14,7 @@ COPY ./src ./src
 RUN mvn package
 
 # our final base image
-FROM openjdk:18-alpine
+FROM eclipse-temurin:18.0.1_10-jre
 
 ARG UID=1000
 ARG GID=1000

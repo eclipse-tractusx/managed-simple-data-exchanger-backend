@@ -14,11 +14,11 @@
  * limitations under the License.
  *
  */
-package com.catenax.dft.usecases.csvhandler.aspects;
+package com.catenax.dft.usecases.csvhandler.aspectrelationship;
 
-import com.catenax.dft.entities.aspect.AspectRequest;
-import com.catenax.dft.entities.usecases.Aspect;
-import com.catenax.dft.mapper.AspectMapper;
+import com.catenax.dft.entities.aspectrelationship.AspectRelationshipRequest;
+import com.catenax.dft.entities.usecases.AspectRelationship;
+import com.catenax.dft.mapper.AspectRelationshipMapper;
 import com.catenax.dft.usecases.csvhandler.AbstractCsvHandlerUseCase;
 import com.catenax.dft.usecases.csvhandler.exceptions.CsvHandlerUseCaseException;
 import lombok.SneakyThrows;
@@ -32,35 +32,38 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class MapFromAspectRequestUseCase extends AbstractCsvHandlerUseCase<AspectRequest, Aspect> {
-    private final AspectMapper aspectMapper;
+public class MapFromAspectRelationshipRequestUseCase extends AbstractCsvHandlerUseCase<AspectRelationshipRequest, AspectRelationship> {
 
-    public MapFromAspectRequestUseCase(GenerateUuIdCsvHandlerUseCase nextUseCase, AspectMapper mapper) {
+    private final AspectRelationshipMapper mapper;
+
+    public MapFromAspectRelationshipRequestUseCase(FetchCatenaXIdCsvHandlerUseCase nextUseCase,
+                                                      AspectRelationshipMapper mapper) {
         super(nextUseCase);
-        this.aspectMapper=mapper;
-
+        this.mapper = mapper;
     }
 
     @SneakyThrows
     @Override
-    protected Aspect executeUseCase(AspectRequest input, String processId) {
-        Aspect aspect = aspectMapper.mapFrom(input);
-        List<String> errorMessages = validateAsset(aspect);
+    protected AspectRelationship executeUseCase(AspectRelationshipRequest input, String processId) {
+
+        AspectRelationship aspectRelationship = mapper.mapFrom(input);
+        List<String> errorMessages = validateAsset(aspectRelationship);
         if (errorMessages.size() != 0) {
             throw new CsvHandlerUseCaseException(input.getRowNumber(), errorMessages.toString());
         }
 
-        return aspect;
+        return aspectRelationship;
     }
 
-    private List<String> validateAsset(Aspect asset) {
+    private List<String> validateAsset(AspectRelationship asset) {
         Validator validator = Validation.buildDefaultValidatorFactory()
                 .getValidator();
-        Set<ConstraintViolation<Aspect>> violations = validator.validate(asset);
+        Set<ConstraintViolation<AspectRelationship>> violations = validator.validate(asset);
 
         return violations.stream()
                 .map(ConstraintViolation::getMessage)
                 .sorted()
                 .collect(Collectors.toList());
     }
+
 }

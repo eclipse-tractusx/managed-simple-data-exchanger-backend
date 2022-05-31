@@ -19,9 +19,11 @@ package com.catenax.dft.controllers;
 
 import com.catenax.dft.entities.aspect.AspectRequest;
 import com.catenax.dft.entities.aspect.AspectResponse;
+import com.catenax.dft.entities.aspectrelationship.AspectRelationshipRequest;
 import com.catenax.dft.entities.aspectrelationship.AspectRelationshipResponse;
 import com.catenax.dft.usecases.aspectrelationship.GetAspectsRelationshipUseCase;
 import com.catenax.dft.usecases.aspects.GetAspectsUseCase;
+import com.catenax.dft.usecases.csvhandler.aspectrelationship.CreateAspectRelationshipUseCase;
 import com.catenax.dft.usecases.csvhandler.aspects.CreateAspectsUseCase;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -40,13 +42,17 @@ public class AspectController {
     private final GetAspectsUseCase aspectsUseCase;
     private final GetAspectsRelationshipUseCase aspectsRelationshipUseCase;
     private final CreateAspectsUseCase createAspectsUseCase;
+    private final CreateAspectRelationshipUseCase createAspectRelationshipUseCase;
 
     public AspectController(GetAspectsUseCase aspectsUseCase,
                             GetAspectsRelationshipUseCase aspectsRelationshipUseCase,
-                            CreateAspectsUseCase createAspectsUseCase) {
+                            CreateAspectsUseCase createAspectsUseCase,
+                            CreateAspectRelationshipUseCase createAspectRelationshipUseCase) {
         this.aspectsUseCase = aspectsUseCase;
         this.aspectsRelationshipUseCase = aspectsRelationshipUseCase;
         this.createAspectsUseCase = createAspectsUseCase;
+        this.createAspectRelationshipUseCase = createAspectRelationshipUseCase;
+
     }
 
     @GetMapping(value = "/aspect/{id}")
@@ -79,6 +85,20 @@ public class AspectController {
         Runnable runnable = () ->
         {
             createAspectsUseCase.createAspects(aspects, processId);
+        };
+        new Thread(runnable).start();
+
+        return ok().body(processId);
+    }
+
+    @PostMapping(value="/aspect")
+    public ResponseEntity<String> createAspectRelationship(@RequestBody List<AspectRelationshipRequest> aspects){
+
+        String processId = UUID.randomUUID().toString();
+
+        Runnable runnable = () ->
+        {
+            createAspectRelationshipUseCase.createAspects(aspects, processId);
         };
         new Thread(runnable).start();
 

@@ -23,12 +23,15 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
+@RequestMapping("processing-report")
 public class ProcessReportController {
 
     private final ProcessReportUseCase processReportUseCase;
@@ -37,7 +40,7 @@ public class ProcessReportController {
         this.processReportUseCase = processReportUseCase;
     }
 
-    @GetMapping(path = "/processing-report")
+    @GetMapping(produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<ProcessReportPageResponse> getProcessingReportsByDateDesc(@Param("page") Integer page, @Param("pageSize") Integer pageSize) {
 
         page = page == null ? 0 : page;
@@ -46,7 +49,7 @@ public class ProcessReportController {
         return ok().body(processReportUseCase.listAllProcessReports(page, pageSize));
     }
 
-    @GetMapping(value = "/processing-report/{id}")
+    @GetMapping(value = "/{id}", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<ProcessReport> getProcessReportById(@PathVariable("id") String id) {
         ProcessReport processReportById = processReportUseCase.getProcessReportById(id);
         if (processReportById == null) {

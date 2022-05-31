@@ -17,14 +17,12 @@
 
 package com.catenax.dft.configuration;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -33,43 +31,30 @@ import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collections;
 
-@EnableWebSecurity
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+@Configuration
+public class WebSecurityConfig {
 
-    private static final String API_KEY_AUTH_HEADER_NAME = "API_KEY";
+    private static final String API_KEY_HEADER = "API_KEY";
+    private final DataSource dataStorage;
 
-    @Autowired
-    private DataSource dataSource;
-
-    @Override
-    public void configure(WebSecurity web) {
-        web
-                .ignoring()
-                .antMatchers("/ping");
+    public WebSecurityConfig(DataSource dataStorage) {
+        this.dataStorage = dataStorage;
     }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        ApiKeyAuthFilter filter = new ApiKeyAuthFilter(API_KEY_AUTH_HEADER_NAME);
-        filter.setAuthenticationManager(new ApiKeyAuthManager(dataSource));
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        ApiKeyAuthFilter filter = new ApiKeyAuthFilter(API_KEY_HEADER);
+        filter.setAuthenticationManager(new ApiKeyAuthManager(dataStorage));
 
         http
-                .csrf()
-                .ignoringAntMatchers("/upload")
-                .and()
-                .cors()
-                .and()
-                .headers()
-                .frameOptions()
-                .sameOrigin()
-                .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .addFilter(filter)
-                .authorizeRequests()
-                .anyRequest()
+                .csrf().disable()
+                .cors().and()
+                .headers().frameOptions().sameOrigin().and()
+                .authorizeRequests().antMatchers("/ping").permitAll().and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+                .addFilter(filter).authorizeRequests().anyRequest().authenticated();
 
-                .authenticated();
+        return http.build();
     }
 
     @Bean
@@ -88,7 +73,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "Access-Control-Allow-Headers",
                         "Access-Control-Allow-Origin",
                         "Authorization",
-                        API_KEY_AUTH_HEADER_NAME
+                        API_KEY_HEADER
                 )
         );
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

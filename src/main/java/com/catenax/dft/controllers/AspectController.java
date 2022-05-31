@@ -32,11 +32,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.ok;
 
 @Slf4j
 @RestController
+@RequestMapping("aspect")
 public class AspectController {
 
     private final GetAspectsUseCase aspectsUseCase;
@@ -55,7 +57,7 @@ public class AspectController {
 
     }
 
-    @GetMapping(value = "/aspect/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<AspectResponse> getAspect(@PathVariable("id") String uuid) {
 
         AspectResponse response = aspectsUseCase.execute(uuid);
@@ -66,7 +68,7 @@ public class AspectController {
         return ok().body(response);
     }
 
-    @GetMapping(value = "/aspect/{id}/relationship")
+    @GetMapping(value = "/{id}/relationship", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<AspectRelationshipResponse> getAspectRelationships(@PathVariable("id") String uuid) {
 
         AspectRelationshipResponse response = aspectsRelationshipUseCase.execute(uuid);
@@ -77,15 +79,12 @@ public class AspectController {
         return ok().body(response);
     }
 
-    @PostMapping(value="/aspect")
-    public ResponseEntity<String> createAspect(@RequestBody List<AspectRequest> aspects){
+    @PostMapping(consumes = APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> createAspect(@RequestBody List<AspectRequest> aspects) {
 
         String processId = UUID.randomUUID().toString();
 
-        Runnable runnable = () ->
-        {
-            createAspectsUseCase.createAspects(aspects, processId);
-        };
+        Runnable runnable = () -> createAspectsUseCase.createAspects(aspects, processId);
         new Thread(runnable).start();
 
         return ok().body(processId);

@@ -70,7 +70,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase
     public DigitalTwinsAspectRelationShipCsvHandlerUseCase(DigitalTwinGateway gateway,
                                                            AspectRepository aspectRepository,
                                                            AspectMapper aspectMapper,
-                                                           EDCAspectRelationshipHandlerUseCase nextUseCase) {
+                                                           StoreAspectRelationshipCsvHandlerUseCase nextUseCase) {
         super(nextUseCase);
         this.gateway = gateway;
         this.aspectRepository = aspectRepository;

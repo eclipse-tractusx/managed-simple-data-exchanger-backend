@@ -18,6 +18,7 @@
 package com.catenax.dft.entities.aspectrelationship;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -29,19 +30,50 @@ public class AspectRelationshipRequest {
     private int rowNumber;
     @JsonIgnore
     private String processId;
+
+    @JsonProperty(value = "child_uuid")
     private String childUuid;
+
+    @JsonProperty(value = "parent_uuid")
     private String parentUuid;
+
+    @JsonProperty(value = "parent_part_instance_id")
     private String parentPartInstanceId;
+
+    @JsonProperty(value = "parent_manufacturer_part_id")
     private String parentManufacturerPartId;
+
+    @JsonProperty(value = "parent_optional_identifier_key")
     private String parentOptionalIdentifierKey;
+
+    @JsonProperty(value = "parent_optional_identifier_value")
     private String parentOptionalIdentifierValue;
+
+    @JsonProperty(value = "part_instance_id")
     private String childPartInstanceId;
+
+    @JsonProperty(value = "manufacturer_part_id")
     private String childManufacturerPartId;
+
+    @JsonProperty(value = "child_optional_identifier_key")
     private String childOptionalIdentifierKey;
+
+    @JsonProperty(value = "child_optional_identifier_value")
     private String childOptionalIdentifierValue;
+
+    @JsonProperty(value = "lifecycle_context")
     private String lifecycleContext;
+
+    @JsonProperty(value = "quantity_number")
     private String quantityNumber;
+
+    @JsonProperty(value = "measurement_unit_lexical_value")
     private String measurementUnitLexicalValue;
+
+    @JsonProperty(value = "datatype_uri")
     private String dataTypeUri;
+
+    @JsonProperty(value = "assembled_on")
     private String assembledOn;
+
 }

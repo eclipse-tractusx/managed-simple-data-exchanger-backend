@@ -57,7 +57,7 @@ public class AspectController {
 
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(value="/{id}", consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<AspectResponse> getAspect(@PathVariable("id") String uuid) {
 
         AspectResponse response = aspectsUseCase.execute(uuid);
@@ -90,7 +90,7 @@ public class AspectController {
         return ok().body(processId);
     }
 
-    @PostMapping(value="/aspect")
+    @PostMapping(value="/aspect-relationship", consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> createAspectRelationship(@RequestBody List<AspectRelationshipRequest> aspects){
 
         String processId = UUID.randomUUID().toString();

@@ -18,6 +18,8 @@
 package com.catenax.dft.usecases.csvhandler.aspects;
 
 import com.catenax.dft.entities.aspect.AspectRequest;
+import com.catenax.dft.enums.CsvTypeEnum;
+import com.catenax.dft.usecases.processreport.ProcessReportUseCase;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,17 +27,23 @@ import java.util.List;
 @Service
 public class CreateAspectsUseCase {
     private final MapFromAspectRequestUseCase useCase;
+    private final ProcessReportUseCase processReportUseCase;
 
-    public CreateAspectsUseCase(MapFromAspectRequestUseCase useCase) {
+    public CreateAspectsUseCase(MapFromAspectRequestUseCase useCase, ProcessReportUseCase processReportUseCase) {
         this.useCase = useCase;
+        this.processReportUseCase = processReportUseCase;
     }
 
     public void createAspects(List<AspectRequest> aspects, String processId){
+        processReportUseCase.startBuildProcessReport(processId, CsvTypeEnum.ASPECT, aspects.size());
+
         for(int i=0; i<aspects.size();i++){
             AspectRequest aspect = aspects.get(i);
             aspect.setRowNumber(i);
             aspect.setProcessId(processId);
             useCase.run(aspect, processId);
         }
+
+        processReportUseCase.finishBuildAspectProgressReport(processId);
     }
 }

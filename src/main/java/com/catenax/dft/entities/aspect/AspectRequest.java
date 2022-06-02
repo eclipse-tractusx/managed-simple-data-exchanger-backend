@@ -18,6 +18,7 @@
 package com.catenax.dft.entities.aspect;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -29,14 +30,33 @@ public class AspectRequest {
     private String uuid;
     @JsonIgnore
     private String processId;
+
+    @JsonProperty(value = "part_instance_id")
     private String partInstanceId;
+
+    @JsonProperty(value = "manufacturing_date")
     private String manufacturingDate;
+
+    @JsonProperty(value = "manufacturing_country")
     private String manufacturingCountry;
+
+    @JsonProperty(value = "manufacturer_part_id")
     private String manufacturerPartId;
+
+    @JsonProperty(value = "customer_part_id")
     private String customerPartId;
+
     private String classification;
+
+    @JsonProperty(value = "name_at_manufacturer")
     private String nameAtManufacturer;
+
+    @JsonProperty(value = "name_at_customer")
     private String nameAtCustomer;
+
+    @JsonProperty(value = "optional_identifier_key")
     private String optionalIdentifierKey;
+
+    @JsonProperty(value = "optional_identifier_value")
     private String optionalIdentifierValue;
 }

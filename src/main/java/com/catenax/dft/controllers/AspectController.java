@@ -17,33 +17,47 @@
 
 package com.catenax.dft.controllers;
 
+import com.catenax.dft.entities.aspect.AspectRequest;
 import com.catenax.dft.entities.aspect.AspectResponse;
+import com.catenax.dft.entities.aspectrelationship.AspectRelationshipRequest;
 import com.catenax.dft.entities.aspectrelationship.AspectRelationshipResponse;
 import com.catenax.dft.usecases.aspectrelationship.GetAspectsRelationshipUseCase;
 import com.catenax.dft.usecases.aspects.GetAspectsUseCase;
+import com.catenax.dft.usecases.csvhandler.aspectrelationship.CreateAspectRelationshipUseCase;
+import com.catenax.dft.usecases.csvhandler.aspects.CreateAspectsUseCase;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.UUID;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.ok;
 
 @Slf4j
 @RestController
+@RequestMapping("aspect")
 public class AspectController {
 
     private final GetAspectsUseCase aspectsUseCase;
     private final GetAspectsRelationshipUseCase aspectsRelationshipUseCase;
+    private final CreateAspectsUseCase createAspectsUseCase;
+    private final CreateAspectRelationshipUseCase createAspectRelationshipUseCase;
 
     public AspectController(GetAspectsUseCase aspectsUseCase,
-                            GetAspectsRelationshipUseCase aspectsRelationshipUseCase) {
+                            GetAspectsRelationshipUseCase aspectsRelationshipUseCase,
+                            CreateAspectsUseCase createAspectsUseCase,
+                            CreateAspectRelationshipUseCase createAspectRelationshipUseCase) {
         this.aspectsUseCase = aspectsUseCase;
         this.aspectsRelationshipUseCase = aspectsRelationshipUseCase;
+        this.createAspectsUseCase = createAspectsUseCase;
+        this.createAspectRelationshipUseCase = createAspectRelationshipUseCase;
+
     }
 
-    @GetMapping(value = "/aspect/{id}")
+    @GetMapping(value="/{id}", consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<AspectResponse> getAspect(@PathVariable("id") String uuid) {
 
         AspectResponse response = aspectsUseCase.execute(uuid);
@@ -54,7 +68,7 @@ public class AspectController {
         return ok().body(response);
     }
 
-    @GetMapping(value = "/aspect/{id}/relationship")
+    @GetMapping(value = "/{id}/relationship", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<AspectRelationshipResponse> getAspectRelationships(@PathVariable("id") String uuid) {
 
         AspectRelationshipResponse response = aspectsRelationshipUseCase.execute(uuid);
@@ -63,6 +77,31 @@ public class AspectController {
             return notFound().build();
         }
         return ok().body(response);
+    }
+
+    @PostMapping(consumes = APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> createAspect(@RequestBody List<AspectRequest> aspects) {
+
+        String processId = UUID.randomUUID().toString();
+
+        Runnable runnable = () -> createAspectsUseCase.createAspects(aspects, processId);
+        new Thread(runnable).start();
+
+        return ok().body(processId);
+    }
+
+    @PostMapping(value="/aspect-relationship", consumes = APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> createAspectRelationship(@RequestBody List<AspectRelationshipRequest> aspects){
+
+        String processId = UUID.randomUUID().toString();
+
+        Runnable runnable = () ->
+        {
+            createAspectRelationshipUseCase.createAspects(aspects, processId);
+        };
+        new Thread(runnable).start();
+
+        return ok().body(processId);
     }
 
 }

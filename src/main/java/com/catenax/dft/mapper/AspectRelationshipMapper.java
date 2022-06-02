@@ -17,10 +17,7 @@
 
 package com.catenax.dft.mapper;
 
-import com.catenax.dft.entities.aspectrelationship.AspectRelationshipResponse;
-import com.catenax.dft.entities.aspectrelationship.ChildPart;
-import com.catenax.dft.entities.aspectrelationship.MeasurementUnit;
-import com.catenax.dft.entities.aspectrelationship.Quantity;
+import com.catenax.dft.entities.aspectrelationship.*;
 import com.catenax.dft.entities.database.AspectRelationshipEntity;
 import com.catenax.dft.entities.usecases.AspectRelationship;
 import org.mapstruct.Mapper;
@@ -35,6 +32,10 @@ public abstract class AspectRelationshipMapper {
     @Mapping(source = "parentUuid", target = "parentCatenaXId")
     @Mapping(source = "childUuid", target = "childCatenaXId")
     public abstract AspectRelationshipEntity mapFrom(AspectRelationship aspectRelationShip);
+
+    @Mapping(target = "subModelId", ignore = true)
+    @Mapping(target = "shellId", ignore = true)
+    public abstract AspectRelationship mapFrom(AspectRelationshipRequest aspectRelationship);
 
     public AspectRelationshipResponse mapToResponse(String parentCatenaXUuid, List<AspectRelationshipEntity> aspectRelationships) {
 

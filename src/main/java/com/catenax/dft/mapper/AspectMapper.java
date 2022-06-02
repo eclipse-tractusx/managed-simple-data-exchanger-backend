@@ -17,10 +17,7 @@
 
 package com.catenax.dft.mapper;
 
-import com.catenax.dft.entities.aspect.AspectResponse;
-import com.catenax.dft.entities.aspect.LocalIdentifier;
-import com.catenax.dft.entities.aspect.ManufacturingInformation;
-import com.catenax.dft.entities.aspect.PartTypeInformation;
+import com.catenax.dft.entities.aspect.*;
 import com.catenax.dft.entities.database.AspectEntity;
 import com.catenax.dft.entities.usecases.Aspect;
 import com.catenax.dft.enums.OptionalIdentifierKeyEnum;
@@ -45,6 +42,10 @@ public abstract class AspectMapper {
             target = "optionalIdentifierKey",
             qualifiedByName = "prettyName")
     public abstract AspectEntity mapFrom(Aspect aspect);
+
+    @Mapping(target = "subModelId", ignore = true)
+    @Mapping(target = "shellId", ignore = true)
+    public abstract Aspect mapFrom(AspectRequest aspect);
 
     public AspectResponse mapToResponse(AspectEntity entity) {
 

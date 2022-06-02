@@ -44,7 +44,7 @@ public class CsvGateway {
     public static final String SEPARATOR = ";";
     private final Path fileStorageLocation;
 
-    @Autowired
+
     public CsvGateway(CsvGatewayProperties csvGatewayProperties) {
         this.fileStorageLocation = Paths.get(csvGatewayProperties.getUploadDir())
                 .toAbsolutePath().normalize();

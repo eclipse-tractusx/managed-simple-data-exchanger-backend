@@ -51,8 +51,6 @@ public class WebSecurityConfig {
                 .cors().and()
                 .headers().frameOptions().sameOrigin().and()
                 .authorizeRequests().antMatchers("/ping").permitAll().and()
-                .authorizeRequests().antMatchers("/aspect/**").permitAll().and()
-                .authorizeRequests().antMatchers("/ping", "/failed").permitAll().and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .addFilter(filter).authorizeRequests().anyRequest().authenticated();
 

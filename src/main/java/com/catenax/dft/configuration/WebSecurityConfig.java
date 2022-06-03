@@ -50,9 +50,7 @@ public class WebSecurityConfig {
                 .csrf().disable()
                 .cors().and()
                 .headers().frameOptions().sameOrigin().and()
-                .authorizeRequests().antMatchers("/ping").permitAll().and()
-                .authorizeRequests().antMatchers("/aspect").permitAll().and()
-                .authorizeRequests().antMatchers("/aspect-relationship").permitAll().and()
+                .authorizeRequests().antMatchers("/ping", "/aspect", "aspect-relationship").permitAll().and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .addFilter(filter).authorizeRequests().anyRequest().authenticated();
 

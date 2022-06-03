@@ -82,8 +82,8 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase
     protected AspectRelationship executeUseCase(AspectRelationship aspectRelationShip, String processId) {
         try {
             return doUseCase(aspectRelationShip);
-        } catch (HttpClientErrorException e) {
-            throw new CsvHandlerUseCaseException(aspectRelationShip.getRowNumber(), e.getMessage());
+        } catch (Exception e) {
+            throw new CsvHandlerUseCaseException(aspectRelationShip.getRowNumber(), "DigitalTwins: " + e.getMessage());
         }
     }
 

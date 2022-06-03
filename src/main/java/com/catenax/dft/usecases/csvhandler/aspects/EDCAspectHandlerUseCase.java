@@ -26,6 +26,7 @@ import com.catenax.dft.entities.edc.request.policies.PolicyRequestFactory;
 import com.catenax.dft.entities.usecases.Aspect;
 import com.catenax.dft.gateways.external.EDCAssetGateway;
 import com.catenax.dft.usecases.csvhandler.AbstractCsvHandlerUseCase;
+import com.catenax.dft.usecases.csvhandler.exceptions.CsvHandlerUseCaseException;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -58,22 +59,28 @@ public class EDCAspectHandlerUseCase extends AbstractCsvHandlerUseCase<Aspect, A
         String shellId = input.getShellId();
         String subModelId = input.getSubModelId();
 
-        //create asset
-        AssetEntryRequest assetEntryRequest = assetFactory.getAspectAssetRequest(shellId, subModelId, input.getUuid());
-        if (!edcGateway.assetExistsLookup(assetEntryRequest.getAsset().getProperties().get("asset:prop:id"))) {
-            edcGateway.createAsset(assetEntryRequest);
+        try {
 
-            //create policies
-            PolicyDefinitionRequest policyDefinitionRequest = policyFactory.getPolicy(shellId, subModelId);
-            edcGateway.createPolicyDefinition(policyDefinitionRequest);
 
-            //create contractDefinitions
-            ContractDefinitionRequest contractDefinitionRequest = contractFactory.getContractDefinitionRequest(
-                    assetEntryRequest.getAsset().getProperties().get("asset:prop:id"),
-                    policyDefinitionRequest.getUid());
-            edcGateway.createContractDefinition(contractDefinitionRequest);
+            //create asset
+            AssetEntryRequest assetEntryRequest = assetFactory.getAspectAssetRequest(shellId, subModelId, input.getUuid());
+            if (!edcGateway.assetExistsLookup(assetEntryRequest.getAsset().getProperties().get("asset:prop:id"))) {
+                edcGateway.createAsset(assetEntryRequest);
+
+                //create policies
+                PolicyDefinitionRequest policyDefinitionRequest = policyFactory.getPolicy(shellId, subModelId);
+                edcGateway.createPolicyDefinition(policyDefinitionRequest);
+
+                //create contractDefinitions
+                ContractDefinitionRequest contractDefinitionRequest = contractFactory.getContractDefinitionRequest(
+                        assetEntryRequest.getAsset().getProperties().get("asset:prop:id"),
+                        policyDefinitionRequest.getUid());
+                edcGateway.createContractDefinition(contractDefinitionRequest);
+            }
+
+            return input;
+        } catch (Exception e) {
+            throw new CsvHandlerUseCaseException(input.getRowNumber(), "EDC: " + e.getMessage());
         }
-
-        return input;
     }
 }

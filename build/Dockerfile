@@ -25,6 +25,8 @@ WORKDIR /dft
 # copy over the built artifact from the maven image
 COPY --chown=${UID}:${GID} --from=build target/*.jar ./app.jar
 
+chown ${UID}:${GID} /dft
+
 USER ${UID}:${GID}
 
 # set the startup command to run your binary

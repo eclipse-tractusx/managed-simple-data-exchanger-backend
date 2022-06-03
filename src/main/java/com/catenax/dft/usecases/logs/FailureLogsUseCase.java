@@ -19,7 +19,10 @@ package com.catenax.dft.usecases.logs;
 import com.catenax.dft.entities.database.FailureLogEntity;
 import com.catenax.dft.gateways.database.FailureLogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class FailureLogsUseCase {
@@ -29,5 +32,9 @@ public class FailureLogsUseCase {
 
     public void saveLog(FailureLogEntity entity) {
         repository.save(entity);
+    }
+
+    public List<FailureLogEntity> getLogs() {
+       return repository.findAllOrderByDateTime();
     }
 }

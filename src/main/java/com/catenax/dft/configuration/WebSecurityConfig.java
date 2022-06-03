@@ -77,6 +77,7 @@ public class WebSecurityConfig {
                         "Access-Control-Allow-Headers",
                         "Access-Control-Allow-Origin",
                         "Authorization",
+                        "content-type",
                         API_KEY_HEADER
                 )
         );

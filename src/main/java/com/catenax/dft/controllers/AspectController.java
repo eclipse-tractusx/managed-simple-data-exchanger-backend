@@ -57,7 +57,7 @@ public class AspectController {
 
     }
 
-    @GetMapping(value="/{id}", consumes = APPLICATION_JSON_VALUE)
+    @GetMapping(value="/{id}", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<AspectResponse> getAspect(@PathVariable("id") String uuid) {
 
         AspectResponse response = aspectsUseCase.execute(uuid);
@@ -95,10 +95,7 @@ public class AspectController {
 
         String processId = UUID.randomUUID().toString();
 
-        Runnable runnable = () ->
-        {
-            createAspectRelationshipUseCase.createAspects(aspects, processId);
-        };
+        Runnable runnable = () -> createAspectRelationshipUseCase.createAspects(aspects, processId);
         new Thread(runnable).start();
 
         return ok().body(processId);

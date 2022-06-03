@@ -17,6 +17,7 @@
 
 package com.catenax.dft.configuration;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -31,6 +32,7 @@ import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collections;
 
+@Slf4j
 @Configuration
 public class WebSecurityConfig {
 
@@ -43,6 +45,7 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        log.info("WebSecurity configuration loaded!!!");
         ApiKeyAuthFilter filter = new ApiKeyAuthFilter(API_KEY_HEADER);
         filter.setAuthenticationManager(new ApiKeyAuthManager(dataStorage));
 
@@ -59,6 +62,7 @@ public class WebSecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+        log.info("CORS configuration loaded!!!");
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Collections.singletonList("*"));
         configuration.setAllowedMethods(

@@ -16,8 +16,8 @@ RUN mvn package
 # our final base image
 FROM eclipse-temurin:18.0.1_10-jre
 
-ARG UID=3000
-ARG GID=3000
+ARG UID=7000
+ARG GID=7000
 
 # set deployment directory
 WORKDIR /dft

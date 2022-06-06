@@ -18,6 +18,7 @@ package com.catenax.dft.entities.edc.request.asset;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.HashMap;
 
@@ -35,10 +36,12 @@ public class AssetEntryRequestFactory {
     private String authKey;
     @Value(value = "${edc.asset.payload.url.auth.code}")
     private String authCode;
-    @Value(value = "${edc.asset.payload.url}")
-    private String edcAssetUrl;
-    @Value(value = "${edc.asset.relationship.payload.url}")
-    private String edcAssetRelationshipUrl;
+    @Value(value = "${edc.payload.url}")
+    private String edcPayloadUrl;
+    @Value(value = "${edc.asset.payload.path}")
+    private String edcAssetPath;
+    @Value(value = "${edc.asset.relationship.payload.path}")
+    private String edcAssetRelationshipPath;
 
     public AssetEntryRequest getAspectRelationshipAssetRequest(String shellId, String subModelId, String parentUuid) {
         return buildAsset(shellId, subModelId, ASSET_PROP_NAME_ASPECT_RELATIONSHIP, parentUuid);
@@ -54,10 +57,9 @@ public class AssetEntryRequestFactory {
         HashMap<String, String> assetProperties = getAssetProperties(assetId, assetName);
         AssetRequest assetRequest = AssetRequest.builder().properties(assetProperties).build();
 
-        String endpoint = assetName.equals(ASSET_PROP_NAME_ASPECT) ? String.format(edcAssetUrl, uuid)
-                : String.format(edcAssetRelationshipUrl, uuid);
+        String uriString = assetName.equals(ASSET_PROP_NAME_ASPECT) ? getAssetPayloadUrl(uuid) : getAssetRelationshipPayloadUrl(uuid);
 
-        HashMap<String, String> dataAddressProperties = getDataAddressProperties(shellId, subModelId, endpoint);
+        HashMap<String, String> dataAddressProperties = getDataAddressProperties(shellId, subModelId, uriString);
         DataAddressRequest dataAddressRequest = DataAddressRequest.builder().properties(dataAddressProperties).build();
 
         return AssetEntryRequest.builder()
@@ -84,5 +86,22 @@ public class AssetEntryRequestFactory {
         dataAddressProperties.put("authKey", authKey);
         dataAddressProperties.put("authCode", authCode);
         return dataAddressProperties;
+    }
+
+    private String getAssetPayloadUrl(String uuid) {
+        return UriComponentsBuilder
+                .fromHttpUrl(edcPayloadUrl)
+                .path(edcAssetPath)
+                .path(uuid)
+                .toUriString();
+    }
+
+    private String getAssetRelationshipPayloadUrl(String uuid) {
+        return UriComponentsBuilder
+                .fromHttpUrl(edcPayloadUrl)
+                .path(edcAssetPath)
+                .path(uuid)
+                .path(edcAssetRelationshipPath)
+                .toUriString();
     }
 }

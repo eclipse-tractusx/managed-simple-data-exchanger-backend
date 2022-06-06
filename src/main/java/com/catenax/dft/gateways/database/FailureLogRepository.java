@@ -18,15 +18,17 @@ package com.catenax.dft.gateways.database;
 
 
 import com.catenax.dft.entities.database.FailureLogEntity;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.ResponseEntity;
 
+import java.awt.print.Pageable;
 import java.util.List;
 
 public interface FailureLogRepository extends JpaRepository<FailureLogEntity, String> {
 
     @Query("SELECT f FROM FailureLogEntity f ORDER BY f.dateTime DESC")
-    List<FailureLogEntity> findAllOrderByDateTime();
+    List<FailureLogEntity> findAllOrderByDateTime(PageRequest pageRequest);
 }

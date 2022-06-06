@@ -69,8 +69,8 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
     protected Aspect executeUseCase(Aspect aspect, String processId) {
         try {
             return doUseCase(aspect);
-        } catch (HttpClientErrorException e) {
-            throw new CsvHandlerUseCaseException(aspect.getRowNumber(), e.getMessage());
+        } catch (Exception e) {
+            throw new CsvHandlerUseCaseException(aspect.getRowNumber(), "DigitalTwins: " + e.getMessage());
         }
     }
 

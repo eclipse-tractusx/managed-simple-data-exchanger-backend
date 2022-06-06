@@ -19,7 +19,7 @@ package com.catenax.dft.usecases.logs;
 import com.catenax.dft.entities.database.FailureLogEntity;
 import com.catenax.dft.gateways.database.FailureLogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,6 +35,7 @@ public class FailureLogsUseCase {
     }
 
     public List<FailureLogEntity> getLogs() {
-       return repository.findAllOrderByDateTime();
+        PageRequest pageRequest = PageRequest.of(0, 20);
+       return repository.findAllOrderByDateTime(pageRequest);
     }
 }

@@ -63,11 +63,6 @@ public class DigitalTwinGateway {
 
     public ShellLookupResponse shellLookup(ShellLookupRequest request) {
 
-        log.info("[DigitalTwinGateway] clientSecret: " + clientSecret);
-        log.info("[DigitalTwinGateway] clientId: " + clientId);
-        log.info("[DigitalTwinGateway] digitalTwinsUrl:" + digitalTwinsUrl);
-        log.info("[DigitalTwinGateway] tokenUrl:" + tokenUrl);
-
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.add(AUTHORIZATION, getBearerToken());
@@ -82,18 +77,26 @@ public class DigitalTwinGateway {
                 .queryParam(ASSET_IDS_QUERY_PARAMETER, "{assetIds}")
                 .encode()
                 .toUriString();
-        ResponseEntity<ShellLookupResponse> response = restTemplate.exchange(
-                urlTemplate,
-                HttpMethod.GET,
-                entity,
-                ShellLookupResponse.class,
-                queryParameters);
+        log.info("[Digital Twins] URL: " + urlTemplate + " | QUERY PARAM: " + request.toJsonString());
 
-        ShellLookupResponse responseBody;
-        if (response.getStatusCode() != HttpStatus.OK) {
-            responseBody = new ShellLookupResponse();
-        } else {
-            responseBody = response.getBody();
+            ShellLookupResponse responseBody=null;
+        try{
+
+            ResponseEntity<ShellLookupResponse> response = restTemplate.exchange(
+                    urlTemplate,
+                    HttpMethod.GET,
+                    entity,
+                    ShellLookupResponse.class,
+                    queryParameters);
+
+            if (response.getStatusCode() != HttpStatus.OK) {
+                responseBody = new ShellLookupResponse();
+            } else {
+                responseBody = response.getBody();
+            }
+        }catch (Exception e) {
+            log.error("[DIGITAL TWINS] [LOOKUP] " + e.getLocalizedMessage());
+            throw e;
         }
         return responseBody;
     }

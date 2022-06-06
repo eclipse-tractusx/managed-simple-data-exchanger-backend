@@ -20,12 +20,11 @@ package com.catenax.dft;
 import com.catenax.dft.gateways.file.CsvGatewayProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
-@SpringBootApplication
-@EnableConfigurationProperties({
-        CsvGatewayProperties.class
-})
+@SpringBootApplication(exclude = {UserDetailsServiceAutoConfiguration.class})
+@EnableConfigurationProperties({CsvGatewayProperties.class})
 public class DftApplication {
 
     public static void main(String[] args) {

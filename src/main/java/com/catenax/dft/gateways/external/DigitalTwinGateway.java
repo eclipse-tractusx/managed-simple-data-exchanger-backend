@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.catenax.dft.gateways.external;
 
@@ -60,6 +60,13 @@ public class DigitalTwinGateway {
     private String digitalTwinsUrl;
     @Value(value = "${digital-twins.authentication.url}")
     private String tokenUrl;
+
+    public DigitalTwinGateway() {
+        log.info("[DigitalTwinGateway] clientSecret: " + clientSecret);
+        log.info("[DigitalTwinGateway] clientId: " + clientId);
+        log.info("[DigitalTwinGateway] digitalTwinsUrl:" + digitalTwinsUrl);
+        log.info("[DigitalTwinGateway] tokenUrl:" + tokenUrl);
+    }
 
     public ShellLookupResponse shellLookup(ShellLookupRequest request) {
         RestTemplate restTemplate = new RestTemplate();

@@ -61,14 +61,13 @@ public class DigitalTwinGateway {
     @Value(value = "${digital-twins.authentication.url}")
     private String tokenUrl;
 
-    public DigitalTwinGateway() {
+    public ShellLookupResponse shellLookup(ShellLookupRequest request) {
+
         log.info("[DigitalTwinGateway] clientSecret: " + clientSecret);
         log.info("[DigitalTwinGateway] clientId: " + clientId);
         log.info("[DigitalTwinGateway] digitalTwinsUrl:" + digitalTwinsUrl);
         log.info("[DigitalTwinGateway] tokenUrl:" + tokenUrl);
-    }
 
-    public ShellLookupResponse shellLookup(ShellLookupRequest request) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.add(AUTHORIZATION, getBearerToken());

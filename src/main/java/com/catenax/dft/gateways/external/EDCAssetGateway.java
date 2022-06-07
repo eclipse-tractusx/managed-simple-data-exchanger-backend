@@ -42,5 +42,4 @@ public class EDCAssetGateway extends EDCGateway {
     protected String getApiValue() {
         return aspectApiValue;
     }
-
 }

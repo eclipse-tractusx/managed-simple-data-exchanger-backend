@@ -31,5 +31,3 @@ public class PingController {
         return ok().body(LocalDateTime.now().toString());
     }
 }
-
-

@@ -43,7 +43,6 @@ public class UploadFileController {
 
     @PostMapping(value = "/upload")
     public ResponseEntity<String> fileUpload(@RequestParam("file") MultipartFile file) {
-
         String processId = csvGateway.storeFile(file);
 
         Runnable runnable = () ->

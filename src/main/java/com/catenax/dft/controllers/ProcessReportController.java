@@ -42,7 +42,6 @@ public class ProcessReportController {
 
     @GetMapping(produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<ProcessReportPageResponse> getProcessingReportsByDateDesc(@Param("page") Integer page, @Param("pageSize") Integer pageSize) {
-
         page = page == null ? 0 : page;
         pageSize = pageSize == null ? 10 : pageSize;
 

@@ -77,26 +77,19 @@ public class DigitalTwinGateway {
                 .queryParam(ASSET_IDS_QUERY_PARAMETER, "{assetIds}")
                 .encode()
                 .toUriString();
-        log.info("[Digital Twins] URL: " + urlTemplate + " | QUERY PARAM: " + request.toJsonString());
 
-            ShellLookupResponse responseBody=null;
-        try{
+        ResponseEntity<ShellLookupResponse> response = restTemplate.exchange(
+                urlTemplate,
+                HttpMethod.GET,
+                entity,
+                ShellLookupResponse.class,
+                queryParameters);
 
-            ResponseEntity<ShellLookupResponse> response = restTemplate.exchange(
-                    urlTemplate,
-                    HttpMethod.GET,
-                    entity,
-                    ShellLookupResponse.class,
-                    queryParameters);
-
-            if (response.getStatusCode() != HttpStatus.OK) {
-                responseBody = new ShellLookupResponse();
-            } else {
-                responseBody = response.getBody();
-            }
-        }catch (Exception e) {
-            log.error("[DIGITAL TWINS] [LOOKUP] " + e.getLocalizedMessage());
-            throw e;
+        ShellLookupResponse responseBody;
+        if (response.getStatusCode() != HttpStatus.OK) {
+            responseBody = new ShellLookupResponse();
+        } else {
+            responseBody = response.getBody();
         }
         return responseBody;
     }
@@ -106,7 +99,6 @@ public class DigitalTwinGateway {
         HttpHeaders headers = new HttpHeaders();
         headers.add(AUTHORIZATION, getBearerToken());
         HttpEntity<ShellDescriptorRequest> entity = new HttpEntity<>(request, headers);
-
         String url = digitalTwinsUrl + "/registry/shell-descriptors";
         ResponseEntity<ShellDescriptorResponse> response = restTemplate.postForEntity(url, entity, ShellDescriptorResponse.class);
 
@@ -124,10 +116,7 @@ public class DigitalTwinGateway {
         HttpHeaders headers = new HttpHeaders();
         headers.add(AUTHORIZATION, getBearerToken());
         HttpEntity<CreateSubModelRequest> entity = new HttpEntity<>(request, headers);
-
-        String baseUrl = digitalTwinsUrl + "/registry/shell-descriptors/%s/submodel-descriptors";
-        String url = String.format(baseUrl, shellId);
-
+        String url = digitalTwinsUrl + "/registry/shell-descriptors/" + shellId + "/submodel-descriptors";
         ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
 
         if (response.getStatusCode() != HttpStatus.CREATED) {
@@ -140,10 +129,7 @@ public class DigitalTwinGateway {
         HttpHeaders headers = new HttpHeaders();
         headers.add(AUTHORIZATION, getBearerToken());
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(headers);
-
-        String baseUrl = digitalTwinsUrl + "/registry/shell-descriptors/%s/submodel-descriptors";
-        String url = String.format(baseUrl, shellId);
-
+        String url = digitalTwinsUrl + "/registry/shell-descriptors/" + shellId + "/submodel-descriptors";
         ResponseEntity<SubModelListResponse> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
@@ -160,7 +146,7 @@ public class DigitalTwinGateway {
     @SneakyThrows
     private String getBearerToken() {
         if (accessToken != null && isTokenValid()) {
-            return String.format("Bearer %s", accessToken);
+            return "Bearer " + accessToken;
         }
 
         RestTemplate restTemplate = new RestTemplate();
@@ -173,14 +159,13 @@ public class DigitalTwinGateway {
         map.add(GRANT_TYPE_TOKEN_QUERY_PARAMETER, CLIENT_CREDENTIALS_TOKEN_QUERY_PARAMETER_VALUE);
 
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
-        ResponseEntity<String> response = restTemplate.exchange(tokenUrl, HttpMethod.POST, entity, String.class);
+        ResponseEntity<String> response = restTemplate.postForEntity(tokenUrl, entity, String.class);
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper.readTree(response.getBody());
-
         accessToken = node.path(ACCESS_TOKEN).asText();
 
-        return String.format("Bearer %s", accessToken);
+        return "Bearer " + accessToken;
     }
 
     @SneakyThrows
@@ -193,6 +178,7 @@ public class DigitalTwinGateway {
         JsonNode actualObj = mapper.readTree(body);
         long tokenExpirationTime = actualObj.get("exp").asLong() * 1000;
         long currentTime = System.currentTimeMillis();
+
         return tokenExpirationTime - 20000 > currentTime;
     }
 }

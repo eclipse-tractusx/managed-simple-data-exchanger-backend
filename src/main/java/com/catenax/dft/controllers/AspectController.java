@@ -54,12 +54,10 @@ public class AspectController {
         this.aspectsRelationshipUseCase = aspectsRelationshipUseCase;
         this.createAspectsUseCase = createAspectsUseCase;
         this.createAspectRelationshipUseCase = createAspectRelationshipUseCase;
-
     }
 
     @GetMapping(value="/{id}", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<AspectResponse> getAspect(@PathVariable("id") String uuid) {
-
         AspectResponse response = aspectsUseCase.execute(uuid);
 
         if (response == null) {
@@ -70,7 +68,6 @@ public class AspectController {
 
     @GetMapping(value = "/{id}/relationship", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<AspectRelationshipResponse> getAspectRelationships(@PathVariable("id") String uuid) {
-
         AspectRelationshipResponse response = aspectsRelationshipUseCase.execute(uuid);
 
         if (response == null) {
@@ -81,7 +78,6 @@ public class AspectController {
 
     @PostMapping(consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> createAspect(@RequestBody List<AspectRequest> aspects) {
-
         String processId = UUID.randomUUID().toString();
 
         Runnable runnable = () -> createAspectsUseCase.createAspects(aspects, processId);
@@ -90,9 +86,8 @@ public class AspectController {
         return ok().body(processId);
     }
 
-    @PostMapping(value="/aspect-relationship", consumes = APPLICATION_JSON_VALUE)
+    @PostMapping(value="/relationship", consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> createAspectRelationship(@RequestBody List<AspectRelationshipRequest> aspects){
-
         String processId = UUID.randomUUID().toString();
 
         Runnable runnable = () -> createAspectRelationshipUseCase.createAspects(aspects, processId);
@@ -100,5 +95,4 @@ public class AspectController {
 
         return ok().body(processId);
     }
-
 }

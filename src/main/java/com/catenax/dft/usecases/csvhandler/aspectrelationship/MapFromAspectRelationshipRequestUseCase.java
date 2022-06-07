@@ -48,7 +48,7 @@ public class MapFromAspectRelationshipRequestUseCase extends AbstractCsvHandlerU
 
         AspectRelationship aspectRelationship = mapper.mapFrom(input);
         List<String> errorMessages = validateAsset(aspectRelationship);
-        if (errorMessages.size() != 0) {
+        if (!errorMessages.isEmpty()) {
             throw new CsvHandlerUseCaseException(input.getRowNumber(), errorMessages.toString());
         }
 

@@ -46,7 +46,7 @@ public class MapFromAspectRequestUseCase extends AbstractCsvHandlerUseCase<Aspec
     protected Aspect executeUseCase(AspectRequest input, String processId) {
         Aspect aspect = aspectMapper.mapFrom(input);
         List<String> errorMessages = validateAsset(aspect);
-        if (errorMessages.size() != 0) {
+        if (!errorMessages.isEmpty()) {
             throw new CsvHandlerUseCaseException(input.getRowNumber(), errorMessages.toString());
         }
 

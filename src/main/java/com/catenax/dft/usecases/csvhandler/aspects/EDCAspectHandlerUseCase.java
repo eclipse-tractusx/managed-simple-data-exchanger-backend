@@ -24,7 +24,7 @@ import com.catenax.dft.entities.edc.request.contractdefinition.ContractDefinitio
 import com.catenax.dft.entities.edc.request.policies.PolicyDefinitionRequest;
 import com.catenax.dft.entities.edc.request.policies.PolicyRequestFactory;
 import com.catenax.dft.entities.usecases.Aspect;
-import com.catenax.dft.gateways.external.EDCAssetGateway;
+import com.catenax.dft.gateways.external.EDCGateway;
 import com.catenax.dft.usecases.csvhandler.AbstractCsvHandlerUseCase;
 import com.catenax.dft.usecases.csvhandler.exceptions.CsvHandlerUseCaseException;
 import lombok.SneakyThrows;
@@ -36,13 +36,13 @@ import org.springframework.stereotype.Service;
 public class EDCAspectHandlerUseCase extends AbstractCsvHandlerUseCase<Aspect, Aspect> {
 
     private final AssetEntryRequestFactory assetFactory;
-    private final EDCAssetGateway edcGateway;
+    private final EDCGateway edcGateway;
     private final PolicyRequestFactory policyFactory;
     private final ContractDefinitionRequestFactory contractFactory;
 
 
     public EDCAspectHandlerUseCase(StoreAspectCsvHandlerUseCase nextUseCase,
-                                   EDCAssetGateway edcGateway,
+                                   EDCGateway edcGateway,
                                    AssetEntryRequestFactory assetFactory,
                                    PolicyRequestFactory policyFactory,
                                    ContractDefinitionRequestFactory contractFactory) {

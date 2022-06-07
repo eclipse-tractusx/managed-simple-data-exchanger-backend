@@ -21,6 +21,7 @@ import com.catenax.dft.entities.aspectrelationship.AspectRelationshipRequest;
 import com.catenax.dft.enums.CsvTypeEnum;
 import com.catenax.dft.usecases.processreport.ProcessReportUseCase;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service

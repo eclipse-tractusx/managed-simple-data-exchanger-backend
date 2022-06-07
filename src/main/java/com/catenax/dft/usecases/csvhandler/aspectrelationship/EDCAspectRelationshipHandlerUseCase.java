@@ -18,8 +18,8 @@ package com.catenax.dft.usecases.csvhandler.aspectrelationship;
 
 import com.catenax.dft.entities.edc.request.asset.AssetEntryRequest;
 import com.catenax.dft.entities.edc.request.asset.AssetEntryRequestFactory;
-import com.catenax.dft.entities.edc.request.contractdefinition.ContractDefinitionRequestFactory;
 import com.catenax.dft.entities.edc.request.contractdefinition.ContractDefinitionRequest;
+import com.catenax.dft.entities.edc.request.contractdefinition.ContractDefinitionRequestFactory;
 import com.catenax.dft.entities.edc.request.policies.PolicyDefinitionRequest;
 import com.catenax.dft.entities.edc.request.policies.PolicyRequestFactory;
 import com.catenax.dft.entities.usecases.AspectRelationship;

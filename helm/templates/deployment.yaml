@@ -51,11 +51,11 @@ spec:
                 secretKeyRef:
                   name: dft-postgres-secrets
                   key: dbPassword
-            - name: DIGITAL-TWINS_URL
+            - name: DIGITAL-TWINS_HOSTNAME
               valueFrom:
                 secretKeyRef:
                   name: dtf-digitaltwins-secrets
-                  key: digitalTwinUrl
+                  key: digitalTwinHostname
             - name: DIGITAL-TWINS_AUTHENTICATION_URL
               valueFrom:
                 secretKeyRef:
@@ -71,51 +71,26 @@ spec:
                 secretKeyRef:
                   name: dtf-digitaltwins-secrets
                   key: digitalTwinAuthorizationClientSecret
-            - name: EDC_ASPECT_URL
+            - name: EDC_HOSTNAME
               valueFrom:
                 secretKeyRef:
                   name: dft-edc-secrets
-                  key: edcAspectUrl
-            - name: EDC_ASPECT_API_KEY
+                  key: edcHostname
+            - name: EDC_APIKEYHEADER
               valueFrom:
                 secretKeyRef:
                   name: dft-edc-secrets
-                  key: edcAspectApiKey
-            - name: EDC_ASPECT_API_VALUE
+                  key: edcApiKeyHeader
+            - name: EDC_APIKEY
               valueFrom:
                 secretKeyRef:
                   name: dft-edc-secrets
-                  key: edcAspectApiValue
-            - name: EDC_CHILD_ASPECT_URL
+                  key: edcApiKey
+            - name: DFT_HOSTNAME
               valueFrom:
                 secretKeyRef:
                   name: dft-edc-secrets
-                  key: edcChildAspectUrl
-            - name: EDC_CHILD_ASPECT_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: dft-edc-secrets
-                  key: edcChildAspectApiKey
-            - name: EDC_CHILD_ASPECT_API_VALUE
-              valueFrom:
-                secretKeyRef:
-                  name: dft-edc-secrets
-                  key: edcChildAspectApiValue
-            - name: EDC_PAYLOAD_URL
-              valueFrom:
-                secretKeyRef:
-                  name: dft-edc-secrets
-                  key: edcPayloadUrl
-            - name: EDC_ASSET_PAYLOAD_PATH
-              valueFrom:
-                secretKeyRef:
-                  name: dft-edc-secrets
-                  key: edcAssetPayloadPath
-            - name: EDC_ASSET_RELATIONSHIP_PAYLOAD_PATH
-              valueFrom:
-                secretKeyRef:
-                  name: dft-edc-secrets
-                  key: edcAssetRelationshipPayloadPath
+                  key: edcDftHostname
             - name: EDC_ASSET_PAYLOAD_URL_AUTH_KEY
               valueFrom:
                 secretKeyRef:

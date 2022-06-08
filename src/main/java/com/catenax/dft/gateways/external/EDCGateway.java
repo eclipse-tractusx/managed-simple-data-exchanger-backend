@@ -21,29 +21,33 @@ import com.catenax.dft.entities.edc.request.contractdefinition.ContractDefinitio
 import com.catenax.dft.entities.edc.request.policies.PolicyDefinitionRequest;
 import com.catenax.dft.gateways.exceptions.EDCGatewayException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 @Slf4j
-public abstract class EDCGateway {
+@Service
+public class EDCGateway {
 
-    protected abstract String getEndPoint();
-
-    protected abstract String getApiKey();
-
-    protected abstract String getApiValue();
+    @Value(value = "${edc.hostname}")
+    private String edcHostname;
+    @Value(value = "${edc.apiKeyHeader}")
+    private String apiKeyHeader;
+    @Value(value = "${edc.apiKey}")
+    private String apiKey;
 
     public boolean assetExistsLookup(String id) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
-        headers.add(getApiKey(), getApiValue());
+        headers.add(apiKeyHeader, apiKey);
 
         try {
-            String url = getEndPoint() + "/assets/"+ id;
+            String url = edcHostname + "/assets/"+ id;
             restTemplate.getForEntity(url, Object.class, headers);
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
@@ -57,12 +61,12 @@ public abstract class EDCGateway {
     public void createAsset(AssetEntryRequest request) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
-        headers.add(getApiKey(), getApiValue());
+        headers.add(apiKeyHeader, apiKey);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         HttpEntity<AssetEntryRequest> entity = new HttpEntity<>(request, headers);
         try {
-            restTemplate.postForEntity(getEndPoint() + "/assets", entity, String.class);
+            restTemplate.postForEntity(edcHostname + "/assets", entity, String.class);
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.CONFLICT) {
                 throw new EDCGatewayException("Asset already exists");
@@ -75,11 +79,11 @@ public abstract class EDCGateway {
         final String policyResource = "/policies";
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
-        headers.add(getApiKey(), getApiValue());
+        headers.add(apiKey, apiKeyHeader);
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<PolicyDefinitionRequest> entity = new HttpEntity<>(request, headers);
         try {
-            restTemplate.postForEntity(getEndPoint() + policyResource, entity, String.class);
+            restTemplate.postForEntity(edcHostname + policyResource, entity, String.class);
         } catch (HttpClientErrorException e) {
             throw new EDCGatewayException(e.getStatusCode().toString());
         }
@@ -89,11 +93,11 @@ public abstract class EDCGateway {
         final String contractDefinitionResource = "/contractdefinitions";
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
-        headers.add(getApiKey(), getApiValue());
+        headers.add(apiKeyHeader, apiKey);
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<ContractDefinitionRequest> entity = new HttpEntity<>(request, headers);
         try {
-            restTemplate.postForEntity(getEndPoint() + contractDefinitionResource, entity, String.class);
+            restTemplate.postForEntity(edcHostname + contractDefinitionResource, entity, String.class);
         } catch (HttpClientErrorException e) {
             throw new EDCGatewayException(e.getStatusCode().toString());
         }

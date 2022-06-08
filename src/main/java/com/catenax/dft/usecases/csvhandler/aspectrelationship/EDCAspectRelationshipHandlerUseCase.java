@@ -28,6 +28,7 @@ import com.catenax.dft.usecases.csvhandler.AbstractCsvHandlerUseCase;
 import com.catenax.dft.usecases.csvhandler.exceptions.CsvHandlerUseCaseException;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -35,6 +36,8 @@ import org.springframework.stereotype.Service;
 public class EDCAspectRelationshipHandlerUseCase
         extends AbstractCsvHandlerUseCase<AspectRelationship, AspectRelationship> {
 
+    @Value(value = "{$edc.enabled:false}")
+    private boolean isEdcEnable;
     private final AssetEntryRequestFactory assetFactory;
     private final EDCGateway edcGateway;
     private final PolicyRequestFactory policyFactory;
@@ -55,22 +58,21 @@ public class EDCAspectRelationshipHandlerUseCase
     @SneakyThrows
     @Override
     protected AspectRelationship executeUseCase(AspectRelationship input, String processId) {
+        if (!isEdcEnable){
+            return input;
+        }
+
         String shellId = input.getShellId();
         String subModelId = input.getSubModelId();
 
         try {
-
-
-            //Create asset
             AssetEntryRequest assetEntryRequest = assetFactory.getAspectRelationshipAssetRequest(shellId, subModelId, input.getParentUuid());
             if (!edcGateway.assetExistsLookup(assetEntryRequest.getAsset().getProperties().get("asset:prop:id"))) {
                 edcGateway.createAsset(assetEntryRequest);
 
-                //create policies
                 PolicyDefinitionRequest policyDefinitionRequest = policyFactory.getPolicy(shellId, subModelId);
                 edcGateway.createPolicyDefinition(policyDefinitionRequest);
 
-                //create contractDefinitions
                 ContractDefinitionRequest contractDefinitionRequest = contractFactory.getContractDefinitionRequest(
                         assetEntryRequest.getAsset().getProperties().get("asset:prop:id"),
                         policyDefinitionRequest.getUid());

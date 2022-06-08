@@ -19,6 +19,7 @@ package com.catenax.dft.usecases.csvhandler.aspects;
 
 import com.catenax.dft.entities.aspect.AspectRequest;
 import com.catenax.dft.enums.CsvTypeEnum;
+import com.catenax.dft.usecases.csvhandler.aspects.MapFromAspectRequestUseCase;
 import com.catenax.dft.usecases.processreport.ProcessReportUseCase;
 import org.springframework.stereotype.Service;
 

@@ -38,7 +38,6 @@ public class MapFromAspectRequestUseCase extends AbstractCsvHandlerUseCase<Aspec
     public MapFromAspectRequestUseCase(GenerateUuIdCsvHandlerUseCase nextUseCase, AspectMapper mapper) {
         super(nextUseCase);
         this.aspectMapper=mapper;
-
     }
 
     @SneakyThrows

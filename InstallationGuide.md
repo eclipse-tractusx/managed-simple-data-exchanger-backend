@@ -20,7 +20,7 @@ It is necessary to inject the environment variables, credentials and URLs that c
 | digital-twins.authentication.clientId     | DIGITAL-TWINS_AUTHENTICATION_CLIENTID     | client ID authentication for Digital Twins     | sa-cl6-cx-4                      |
 | digital-twins.authentication.clientSecret | DIGITAL-TWINS_AUTHENTICATION_CLIENTSECRET | client secret authentication for Digital Twins | VrL8uSG5Tn3NrFiY39vs0klTmlvsRRmo |
 
-The values are on the (Vault)[https://vault.vault.demo.catena-x.net/].
+The values are on the [Vault](https://vault.vault.demo.catena-x.net/).
 *<i><b>Must create a GitHub token to access</b></i>
 
 #### EDC variables and endpoints to run locally:
@@ -34,7 +34,7 @@ The values are on the (Vault)[https://vault.vault.demo.catena-x.net/].
 | edc.asset.payload.url.auth.code | EDC_ASSET_PAYLOAD_URL_AUTH_CODE | url authentication code for edc asset payload | someCode     |
 | edc.enable                      | EDC_ENABLE                      | enable / disable edc                          | true / false |
 
-The values are on the (Vault)[https://vault.vault.demo.catena-x.net/].
+The values are on the [Vault](https://vault.vault.demo.catena-x.net/).
 *<i><b>Must create a GitHub token to access</b></i> 
 
 ## Upload a file:

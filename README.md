@@ -32,8 +32,16 @@ You can find the standard credentials as well as further database configurations
 3. Setup your project environment to JDK 18
 4. Start the application from your IDE.
 
+## Database
+### Wildfly
+The scripts are in the folder: resources/flyway.<p>
+File naming: <b>Vx__script_name.sql</b>, where x is the version number. <p>
+When there is a need to change the last script, it is necessary to create a new script with the changes.
+
+Link to flyway documentation: [Documentation](https://flywaydb.org/documentation/) 
+
 ## API authentication
-Authentication for the backend is handeled via an API Key. This can be set in the configuration file.
+Authentication for the backend is handled via an API Key. This can be set in the configuration file.
 
 ## ArgoCD
 The latest version on main is automatically picked up by ArgoCD and deployed to the DEV environment. See https://catenax-ng.github.io/.

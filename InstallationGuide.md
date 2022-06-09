@@ -12,8 +12,8 @@ It is necessary to inject the environment variables, credentials and URLs that c
 | manufacturerId | MANUFACTURERID | Id of manufacturer | CatenaX |
 
 
-#### Digital Twins variables and endpoints to run locally:
-| Property                                  | Value                                     | Description                                    | Example                          |
+#### Digital Twins variables:
+| Property name                             | Environment Variable Name                 | Description                                    | Example Value                    |
 |-------------------------------------------|-------------------------------------------|------------------------------------------------|----------------------------------|
 | digital-twins.hostname                    | DIGITAL-TWINS_HOSTNAME                    | hostname for Digital Twins                     | https://                         |
 | digital-twins.authentication.url          | DIGITAL-TWINS_AUTHENTICATION_URL          | authentication url for Digital Twins           | https://                         |
@@ -23,16 +23,16 @@ It is necessary to inject the environment variables, credentials and URLs that c
 The values are on the [Vault](https://vault.vault.demo.catena-x.net/).
 *<i><b>Must create a GitHub token to access</b></i>
 
-#### EDC variables and endpoints to run locally:
-| Property         | Value            | Description                                   | EXAMPLE      |
-|------------------|------------------|-----------------------------------------------|--------------|
-| edc.hostname     | EDC_HOSTNAME     | edc hostname                                  | https://     |
-| edc.apiKeyHeader | EDC_APIKEYHEADER | API KEY header for edc                        | X-Api_Key    |
-| edc.apiKey       | EDC_APIKEY       | API KEY for edc                               | 123456       |
-| dft.hostname     | DFT_HOSTNAME     | hostname for DFT                              | https://     |
-| dft.apiKeyHeader | DFT_APIKEYHEADER | url authentication key for edc asset payload  | Api-Key      |
-| dft.apiKey       | DFT_APIKEY       | url authentication code for edc asset payload | someCode     |
-| edc.enable       | EDC_ENABLE       | enable / disable edc                          | true / false |
+#### EDC variables:
+| Property name    | Environment Variable Name | Description                                   | Example Value |
+|------------------|---------------------------|-----------------------------------------------|---------------|
+| edc.hostname     | EDC_HOSTNAME              | edc hostname                                  | https://      |
+| edc.apiKeyHeader | EDC_APIKEYHEADER          | API KEY header for edc                        | X-Api_Key     |
+| edc.apiKey       | EDC_APIKEY                | API KEY for edc                               | 123456        |
+| dft.hostname     | DFT_HOSTNAME              | hostname for DFT                              | https://      |
+| dft.apiKeyHeader | DFT_APIKEYHEADER          | url authentication key for edc asset payload  | Api-Key       |
+| dft.apiKey       | DFT_APIKEY                | url authentication code for edc asset payload | someCode      |
+| edc.enabled      | EDC_ENABLED               | enable / disable edc                          | true / false  |
 
 The values are in the [Vault](https://vault.vault.demo.catena-x.net/).
 *<i><b>Must create a GitHub token to access</b></i> 

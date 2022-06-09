@@ -24,17 +24,17 @@ The values are on the [Vault](https://vault.vault.demo.catena-x.net/).
 *<i><b>Must create a GitHub token to access</b></i>
 
 #### EDC variables and endpoints to run locally:
-| Property                        | Value                           | Description                                   | EXAMPLE      |
-|---------------------------------|---------------------------------|-----------------------------------------------|--------------|
-| edc.aspect.hostname             | EDC_ASPECT_HOSTNAME             | hostname for aspect edc                       | https://     |
-| edc.apiKeyHeader                | EDC_APIKEYHEADER                | API KEY header for edc                        |              |
-| edc.apiKey                      | EDC_APIKEY                      | API KEY for edc                               | apiKey       |
-| dft.hostname                    | DFT_HOSTNAME                    | hostname for DFT                              | apiValue     |
-| edc.asset.payload.url.auth.key  | EDC_ASSET_PAYLOAD_URL_AUTH_KEY  | url authentication key for edc asset payload  | someKey      |
-| edc.asset.payload.url.auth.code | EDC_ASSET_PAYLOAD_URL_AUTH_CODE | url authentication code for edc asset payload | someCode     |
-| edc.enable                      | EDC_ENABLE                      | enable / disable edc                          | true / false |
+| Property         | Value            | Description                                   | EXAMPLE      |
+|------------------|------------------|-----------------------------------------------|--------------|
+| edc.hostname     | EDC_HOSTNAME     | edc hostname                                  | https://     |
+| edc.apiKeyHeader | EDC_APIKEYHEADER | API KEY header for edc                        | X-Api_Key    |
+| edc.apiKey       | EDC_APIKEY       | API KEY for edc                               | 123456       |
+| dft.hostname     | DFT_HOSTNAME     | hostname for DFT                              | https://     |
+| dft.apiKeyHeader | DFT_APIKEYHEADER | url authentication key for edc asset payload  | Api-Key      |
+| dft.apiKey       | DFT_APIKEY       | url authentication code for edc asset payload | someCode     |
+| edc.enable       | EDC_ENABLE       | enable / disable edc                          | true / false |
 
-The values are on the [Vault](https://vault.vault.demo.catena-x.net/).
+The values are in the [Vault](https://vault.vault.demo.catena-x.net/).
 *<i><b>Must create a GitHub token to access</b></i> 
 
 ## Upload a file:
@@ -54,7 +54,7 @@ When a file .csv is uploaded, the program checks whether the file is a SerialPar
 3. Registers in DigitalTwins.
 4. Stores the line in the database.
 
-The file .cvs is loaded in memory, the content is saved and then, the file is removed from memory.
+The file .csv is loaded in memory, the content is saved and then, the file is removed from memory.
 
 
 If the file is not .csv, it is read, processed and is considered as FAILED

@@ -36,7 +36,7 @@ import org.springframework.stereotype.Service;
 public class EDCAspectRelationshipHandlerUseCase
         extends AbstractCsvHandlerUseCase<AspectRelationship, AspectRelationship> {
 
-    @Value(value = "{$edc.enabled:false}")
+    @Value("#{new Boolean('${edc.enabled:false}')}")
     private boolean isEdcEnable;
     private final AssetEntryRequestFactory assetFactory;
     private final EDCGateway edcGateway;

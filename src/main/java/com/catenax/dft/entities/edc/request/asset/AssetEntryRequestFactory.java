@@ -36,12 +36,8 @@ public class AssetEntryRequestFactory {
     private String authKey;
     @Value(value = "${edc.asset.payload.url.auth.code}")
     private String authCode;
-    @Value(value = "${edc.payload.url}")
-    private String edcPayloadUrl;
-    @Value(value = "${edc.asset.payload.path}")
-    private String edcAssetPath;
-    @Value(value = "${edc.asset.relationship.payload.path}")
-    private String edcAssetRelationshipPath;
+    @Value(value = "${dft.hostname}")
+    private String dftHostname;
 
     public AssetEntryRequest getAspectRelationshipAssetRequest(String shellId, String subModelId, String parentUuid) {
         return buildAsset(shellId, subModelId, ASSET_PROP_NAME_ASPECT_RELATIONSHIP, parentUuid);
@@ -90,18 +86,18 @@ public class AssetEntryRequestFactory {
 
     private String getAssetPayloadUrl(String uuid) {
         return UriComponentsBuilder
-                .fromHttpUrl(edcPayloadUrl)
-                .path(edcAssetPath)
+                .fromHttpUrl(dftHostname)
+                .path("/api/aspect/")
                 .path(uuid)
                 .toUriString();
     }
 
     private String getAssetRelationshipPayloadUrl(String uuid) {
         return UriComponentsBuilder
-                .fromHttpUrl(edcPayloadUrl)
-                .path(edcAssetPath)
+                .fromHttpUrl(dftHostname)
+                .path("/api/aspect/")
                 .path(uuid)
-                .path(edcAssetRelationshipPath)
+                .path("/relationship")
                 .toUriString();
     }
 }

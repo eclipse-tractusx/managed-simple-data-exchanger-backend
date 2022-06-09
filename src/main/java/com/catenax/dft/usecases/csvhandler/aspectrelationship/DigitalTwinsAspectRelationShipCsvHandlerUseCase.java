@@ -63,8 +63,8 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase
 
     @Value(value = "${manufacturerId}")
     private String manufacturerId;
-    @Value(value = "${edc.child.aspect.url}")
-    private String edcEndpointChildren;
+    @Value(value = "${edc.hostname}")
+    private String edcEndpoint;
 
     public DigitalTwinsAspectRelationShipCsvHandlerUseCase(DigitalTwinGateway gateway,
                                                            AspectRepository aspectRepository,
@@ -172,7 +172,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase
         endpoints.add(Endpoint.builder()
                 .endpointInterface(HTTP)
                 .protocolInformation(ProtocolInformation.builder()
-                        .endpointAddress(String.format(edcEndpointChildren, encodedId))
+                        .endpointAddress(String.format(edcEndpoint, encodedId))
                         .endpointProtocol(HTTPS)
                         .endpointProtocolVersion(ENDPOINT_PROTOCOL_VERSION)
                         .build())

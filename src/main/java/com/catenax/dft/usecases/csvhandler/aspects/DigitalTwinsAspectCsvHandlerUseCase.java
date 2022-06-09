@@ -55,7 +55,7 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
 
     @Value(value = "${manufacturerId}")
     private String manufacturerId;
-    @Value(value = "${edc.aspect.url}")
+    @Value(value = "${edc.hostname}")
     private String edcEndpoint;
 
     public DigitalTwinsAspectCsvHandlerUseCase(DigitalTwinGateway gateway, StoreAspectCsvHandlerUseCase nextUseCase) {

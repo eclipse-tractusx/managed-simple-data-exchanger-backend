@@ -24,25 +24,28 @@ import com.catenax.dft.entities.edc.request.contractdefinition.ContractDefinitio
 import com.catenax.dft.entities.edc.request.policies.PolicyDefinitionRequest;
 import com.catenax.dft.entities.edc.request.policies.PolicyRequestFactory;
 import com.catenax.dft.entities.usecases.Aspect;
-import com.catenax.dft.gateways.external.EDCAssetGateway;
+import com.catenax.dft.gateways.external.EDCGateway;
 import com.catenax.dft.usecases.csvhandler.AbstractCsvHandlerUseCase;
 import com.catenax.dft.usecases.csvhandler.exceptions.CsvHandlerUseCaseException;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 public class EDCAspectHandlerUseCase extends AbstractCsvHandlerUseCase<Aspect, Aspect> {
 
+    @Value(value = "{$edc.enabled:false}")
+    private boolean isEdcEnable;
     private final AssetEntryRequestFactory assetFactory;
-    private final EDCAssetGateway edcGateway;
+    private final EDCGateway edcGateway;
     private final PolicyRequestFactory policyFactory;
     private final ContractDefinitionRequestFactory contractFactory;
 
 
     public EDCAspectHandlerUseCase(StoreAspectCsvHandlerUseCase nextUseCase,
-                                   EDCAssetGateway edcGateway,
+                                   EDCGateway edcGateway,
                                    AssetEntryRequestFactory assetFactory,
                                    PolicyRequestFactory policyFactory,
                                    ContractDefinitionRequestFactory contractFactory) {
@@ -56,22 +59,21 @@ public class EDCAspectHandlerUseCase extends AbstractCsvHandlerUseCase<Aspect, A
     @SneakyThrows
     @Override
     protected Aspect executeUseCase(Aspect input, String processId) {
+        if (!isEdcEnable){
+            return input;
+        }
         String shellId = input.getShellId();
         String subModelId = input.getSubModelId();
 
         try {
 
-
-            //create asset
             AssetEntryRequest assetEntryRequest = assetFactory.getAspectAssetRequest(shellId, subModelId, input.getUuid());
             if (!edcGateway.assetExistsLookup(assetEntryRequest.getAsset().getProperties().get("asset:prop:id"))) {
                 edcGateway.createAsset(assetEntryRequest);
 
-                //create policies
                 PolicyDefinitionRequest policyDefinitionRequest = policyFactory.getPolicy(shellId, subModelId);
                 edcGateway.createPolicyDefinition(policyDefinitionRequest);
 
-                //create contractDefinitions
                 ContractDefinitionRequest contractDefinitionRequest = contractFactory.getContractDefinitionRequest(
                         assetEntryRequest.getAsset().getProperties().get("asset:prop:id"),
                         policyDefinitionRequest.getUid());

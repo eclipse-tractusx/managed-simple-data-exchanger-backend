@@ -56,7 +56,7 @@ public class DigitalTwinGateway {
     private String clientSecret;
     @Value(value = "${digital-twins.authentication.clientId}")
     private String clientId;
-    @Value(value = "${digital-twins.url}")
+    @Value(value = "${digital-twins.hostname}")
     private String digitalTwinsUrl;
     @Value(value = "${digital-twins.authentication.url}")
     private String tokenUrl;
@@ -71,7 +71,7 @@ public class DigitalTwinGateway {
         Map<String, String> queryParameters = new HashMap<>();
         queryParameters.put(ASSET_IDS_QUERY_PARAMETER, request.toJsonString());
 
-        String url = digitalTwinsUrl + "/lookup/shells";
+        String url = digitalTwinsUrl + "/semantics/twin-registry/lookup/shells";
         String urlTemplate = UriComponentsBuilder
                 .fromHttpUrl(url)
                 .queryParam(ASSET_IDS_QUERY_PARAMETER, "{assetIds}")
@@ -99,7 +99,7 @@ public class DigitalTwinGateway {
         HttpHeaders headers = new HttpHeaders();
         headers.add(AUTHORIZATION, getBearerToken());
         HttpEntity<ShellDescriptorRequest> entity = new HttpEntity<>(request, headers);
-        String url = digitalTwinsUrl + "/registry/shell-descriptors";
+        String url = digitalTwinsUrl + "/semantics/twin-registry/registry/shell-descriptors";
         ResponseEntity<ShellDescriptorResponse> response = restTemplate.postForEntity(url, entity, ShellDescriptorResponse.class);
 
         ShellDescriptorResponse responseBody;
@@ -116,7 +116,7 @@ public class DigitalTwinGateway {
         HttpHeaders headers = new HttpHeaders();
         headers.add(AUTHORIZATION, getBearerToken());
         HttpEntity<CreateSubModelRequest> entity = new HttpEntity<>(request, headers);
-        String url = digitalTwinsUrl + "/registry/shell-descriptors/" + shellId + "/submodel-descriptors";
+        String url = digitalTwinsUrl + "/semantics/twin-registry/registry/shell-descriptors/" + shellId + "/submodel-descriptors";
         ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
 
         if (response.getStatusCode() != HttpStatus.CREATED) {
@@ -129,7 +129,7 @@ public class DigitalTwinGateway {
         HttpHeaders headers = new HttpHeaders();
         headers.add(AUTHORIZATION, getBearerToken());
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(headers);
-        String url = digitalTwinsUrl + "/registry/shell-descriptors/" + shellId + "/submodel-descriptors";
+        String url = digitalTwinsUrl + "/semantics/twin-registry/registry/shell-descriptors/" + shellId + "/submodel-descriptors";
         ResponseEntity<SubModelListResponse> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,

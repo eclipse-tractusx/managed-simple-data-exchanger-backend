@@ -91,16 +91,16 @@ spec:
                 secretKeyRef:
                   name: dft-edc-secrets
                   key: edcDftHostname
-            - name: EDC_ASSET_PAYLOAD_URL_AUTH_KEY
+            - name: DFT_APIKEYHEADER
               valueFrom:
                 secretKeyRef:
                   name: dft-edc-secrets
-                  key: edcAssetPayloadUrlAuthKey
-            - name: EDC_ASSET_PAYLOAD_URL_AUTH_CODE
+                  key: edcDftApiKeyHeader
+            - name: DFT_APIKEY
               valueFrom:
                 secretKeyRef:
                   name: dft-edc-secrets
-                  key: edcAssetPayloadUrlAuthCode
+                  key: edcDftApiKey
           ports:
             - name: http
               containerPort: 8080

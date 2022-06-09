@@ -32,10 +32,10 @@ public class AssetEntryRequestFactory {
     private static final String ASSET_PROP_VERSION = "1.0.0";
     private static final String NAME = "Backend Data Service - AAS Server";
     private static final String TYPE = "AzureStorage";
-    @Value(value = "${edc.asset.payload.url.auth.key}")
-    private String authKey;
-    @Value(value = "${edc.asset.payload.url.auth.code}")
-    private String authCode;
+    @Value(value = "${dft.apiKeyHeader}")
+    private String apiKeyHeader;
+    @Value(value = "${dft.apiKey}")
+    private String apiKey;
     @Value(value = "${dft.hostname}")
     private String dftHostname;
 
@@ -79,8 +79,8 @@ public class AssetEntryRequestFactory {
         dataAddressProperties.put("type", TYPE);
         dataAddressProperties.put("endpoint", String.format(endpoint, shellId, subModelId));
         dataAddressProperties.put("name", NAME);
-        dataAddressProperties.put("authKey", authKey);
-        dataAddressProperties.put("authCode", authCode);
+        dataAddressProperties.put("authKey", apiKeyHeader);
+        dataAddressProperties.put("authCode", apiKey);
         return dataAddressProperties;
     }
 

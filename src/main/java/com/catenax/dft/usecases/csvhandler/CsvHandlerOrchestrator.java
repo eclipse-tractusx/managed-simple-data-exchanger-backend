@@ -18,6 +18,7 @@
 package com.catenax.dft.usecases.csvhandler;
 
 
+import com.catenax.dft.entities.SubmodelFileRequest;
 import com.catenax.dft.entities.csv.CsvContent;
 import com.catenax.dft.enums.CsvTypeEnum;
 import com.catenax.dft.exceptions.DftException;
@@ -88,16 +89,27 @@ public class CsvHandlerOrchestrator {
     }
 
     @SneakyThrows
-    public void execute(CsvContent csvContent, String processId) {
+    public void execute(CsvContent csvContent, String processId, SubmodelFileRequest submodelFileRequest) {
         if (ASPECT_COLUMNS.equals(csvContent.getColumns())) {
-            processReportUseCase.startBuildProcessReport(processId, CsvTypeEnum.ASPECT, csvContent.getRows().size());
+            processReportUseCase.startBuildProcessReport(processId, CsvTypeEnum.ASPECT, csvContent.getRows().size(),submodelFileRequest.getBpnNumbers(),submodelFileRequest.getTypeOfAccess());
             log.debug("I'm an ASPECT file. Unpacked and ready to be processed.");
-            csvContent.getRows().parallelStream().forEach(input -> aspectStarterUseCase.run(input, processId));
+            
+            csvContent.getRows().parallelStream().forEach(input ->{
+            	
+            	aspectStarterUseCase.init(submodelFileRequest);
+            	aspectStarterUseCase.run(input, processId);
+            	});
+            
             processReportUseCase.finishBuildAspectProgressReport(processId);
         } else if (ASPECT_RELATIONSHIP_COLUMNS.equals(csvContent.getColumns())) {
-            processReportUseCase.startBuildProcessReport(processId, CsvTypeEnum.ASPECT_RELATIONSHIP, csvContent.getRows().size());
+            processReportUseCase.startBuildProcessReport(processId, CsvTypeEnum.ASPECT_RELATIONSHIP, csvContent.getRows().size(),submodelFileRequest.getBpnNumbers(),submodelFileRequest.getTypeOfAccess());
             log.debug("I'm an ASPECT RELATIONSHIP file. Unpacked and ready to be processed.");
-            csvContent.getRows().parallelStream().forEach(input -> aspectRelationshipStarterUseCase.run(input, processId));
+            
+            csvContent.getRows().parallelStream().forEach(input -> {
+            	aspectRelationshipStarterUseCase.init(submodelFileRequest);
+            	aspectRelationshipStarterUseCase.run(input, processId);
+            });
+            
             processReportUseCase.finishBuildChildAspectProgressReport(processId);
         } else {
             processReportUseCase.unknownProcessReport(processId);

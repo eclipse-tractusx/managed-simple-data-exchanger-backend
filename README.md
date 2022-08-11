@@ -12,7 +12,7 @@ The DFT project has two dependencies: Digital Twins and EDC.
 
 ##### For installation guide: see [InstallationGuide.md](InstallationGuide.md)
 
-## How to run
+### How to run
 
 DFT is a SpringBoot Java software project managed by Maven.
 
@@ -54,5 +54,5 @@ To see how to deploy an application on 'Hotel Budapest':
 ## EDC
 GitHub repository with correct version of the Eclipse DataSpace Connector Project: [repository](https://github.com/catenax-ng/product-edc)
 
-## Licenses
+### Licenses
 Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0)

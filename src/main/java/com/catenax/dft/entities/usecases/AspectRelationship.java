@@ -20,6 +20,8 @@ package com.catenax.dft.entities.usecases;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.List;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 
@@ -33,6 +35,9 @@ public class AspectRelationship {
     private String processId;
     private String childUuid;
     private String parentUuid;
+    private List<String> bpnNumbers;
+    private String typeOfAccess;
+    
 
     @NotBlank(message = "parent_part_instance_id cannot be empty")
     private String parentPartInstanceId;
@@ -55,7 +60,7 @@ public class AspectRelationship {
     @NotBlank(message = "lifecycle_context cannot be empty")
     private String lifecycleContext;
 
-    @Positive(message = "quantity_number cannot be empty")
+    @Positive(message = "quantity_number cannot be non number")
     private String quantityNumber;
 
     @NotBlank(message = "measurement_unit_lexical_value cannot be empty")

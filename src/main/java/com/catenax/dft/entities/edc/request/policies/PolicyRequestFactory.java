@@ -16,58 +16,95 @@
 
 package com.catenax.dft.entities.edc.request.policies;
 
-import com.catenax.dft.usecases.common.UUIdGenerator;
-import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.catenax.dft.usecases.common.UUIdGenerator;
 
 @Service
 public class PolicyRequestFactory {
 
-    public PolicyDefinitionRequest getPolicy(String shellId, String subModelId) {
-        String assetId = shellId + "-" + subModelId;
+	private static final String DATASPACECONNECTOR_LITERALEXPRESSION = "dataspaceconnector:literalexpression";
 
-        ArrayList<PermissionRequest> permissions = getPermissions(assetId);
-        HashMap<String, String> extensibleProperties = new HashMap<>();
-        HashMap<String, String> type = new HashMap<>();
-        type.put("@policytype", "set");
+	public PolicyDefinitionRequest getPolicy(String shellId, String subModelId, List<String> bpnNumbers) {
+		String assetId = shellId + "-" + subModelId;
 
-        extensibleProperties.put("additionalProp1", "value1");
+		ArrayList<PermissionRequest> permissions = getPermissions(assetId, bpnNumbers);
+		HashMap<String, String> extensibleProperties = new HashMap<>();
+		HashMap<String, String> type = new HashMap<>();
+		type.put("@policytype", "set");
 
-        return PolicyDefinitionRequest.builder()
-                .uid(UUIdGenerator.getUrnUuid())
-                .permissions(permissions)
-                .prohibitions(new ArrayList<>())
-                .obligations(new ArrayList<>())
-                .extensibleProperties(extensibleProperties)
-                .inheritsFrom(null)
-                .assigner(null)
-                .assignee(null)
-                .target(assetId)
-                .type(type)
-                .build();
-    }
+		extensibleProperties.put("additionalProp1", "value1");
 
-    private ArrayList<PermissionRequest> getPermissions(String assetId) {
-        ArrayList<PermissionRequest> permissions = new ArrayList<>();
-        ActionRequest action = ActionRequest.builder()
-                .type("USE")
-                .includedIn(null)
-                .constraint(null)
-                .build();
+		return PolicyDefinitionRequest.builder()
+				.uid(UUIdGenerator.getUrnUuid())
+				.permissions(permissions)
+				.prohibitions(new ArrayList<>())
+				.obligations(new ArrayList<>())
+				.extensibleProperties(extensibleProperties)
+				.inheritsFrom(null)
+				.assigner(null)
+				.assignee(null)
+				.target(assetId).type(type).build();
+	}
 
-        PermissionRequest permissionRequest = PermissionRequest.builder()
-                .uid("Perm_1")
-                .target(assetId)
-                .action(action)
-                .assignee(null)
-                .assigner(null)
-                .constraints(new ArrayList<>())
-                .duties(new ArrayList<>())
-                .edcType("dataspaceconnector:permission")
-                .build();
-        permissions.add(permissionRequest);
-        return permissions;
-    }
+	private ArrayList<PermissionRequest> getPermissions(String assetId, List<String> bpnNumbers) {
+		ArrayList<PermissionRequest> permissions = new ArrayList<>();
+		ActionRequest action = ActionRequest.builder()
+				.type("USE")
+				.includedIn(null)
+				.constraint(null)
+				.build();
+		
+		List<ConstraintRequest> constraints= new ArrayList<>();
+		if(bpnNumbers !=null && !bpnNumbers.isEmpty()) {
+			constraints.add(getBPNConstraints(bpnNumbers));
+		}
+		
+		
+		PermissionRequest permissionRequest = PermissionRequest.builder()
+				.target(assetId)
+				.action(action)
+				.assignee(null)
+				.assigner(null)
+				.constraints(constraints)
+				.duties(new ArrayList<>())
+				.edcType("dataspaceconnector:permission")
+				.build();
+		permissions.add(permissionRequest);
+		return permissions;
+	}
+
+	private ConstraintRequest getBPNConstraints(List<String> bpnNumbers) {
+		Expression lExpression = Expression.builder()
+				.edcType(DATASPACECONNECTOR_LITERALEXPRESSION)
+				.value("BusinessPartnerNumber")
+				.build();
+
+		String operator = "IN";
+		Expression rExpression = null;
+		if(bpnNumbers.size()==1) {
+			operator = "EQ";
+			rExpression = Expression.builder()
+					.edcType(DATASPACECONNECTOR_LITERALEXPRESSION)
+					.value(bpnNumbers.get(0))
+					.build();
+		}
+		else {
+			rExpression = Expression.builder()
+					.edcType(DATASPACECONNECTOR_LITERALEXPRESSION)
+					.value(bpnNumbers)
+					.build();
+		}
+
+		return ConstraintRequest.builder().edcType("AtomicConstraint")
+				.leftExpression(lExpression)
+				.rightExpression(rExpression)
+				.operator(operator)
+				.build();
+
+	}
 }

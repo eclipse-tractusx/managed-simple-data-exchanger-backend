@@ -24,6 +24,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -39,4 +40,6 @@ public class ProcessReport {
     private ProgressStatusEnum status;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
+    private List<String> bpnNumbers;
+    private String typeOfAccess;
 }

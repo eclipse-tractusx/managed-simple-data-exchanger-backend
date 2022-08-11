@@ -18,7 +18,12 @@ package com.catenax.dft.entities.edc.request.policies;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.*;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,6 +33,15 @@ public class ConstraintRequest {
 
     @JsonProperty("edctype")
     private String edcType;
+    
+    @JsonProperty("leftExpression")
+    private Expression leftExpression;
+    
+    @JsonProperty("rightExpression")
+    private Expression rightExpression;
+    
+    @JsonProperty("operator")
+    private String operator;
 
     @SneakyThrows
     public String toJsonString() {

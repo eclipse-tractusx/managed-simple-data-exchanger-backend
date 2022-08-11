@@ -17,6 +17,22 @@
 
 package com.catenax.dft.controllers;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.ResponseEntity.notFound;
+import static org.springframework.http.ResponseEntity.ok;
+
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.catenax.dft.entities.SubmodelJsonRequest;
 import com.catenax.dft.entities.aspect.AspectRequest;
 import com.catenax.dft.entities.aspect.AspectResponse;
 import com.catenax.dft.entities.aspectrelationship.AspectRelationshipRequest;
@@ -25,16 +41,8 @@ import com.catenax.dft.usecases.aspectrelationship.GetAspectsRelationshipUseCase
 import com.catenax.dft.usecases.aspects.GetAspectsUseCase;
 import com.catenax.dft.usecases.csvhandler.aspectrelationship.CreateAspectRelationshipUseCase;
 import com.catenax.dft.usecases.csvhandler.aspects.CreateAspectsUseCase;
+
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.UUID;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.ResponseEntity.notFound;
-import static org.springframework.http.ResponseEntity.ok;
 
 @Slf4j
 @RestController
@@ -77,7 +85,7 @@ public class AspectController {
     }
 
     @PostMapping(consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> createAspect(@RequestBody List<AspectRequest> aspects) {
+    public ResponseEntity<String> createAspect(@RequestBody SubmodelJsonRequest<AspectRequest> aspects) {
         String processId = UUID.randomUUID().toString();
 
         Runnable runnable = () -> createAspectsUseCase.createAspects(aspects, processId);
@@ -87,7 +95,7 @@ public class AspectController {
     }
 
     @PostMapping(value="/relationship", consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> createAspectRelationship(@RequestBody List<AspectRelationshipRequest> aspects){
+    public ResponseEntity<String> createAspectRelationship(@RequestBody SubmodelJsonRequest<AspectRelationshipRequest> aspects){
         String processId = UUID.randomUUID().toString();
 
         Runnable runnable = () -> createAspectRelationshipUseCase.createAspects(aspects, processId);

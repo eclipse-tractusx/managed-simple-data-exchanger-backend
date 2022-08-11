@@ -45,13 +45,15 @@ public class ProcessReportUseCase {
         this.mapper = mapper;
     }
 
-    public void startBuildProcessReport(String processId, CsvTypeEnum type, int size) {
+    public void startBuildProcessReport(String processId, CsvTypeEnum type, int size,List<String> bpnNumbers, String typeOfAccess) {
         saveProcessReport(ProcessReport.builder()
                 .processId(processId)
                 .csvType(type)
                 .status(ProgressStatusEnum.IN_PROGRESS)
                 .numberOfItems(size)
                 .startDate(LocalDateTime.now())
+                .bpnNumbers(bpnNumbers)
+                .typeOfAccess(typeOfAccess)
                 .build());
     }
 

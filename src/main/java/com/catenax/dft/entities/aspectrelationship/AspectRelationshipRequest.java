@@ -17,6 +17,8 @@
 
 package com.catenax.dft.entities.aspectrelationship;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -30,8 +32,12 @@ public class AspectRelationshipRequest {
     private int rowNumber;
     @JsonIgnore
     private String processId;
+    @JsonIgnore
+    private List<String> bpnNumbers;
+    @JsonIgnore
+    private String typeOfAccess;
 
-    @JsonProperty(value = "child_uuid")
+    @JsonProperty(value = "uuid")
     private String childUuid;
 
     @JsonProperty(value = "parent_uuid")
@@ -55,10 +61,10 @@ public class AspectRelationshipRequest {
     @JsonProperty(value = "manufacturer_part_id")
     private String childManufacturerPartId;
 
-    @JsonProperty(value = "child_optional_identifier_key")
+    @JsonProperty(value = "optional_identifier_key")
     private String childOptionalIdentifierKey;
 
-    @JsonProperty(value = "child_optional_identifier_value")
+    @JsonProperty(value = "optional_identifier_value")
     private String childOptionalIdentifierValue;
 
     @JsonProperty(value = "lifecycle_context")

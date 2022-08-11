@@ -30,6 +30,7 @@
     ALTER COLUMN optional_identifier_value TYPE TEXT,
     ALTER COLUMN shell_id                  TYPE TEXT;
 
+
  ALTER TABLE aspect_relationship
     ALTER COLUMN parent_catenax_id              TYPE TEXT,
     ALTER COLUMN process_id                     TYPE TEXT,
@@ -49,3 +50,6 @@
     ALTER COLUMN process_id TYPE TEXT,
     ALTER COLUMN csv_type   TYPE TEXT,
     ALTER COLUMN status     TYPE TEXT;
+	
+ALTER TABLE process_report ADD type_of_access varchar NULL;
+ALTER TABLE process_report ADD bpn_numbers TEXT NULL;

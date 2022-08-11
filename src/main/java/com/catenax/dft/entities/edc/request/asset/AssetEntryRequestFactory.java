@@ -31,7 +31,7 @@ public class AssetEntryRequestFactory {
     private static final String ASSET_PROP_DESCRIPTION = "...";
     private static final String ASSET_PROP_VERSION = "1.0.0";
     private static final String NAME = "Backend Data Service - AAS Server";
-    private static final String TYPE = "AzureStorage";
+    private static final String TYPE = "HttpData";
     @Value(value = "${dft.apiKeyHeader}")
     private String apiKeyHeader;
     @Value(value = "${dft.apiKey}")
@@ -69,7 +69,7 @@ public class AssetEntryRequestFactory {
         assetProperties.put("asset:prop:id", assetId);
         assetProperties.put("asset:prop:name", assetName);
         assetProperties.put("asset:prop:contenttype", ASSET_PROP_CONTENT_TYPE);
-        assetProperties.put("asset:prop:description", ASSET_PROP_DESCRIPTION);
+        assetProperties.put("asset:prop:description", assetName);
         assetProperties.put("asset:prop:version", ASSET_PROP_VERSION);
         return assetProperties;
     }

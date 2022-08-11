@@ -17,6 +17,7 @@
 
 package com.catenax.dft.usecases.csvhandler.aspectrelationship;
 
+import com.catenax.dft.entities.SubmodelFileRequest;
 import com.catenax.dft.entities.csv.RowData;
 import com.catenax.dft.entities.usecases.AspectRelationship;
 import com.catenax.dft.usecases.csvhandler.AbstractCsvHandlerUseCase;
@@ -38,10 +39,16 @@ import static com.catenax.dft.gateways.file.CsvGateway.SEPARATOR;
 public class MapToAspectRelationshipCsvHandlerUseCase
         extends AbstractCsvHandlerUseCase<RowData, AspectRelationship> {
 
+	private SubmodelFileRequest submodelFileRequest;
+	
     public MapToAspectRelationshipCsvHandlerUseCase(FetchCatenaXIdCsvHandlerUseCase nextUseCase) {
         super(nextUseCase);
     }
 
+    public void init(SubmodelFileRequest submodelFileRequest) {
+		this.submodelFileRequest = submodelFileRequest;
+	}
+    
     @Override
     @SneakyThrows
     protected AspectRelationship executeUseCase(RowData rowData, String processId) {
@@ -75,6 +82,8 @@ public class MapToAspectRelationshipCsvHandlerUseCase
             throw new CsvHandlerUseCaseException(rowData.position(), errorMessages.toString());
         }
 
+        aspectRelationShip.setBpnNumbers(submodelFileRequest.getBpnNumbers());
+        
         return aspectRelationShip;
     }
 

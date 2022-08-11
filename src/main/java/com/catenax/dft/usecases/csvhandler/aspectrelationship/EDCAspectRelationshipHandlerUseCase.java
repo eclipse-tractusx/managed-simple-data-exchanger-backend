@@ -70,7 +70,7 @@ public class EDCAspectRelationshipHandlerUseCase
             if (!edcGateway.assetExistsLookup(assetEntryRequest.getAsset().getProperties().get("asset:prop:id"))) {
                 edcGateway.createAsset(assetEntryRequest);
 
-                PolicyDefinitionRequest policyDefinitionRequest = policyFactory.getPolicy(shellId, subModelId);
+                PolicyDefinitionRequest policyDefinitionRequest = policyFactory.getPolicy(shellId, subModelId, input.getBpnNumbers());
                 edcGateway.createPolicyDefinition(policyDefinitionRequest);
 
                 ContractDefinitionRequest contractDefinitionRequest = contractFactory.getContractDefinitionRequest(

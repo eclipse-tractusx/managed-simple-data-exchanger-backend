@@ -23,6 +23,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.List;
+
 import javax.validation.constraints.NotBlank;
 
 @Data
@@ -36,6 +38,9 @@ public class Aspect {
     private int rowNumber;
     private String uuid;
     private String processId;
+    
+    private List<String> bpnNumbers;
+    private String typeOfAccess;
 
     @NotBlank(message = "part_instance_id cannot be empty")
     private String partInstanceId;

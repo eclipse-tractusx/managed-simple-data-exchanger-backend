@@ -17,13 +17,14 @@
 
 package com.catenax.dft.usecases.csvhandler.aspects;
 
-import com.catenax.dft.entities.aspect.AspectRequest;
-import com.catenax.dft.enums.CsvTypeEnum;
-import com.catenax.dft.usecases.csvhandler.aspects.MapFromAspectRequestUseCase;
-import com.catenax.dft.usecases.processreport.ProcessReportUseCase;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.catenax.dft.entities.SubmodelJsonRequest;
+import com.catenax.dft.entities.aspect.AspectRequest;
+import com.catenax.dft.enums.CsvTypeEnum;
+import com.catenax.dft.usecases.processreport.ProcessReportUseCase;
 
 @Service
 public class CreateAspectsUseCase {
@@ -35,13 +36,15 @@ public class CreateAspectsUseCase {
         this.processReportUseCase = processReportUseCase;
     }
 
-    public void createAspects(List<AspectRequest> aspects, String processId){
-        processReportUseCase.startBuildProcessReport(processId, CsvTypeEnum.ASPECT, aspects.size());
-
-        for(int i=0; i<aspects.size();i++){
-            AspectRequest aspect = aspects.get(i);
+    public void createAspects(SubmodelJsonRequest<AspectRequest> aspectInputs, String processId){
+        List<AspectRequest> rowData = aspectInputs.getRowData();
+		processReportUseCase.startBuildProcessReport(processId, CsvTypeEnum.ASPECT, rowData.size(), aspectInputs.getBpnNumbers(), aspectInputs.getTypeOfAccess());
+      
+		for(int i=0; i<rowData.size();i++){
+            AspectRequest aspect = rowData.get(i);
             aspect.setRowNumber(i);
             aspect.setProcessId(processId);
+            aspect.setBpnNumbers(aspectInputs.getBpnNumbers());
             useCase.run(aspect, processId);
         }
 

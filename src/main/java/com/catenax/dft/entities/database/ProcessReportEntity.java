@@ -22,6 +22,7 @@ import lombok.Data;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Table(name = "process_report")
 @Entity
@@ -46,4 +47,11 @@ public class ProcessReportEntity implements Serializable {
     private LocalDateTime startDate;
     @Column(name = "end_date")
     private LocalDateTime endDate;
+    
+    @Convert(converter = ListToStringConverter.class)
+    @Column(name = "bpn_numbers")
+    private List<String> bpnNumbers;
+
+    @Column(name = "type_of_access")
+    private String typeOfAccess;
 }

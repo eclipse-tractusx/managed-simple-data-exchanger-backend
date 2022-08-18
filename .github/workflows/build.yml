@@ -19,8 +19,6 @@ on:
   push:
     branches:
       - 'main'
-    tags:
-      - v1.*
 
 env:
   REGISTRY: ghcr.io

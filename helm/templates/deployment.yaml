@@ -35,7 +35,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: MANUFACTURERID
-              value: "catenaX"
+              value: "BPNL00000005PROV"
             - name: SPRING_DATASOURCE_URL
               valueFrom:
                 secretKeyRef:

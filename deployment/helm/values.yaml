@@ -13,7 +13,7 @@ image:
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
-
+portContainer: 8080
 serviceAccount:
   # Specifies whether a service account should be created
   create: true

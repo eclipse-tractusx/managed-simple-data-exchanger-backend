@@ -2,17 +2,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "helm.fullname" . }}
+  name: {{ include "dftbackend.fullname" . }}
   namespace: {{ .Release.Namespace | default "default" | quote }}
   labels:
-    {{- include "helm.labels" . | nindent 4 }}
+    {{- include "dftbackend.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "helm.selectorLabels" . | nindent 6 }}
+      {{- include "dftbackend.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -20,7 +20,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "helm.selectorLabels" . | nindent 8 }}
+        {{- include "dftbackend.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -33,9 +33,11 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+          - containerPort: {{ .Values.portContainer }}
           envFrom:
             - configMapRef:
-                name: {{ include "helm.fullname" . }}-configmap
+                name: {{ include "dftbackend.fullname" . }}-configmap
           volumeMounts:
             - name: configuration
               mountPath: /app/configuration.properties
@@ -43,7 +45,7 @@ spec:
       volumes:
         - name: configuration
           configMap:
-            name: {{ include "helm.fullname" . }}-configmap
+            name: {{ include "dftbackend.fullname" . }}-configmap
             items:
               - key: configuration.properties
                 path: configuration.properties

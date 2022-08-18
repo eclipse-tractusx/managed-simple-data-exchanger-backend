@@ -50,6 +50,3 @@
     ALTER COLUMN process_id TYPE TEXT,
     ALTER COLUMN csv_type   TYPE TEXT,
     ALTER COLUMN status     TYPE TEXT;
-	
-ALTER TABLE process_report ADD type_of_access varchar NULL;
-ALTER TABLE process_report ADD bpn_numbers TEXT NULL;

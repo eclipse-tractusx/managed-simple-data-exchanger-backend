@@ -58,9 +58,8 @@ jobs:
         uses: docker/metadata-action@v3
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tag-custom: 1.2.0
-          tag-semver: |
-            {{raw}}
+          tags: |
+           type=semver,pattern={{version}},value=v1.2.0
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v2

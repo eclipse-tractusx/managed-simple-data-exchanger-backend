@@ -56,6 +56,13 @@ jobs:
         uses: docker/metadata-action@v3
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          
+      - name: version for each merged version
+        id: taggerFinal
+        uses: anothrNick/github-tag-action@1.36.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WITH_V: true
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
@@ -64,7 +71,7 @@ jobs:
           file: ./build/Dockerfile
           push: true
           # build tag :main
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ steps.taggerFinal.outputs.tags }}
           # build tag :latest
           # tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          labels: ${{ steps.meta.outputs.labels }}
+          labels: ${{ steps.taggerFinal.outputs.labels }}

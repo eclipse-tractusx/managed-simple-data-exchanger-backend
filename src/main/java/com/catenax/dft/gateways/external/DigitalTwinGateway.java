@@ -16,6 +16,23 @@
 
 package com.catenax.dft.gateways.external;
 
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
+
 import com.catenax.dft.entities.digitaltwins.request.CreateSubModelRequest;
 import com.catenax.dft.entities.digitaltwins.request.ShellDescriptorRequest;
 import com.catenax.dft.entities.digitaltwins.request.ShellLookupRequest;
@@ -24,19 +41,9 @@ import com.catenax.dft.entities.digitaltwins.response.ShellLookupResponse;
 import com.catenax.dft.entities.digitaltwins.response.SubModelListResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
-import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 @Service
@@ -49,7 +56,6 @@ public class DigitalTwinGateway {
     private static final String GRANT_TYPE_TOKEN_QUERY_PARAMETER = "grant_type";
     private static final String CLIENT_CREDENTIALS_TOKEN_QUERY_PARAMETER_VALUE = "client_credentials";
     private static final String ACCESS_TOKEN = "access_token";
-    private static final String REGISTRY = "/registry";
 
     private String accessToken;
 
@@ -72,7 +78,7 @@ public class DigitalTwinGateway {
         Map<String, String> queryParameters = new HashMap<>();
         queryParameters.put(ASSET_IDS_QUERY_PARAMETER, request.toJsonString());
 
-        String url = digitalTwinsHost + REGISTRY + "/lookup/shells";
+        String url = digitalTwinsHost + "/lookup/shells";
         String urlTemplate = UriComponentsBuilder
                 .fromHttpUrl(url)
                 .queryParam(ASSET_IDS_QUERY_PARAMETER, "{assetIds}")
@@ -94,13 +100,40 @@ public class DigitalTwinGateway {
         }
         return responseBody;
     }
+    
+    public String deleteShell(String assetId) {
+
+        RestTemplate restTemplate = new RestTemplate();
+        String deleteResponse = "";
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(AUTHORIZATION, getBearerToken());
+        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(headers);
+
+        String url = digitalTwinsHost + "/lookup/shells/";
+        String urlTemplate = UriComponentsBuilder
+                .fromHttpUrl(url)
+                .path(assetId)
+                .encode()
+                .toUriString();
+
+        ResponseEntity<Void> response = restTemplate.exchange(
+                urlTemplate,
+                HttpMethod.DELETE,
+                entity,
+                Void.class);
+
+        if (response.getStatusCode() == HttpStatus.NO_CONTENT) {
+        	deleteResponse = "Asset identifier"+ assetId +"deleted successfully";
+        }
+        return deleteResponse;
+    }
 
     public ShellDescriptorResponse createShellDescriptor(ShellDescriptorRequest request) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.add(AUTHORIZATION, getBearerToken());
         HttpEntity<ShellDescriptorRequest> entity = new HttpEntity<>(request, headers);
-        String url = digitalTwinsHost + REGISTRY + "/registry/shell-descriptors";
+        String url = digitalTwinsHost + "/registry/shell-descriptors";
         ResponseEntity<ShellDescriptorResponse> response = restTemplate.postForEntity(url, entity, ShellDescriptorResponse.class);
 
         ShellDescriptorResponse responseBody;
@@ -117,7 +150,7 @@ public class DigitalTwinGateway {
         HttpHeaders headers = new HttpHeaders();
         headers.add(AUTHORIZATION, getBearerToken());
         HttpEntity<CreateSubModelRequest> entity = new HttpEntity<>(request, headers);
-        String url = digitalTwinsHost + REGISTRY + "/registry/shell-descriptors/" + shellId + "/submodel-descriptors";
+        String url = digitalTwinsHost + "/registry/shell-descriptors/" + shellId + "/submodel-descriptors";
         ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
 
         if (response.getStatusCode() != HttpStatus.CREATED) {
@@ -130,7 +163,7 @@ public class DigitalTwinGateway {
         HttpHeaders headers = new HttpHeaders();
         headers.add(AUTHORIZATION, getBearerToken());
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(headers);
-        String url = digitalTwinsHost + REGISTRY + "/registry/shell-descriptors/" + shellId + "/submodel-descriptors";
+        String url = digitalTwinsHost + "/registry/shell-descriptors/" + shellId + "/submodel-descriptors";
         ResponseEntity<SubModelListResponse> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,

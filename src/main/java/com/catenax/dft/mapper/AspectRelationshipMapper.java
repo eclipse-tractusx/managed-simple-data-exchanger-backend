@@ -17,14 +17,19 @@
 
 package com.catenax.dft.mapper;
 
-import com.catenax.dft.entities.aspectrelationship.*;
-import com.catenax.dft.entities.database.AspectRelationshipEntity;
-import com.catenax.dft.entities.usecases.AspectRelationship;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import com.catenax.dft.entities.aspectrelationship.AspectRelationshipRequest;
+import com.catenax.dft.entities.aspectrelationship.AspectRelationshipResponse;
+import com.catenax.dft.entities.aspectrelationship.ChildPart;
+import com.catenax.dft.entities.aspectrelationship.MeasurementUnit;
+import com.catenax.dft.entities.aspectrelationship.Quantity;
+import com.catenax.dft.entities.database.AspectRelationshipEntity;
+import com.catenax.dft.entities.usecases.AspectRelationship;
 
 @Mapper(componentModel = "spring")
 public abstract class AspectRelationshipMapper {

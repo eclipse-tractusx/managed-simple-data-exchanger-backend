@@ -17,8 +17,18 @@
 
 package com.catenax.dft.usecases.csvhandler.aspectrelationship;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
 import com.catenax.dft.entities.database.AspectEntity;
-import com.catenax.dft.entities.digitaltwins.common.*;
+import com.catenax.dft.entities.digitaltwins.common.Endpoint;
+import com.catenax.dft.entities.digitaltwins.common.GlobalAssetId;
+import com.catenax.dft.entities.digitaltwins.common.KeyValuePair;
+import com.catenax.dft.entities.digitaltwins.common.ProtocolInformation;
+import com.catenax.dft.entities.digitaltwins.common.SemanticId;
 import com.catenax.dft.entities.digitaltwins.request.CreateSubModelRequest;
 import com.catenax.dft.entities.digitaltwins.request.ShellDescriptorRequest;
 import com.catenax.dft.entities.digitaltwins.request.ShellLookupRequest;
@@ -33,15 +43,9 @@ import com.catenax.dft.mapper.AspectMapper;
 import com.catenax.dft.usecases.common.UUIdGenerator;
 import com.catenax.dft.usecases.csvhandler.AbstractCsvHandlerUseCase;
 import com.catenax.dft.usecases.csvhandler.exceptions.CsvHandlerUseCaseException;
+
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -53,7 +57,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase
     private static final String MANUFACTURER_ID = "ManufacturerID";
     private static final String HTTP = "HTTP";
     private static final String HTTPS = "HTTPS";
-    private static final String SEMANTIC_ID = " urn:bamm:com.catenax.assembly_part_relationship:1.0.0";
+    private static final String SEMANTIC_ID = "urn:bamm:io.catenax.assembly_part_relationship:1.1.0#AssemblyPartRelationship";
     private static final String ID_SHORT = "assemblyPartRelationship";
     private static final String ENDPOINT_PROTOCOL_VERSION = "1.0";
 
@@ -165,14 +169,14 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase
     private CreateSubModelRequest getCreateSubModelRequest(AspectRelationship aspectRelationShip) {
         ArrayList<String> value = new ArrayList<>();
         value.add(SEMANTIC_ID);
+        String identification = UUIdGenerator.getUrnUuid();
         SemanticId semanticId = new SemanticId(value);
-        String encodedId = URLEncoder.encode(aspectRelationShip.getParentUuid(), StandardCharsets.UTF_8.toString());
 
         List<Endpoint> endpoints = new ArrayList<>();
         endpoints.add(Endpoint.builder()
                 .endpointInterface(HTTP)
                 .protocolInformation(ProtocolInformation.builder()
-                        .endpointAddress(String.format(edcEndpoint, encodedId))
+                		.endpointAddress(String.format(String.format("%s%s/%s-%s%s", edcEndpoint.replace("data", ""), manufacturerId ,aspectRelationShip.getShellId(),identification,"/submodel?content=value&extent=WithBLOBValue")))
                         .endpointProtocol(HTTPS)
                         .endpointProtocolVersion(ENDPOINT_PROTOCOL_VERSION)
                         .build())
@@ -180,7 +184,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase
 
         return CreateSubModelRequest.builder()
                 .idShort(ID_SHORT)
-                .identification(UUIdGenerator.getUrnUuid())
+                .identification(identification)
                 .semanticId(semanticId)
                 .endpoints(endpoints)
                 .build();

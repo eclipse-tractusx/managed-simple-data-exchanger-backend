@@ -16,11 +16,12 @@
 
 package com.catenax.dft.entities.edc.request.contractdefinition;
 
-import com.catenax.dft.usecases.common.UUIdGenerator;
-import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.catenax.dft.usecases.common.UUIdGenerator;
 
 @Service
 public class ContractDefinitionRequestFactory {

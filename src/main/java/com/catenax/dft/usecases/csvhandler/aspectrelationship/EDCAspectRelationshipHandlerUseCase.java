@@ -16,6 +16,9 @@
 
 package com.catenax.dft.usecases.csvhandler.aspectrelationship;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
 import com.catenax.dft.entities.edc.request.asset.AssetEntryRequest;
 import com.catenax.dft.entities.edc.request.asset.AssetEntryRequestFactory;
 import com.catenax.dft.entities.edc.request.contractdefinition.ContractDefinitionRequest;
@@ -26,10 +29,9 @@ import com.catenax.dft.entities.usecases.AspectRelationship;
 import com.catenax.dft.gateways.external.EDCGateway;
 import com.catenax.dft.usecases.csvhandler.AbstractCsvHandlerUseCase;
 import com.catenax.dft.usecases.csvhandler.exceptions.CsvHandlerUseCaseException;
+
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service

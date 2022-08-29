@@ -18,20 +18,22 @@
 package com.catenax.dft.usecases.csvhandler;
 
 
+import java.util.List;
+import java.util.stream.Stream;
+
+import org.springframework.stereotype.Service;
+
 import com.catenax.dft.entities.SubmodelFileRequest;
 import com.catenax.dft.entities.csv.CsvContent;
 import com.catenax.dft.enums.CsvTypeEnum;
 import com.catenax.dft.exceptions.DftException;
 import com.catenax.dft.usecases.csvhandler.aspectrelationship.MapToAspectRelationshipCsvHandlerUseCase;
 import com.catenax.dft.usecases.csvhandler.aspects.MapToAspectCsvHandlerUseCase;
+import com.catenax.dft.usecases.csvhandler.batchs.MapToBatchCsvHandlerUseCase;
 import com.catenax.dft.usecases.processreport.ProcessReportUseCase;
+
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -49,7 +51,20 @@ public class CsvHandlerOrchestrator {
             "name_at_customer",
             "optional_identifier_key",
             "optional_identifier_value")
-            .collect(Collectors.toList());
+            .toList();
+    private static final List<String> BATCH_COLUMNS = Stream.of(
+            "UUID",
+            "batch_id",
+            "manufacturing_date",
+            "manufacturing_country",
+            "manufacturer_part_id",
+            "customer_part_id",
+            "classification",
+            "name_at_manufacturer",
+            "name_at_customer",
+            "optional_identifier_key",
+            "optional_identifier_value")
+            .toList();
     private static final List<String> ASPECT_RELATIONSHIP_COLUMNS = Stream.of(
             "parent_UUID",
             "parent_part_instance_id",
@@ -66,22 +81,29 @@ public class CsvHandlerOrchestrator {
             "measurement_unit_lexical_value",
             "datatype_URI",
             "assembled_on")
-            .collect(Collectors.toList());
+            .toList();
 
     private final MapToAspectCsvHandlerUseCase aspectStarterUseCase;
+    private final MapToBatchCsvHandlerUseCase batchStarterUseCase;
     private final MapToAspectRelationshipCsvHandlerUseCase aspectRelationshipStarterUseCase;
     private final ProcessReportUseCase processReportUseCase;
 
     public CsvHandlerOrchestrator(MapToAspectCsvHandlerUseCase aspectStarterUseCase,
+    							  MapToBatchCsvHandlerUseCase batchStarterUseCase,
                                   MapToAspectRelationshipCsvHandlerUseCase aspectRelationshipStarterUseCase,
                                   ProcessReportUseCase processReportUseCase) {
         this.aspectStarterUseCase = aspectStarterUseCase;
+        this.batchStarterUseCase = batchStarterUseCase;
         this.aspectRelationshipStarterUseCase = aspectRelationshipStarterUseCase;
         this.processReportUseCase = processReportUseCase;
     }
 
     public static int getAspectColumnSize(){
         return ASPECT_COLUMNS.size();
+    }
+    
+    public static int getBatchColumnSize(){
+        return BATCH_COLUMNS.size();
     }
 
     public static int getAspectRelationshipColumnSize(){
@@ -95,12 +117,21 @@ public class CsvHandlerOrchestrator {
             log.debug("I'm an ASPECT file. Unpacked and ready to be processed.");
             
             csvContent.getRows().parallelStream().forEach(input ->{
-            	
             	aspectStarterUseCase.init(submodelFileRequest);
             	aspectStarterUseCase.run(input, processId);
             	});
             
             processReportUseCase.finishBuildAspectProgressReport(processId);
+        }else if (BATCH_COLUMNS.equals(csvContent.getColumns())) {
+            processReportUseCase.startBuildProcessReport(processId, CsvTypeEnum.BATCH, csvContent.getRows().size(),submodelFileRequest.getBpnNumbers(),submodelFileRequest.getTypeOfAccess());
+            log.debug("I'm an BATCH file. Unpacked and ready to be processed.");
+            
+            csvContent.getRows().parallelStream().forEach(input -> {
+            	batchStarterUseCase.init(submodelFileRequest);
+            	batchStarterUseCase.run(input, processId);
+            });
+            
+            processReportUseCase.finishBuildBatchProgressReport(processId);
         } else if (ASPECT_RELATIONSHIP_COLUMNS.equals(csvContent.getColumns())) {
             processReportUseCase.startBuildProcessReport(processId, CsvTypeEnum.ASPECT_RELATIONSHIP, csvContent.getRows().size(),submodelFileRequest.getBpnNumbers(),submodelFileRequest.getTypeOfAccess());
             log.debug("I'm an ASPECT RELATIONSHIP file. Unpacked and ready to be processed.");

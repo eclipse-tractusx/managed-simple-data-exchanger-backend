@@ -16,9 +16,10 @@
 
 package com.catenax.dft.mapper;
 
+import org.mapstruct.Mapper;
+
 import com.catenax.dft.entities.database.ProcessReportEntity;
 import com.catenax.dft.entities.usecases.ProcessReport;
-import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface ProcessReportMapper {

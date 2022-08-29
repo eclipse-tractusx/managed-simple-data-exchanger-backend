@@ -16,26 +16,29 @@
  */
 package com.catenax.dft.usecases.csvhandler.aspects;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+
+import org.springframework.stereotype.Service;
+
 import com.catenax.dft.entities.aspect.AspectRequest;
 import com.catenax.dft.entities.usecases.Aspect;
 import com.catenax.dft.mapper.AspectMapper;
 import com.catenax.dft.usecases.csvhandler.AbstractCsvHandlerUseCase;
 import com.catenax.dft.usecases.csvhandler.exceptions.CsvHandlerUseCaseException;
-import lombok.SneakyThrows;
-import org.springframework.stereotype.Service;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import lombok.SneakyThrows;
 
 @Service
 public class MapFromAspectRequestUseCase extends AbstractCsvHandlerUseCase<AspectRequest, Aspect> {
     private final AspectMapper aspectMapper;
 
-    public MapFromAspectRequestUseCase(GenerateUuIdCsvHandlerUseCase nextUseCase, AspectMapper mapper) {
+    public MapFromAspectRequestUseCase(GenerateAspectUuIdCsvHandlerUseCase nextUseCase, AspectMapper mapper) {
         super(nextUseCase);
         this.aspectMapper=mapper;
     }

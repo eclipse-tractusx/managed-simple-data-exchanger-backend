@@ -17,13 +17,15 @@
 
 package com.catenax.dft.usecases.csvhandler;
 
-import com.catenax.dft.entities.database.FailureLogEntity;
-import com.catenax.dft.usecases.logs.FailureLogsUseCase;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.catenax.dft.entities.database.FailureLogEntity;
+import com.catenax.dft.usecases.logs.FailureLogsUseCase;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public abstract class AbstractCsvHandlerUseCase<I, O> implements CsvHandlerUseCase<I> {

@@ -17,24 +17,27 @@
 
 package com.catenax.dft.usecases.csvhandler.aspects;
 
+import static com.catenax.dft.gateways.file.CsvGateway.SEPARATOR;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+
+import org.springframework.stereotype.Service;
+
 import com.catenax.dft.entities.SubmodelFileRequest;
 import com.catenax.dft.entities.csv.RowData;
 import com.catenax.dft.entities.usecases.Aspect;
 import com.catenax.dft.usecases.csvhandler.AbstractCsvHandlerUseCase;
 import com.catenax.dft.usecases.csvhandler.CsvHandlerOrchestrator;
 import com.catenax.dft.usecases.csvhandler.exceptions.CsvHandlerUseCaseException;
+
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import static com.catenax.dft.gateways.file.CsvGateway.SEPARATOR;
 
 @Slf4j
 @Service
@@ -42,7 +45,7 @@ public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<RowD
 
 	private SubmodelFileRequest submodelFileRequest;
 	
-    public MapToAspectCsvHandlerUseCase(GenerateUuIdCsvHandlerUseCase nextUseCase) {
+    public MapToAspectCsvHandlerUseCase(GenerateAspectUuIdCsvHandlerUseCase nextUseCase) {
         super(nextUseCase);
     }
     

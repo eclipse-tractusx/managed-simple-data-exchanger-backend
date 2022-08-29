@@ -17,10 +17,11 @@
 
 package com.catenax.dft.gateways.database;
 
-import com.catenax.dft.entities.database.AspectRelationshipEntity;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
+import com.catenax.dft.entities.database.AspectRelationshipEntity;
 
 public interface AspectRelationshipRepository extends JpaRepository<AspectRelationshipEntity, String> {
 

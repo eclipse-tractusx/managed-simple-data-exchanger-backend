@@ -64,7 +64,7 @@ public class AspectController {
         this.createAspectRelationshipUseCase = createAspectRelationshipUseCase;
     }
 
-    @GetMapping(value="/{id}", produces = APPLICATION_JSON_VALUE)
+    @GetMapping(value="/public/{id}", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<AspectResponse> getAspect(@PathVariable("id") String uuid) {
         AspectResponse response = aspectsUseCase.execute(uuid);
 
@@ -74,7 +74,7 @@ public class AspectController {
         return ok().body(response);
     }
 
-    @GetMapping(value = "/{id}/relationship", produces = APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/public/{id}/relationship", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<AspectRelationshipResponse> getAspectRelationships(@PathVariable("id") String uuid) {
         AspectRelationshipResponse response = aspectsRelationshipUseCase.execute(uuid);
 

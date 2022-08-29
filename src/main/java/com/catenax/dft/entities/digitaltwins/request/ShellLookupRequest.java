@@ -17,13 +17,14 @@
 
 package com.catenax.dft.entities.digitaltwins.request;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.catenax.dft.entities.digitaltwins.common.LocalIdentifier;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.SneakyThrows;
 
-import java.util.ArrayList;
-import java.util.List;
+import lombok.SneakyThrows;
 
 public class ShellLookupRequest {
 

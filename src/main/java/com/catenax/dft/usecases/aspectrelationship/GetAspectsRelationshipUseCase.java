@@ -17,13 +17,14 @@
 
 package com.catenax.dft.usecases.aspectrelationship;
 
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import com.catenax.dft.entities.aspectrelationship.AspectRelationshipResponse;
 import com.catenax.dft.entities.database.AspectRelationshipEntity;
 import com.catenax.dft.gateways.database.AspectRelationshipRepository;
 import com.catenax.dft.mapper.AspectRelationshipMapper;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class GetAspectsRelationshipUseCase {

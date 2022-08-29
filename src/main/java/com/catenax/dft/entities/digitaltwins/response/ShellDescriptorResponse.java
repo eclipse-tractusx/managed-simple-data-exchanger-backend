@@ -17,14 +17,15 @@
 
 package com.catenax.dft.entities.digitaltwins.response;
 
+import java.util.List;
+
 import com.catenax.dft.entities.digitaltwins.common.Description;
 import com.catenax.dft.entities.digitaltwins.common.GlobalAssetId;
 import com.catenax.dft.entities.digitaltwins.common.KeyValuePair;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Data
 @AllArgsConstructor

@@ -16,11 +16,6 @@
 
 package com.catenax.dft.gateways.external;
 
-import com.catenax.dft.entities.edc.request.asset.AssetEntryRequest;
-import com.catenax.dft.entities.edc.request.contractdefinition.ContractDefinitionRequest;
-import com.catenax.dft.entities.edc.request.policies.PolicyDefinitionRequest;
-import com.catenax.dft.gateways.exceptions.EDCGatewayException;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -31,6 +26,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+
+import com.catenax.dft.entities.edc.request.asset.AssetEntryRequest;
+import com.catenax.dft.entities.edc.request.contractdefinition.ContractDefinitionRequest;
+import com.catenax.dft.entities.edc.request.policies.PolicyDefinitionRequest;
+import com.catenax.dft.gateways.exceptions.EDCGatewayException;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service

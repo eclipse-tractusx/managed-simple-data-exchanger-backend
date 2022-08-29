@@ -17,13 +17,15 @@
 
 package com.catenax.dft.usecases.csvhandler.aspectrelationship;
 
+import org.springframework.stereotype.Service;
+
 import com.catenax.dft.entities.database.AspectRelationshipEntity;
 import com.catenax.dft.entities.usecases.AspectRelationship;
 import com.catenax.dft.gateways.database.AspectRelationshipRepository;
 import com.catenax.dft.mapper.AspectRelationshipMapper;
 import com.catenax.dft.usecases.csvhandler.AbstractCsvHandlerUseCase;
+
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service

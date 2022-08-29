@@ -17,13 +17,13 @@
 
 package com.catenax.dft.entities.usecases;
 
-import lombok.Builder;
-import lombok.Data;
-
 import java.util.List;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
+
+import lombok.Builder;
+import lombok.Data;
 
 @Builder
 @Data

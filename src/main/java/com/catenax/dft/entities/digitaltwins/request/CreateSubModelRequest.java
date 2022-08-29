@@ -17,13 +17,18 @@
 
 package com.catenax.dft.entities.digitaltwins.request;
 
+import java.util.List;
+
 import com.catenax.dft.entities.digitaltwins.common.Description;
 import com.catenax.dft.entities.digitaltwins.common.Endpoint;
 import com.catenax.dft.entities.digitaltwins.common.SemanticId;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.*;
 
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 
 @Builder
 @NoArgsConstructor

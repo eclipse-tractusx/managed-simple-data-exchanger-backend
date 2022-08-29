@@ -16,10 +16,15 @@
 
 package com.catenax.dft.entities.edc.request.asset;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.*;
-
 import java.util.HashMap;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 
 @NoArgsConstructor
 @AllArgsConstructor

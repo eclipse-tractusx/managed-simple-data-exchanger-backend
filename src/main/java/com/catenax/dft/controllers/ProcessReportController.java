@@ -16,9 +16,10 @@
 
 package com.catenax.dft.controllers;
 
-import com.catenax.dft.entities.usecases.ProcessReport;
-import com.catenax.dft.entities.usecases.ProcessReportPageResponse;
-import com.catenax.dft.usecases.processreport.ProcessReportUseCase;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.ResponseEntity.notFound;
+import static org.springframework.http.ResponseEntity.ok;
+
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,9 +27,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.ResponseEntity.notFound;
-import static org.springframework.http.ResponseEntity.ok;
+import com.catenax.dft.entities.usecases.ProcessReport;
+import com.catenax.dft.entities.usecases.ProcessReportPageResponse;
+import com.catenax.dft.usecases.processreport.ProcessReportUseCase;
 
 @RestController
 @RequestMapping("processing-report")

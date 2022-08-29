@@ -16,11 +16,12 @@
 
 package com.catenax.dft.validators;
 
-import com.catenax.dft.enums.OptionalIdentifierKeyEnum;
+import java.util.stream.Stream;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import java.util.stream.Stream;
+
+import com.catenax.dft.enums.OptionalIdentifierKeyEnum;
 
 public class OptionalIdentifierKeyValidator implements ConstraintValidator<OptionalIdentifierKeyValidation, String> {
 

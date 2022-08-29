@@ -17,10 +17,11 @@
 
 package com.catenax.dft.usecases.aspects;
 
+import org.springframework.stereotype.Service;
+
 import com.catenax.dft.entities.aspect.AspectResponse;
 import com.catenax.dft.gateways.database.AspectRepository;
 import com.catenax.dft.mapper.AspectMapper;
-import org.springframework.stereotype.Service;
 
 @Service
 public class GetAspectsUseCase {

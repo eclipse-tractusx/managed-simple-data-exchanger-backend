@@ -30,7 +30,6 @@ import com.catenax.dft.entities.csv.CsvContent;
 import com.catenax.dft.gateways.file.CsvGateway;
 import com.catenax.dft.usecases.csvhandler.CsvHandlerOrchestrator;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;

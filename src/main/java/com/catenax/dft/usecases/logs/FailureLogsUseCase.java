@@ -16,10 +16,11 @@
 
 package com.catenax.dft.usecases.logs;
 
-import com.catenax.dft.entities.database.FailureLogEntity;
-import com.catenax.dft.gateways.database.FailureLogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.catenax.dft.entities.database.FailureLogEntity;
+import com.catenax.dft.gateways.database.FailureLogRepository;
 
 @Service
 public class FailureLogsUseCase {

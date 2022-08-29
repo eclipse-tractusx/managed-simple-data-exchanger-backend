@@ -46,7 +46,7 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
     private static final String MANUFACTURER_ID = "ManufacturerID";
     private static final String HTTP = "HTTP";
     private static final String HTTPS = "HTTPS";
-    private static final String SEMANTIC_ID = "urn:bamm:com.catenax.serial_part_typization:1.0.0";
+    private static final String SEMANTIC_ID = "urn:bamm:io.catenax.serial_part_typization:1.1.0#SerialPartTypization";
     private static final String ID_SHORT = "serialPartTypization";
     private static final String ENDPOINT_PROTOCOL_VERSION = "1.0";
     private static final String PREFIX = "urn:uuid:";
@@ -127,12 +127,13 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
         ArrayList<String> value = new ArrayList<>();
         value.add(SEMANTIC_ID);
         SemanticId semanticId = new SemanticId(value);
-
+        String identification = PREFIX + UUID.randomUUID();
+        
         List<Endpoint> endpoints = new ArrayList<>();
         endpoints.add(Endpoint.builder()
                 .endpointInterface(HTTP)
                 .protocolInformation(ProtocolInformation.builder()
-                        .endpointAddress(String.format("%s%s", edcEndpoint, aspect.getUuid()))
+                		.endpointAddress(String.format(String.format("%s%s/%s-%s%s", edcEndpoint.replace("data", ""), manufacturerId ,aspect.getShellId(),identification,"/submodel?content=value&extent=WithBLOBValue")))
                         .endpointProtocol(HTTPS)
                         .endpointProtocolVersion(ENDPOINT_PROTOCOL_VERSION)
                         .build())
@@ -140,7 +141,7 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
 
         return CreateSubModelRequest.builder()
                 .idShort(ID_SHORT)
-                .identification(PREFIX + UUID.randomUUID())
+                .identification(identification)
                 .semanticId(semanticId)
                 .endpoints(endpoints)
                 .build();

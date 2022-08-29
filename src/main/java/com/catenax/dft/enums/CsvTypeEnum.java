@@ -18,6 +18,7 @@ package com.catenax.dft.enums;
 
 public enum CsvTypeEnum {
     ASPECT,
+    BATCH,
     ASPECT_RELATIONSHIP,
     UNKNOWN
 }

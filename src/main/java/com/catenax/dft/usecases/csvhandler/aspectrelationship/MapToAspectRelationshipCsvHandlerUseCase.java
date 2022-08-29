@@ -17,23 +17,26 @@
 
 package com.catenax.dft.usecases.csvhandler.aspectrelationship;
 
+import static com.catenax.dft.gateways.file.CsvGateway.SEPARATOR;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+
+import org.springframework.stereotype.Service;
+
 import com.catenax.dft.entities.SubmodelFileRequest;
 import com.catenax.dft.entities.csv.RowData;
 import com.catenax.dft.entities.usecases.AspectRelationship;
 import com.catenax.dft.usecases.csvhandler.AbstractCsvHandlerUseCase;
 import com.catenax.dft.usecases.csvhandler.CsvHandlerOrchestrator;
 import com.catenax.dft.usecases.csvhandler.exceptions.CsvHandlerUseCaseException;
+
 import lombok.SneakyThrows;
-import org.springframework.stereotype.Service;
-
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import static com.catenax.dft.gateways.file.CsvGateway.SEPARATOR;
 
 @Service
 public class MapToAspectRelationshipCsvHandlerUseCase

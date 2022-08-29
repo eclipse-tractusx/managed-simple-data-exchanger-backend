@@ -16,14 +16,14 @@
 
 package com.catenax.dft.validators;
 
-import com.catenax.dft.entities.usecases.Aspect;
-
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class AspectValidator implements ConstraintValidator<AspectValidation, Aspect> {
+import com.catenax.dft.entities.usecases.Aspect;
+
+public class AspectValidator implements ConstraintValidator<SubmodelValidation, Aspect> {
     @Override
-    public void initialize(AspectValidation constraintAnnotation) {
+    public void initialize(SubmodelValidation constraintAnnotation) {
         ConstraintValidator.super.initialize(constraintAnnotation);
     }
 

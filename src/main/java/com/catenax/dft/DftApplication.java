@@ -17,11 +17,15 @@
 
 package com.catenax.dft;
 
-import com.catenax.dft.gateways.file.CsvGatewayProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import com.catenax.dft.gateways.file.CsvGatewayProperties;
 
 @SpringBootApplication(exclude = {UserDetailsServiceAutoConfiguration.class})
 @EnableConfigurationProperties({CsvGatewayProperties.class})
@@ -30,4 +34,16 @@ public class DftApplication {
     public static void main(String[] args) {
         SpringApplication.run(DftApplication.class, args);
     }
+    
+    
+    @Bean
+	public WebMvcConfigurer corsConfigurer() {
+		return new WebMvcConfigurer() {
+			@Override
+			public void addCorsMappings(CorsRegistry registry) {
+				registry.addMapping("/**").allowedMethods("GET", "POST", "PUT", "DELETE").allowedOrigins("*")
+						.allowedHeaders("*");
+			}
+		};
+	}
 }

@@ -17,20 +17,21 @@
 
 package com.catenax.dft.entities.usecases;
 
-import com.catenax.dft.validators.AspectValidation;
-import com.catenax.dft.validators.OptionalIdentifierKeyValidation;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-
 import java.util.List;
 
 import javax.validation.constraints.NotBlank;
 
+import com.catenax.dft.validators.SubmodelValidation;
+import com.catenax.dft.validators.OptionalIdentifierKeyValidation;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+
 @Data
 @Builder
 @AllArgsConstructor
-@AspectValidation
+@SubmodelValidation
 public class Aspect {
 
     private String shellId;

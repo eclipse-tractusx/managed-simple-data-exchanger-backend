@@ -17,17 +17,22 @@
 
 package com.catenax.dft.mapper;
 
-import com.catenax.dft.entities.aspect.*;
-import com.catenax.dft.entities.database.AspectEntity;
-import com.catenax.dft.entities.usecases.Aspect;
-import com.catenax.dft.enums.OptionalIdentifierKeyEnum;
+import java.util.ArrayList;
+import java.util.stream.Stream;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.util.ArrayList;
-import java.util.stream.Stream;
+import com.catenax.dft.entities.aspect.AspectRequest;
+import com.catenax.dft.entities.aspect.AspectResponse;
+import com.catenax.dft.entities.aspect.LocalIdentifier;
+import com.catenax.dft.entities.aspect.ManufacturingInformation;
+import com.catenax.dft.entities.aspect.PartTypeInformation;
+import com.catenax.dft.entities.database.AspectEntity;
+import com.catenax.dft.entities.usecases.Aspect;
+import com.catenax.dft.enums.OptionalIdentifierKeyEnum;
 
 @Mapper(componentModel = "spring")
 public abstract class AspectMapper {

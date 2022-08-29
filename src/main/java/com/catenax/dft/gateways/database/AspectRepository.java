@@ -17,9 +17,10 @@
 
 package com.catenax.dft.gateways.database;
 
+import org.springframework.data.repository.CrudRepository;
+
 import com.catenax.dft.entities.database.AspectEntity;
 import com.catenax.dft.enums.OptionalIdentifierKeyEnum;
-import org.springframework.data.repository.CrudRepository;
 
 public interface AspectRepository extends CrudRepository<AspectEntity, String> {
 

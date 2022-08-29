@@ -17,11 +17,12 @@
 
 package com.catenax.dft.configuration;
 
-import lombok.SneakyThrows;
-import org.apache.commons.codec.binary.Hex;
-
 import java.nio.ByteBuffer;
 import java.util.UUID;
+
+import org.apache.commons.codec.binary.Hex;
+
+import lombok.SneakyThrows;
 
 public final class UUIDUtil {
 

@@ -16,6 +16,16 @@
 
 package com.catenax.dft.usecases.processreport;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Component;
+
 import com.catenax.dft.entities.database.ProcessReportEntity;
 import com.catenax.dft.entities.usecases.ProcessReport;
 import com.catenax.dft.entities.usecases.ProcessReportPageResponse;
@@ -23,16 +33,8 @@ import com.catenax.dft.enums.CsvTypeEnum;
 import com.catenax.dft.enums.ProgressStatusEnum;
 import com.catenax.dft.gateways.database.ProcessReportRepository;
 import com.catenax.dft.mapper.ProcessReportMapper;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
@@ -59,6 +61,9 @@ public class ProcessReportUseCase {
 
     public void finishBuildAspectProgressReport(String processId) {
         repository.finalizeAspectProgressReport(processId, LocalDateTime.now(), ProgressStatusEnum.COMPLETED.toString());
+    }
+    public void finishBuildBatchProgressReport(String processId) {
+        repository.finalizeBatchProgressReport(processId, LocalDateTime.now(), ProgressStatusEnum.COMPLETED.toString());
     }
 
     public void finishBuildChildAspectProgressReport(String processId) {

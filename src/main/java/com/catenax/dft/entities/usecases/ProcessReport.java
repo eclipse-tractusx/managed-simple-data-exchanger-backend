@@ -16,15 +16,16 @@
 
 package com.catenax.dft.entities.usecases;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import com.catenax.dft.enums.CsvTypeEnum;
 import com.catenax.dft.enums.ProgressStatusEnum;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @Builder

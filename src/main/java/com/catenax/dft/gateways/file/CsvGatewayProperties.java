@@ -17,8 +17,9 @@
 
 package com.catenax.dft.gateways.file;
 
-import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import lombok.Data;
 
 @ConfigurationProperties(prefix = "file")
 @Data

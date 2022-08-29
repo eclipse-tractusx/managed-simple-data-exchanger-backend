@@ -16,17 +16,18 @@
 
 package com.catenax.dft.entities.edc.request.asset;
 
+import java.util.HashMap;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import java.util.HashMap;
 
 @Service
 public class AssetEntryRequestFactory {
 
     private static final String ASSET_PROP_CONTENT_TYPE = "application/json";
     private static final String ASSET_PROP_NAME_ASPECT = "Serialized Part - Submodel SerialPartTypization";
+    private static final String ASSET_PROP_NAME_BATCH = "Batches - Submodel Batch";
     private static final String ASSET_PROP_NAME_ASPECT_RELATIONSHIP = "Serialized Part - Submodel AssemblyPartRelationship";
     private static final String ASSET_PROP_DESCRIPTION = "...";
     private static final String ASSET_PROP_VERSION = "1.0.0";
@@ -46,6 +47,10 @@ public class AssetEntryRequestFactory {
     public AssetEntryRequest getAspectAssetRequest(String shellId, String subModelId, String uuid) {
         return buildAsset(shellId, subModelId, ASSET_PROP_NAME_ASPECT, uuid);
     }
+    
+    public AssetEntryRequest getBatchAssetRequest(String shellId, String subModelId, String uuid) {
+        return buildAsset(shellId, subModelId, ASSET_PROP_NAME_BATCH, uuid);
+    }
 
     private AssetEntryRequest buildAsset(String shellId, String subModelId, String assetName, String uuid) {
         String assetId = shellId + "-" + subModelId;
@@ -53,7 +58,7 @@ public class AssetEntryRequestFactory {
         HashMap<String, String> assetProperties = getAssetProperties(assetId, assetName);
         AssetRequest assetRequest = AssetRequest.builder().properties(assetProperties).build();
 
-        String uriString = assetName.equals(ASSET_PROP_NAME_ASPECT) ? getAssetPayloadUrl(uuid) : getAssetRelationshipPayloadUrl(uuid);
+        String uriString = subModelPayloadUrl(assetName, uuid);
 
         HashMap<String, String> dataAddressProperties = getDataAddressProperties(shellId, subModelId, uriString);
         DataAddressRequest dataAddressRequest = DataAddressRequest.builder().properties(dataAddressProperties).build();
@@ -64,7 +69,25 @@ public class AssetEntryRequestFactory {
                 .build();
     }
 
-    private HashMap<String, String> getAssetProperties(String assetId, String assetName) {
+    private String subModelPayloadUrl(String assetName, String uuid) {
+    	String urlString="";
+    	switch (assetName) {
+		case ASSET_PROP_NAME_ASPECT:
+			urlString = getAssetPayloadUrl(uuid);
+			break;
+		case ASSET_PROP_NAME_BATCH:
+			urlString = getBatchAssetPayloadUrl(uuid);
+			break;
+		case ASSET_PROP_NAME_ASPECT_RELATIONSHIP:
+			urlString = getAssetRelationshipPayloadUrl(uuid);
+			break;
+		 default:
+			break;
+		}
+		return urlString;
+	}
+
+	private HashMap<String, String> getAssetProperties(String assetId, String assetName) {
         HashMap<String, String> assetProperties = new HashMap<>();
         assetProperties.put("asset:prop:id", assetId);
         assetProperties.put("asset:prop:name", assetName);
@@ -87,7 +110,15 @@ public class AssetEntryRequestFactory {
     private String getAssetPayloadUrl(String uuid) {
         return UriComponentsBuilder
                 .fromHttpUrl(dftHostname)
-                .path("/api/aspect/")
+                .path("/api/aspect/public/")
+                .path(uuid)
+                .toUriString();
+    }
+    
+    private String getBatchAssetPayloadUrl(String uuid) {
+        return UriComponentsBuilder
+                .fromHttpUrl(dftHostname)
+                .path("/api/batch/public/")
                 .path(uuid)
                 .toUriString();
     }
@@ -95,7 +126,7 @@ public class AssetEntryRequestFactory {
     private String getAssetRelationshipPayloadUrl(String uuid) {
         return UriComponentsBuilder
                 .fromHttpUrl(dftHostname)
-                .path("/api/aspect/")
+                .path("/api/aspect/public/")
                 .path(uuid)
                 .path("/relationship")
                 .toUriString();

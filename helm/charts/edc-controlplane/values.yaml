@@ -267,6 +267,7 @@ configuration:
     edc.oauth.private.key.alias=dft-private-key
     # Azure vault related configuration
     edc.vault.clientid=2f0e6b4e-de1a-42bd-b30e-453d558d2dd4
+    edc.vault.clientsecret=
     edc.vault.tenantid=495463c3-0991-4659-9cc5-94b4a3f7b1d6
     edc.vault.name=cxtsi-dev010-vault
     edc.vault.clientsecret=DoKjRi5op~BnuIyXDbQdkgi12kKNsIUWMp 

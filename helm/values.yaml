@@ -42,6 +42,8 @@ ingress:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
     nginx.ingress.kubernetes.io/affinity: "cookie"
     nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "https://dft-api.int.demo.catena-x.net"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
   host: dft-api.int.demo.catena-x.net
 
 resources:

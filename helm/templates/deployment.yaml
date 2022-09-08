@@ -131,16 +131,16 @@ spec:
                 secretKeyRef:
                   name: dft-edc-secrets
                   key: edcconsapikey
-             - name: EDC_CONSUMER_DATAURI
-               valueFrom:
-                 secretKeyRef:
-                   name: dft-edc-secrets
-                   key: edcconsdatauri
-             - name: EDC_CONSUMER_APIKEYHEADER
-               valueFrom:
-                 secretKeyRef:
-                   name: dft-edc-secrets
-                   key: edcconsapiheader                
+            - name: EDC_CONSUMER_DATAURI
+              valueFrom:
+                secretKeyRef:
+                  name: dft-edc-secrets
+                  key: edcconsdatauri
+            - name: EDC_CONSUMER_APIKEYHEADER
+              valueFrom:
+                secretKeyRef:
+                  name: dft-edc-secrets
+                  key: edcconsapiheader                
           ports:
             - name: http
               containerPort: 8080

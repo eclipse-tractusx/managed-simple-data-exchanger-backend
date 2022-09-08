@@ -56,7 +56,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Versioning for each merge
-        id: taggerFinal
+        id: meta
         uses: anothrNick/github-tag-action@1.36.0
         with: 
           images: ghcr.io/productdft-backend
@@ -79,7 +79,7 @@ jobs:
           file: ./build/Dockerfile
           push: true
           # build tag :main
-          tags: ${{ steps.taggerFinal.outputs.tags }}
+          tags: ${{ steps.meta.outputs.tags }}
           # build tag :latest
           # tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          labels: ${{ steps.taggerFinal.outputs.labels }}
+          labels: ${{ steps.meta.outputs.labels }}

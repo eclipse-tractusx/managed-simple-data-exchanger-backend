@@ -58,15 +58,17 @@ jobs:
       - name: Versioning for each merge
         id: taggerFinal
         uses: anothrNick/github-tag-action@1.36.0
+        with: 
+          images: ghcr.io/productdft-backend
         env:
          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
          WITH_V: true
 
-      - name: Extract Metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v3
-        with:
-          images: ghcr.io/productdft-backend
+#      - name: Extract Metadata (tags, labels) for Docker
+#        id: meta
+#        uses: docker/metadata-action@v3
+#        with:
+#          images: ghcr.io/productdft-backend
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v2

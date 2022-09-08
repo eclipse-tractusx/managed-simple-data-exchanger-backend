@@ -40,7 +40,7 @@ jobs:
          fetch-depth: '0'
          
       - name: Versioning for each merge
-        id: metatag
+        id: buildcodemeta
         uses: anothrNick/github-tag-action@1.36.0
         env:
          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -64,17 +64,16 @@ jobs:
 
       - name: Extract Metadata (tags, labels) for Docker
         id: meta
-   #     uses: docker/metadata-action@v3
-        uses: anothrNick/github-tag-action@1.36.0
+        uses: docker/metadata-action@v3
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-           type=semver,pattern={{version}}
-        env:
-         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-         WITH_V: true
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+          flavor: |
+            latest=true
           
-
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
         with:

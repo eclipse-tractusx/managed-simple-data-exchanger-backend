@@ -39,6 +39,13 @@ jobs:
         with:
          fetch-depth: '1'
          
+      - name: Versioning for each merge
+        id: metatag
+        uses: anothrNick/github-tag-action@1.36.0
+        env:
+         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+         WITH_V: true
+         
       - name: Set up JDK 18
         uses: actions/setup-java@v3
         with:
@@ -54,23 +61,12 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-          
-      - name: Versioning for each merge
-        id: meta
-        uses: anothrNick/github-tag-action@1.36.0
-        with: 
-          images: ghcr.io/productdft-backend
-          tags: |
-           type=semver,pattern={{version}}
-        env:
-         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-         WITH_V: true
 
-#      - name: Extract Metadata (tags, labels) for Docker
-#        id: meta
-#        uses: docker/metadata-action@v3
-#        with:
-#          images: ghcr.io/productdft-backend
+      - name: Extract Metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: ghcr.io/productdft-backend
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v2

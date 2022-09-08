@@ -14,15 +14,15 @@ spec:
     - hosts:
        - {{ .Values.ingress.host }}
       secretName: {{ include "helm.fullname" . }}-tls
- rules:
-   - host: {{ .Values.ingress.host }}
-     http:
-       paths:
-         - path: /
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: /
             pathType: Prefix
             backend:
               service:
                 name: {{ include "helm.fullname" . }}
                 port:
-                 number: {{ .Values.service.port }}
+                  number: {{ .Values.service.port }}
 

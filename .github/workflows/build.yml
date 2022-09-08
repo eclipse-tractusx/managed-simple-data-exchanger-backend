@@ -37,7 +37,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-         fetch-depth: '1'
+         fetch-depth: '0'
          
       - name: Versioning for each merge
         id: metatag
@@ -64,9 +64,16 @@ jobs:
 
       - name: Extract Metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@v3
+   #     uses: docker/metadata-action@v3
+        uses: anothrNick/github-tag-action@1.36.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+           type=semver,pattern={{version}}
+        env:
+         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+         WITH_V: true
+          
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
@@ -75,7 +82,7 @@ jobs:
           file: ./build/Dockerfile
           push: true
           # build tag :main
-          tags: ${{ steps.metatag.outputs.tags }}
+          tags: ${{ steps.meta.outputs.tags }}
           # build tag :latest
           # tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          labels: ${{ steps.metatag.outputs.labels }}
+          labels: ${{ steps.meta.outputs.labels }}

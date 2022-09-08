@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import com.catenax.dft.entities.database.BatchEntity;
 import com.catenax.dft.entities.usecases.Batch;
 import com.catenax.dft.gateways.database.BatchRepository;
-import com.catenax.dft.mapper.AspectMapper;
 import com.catenax.dft.mapper.BatchMapper;
 import com.catenax.dft.usecases.csvhandler.AbstractCsvHandlerUseCase;
 

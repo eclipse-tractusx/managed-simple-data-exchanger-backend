@@ -21,6 +21,7 @@ import java.util.List;
 
 import javax.validation.constraints.NotBlank;
 
+import com.catenax.dft.entities.UsagePolicyRequest;
 import com.catenax.dft.validators.SubmodelValidation;
 import com.catenax.dft.validators.OptionalIdentifierKeyValidation;
 
@@ -42,6 +43,7 @@ public class Batch {
     
     private List<String> bpnNumbers;
     private String typeOfAccess;
+    private List<UsagePolicyRequest> usagePolicies;
 
     @NotBlank(message = "batch_id cannot be empty")
     private String batchId;

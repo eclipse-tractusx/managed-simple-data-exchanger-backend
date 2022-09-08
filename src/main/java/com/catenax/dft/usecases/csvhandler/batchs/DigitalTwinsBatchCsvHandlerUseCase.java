@@ -38,6 +38,7 @@ import com.catenax.dft.entities.digitaltwins.response.SubModelListResponse;
 import com.catenax.dft.entities.usecases.Batch;
 import com.catenax.dft.gateways.external.DigitalTwinGateway;
 import com.catenax.dft.usecases.csvhandler.AbstractCsvHandlerUseCase;
+import com.catenax.dft.usecases.csvhandler.exceptions.CsvHandlerDigitalTwinUseCaseException;
 import com.catenax.dft.usecases.csvhandler.exceptions.CsvHandlerUseCaseException;
 
 import lombok.SneakyThrows;
@@ -69,15 +70,15 @@ public class DigitalTwinsBatchCsvHandlerUseCase extends AbstractCsvHandlerUseCas
 
     @Override
     @SneakyThrows
-    protected Batch executeUseCase(Batch batch, String processId) {
-        try {
-            return doUseCase(batch);
-        } catch (Exception e) {
-            throw new CsvHandlerUseCaseException(batch.getRowNumber(), "DigitalTwins: " + e.getMessage());
-        }
-    }
+	protected Batch executeUseCase(Batch batch, String processId) {
+		try {
+			return doUseCase(batch);
+		} catch (Exception e) {
+			throw new CsvHandlerUseCaseException(batch.getRowNumber(), "DigitalTwins: " + e.getMessage());
+		}
+	}
 
-    private Batch doUseCase(Batch batch) throws CsvHandlerUseCaseException {
+    private Batch doUseCase(Batch batch) throws CsvHandlerDigitalTwinUseCaseException {
         ShellLookupRequest shellLookupRequest = getShellLookupRequest(batch);
         ShellLookupResponse shellIds = gateway.shellLookup(shellLookupRequest);
 
@@ -94,7 +95,7 @@ public class DigitalTwinsBatchCsvHandlerUseCase extends AbstractCsvHandlerUseCas
             shellId = shellIds.stream().findFirst().orElse(null);
             logDebug(String.format("Shell id '%s'", shellId));
         } else {
-            throw new CsvHandlerUseCaseException(batch.getRowNumber(), String.format("Multiple ids found on aspect %s", shellLookupRequest.toJsonString()));
+            throw new CsvHandlerDigitalTwinUseCaseException(String.format("Multiple ids found on aspect %s", shellLookupRequest.toJsonString()));
         }
 
         batch.setShellId(shellId);
@@ -108,9 +109,7 @@ public class DigitalTwinsBatchCsvHandlerUseCase extends AbstractCsvHandlerUseCas
             gateway.createSubModel(shellId, createSubModelRequest);
             batch.setSubModelId(createSubModelRequest.getIdentification());
         } else {
-            batch.setSubModelId(subModelResponse.stream()
-                    .filter(x -> x.getIdShort().equals(ID_SHORT)).findFirst()
-                    .get().getIdentification());
+        	throw new CsvHandlerDigitalTwinUseCaseException(String.format("Batch submodels already exist/found with Shell id %s for %s",shellId, shellLookupRequest.toJsonString()));
         }
 
         return batch;

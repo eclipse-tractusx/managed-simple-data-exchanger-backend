@@ -38,32 +38,36 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 public class CsvHandlerOrchestrator {
+	
+	private static final String MANUFACTURE_PART_ID="manufacturer_part_id";
+	private static final String OPTIONAL_IDENTIFIER_KEY="optional_identifier_key";
+	private static final String OPTIONAL_IDENTIFIER_VALUE="optional_identifier_value";
 
     private static final List<String> ASPECT_COLUMNS = Stream.of(
             "UUID",
             "part_instance_id",
             "manufacturing_date",
             "manufacturing_country",
-            "manufacturer_part_id",
+            MANUFACTURE_PART_ID,
             "customer_part_id",
             "classification",
             "name_at_manufacturer",
             "name_at_customer",
-            "optional_identifier_key",
-            "optional_identifier_value")
+            OPTIONAL_IDENTIFIER_KEY,
+            OPTIONAL_IDENTIFIER_VALUE)
             .toList();
     private static final List<String> BATCH_COLUMNS = Stream.of(
             "UUID",
             "batch_id",
             "manufacturing_date",
             "manufacturing_country",
-            "manufacturer_part_id",
+            MANUFACTURE_PART_ID,
             "customer_part_id",
             "classification",
             "name_at_manufacturer",
             "name_at_customer",
-            "optional_identifier_key",
-            "optional_identifier_value")
+            OPTIONAL_IDENTIFIER_KEY,
+            OPTIONAL_IDENTIFIER_VALUE)
             .toList();
     private static final List<String> ASPECT_RELATIONSHIP_COLUMNS = Stream.of(
             "parent_UUID",
@@ -73,9 +77,9 @@ public class CsvHandlerOrchestrator {
             "parent_optional_identifier_value",
             "UUID",
             "part_instance_id",
-            "manufacturer_part_id",
-            "optional_identifier_key",
-            "optional_identifier_value",
+            MANUFACTURE_PART_ID,
+            OPTIONAL_IDENTIFIER_KEY,
+            OPTIONAL_IDENTIFIER_VALUE,
             "lifecycle_context",
             "quantity_number",
             "measurement_unit_lexical_value",
@@ -113,7 +117,8 @@ public class CsvHandlerOrchestrator {
     @SneakyThrows
     public void execute(CsvContent csvContent, String processId, SubmodelFileRequest submodelFileRequest) {
         if (ASPECT_COLUMNS.equals(csvContent.getColumns())) {
-            processReportUseCase.startBuildProcessReport(processId, CsvTypeEnum.ASPECT, csvContent.getRows().size(),submodelFileRequest.getBpnNumbers(),submodelFileRequest.getTypeOfAccess());
+            processReportUseCase.startBuildProcessReport(processId, CsvTypeEnum.ASPECT, csvContent.getRows().size(),
+                    submodelFileRequest.getBpnNumbers(),submodelFileRequest.getTypeOfAccess(), submodelFileRequest.getUsagePolicies());
             log.debug("I'm an ASPECT file. Unpacked and ready to be processed.");
             
             csvContent.getRows().parallelStream().forEach(input ->{
@@ -123,7 +128,8 @@ public class CsvHandlerOrchestrator {
             
             processReportUseCase.finishBuildAspectProgressReport(processId);
         }else if (BATCH_COLUMNS.equals(csvContent.getColumns())) {
-            processReportUseCase.startBuildProcessReport(processId, CsvTypeEnum.BATCH, csvContent.getRows().size(),submodelFileRequest.getBpnNumbers(),submodelFileRequest.getTypeOfAccess());
+            processReportUseCase.startBuildProcessReport(processId, CsvTypeEnum.BATCH, csvContent.getRows().size(),
+                    submodelFileRequest.getBpnNumbers(),submodelFileRequest.getTypeOfAccess(), submodelFileRequest.getUsagePolicies());
             log.debug("I'm an BATCH file. Unpacked and ready to be processed.");
             
             csvContent.getRows().parallelStream().forEach(input -> {
@@ -133,7 +139,8 @@ public class CsvHandlerOrchestrator {
             
             processReportUseCase.finishBuildBatchProgressReport(processId);
         } else if (ASPECT_RELATIONSHIP_COLUMNS.equals(csvContent.getColumns())) {
-            processReportUseCase.startBuildProcessReport(processId, CsvTypeEnum.ASPECT_RELATIONSHIP, csvContent.getRows().size(),submodelFileRequest.getBpnNumbers(),submodelFileRequest.getTypeOfAccess());
+            processReportUseCase.startBuildProcessReport(processId, CsvTypeEnum.ASPECT_RELATIONSHIP, csvContent.getRows().size(),
+                    submodelFileRequest.getBpnNumbers(),submodelFileRequest.getTypeOfAccess(), submodelFileRequest.getUsagePolicies());
             log.debug("I'm an ASPECT RELATIONSHIP file. Unpacked and ready to be processed.");
             
             csvContent.getRows().parallelStream().forEach(input -> {

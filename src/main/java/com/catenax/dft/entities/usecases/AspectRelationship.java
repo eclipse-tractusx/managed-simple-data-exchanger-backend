@@ -22,6 +22,7 @@ import java.util.List;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 
+import com.catenax.dft.entities.UsagePolicyRequest;
 import lombok.Builder;
 import lombok.Data;
 
@@ -37,6 +38,7 @@ public class AspectRelationship {
     private String parentUuid;
     private List<String> bpnNumbers;
     private String typeOfAccess;
+    private List<UsagePolicyRequest> usagePolicies;
     
 
     @NotBlank(message = "parent_part_instance_id cannot be empty")

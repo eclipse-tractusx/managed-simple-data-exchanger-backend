@@ -18,7 +18,6 @@
 package com.catenax.dft.mapper;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -48,7 +47,7 @@ public abstract class AspectRelationshipMapper {
             return null;
         }
 
-        List<ChildPart> childParts = aspectRelationships.stream().map(this::toChildPart).collect(Collectors.toList());
+        List<ChildPart> childParts = aspectRelationships.stream().map(this::toChildPart).toList();
         return AspectRelationshipResponse.builder()
                 .catenaXId(parentCatenaXUuid)
                 .childParts(childParts)

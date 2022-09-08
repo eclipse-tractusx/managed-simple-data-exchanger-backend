@@ -17,7 +17,8 @@
 	<properties>
 		<java.version>18</java.version>
 		<log4j2.version>2.17.1</log4j2.version>
-		<keycloak.version>18.0.2</keycloak.version>
+		<keycloak.version>19.0.1</keycloak.version>
+		<spring-cloud.version>2021.0.3</spring-cloud.version>
 	</properties>
 
 	<dependencies>
@@ -122,8 +123,8 @@
 			<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-openfeign</artifactId>
 		</dependency>
 	</dependencies>
 	<dependencyManagement>
@@ -132,6 +133,13 @@
 				<groupId>org.keycloak.bom</groupId>
 				<artifactId>keycloak-adapter-bom</artifactId>
 				<version>${keycloak.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>${spring-cloud.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>

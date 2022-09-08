@@ -19,4 +19,6 @@ public class SubmodelFileRequest {
 	@JsonProperty(value = "bpn_numbers")
 	private List<String> bpnNumbers;
 
+	@JsonProperty(value = "usage_policy")
+	private List<UsagePolicyRequest> usagePolicies;
 }

@@ -18,7 +18,6 @@ package com.catenax.dft.usecases.csvhandler.aspects;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -63,6 +62,6 @@ public class MapFromAspectRequestUseCase extends AbstractCsvHandlerUseCase<Aspec
         return violations.stream()
                 .map(ConstraintViolation::getMessage)
                 .sorted()
-                .collect(Collectors.toList());
+                .toList();
     }
 }

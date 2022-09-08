@@ -19,6 +19,7 @@ package com.catenax.dft.entities.batch;
 
 import java.util.List;
 
+import com.catenax.dft.entities.UsagePolicyRequest;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -39,6 +40,8 @@ public class BatchRequest {
     private List<String> bpnNumbers;
     @JsonIgnore
     private String typeOfAccess;
+    @JsonIgnore
+    private List<UsagePolicyRequest> usagePolicies;
 
     @JsonProperty(value = "batch_id")
     private String batchId;

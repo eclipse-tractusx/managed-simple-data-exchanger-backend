@@ -43,4 +43,6 @@ public class ProcessReport {
     private LocalDateTime endDate;
     private List<String> bpnNumbers;
     private String typeOfAccess;
+    private String usagePolicies;
+
 }

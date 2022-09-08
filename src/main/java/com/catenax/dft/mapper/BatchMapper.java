@@ -25,7 +25,6 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.springframework.beans.factory.annotation.Value;
 
-import com.catenax.dft.entities.aspect.AspectResponse;
 import com.catenax.dft.entities.aspect.LocalIdentifier;
 import com.catenax.dft.entities.aspect.ManufacturingInformation;
 import com.catenax.dft.entities.aspect.PartTypeInformation;

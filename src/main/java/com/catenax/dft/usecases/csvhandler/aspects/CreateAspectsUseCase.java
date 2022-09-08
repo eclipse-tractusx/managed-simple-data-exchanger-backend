@@ -19,6 +19,7 @@ package com.catenax.dft.usecases.csvhandler.aspects;
 
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Service;
 
 import com.catenax.dft.entities.SubmodelJsonRequest;
@@ -36,15 +37,17 @@ public class CreateAspectsUseCase {
         this.processReportUseCase = processReportUseCase;
     }
 
-    public void createAspects(SubmodelJsonRequest<AspectRequest> aspectInputs, String processId){
+    public void createAspects(SubmodelJsonRequest<AspectRequest> aspectInputs, String processId) throws JsonProcessingException {
         List<AspectRequest> rowData = aspectInputs.getRowData();
-		processReportUseCase.startBuildProcessReport(processId, CsvTypeEnum.ASPECT, rowData.size(), aspectInputs.getBpnNumbers(), aspectInputs.getTypeOfAccess());
+		processReportUseCase.startBuildProcessReport(processId, CsvTypeEnum.ASPECT, rowData.size(),
+                aspectInputs.getBpnNumbers(), aspectInputs.getTypeOfAccess(), aspectInputs.getUsagePolicies());
       
 		for(int i=0; i<rowData.size();i++){
             AspectRequest aspect = rowData.get(i);
             aspect.setRowNumber(i);
             aspect.setProcessId(processId);
             aspect.setBpnNumbers(aspectInputs.getBpnNumbers());
+            aspect.setUsagePolicies(aspectInputs.getUsagePolicies());
             useCase.run(aspect, processId);
         }
 

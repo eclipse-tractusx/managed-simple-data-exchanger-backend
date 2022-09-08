@@ -19,6 +19,7 @@ package com.catenax.dft.entities.aspect;
 
 import java.util.List;
 
+import com.catenax.dft.entities.UsagePolicyRequest;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -36,6 +37,8 @@ public class AspectRequest {
     private List<String> bpnNumbers;
     @JsonIgnore
     private String typeOfAccess;
+    @JsonIgnore
+    private List<UsagePolicyRequest> usagePolicies;
 
     @JsonProperty(value = "part_instance_id")
     private String partInstanceId;

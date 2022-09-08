@@ -21,17 +21,18 @@ import static com.catenax.dft.gateways.file.CsvGateway.SEPARATOR;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.catenax.dft.entities.SubmodelFileRequest;
 import com.catenax.dft.entities.csv.RowData;
 import com.catenax.dft.entities.usecases.Aspect;
+import com.catenax.dft.usecases.common.DftDateValidator;
 import com.catenax.dft.usecases.csvhandler.AbstractCsvHandlerUseCase;
 import com.catenax.dft.usecases.csvhandler.CsvHandlerOrchestrator;
 import com.catenax.dft.usecases.csvhandler.exceptions.CsvHandlerUseCaseException;
@@ -44,6 +45,9 @@ import lombok.extern.slf4j.Slf4j;
 public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<RowData, Aspect> {
 
 	private SubmodelFileRequest submodelFileRequest;
+	
+	@Autowired
+	private DftDateValidator dftDateValidator;
 	
     public MapToAspectCsvHandlerUseCase(GenerateAspectUuIdCsvHandlerUseCase nextUseCase) {
         super(nextUseCase);
@@ -65,7 +69,7 @@ public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<RowD
                 .uuid(rowDataFields[0].trim())
                 .processId(processId)
                 .partInstanceId(rowDataFields[1].trim())
-                .manufacturingDate(rowDataFields[2].trim())
+                .manufacturingDate(dftDateValidator.getIfValidDateTime(rowDataFields[2].trim(),rowData.position()))
                 .manufacturingCountry(rowDataFields[3].trim().isBlank() ? null : rowDataFields[3])
                 .manufacturerPartId(rowDataFields[4].trim())
                 .customerPartId(rowDataFields[5].trim().isBlank() ? null : rowDataFields[5])
@@ -82,6 +86,8 @@ public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<RowD
         }
 
         aspect.setBpnNumbers(this.submodelFileRequest.getBpnNumbers());
+        aspect.setUsagePolicies(submodelFileRequest.getUsagePolicies());
+        aspect.setTypeOfAccess(submodelFileRequest.getTypeOfAccess());
         
         return aspect;
     }
@@ -94,7 +100,7 @@ public class MapToAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCase<RowD
         return violations.stream()
                 .map(ConstraintViolation::getMessage)
                 .sorted()
-                .collect(Collectors.toList());
+                .toList();
     }
 
 	

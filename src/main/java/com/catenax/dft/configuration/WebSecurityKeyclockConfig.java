@@ -29,16 +29,17 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 @Import(KeycloakSpringBootConfigResolver.class)
 public class WebSecurityKeyclockConfig extends KeycloakWebSecurityConfigurerAdapter {
 
-
+	private static final String[] PUBLIC_URL = {"/ping","/*/public/**"};
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		super.configure(http);
-	
-		http.csrf().disable().authorizeRequests().antMatchers("/ping").permitAll();
-		http.addFilterAfter(customAuthFilter(),BasicAuthenticationFilter.class).authorizeRequests().antMatchers("/public/*").authenticated();
+
+		http.csrf().disable().cors().and().authorizeRequests().antMatchers(PUBLIC_URL).permitAll()
+		.and().addFilterAfter(customAuthFilter(),BasicAuthenticationFilter.class).authorizeRequests().anyRequest().authenticated();
 
 	}
+	
 	@Bean
 	public ApiHeaderAuthFilter customAuthFilter(){
 	  return new ApiHeaderAuthFilter();

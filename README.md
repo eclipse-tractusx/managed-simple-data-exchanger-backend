@@ -12,7 +12,7 @@ The DFT project has two dependencies: Digital Twins and EDC.
 
 ##### For installation guide: see [InstallationGuide.md](InstallationGuide.md)
 
-### How to run
+#### How to run
 
 DFT is a SpringBoot Java software project managed by Maven.
 
@@ -33,7 +33,7 @@ You can find the standard credentials as well as further database configurations
 4. Start the application from your IDE.
 
 ## Database
-### Wildfly
+## Wildfly
 The scripts are in the folder: resources/flyway.<p>
 File naming: <b>Vx__script_name.sql</b>, where x is the version number. <p>
 When there is a need to change the last script, it is necessary to create a new script with the changes.
@@ -51,7 +51,7 @@ https://dft-api.int.demo.catena-x.net/
 To see how to deploy an application on 'Hotel Budapest': 
 [How to deploy](https://catenax-ng.github.io/docs/guides/how-to-deploy-an-application)
 
-## EDC
+### EDC
 GitHub repository with correct version of the Eclipse DataSpace Connector Project: [repository](https://github.com/catenax-ng/product-edc)
 
 ### Licenses

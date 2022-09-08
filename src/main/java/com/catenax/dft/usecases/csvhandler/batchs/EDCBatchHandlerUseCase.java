@@ -17,6 +17,10 @@
 package com.catenax.dft.usecases.csvhandler.batchs;
 
 
+import com.catenax.dft.entities.edc.request.policies.ConstraintRequest;
+import com.catenax.dft.entities.edc.request.policies.PolicyConstraintBuilderService;
+import com.catenax.dft.enums.UsagePolicyEnum;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +37,10 @@ import com.catenax.dft.usecases.csvhandler.exceptions.CsvHandlerUseCaseException
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
+
+import java.util.HashMap;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -44,18 +52,20 @@ public class EDCBatchHandlerUseCase extends AbstractCsvHandlerUseCase<Batch, Bat
     private final EDCGateway edcGateway;
     private final PolicyRequestFactory policyFactory;
     private final ContractDefinitionRequestFactory contractFactory;
+    private final PolicyConstraintBuilderService policyConstraintBuilderService;
 
 
     public EDCBatchHandlerUseCase(StoreBatchCsvHandlerUseCase nextUseCase,
-                                   EDCGateway edcGateway,
-                                   AssetEntryRequestFactory assetFactory,
-                                   PolicyRequestFactory policyFactory,
-                                   ContractDefinitionRequestFactory contractFactory) {
+                                  EDCGateway edcGateway,
+                                  AssetEntryRequestFactory assetFactory,
+                                  PolicyRequestFactory policyFactory,
+                                  ContractDefinitionRequestFactory contractFactory, PolicyConstraintBuilderService policyConstraintBuilderService) {
         super(nextUseCase);
         this.assetFactory = assetFactory;
         this.edcGateway = edcGateway;
         this.policyFactory = policyFactory;
         this.contractFactory = contractFactory;
+        this.policyConstraintBuilderService = policyConstraintBuilderService;
     }
 
     @SneakyThrows
@@ -64,6 +74,7 @@ public class EDCBatchHandlerUseCase extends AbstractCsvHandlerUseCase<Batch, Bat
         if (!isEdcEnable){
             return input;
         }
+        HashMap<String, String> extensibleProperties = new HashMap<>();
         String shellId = input.getShellId();
         String subModelId = input.getSubModelId();
 
@@ -73,7 +84,14 @@ public class EDCBatchHandlerUseCase extends AbstractCsvHandlerUseCase<Batch, Bat
             if (!edcGateway.assetExistsLookup(assetEntryRequest.getAsset().getProperties().get("asset:prop:id"))) {
                 edcGateway.createAsset(assetEntryRequest);
 
-                PolicyDefinitionRequest policyDefinitionRequest = policyFactory.getPolicy(shellId, subModelId, input.getBpnNumbers());
+                List<ConstraintRequest> constraints =  policyConstraintBuilderService.getPolicyConstraints(input.getBpnNumbers(), input.getUsagePolicies());
+
+                String customValue = getCustomValue(input);
+                if(StringUtils.isNotBlank(customValue))
+                {
+                    extensibleProperties.put("cx-terms-conditions", customValue);
+                }
+                PolicyDefinitionRequest policyDefinitionRequest = policyFactory.getPolicy(shellId, subModelId, constraints, extensibleProperties);
                 edcGateway.createPolicyDefinition(policyDefinitionRequest);
 
                 ContractDefinitionRequest contractDefinitionRequest = contractFactory.getContractDefinitionRequest(
@@ -86,5 +104,14 @@ public class EDCBatchHandlerUseCase extends AbstractCsvHandlerUseCase<Batch, Bat
         } catch (Exception e) {
             throw new CsvHandlerUseCaseException(input.getRowNumber(), "EDC: " + e.getMessage());
         }
+    }
+
+    private String getCustomValue(Batch input) {
+        if(!CollectionUtils.isEmpty(input.getUsagePolicies()))
+        {
+            return input.getUsagePolicies().stream().filter(policy -> policy.getType()
+                    .equals(UsagePolicyEnum.CUSTOM)).map(value -> value.getValue()).findFirst().orElse(null);
+        }
+        return null;
     }
 }

@@ -54,4 +54,7 @@ public class ProcessReportEntity implements Serializable {
 
     @Column(name = "type_of_access")
     private String typeOfAccess;
+
+    @Column(name = "usage_policy", columnDefinition = "jsonb")
+    private String usagePolicies;
 }

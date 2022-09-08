@@ -23,7 +23,9 @@ import static org.springframework.http.ResponseEntity.ok;
 
 import java.util.UUID;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,11 +36,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.catenax.dft.entities.SubmodelJsonRequest;
 import com.catenax.dft.entities.batch.BatchRequest;
 import com.catenax.dft.entities.batch.BatchResponse;
+import com.catenax.dft.exceptions.DftException;
 import com.catenax.dft.usecases.batchs.GetBatchsUseCase;
 import com.catenax.dft.usecases.csvhandler.batchs.CreateBatchsUseCase;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("batch")
+@Validated
 public class BatchController {
 
     private final GetBatchsUseCase batchsUseCase;
@@ -61,10 +67,16 @@ public class BatchController {
     }
 
     @PostMapping(consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> createAspectBatch(@RequestBody SubmodelJsonRequest<BatchRequest> batchAspects){
+    public ResponseEntity<String> createAspectBatch(@RequestBody @Valid SubmodelJsonRequest<BatchRequest> batchAspects){
         String processId = UUID.randomUUID().toString();
 
-        Runnable runnable = () -> createBatchsUseCase.createBatchs(batchAspects, processId);
+        Runnable runnable = () -> {
+            try {
+                createBatchsUseCase.createBatchs(batchAspects, processId);
+            } catch (JsonProcessingException e) {
+                throw new DftException(e);
+            }
+        };
         new Thread(runnable).start();
 
         return ok().body(processId);

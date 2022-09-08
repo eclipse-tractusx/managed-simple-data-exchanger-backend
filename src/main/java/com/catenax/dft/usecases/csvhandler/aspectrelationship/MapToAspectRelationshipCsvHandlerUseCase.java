@@ -21,17 +21,18 @@ import static com.catenax.dft.gateways.file.CsvGateway.SEPARATOR;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.catenax.dft.entities.SubmodelFileRequest;
 import com.catenax.dft.entities.csv.RowData;
 import com.catenax.dft.entities.usecases.AspectRelationship;
+import com.catenax.dft.usecases.common.DftDateValidator;
 import com.catenax.dft.usecases.csvhandler.AbstractCsvHandlerUseCase;
 import com.catenax.dft.usecases.csvhandler.CsvHandlerOrchestrator;
 import com.catenax.dft.usecases.csvhandler.exceptions.CsvHandlerUseCaseException;
@@ -43,6 +44,9 @@ public class MapToAspectRelationshipCsvHandlerUseCase
         extends AbstractCsvHandlerUseCase<RowData, AspectRelationship> {
 
 	private SubmodelFileRequest submodelFileRequest;
+	
+	@Autowired
+	private DftDateValidator dftDateValidator;
 	
     public MapToAspectRelationshipCsvHandlerUseCase(FetchCatenaXIdCsvHandlerUseCase nextUseCase) {
         super(nextUseCase);
@@ -77,7 +81,7 @@ public class MapToAspectRelationshipCsvHandlerUseCase
                 .quantityNumber(rowDataFields[11].trim())
                 .measurementUnitLexicalValue(rowDataFields[12].trim())
                 .dataTypeUri(rowDataFields[13].trim())
-                .assembledOn(rowDataFields[14].trim())
+                .assembledOn(dftDateValidator.getIfValidDateTimeForAssembly(rowDataFields[14].trim(),rowData.position()))
                 .build();
 
         List<String> errorMessages = validateAsset(aspectRelationShip);
@@ -86,6 +90,7 @@ public class MapToAspectRelationshipCsvHandlerUseCase
         }
 
         aspectRelationShip.setBpnNumbers(submodelFileRequest.getBpnNumbers());
+        aspectRelationShip.setUsagePolicies(submodelFileRequest.getUsagePolicies());
         
         return aspectRelationShip;
     }
@@ -98,6 +103,6 @@ public class MapToAspectRelationshipCsvHandlerUseCase
         return violations.stream()
                 .map(ConstraintViolation::getMessage)
                 .sorted()
-                .collect(Collectors.toList());
+                .toList();
     }
 }

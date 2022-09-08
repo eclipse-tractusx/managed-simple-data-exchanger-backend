@@ -19,7 +19,6 @@ package com.catenax.dft.validators;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import com.catenax.dft.entities.usecases.Aspect;
 import com.catenax.dft.entities.usecases.Batch;
 
 public class BatchValidator implements ConstraintValidator<SubmodelValidation, Batch> {

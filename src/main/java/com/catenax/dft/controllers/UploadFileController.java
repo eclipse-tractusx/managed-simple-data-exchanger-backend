@@ -19,9 +19,14 @@ package com.catenax.dft.controllers;
 
 import static org.springframework.http.ResponseEntity.ok;
 
+import com.catenax.dft.validators.UsagePolicyValidation;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,13 +39,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 
+import javax.validation.ConstraintViolationException;
+
 @Slf4j
 @RestController
+@Validated
 public class UploadFileController {
 
 	private final CsvGateway csvGateway;
 	private final CsvHandlerOrchestrator csvHandlerOrchestrator;
-	
+
 	private ObjectMapper objectMapper = new ObjectMapper();
 	
 
@@ -51,7 +59,7 @@ public class UploadFileController {
 
 	@PostMapping(value = "/upload")
 	public ResponseEntity<String> fileUpload(@RequestParam("file") MultipartFile file,
-			@RequestParam("meta_data") String metaData) throws JsonProcessingException  {
+			@UsagePolicyValidation @RequestParam("meta_data") String metaData) throws JsonProcessingException  {
 		String processId = csvGateway.storeFile(file);
 
 		SubmodelFileRequest submodelFileRequest = objectMapper.readValue(metaData, SubmodelFileRequest.class);
@@ -64,5 +72,11 @@ public class UploadFileController {
 		new Thread(runnable).start();
 
 		return ok().body(processId);
+	}
+
+	@ExceptionHandler(ConstraintViolationException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	String handleConstraintViolationException(ConstraintViolationException e) {
+		return "Usage Policy Validation Failed";
 	}
 }

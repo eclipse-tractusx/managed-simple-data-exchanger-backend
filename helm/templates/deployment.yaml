@@ -35,7 +35,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: MANUFACTURERID
-              value: "BPNL00000005PROV"
+              value: "catenaX"
             - name: SPRING_DATASOURCE_URL
               valueFrom:
                 secretKeyRef:
@@ -71,8 +71,6 @@ spec:
                 secretKeyRef:
                   name: dtf-digitaltwins-secrets
                   key: digitalTwinAuthorizationClientSecret
-            - name: EDC_ENABLED
-              value: 'true'
             - name: EDC_HOSTNAME
               valueFrom:
                 secretKeyRef:

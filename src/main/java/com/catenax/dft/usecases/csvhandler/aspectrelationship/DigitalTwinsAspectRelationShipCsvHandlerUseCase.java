@@ -42,6 +42,7 @@ import com.catenax.dft.gateways.external.DigitalTwinGateway;
 import com.catenax.dft.mapper.AspectMapper;
 import com.catenax.dft.usecases.common.UUIdGenerator;
 import com.catenax.dft.usecases.csvhandler.AbstractCsvHandlerUseCase;
+import com.catenax.dft.usecases.csvhandler.exceptions.CsvHandlerDigitalTwinUseCaseException;
 import com.catenax.dft.usecases.csvhandler.exceptions.CsvHandlerUseCaseException;
 
 import lombok.SneakyThrows;
@@ -82,15 +83,15 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase
 
     @Override
     @SneakyThrows
-    protected AspectRelationship executeUseCase(AspectRelationship aspectRelationShip, String processId) {
-        try {
-            return doUseCase(aspectRelationShip);
-        } catch (Exception e) {
-            throw new CsvHandlerUseCaseException(aspectRelationShip.getRowNumber(), "DigitalTwins: " + e.getMessage());
-        }
-    }
+	protected AspectRelationship executeUseCase(AspectRelationship aspectRelationShip, String processId) {
+		try {
+			return doUseCase(aspectRelationShip);
+		} catch (Exception e) {
+			throw new CsvHandlerUseCaseException(aspectRelationShip.getRowNumber(), "DigitalTwins: " + e.getMessage());
+		}
+	}
 
-    private AspectRelationship doUseCase(AspectRelationship aspectRelationShip) throws CsvHandlerUseCaseException {
+    private AspectRelationship doUseCase(AspectRelationship aspectRelationShip) throws CsvHandlerUseCaseException, CsvHandlerDigitalTwinUseCaseException {
         ShellLookupRequest shellLookupRequest = getShellLookupRequest(aspectRelationShip);
         ShellLookupResponse shellIds = gateway.shellLookup(shellLookupRequest);
 
@@ -103,7 +104,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase
             shellId = shellIds.stream().findFirst().orElse(null);
             logDebug(String.format("Shell id '%s'", shellId));
         } else {
-            throw new CsvHandlerUseCaseException(aspectRelationShip.getRowNumber(), String.format("Multiple id's found on childAspect %s", shellLookupRequest.toJsonString()));
+            throw new CsvHandlerDigitalTwinUseCaseException(String.format("Multiple id's found on childAspect %s", shellLookupRequest.toJsonString()));
         }
 
         aspectRelationShip.setShellId(shellId);
@@ -117,9 +118,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase
             gateway.createSubModel(shellId, createSubModelRequest);
             aspectRelationShip.setSubModelId(createSubModelRequest.getIdentification());
         } else {
-            aspectRelationShip.setSubModelId(subModelResponse.stream()
-                    .filter(x -> x.getIdShort().equals(ID_SHORT)).findFirst()
-                    .get().getIdentification());
+        	throw new CsvHandlerDigitalTwinUseCaseException(String.format("AssemblyPartRelationship submodels already exist/found with Shell id %s for %s",shellId, shellLookupRequest.toJsonString()));
         }
         return aspectRelationShip;
     }

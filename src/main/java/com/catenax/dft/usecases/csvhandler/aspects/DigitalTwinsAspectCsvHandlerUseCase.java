@@ -27,6 +27,7 @@ import com.catenax.dft.entities.digitaltwins.response.SubModelListResponse;
 import com.catenax.dft.entities.usecases.Aspect;
 import com.catenax.dft.gateways.external.DigitalTwinGateway;
 import com.catenax.dft.usecases.csvhandler.AbstractCsvHandlerUseCase;
+import com.catenax.dft.usecases.csvhandler.exceptions.CsvHandlerDigitalTwinUseCaseException;
 import com.catenax.dft.usecases.csvhandler.exceptions.CsvHandlerUseCaseException;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -65,15 +66,15 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
 
     @Override
     @SneakyThrows
-    protected Aspect executeUseCase(Aspect aspect, String processId) {
-        try {
-            return doUseCase(aspect);
-        } catch (Exception e) {
-            throw new CsvHandlerUseCaseException(aspect.getRowNumber(), "DigitalTwins: " + e.getMessage());
-        }
-    }
+	protected Aspect executeUseCase(Aspect aspect, String processId) {
+		try {
+			return doUseCase(aspect);
+		} catch (Exception e) {
+			throw new CsvHandlerUseCaseException(aspect.getRowNumber(), "DigitalTwins: " + e.getMessage());
+		}
+	}
 
-    private Aspect doUseCase(Aspect aspect) throws CsvHandlerUseCaseException {
+    private Aspect doUseCase(Aspect aspect) throws CsvHandlerDigitalTwinUseCaseException {
         ShellLookupRequest shellLookupRequest = getShellLookupRequest(aspect);
         ShellLookupResponse shellIds = gateway.shellLookup(shellLookupRequest);
 
@@ -90,7 +91,7 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
             shellId = shellIds.stream().findFirst().orElse(null);
             logDebug(String.format("Shell id '%s'", shellId));
         } else {
-            throw new CsvHandlerUseCaseException(aspect.getRowNumber(), String.format("Multiple ids found on aspect %s", shellLookupRequest.toJsonString()));
+        	 throw new CsvHandlerDigitalTwinUseCaseException(String.format("Multiple ids found on aspect %s", shellLookupRequest.toJsonString()));
         }
 
         aspect.setShellId(shellId);
@@ -103,10 +104,8 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends AbstractCsvHandlerUseCa
             CreateSubModelRequest createSubModelRequest = getCreateSubModelRequest(aspect);
             gateway.createSubModel(shellId, createSubModelRequest);
             aspect.setSubModelId(createSubModelRequest.getIdentification());
-        } else {
-            aspect.setSubModelId(subModelResponse.stream()
-                    .filter(x -> x.getIdShort().equals(ID_SHORT)).findFirst()
-                    .get().getIdentification());
+        } else {	
+        	throw new CsvHandlerDigitalTwinUseCaseException(String.format("serialPartTypization submodels already exist/found with Shell id %s for %s",shellId, shellLookupRequest.toJsonString()));
         }
 
         return aspect;

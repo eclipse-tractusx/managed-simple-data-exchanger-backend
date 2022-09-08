@@ -26,11 +26,13 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.catenax.dft.entities.SubmodelFileRequest;
 import com.catenax.dft.entities.csv.RowData;
 import com.catenax.dft.entities.usecases.Batch;
+import com.catenax.dft.usecases.common.DftDateValidator;
 import com.catenax.dft.usecases.csvhandler.AbstractCsvHandlerUseCase;
 import com.catenax.dft.usecases.csvhandler.CsvHandlerOrchestrator;
 import com.catenax.dft.usecases.csvhandler.exceptions.CsvHandlerUseCaseException;
@@ -41,6 +43,9 @@ import lombok.SneakyThrows;
 public class MapToBatchCsvHandlerUseCase extends AbstractCsvHandlerUseCase<RowData, Batch> {
 
 	private SubmodelFileRequest submodelFileRequest;
+	
+	@Autowired
+	private DftDateValidator dftDateValidator;
 	
     public MapToBatchCsvHandlerUseCase(GenerateBatchUuIdCsvHandlerUseCase nextUseCase) {
         super(nextUseCase);
@@ -62,7 +67,7 @@ public class MapToBatchCsvHandlerUseCase extends AbstractCsvHandlerUseCase<RowDa
                 .uuid(rowDataFields[0].trim())
                 .processId(processId)
                 .batchId(rowDataFields[1].trim())
-                .manufacturingDate(rowDataFields[2].trim())
+                .manufacturingDate(dftDateValidator.getIfValidDateTime(rowDataFields[2].trim(),rowData.position()))
                 .manufacturingCountry(rowDataFields[3].trim().isBlank() ? null : rowDataFields[3])
                 .manufacturerPartId(rowDataFields[4].trim())
                 .customerPartId(rowDataFields[5].trim().isBlank() ? null : rowDataFields[5])
@@ -79,6 +84,7 @@ public class MapToBatchCsvHandlerUseCase extends AbstractCsvHandlerUseCase<RowDa
         }
 
         batch.setBpnNumbers(this.submodelFileRequest.getBpnNumbers());
+        batch.setUsagePolicies(submodelFileRequest.getUsagePolicies());
         
         return batch;
     }

@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import com.catenax.dft.entities.UsagePolicyRequest;
+import com.catenax.dft.enums.PolicyAccessEnum;
+import com.catenax.dft.enums.UsagePolicyEnum;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -77,6 +80,10 @@ class BatchControllerTest {
 		
 		String typeOfAccess = "restricted";
 		List<String> bpnNumber = Stream.of("BPNL00000005CONS","BPNL00000005PROV").toList();
+		List<UsagePolicyRequest> list = new ArrayList<>();
+		UsagePolicyRequest usagePolicyRequest = UsagePolicyRequest.builder()
+				.type(UsagePolicyEnum.ROLE).typeOfAccess(PolicyAccessEnum.RESTRICTED).value("ADMIN").build();
+		list.add(usagePolicyRequest);
 		List<BatchRequest> rowData = new ArrayList<>();
 		BatchRequest batch = BatchRequest.builder()
 				.uuid("urn:uuid:580d3adf-1981-2022-a214-13d6ccmp9889")
@@ -93,7 +100,7 @@ class BatchControllerTest {
 				.build();
 		rowData.add(batch);
 				
-	return  new SubmodelJsonRequest<BatchRequest>(rowData, typeOfAccess, bpnNumber);
+	return  new SubmodelJsonRequest<BatchRequest>(rowData, typeOfAccess, bpnNumber, list);
 	}
 
 	private BatchResponse getBatchResponseObject() {

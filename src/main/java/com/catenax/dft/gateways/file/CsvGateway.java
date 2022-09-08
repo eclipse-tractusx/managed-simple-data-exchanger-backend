@@ -108,7 +108,7 @@ public class CsvGateway {
             String row = scanner.nextLine();
 
             if (numberOfRows == 0) {
-                fileColumns = Arrays.stream(row.split(SEPARATOR)).collect(Collectors.toList());
+                fileColumns = Arrays.stream(row.split(SEPARATOR)).toList();
                 csvContent.setColumns(fileColumns);
 
             } else {

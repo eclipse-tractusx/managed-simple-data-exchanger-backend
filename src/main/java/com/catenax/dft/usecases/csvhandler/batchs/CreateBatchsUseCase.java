@@ -19,10 +19,10 @@ package com.catenax.dft.usecases.csvhandler.batchs;
 
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Service;
 
 import com.catenax.dft.entities.SubmodelJsonRequest;
-import com.catenax.dft.entities.aspect.AspectRequest;
 import com.catenax.dft.entities.batch.BatchRequest;
 import com.catenax.dft.enums.CsvTypeEnum;
 import com.catenax.dft.usecases.processreport.ProcessReportUseCase;
@@ -37,15 +37,17 @@ public class CreateBatchsUseCase {
         this.processReportUseCase = processReportUseCase;
     }
 
-    public void createBatchs(SubmodelJsonRequest<BatchRequest> batchInputs, String processId){
+    public void createBatchs(SubmodelJsonRequest<BatchRequest> batchInputs, String processId) throws JsonProcessingException {
         List<BatchRequest> rowData = batchInputs.getRowData();
-		processReportUseCase.startBuildProcessReport(processId, CsvTypeEnum.BATCH, rowData.size(), batchInputs.getBpnNumbers(), batchInputs.getTypeOfAccess());
+		processReportUseCase.startBuildProcessReport(processId, CsvTypeEnum.BATCH, rowData.size(),
+                batchInputs.getBpnNumbers(), batchInputs.getTypeOfAccess(), batchInputs.getUsagePolicies());
       
 		for(int i=0; i<rowData.size();i++){
             BatchRequest batch = rowData.get(i);
             batch.setRowNumber(i);
             batch.setProcessId(processId);
             batch.setBpnNumbers(batchInputs.getBpnNumbers());
+            batch.setUsagePolicies(batchInputs.getUsagePolicies());
             useCase.run(batch, processId);
         }
 

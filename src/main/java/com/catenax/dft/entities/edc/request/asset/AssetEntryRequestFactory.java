@@ -16,8 +16,11 @@
 
 package com.catenax.dft.entities.edc.request.asset;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 
+import com.catenax.dft.mapper.EDCAssetConstant;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -29,16 +32,20 @@ public class AssetEntryRequestFactory {
     private static final String ASSET_PROP_NAME_ASPECT = "Serialized Part - Submodel SerialPartTypization";
     private static final String ASSET_PROP_NAME_BATCH = "Batches - Submodel Batch";
     private static final String ASSET_PROP_NAME_ASPECT_RELATIONSHIP = "Serialized Part - Submodel AssemblyPartRelationship";
-    private static final String ASSET_PROP_DESCRIPTION = "...";
     private static final String ASSET_PROP_VERSION = "1.0.0";
     private static final String NAME = "Backend Data Service - AAS Server";
     private static final String TYPE = "HttpData";
+    private static final String DATE_FORMATTER = "dd/MM/yyyy HH:mm:ss";
     @Value(value = "${dft.apiKeyHeader}")
     private String apiKeyHeader;
     @Value(value = "${dft.apiKey}")
     private String apiKey;
     @Value(value = "${dft.hostname}")
     private String dftHostname;
+    @Value(value = "${manufacturerId}")
+    private String manufacturerId;
+    @Value(value = "${edc.hostname}")
+    private String edcEndpoint;
 
     public AssetEntryRequest getAspectRelationshipAssetRequest(String shellId, String subModelId, String parentUuid) {
         return buildAsset(shellId, subModelId, ASSET_PROP_NAME_ASPECT_RELATIONSHIP, parentUuid);
@@ -89,11 +96,16 @@ public class AssetEntryRequestFactory {
 
 	private HashMap<String, String> getAssetProperties(String assetId, String assetName) {
         HashMap<String, String> assetProperties = new HashMap<>();
-        assetProperties.put("asset:prop:id", assetId);
-        assetProperties.put("asset:prop:name", assetName);
-        assetProperties.put("asset:prop:contenttype", ASSET_PROP_CONTENT_TYPE);
-        assetProperties.put("asset:prop:description", assetName);
-        assetProperties.put("asset:prop:version", ASSET_PROP_VERSION);
+        LocalDateTime d = LocalDateTime.now();
+        String date = d.format(DateTimeFormatter.ofPattern(DATE_FORMATTER));
+        assetProperties.put(EDCAssetConstant.ASSET_PROP_ID, assetId);
+        assetProperties.put(EDCAssetConstant.ASSET_PROP_NAME, assetName);
+        assetProperties.put(EDCAssetConstant.ASSET_PROP_CONTENTTYPE, ASSET_PROP_CONTENT_TYPE);
+        assetProperties.put(EDCAssetConstant.ASSET_PROP_DESCRIPTION, assetName);
+        assetProperties.put(EDCAssetConstant.ASSET_PROP_VERSION, ASSET_PROP_VERSION);
+        assetProperties.put(EDCAssetConstant.ASSET_PROP_PUBLISHER, manufacturerId+":"+edcEndpoint);
+        assetProperties.put(EDCAssetConstant.ASSET_PROP_CREATED, date);
+        assetProperties.put(EDCAssetConstant.ASSET_PROP_MODIFIED, date);
         return assetProperties;
     }
 

@@ -32,9 +32,7 @@ public class FailureLogsUseCase {
     private FailureLogRepository repository;
 
     public void saveLog(FailureLogEntity entity) {
-    	log.error("Error in process: {}, {}", entity.getProcessId(), entity.getLog());
+    	log.error("Error in process {}, {}", entity.getProcessId(), entity.getLog());
         repository.save(entity);
     }
-
 }
-

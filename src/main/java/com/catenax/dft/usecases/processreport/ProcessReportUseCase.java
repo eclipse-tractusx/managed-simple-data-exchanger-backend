@@ -19,8 +19,10 @@ package com.catenax.dft.usecases.processreport;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
+import com.catenax.dft.entities.UsagePolicyRequest;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -47,7 +49,11 @@ public class ProcessReportUseCase {
         this.mapper = mapper;
     }
 
-    public void startBuildProcessReport(String processId, CsvTypeEnum type, int size,List<String> bpnNumbers, String typeOfAccess) {
+    public void startBuildProcessReport(String processId, CsvTypeEnum type, int size, List<String> bpnNumbers,
+                                        String typeOfAccess, List<UsagePolicyRequest> usagePolicies) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        String usageList = objectMapper.writeValueAsString(usagePolicies);
         saveProcessReport(ProcessReport.builder()
                 .processId(processId)
                 .csvType(type)
@@ -56,6 +62,7 @@ public class ProcessReportUseCase {
                 .startDate(LocalDateTime.now())
                 .bpnNumbers(bpnNumbers)
                 .typeOfAccess(typeOfAccess)
+                .usagePolicies(usageList)
                 .build());
     }
 
@@ -88,7 +95,7 @@ public class ProcessReportUseCase {
 
     public ProcessReportPageResponse listAllProcessReports(int page, int size) {
         Page<ProcessReportEntity> result = repository.findAll(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "startDate")));
-        List<ProcessReport> processReports = result.get().map(mapper::mapFrom).collect(Collectors.toList());
+        List<ProcessReport> processReports = result.get().map(mapper::mapFrom).toList();
         return ProcessReportPageResponse.builder()
                 .items(processReports)
                 .pageSize(result.getSize())

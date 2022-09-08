@@ -35,7 +35,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: MANUFACTURERID
-              value: "catenaX"
+              value: "BPNL00000005PROV"
             - name: SPRING_DATASOURCE_URL
               valueFrom:
                 secretKeyRef:
@@ -120,7 +120,27 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: dtf-digitaltwins-secrets
-                  key: keycloakSSL           
+                  key: keycloakSSL  
+            - name: EDC_CONSUMER_HOSTNAME
+              valueFrom:
+                secretKeyRef:
+                  name: dft-edc-secrets
+                  key: edcconshost
+            - name: EDC_CONSUMER_APIKEY
+              valueFrom:
+                secretKeyRef:
+                  name: dft-edc-secrets
+                  key: edcconsapikey
+             - name: EDC_CONSUMER_DATAURI
+               valueFrom:
+                 secretKeyRef:
+                   name: dft-edc-secrets
+                   key: edcconsdatauri
+             - name: EDC_CONSUMER_APIKEYHEADER
+               valueFrom:
+                 secretKeyRef:
+                   name: dft-edc-secrets
+                   key: edcconsapiheader                
           ports:
             - name: http
               containerPort: 8080

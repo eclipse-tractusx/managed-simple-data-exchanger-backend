@@ -104,22 +104,22 @@ spec:
             - name: KEYCLOAK_REALM
               valueFrom:
                 secretKeyRef:
-                  name: digitaltwin-secret
+                  name: dtf-digitaltwins-secrets
                   key: keycloakREALM
             - name: KEYCLOAK_REASOURCE
               valueFrom:
                 secretKeyRef:
-                  name: digitaltwin-secret
+                  name: dtf-digitaltwins-secrets
                   key: keycloakAUTH
             - name: KEYCLOAK_AUTH_SERVER_URL
               valueFrom:
                 secretKeyRef:
-                  name: digitaltwin-secret
+                  name: dtf-digitaltwins-secrets
                   key: keycloakURL   
             - name: KEYCLOAK_SSL-REQUIRED
               valueFrom:
                 secretKeyRef:
-                  name: digitaltwin-secret
+                  name: dtf-digitaltwins-secrets
                   key: keycloakSSL           
           ports:
             - name: http

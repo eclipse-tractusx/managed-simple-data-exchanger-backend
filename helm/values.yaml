@@ -1,11 +1,14 @@
 # Default values for helm.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
+
 replicaCount: 1
+
 image:
-  repository: ghcr.io/catenax/gds-product-dft
+  repository: ghcr.io/catenax-ng/product-dft-backend
   pullPolicy: Always
   tag: "main"
+
 imagePullSecrets: []
 
 serviceAccount:
@@ -16,16 +19,31 @@ serviceAccount:
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
+
 podAnnotations: {}
+
 podSecurityContext:
   fsGroup: 2000
+
 securityContext:
   allowPrivilegeEscalation: true
+
 probe:
-  endpoint: "/api/ping"    
+  endpoint: "/api/ping"
+    
 service:
-  type: LoadBalancer
+  type: ClusterIP
   port: 8080
+
+ingress:
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: HTTP
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
+  host: dft-api.int.demo.catena-x.net
+
 resources:
   limits:
     cpu: 800m
@@ -33,10 +51,14 @@ resources:
   requests:
     cpu: 300m
     memory: 1Gi
+
 autoscaling:
   enabled: false
+
 nodeSelector: {}
+
 tolerations: []
+
 affinity:
   podAntiAffinity:
     preferredDuringSchedulingIgnoredDuringExecution:
@@ -63,7 +85,3 @@ readinessProbe:
 
 postgres:
   enabled: true
-
-
-
-

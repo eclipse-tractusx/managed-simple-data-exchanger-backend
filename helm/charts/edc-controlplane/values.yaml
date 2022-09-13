@@ -151,13 +151,13 @@ ingresses:
     # -- Defines the [ingress class](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-class)  to use
     className: "nginx"
     # -- Enables TLS on the ingress resource
-    tls: false
+    tls: true
     ## Adds [cert-manager](https://cert-manager.io/docs/) annotations to the ingress resource
     certManager:
       # -- If preset enables certificate generation via cert-manager namespace scoped issuer
       issuer: ""
       # -- If preset enables certificate generation via cert-manager cluster-wide issuer
-      clusterIssuer: ""
+      clusterIssuer: "letsencrypt-prod"
 
   ## Private / Intranet facing Ingress
   - enabled: false

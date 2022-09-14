@@ -35,7 +35,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: MANUFACTURERID
-              value: "BPNL00000005PROV"
+              value: "BPN00022PRV"
             - name: SPRING_DATASOURCE_URL
               valueFrom:
                 secretKeyRef:
@@ -71,6 +71,8 @@ spec:
                 secretKeyRef:
                   name: dtf-digitaltwins-secrets
                   key: digitalTwinAuthorizationClientSecret
+            - name: EDC_ENABLED
+              value: 'true'
             - name: EDC_HOSTNAME
               valueFrom:
                 secretKeyRef:
@@ -131,16 +133,16 @@ spec:
                 secretKeyRef:
                   name: dft-edc-secrets
                   key: edcconsapikey
-             - name: EDC_CONSUMER_DATAURI
-               valueFrom:
-                 secretKeyRef:
-                   name: dft-edc-secrets
-                   key: edcconsdatauri
-             - name: EDC_CONSUMER_APIKEYHEADER
-               valueFrom:
-                 secretKeyRef:
-                   name: dft-edc-secrets
-                   key: edcconsapiheader                
+            - name: EDC_CONSUMER_DATAURI
+              valueFrom:
+                secretKeyRef:
+                  name: dft-edc-secrets
+                  key: edcconsdatauri
+            - name: EDC_CONSUMER_APIKEYHEADER
+              valueFrom:
+                secretKeyRef:
+                  name: dft-edc-secrets
+                  key: edcconsapiheader                
           ports:
             - name: http
               containerPort: 8080

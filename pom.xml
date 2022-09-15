@@ -16,7 +16,6 @@
 	<description>DFT for CatenaX</description>
 	<properties>
 		<java.version>18</java.version>
-		<snakeyaml.version>1.31</snakeyaml.version>
 		<log4j2.version>2.17.1</log4j2.version>
 		<keycloak.version>19.0.1</keycloak.version>
 		<spring-cloud.version>2021.0.3</spring-cloud.version>
@@ -51,7 +50,7 @@
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
-            <version>1.31</version>
+            <version>1.32</version>
         </dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -136,6 +135,17 @@
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-openfeign</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-io</groupId>
+					<artifactId>commons-io</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.7</version>
 		</dependency>
 	</dependencies>
 	<dependencyManagement>

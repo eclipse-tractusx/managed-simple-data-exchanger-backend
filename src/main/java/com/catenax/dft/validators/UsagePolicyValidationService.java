@@ -1,6 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,7 +20,7 @@
 
 package com.catenax.dft.validators;
 
-import com.catenax.dft.entities.UsagePolicyRequest;
+import com.catenax.dft.entities.UsagePolicy;
 import org.springframework.stereotype.Service;
 
 import javax.validation.ConstraintValidator;
@@ -28,7 +28,7 @@ import javax.validation.ConstraintValidatorContext;
 import java.util.List;
 
 @Service
-public class UsagePolicyValidationService implements ConstraintValidator<UsagePolicyValidation, List<UsagePolicyRequest>> {
+public class UsagePolicyValidationService implements ConstraintValidator<UsagePolicyValidation, List<UsagePolicy>> {
 
     private final ValidationService validationService;
 
@@ -42,7 +42,7 @@ public class UsagePolicyValidationService implements ConstraintValidator<UsagePo
     }
 
     @Override
-    public boolean isValid(List<UsagePolicyRequest> usagePolicyRequests, ConstraintValidatorContext constraintValidatorContext) {
-        return validationService.isValid(usagePolicyRequests);
+    public boolean isValid(List<UsagePolicy> usagePolicies, ConstraintValidatorContext constraintValidatorContext) {
+        return validationService.isValid(usagePolicies);
     }
 }

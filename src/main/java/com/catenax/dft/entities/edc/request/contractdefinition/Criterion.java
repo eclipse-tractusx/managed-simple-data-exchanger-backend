@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2022 BMW GmbH
  * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -32,7 +32,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Criterion {
 
-    private String left;
-    private String op;
-    private String right;
+    private String operandLeft;
+    private String operator;
+    private String operandRight;
 }

@@ -2,7 +2,7 @@
  * Copyright (c) 2022 Critical TechWorks GmbH
  * Copyright (c) 2022 BMW GmbH
  * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -25,7 +25,7 @@ package com.catenax.dft.usecases.processreport;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import com.catenax.dft.entities.UsagePolicyRequest;
+import com.catenax.dft.entities.UsagePolicy;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -56,7 +56,7 @@ public class ProcessReportUseCase {
     }
 
     public void startBuildProcessReport(String processId, CsvTypeEnum type, int size, List<String> bpnNumbers,
-                                        String typeOfAccess, List<UsagePolicyRequest> usagePolicies) throws JsonProcessingException {
+                                        String typeOfAccess, List<UsagePolicy> usagePolicies) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
         String usageList = objectMapper.writeValueAsString(usagePolicies);

@@ -1,6 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,6 +20,10 @@
 
 package com.catenax.dft.util;
 
+import com.catenax.dft.entities.UsagePolicy;
+import com.catenax.dft.enums.DurationEnum;
+import com.catenax.dft.enums.PolicyAccessEnum;
+import com.catenax.dft.enums.UsagePolicyEnum;
 import org.apache.commons.lang3.StringUtils;
 
 
@@ -33,33 +37,50 @@ public class UtilityFunctions {
         }
     }
 
-    public static String getDurationValue(String durationValue) {
+    public static UsagePolicy getDurationPolicy(String durationValue) {
+        DurationEnum durationUnit;
         //Sample value - P0Y0M3DT0H0M0S - Output - 3 Day(s)
         String value = StringUtils.substringBetween(durationValue, "P", "Y");
         if (!value.equals("0")) {
-            return value + " Year(s)";
+            durationUnit = DurationEnum.YEAR;
+            return getResponse(value, durationUnit);
         }
         value = StringUtils.substringBetween(durationValue, "Y", "M");
         if (!value.equals("0")) {
-            return value + " Month(s)";
+            durationUnit = DurationEnum.MONTH;
+            return getResponse(value, durationUnit);
         }
         value = StringUtils.substringBetween(durationValue, "M", "D");
         if (!value.equals("0")) {
-            return value + " Day(s)";
+            durationUnit = DurationEnum.DAY;
+            return getResponse(value, durationUnit);
         }
         value = StringUtils.substringBetween(durationValue, "T", "H");
         if (!value.equals("0")) {
-            return value + " Hour(s)";
+            durationUnit = DurationEnum.HOUR;
+            return getResponse(value, durationUnit);
         }
         value = StringUtils.substringBetween(durationValue, "H", "M");
         if (!value.equals("0")) {
-            return value + " Minute(s)";
+            durationUnit = DurationEnum.MINUTE;
+            return getResponse(value, durationUnit);
         }
         value = durationValue.substring(durationValue.lastIndexOf("M") + 1, durationValue.indexOf("S"));
         if (!value.equals("0")) {
-            return value + " Second(s)";
+            durationUnit = DurationEnum.SECOND;
+            return getResponse(value, durationUnit);
         }
         return null;
+    }
+
+    private static UsagePolicy getResponse(String value, DurationEnum durationUnit) {
+        UsagePolicy policyResponse;
+        policyResponse = UsagePolicy.builder().type(UsagePolicyEnum.DURATION)
+                .typeOfAccess(PolicyAccessEnum.RESTRICTED)
+                .value(value)
+                .durationUnit(durationUnit)
+                .build();
+        return policyResponse;
     }
 
 }

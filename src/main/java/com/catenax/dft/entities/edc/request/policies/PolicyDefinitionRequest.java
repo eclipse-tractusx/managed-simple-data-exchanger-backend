@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2022 BMW GmbH
  * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -39,17 +39,9 @@ import lombok.SneakyThrows;
 @AllArgsConstructor
 public class PolicyDefinitionRequest {
 
-    private String uid;
-    private ArrayList<PermissionRequest> permissions;
-    private ArrayList<ProhibitionRequest> prohibitions;
-    private ArrayList<ObligationRequest> obligations;
-    private HashMap<String, String> extensibleProperties;
-    private String inheritsFrom;
-    private String assigner;
-    private String assignee;
-    private String target;
-    @JsonProperty("@type")
-    private HashMap<String, String> type;
+    private String id;
+    @JsonProperty("policy")
+    private PolicyRequest policyRequest;
 
     @SneakyThrows
     public String toJsonString() {

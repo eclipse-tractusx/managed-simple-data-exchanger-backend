@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2022 BMW GmbH
  * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -117,7 +117,7 @@ public class AssetEntryRequestFactory {
     private HashMap<String, String> getDataAddressProperties(String shellId, String subModelId, String endpoint) {
         HashMap<String, String> dataAddressProperties = new HashMap<>();
         dataAddressProperties.put("type", TYPE);
-        dataAddressProperties.put("endpoint", String.format(endpoint, shellId, subModelId));
+        dataAddressProperties.put("baseUrl", String.format(endpoint, shellId, subModelId));
         dataAddressProperties.put("name", NAME);
         dataAddressProperties.put("authKey", apiKeyHeader);
         dataAddressProperties.put("authCode", apiKey);

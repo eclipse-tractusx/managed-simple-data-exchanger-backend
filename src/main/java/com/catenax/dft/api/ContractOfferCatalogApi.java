@@ -1,6 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -33,6 +33,6 @@ public interface ContractOfferCatalogApi {
     @GetMapping(value = "/data/catalog")
     public ContractOffersCatalogResponse getContractOffersCatalog(
             @RequestHeader Map<String, String> requestHeader,
-            @RequestParam String providerUrl
-    );
+            @RequestParam String providerUrl, @RequestParam Integer limit
+            );
 }

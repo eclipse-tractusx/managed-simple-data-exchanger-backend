@@ -1,6 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -21,7 +21,17 @@
 package com.catenax.dft.service;
 
 import com.catenax.dft.api.ContractOfferCatalogApi;
+import com.catenax.dft.entities.UsagePolicy;
+import com.catenax.dft.entities.edc.request.policies.ConstraintRequest;
+import com.catenax.dft.entities.edc.request.policies.Expression;
+import com.catenax.dft.entities.edc.request.policies.PolicyConstraintBuilderService;
+import com.catenax.dft.enums.PolicyAccessEnum;
+import com.catenax.dft.enums.UsagePolicyEnum;
+import com.catenax.dft.facilitator.ContractNegotiateManagement;
+import com.catenax.dft.gateways.database.ContractNegotiationInfoRepository;
 import com.catenax.dft.model.contractoffers.ContractOffersCatalogResponse;
+import com.catenax.dft.model.request.ConsumerRequest;
+import com.catenax.dft.model.request.OfferRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,7 +41,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -40,41 +52,86 @@ import static org.mockito.Mockito.*;
 @ContextConfiguration(classes = {ConsumerControlPanelService.class, String.class})
 @ExtendWith(SpringExtension.class)
 class ConsumerControlPanelServiceTest {
+    @MockBean
+    private ContractNegotiateManagement contractNegotiateManagement;
+
+    @MockBean
+    private ContractNegotiationInfoRepository contractNegotiationInfoRepository;
+
     @Autowired
     private ConsumerControlPanelService consumerControlPanelService;
 
     @MockBean
     private ContractOfferCatalogApi contractOfferCatalogApi;
 
+    @MockBean
+    private PolicyConstraintBuilderService policyConstraintBuilderService;
+
 
     @Test
     void testQueryOnDataOfferEmpty() throws Exception {
         ContractOffersCatalogResponse contractOffersCatalogResponse = new ContractOffersCatalogResponse();
         contractOffersCatalogResponse.setContractOffers(new ArrayList<>());
-        when(contractOfferCatalogApi.getContractOffersCatalog((Map<String, String>) any(), (String) any()))
+        when(contractOfferCatalogApi.getContractOffersCatalog((Map<String, String>) any(), (String) any(), anyInt()))
                 .thenReturn(contractOffersCatalogResponse);
         assertTrue(consumerControlPanelService.queryOnDataOffers("https://example.org/example").isEmpty());
-        verify(contractOfferCatalogApi).getContractOffersCatalog((Map<String, String>) any(), (String) any());
+        verify(contractOfferCatalogApi).getContractOffersCatalog((Map<String, String>) any(), (String) any(), anyInt());
     }
 
     @Test
     void testQueryOnDataOffersWithUsagePolicies() throws Exception {
 
         ContractOffersCatalogResponse contractOffersCatalogResponse = getContractOffersCatalogWithConstraints();
-        when(contractOfferCatalogApi.getContractOffersCatalog((Map<String, String>) any(), (String) any()))
+        when(contractOfferCatalogApi.getContractOffersCatalog((Map<String, String>) any(), (String) any(), anyInt()))
                 .thenReturn(contractOffersCatalogResponse);
         assertEquals(1, consumerControlPanelService.queryOnDataOffers("https://example.org/example").size());
-        verify(contractOfferCatalogApi).getContractOffersCatalog((Map<String, String>) any(), (String) any());
+        verify(contractOfferCatalogApi).getContractOffersCatalog((Map<String, String>) any(), (String) any(), anyInt());
     }
 
     @Test
     void testQueryOnDataOffersWithMissingUsagePolicies() throws Exception {
 
         ContractOffersCatalogResponse contractOffersCatalogResponse = getCatalogObjectWithMissingConstraints();
-        when(contractOfferCatalogApi.getContractOffersCatalog((Map<String, String>) any(), (String) any()))
+        when(contractOfferCatalogApi.getContractOffersCatalog((Map<String, String>) any(), (String) any(), anyInt()))
                 .thenReturn(contractOffersCatalogResponse);
         assertEquals(1, consumerControlPanelService.queryOnDataOffers("https://example.org/example").size());
-        verify(contractOfferCatalogApi).getContractOffersCatalog((Map<String, String>) any(), (String) any());
+        verify(contractOfferCatalogApi).getContractOffersCatalog((Map<String, String>) any(), (String) any(), anyInt());
+    }
+
+    @Test
+    void testSubscribeDataOffers1() {
+        ArrayList<OfferRequest> offerRequestList = new ArrayList<>();
+        List<UsagePolicy> usagePolicies = new ArrayList<>();
+        UsagePolicy usagePolicy = UsagePolicy.builder().type(UsagePolicyEnum.CUSTOM).value("Sample").typeOfAccess(PolicyAccessEnum.RESTRICTED).build();
+        usagePolicies.add(usagePolicy);
+        ConsumerRequest consumerRequest = new ConsumerRequest("42", "https://example.org/example", offerRequestList,
+                usagePolicies);
+        String processId = UUID.randomUUID().toString();
+        consumerControlPanelService.subscribeDataOffers(consumerRequest, processId);
+        assertEquals("42", consumerRequest.getConnectorId());
+        assertEquals("https://example.org/example", consumerRequest.getProviderUrl());
+        List<UsagePolicy> policies = consumerRequest.getPolicies();
+        List<ConstraintRequest> list = new ArrayList<>();
+        ConstraintRequest constraintRequest = ConstraintRequest.builder().edcType("type").leftExpression(new Expression()).rightExpression(new Expression()).operator("EQ").build();
+        list.add(constraintRequest);
+        when(policyConstraintBuilderService.getUsagePolicyConstraints(any())).thenReturn(list);
+        assertEquals(usagePolicies, policies);
+        assertEquals(1, consumerControlPanelService.getAuthHeader().size());
+    }
+
+    @Test
+    void testSubscribeDataOffers2() {
+        List<UsagePolicy> usagePolicies = new ArrayList<>();
+        UsagePolicy usagePolicy = UsagePolicy.builder().type(UsagePolicyEnum.CUSTOM).value("Sample").typeOfAccess(PolicyAccessEnum.RESTRICTED).build();
+        usagePolicies.add(usagePolicy);
+        ConsumerRequest consumerRequest = mock(ConsumerRequest.class);
+        when(consumerRequest.getOffers()).thenReturn(new ArrayList<>());
+        when(consumerRequest.getProviderUrl()).thenReturn("https://example.org/example");
+        when(consumerRequest.getPolicies()).thenReturn(usagePolicies);
+        String processId = UUID.randomUUID().toString();
+        consumerControlPanelService.subscribeDataOffers(consumerRequest, processId);
+        verify(consumerRequest).getProviderUrl();
+        verify(consumerRequest).getOffers();
     }
 
     private ContractOffersCatalogResponse getContractOffersCatalogWithConstraints() throws Exception {
@@ -239,5 +296,32 @@ class ConsumerControlPanelServiceTest {
                 = mapper.readValue(contactOfferCatalogResponse, ContractOffersCatalogResponse.class);
         return mockResponse;
     }
-}
 
+    private ConsumerRequest getConsumerRequest() throws Exception {
+        String consumerRequest = "{\n" +
+                "\t\"connectorId\": \"343cdfdfd\",\n" +
+                "\t\"providerUrl\": \"http: //20.218.254.172:7171/\",\n" +
+                "\t\"offers\": [{\n" +
+                "\t\t\t\"offerId\": \"1\",\n" +
+                "\t\t\t\"assetId\": \"12345\",\n" +
+                "\t\t\t\"policyId\": \"343 fdfd\"\n" +
+                "\t\t}\n" +
+                "\t],\n" +
+                "\t\"policies\": [\n" +
+                "\t\t{\n" +
+                "\t\t\t\"type\": \"ROLE\",\n" +
+                "\t\t\t\"value\": \"ADMIN\"\n" +
+                "\t\t},\n" +
+                "        {\n" +
+                "\t\t\t\"type\": \"DURATION\",\n" +
+                "\t\t\t\"value\": \"3 Day(s)\"\n" +
+                "\t\t}\n" +
+                "\t]\n" +
+                "}";
+        ObjectMapper mapper = new ObjectMapper();
+        ConsumerRequest mockRequest
+                = mapper.readValue(consumerRequest, ConsumerRequest.class);
+        return mockRequest;
+    }
+
+}

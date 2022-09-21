@@ -1,6 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,16 +20,19 @@
 
 package com.catenax.dft.controllers;
 
-import static org.springframework.http.ResponseEntity.ok;
+import com.catenax.dft.model.request.ConsumerRequest;
+import com.catenax.dft.service.ConsumerControlPanelService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.web.bind.annotation.*;
 
-import com.catenax.dft.service.ConsumerControlPanelService;
+import javax.validation.Valid;
 
-import lombok.extern.slf4j.Slf4j;
+import java.util.UUID;
+
+import static org.springframework.http.ResponseEntity.ok;
 
 @Slf4j
 @RestController
@@ -46,8 +49,16 @@ public class ConsumerController {
     @GetMapping(value = "/query-data-offers")
     public ResponseEntity<Object> queryOnDataOffers(@RequestParam String providerUrl)
             throws Exception {
-        log.info("Request received : /api/v1/query-data-Offers");
+        log.info("Request received : /api/query-data-Offers");
         return ok().body(consumerControlPanelService.queryOnDataOffers(providerUrl));
+    }
+
+    @PostMapping(value = "/subscribe-data-offers")
+    public ResponseEntity subscribeDataOffers(@Valid @RequestBody ConsumerRequest consumerRequest) {
+        String processId = UUID.randomUUID().toString();
+        log.info("Request recevied : /api/subscribe-data-offers");
+        consumerControlPanelService.subscribeDataOffers(consumerRequest, processId);
+        return ResponseEntity.ok().body(processId);
     }
 
 }

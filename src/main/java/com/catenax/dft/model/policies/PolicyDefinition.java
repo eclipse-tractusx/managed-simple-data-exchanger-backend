@@ -1,6 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,6 +20,7 @@
 
 package com.catenax.dft.model.policies;
 
+import com.catenax.dft.entities.edc.request.policies.PermissionRequest;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -42,10 +43,10 @@ import java.util.HashMap;
 @JsonInclude(Include.NON_NULL)
 public class PolicyDefinition {
 
-    private String uid;
-    private ArrayList<Permission> permissions;
+    private ArrayList<PermissionRequest> permissions;
     private ArrayList<Prohibition> prohibitions;
     private ArrayList<Obligation> obligations;
+    private HashMap<String, String> extensibleProperties;
     private String inheritsFrom;
     private String assigner;
     private String assignee;

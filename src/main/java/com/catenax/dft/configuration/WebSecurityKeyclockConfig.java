@@ -1,6 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -39,6 +39,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
 import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
@@ -55,7 +56,10 @@ public class WebSecurityKeyclockConfig extends KeycloakWebSecurityConfigurerAdap
 	protected void configure(HttpSecurity http) throws Exception {
 		super.configure(http);
 
-		http.csrf().disable().cors().and().authorizeRequests().antMatchers(PUBLIC_URL).permitAll()
+		http.csrf().disable().cors()
+		.and().headers().frameOptions().sameOrigin()
+		.and().authorizeRequests().antMatchers(PUBLIC_URL).permitAll()
+		.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 		.and().addFilterAfter(customAuthFilter(),BasicAuthenticationFilter.class).authorizeRequests().anyRequest().authenticated();
 
 	}

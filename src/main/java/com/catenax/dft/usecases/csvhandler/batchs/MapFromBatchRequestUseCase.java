@@ -1,6 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -50,6 +50,7 @@ public class MapFromBatchRequestUseCase extends AbstractCsvHandlerUseCase<BatchR
     @Override
     protected Batch executeUseCase(BatchRequest input, String processId) {
         Batch batch = batchMapper.mapFrom(input);
+
         List<String> errorMessages = validateAsset(batch);
         if (!errorMessages.isEmpty()) {
             throw new CsvHandlerUseCaseException(input.getRowNumber(), errorMessages.toString());

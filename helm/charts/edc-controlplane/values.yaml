@@ -139,7 +139,7 @@ ingresses:
   ## Public / Internet facing Ingress
   - enabled: true
     # -- The hostname to be used to precisely map incoming traffic onto the underlying network service
-    hostname: "dft-connector-prv-cp.int.demo.catena-x.net"
+    hostname: "dft-connector.int.demo.catena-x.net"
     # -- Additional ingress annotations to add
     annotations: {}
     # -- EDC endpoints exposed by this ingress resource
@@ -248,11 +248,11 @@ configuration:
     edc.ids.description=Eclipse Dataspace Connector
     edc.ids.id=urn:connector:edc
     edc.ids.security.profile=base
-    edc.ids.endpoint=http://dft-connector-prv-cp.int.demo.catena-x.net:7272/api/v1/ids
-    edc.ids.maintainer=http://dft-connector-prv-cp.int.demo.catena-x.net
-    edc.ids.curator=http://dft-connector-prv-cp.int.demo.catena-x.net
+    edc.ids.endpoint=http://dft-connector.int.demo.catena-x.net:7272/api/v1/ids
+    edc.ids.maintainer=http://dft-connector.int.demo.catena-x.net
+    edc.ids.curator=http://dft-connector.int.demo.catena-x.net
     edc.ids.catalog.id=urn:catalog:default
-    ids.webhook.address=http://dft-connector-prv-cp.int.demo.catena-x.net:7272
+    ids.webhook.address=http://dft-connector.int.demo.catena-x.net:7272
     edc.api.control.auth.apikey.key=X-Api-Key
     edc.api.control.auth.apikey.value=pass
     edc.api.auth.key=password
@@ -271,11 +271,11 @@ configuration:
     edc.vault.name=cxtsi-dev010-vault
     edc.vault.clientsecret=
     # Control- / Data- Plane configuration
-    edc.ids.endpoint.audience=http://dft-connector-prv-cp.int.demo.catena-x.net:7272/api/v1/ids/data
+    edc.ids.endpoint.audience=http://dft-connector.int.demo.catena-x.net:7272/api/v1/ids/data
     edc.data.encryption.keys.alias=encryptionkeys
-    edc.transfer.proxy.endpoint=http://dft-connector-prv-dp.int.demo.catena-x.net/public
+    edc.transfer.proxy.endpoint=http://dft-connector.int.demo.catena-x.net/public
     edc.transfer.proxy.token.signer.privatekey.alias=gds-data-plane-private-key
-    edc.transfer.dataplane.sync.endpoint=http://dft-connector-prv-dp.int.demo.catena-x.net/public
+    edc.transfer.dataplane.sync.endpoint=http://dft-connector.int.demo.catena-x.net/public
     edc.transfer.dataplane.token.signer.privatekey.alias=gds-data-plane-private-key
     edc.transfer.proxy.token.verifier.publickey.alias=gds-data-plane-public-key
     edc.public.key.alias=gds-data-plane-public-key

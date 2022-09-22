@@ -15,7 +15,7 @@ image:
   # -- [Kubernetes image pull policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy) to use
   pullPolicy: IfNotPresent
   # -- Overrides the image tag whose default is the chart appVersion.
-  tag: "sha-7eed420"
+  tag: "0.1.1"
 
 imagePullSecret:
   # -- Image pull secret to create to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry)
@@ -283,7 +283,7 @@ configuration:
     edc.vault.clientsecret=
     # Control- / Data- Plane configuration
     edc.ids.endpoint.audience=https://dft-connector.int.demo.catena-x.net:7272/api/v1/ids/data
-    edc.data.encryption.keys.alias=encryptionkeys
+    edc.data.encryption.keys.alias=encrypt-edc-alias
     edc.transfer.proxy.endpoint=https://dft-connector.int.demo.catena-x.net/public
     edc.transfer.proxy.token.signer.privatekey.alias=gds-data-plane-private-key
     edc.transfer.dataplane.sync.endpoint=https://dft-connector.int.demo.catena-x.net/public

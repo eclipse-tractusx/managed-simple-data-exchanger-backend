@@ -14,7 +14,7 @@ image:
   # -- [Kubernetes image pull policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy) to use
   pullPolicy: IfNotPresent
   # -- Overrides the image tag whose default is the chart appVersion.
-  tag: "0.0.6"
+  tag: "0.1.0"
 
 imagePullSecret:
   # -- Image pull secret to create to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry)
@@ -248,11 +248,11 @@ configuration:
     edc.ids.description=Eclipse Dataspace Connector
     edc.ids.id=urn:connector:edc
     edc.ids.security.profile=base
-    edc.ids.endpoint=http://localhost:7272/api/v1/ids
-    edc.ids.maintainer=http://localhost
-    edc.ids.curator=http://localhost
+    edc.ids.endpoint=http://dft-connector-prv-cp.int.demo.catena-x.net:7272/api/v1/ids
+    edc.ids.maintainer=http://dft-connector-prv-cp.int.demo.catena-x.net
+    edc.ids.curator=http://dft-connector-prv-cp.int.demo.catena-x.net
     edc.ids.catalog.id=urn:catalog:default
-    ids.webhook.address=http://localhost:7272
+    ids.webhook.address=http://dft-connector-prv-cp.int.demo.catena-x.net:7272
     edc.api.control.auth.apikey.key=X-Api-Key
     edc.api.control.auth.apikey.value=pass
     edc.api.auth.key=password
@@ -271,6 +271,8 @@ configuration:
     edc.vault.name=cxtsi-dev010-vault
     edc.vault.clientsecret=
     # Control- / Data- Plane configuration
+    edc.ids.endpoint.audience=http://dft-connector-prv-cp.int.demo.catena-x.net:7272/api/v1/ids/data
+    edc.data.encryption.keys.alias=encryptionkeys
     edc.transfer.proxy.endpoint=http://dft-connector-prv-dp.int.demo.catena-x.net/public
     edc.transfer.proxy.token.signer.privatekey.alias=gds-data-plane-private-key
     edc.transfer.dataplane.sync.endpoint=http://dft-connector-prv-dp.int.demo.catena-x.net/public

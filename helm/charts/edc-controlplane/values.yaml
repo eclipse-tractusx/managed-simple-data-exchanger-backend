@@ -248,15 +248,16 @@ configuration:
     edc.ids.description=Eclipse Dataspace Connector
     edc.ids.id=urn:connector:edc
     edc.ids.security.profile=base
-    edc.ids.endpoint=http://dft-connector.int.demo.catena-x.net:7272/api/v1/ids
-    edc.ids.maintainer=http://dft-connector.int.demo.catena-x.net
-    edc.ids.curator=http://dft-connector.int.demo.catena-x.net
+    edc.ids.endpoint=https://dft-connector.int.demo.catena-x.net:7272/api/v1/ids
+    edc.ids.maintainer=https://dft-connector.int.demo.catena-x.net
+    edc.ids.curator=https://dft-connector.int.demo.catena-x.net
     edc.ids.catalog.id=urn:catalog:default
-    ids.webhook.address=http://dft-connector.int.demo.catena-x.net:7272
+    ids.webhook.address=https://dft-connector.int.demo.catena-x.net:7272
     edc.api.control.auth.apikey.key=X-Api-Key
     edc.api.control.auth.apikey.value=pass
     edc.api.auth.key=password
-    edc.hostname=dft-connector-prv-cp.int.demo.catena-x.net
+    #edc.hostname=dft-connector-prv-cp.int.demo.catena-x.net
+    edc.hostname=dft-connector.int.demo.catena-x.net
     # DAPS Properties
     edc.oauth.token.url=https://daps-pen.int.demo.catena-x.net/token
     edc.oauth.client.id=B7:61:0F:A1:87:F4:34:56:84:AB:61:23:80:4A:39:89:93:50:B5:38:keyid:B7:61:0F:A1:87:F4:34:56:84:AB:61:23:80:4A:39:89:93:50:B5:38
@@ -271,11 +272,11 @@ configuration:
     edc.vault.name=cxtsi-dev010-vault
     edc.vault.clientsecret=
     # Control- / Data- Plane configuration
-    edc.ids.endpoint.audience=http://dft-connector.int.demo.catena-x.net:7272/api/v1/ids/data
+    edc.ids.endpoint.audience=https://dft-connector.int.demo.catena-x.net:7272/api/v1/ids/data
     edc.data.encryption.keys.alias=encryptionkeys
-    edc.transfer.proxy.endpoint=http://dft-connector.int.demo.catena-x.net/public
+    edc.transfer.proxy.endpoint=https://dft-connector.int.demo.catena-x.net/public
     edc.transfer.proxy.token.signer.privatekey.alias=gds-data-plane-private-key
-    edc.transfer.dataplane.sync.endpoint=http://dft-connector.int.demo.catena-x.net/public
+    edc.transfer.dataplane.sync.endpoint=https://dft-connector.int.demo.catena-x.net/public
     edc.transfer.dataplane.token.signer.privatekey.alias=gds-data-plane-private-key
     edc.transfer.proxy.token.verifier.publickey.alias=gds-data-plane-public-key
     edc.public.key.alias=gds-data-plane-public-key

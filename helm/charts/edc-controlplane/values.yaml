@@ -291,23 +291,23 @@ configuration:
     edc.public.key.alias=gds-data-plane-public-key
     # Postgresql related configuration
     edc.datasource.asset.name=asset
-    edc.datasource.asset.url=jdbc:postgresql://postgres:5432/edcdb
+    edc.datasource.asset.url=jdbc:postgresql://postgres:5433/edcdb
     #edc.datasource.asset.user=admin
     #edc.datasource.asset.password=password@123
     edc.datasource.contractdefinition.name=contractdefinition
-    edc.datasource.contractdefinition.url=jdbc:postgresql://postgres-postgresql:5432/edcdb
+    edc.datasource.contractdefinition.url=jdbc:postgresql://postgres:5433/edcdb
     #edc.datasource.contractdefinition.user=admin
     #edc.datasource.contractdefinition.password=password@123
     edc.datasource.contractnegotiation.name=contractnegotiation
-    edc.datasource.contractnegotiation.url=jdbc:postgresql://postgres-postgresql:5432/edcdb
+    edc.datasource.contractnegotiation.url=jdbc:postgresql://postgres:5433/edcdb
     #edc.datasource.contractnegotiation.user=admin
     #edc.datasource.contractnegotiation.password=password@123
     edc.datasource.policy.name=policy
-    edc.datasource.policy.url=jdbc:postgresql://postgres-postgresql:5432/edcdb
+    edc.datasource.policy.url=jdbc:postgresql://postgres:5433/edcdb
     #edc.datasource.policy.user=admin
     #edc.datasource.policy.password=password@123
     edc.datasource.transferprocess.name=transferprocess
-    edc.datasource.transferprocess.url=jdbc:postgresql://postgres-postgresql:5432/edcdb
+    edc.datasource.transferprocess.url=jdbc:postgresql://postgres:5433/edcdb
     #edc.datasource.transferprocess.user=admin
     #edc.datasource.transferprocess.password=password@123
 

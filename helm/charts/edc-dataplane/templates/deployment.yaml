@@ -56,6 +56,12 @@ spec:
             - name: metrics
               containerPort: {{ .Values.edc.endpoints.metrics.port }}
               protocol: TCP
+          env:
+          - name: EDC_VAULT_CLIENTSECRET
+            valueFrom: 
+              secretKeyRef:
+                name: avp-edc-secret
+                key: azvaultclientsecret
           {{- if .Values.livenessProbe.enabled }}
           livenessProbe:
             httpGet:

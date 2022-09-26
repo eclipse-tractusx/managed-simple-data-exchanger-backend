@@ -64,7 +64,7 @@ spec:
               protocol: TCP
           env:
           - name: SPRING_PROFILE
-            value: "database"
+            value: "kyma"
           - name: DB_HOST
             value: "edcdb"
           - name: DB_NAME

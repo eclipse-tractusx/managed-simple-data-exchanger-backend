@@ -14,7 +14,7 @@ image:
   # -- [Kubernetes image pull policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy) to use
   pullPolicy: IfNotPresent
   # -- Overrides the image tag whose default is the chart appVersion
-  tag: "sha-970a09d"
+  tag: "0.1.1"
 
 imagePullSecret:
   # -- Image pull secret to create to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry)
@@ -204,7 +204,7 @@ opentelemetry:
 configuration:
   # -- EDC configuration.properties configuring aspects of the [eclipse-dataspaceconnector](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector)
   properties: |-
-    edc.controlplane.validation-endpoint=http://dft-connector-prv-cp.int.demo.catena-x.net/validation/token
+    edc.controlplane.validation-endpoint=http://dft-connector.int.demo.catena-x.net/validation/token
     edc.hostname=localhost
     edc.vault.clientid=2f0e6b4e-de1a-42bd-b30e-453d558d2dd4
     edc.vault.tenantid=495463c3-0991-4659-9cc5-94b4a3f7b1d6

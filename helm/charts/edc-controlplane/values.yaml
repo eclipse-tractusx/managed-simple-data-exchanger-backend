@@ -243,6 +243,12 @@ opentelemetry:
 
 postgresql:
   enabled: true
+  auth:
+  secret:
+    password: "Catenax#22"
+    username: "postgres"
+    database: "postgres"
+  
   
 configuration:
   # -- EDC configuration.properties configuring aspects of the [eclipse-dataspaceconnector](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector)

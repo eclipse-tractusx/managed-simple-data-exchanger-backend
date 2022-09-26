@@ -241,14 +241,14 @@ opentelemetry:
     otel.javaagent.enabled=false
     otel.javaagent.debug=false
 
-#postgres:
-#  enabled: true
-# global:
-#    postgresql:
-#      postgresqlDatabase: "edcdb"
-#      postgresqlPassword: "Connector@123"
-#      postgresqlUsername: "postgres"
-#      servicePort: "5433"
+postgresql:
+  enabled: true
+  global:
+    postgresql:
+      postgresqlDatabase: "edcdb"
+      postgresqlPassword: "Connector@123"
+      postgresqlUsername: "postgres"
+      servicePort: "5433"
   
 configuration:
   # -- EDC configuration.properties configuring aspects of the [eclipse-dataspaceconnector](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector)

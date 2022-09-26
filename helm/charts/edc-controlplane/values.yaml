@@ -241,7 +241,7 @@ opentelemetry:
     otel.javaagent.enabled=false
     otel.javaagent.debug=false
 
-postgresql:
+postgresqledc:
   enabled: true
   global:
     postgresql:
@@ -292,23 +292,23 @@ configuration:
     edc.public.key.alias=gds-data-plane-public-key
     # Postgresql related configuration
     edc.datasource.asset.name=asset
-    edc.datasource.asset.url=jdbc:postgresql://product-dft-backend-postgresql:5432/edcdb
+    edc.datasource.asset.url=jdbc:postgresql://product-dft-backend-postgresqledc:5432/edcdb
     edc.datasource.asset.user=postgres
     edc.datasource.asset.password=Connector@123
     edc.datasource.contractdefinition.name=contractdefinition
-    edc.datasource.contractdefinition.url=jdbc:postgresql://product-dft-backend-postgresql:5432/edcdb
+    edc.datasource.contractdefinition.url=jdbc:postgresql://product-dft-backend-postgresqledc:5432/edcdb
     edc.datasource.contractdefinition.user=postgres
     edc.datasource.contractdefinition.password=Connector@123
     edc.datasource.contractnegotiation.name=contractnegotiation
-    edc.datasource.contractnegotiation.url=jdbc:postgresql://product-dft-backend-postgresql:5432/edcdb
+    edc.datasource.contractnegotiation.url=jdbc:postgresql://product-dft-backend-postgresqledc:5432/edcdb
     edc.datasource.contractnegotiation.user=postgres
     edc.datasource.contractnegotiation.password=Connector@123
     edc.datasource.policy.name=policy
-    edc.datasource.policy.url=jdbc:postgresql://product-dft-backend-postgresql:5432/edcdb
+    edc.datasource.policy.url=jdbc:postgresql://product-dft-backend-postgresqledc:5432/edcdb
     edc.datasource.policy.user=postgres
     edc.datasource.policy.password=Connector@123
     edc.datasource.transferprocess.name=transferprocess
-    edc.datasource.transferprocess.url=jdbc:postgresql://product-dft-backend-postgresql:5432/edcdb
+    edc.datasource.transferprocess.url=jdbc:postgresql://product-dft-backend-postgresqledc:5432/edcdb
     edc.datasource.transferprocess.user=postgres
     edc.datasource.transferprocess.password=Connector@123
 

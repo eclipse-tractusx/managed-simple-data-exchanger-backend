@@ -244,7 +244,7 @@ opentelemetry:
 postgresql:
   enabled: true
   auth:
-  secret:
+    postgresPassword: "Connector@123"
     password: "Connector@123"
     username: "postgres"
     database: "postgres"

@@ -63,6 +63,18 @@ spec:
               containerPort: {{ .Values.edc.endpoints.metrics.port }}
               protocol: TCP
           env:
+          - name: SPRING_PROFILE
+            value: "kyma"
+          - name: DB_HOST
+            value: "edcdb"
+          - name: DB_NAME
+            value: {{ .Values.postgresql.global.postgresql.postgresqlDatabase | quote }}
+          - name: MASTER_PASSWORD
+            value: {{ .Values.postgresql.global.postgresql.postgresqlPassword | quote }}
+          - name: MASTER_USERNAME
+            value: {{ .Values.postgresql.global.postgresql.postgresqlUsername | quote }}
+          - name: DB_PORT
+            value: {{ .Values.postgresql.global.postgresql.servicePort | quote }}
           - name: EDC_VAULT_CLIENTSECRET
             valueFrom: 
               secretKeyRef:

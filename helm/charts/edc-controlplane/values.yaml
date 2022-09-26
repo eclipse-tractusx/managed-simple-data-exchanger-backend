@@ -245,7 +245,7 @@ postgresql:
   enabled: true
   auth:
   secret:
-    password: "Catenax#22"
+    password: "Connector@123"
     username: "postgres"
     database: "postgres"
   
@@ -293,23 +293,23 @@ configuration:
     # Postgresql related configuration
     edc.datasource.asset.name=asset
     edc.datasource.asset.url=jdbc:postgresql://product-dft-backend-postgresql:5432/postgres
-    #edc.datasource.asset.user=postgres
-    #edc.datasource.asset.password=Connector@123
+    edc.datasource.asset.user=postgres
+    edc.datasource.asset.password=Connector@123
     edc.datasource.contractdefinition.name=contractdefinition
     edc.datasource.contractdefinition.url=jdbc:postgresql://product-dft-backend-postgresql:5432/postgres
-    #edc.datasource.contractdefinition.user=postgres
-    #edc.datasource.contractdefinition.password=Connector@123
+    edc.datasource.contractdefinition.user=postgres
+    edc.datasource.contractdefinition.password=Connector@123
     edc.datasource.contractnegotiation.name=contractnegotiation
     edc.datasource.contractnegotiation.url=jdbc:postgresql://product-dft-backend-postgresql:5432/postgres
-    #edc.datasource.contractnegotiation.user=postgres
-    #edc.datasource.contractnegotiation.password=Connector@123
+    edc.datasource.contractnegotiation.user=postgres
+    edc.datasource.contractnegotiation.password=Connector@123
     edc.datasource.policy.name=policy
     edc.datasource.policy.url=jdbc:postgresql://product-dft-backend-postgresql:5432/postgres
-    #edc.datasource.policy.user=postgres
-    #edc.datasource.policy.password=Connector@123
+    edc.datasource.policy.user=postgres
+    edc.datasource.policy.password=Connector@123
     edc.datasource.transferprocess.name=transferprocess
     edc.datasource.transferprocess.url=jdbc:postgresql://product-dft-backend-postgresql:5432/postgres
-    #edc.datasource.transferprocess.user=postgres
-    #edc.datasource.transferprocess.password=Connector@123
+    edc.datasource.transferprocess.user=postgres
+    edc.datasource.transferprocess.password=Connector@123
 
 

@@ -243,12 +243,11 @@ opentelemetry:
 
 postgresql:
   enabled: true
-  global:
-    postgresql:
-      postgresqlDatabase: edcdb
-      postgresqlPassword: Connector@123
-      postgresqlUsername: postgres
-      servicePort: 5433
+  auth:
+    postgresqlDatabase: "edcdb"
+    postgresqlPassword: "Connector@123"
+    postgresqlUsername: "postgres"
+    servicePort: "5433"
   persistence:
     size: 1Gi
   service:

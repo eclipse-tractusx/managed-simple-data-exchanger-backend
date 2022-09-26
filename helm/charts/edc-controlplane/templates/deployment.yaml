@@ -71,7 +71,7 @@ spec:
             - name: SPRING_PROFILE
               value: "database"
             - name: DB_HOST
-              value: "{{ .Release.Name}}-postgresql-headless"
+              value: "edcdb"
             - name: DB_NAME
               value: {{ .Values.postgresql.global.postgresql.postgresqlDatabase | quote }}
             - name: MASTER_PASSWORD

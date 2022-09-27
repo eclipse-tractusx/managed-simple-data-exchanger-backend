@@ -87,6 +87,8 @@ readinessProbe:
 
 postgresql:
   enabled: true
+  auth:
+    postgresPassword: "Connector@123"
 
 #postgres:
  # enabled: true

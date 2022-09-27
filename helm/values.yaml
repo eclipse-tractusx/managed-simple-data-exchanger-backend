@@ -82,5 +82,12 @@ ingress:
 postgres:
   enabled: true
   auth:
-    existingSecret: dft-postgresql-secrets
+    #existingSecret: dft-postgresql-secrets
+    dbUrl: ""
+    dbUser: ""
+    dbPassword: ""
+    postgres-password: ""
+    dbName: ""
+    
+ 
   

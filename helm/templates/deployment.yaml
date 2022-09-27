@@ -55,7 +55,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: dft-postgresql-secrets
-                  key: postgresPassword
+                  key: postgres-password
             - name: DIGITAL-TWINS_HOSTNAME
               valueFrom:
                 secretKeyRef:

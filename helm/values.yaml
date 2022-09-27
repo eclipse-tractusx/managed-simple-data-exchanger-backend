@@ -92,7 +92,7 @@ postgres:
   auth:
     existingSecret: dft-postgres-secrets
   secret:
-    postgresPassword: ""
+    postgresPassword: "1mth3us3r"
     dbPassword: ""
     dbUser: ""
     database: ""

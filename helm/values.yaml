@@ -78,7 +78,12 @@ ingress:
     nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
     nginx.ingress.kubernetes.io/enable-cors: 'false'
 
-postgres:
-  enabled: true
-  auth:
-    postgresPassword: "admin@123"
+global:
+  postgresql:
+    auth:
+      database: postgres
+      password: admin@123
+      postgresPassword: admin@123
+      username: admin
+persistence:
+  size: 1Gi

@@ -81,10 +81,4 @@ ingress:
  
 postgres:
   enabled: true
-  auth:
-    database: "postgres"
-    password: "admin@123"
-    postgresPassword: "admin@123"
-    username: "admin"
-  persistence:
-    size: 1Gi
+  

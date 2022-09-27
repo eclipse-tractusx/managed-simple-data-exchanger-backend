@@ -3,7 +3,6 @@ kind: Ingress
 metadata:
   name: {{ include "helm.fullname" . }}
   labels:
-     {{- include "helm.labels" . | nindent 4 }}
     nginx.ingress.kubernetes.io/backend-protocol: HTTP
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
     nginx.ingress.kubernetes.io/affinity: "cookie"

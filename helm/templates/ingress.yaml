@@ -3,15 +3,16 @@ kind: Ingress
 metadata:
   name: {{ include "helm.fullname" . }}
   labels:
-     {{- include "helm.labels" . | nindent 4 }}
-    {{ .Values.ingress.annotations }}
+      {{- include "helm.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
   annotations:
-   {{- toYaml . | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   ingressClassName: {{ .Values.ingress.className }}
   tls:
     - hosts:
-       - {{ .Values.ingress.host }}
+        - {{ .Values.ingress.host }}
       secretName: {{ include "helm.fullname" . }}-tls
   rules:
     - host: {{ .Values.ingress.host }}

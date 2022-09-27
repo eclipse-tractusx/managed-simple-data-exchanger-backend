@@ -1,10 +1,6 @@
 ingress:
   enabled: true
-  hosts:
-  - host: dft-api.int.demo.catena-x.net
-    paths:
-      - path: /
-        pathType: ImplementationSpecific
+  host: dft-api.int.demo.catena-x.net
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: HTTP
     cert-manager.io/cluster-issuer: "letsencrypt-prod"

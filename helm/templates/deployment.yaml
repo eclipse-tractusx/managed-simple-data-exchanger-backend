@@ -36,11 +36,11 @@ spec:
           env:
             - name: MANUFACTURERID
               value: "BPN00022PRV"
-           # - name: SPRING_DATASOURCE_URL
-             # valueFrom:
-              #  secretKeyRef:
-                  #name: dft-postgres-secrets
-                  #key: dbUrl
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: dft-postgres-secrets
+                  key: dbUrl
            # - name: SPRING_DATASOURCE_USERNAME
              # valueFrom:
                # secretKeyRef:

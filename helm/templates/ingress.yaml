@@ -1,9 +1,3 @@
-{{- if .Values.ingress.enabled -}}
-{{- $fullName := include "omejdn-server.fullname" . -}}
-{{- $ingressExtraPaths := .Values.ingress.extraPaths -}}
-{{- $svcName := include "omejdn-server.fullname" . -}}
-{{- $svcPort := .Values.service.port -}}
-{{- if semverCompare ">=1.20-0" .Capabilities.KubeVersion.GitVersion -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:

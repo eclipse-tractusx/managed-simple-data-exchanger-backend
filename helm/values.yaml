@@ -84,15 +84,16 @@ readinessProbe:
   successThreshold: 1
   timeoutSeconds: 1
 
-postgres:
-  enabled: true
+#postgres:
+ # enabled: true
   
-#postgresql:
-  #enabled: true
-  #auth:
-    #existingSecret: secret-postgres-init
-  #secret:
-    #postgresPassword: "1mth3us3r"
-    #password: "1mth3us3r"
-    #username: "dftUser"
-    #database: "dft"
+postgresql:
+  enabled: true
+  auth:
+    existingSecret: dft-postgres-secrets
+  secret:
+    postgresPassword: ""
+    dbPassword: ""
+    dbUser: ""
+    database: ""
+    dbUrl: ""

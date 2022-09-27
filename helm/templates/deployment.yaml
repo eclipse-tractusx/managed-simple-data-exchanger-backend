@@ -36,26 +36,26 @@ spec:
           env:
             - name: MANUFACTURERID
               value: "BPN00022PRV"
-           # - name: SPRING_DATASOURCE_URL
-             # valueFrom:
-             #   secretKeyRef:
-                #  name: dft-postgres-secrets
-                 # key: dbUrl
-           # - name: SPRING_DATASOURCE_USERNAME
-             # valueFrom:
-              #  secretKeyRef:
-              #    name: dft-postgres-secrets
-               #   key: dbUser
-          #  - name: SPRING_DATASOURCE_PASSWORD
-           #   valueFrom:
-            #    secretKeyRef:
-              #    name: dft-postgres-secrets
-               #   key: dbPassword
-           # - name: SPRING_DATASOURCE_POSTGRESPASSWORD
-            #  valueFrom:
-             #   secretKeyRef:
-               #   name: dft-postgres-secrets
-               #   key: postgresPassword
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: dft-postgresql-secrets
+                  key: dbUrl
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: dft-postgresql-secrets
+                  key: dbUser
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dft-postgresql-secrets
+                  key: dbPassword
+            - name: SPRING_DATASOURCE_POSTGRESPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dft-postgresql-secrets
+                  key: postgresPassword
             - name: DIGITAL-TWINS_HOSTNAME
               valueFrom:
                 secretKeyRef:

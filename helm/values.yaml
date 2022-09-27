@@ -87,17 +87,13 @@ readinessProbe:
 
 postgresql:
   enabled: true
-  auth:
-    postgresPassword: "Connector@123"
-    password: "Connector@123"
-    username: "postgres"
-    database: "postgres"
+
 #postgres:
  # enabled: true
   #auth:
     #existingSecret: dft-postgres-secrets
   #secret:
-    #postgresPassword: "1mth3us3r"
+    #postgresPassword: ""
     #dbPassword: ""
     #dbUser: ""
     #database: ""

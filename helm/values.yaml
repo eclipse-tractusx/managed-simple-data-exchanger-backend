@@ -89,11 +89,11 @@ readinessProbe:
   
 postgres:
   enabled: true
-  auth:
-    existingSecret: dft-postgres-secrets
-  secret:
-    postgresPassword: "1mth3us3r"
-    dbPassword: ""
-    dbUser: ""
-    database: ""
-    dbUrl: ""
+  #auth:
+    #existingSecret: dft-postgres-secrets
+  #secret:
+    #postgresPassword: "1mth3us3r"
+    #dbPassword: ""
+    #dbUser: ""
+    #database: ""
+    #dbUrl: ""

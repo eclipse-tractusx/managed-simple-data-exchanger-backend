@@ -81,4 +81,6 @@ ingress:
  
 postgres:
   enabled: true
+  auth:
+    existingSecret: dft-postgresql-secrets
   

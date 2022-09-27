@@ -23,15 +23,15 @@ version: 1.0.0
 # It is recommended to use it with quotes.
 appVersion: "1.0.0"
 
-#dependencies:
-  #- name: postgresql
-   # version: 1.0.0
-    #repository: file://charts/postgresql
-    #alias: postgres
-    #condition: postgresql.enabled
-
 dependencies:
-  - condition: postgresql.enabled
-    name: postgresql
-    repository: https://charts.bitnami.com/bitnami
-    version: 11.x.x
+  - name: postgresql
+    version: 1.0.0
+    repository: file://charts/postgresql
+    alias: postgres
+    condition: postgresql.enabled
+
+#dependencies:
+ # - condition: postgresql.enabled
+    #name: postgresql
+    #repository: https://charts.bitnami.com/bitnami
+    #version: 11.x.x

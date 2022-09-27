@@ -3,12 +3,13 @@ kind: Ingress
 metadata:
   name: {{ include "helm.fullname" . }}
   labels:
+     {{- include "helm.labels" . | nindent 4 }}
+  annotations:
     nginx.ingress.kubernetes.io/backend-protocol: HTTP
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
     nginx.ingress.kubernetes.io/affinity: "cookie"
     nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
     nginx.ingress.kubernetes.io/enable-cors: 'false' 
-  annotations:
    {{- toYaml . | nindent 4 }}
 spec:
   ingressClassName: {{ .Values.ingress.className }}

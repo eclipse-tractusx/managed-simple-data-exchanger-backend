@@ -68,5 +68,15 @@ readinessProbe:
   successThreshold: 1
   timeoutSeconds: 1
 
+ingress:
+  enabled: false
+  host: dft-api.int.demo.catena-x.net
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: HTTP
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
+    nginx.ingress.kubernetes.io/enable-cors: 'false'
+
 postgres:
   enabled: true

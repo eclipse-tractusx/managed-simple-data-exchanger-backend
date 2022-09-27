@@ -87,7 +87,7 @@ readinessProbe:
 #postgres:
  # enabled: true
   
-postgresql:
+postgres:
   enabled: true
   auth:
     existingSecret: dft-postgres-secrets

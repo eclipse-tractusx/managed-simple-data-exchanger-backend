@@ -80,3 +80,5 @@ ingress:
 
 postgres:
   enabled: true
+  auth:
+    postgresPassword: "admin@123"

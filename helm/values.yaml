@@ -84,11 +84,16 @@ readinessProbe:
   successThreshold: 1
   timeoutSeconds: 1
 
+
+postgresql:
+  enabled: true
+  auth:
+    postgresPassword: "Connector@123"
+    password: "Connector@123"
+    username: "postgres"
+    database: "postgres"
 #postgres:
  # enabled: true
-  
-postgres:
-  enabled: true
   #auth:
     #existingSecret: dft-postgres-secrets
   #secret:

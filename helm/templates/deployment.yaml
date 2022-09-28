@@ -51,11 +51,11 @@ spec:
                 secretKeyRef:
                   name: dft-postgresql-secrets
                   key: dbPassword
-            - name: SPRING_DATASOURCE_POSTGRESPASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: dft-postgresql-secrets
-                  key: postgres-password
+            #- name: SPRING_DATASOURCE_POSTGRESPASSWORD
+            #  valueFrom:
+               # secretKeyRef:
+                #  name: dft-postgresql-secrets
+                 # key: postgresPassword
             - name: DIGITAL-TWINS_HOSTNAME
               valueFrom:
                 secretKeyRef:

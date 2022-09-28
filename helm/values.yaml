@@ -82,7 +82,7 @@ ingress:
 postgres:
   enabled: true
   auth:
-    postgres-password: "admin@123"
+    postgresPassword: "admin@123"
     username: "dftUser"
     password: "admin@123"
     database: "dftdb"

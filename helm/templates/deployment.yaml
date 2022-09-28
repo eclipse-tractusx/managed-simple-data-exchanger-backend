@@ -45,12 +45,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: dft-postgresql-secrets
-                  key: dbUser
+                  key: username
             - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: dft-postgresql-secrets
-                  key: dbPassword
+                  key: password
             #- name: SPRING_DATASOURCE_POSTGRESPASSWORD
             #  valueFrom:
                # secretKeyRef:

@@ -83,7 +83,7 @@ postgres:
   enabled: true
   auth:
     postgres-password: "admin@123"
-    username: "postgres"
+    username: "dftUser"
     password: "admin@123"
     database: "dftdb"
     

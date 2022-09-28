@@ -84,9 +84,9 @@ postgres:
   auth:
     existingSecret: dft-postgresql-secrets
  #  postgresPassword: "admin@123"
-    username: "dftUser"
+ #   username: "dftUser"
  #  password: "admin@123"
-    database: "dftdb"
+ #   database: "dftdb"
     
     #database: "dftdb"
     #username: "dftUser"

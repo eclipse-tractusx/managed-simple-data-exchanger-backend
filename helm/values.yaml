@@ -86,6 +86,8 @@ postgres:
     enablePostgresUser: true
     postgres-password: "Postgres@123"
     database: "dftdb"
+    username: "dftUser"
+    password: "admin@123"
     #dbUser: "dftUser"
     #dbPassword: "admin@123"
     

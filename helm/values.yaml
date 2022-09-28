@@ -82,11 +82,10 @@ ingress:
 postgres:
   enabled: true
   auth:
-    existingSecret: dft-postgresql-secrets
-    #postgresPassword: "admin@123"
-    #username: "dftUser"
-    #password: "admin@123"
-    #database: "dftdb"
+    postgresPassword: "admin@123"
+    username: "dftUser"
+    password: "admin@123"
+    database: "dftdb"
     
     #database: "dftdb"
     #username: "dftUser"

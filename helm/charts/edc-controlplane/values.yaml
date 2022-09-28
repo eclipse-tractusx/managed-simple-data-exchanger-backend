@@ -253,7 +253,7 @@ postgresql:
 configuration:
   # -- EDC configuration.properties configuring aspects of the [eclipse-dataspaceconnector](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector)
   properties: |-
-    edc.receiver.http.endpoint=https://gateway-dataservices.germanywestcentral.cloudapp.azure.com:8888/edc-backend/api/v1/public
+    edc.receiver.http.endpoint=http://gateway-dataservices.germanywestcentral.cloudapp.azure.com:8888/edc-backend/api/v1/public
     edc.ids.title=Eclipse Dataspace Connector
     edc.ids.description=Eclipse Dataspace Connector
     edc.ids.id=urn:connector:edc

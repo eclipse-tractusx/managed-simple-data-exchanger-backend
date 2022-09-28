@@ -83,11 +83,11 @@ postgres:
   enabled: true
   auth:
     #existingSecret: dft-postgresql-secrets
-    dbUrl: "jdbc:postgresql://product-dft-backend-postgres:5432/dft"
-    dbUser: "dftUser"
-    dbPassword: "admin@123"
-    postgres-password: "admin@123"
-    dbName: "dft"
+    enablePostgresUser: true
+    postgres-password: "Postgres@123"
+    database: "dft"
+    #dbUser: "dftUser"
+    #dbPassword: "admin@123"
     
  
   

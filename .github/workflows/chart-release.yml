@@ -31,7 +31,7 @@ jobs:
           
       - name: Update helm dependencies for chart1
         run: |
-          cd charts/charts
+          cd charts/dft-backend/charts
           helm repo add bitnami https://charts.bitnami.com/bitnami
           helm dependency update
           

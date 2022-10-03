@@ -18,7 +18,7 @@ RUN mvn package
 # our final base image
 FROM eclipse-temurin:18.0.1_10-jre
 
-RUN rm -f -R ./charts
+RUN rm -f -R charts
 
 ARG UID=7000
 ARG GID=7000

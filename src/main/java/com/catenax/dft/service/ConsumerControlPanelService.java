@@ -25,6 +25,7 @@ import com.catenax.dft.entities.UsagePolicy;
 import com.catenax.dft.entities.database.ContractNegotiationInfoEntity;
 import com.catenax.dft.entities.edc.request.policies.ConstraintRequest;
 import com.catenax.dft.entities.edc.request.policies.PolicyConstraintBuilderService;
+import com.catenax.dft.enums.NegotiationState;
 import com.catenax.dft.enums.PolicyAccessEnum;
 import com.catenax.dft.enums.UsagePolicyEnum;
 import com.catenax.dft.facilitator.AbstractEDCStepsHelper;
@@ -32,6 +33,8 @@ import com.catenax.dft.facilitator.ContractNegotiateManagement;
 import com.catenax.dft.gateways.database.ContractNegotiationInfoRepository;
 import com.catenax.dft.mapper.EDCAssetConstant;
 import com.catenax.dft.model.asset.Asset;
+import com.catenax.dft.model.contractnegotiation.ContractAgreementResponse;
+import com.catenax.dft.model.contractnegotiation.ContractNegotiationDto;
 import com.catenax.dft.model.contractnegotiation.ContractNegotiationsResponse;
 import com.catenax.dft.model.contractoffers.ContractOffer;
 import com.catenax.dft.model.contractoffers.ContractOffersCatalogResponse;
@@ -60,7 +63,7 @@ import java.util.stream.Stream;
 @Service
 public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
-    private final Integer limit = 10000;
+    private static final Integer LIMIT = 10000;
     private final String edcDataUri;
     private final ContractOfferCatalogApi contractOfferCatalogApiProxy;
     private final ContractNegotiateManagement contractNegotiateManagement;
@@ -88,7 +91,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
         ContractOffersCatalogResponse contractOfferCatalog = contractOfferCatalogApiProxy.getContractOffersCatalog(
                 getAuthHeader(),
-                providerUrl, limit);
+                providerUrl, LIMIT);
 
         for (ContractOffer contractOffer : contractOfferCatalog.getContractOffers()) {
             Asset asset = contractOffer.getAsset();
@@ -97,10 +100,10 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
             //Populating usage policies response based on usage policy constraints
             List<UsagePolicy> usagePolicies = new ArrayList<>();
             policy.getPermissions().stream().forEach(permission -> {
-                usagePolicies.addAll(getUsagePolicies(permission.getConstraints().stream()));
+                usagePolicies.addAll(UtilityFunctions.getUsagePolicies(permission.getConstraints().stream()));
             });
 
-            addCustomUsagePolicy(policy.getExtensibleProperties(), usagePolicies);
+            UtilityFunctions.addCustomUsagePolicy(policy.getExtensibleProperties(), usagePolicies);
             //Later to be part of access policy
             List<String> bpnNumbers = new ArrayList<>();
             policy.getPermissions().stream().forEach(permission -> {
@@ -134,72 +137,8 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
         return queryOfferResponse;
     }
 
-    private void addMissingPolicies(List<UsagePolicy> usagePolicies) {
-        Arrays.stream(UsagePolicyEnum.values()).forEach(
-                policy -> {
-                    if (!policy.equals(UsagePolicyEnum.CUSTOM)) {
-                        boolean found = usagePolicies.stream().anyMatch(usagePolicy -> usagePolicy.getType().equals(policy));
-                        if (!found) {
-                            UsagePolicy policyObj = UsagePolicy.builder().type(policy).typeOfAccess(PolicyAccessEnum.UNRESTRICTED)
-                                    .value("").build();
-                            usagePolicies.add(policyObj);
-                        }
-                    }
-                }
-        );
-    }
-
-    private void addCustomUsagePolicy(HashMap<String, String> extensibleProperties, List<UsagePolicy> usagePolicies) {
-        if (!CollectionUtils.isEmpty(extensibleProperties) &&
-                extensibleProperties.keySet().contains(UsagePolicyEnum.CUSTOM.name())) {
-            UsagePolicy policyObj = UsagePolicy.builder().type(UsagePolicyEnum.CUSTOM).typeOfAccess(PolicyAccessEnum.RESTRICTED)
-                    .value(extensibleProperties.get(UsagePolicyEnum.CUSTOM.name())).build();
-            usagePolicies.add(policyObj);
-        }
-        else
-        {
-            UsagePolicy policyObj = UsagePolicy.builder().type(UsagePolicyEnum.CUSTOM).typeOfAccess(PolicyAccessEnum.UNRESTRICTED)
-                    .value("").build();
-            usagePolicies.add(policyObj);
-        }
-    }
-
     private String getFieldFromAsset(Asset asset, String field) {
         return asset.getProperties().getOrDefault(field, "");
-    }
-
-    private List<UsagePolicy> getUsagePolicies(Stream<ConstraintRequest> constraints) {
-        List<UsagePolicy> usagePolicies = new ArrayList<>();
-        constraints.forEach(constraint ->
-        {
-            Object leftExpVal = constraint.getLeftExpression().getValue();
-            Object rightExpVal = constraint.getRightExpression().getValue();
-            UsagePolicy policyResponse = null;
-            switch (leftExpVal.toString()) {
-                case "idsc:ROLE":
-                    policyResponse = UsagePolicy.builder().type(UsagePolicyEnum.ROLE)
-                            .typeOfAccess(PolicyAccessEnum.RESTRICTED)
-                            .value(rightExpVal.toString())
-                            .build();
-                    usagePolicies.add(policyResponse);
-                    break;
-                case "idsc:ELAPSED_TIME":
-                    policyResponse = UtilityFunctions.getDurationPolicy(rightExpVal.toString());
-                    usagePolicies.add(policyResponse);
-                    break;
-                case "idsc:PURPOSE":
-                    policyResponse = UsagePolicy.builder().type(UsagePolicyEnum.PURPOSE)
-                            .typeOfAccess(PolicyAccessEnum.RESTRICTED)
-                            .value(rightExpVal.toString())
-                            .build();
-                    usagePolicies.add(policyResponse);
-                    break;
-                default:
-                    break;
-            }
-        });
-        addMissingPolicies(usagePolicies);
-        return usagePolicies;
     }
 
     @Async
@@ -250,4 +189,30 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
     }
 
-}
+    public List<ContractAgreementResponse> getAllContractOffers(Integer limit, Integer offset) {
+        List<ContractAgreementResponse> contractAgreementResponses = new ArrayList<>();
+        List<ContractNegotiationDto> contractNegotiationDtoList = contractNegotiateManagement.getAllContractNegotiations(limit, offset);
+        contractNegotiationDtoList.stream().forEach((contract)->
+                {
+                    if (contract.getState().equals(NegotiationState.CONFIRMED.name())) {
+                        String negotiationId = contract.getId();
+                        if (StringUtils.isNotBlank(contract.getContractAgreementId())) {
+                            ContractAgreementResponse agreementResponse = contractNegotiateManagement.getAgreementBasedOnNegotiationId(negotiationId);
+                            agreementResponse.setCounterPartyAddress(contract.getCounterPartyAddress());
+                            agreementResponse.setDateCreated(contract.getCreatedAt());
+                            agreementResponse.setDateUpdated(contract.getUpdatedAt());
+                            contractAgreementResponses.add(agreementResponse);
+                        }
+                    } else {
+                        ContractAgreementResponse agreementResponse = ContractAgreementResponse.builder().contractAgreementId(StringUtils.EMPTY).organizationName(StringUtils.EMPTY)
+                                .title(StringUtils.EMPTY).negotiationId(contract.getId()).state(contract.getState())
+                                .contractAgreementInfo(null).counterPartyAddress(contract.getCounterPartyAddress())
+                                .dateCreated(contract.getCreatedAt()).dateUpdated(contract.getUpdatedAt()).build();
+                        contractAgreementResponses.add(agreementResponse);
+                    }
+                }
+                );
+        return contractAgreementResponses;
+        }
+
+    }

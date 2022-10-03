@@ -23,6 +23,8 @@ package com.catenax.dft.entities;
 import com.catenax.dft.enums.DurationEnum;
 import com.catenax.dft.enums.PolicyAccessEnum;
 import com.catenax.dft.enums.UsagePolicyEnum;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,6 +37,8 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UsagePolicy implements Serializable {
 
     @JsonProperty(value = "type")

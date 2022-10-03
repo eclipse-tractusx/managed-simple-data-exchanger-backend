@@ -66,6 +66,18 @@ class ConsumerControllerTest {
                 .andExpect(MockMvcResultMatchers.content().string("[]"));
     }
 
+    @Test
+    void testQueryOnDataOffersStatus() throws Exception {
+        when(consumerControlPanelService.getAllContractOffers(anyInt(), anyInt())).thenReturn(new ArrayList<>());
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/contract-offers");
+        MockMvcBuilders.standaloneSetup(consumerController)
+                .build()
+                .perform(requestBuilder)
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+                .andExpect(MockMvcResultMatchers.content().string("[]"));
+    }
+
 
     @Test
     void testQueryOnDataOffersWithOfferModel() throws Exception {

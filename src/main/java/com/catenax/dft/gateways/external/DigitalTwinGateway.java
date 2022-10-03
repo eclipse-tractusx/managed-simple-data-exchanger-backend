@@ -60,7 +60,6 @@ public class DigitalTwinGateway {
     private static final String CLIENT_ID_TOKEN_QUERY_PARAMETER = "client_id";
     private static final String CLIENT_SECRET_TOKEN_QUERY_PARAMETER = "client_secret";
     private static final String GRANT_TYPE_TOKEN_QUERY_PARAMETER = "grant_type";
-    private static final String CLIENT_CREDENTIALS_TOKEN_QUERY_PARAMETER_VALUE = "client_credentials";
     private static final String ACCESS_TOKEN = "access_token";
 
     private String accessToken;
@@ -69,6 +68,8 @@ public class DigitalTwinGateway {
     private String clientSecret;
     @Value(value = "${digital-twins.authentication.clientId}")
     private String clientId;
+    @Value(value = "${digital-twins.authentication.grantType}")
+    private String grantType;
     @Value(value = "${digital-twins.hostname}")
     private String digitalTwinsHost;
     @Value(value = "${digital-twins.authentication.url}")
@@ -196,7 +197,7 @@ public class DigitalTwinGateway {
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add(CLIENT_ID_TOKEN_QUERY_PARAMETER, clientId);
         map.add(CLIENT_SECRET_TOKEN_QUERY_PARAMETER, clientSecret);
-        map.add(GRANT_TYPE_TOKEN_QUERY_PARAMETER, CLIENT_CREDENTIALS_TOKEN_QUERY_PARAMETER_VALUE);
+        map.add(GRANT_TYPE_TOKEN_QUERY_PARAMETER, grantType);
 
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
         ResponseEntity<String> response = restTemplate.postForEntity(tokenUrl, entity, String.class);

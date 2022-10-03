@@ -31,6 +31,7 @@ import org.keycloak.adapters.springsecurity.filter.KeycloakAuthenticationProcess
 import org.keycloak.adapters.springsecurity.filter.KeycloakPreAuthActionsFilter;
 import org.keycloak.adapters.springsecurity.filter.KeycloakSecurityContextRequestFilter;
 import org.keycloak.adapters.springsecurity.management.HttpSessionManager;
+import org.keycloak.common.crypto.CryptoIntegration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -56,6 +57,7 @@ public class WebSecurityKeyclockConfig extends KeycloakWebSecurityConfigurerAdap
 	protected void configure(HttpSecurity http) throws Exception {
 		super.configure(http);
 
+        CryptoIntegration.init(this.getClass().getClassLoader());
 		http.csrf().disable().cors()
 		.and().headers().frameOptions().sameOrigin()
 		.and().authorizeRequests().antMatchers(PUBLIC_URL).permitAll()

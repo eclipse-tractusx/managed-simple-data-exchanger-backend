@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 T-Systems International Gmbh
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022 T-Systems International GmbH
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -18,33 +18,25 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package com.catenax.dft.entities;
+package com.catenax.dft.model.contractnegotiation;
 
-import com.catenax.dft.enums.DurationEnum;
-import com.catenax.dft.enums.PolicyAccessEnum;
-import com.catenax.dft.enums.UsagePolicyEnum;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
-
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class UsagePolicyRequest implements Serializable {
-
-    @JsonProperty(value = "type")
-    UsagePolicyEnum type;
-    @JsonProperty(value = "typeOfAccess")
-    PolicyAccessEnum typeOfAccess;
-    @JsonProperty(value = "value")
-    String value;
-    @JsonProperty(value = "durationUnit")
-    DurationEnum durationUnit;
-    @JsonProperty(value = "customName")
-    String customName;
+public class ContractAgreementResponse {
+    private String negotiationId;
+    private String counterPartyAddress;
+    private String state;
+    private String title;
+    private String organizationName;
+    private String contractAgreementId;
+    private ContractAgreementInfo contractAgreementInfo;
+    private long dateCreated;
+    private long dateUpdated;
 }

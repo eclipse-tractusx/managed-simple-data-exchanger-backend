@@ -25,14 +25,19 @@ import com.catenax.dft.entities.UsagePolicy;
 import com.catenax.dft.entities.edc.request.policies.ConstraintRequest;
 import com.catenax.dft.entities.edc.request.policies.Expression;
 import com.catenax.dft.entities.edc.request.policies.PolicyConstraintBuilderService;
+import com.catenax.dft.enums.NegotiationState;
 import com.catenax.dft.enums.PolicyAccessEnum;
+import com.catenax.dft.enums.Type;
 import com.catenax.dft.enums.UsagePolicyEnum;
 import com.catenax.dft.facilitator.ContractNegotiateManagement;
 import com.catenax.dft.gateways.database.ContractNegotiationInfoRepository;
+import com.catenax.dft.model.contractnegotiation.ContractAgreementResponse;
+import com.catenax.dft.model.contractnegotiation.ContractNegotiationDto;
 import com.catenax.dft.model.contractoffers.ContractOffersCatalogResponse;
 import com.catenax.dft.model.request.ConsumerRequest;
 import com.catenax.dft.model.request.OfferRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,6 +122,15 @@ class ConsumerControlPanelServiceTest {
         when(policyConstraintBuilderService.getUsagePolicyConstraints(any())).thenReturn(list);
         assertEquals(usagePolicies, policies);
         assertEquals(1, consumerControlPanelService.getAuthHeader().size());
+    }
+
+    @Test
+    void testContractOffer() {
+        List<ContractNegotiationDto> contractNegotiationDtoList = List.of(ContractNegotiationDto.builder().contractAgreementId(null)
+                .id("negotiationId").state(NegotiationState.DECLINED.name()).counterPartyAddress("address").build());
+        when(contractNegotiateManagement.getAllContractNegotiations(anyInt(), anyInt())).thenReturn(contractNegotiationDtoList);
+        List<ContractAgreementResponse> list = consumerControlPanelService.getAllContractOffers(10,1);
+        assertEquals(1, list.size());
     }
 
     @Test

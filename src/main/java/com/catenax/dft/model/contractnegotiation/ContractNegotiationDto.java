@@ -18,33 +18,27 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package com.catenax.dft.model.asset;
+package com.catenax.dft.model.contractnegotiation;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.catenax.dft.enums.Type;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.SneakyThrows;
-
-import java.util.Map;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(Include.NON_NULL)
-public class Asset {
+public class ContractNegotiationDto {
+    private String contractAgreementId; // is null until state == CONFIRMED
+    private String counterPartyAddress;
+    private String errorDetail;
+    private String id;
+    private String protocol = "ids-multipart";
+    private String state;
+    private Type type = Type.CONSUMER;
+    private long createdAt;
+    private long updatedAt;
 
-	public Map<String, String> properties;
-	
-    @SneakyThrows
-    public String toJsonString() {
-        final ObjectMapper mapper = new ObjectMapper();
-        return mapper.writeValueAsString(this);
-    }
 }

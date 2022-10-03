@@ -48,30 +48,34 @@ public class PolicyConstraintBuilderService {
         if (usagePolicies != null && !usagePolicies.isEmpty()) {
             usagePolicies.stream().forEach(policy ->
             {
-                switch (policy.getType()) {
-                    case DURATION:
-                        ConstraintRequest request = DurationPolicyDTO.fromUsagePolicy(policy).toConstraint();
-                        if (request != null) {
-                            usageConstraintList.add(request);
-                        }
-                        break;
-                    case PURPOSE:
-                        ConstraintRequest purposeRequest = PurposePolicyDTO.fromUsagePolicy(policy).toConstraint();
-                        if (purposeRequest != null) {
-                            usageConstraintList.add(purposeRequest);
-                        }
-                        break;
-                    case ROLE:
-                        ConstraintRequest roleRequest = RolePolicyDTO.fromUsagePolicy(policy).toConstraint();
-                        if (roleRequest != null) {
-                            usageConstraintList.add(roleRequest);
-                        }
-                        break;
-                    default:
-                        break;
-                }
+                usagePolicy(usageConstraintList, policy);
             });
         }
         return usageConstraintList;
+    }
+
+    private void usagePolicy(List<ConstraintRequest> usageConstraintList, UsagePolicy policy) {
+        switch (policy.getType()) {
+            case DURATION:
+                ConstraintRequest request = DurationPolicyDTO.fromUsagePolicy(policy).toConstraint();
+                if (request != null) {
+                    usageConstraintList.add(request);
+                }
+                break;
+            case PURPOSE:
+                ConstraintRequest purposeRequest = PurposePolicyDTO.fromUsagePolicy(policy).toConstraint();
+                if (purposeRequest != null) {
+                    usageConstraintList.add(purposeRequest);
+                }
+                break;
+            case ROLE:
+                ConstraintRequest roleRequest = RolePolicyDTO.fromUsagePolicy(policy).toConstraint();
+                if (roleRequest != null) {
+                    usageConstraintList.add(roleRequest);
+                }
+                break;
+            default:
+                break;
+        }
     }
 }

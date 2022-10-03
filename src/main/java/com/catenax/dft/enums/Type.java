@@ -1,6 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -18,22 +18,8 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package com.catenax.dft.model.response;
+package com.catenax.dft.enums;
 
-import com.catenax.dft.enums.PolicyAccessEnum;
-import com.catenax.dft.enums.UsagePolicyEnum;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-public class UsagePolicyResponse {
-
-    UsagePolicyEnum type;
-    PolicyAccessEnum typeOfAccess;
-    String value;
+public enum Type {
+    PROVIDER, CONSUMER
 }

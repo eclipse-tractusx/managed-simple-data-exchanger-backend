@@ -20,18 +20,21 @@
 
 package com.catenax.dft.controllers;
 
+import com.catenax.dft.model.contractnegotiation.ContractAgreementResponse;
 import com.catenax.dft.model.request.ConsumerRequest;
 import com.catenax.dft.service.ConsumerControlPanelService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+import java.util.List;
 import java.util.UUID;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.ok;
 
 @Slf4j
@@ -54,11 +57,25 @@ public class ConsumerController {
     }
 
     @PostMapping(value = "/subscribe-data-offers")
-    public ResponseEntity subscribeDataOffers(@Valid @RequestBody ConsumerRequest consumerRequest) {
+    public ResponseEntity<Object> subscribeDataOffers(@Valid @RequestBody ConsumerRequest consumerRequest) {
         String processId = UUID.randomUUID().toString();
         log.info("Request recevied : /api/subscribe-data-offers");
         consumerControlPanelService.subscribeDataOffers(consumerRequest, processId);
         return ResponseEntity.ok().body(processId);
     }
 
+    @GetMapping(value = "/contract-offers", produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> queryOnDataOffersStatus(@RequestParam(value="limit", required = false) Integer limit, @RequestParam(value="offset", required = false) Integer offset) {
+        log.info("Request received : /api/contract-offer");
+        if(limit ==null)
+        {
+            limit = 10;
+        }
+        if(offset ==null)
+        {
+            offset = 1;
+        }
+        List<ContractAgreementResponse> responseEntity = consumerControlPanelService.getAllContractOffers(limit, offset);
+        return ok().body(responseEntity);
+    }
 }

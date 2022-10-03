@@ -21,13 +21,27 @@
 package com.catenax.dft.util;
 
 import com.catenax.dft.entities.UsagePolicy;
+import com.catenax.dft.entities.edc.request.policies.ConstraintRequest;
 import com.catenax.dft.enums.DurationEnum;
 import com.catenax.dft.enums.PolicyAccessEnum;
 import com.catenax.dft.enums.UsagePolicyEnum;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.CollectionUtils;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 
 
 public class UtilityFunctions {
+	
+	/* IMP: Resolve SonarQube Code smell Issue for "Add a private constructor to hide the implicit public one"
+	 * 
+	 */
+	 
+	private UtilityFunctions() {}	
 
     public static String removeLastSlashOfUrl(String url) {
         if (url.endsWith("/")) {
@@ -81,6 +95,69 @@ public class UtilityFunctions {
                 .durationUnit(durationUnit)
                 .build();
         return policyResponse;
+    }
+
+    public static List<UsagePolicy> getUsagePolicies(Stream<ConstraintRequest> constraints) {
+        List<UsagePolicy> usagePolicies = new ArrayList<>();
+        constraints.forEach(constraint ->
+        {
+            Object leftExpVal = constraint.getLeftExpression().getValue();
+            Object rightExpVal = constraint.getRightExpression().getValue();
+            UsagePolicy policyResponse = null;
+            switch (leftExpVal.toString()) {
+                case "idsc:ROLE":
+                    policyResponse = UsagePolicy.builder().type(UsagePolicyEnum.ROLE)
+                            .typeOfAccess(PolicyAccessEnum.RESTRICTED)
+                            .value(rightExpVal.toString())
+                            .build();
+                    usagePolicies.add(policyResponse);
+                    break;
+                case "idsc:ELAPSED_TIME":
+                    policyResponse = UtilityFunctions.getDurationPolicy(rightExpVal.toString());
+                    usagePolicies.add(policyResponse);
+                    break;
+                case "idsc:PURPOSE":
+                    policyResponse = UsagePolicy.builder().type(UsagePolicyEnum.PURPOSE)
+                            .typeOfAccess(PolicyAccessEnum.RESTRICTED)
+                            .value(rightExpVal.toString())
+                            .build();
+                    usagePolicies.add(policyResponse);
+                    break;
+                default:
+                    break;
+            }
+        });
+        addMissingPolicies(usagePolicies);
+        return usagePolicies;
+    }
+
+    public static void addCustomUsagePolicy(Map<String, String> extensibleProperties, List<UsagePolicy> usagePolicies) {
+        if (!CollectionUtils.isEmpty(extensibleProperties) &&
+                extensibleProperties.keySet().contains(UsagePolicyEnum.CUSTOM.name())) {
+            UsagePolicy policyObj = UsagePolicy.builder().type(UsagePolicyEnum.CUSTOM).typeOfAccess(PolicyAccessEnum.RESTRICTED)
+                    .value(extensibleProperties.get(UsagePolicyEnum.CUSTOM.name())).build();
+            usagePolicies.add(policyObj);
+        }
+        else
+        {
+            UsagePolicy policyObj = UsagePolicy.builder().type(UsagePolicyEnum.CUSTOM).typeOfAccess(PolicyAccessEnum.UNRESTRICTED)
+                    .value("").build();
+            usagePolicies.add(policyObj);
+        }
+    }
+    private static void addMissingPolicies(List<UsagePolicy> usagePolicies) {
+        Arrays.stream(UsagePolicyEnum.values()).forEach(
+                policy -> {
+                    if (!policy.equals(UsagePolicyEnum.CUSTOM)) {
+                        boolean found = usagePolicies.stream().anyMatch(usagePolicy -> usagePolicy.getType().equals(policy));
+                        if (!found) {
+                            UsagePolicy policyObj = UsagePolicy.builder().type(policy).typeOfAccess(PolicyAccessEnum.UNRESTRICTED)
+                                    .value("").build();
+                            usagePolicies.add(policyObj);
+                        }
+                    }
+                }
+        );
     }
 
 }

@@ -21,12 +21,15 @@
 package com.catenax.dft.api;
 
 import com.catenax.dft.model.contractnegotiation.AcknowledgementId;
+import com.catenax.dft.model.contractnegotiation.ContractAgreementDto;
+import com.catenax.dft.model.contractnegotiation.ContractNegotiationDto;
 import com.catenax.dft.model.contractnegotiation.ContractNegotiations;
 import com.catenax.dft.model.contractnegotiation.ContractNegotiationsResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @FeignClient(name = "ContractApi", url = "${edc.consumer.hostname}")
@@ -39,5 +42,13 @@ public interface ContractApi {
     @GetMapping(path = "/data/contractnegotiations/{contractnegotiationsId}")
     ContractNegotiationsResponse checkContractNegotiationsStatus(@PathVariable("contractnegotiationsId") String contractnegotiationsId,
                                                                  @RequestHeader Map<String, String> requestHeader);
+
+    @GetMapping(path = "/data/contractnegotiations")
+    List<ContractNegotiationDto> getAllContractNegotiations(@RequestParam("limit") Integer limit, @RequestParam("offset") Integer offset,
+                                                                  @RequestHeader Map<String, String> requestHeader);
+
+    @GetMapping(path = "/data/contractnegotiations/{contractnegotiationsId}/agreement")
+    ContractAgreementDto getAgreementBasedOnNegotiationId(@PathVariable("contractnegotiationsId") String contractnegotiationsId,
+                                      @RequestHeader Map<String, String> requestHeader);
 
 }

@@ -49,8 +49,8 @@ public enum UsagePolicyType {
     //EDC default use policy start	
     USE("USE", "Default use p[olicy for EDC");
 
-    public String label;
-    public String description;
+    private String label;
+    private String description;
 
     private UsagePolicyType(String label, String description) {
         this.label = label;

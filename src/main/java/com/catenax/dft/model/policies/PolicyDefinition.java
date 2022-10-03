@@ -34,6 +34,7 @@ import lombok.SneakyThrows;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 @Data
 @Builder
@@ -46,7 +47,7 @@ public class PolicyDefinition {
     private ArrayList<PermissionRequest> permissions;
     private ArrayList<Prohibition> prohibitions;
     private ArrayList<Obligation> obligations;
-    private HashMap<String, String> extensibleProperties;
+    private Map<String, String> extensibleProperties;
     private String inheritsFrom;
     private String assigner;
     private String assignee;

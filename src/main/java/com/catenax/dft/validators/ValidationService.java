@@ -53,30 +53,27 @@ public class ValidationService {
         }
        return true;
     }
-    private boolean validatePolicy(UsagePolicy usagePolicy) {
 
-        boolean isValid = false;
-        if(usagePolicy.getTypeOfAccess() != null && usagePolicy.getTypeOfAccess().equals(PolicyAccessEnum.UNRESTRICTED)) {
-            isValid = true;
-        }
-        else if(usagePolicy.getTypeOfAccess() != null && usagePolicy.getTypeOfAccess().equals(PolicyAccessEnum.RESTRICTED) &&
-                StringUtils.isNotBlank(usagePolicy.getValue())) {
-            isValid= true;
-        }
-        return isValid;
-    }
+	private boolean validatePolicy(UsagePolicy usagePolicy) {
 
-    private boolean validateDuration(UsagePolicy usagePolicy) {
+		boolean isValid = false;
+		if (usagePolicy.getTypeOfAccess().equals(PolicyAccessEnum.UNRESTRICTED)
+				|| (usagePolicy.getTypeOfAccess().equals(PolicyAccessEnum.RESTRICTED)
+						&& StringUtils.isNotBlank(usagePolicy.getValue()))) {
+			isValid = true;
+		}
 
-        boolean isValid = false;
-        if(usagePolicy.getTypeOfAccess() != null && usagePolicy.getTypeOfAccess().equals(PolicyAccessEnum.UNRESTRICTED)) {
-            isValid = true;
-        }
-        else if(usagePolicy.getTypeOfAccess() != null && usagePolicy.getTypeOfAccess().equals(PolicyAccessEnum.RESTRICTED) &&
-                StringUtils.isNotBlank(usagePolicy.getValue()) &&
-                usagePolicy.getDurationUnit() != null) {
-            isValid = true;
-        }
-        return isValid;
-    }
+		return isValid;
+	}
+
+	private boolean validateDuration(UsagePolicy usagePolicy) {
+
+		boolean isValid = false;
+		if (usagePolicy.getTypeOfAccess().equals(PolicyAccessEnum.UNRESTRICTED)
+				|| usagePolicy.getTypeOfAccess().equals(PolicyAccessEnum.RESTRICTED)
+						&& StringUtils.isNotBlank(usagePolicy.getValue()) && usagePolicy.getDurationUnit() != null) {
+			isValid = true;
+		}
+		return isValid;
+	}
 }

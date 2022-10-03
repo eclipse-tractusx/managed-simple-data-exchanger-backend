@@ -80,7 +80,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: dtf-digitaltwins-secrets
-                  key: digitalTwinAuthorizationGrantType
+                  key: digitalTwinsAuthenticationGrantType
             - name: EDC_ENABLED
               value: 'true'
             - name: EDC_HOSTNAME

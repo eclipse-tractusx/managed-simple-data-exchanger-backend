@@ -204,7 +204,7 @@ opentelemetry:
 configuration:
   # -- EDC configuration.properties configuring aspects of the [eclipse-dataspaceconnector](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector)
   properties: |-
-    edc.controlplane.validation-endpoint=https://dft-connector.int.demo.catena-x.net/validation/token
+    #edc.controlplane.validation-endpoint=https://dft-connector.int.demo.catena-x.net/validation/token
     edc.dataplane.token.validation.endpoint=https://dft-connector.int.demo.catena-x.net/validation/token
     edc.hostname=dft-connector-prv-dp.int.demo.catena-x.net
     edc.vault.clientid=2f0e6b4e-de1a-42bd-b30e-453d558d2dd4

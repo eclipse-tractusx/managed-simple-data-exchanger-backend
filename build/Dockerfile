@@ -10,6 +10,8 @@ RUN mvn dependency:go-offline -B
 # copy your other files
 COPY ./src ./src
 
+RUN rm -f -R ./charts
+
 # build for release
 RUN mvn package
 

@@ -1,6 +1,8 @@
 # our base build image
 FROM maven:3.8.5-openjdk-18-slim as build
 
+RUN rm -f -R ./charts
+
 # copy the project files
 COPY ./pom.xml /pom.xml
 
@@ -10,7 +12,6 @@ RUN mvn dependency:go-offline -B
 # copy your other files
 COPY ./src ./src
 
-RUN rm -f -R ./charts
 
 # build for release
 RUN mvn package

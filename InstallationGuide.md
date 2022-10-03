@@ -33,7 +33,7 @@ The values are on the [Vault](https://vault.vault.demo.catena-x.net/).
 | dft.apiKeyHeader | DFT_APIKEYHEADER          | url authentication key for edc asset payload  | Api-Key       |
 | dft.apiKey       | DFT_APIKEY                | url authentication code for edc asset payload | someCode      |
 | edc.enabled      | EDC_ENABLED               | enable / disable edc                          | true / false  |
-
+                     KEYCLOAK_REALM             
 The values are in the [Vault](https://vault.vault.demo.catena-x.net/).
 *<i><b>Must create a GitHub token to access</b></i> 
 

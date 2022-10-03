@@ -1,7 +1,6 @@
 # our base build image
 FROM maven:3.8.5-openjdk-18-slim as build
 
-RUN rm -f -R ./charts
 
 # copy the project files
 COPY ./pom.xml /pom.xml
@@ -18,6 +17,8 @@ RUN mvn package
 
 # our final base image
 FROM eclipse-temurin:18.0.1_10-jre
+
+RUN rm -f -R ./charts
 
 ARG UID=7000
 ARG GID=7000

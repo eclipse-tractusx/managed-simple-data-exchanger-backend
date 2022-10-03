@@ -76,6 +76,11 @@ spec:
                 secretKeyRef:
                   name: dtf-digitaltwins-secrets
                   key: digitalTwinAuthorizationClientSecret
+            - name: DIGITAL-TWINS_AUTHENTICATION_GRANTTYPE
+              valueFrom:
+                secretKeyRef:
+                  name: dtf-digitaltwins-secrets
+                  key: digitalTwinAuthorizationGrantType
             - name: EDC_ENABLED
               value: 'true'
             - name: EDC_HOSTNAME

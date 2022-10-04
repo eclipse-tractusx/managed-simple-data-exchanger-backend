@@ -2,7 +2,7 @@
 ## Product DFT
 Install from the command line:
 
-`docker pull ghcr.io/catenax-ng/product-dft-backend:main`
+`docker pull ghcr.io/catenax-ng/product-dft-backend:latest`
 
 
 It is necessary to inject the environment variables, credentials and URLs that can be found on application.properties file.

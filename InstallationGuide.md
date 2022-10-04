@@ -18,8 +18,9 @@ It is necessary to inject the environment variables, credentials and URLs that c
 | digital-twins.hostname                    | DIGITAL-TWINS_HOSTNAME                    | hostname for Digital Twins                     | https://                         |
 | digital-twins.authentication.url          | DIGITAL-TWINS_AUTHENTICATION_URL          | authentication url for Digital Twins           | https://                         |
 | digital-twins.authentication.clientId     | DIGITAL-TWINS_AUTHENTICATION_CLIENTID     | client ID authentication for Digital Twins     | sa-cl6-cx-4                      |
-| digital-twins.authentication.clientSecret | DIGITAL-TWINS_AUTHENTICATION_CLIENTSECRET | client secret authentication for Digital Twins | VrL8uSG5Tn3NrFiY39vs0klTmlvsRRmo |
-
+| digital-twins.authentication.clientSecret | DIGITAL-TWINS_AUTHENTICATION_CLIENTSECRET | client secret authentication for Digital Twins | 
+VrL8uSG5Tn3NrFiY39vs0klTmlvsRRmo |
+| digital-twins.authentication.granttype    | DIGITAL-TWINS_AUTHENTICATION_GRANTTYPE.   | grantType authentication for Digital Twins     | client_credentials
 The values are on the [Vault](https://vault.vault.demo.catena-x.net/).
 *<i><b>Must create a GitHub token to access</b></i>
 

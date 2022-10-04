@@ -35,6 +35,14 @@ service:
   type: ClusterIP
   port: 8080
 
+securityContext: 
+   capabilities:
+     drop:
+      - ALL
+   readOnlyRootFilesystem: true
+   runAsNonRoot: true
+   runAsUser: 1000
+   allowPrivilegeEscalation: false
 
 
 autoscaling:

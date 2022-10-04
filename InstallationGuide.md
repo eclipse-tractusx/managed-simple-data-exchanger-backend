@@ -37,6 +37,17 @@ The values are on the [Vault](https://vault.vault.demo.catena-x.net/).
 The values are in the [Vault](https://vault.vault.demo.catena-x.net/).
 *<i><b>Must create a GitHub token to access</b></i> 
 
+#### KEYCLOAK variables:
+
+| Property name    | Environment Variable Name | Description                                   | Example Value |
+|------------------|---------------------------|-----------------------------------------------|---------------|
+| keycloak.realm    | KEYCLOAK_REALM             |                                 | REALM NAME     |
+| keycloak.auth-server-url | KEYCLOAK_AUTH_SERVER_URL          |                        | Server URl    |
+| keycloak.ssl-required      | KEYCLOAK_SSL-REQUIRED                |                              | External       |
+| keycloak.resource    | KEYCLOAK_REASOURCE             |                              |   Keycloak Username    |
+| keycloak.use-resource-role-mappings | KEYCLOAK_USE-RESOURCE-ROLE-MAPPINGS         |  | true       |
+| keycloak.bearer-only      | KEYCLOAK_BEARER-ONLY                |  | someCode      | true         |
+
 ## Upload a file:
 When a file .csv is uploaded, the program checks whether the file is a SerialPartTypization or an AssemblyPartRelationship and there is a pipeline for each one.
 

@@ -23,18 +23,6 @@ VrL8uSG5Tn3NrFiY39vs0klTmlvsRRmo |
 | digital-twins.authentication.granttype    | DIGITAL-TWINS_AUTHENTICATION_GRANTTYPE.   | grantType authentication for Digital Twins     | client_credentials
 The values are on the [Vault](https://vault.vault.demo.catena-x.net/).
 *<i><b>Must create a GitHub token to access</b></i>
-
-#### EDC variables:
-| Property name    | Environment Variable Name | Description                                   | Example Value |
-|------------------|---------------------------|-----------------------------------------------|---------------|
-| edc.hostname     | EDC_HOSTNAME              | edc hostname                                  | https://      |
-| edc.apiKeyHeader | EDC_APIKEYHEADER          | API KEY header for edc                        | X-Api_Key     |
-| edc.apiKey       | EDC_APIKEY                | API KEY for edc                               | 123456        |
-| dft.hostname     | DFT_HOSTNAME              | hostname for DFT                              | https://      |
-| dft.apiKeyHeader | DFT_APIKEYHEADER          | url authentication key for edc asset payload  | Api-Key       |
-| dft.apiKey       | DFT_APIKEY                | url authentication code for edc asset payload | someCode      |
-| edc.enabled      | EDC_ENABLED               | enable / disable edc                          | true / false  |
-
 #### EDC variables:
 | Property name    | Environment Variable Name | Description                                   | Example Value |
 |------------------|---------------------------|-----------------------------------------------|---------------|

@@ -36,3 +36,7 @@ This project provides the following files:
 | `/charts/dft-backend/templates/service.yaml`        | Template to configure your application deployment.                 | 
 | `/charts/dft-backend/templates/hpa.yaml`            | Template to configure your application deployment.                 | 
 | `/charts/dft-backend/templates/NOTES.txt`           | Helper to enable locating your application IP and PORT        | 
+
+## Helm Commands
+$ helm repo add product-dft-backend https://catenax-ng.github.io/product-dft-backend
+$ helm install my-release catenax-ng/product-dft-backend --version 1.5.0

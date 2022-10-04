@@ -18,8 +18,6 @@ RUN mvn package
 # our final base image
 FROM eclipse-temurin:18.0.1_10-jre
 
-RUN rm -f -R charts
-
 ARG USERNAME=dftuser
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID

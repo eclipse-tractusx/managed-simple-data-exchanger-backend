@@ -39,11 +39,11 @@ USER $USERNAME
 WORKDIR /dft
 
 # copy over the built artifact from the maven image
-#COPY --chown=${UID}:${GID} --from=build target/*.jar ./app.jar
+COPY --chown=${UID}:${GID} --from=build target/*.jar ./app.jar
 
-#RUN chown ${UID}:${GID} /dft
+RUN chown ${UID}:${GID} /dft
 
-#USER ${UID}:${GID}
+USER ${UID}:${GID}
 
 # set the startup command to run your binary
 CMD ["java", "-jar", "./app.jar"]

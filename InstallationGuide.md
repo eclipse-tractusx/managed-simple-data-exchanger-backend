@@ -35,6 +35,21 @@ The values are on the [Vault](https://vault.vault.demo.catena-x.net/).
 | dft.apiKey       | DFT_APIKEY                | url authentication code for edc asset payload | someCode      |
 | edc.enabled      | EDC_ENABLED               | enable / disable edc                          | true / false  |
 
+#### EDC variables:
+| Property name    | Environment Variable Name | Description                                   | Example Value |
+|------------------|---------------------------|-----------------------------------------------|---------------|
+| edc.hostname     | EDC_HOSTNAME              | edc hostname                                  | https://      |
+| edc.apiKeyHeader | EDC_APIKEYHEADER          | API KEY header for edc                        | X-Api_Key     |
+| edc.apiKey       | EDC_APIKEY                | API KEY for edc                               | 123456        |
+| dft.hostname     | DFT_HOSTNAME              | hostname for DFT                              | https://      |
+| dft.apiKeyHeader | DFT_APIKEYHEADER          | url authentication key for edc asset payload  | Api-Key       |
+| dft.apiKey       | DFT_APIKEY                | url authentication code for edc asset payload | someCode      |
+| edc.enabled      | EDC_ENABLED               | enable / disable edc                          | true / false  |
+| edc.consumer.hostname | EDC_CONSUMER_HOSTNAME | edc consumer hostname                         | https://           
+| edc.consumer.apikeyheader | EDC_CONSUMER_APIKEYHEADER | API KEY header for edc               | X-Api_Key 
+| edc.consumer.apikey | EDC_CONSUMER_APIKEY | API KEY for edc   										  | 123456
+| edc.consumer.datauri | EDC_CONSUMER_DATAURI | consumer data uri  									  | /api/v1/ids/data
+
 The values are in the [Vault](https://vault.vault.demo.catena-x.net/).
 *<i><b>Must create a GitHub token to access</b></i> 
 

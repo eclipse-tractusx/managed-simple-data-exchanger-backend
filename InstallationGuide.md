@@ -69,10 +69,15 @@ When a file .csv is uploaded, the program checks whether the file is a SerialPar
 3. Registers in DigitalTwins.
 4. Stores the line in the database.
 
+For Batch Upload:
+
+Maps the content of the line with an Batch.
+Generates the UUID if it does not contain a UUID.
+Registers in DigitalTwins.
+Stores the line in the database.
+
 The file .csv is loaded in memory, the content is saved and then, the file is removed from memory.
 
-
 If the file is not .csv, it is read, processed and is considered as FAILED
-
 
 

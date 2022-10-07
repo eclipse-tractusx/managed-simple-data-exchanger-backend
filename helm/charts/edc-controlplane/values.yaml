@@ -258,11 +258,11 @@ configuration:
     edc.ids.description=Eclipse Dataspace Connector
     edc.ids.id=urn:connector:edc
     edc.ids.security.profile=base
-    edc.ids.endpoint=https://dft-connector.int.demo.catena-x.net:7272/api/v1/ids
+    edc.ids.endpoint=https://dft-connector.int.demo.catena-x.net/api/v1/ids
     edc.ids.maintainer=https://dft-connector.int.demo.catena-x.net
     edc.ids.curator=https://dft-connector.int.demo.catena-x.net
     edc.ids.catalog.id=urn:catalog:default
-    ids.webhook.address=https://dft-connector.int.demo.catena-x.net:7272
+    ids.webhook.address=https://dft-connector.int.demo.catena-x.net/api/v1/ids
     edc.api.control.auth.apikey.key=X-Api-Key
     edc.api.control.auth.apikey.value=pass
     edc.api.auth.key=password

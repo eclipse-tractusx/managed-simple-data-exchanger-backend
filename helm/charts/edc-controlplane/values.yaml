@@ -262,7 +262,7 @@ configuration:
     edc.ids.maintainer=https://dft-connector.int.demo.catena-x.net
     edc.ids.curator=https://dft-connector.int.demo.catena-x.net
     edc.ids.catalog.id=urn:catalog:default
-    ids.webhook.address=https://dft-connector.int.demo.catena-x.net/api/v1/ids
+    ids.webhook.address=https://dft-connector.int.demo.catena-x.net
     edc.api.control.auth.apikey.key=X-Api-Key
     edc.api.control.auth.apikey.value=pass
     edc.api.auth.key=password

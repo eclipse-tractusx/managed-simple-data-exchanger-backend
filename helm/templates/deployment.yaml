@@ -167,12 +167,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: digitaltwin-secret
-                  key: portalpoolhostURL 
+                  key: partnerpoolhostURL
             - name: PORTAL-BACKEND-HOSTNAME 
               valueFrom:
                 secretKeyRef:
                   name: digitaltwin-secret
-                  key: partnerpoolhostURL 
+                  key: portalpoolhostURL 
           ports:
             - name: http
               containerPort: 8080

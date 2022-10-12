@@ -162,7 +162,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: dtf-digitaltwins-secrets
-                  key: keycloakportalApi  
+                  key: keycloakportalApisecret  
             - name: PARTNER-POOL-HOSTNAME
               valueFrom:
                 secretKeyRef:

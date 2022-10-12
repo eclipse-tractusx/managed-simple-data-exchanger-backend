@@ -82,7 +82,6 @@ ingress:
 postgres:
   enabled: true
   auth:
-    dbUrl: "jdbc:postgresql://product-dft-backend-pen-postgres:5432/dftdb"
     username: "dftUser"
     database: "dftdb"
     existingSecret: dft-postgresql-secrets

@@ -26,6 +26,8 @@ import lombok.SneakyThrows;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Data
 @Builder
@@ -33,7 +35,7 @@ import java.util.HashMap;
 @AllArgsConstructor
 public class PolicyRequest {
 
-    private ArrayList<PermissionRequest> permissions;
+    private List<PermissionRequest> permissions;
     private ArrayList<ProhibitionRequest> prohibitions;
     private ArrayList<ObligationRequest> obligations;
     private String inheritsFrom;
@@ -42,7 +44,7 @@ public class PolicyRequest {
     private String target;
     @JsonProperty("@type")
     private HashMap<String, String> type;
-    private HashMap<String, String> extensibleProperties;
+    private Map<String, String> extensibleProperties;
 
     @SneakyThrows
     public String toJsonString() {

@@ -27,6 +27,8 @@ import com.catenax.dft.enums.PolicyAccessEnum;
 import com.catenax.dft.enums.UsagePolicyEnum;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -158,6 +160,10 @@ public class UtilityFunctions {
                     }
                 }
         );
+    }
+
+    public static String getAuthToken() {
+        return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
     }
 
 }

@@ -27,14 +27,15 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class PolicyRequestFactory {
 
-    public PolicyDefinitionRequest getPolicy(String shellId, String subModelId, List<ConstraintRequest> constraints, HashMap<String, String> extensibleProperties) {
+    public PolicyDefinitionRequest getPolicy(String shellId, String subModelId, List<ConstraintRequest> constraints, Map<String, String> extensibleProperties) {
         String assetId = shellId + "-" + subModelId;
 
-        ArrayList<PermissionRequest> permissions = getPermissions(assetId, constraints);
+        List<PermissionRequest> permissions = getPermissions(assetId, constraints);
         HashMap<String, String> type = new HashMap<>();
         type.put("@policytype", "set");
         PolicyRequest policyRequest = PolicyRequest.builder().permissions(permissions).obligations(new ArrayList<>())
@@ -47,7 +48,7 @@ public class PolicyRequestFactory {
                 .build();
     }
 
-    public ArrayList<PermissionRequest> getPermissions(String assetId, List<ConstraintRequest> constraints) {
+    public List<PermissionRequest> getPermissions(String assetId, List<ConstraintRequest> constraints) {
         ArrayList<PermissionRequest> permissions = new ArrayList<>();
         ActionRequest action = ActionRequest.builder()
                 .type("USE")

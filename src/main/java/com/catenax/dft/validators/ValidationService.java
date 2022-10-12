@@ -28,6 +28,7 @@ import org.springframework.util.CollectionUtils;
 
 import com.catenax.dft.entities.UsagePolicy;
 import com.catenax.dft.enums.PolicyAccessEnum;
+import com.catenax.dft.enums.UsagePolicyEnum;
 
 @Service
 public class ValidationService {
@@ -37,14 +38,13 @@ public class ValidationService {
         {
             boolean validateFlag = false;
             for(UsagePolicy usagePolicy : usagePolicies) {
-                switch (usagePolicy.getType()) {
-                    case DURATION:
-                        validateFlag = validateDuration(usagePolicy);
-                        break;
-                    default:
-                        validateFlag = validatePolicy(usagePolicy);
-                        break;
-                }
+            	if(usagePolicy.getType().equals(UsagePolicyEnum.DURATION))
+            	{
+            		validateFlag = validateDuration(usagePolicy);
+            	}
+            	else {
+            		 validateFlag = validatePolicy(usagePolicy);
+            	}
                 if(!validateFlag){
                     break;
                 }

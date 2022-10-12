@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2022 T-Systems International GmbH
+  * Copyright (c) 2022 T-Systems International GmbH
  * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -40,7 +40,7 @@ import java.util.Map;
 @JsonInclude(Include.NON_NULL)
 public class Asset {
 
-	public Map<String, String> properties;
+	private Map<String, String> properties;
 	
     @SneakyThrows
     public String toJsonString() {

@@ -20,8 +20,10 @@
 
 package com.catenax.dft.controllers;
 
+import com.catenax.dft.api.model.connector.ConnectorInfo;
 import com.catenax.dft.model.contractnegotiation.ContractAgreementResponse;
 import com.catenax.dft.model.request.ConsumerRequest;
+import com.catenax.dft.model.response.LegalEntityResponse;
 import com.catenax.dft.service.ConsumerControlPanelService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,12 +31,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-
 import java.util.List;
 import java.util.UUID;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.ok;
 
 @Slf4j
@@ -65,17 +65,29 @@ public class ConsumerController {
     }
 
     @GetMapping(value = "/contract-offers", produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> queryOnDataOffersStatus(@RequestParam(value="limit", required = false) Integer limit, @RequestParam(value="offset", required = false) Integer offset) {
+    public ResponseEntity<Object> queryOnDataOffersStatus(@RequestParam(value = "limit", required = false) Integer limit, @RequestParam(value = "offset", required = false) Integer offset) {
         log.info("Request received : /api/contract-offer");
-        if(limit ==null)
-        {
+        if (limit == null) {
             limit = 10;
         }
-        if(offset ==null)
-        {
+        if (offset == null) {
             offset = 1;
         }
         List<ContractAgreementResponse> responseEntity = consumerControlPanelService.getAllContractOffers(limit, offset);
         return ok().body(responseEntity);
+    }
+
+    @GetMapping(value = "/legal-entities")
+    public ResponseEntity<LegalEntityResponse[]> fetchLegalEntitiesData(@RequestParam String searchText, @RequestParam Integer page, @RequestParam Integer size)
+            throws Exception {
+        log.info("Request received : /api/legal-entities");
+        return consumerControlPanelService.fetchLegalEntitiesData(searchText, page, size);
+    }
+
+    @PostMapping(value = "/connectors-discovery")
+    public ResponseEntity<ConnectorInfo[]> fetchConnectorInfo(@RequestBody String[] bpns)
+            throws Exception {
+        log.info("Request received : /api/connectors-discovery");
+        return consumerControlPanelService.fetchConnectorInfo(bpns);
     }
 }

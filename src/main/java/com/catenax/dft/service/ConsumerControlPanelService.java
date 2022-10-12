@@ -20,7 +20,10 @@
 
 package com.catenax.dft.service;
 
+import com.catenax.dft.api.ConnectorDiscoveryApi;
 import com.catenax.dft.api.ContractOfferCatalogApi;
+import com.catenax.dft.api.LegalEntityDataApi;
+import com.catenax.dft.api.model.connector.ConnectorInfo;
 import com.catenax.dft.entities.UsagePolicy;
 import com.catenax.dft.entities.database.ContractNegotiationInfoEntity;
 import com.catenax.dft.entities.edc.request.policies.ConstraintRequest;
@@ -38,17 +41,20 @@ import com.catenax.dft.model.contractnegotiation.ContractNegotiationDto;
 import com.catenax.dft.model.contractnegotiation.ContractNegotiationsResponse;
 import com.catenax.dft.model.contractoffers.ContractOffer;
 import com.catenax.dft.model.contractoffers.ContractOffersCatalogResponse;
+import com.catenax.dft.model.legalEntity.LegalEntityData;
 import com.catenax.dft.model.policies.PolicyDefinition;
 import com.catenax.dft.model.request.ConsumerRequest;
+import com.catenax.dft.model.response.LegalEntityResponse;
 import com.catenax.dft.model.response.QueryDataOfferModel;
+import com.catenax.dft.util.KeycloakUtil;
 import com.catenax.dft.util.UtilityFunctions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.io.File;
 import java.time.LocalDateTime;
@@ -57,7 +63,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -71,15 +76,27 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
     private ContractNegotiationInfoRepository contractNegotiationInfoRepository;
     private PolicyConstraintBuilderService policyConstraintBuilderService;
 
+    private LegalEntityDataApi legalEntityDataApi;
+    private ConnectorDiscoveryApi connectorDiscoveryApi;
+
+    private KeycloakUtil keycloakUtil;
+
 
     @Autowired
     public ConsumerControlPanelService(@Value("${edc.consumer.datauri}") String edcDataUri,
-                                       ContractOfferCatalogApi contractOfferCatalogApiProxy, ContractNegotiateManagement contractNegotiateManagement, ContractNegotiationInfoRepository contractNegotiationInfoRepository, PolicyConstraintBuilderService policyConstraintBuilderService) {
+                                       ContractOfferCatalogApi contractOfferCatalogApiProxy, ContractNegotiateManagement contractNegotiateManagement, ContractNegotiationInfoRepository contractNegotiationInfoRepository, PolicyConstraintBuilderService policyConstraintBuilderService,
+                                       LegalEntityDataApi legalEntityDataApi,
+                                       ConnectorDiscoveryApi connectorDiscoveryApi,
+                                       KeycloakUtil keycloakUtil) {
         this.edcDataUri = edcDataUri;
         this.contractOfferCatalogApiProxy = contractOfferCatalogApiProxy;
         this.contractNegotiateManagement = contractNegotiateManagement;
         this.contractNegotiationInfoRepository = contractNegotiationInfoRepository;
         this.policyConstraintBuilderService = policyConstraintBuilderService;
+        this.legalEntityDataApi = legalEntityDataApi;
+        this.connectorDiscoveryApi = connectorDiscoveryApi;
+        this.keycloakUtil = keycloakUtil;
+
     }
 
     public List<QueryDataOfferModel> queryOnDataOffers(String providerUrl) {
@@ -149,9 +166,8 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
         AtomicReference<ContractNegotiationsResponse> checkContractNegotiationStatus = new AtomicReference<>();
         var recipientURL = recipient + edcDataUri;
         List<UsagePolicy> policies = consumerRequest.getPolicies();
-        UsagePolicy customPolicy = policies.stream().filter(type-> type.getType().equals(UsagePolicyEnum.CUSTOM)).findFirst().get();
-        if(StringUtils.isNotBlank(customPolicy.getValue()))
-        {
+        UsagePolicy customPolicy = policies.stream().filter(type -> type.getType().equals(UsagePolicyEnum.CUSTOM)).findFirst().get();
+        if (StringUtils.isNotBlank(customPolicy.getValue())) {
             extensibleProperty.put(customPolicy.getType().name(), customPolicy.getValue());
         }
         List<ConstraintRequest> constraintRequests = policyConstraintBuilderService.getUsagePolicyConstraints(policies);
@@ -181,7 +197,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
                         .connectorId(consumerRequest.getConnectorId())
                         .offerId(offer.getOfferId())
                         .contractNegotiationId(negotiateContractId != null ? negotiateContractId.get() : null)
-                        .status(checkContractNegotiationStatus.get()!=null ? checkContractNegotiationStatus.get().getState():"Failed:Exception")
+                        .status(checkContractNegotiationStatus.get() != null ? checkContractNegotiationStatus.get().getState() : "Failed:Exception")
                         .dateTime(LocalDateTime.now()).build();
                 contractNegotiationInfoRepository.save(contractNegotiationInfoEntity);
             }
@@ -192,7 +208,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
     public List<ContractAgreementResponse> getAllContractOffers(Integer limit, Integer offset) {
         List<ContractAgreementResponse> contractAgreementResponses = new ArrayList<>();
         List<ContractNegotiationDto> contractNegotiationDtoList = contractNegotiateManagement.getAllContractNegotiations(limit, offset);
-        contractNegotiationDtoList.stream().forEach((contract)->
+        contractNegotiationDtoList.stream().forEach((contract) ->
                 {
                     if (contract.getState().equals(NegotiationState.CONFIRMED.name())) {
                         String negotiationId = contract.getId();
@@ -211,8 +227,29 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
                         contractAgreementResponses.add(agreementResponse);
                     }
                 }
-                );
+        );
         return contractAgreementResponses;
-        }
-
     }
+
+    public ResponseEntity<LegalEntityResponse[]> fetchLegalEntitiesData(String searchText, Integer page, Integer size) {
+        ResponseEntity<LegalEntityData> apiResponse = legalEntityDataApi.fetchLegalEntityData(searchText, page, size, UtilityFunctions.getAuthToken());
+        LegalEntityData legalEntity = apiResponse.getBody();
+        LegalEntityResponse[] legalEntitiesResponse = new LegalEntityResponse[legalEntity != null ? legalEntity.content.size() : 0];
+        if (null != legalEntity) {
+            final int[] counter = {0};
+            legalEntity.getContent().stream().forEach(companyData -> {
+                companyData.getLegalEntity().getNames().stream().forEach(name -> {
+                    LegalEntityResponse legalEntityResponse = LegalEntityResponse.builder().bpn(companyData.getLegalEntity().getBpn()).name(name.getValue()).build();
+                    legalEntitiesResponse[counter[0]] = legalEntityResponse;
+                    counter[0]++;
+                });
+            });
+        }
+        return new ResponseEntity(legalEntitiesResponse, apiResponse.getStatusCode());
+    }
+
+    public ResponseEntity<ConnectorInfo[]> fetchConnectorInfo(String[] bpns) {
+        String token = keycloakUtil.getKeycloakToken();
+        return connectorDiscoveryApi.fetchConnectorInfo(bpns, "Bearer " + token);
+    }
+}

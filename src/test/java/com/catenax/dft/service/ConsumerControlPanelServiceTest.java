@@ -20,28 +20,34 @@
 
 package com.catenax.dft.service;
 
+import com.catenax.dft.api.ConnectorDiscoveryApi;
 import com.catenax.dft.api.ContractOfferCatalogApi;
+import com.catenax.dft.api.LegalEntityDataApi;
+import com.catenax.dft.api.model.connector.ConnectorInfo;
 import com.catenax.dft.entities.UsagePolicy;
 import com.catenax.dft.entities.edc.request.policies.ConstraintRequest;
 import com.catenax.dft.entities.edc.request.policies.Expression;
 import com.catenax.dft.entities.edc.request.policies.PolicyConstraintBuilderService;
 import com.catenax.dft.enums.NegotiationState;
 import com.catenax.dft.enums.PolicyAccessEnum;
-import com.catenax.dft.enums.Type;
 import com.catenax.dft.enums.UsagePolicyEnum;
 import com.catenax.dft.facilitator.ContractNegotiateManagement;
 import com.catenax.dft.gateways.database.ContractNegotiationInfoRepository;
 import com.catenax.dft.model.contractnegotiation.ContractAgreementResponse;
 import com.catenax.dft.model.contractnegotiation.ContractNegotiationDto;
 import com.catenax.dft.model.contractoffers.ContractOffersCatalogResponse;
+import com.catenax.dft.model.legalEntity.LegalEntityData;
 import com.catenax.dft.model.request.ConsumerRequest;
 import com.catenax.dft.model.request.OfferRequest;
+import com.catenax.dft.util.KeycloakUtil;
+import com.catenax.dft.util.UtilityFunctions;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -50,13 +56,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ContextConfiguration(classes = {ConsumerControlPanelService.class, String.class})
 @ExtendWith(SpringExtension.class)
 class ConsumerControlPanelServiceTest {
+    @MockBean
+    private ConnectorDiscoveryApi connectorDiscoveryApi;
+
+    @MockBean
+    private KeycloakUtil keycloakUtil;
+
+    @MockBean
+    private LegalEntityDataApi legalEntityDataApi;
+
     @MockBean
     private ContractNegotiateManagement contractNegotiateManagement;
 
@@ -71,7 +85,6 @@ class ConsumerControlPanelServiceTest {
 
     @MockBean
     private PolicyConstraintBuilderService policyConstraintBuilderService;
-
 
     @Test
     void testQueryOnDataOfferEmpty() throws Exception {
@@ -129,7 +142,7 @@ class ConsumerControlPanelServiceTest {
         List<ContractNegotiationDto> contractNegotiationDtoList = List.of(ContractNegotiationDto.builder().contractAgreementId(null)
                 .id("negotiationId").state(NegotiationState.DECLINED.name()).counterPartyAddress("address").build());
         when(contractNegotiateManagement.getAllContractNegotiations(anyInt(), anyInt())).thenReturn(contractNegotiationDtoList);
-        List<ContractAgreementResponse> list = consumerControlPanelService.getAllContractOffers(10,1);
+        List<ContractAgreementResponse> list = consumerControlPanelService.getAllContractOffers(10, 1);
         assertEquals(1, list.size());
     }
 
@@ -146,6 +159,24 @@ class ConsumerControlPanelServiceTest {
         consumerControlPanelService.subscribeDataOffers(consumerRequest, processId);
         verify(consumerRequest).getProviderUrl();
         verify(consumerRequest).getOffers();
+    }
+
+    void testFetchLegalEntitiesData() throws Exception {
+        LegalEntityData legalEntityData = getLegalEntityData();
+        when(UtilityFunctions.getAuthToken()).thenReturn("bearer dummytoken1234");
+        when(legalEntityDataApi.fetchLegalEntityData("searchText", 0, 10, UtilityFunctions.getAuthToken())).thenReturn(new ResponseEntity<>(legalEntityData, HttpStatus.OK));
+        assertEquals(consumerControlPanelService.fetchLegalEntitiesData("Search Text", 0, 10).getStatusCodeValue(), 200);
+    }
+
+
+    @Test
+    void testFetchConnectorInfo() {
+        ResponseEntity<ConnectorInfo[]> responseEntity = new ResponseEntity<>(HttpStatus.OK);
+        when(connectorDiscoveryApi.fetchConnectorInfo((String[]) any(), (String) any())).thenReturn(responseEntity);
+        when(keycloakUtil.getKeycloakToken()).thenReturn("ABC123");
+        assertSame(responseEntity, consumerControlPanelService.fetchConnectorInfo(new String[]{"Bpns"}));
+        verify(connectorDiscoveryApi).fetchConnectorInfo((String[]) any(), (String) any());
+        verify(keycloakUtil).getKeycloakToken();
     }
 
     private ContractOffersCatalogResponse getContractOffersCatalogWithConstraints() throws Exception {
@@ -338,4 +369,30 @@ class ConsumerControlPanelServiceTest {
         return mockRequest;
     }
 
+    private LegalEntityData getLegalEntityData() throws Exception {
+        String mockResponse = "{\n" +
+                "  \"totalElements\": 7388,\n" +
+                "  \"totalPages\": 739,\n" +
+                "  \"page\": 0,\n" +
+                "  \"content\": [\n" +
+                "    {\n" +
+                "      \"score\": 98.114334,\n" +
+                "      \"legalEntity\": {\n" +
+                "        \"bpn\": \"BPNL00000003B9JR\",\n" +
+                "        \"names\": [\n" +
+                "          {\n" +
+                "            \"value\": \"BMW M GmbH\",\n" +
+                "            \"shortName\": null\n" +
+                "          }\n" +
+                "        ]\n" +
+                "      }\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}";
+        ObjectMapper mapper = new ObjectMapper();
+        LegalEntityData mockData
+                = mapper.readValue(mockResponse, LegalEntityData.class);
+        return mockData;
+
+    }
 }

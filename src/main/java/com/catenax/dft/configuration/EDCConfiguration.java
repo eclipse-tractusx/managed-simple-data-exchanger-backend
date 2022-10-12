@@ -38,8 +38,6 @@ class EDCRequestInterceptor implements RequestInterceptor {
 
 	@Override
 	public void apply(RequestTemplate template) {
-		//template.header("authorization", "auth-bar");
-		//log.info("edc authentication applied");
 	}
 
 }

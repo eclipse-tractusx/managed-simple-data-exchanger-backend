@@ -34,9 +34,9 @@ import java.util.List;
 @Builder
 public class ContractAgreementInfo {
 
-    public long contractSigningDate;
-    public long contractStartDate;
-    public long contractEndDate;
-    public String assetId;
-    public List<UsagePolicy> policies;
+    private long contractSigningDate;
+    private long contractStartDate;
+    private long contractEndDate;
+    private String assetId;
+    private List<UsagePolicy> policies;
 }

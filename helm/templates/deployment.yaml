@@ -154,12 +154,25 @@ spec:
                   name: dft-edc-secrets
                   key: edcconsapiheader
             - name: CLIENTID
-              value: sa13    
+              valueFrom:
+                secretKeyRef:
+                  name: digitaltwin-secret
+                  key: keycloakportalApiID 
             - name: CLIENTSECRET
-                valueFrom:
-                  secretKeyRef:
-                    name: digitaltwin-secret
-                    key: keycloak-token                    
+              valueFrom:
+                secretKeyRef:
+                  name: digitaltwin-secret
+                  key: keycloakportalApi  
+            - name: PARTNER-POOL-HOSTNAME
+              valueFrom:
+                secretKeyRef:
+                  name: digitaltwin-secret
+                  key: portalpoolhostURL 
+            - name: PORTAL-BACKEND-HOSTNAME 
+              valueFrom:
+                secretKeyRef:
+                  name: digitaltwin-secret
+                  key: partnerpoolhostURL 
           ports:
             - name: http
               containerPort: 8080

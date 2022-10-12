@@ -152,7 +152,14 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: dft-edc-secrets
-                  key: edcconsapiheader                
+                  key: edcconsapiheader
+            - name: CLIENTID
+              value: sa13    
+            - name: CLIENTSECRET
+                valueFrom:
+                  secretKeyRef:
+                    name: digitaltwin-secret
+                    key: keycloak-token                    
           ports:
             - name: http
               containerPort: 8080

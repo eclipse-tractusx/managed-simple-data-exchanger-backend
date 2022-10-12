@@ -156,22 +156,22 @@ spec:
             - name: CLIENTID
               valueFrom:
                 secretKeyRef:
-                  name: digitaltwin-secret
+                  name: dtf-digitaltwins-secrets
                   key: keycloakportalApiID 
             - name: CLIENTSECRET
               valueFrom:
                 secretKeyRef:
-                  name: digitaltwin-secret
+                  name: dtf-digitaltwins-secrets
                   key: keycloakportalApi  
             - name: PARTNER-POOL-HOSTNAME
               valueFrom:
                 secretKeyRef:
-                  name: digitaltwin-secret
+                  name: dtf-digitaltwins-secrets
                   key: partnerpoolhostURL
             - name: PORTAL-BACKEND-HOSTNAME 
               valueFrom:
                 secretKeyRef:
-                  name: digitaltwin-secret
+                  name: dtf-digitaltwins-secrets
                   key: portalpoolhostURL 
           ports:
             - name: http

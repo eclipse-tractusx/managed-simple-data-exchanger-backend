@@ -118,7 +118,7 @@ spec:
                 secretKeyRef:
                   name: dtf-digitaltwins-secrets
                   key: keycloakREALM
-            - name: KEYCLOAK_REASOURCE
+            - name: KEYCLOAK_RESOURCE
               valueFrom:
                 secretKeyRef:
                   name: dtf-digitaltwins-secrets

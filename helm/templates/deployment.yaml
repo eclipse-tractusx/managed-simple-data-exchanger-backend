@@ -163,12 +163,12 @@ spec:
                 secretKeyRef:
                   name: dtf-digitaltwins-secrets
                   key: portalApisecret  
-            - name: PARTNER-POOL-HOSTNAME
+            - name: PARTNER_POOL_HOSTNAME
               valueFrom:
                 secretKeyRef:
                   name: dtf-digitaltwins-secrets
                   key: partnerpoolhostURL
-            - name: PORTAL-BACKEND-HOSTNAME 
+            - name: PORTAL_BACKEND_HOSTNAME 
               valueFrom:
                 secretKeyRef:
                   name: dtf-digitaltwins-secrets

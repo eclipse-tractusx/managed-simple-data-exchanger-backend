@@ -140,7 +140,7 @@ ingresses:
   ## Public / Internet facing Ingress
   - enabled: true
     # -- The hostname to be used to precisely map incoming traffic onto the underlying network service
-    hostname: "dft-connector.pen.demo.catena-x.net"
+    hostname: "dft-connector-prov-cp-pen.int.demo.catena-x.net"
     # -- Additional ingress annotations to add
     annotations: {}
     # -- EDC endpoints exposed by this ingress resource
@@ -258,19 +258,19 @@ configuration:
     edc.ids.description=Eclipse Dataspace Connector
     edc.ids.id=urn:connector:edc
     edc.ids.security.profile=base
-    edc.ids.endpoint=https://dft-connector.pen.demo.catena-x.net/api/v1/ids
-    edc.ids.maintainer=https://dft-connector.pen.demo.catena-x.net
-    edc.ids.curator=https://dft-connector.pen.demo.catena-x.net
+    edc.ids.endpoint=https://dft-connector-prov-cp-pen.int.demo.catena-x.net/api/v1/ids
+    edc.ids.maintainer=https://dft-connector-prov-cp-pen.int.demo.catena-x.net
+    edc.ids.curator=https://dft-connector-prov-cp-pen.int.demo.catena-x.net
     edc.ids.catalog.id=urn:catalog:default
-    ids.webhook.address=https://dft-connector.pen.demo.catena-x.net
+    ids.webhook.address=https://dft-connector-prov-cp-pen.int.demo.catena-x.net
     edc.api.control.auth.apikey.key=X-Api-Key
     edc.api.control.auth.apikey.value=pass
     edc.api.auth.key=password
     #edc.hostname=dft-connector-prv-cp.int.demo.catena-x.net
-    edc.hostname=dft-connector.pen.demo.catena-x.net
+    edc.hostname=dft-connector-prov-cp-pen.int.demo.catena-x.net
     # DAPS Properties
     edc.oauth.token.url=https://daps-pen.int.demo.catena-x.net/token
-    edc.oauth.client.id=B7:61:0F:A1:87:F4:34:56:84:AB:61:23:80:4A:39:89:93:50:B5:38:keyid:B7:61:0F:A1:87:F4:34:56:84:AB:61:23:80:4A:39:89:93:50:B5:38
+    edc.oauth.client.id=D1:C3:B5:19:14:BB:00:D8:67:ED:D5:BC:B7:02:4C:21:8D:A5:3A:5A:keyid:D1:C3:B5:19:14:BB:00:D8:67:ED:D5:BC:B7:02:4C:21:8D:A5:3A:5A
     edc.oauth.provider.audience=idsc:IDS_CONNECTORS_ALL
     edc.oauth.provider.jwks.url=https://daps-pen.int.demo.catena-x.net/.well-known/jwks.json
     # OAUTH Properties
@@ -282,11 +282,11 @@ configuration:
     edc.vault.name=cxtsi-dev010-vault
     edc.vault.clientsecret=
     # Control- / Data- Plane configuration
-    edc.ids.endpoint.audience=https://dft-connector.pen.demo.catena-x.net/api/v1/ids/data
+    edc.ids.endpoint.audience=https://dft-connector-prov-cp-pen.int.demo.catena-x.net/api/v1/ids/data
     edc.data.encryption.keys.alias=encrypt-edc-alias
-    edc.transfer.proxy.endpoint=https://dft-connector-prv-dp.pen.demo.catena-x.net/public
+    edc.transfer.proxy.endpoint=https://dft-connector-prov-cp-pen.int.demo.catena-x.net/public
     edc.transfer.proxy.token.signer.privatekey.alias=gds-data-plane-private-key
-    edc.transfer.dataplane.sync.endpoint=https://dft-connector-prv-dp.pen.demo.catena-x.net/public
+    edc.transfer.dataplane.sync.endpoint=https://dft-connector-prov-cp-pen.int.demo.catena-x.net/public
     edc.transfer.dataplane.token.signer.privatekey.alias=gds-data-plane-private-key
     edc.transfer.proxy.token.verifier.publickey.alias=gds-data-plane-public-key
     edc.public.key.alias=gds-data-plane-public-key

@@ -274,8 +274,8 @@ configuration:
     edc.oauth.provider.audience=idsc:IDS_CONNECTORS_ALL
     edc.oauth.provider.jwks.url=https://daps-pen.int.demo.catena-x.net/.well-known/jwks.json
     # OAUTH Properties
-    edc.oauth.public.key.alias=dft-daps-key
-    edc.oauth.private.key.alias=dft-private-key
+    edc.oauth.public.key.alias=gds-dft-prov-pen-crt
+    edc.oauth.private.key.alias=gds-dft-prov-pen-key
     # Azure vault related configuration
     edc.vault.clientid=2f0e6b4e-de1a-42bd-b30e-453d558d2dd4
     edc.vault.tenantid=495463c3-0991-4659-9cc5-94b4a3f7b1d6
@@ -285,11 +285,11 @@ configuration:
     edc.ids.endpoint.audience=https://dft-connector-prov-cp-pen.int.demo.catena-x.net/api/v1/ids/data
     edc.data.encryption.keys.alias=encrypt-edc-alias
     edc.transfer.proxy.endpoint=https://dft-connector-prov-cp-pen.int.demo.catena-x.net/public
-    edc.transfer.proxy.token.signer.privatekey.alias=gds-data-plane-private-key
+    edc.transfer.proxy.token.signer.privatekey.alias=dft-data-plane-private-pen-key
     edc.transfer.dataplane.sync.endpoint=https://dft-connector-prov-cp-pen.int.demo.catena-x.net/public
-    edc.transfer.dataplane.token.signer.privatekey.alias=gds-data-plane-private-key
-    edc.transfer.proxy.token.verifier.publickey.alias=gds-data-plane-public-key
-    edc.public.key.alias=gds-data-plane-public-key
+    edc.transfer.dataplane.token.signer.privatekey.alias=dft-data-plane-private-pen-key
+    edc.transfer.proxy.token.verifier.publickey.alias=dft-data-plane-public-pen-key
+    edc.public.key.alias=dft-data-plane-public-pen-key
     # Postgresql related configuration
     edc.datasource.asset.name=asset
     edc.datasource.asset.url=jdbc:postgresql://product-dft-backend-pen-postgresql:5432/edcdb

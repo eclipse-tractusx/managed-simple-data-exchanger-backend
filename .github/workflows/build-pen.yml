@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
-name: build
+name: build-pen
 
 on:
   push:

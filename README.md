@@ -12,7 +12,7 @@ The DFT project has two dependencies: Digital Twins and EDC.
 
 ##### For installation guide: see [InstallationGuide.md](InstallationGuide.md)
 
-#### How to run
+### How to run
 
 DFT is a SpringBoot Java software project managed by Maven.
 

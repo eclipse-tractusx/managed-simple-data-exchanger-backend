@@ -244,10 +244,12 @@ opentelemetry:
 postgresql:
   enabled: true
   auth:
-    postgresPassword: "Connector@123"
-    password: "Connector@123"
-    username: "edcuser"
+    username: "edcUser"
     database: "edcdb"
+    existingSecret: db-secrets
+    secretKeys:
+        adminPasswordKey: "postgres-password"
+        userPasswordKey: "password"
   
   
 configuration:
@@ -290,26 +292,24 @@ configuration:
     edc.transfer.dataplane.token.signer.privatekey.alias=gds-data-plane-private-key
     edc.transfer.proxy.token.verifier.publickey.alias=gds-data-plane-public-key
     edc.public.key.alias=gds-data-plane-public-key
-    # Postgresql related configuration
+    #  Postgresql related configuration
     edc.datasource.asset.name=asset
-    edc.datasource.asset.url=jdbc:postgresql://product-dft-backend-postgresql:5432/edcdb
-    edc.datasource.asset.user=edcuser
-    edc.datasource.asset.password=Connector@123
+    edc.datasource.asset.url=
+    #edc.datasource.asset.user=
+    #edc.datasource.asset.password=
     edc.datasource.contractdefinition.name=contractdefinition
-    edc.datasource.contractdefinition.url=jdbc:postgresql://product-dft-backend-postgresql:5432/edcdb
-    edc.datasource.contractdefinition.user=edcuser
-    edc.datasource.contractdefinition.password=Connector@123
+    edc.datasource.contractdefinition.url=
+    #edc.datasource.contractdefinition.user=root
+    #edc.datasource.contractdefinition.password=
     edc.datasource.contractnegotiation.name=contractnegotiation
-    edc.datasource.contractnegotiation.url=jdbc:postgresql://product-dft-backend-postgresql:5432/edcdb
-    edc.datasource.contractnegotiation.user=edcuser
-    edc.datasource.contractnegotiation.password=Connector@123
+    edc.datasource.contractnegotiation.url=
+    #edc.datasource.contractnegotiation.user=root
+    #edc.datasource.contractnegotiation.password=
     edc.datasource.policy.name=policy
-    edc.datasource.policy.url=jdbc:postgresql://product-dft-backend-postgresql:5432/edcdb
-    edc.datasource.policy.user=edcuser
-    edc.datasource.policy.password=Connector@123
+    edc.datasource.policy.url=
+    #edc.datasource.policy.user=root
+    #edc.datasource.policy.password=
     edc.datasource.transferprocess.name=transferprocess
-    edc.datasource.transferprocess.url=jdbc:postgresql://product-dft-backend-postgresql:5432/edcdb
-    edc.datasource.transferprocess.user=edcuser
-    edc.datasource.transferprocess.password=Connector@123
-
-
+    edc.datasource.transferprocess.url=
+    #edc.datasource.transferprocess.user=root
+    #edc.datasource.transferprocess.password=

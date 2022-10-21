@@ -88,18 +88,7 @@ postgres:
     secretKeys:
         adminPasswordKey: "postgres-password"
         userPasswordKey: "password"
- #  postgresPassword: "admin@123"
- #   username: "dftUser"
- #  password: "admin@123"
 
-    
-    #database: "dftdb"
-    #username: "dftUser"
-    #password: "admin@123"
-    #dbUser: "dftUser"
-    #dbPassword: "admin@123"
-        #existingSecret: dft-postgresql-secrets
-    #enablePostgresUser: true
     
  
   

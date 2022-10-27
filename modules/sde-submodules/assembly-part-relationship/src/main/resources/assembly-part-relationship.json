@@ -1,0 +1,158 @@
+{
+	"$schema": "https://json-schema.org/draft/2019-09/schema",
+	"$id": "http://example.com/example.json",
+	"type": "array",
+	"id": "AspectRelationship",
+	"title": "List of Assembly Part Typization",
+	"items": {
+		"type": "object",
+		"title": "Assembly Part Typization",
+		"required": [
+			"parent_UUID",
+			"parent_part_instance_id",
+			"parent_manufacturer_part_id",
+			"UUID",
+			"part_instance_id",
+			"manufacturer_part_id",
+			"lifecycle_context",
+			"quantity_number",
+			"measurement_unit_lexical_value",
+			"datatype_URI",
+			"assembled_on"
+		],
+		"dependentRequired": {
+			"optional_identifier_key": [
+				"optional_identifier_value"
+			],
+			"optional_identifier_value": [
+				"optional_identifier_key"
+			]
+		},
+		"properties": {
+			"parent_UUID": {
+				"type": "string",
+				"title": "Parent UUID",
+				"examples": [
+					"NO-159040131155901488695376"
+				]
+			},
+			"parent_part_instance_id": {
+				"type": "string",
+				"title": "Parent Part instance ID",
+				"examples": [
+					"ParentNO-64534234"
+				]
+			},
+			"parent_manufacturer_part_id": {
+				"type": "string",
+				"title": "Parent Part instance ID",
+				"examples": [
+					"PART-2345546234"
+				]
+			},
+			"parent_optional_identifier_key": {
+				"type": "string",
+				"title": "Parent optional identifier key",
+				"examples": [
+					"Key"
+				]
+			},
+			"parent_optional_identifier_value": {
+				"type": "string",
+				"title": "Parent Optional identifier value",
+				"examples": [
+					"Value"
+				]
+			},
+			"uuid": {
+				"type": "string",
+				"title": "UUID URN",
+				"examples": [
+					"urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2"
+				]
+			},
+			"part_instance_id": {
+				"type": "string",
+				"title": "Part instance ID",
+				"examples": [
+					"NO-234523423"
+				]
+			},
+			"manufacturer_part_id": {
+				"type": "string",
+				"title": "Manufacturer part ID",
+				"examples": [
+					"37754B7-76"
+				]
+			},
+			"optional_identifier_key": {
+				"type": "string",
+				"title": "Optional identifier key",
+				"examples": [
+					"Key"
+				]
+			},
+			"optional_identifier_value": {
+				"type": "string",
+				"title": "Optional identifier value",
+				"examples": [
+					"Value"
+				]
+			},
+			"lifecycle_context": {
+				"type": "string",
+				"title": "lifecycle_context",
+				"examples": [
+					"lifecycle"
+				]
+			},
+			"quantity_number": {
+				"type": "number",
+				"title": "quantity_number",
+				"examples": [
+					"123"
+				]
+			},
+			"measurement_unit_lexical_value": {
+				"type": "number",
+				"title": "Measurement unit lexical value",
+				"examples": [
+					"measurement"
+				]
+			},
+			"datatype_URI": {
+				"type": "string",
+				"title": "datatype_URI",
+				"examples": [
+					"http://xyz.com"
+				]
+			},
+			"assembled_on": {
+				"type": "string",
+				"title": "assembled_on",
+				"examples": [
+					"2022-02-04T14:48:54"
+				]
+			}
+		},
+		"examples": [
+			{
+				"parent_UUID": "urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2",
+				"parent_part_instance_id": "NO-159040131155901488695376",
+				"parent_manufacturer_part_id": "MAN-159040131155901488695376",
+				"parent_optional_identifier_key": "Key",
+				"parent_optional_identifier_value": "Value",
+				"UUID": "urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2",
+				"part_instance_id": "NO-159040131155901488695376",
+				"manufacturer_part_id": "PART-123412416",
+				"optional_identifier_key": "",
+				"optional_identifier_value": "",
+				"lifecycle_context": "Context",
+				"quantity_number": "123",
+				"measurement_unit_lexical_value": "ASW",
+				"datatype_URI": "http://xyz.com",
+				"assembled_on": "2022-02-04T14:48:54"
+			}
+		]
+	}
+}

@@ -118,11 +118,11 @@ Link to flyway documentation: [Documentation](https://flywaydb.org/documentation
 Authentication for the backend is handled via an API Key. This can be set in the configuration file.
 
 ## ArgoCD
-The latest version on main is automatically picked up by ArgoCD and deployed to the DEV environment. See https://catenax-ng.github.io/.
+The latest version on main is automatically picked up by ArgoCD and deployed to the environment using Helm charts
+ # helm repo add catenax-ng-product-dft-backend https://github.com/catenax-ng/product-dft-backend/tree/main/charts
+ # helm install release-name catenax-ng/product-dft-backend
 
-https://dft-api.int.demo.catena-x.net/
-
-To see how to deploy an application on 'Hotel Budapest': 
+To see how to deploy an application: 
 [How to deploy](https://catenax-ng.github.io/docs/guides/how-to-deploy-an-application)
 
 ### EDC

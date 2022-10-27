@@ -39,4 +39,5 @@ This project provides the following files:
 
 ## Helm Commands
 $ helm repo add catenax-ng-product-dft-backend https://github.com/catenax-ng/product-dft-backend/tree/main/charts
+
 $ helm install my-release catenax-ng/product-dft-backend --version 1.5.0

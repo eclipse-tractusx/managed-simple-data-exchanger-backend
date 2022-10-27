@@ -124,9 +124,6 @@ The latest version on main is automatically picked up by ArgoCD and deployed to 
    
  helm install release-name catenax-ng/product-dft-backend
 
-To see how to deploy an application: 
-[How to deploy](https://catenax-ng.github.io/docs/guides/how-to-deploy-an-application)
-
 ### EDC
 GitHub repository with correct version of the Eclipse DataSpace Connector Project: [repository](https://github.com/catenax-ng/product-edc)
 

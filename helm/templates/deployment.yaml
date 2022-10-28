@@ -152,7 +152,27 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: dft-edc-secrets
-                  key: edcconsapiheader                
+                  key: edcconsapiheader   
+            - name: CLIENTID
+              valueFrom:
+                secretKeyRef:
+                  name: dtf-digitaltwins-secrets
+                  key: portalApiID
+            - name: CLIENTSECRET
+              valueFrom:
+                secretKeyRef:
+                  name: dtf-digitaltwins-secrets
+                  key: portalApisecret  
+            - name: PARTNER_POOL_HOSTNAME
+              valueFrom:
+                secretKeyRef:
+                  name: dtf-digitaltwins-secrets
+                  key: partnerpoolhostURL
+            - name: PORTAL_BACKEND_HOSTNAME 
+              valueFrom:
+                secretKeyRef:
+                  name: dtf-digitaltwins-secrets
+                  key: portalpoolhostURL 
           ports:
             - name: http
               containerPort: 8080

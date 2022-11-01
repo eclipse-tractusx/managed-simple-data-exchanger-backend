@@ -19,24 +19,23 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-CREATE TABLE batch
-(
-    uuid                      VARCHAR(50) PRIMARY KEY,
-    process_id                VARCHAR(50),
-    batch_id                  VARCHAR(50),
-    manufacturing_date        VARCHAR(50),
-    manufacturing_country     VARCHAR(50),
-    manufacturer_part_id      VARCHAR(50),
-    customer_part_id          VARCHAR(50),
-    classification            VARCHAR(50),
-    name_at_manufacturer      VARCHAR(50),
-    name_at_customer          VARCHAR(50),
-    optional_identifier_key   VARCHAR(50),
-    optional_identifier_value VARCHAR(50),
-    shell_id                  VARCHAR(50),
-    asset_id                  VARCHAR(50),
-    usage_policy_id           VARCHAR(50),
-    access_policy_id          VARCHAR(50),
-    contract_defination_id    VARCHAR(50)
+package com.catenax.sde.entities.aspect;
 
-);
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(Include.NON_NULL)
+public class EdcCommonResponse {
+	private String id;
+	private String createdAt;
+}

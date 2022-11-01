@@ -46,6 +46,10 @@ public class AspectRelationship {
     private List<String> bpnNumbers;
     private String typeOfAccess;
     private List<UsagePolicy> usagePolicies;
+    private String assetId; 
+    private String usagePolicyId;
+    private String accessPolicyId;
+    private String contractDefinationId;
     
 
     @NotBlank(message = "parent_part_instance_id cannot be empty")

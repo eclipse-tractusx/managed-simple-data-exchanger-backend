@@ -4,15 +4,15 @@ import java.io.InputStream;
 
 import javax.annotation.PostConstruct;
 
-import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 
 import com.catenax.sde.common.extensions.SubmodelExtension;
+import com.google.gson.JsonObject;
 
 @Component
 public class AssemblyPartRelationship extends SubmodelExtension {
 
-	private JSONObject submodel = null;
+	private JsonObject submodel = null;
 
 	@PostConstruct
 	public void init() {
@@ -26,10 +26,14 @@ public class AssemblyPartRelationship extends SubmodelExtension {
 		}
 
 		submodel = loadSubmodel(input);
+		
+		//Mapp POJO for Digital twin (UUID+manufacturingI="shellId")
+		
+		//load custom logic 
 	}
 
 	@Override
-	public JSONObject submodel() {
+	public JsonObject submodel() {
 		return this.submodel;
 	}
 

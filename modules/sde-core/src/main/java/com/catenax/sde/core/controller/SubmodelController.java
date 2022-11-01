@@ -26,8 +26,8 @@ public class SubmodelController {
 	}
 
 	@GetMapping("/submodels/{submodelName}")
-	public Map<String, Object> getSubmodelByName(@PathVariable String submodelName) {
-		return submodelService.findSubmodelByName(submodelName).toMap();
+	public Map<Object,Object> getSubmodelByName(@PathVariable String submodelName) {
+		return submodelService.findSubmodelByName(submodelName);
 	}
 
 }

@@ -6,6 +6,7 @@ import com.catenax.sde.common.model.validation.ValidationRule;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,6 +34,9 @@ public class FieldAttributes {
 	private FieldValueType fieldValueType;
 	
 	private List<String> examples;
+	
+	@JsonProperty("enum")
+	private List<String> listEnum;
 	
 	private List<ValidationRule> validations;
 

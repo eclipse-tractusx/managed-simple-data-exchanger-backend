@@ -23,7 +23,7 @@
 			]
 		},
 		"properties": {
-			"uuid": {
+			"UUID": {
 				"type": "string",
 				"title": "UUID URN",
 				"examples": [

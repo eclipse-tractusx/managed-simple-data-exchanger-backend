@@ -1,7 +1,8 @@
 package com.catenax.sde.common.extensions;
 
-import org.json.JSONObject;
 import org.springframework.stereotype.Component;
+
+import com.google.gson.JsonObject;
 
 import lombok.SneakyThrows;
 
@@ -9,18 +10,18 @@ import lombok.SneakyThrows;
 public interface UsecaseExtension {
 
 	@SneakyThrows
-	default JSONObject loadUsecae(String useCase) {
-		JSONObject json = new JSONObject();
-		json.put("id", useCase);
+	default JsonObject loadUsecae(String useCase) {
+		JsonObject json = new JsonObject();
+		json.addProperty("id", useCase);
 		return json;
 	}
 	
 	@SneakyThrows
-	default JSONObject discoverAndAddsubmodel(String submodelName) {
+	default JsonObject discoverAndAddsubmodel(String submodelName) {
 		return null;
 	}
 
 	
 	
-	public abstract JSONObject useCase();
+	public abstract JsonObject useCase();
 }

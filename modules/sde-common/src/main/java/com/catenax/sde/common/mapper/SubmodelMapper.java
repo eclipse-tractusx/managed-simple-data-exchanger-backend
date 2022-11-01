@@ -1,17 +1,42 @@
 package com.catenax.sde.common.mapper;
 
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-import org.json.JSONObject;
-import org.json.JSONTokener;
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "spring")
-public interface SubmodelMapper {
+import com.catenax.sde.common.model.Submodel;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
-	default JSONObject jsonfileToJsonPojo(InputStream input) {
-		JSONTokener tokenizer = new JSONTokener(input);
-		return new JSONObject(tokenizer);
+import lombok.SneakyThrows;
+
+@Mapper(componentModel = "spring")
+public abstract class SubmodelMapper {
+
+	Gson gson = new Gson();
+
+	@SneakyThrows
+	public JsonObject jsonfileToJsonPojo(InputStream input) {
+		Reader reader = new InputStreamReader(input, StandardCharsets.UTF_8);
+		return gson.fromJson(reader, JsonObject.class);
+	}
+
+	@SneakyThrows
+	public Submodel jsonPojoToSubmodelPojo(JsonObject input) {
+		ObjectMapper objectMapper = new ObjectMapper();
+		return objectMapper.readValue(input.toString(), Submodel.class);
+	}
+	
+	@SuppressWarnings("unchecked")
+	@SneakyThrows
+	public Map<Object,Object> jsonPojoToMap(JsonObject input) {
+		return gson.fromJson(input, LinkedHashMap.class);
 	}
 
 }

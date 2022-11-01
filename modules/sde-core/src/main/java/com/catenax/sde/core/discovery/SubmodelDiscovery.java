@@ -23,11 +23,9 @@ public class SubmodelDiscovery {
 	private ListableBeanFactory beanFactory;
 
 	@PostConstruct
-	private void Submodels() {
+	private void submodels() {
 		Collection<SubmodelExtension> interfaces = beanFactory.getBeansOfType(SubmodelExtension.class).values();
-		interfaces.forEach(subomdelService -> {
-			submoduleRegistration.register(subomdelService);
-		});
+		interfaces.forEach(subomdelService -> submoduleRegistration.register(subomdelService));
 	}
 
 }

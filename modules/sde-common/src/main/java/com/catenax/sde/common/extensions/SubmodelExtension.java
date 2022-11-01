@@ -2,11 +2,11 @@ package com.catenax.sde.common.extensions;
 
 import java.io.InputStream;
 
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.catenax.sde.common.mapper.SubmodelMapper;
+import com.google.gson.JsonObject;
 
 import lombok.SneakyThrows;
 
@@ -17,10 +17,10 @@ public abstract class SubmodelExtension {
 	private SubmodelMapper submodelMapper;
 
 	@SneakyThrows
-	public JSONObject loadSubmodel(InputStream input) {
+	public JsonObject loadSubmodel(InputStream input) {
 		return submodelMapper.jsonfileToJsonPojo(input);
 	}
 
-	public abstract JSONObject submodel();
+	public abstract JsonObject submodel();
 
 }

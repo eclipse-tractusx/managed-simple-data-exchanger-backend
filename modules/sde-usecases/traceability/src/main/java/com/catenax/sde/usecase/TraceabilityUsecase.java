@@ -1,13 +1,12 @@
 package com.catenax.sde.usecase;
 
-import org.json.JSONObject;
-
 import com.catenax.sde.common.extensions.UsecaseExtension;
+import com.google.gson.JsonObject;
 
 public interface TraceabilityUsecase extends UsecaseExtension {
 
 	@Override
-	default JSONObject useCase() {
+	default JsonObject useCase() {
 		
 		loadUsecae("traceability");
 		

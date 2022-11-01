@@ -14,14 +14,13 @@ import lombok.SneakyThrows;
 public abstract class SubmodelExtension {
 
 	@Autowired
-	private SubmodelMapper SubmodelMapper;
+	private SubmodelMapper submodelMapper;
 
 	@SneakyThrows
 	public JSONObject loadSubmodel(InputStream input) {
-		return SubmodelMapper.JsonfileToJsonPojo(input);
+		return submodelMapper.jsonfileToJsonPojo(input);
 	}
 
 	public abstract JSONObject submodel();
-
 
 }

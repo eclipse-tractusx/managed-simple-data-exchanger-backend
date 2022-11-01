@@ -26,6 +26,10 @@ public class SerialPartTypization extends SubmodelExtension {
 		}
 
 		submodel = loadSubmodel(input);
+		
+		//AdddigitalTwinMappnig
+		
+		//EDCmmaping
 
 	}
 

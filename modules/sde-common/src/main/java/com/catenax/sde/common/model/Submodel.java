@@ -19,10 +19,12 @@ public class Submodel {
 
 	private String id;
 
-	private String type;
+	private String name;
 
-	private String title;
-
-	private Schema items;
+	private String version;
+	
+	private String order;
+	
+	private String usecases;
 
 }

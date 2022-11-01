@@ -1,7 +1,7 @@
 package com.catenax.sde.core.registry;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.json.JSONObject;
 import org.springframework.stereotype.Component;
@@ -14,19 +14,19 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SubmodelRegistration {
 
-	private final Map<String, JSONObject> submodelList;
+	private final List<JSONObject> submodelList;
 
 	public SubmodelRegistration() {
-		submodelList = new ConcurrentHashMap<>();
+		submodelList = new LinkedList<>();
 	}
 
 	public void register(SubmodelExtension subomdelService) {
 		JSONObject submodel = subomdelService.submodel();
 		log.info(submodel.toString());
-		submodelList.put(submodel.getString("id"), submodel);
+		submodelList.add(submodel);
 	}
 
-	public Map<String, JSONObject> getModels() {
+	public List<JSONObject> getModels() {
 		return this.submodelList;
 	}
 

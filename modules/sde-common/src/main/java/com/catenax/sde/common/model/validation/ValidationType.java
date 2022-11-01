@@ -1,6 +1,5 @@
 package com.catenax.sde.common.model.validation;
 
-
 public enum ValidationType {
 
 	REQUIRED("", "The '{}' field should be required"),
@@ -15,8 +14,8 @@ public enum ValidationType {
 
 	DATE_TIMESTAMP("", "The '{}' field should be date timestamp in {}");
 
-	public String defaultPattern;
-	public String defaultErrorMsg;
+	String defaultPattern;
+	String defaultErrorMsg;
 
 	private ValidationType(String defaultPattern, String defaultErrorMsg) {
 

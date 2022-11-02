@@ -44,7 +44,11 @@ public class Batch {
     private int rowNumber;
     private String uuid;
     private String processId;
-    
+    private String accessPolicyId;
+    private String assetId; 
+    private String contractDefinationId;
+    private String usagePolicyId;
+
     private List<String> bpnNumbers;
     private String typeOfAccess;
     private List<UsagePolicy> usagePolicies;

@@ -46,6 +46,11 @@ public class Aspect {
     private int rowNumber;
     private String uuid;
     private String processId;
+    private String contractDefinationId;
+    private String usagePolicyId;
+    private String assetId; 
+    private String accessPolicyId;
+
     
     private List<String> bpnNumbers;
     private String typeOfAccess;

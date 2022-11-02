@@ -19,21 +19,21 @@
  ********************************************************************************/
 
  ALTER TABLE aspect
-    ADD asset_id                   VARCHAR(50) NULL,
-    ADD usage_policy_id            VARCHAR(50) NULL,
-    ADD access_policy_id           VARCHAR(50) NULL,
-    ADD contract_defination_id     VARCHAR(50) NULL;
+    ADD asset_id                   TEXT NULL,
+    ADD usage_policy_id            TEXT NULL,
+    ADD access_policy_id           TEXT NULL,
+    ADD contract_defination_id     TEXT NULL;
 
 
  ALTER TABLE aspect_relationship
-    ADD asset_id                   VARCHAR(50) NULL,
-    ADD usage_policy_id            VARCHAR(50) NULL,
-    ADD access_policy_id           VARCHAR(50) NULL,
-    ADD contract_defination_id     VARCHAR(50) NULL;
+    ADD asset_id                   TEXT NULL,
+    ADD usage_policy_id            TEXT NULL,
+    ADD access_policy_id           TEXT NULL,
+    ADD contract_defination_id     TEXT NULL;
 
 
  ALTER TABLE batch
- 	ADD asset_id                   VARCHAR(50) NULL,
- 	ADD usage_policy_id            VARCHAR(50) NULL,
-    ADD access_policy_id           VARCHAR(50) NULL,
-    ADD contract_defination_id     VARCHAR(50) NULL; 	
+ 	ADD asset_id                   TEXT NULL,
+ 	ADD usage_policy_id            TEXT NULL,
+    ADD access_policy_id           TEXT NULL,
+    ADD contract_defination_id     TEXT NULL; 	

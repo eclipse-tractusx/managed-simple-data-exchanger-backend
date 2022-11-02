@@ -58,14 +58,15 @@ public class AspectRelationshipEntity implements Serializable {
     private String shellId;
     @Column(name = "data_type_uri")
     private String dataTypeUri;
-    @Column(name = "asset_id")
-    private String assetId;
     @Column(name = "usage_policy_id")
     private String usagePolicyId;
-    @Column(name = "access_policy_id")
-    private String accessPolicyId;
     @Column(name = "contract_defination_id")
     private String contractDefinationId;
+    @Column(name = "asset_id")
+    private String assetId;
+    @Column(name = "access_policy_id")
+    private String accessPolicyId;
+
 }
 
 @Data

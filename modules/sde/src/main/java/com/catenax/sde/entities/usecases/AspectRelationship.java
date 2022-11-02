@@ -46,8 +46,8 @@ public class AspectRelationship {
     private List<String> bpnNumbers;
     private String typeOfAccess;
     private List<UsagePolicy> usagePolicies;
-    private String assetId; 
     private String usagePolicyId;
+    private String assetId; 
     private String accessPolicyId;
     private String contractDefinationId;
     

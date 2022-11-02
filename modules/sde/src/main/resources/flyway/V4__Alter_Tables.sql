@@ -32,11 +32,7 @@
     ALTER COLUMN name_at_customer          TYPE TEXT,
     ALTER COLUMN optional_identifier_key   TYPE TEXT,
     ALTER COLUMN optional_identifier_value TYPE TEXT,
-    ALTER COLUMN shell_id                  TYPE TEXT,
-    ALTER COLUMN asset_id                  TYPE TEXT,
-    ALTER COLUMN usage_policy_id           TYPE TEXT,
-    ALTER COLUMN access_policy_id          TYPE TEXT,
-    ALTER COLUMN contract_defination_id    TYPE TEXT;
+    ALTER COLUMN shell_id                  TYPE TEXT;
 
 
  ALTER TABLE aspect_relationship
@@ -47,11 +43,7 @@
     ALTER COLUMN assembled_on                   TYPE TEXT,
     ALTER COLUMN measurement_unit_lexical_value TYPE TEXT,
     ALTER COLUMN shell_id                       TYPE TEXT,
-    ALTER COLUMN data_type_uri                  TYPE TEXT,
-    ALTER COLUMN asset_id                       TYPE TEXT,
-    ALTER COLUMN usage_policy_id                TYPE TEXT,
-    ALTER COLUMN access_policy_id               TYPE TEXT,
-    ALTER COLUMN contract_defination_id         TYPE TEXT;
+    ALTER COLUMN data_type_uri                  TYPE TEXT;
 
  ALTER TABLE failure_log
     ALTER COLUMN uuid       TYPE TEXT,

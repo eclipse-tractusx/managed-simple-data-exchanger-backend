@@ -33,15 +33,13 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import com.catenax.dft.entities.aspect.EdcCommonResponse;
+import com.catenax.sde.edc.entities.EdcCommonResponse;
 import com.catenax.sde.edc.entities.request.asset.AssetEntryRequest;
 import com.catenax.sde.edc.entities.request.contractdefinition.ContractDefinitionRequest;
 import com.catenax.sde.edc.entities.request.policies.PolicyDefinitionRequest;
 import com.catenax.sde.edc.exceptions.EDCGatewayException;
 
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Service
 public class EDCGateway {
 

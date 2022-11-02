@@ -21,10 +21,16 @@
 package com.catenax.sde.usecases.csvhandler.batchs;
 
 
+import java.util.HashMap;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import com.catenax.sde.edc.entities.EdcCommonResponse;
 import com.catenax.sde.edc.entities.request.asset.AssetEntryRequest;
 import com.catenax.sde.edc.entities.request.asset.AssetEntryRequestFactory;
 import com.catenax.sde.edc.entities.request.contractdefinition.ContractDefinitionRequest;
@@ -38,15 +44,9 @@ import com.catenax.sde.edc.gateways.external.EDCGateway;
 import com.catenax.sde.entities.usecases.Batch;
 import com.catenax.sde.usecases.csvhandler.AbstractCsvHandlerUseCase;
 import com.catenax.sde.usecases.csvhandler.exceptions.CsvHandlerUseCaseException;
-import com.catenax.sde.entities.aspect.EdcCommonResponse;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.CollectionUtils;
-import org.springframework.http.ResponseEntity;
-
-import java.util.HashMap;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -88,7 +88,8 @@ public class EDCBatchHandlerUseCase extends AbstractCsvHandlerUseCase<Batch, Bat
 
             AssetEntryRequest assetEntryRequest = assetFactory.getBatchAssetRequest(shellId, subModelId, input.getUuid());
             if (!edcGateway.assetExistsLookup(assetEntryRequest.getAsset().getProperties().get("asset:prop:id"))) {
-            	ResponseEntity<EdcCommonResponse> edcAssetId=edcGateway.createAsset(assetEntryRequest);
+            	
+            	ResponseEntity<EdcCommonResponse> edcAssetId = edcGateway.createAsset(assetEntryRequest);
 
                 List<ConstraintRequest> usageConstraints =  policyConstraintBuilderService.getUsagePolicyConstraints(input.getUsagePolicies());
                 List<ConstraintRequest> accessConstraints =  policyConstraintBuilderService.getAccessConstraints(input.getBpnNumbers());
@@ -102,17 +103,20 @@ public class EDCBatchHandlerUseCase extends AbstractCsvHandlerUseCase<Batch, Bat
                 PolicyDefinitionRequest accessPolicyDefinitionRequest = policyFactory.getPolicy(shellId, subModelId, accessConstraints, new HashMap<>());
                 PolicyDefinitionRequest usagePolicyDefinitionRequest = policyFactory.getPolicy(shellId, subModelId, usageConstraints, extensibleProperties);
 
-                ResponseEntity<EdcCommonResponse> edcPolicyAccess=edcGateway.createPolicyDefinition(accessPolicyDefinitionRequest);
-                ResponseEntity<EdcCommonResponse> edcPolicyUsage=edcGateway.createPolicyDefinition(usagePolicyDefinitionRequest);
+                ResponseEntity<EdcCommonResponse> edcPolicyAccess = edcGateway.createPolicyDefinition(accessPolicyDefinitionRequest);
+                ResponseEntity<EdcCommonResponse> edcPolicyUsage = edcGateway.createPolicyDefinition(usagePolicyDefinitionRequest);
 
                 ContractDefinitionRequest contractDefinitionRequest = contractFactory.getContractDefinitionRequest(
                         assetEntryRequest.getAsset().getProperties().get("asset:prop:id"),
                         accessPolicyDefinitionRequest.getId(), usagePolicyDefinitionRequest.getId());
-                ResponseEntity<EdcCommonResponse> edcContractDefinationId=edcGateway.createContractDefinition(contractDefinitionRequest);
+                ResponseEntity<EdcCommonResponse> edcContractDefinationId = edcGateway.createContractDefinition(contractDefinitionRequest);
+             
+                // EDC transaction information for DB
                 input.setAssetId(edcAssetId.getBody().getId());
                 input.setAccessPolicyId(edcPolicyAccess.getBody().getId());
                 input.setUsagePolicyId(edcPolicyUsage.getBody().getId());
                 input.setContractDefinationId(edcContractDefinationId.getBody().getId());
+               
             }
 
             return input;

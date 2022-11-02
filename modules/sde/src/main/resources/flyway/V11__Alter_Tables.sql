@@ -1,5 +1,4 @@
 /********************************************************************************
- * Copyright (c) 2022 BMW GmbH
  * Copyright (c) 2022 T-Systems International GmbH
  * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
@@ -19,23 +18,22 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package com.catenax.sde.entities.aspect;
+ ALTER TABLE aspect
+    ADD asset_id                   VARCHAR(50) NULL,
+    ADD usage_policy_id            VARCHAR(50) NULL,
+    ADD access_policy_id           VARCHAR(50) NULL,
+    ADD contract_defination_id     VARCHAR(50) NULL;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(Include.NON_NULL)
-public class EdcCommonResponse {
-	private String id;
-	private String createdAt;
-}
+ ALTER TABLE aspect_relationship
+    ADD asset_id                   VARCHAR(50) NULL,
+    ADD usage_policy_id            VARCHAR(50) NULL,
+    ADD access_policy_id           VARCHAR(50) NULL,
+    ADD contract_defination_id     VARCHAR(50) NULL;
+
+
+ ALTER TABLE batch
+ 	ADD asset_id                   VARCHAR(50) NULL,
+ 	ADD usage_policy_id            VARCHAR(50) NULL,
+    ADD access_policy_id           VARCHAR(50) NULL,
+    ADD contract_defination_id     VARCHAR(50) NULL; 	

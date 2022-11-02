@@ -34,11 +34,7 @@ CREATE TABLE aspect
     name_at_customer          VARCHAR(50),
     optional_identifier_key   VARCHAR(50),
     optional_identifier_value VARCHAR(50),
-    shell_id                  VARCHAR(50),
-    asset_id                  VARCHAR(50),
-    usage_policy_id           VARCHAR(50),
-    access_policy_id          VARCHAR(50),
-    contract_defination_id    VARCHAR(50)
+    shell_id                  VARCHAR(50)
 );
 
 CREATE TABLE aspect_relationship
@@ -52,10 +48,6 @@ CREATE TABLE aspect_relationship
     measurement_unit_lexical_value VARCHAR(50),
     shell_id                       VARCHAR(50),
     data_type_uri                  VARCHAR(50),
-    asset_id                       VARCHAR(50),
-    usage_policy_id                VARCHAR(50),
-    access_policy_id               VARCHAR(50),
-    contract_defination_id         VARCHAR(50),
     PRIMARY KEY (parent_catenax_id, child_catenax_id)
 );
 

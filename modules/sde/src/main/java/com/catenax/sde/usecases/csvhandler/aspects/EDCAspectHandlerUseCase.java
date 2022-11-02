@@ -33,15 +33,15 @@ import com.catenax.sde.edc.entities.request.policies.PolicyRequestFactory;
 import com.catenax.sde.edc.enums.UsagePolicyEnum;
 import com.catenax.sde.edc.gateways.external.EDCGateway;
 import com.catenax.sde.entities.usecases.Aspect;
+import com.catenax.sde.entities.aspect.EdcCommonResponse;
 import com.catenax.sde.usecases.csvhandler.AbstractCsvHandlerUseCase;
 import com.catenax.sde.usecases.csvhandler.exceptions.CsvHandlerUseCaseException;
-import com.catenax.sde.entities.aspect.EdcCommonResponse;
 
 import lombok.SneakyThrows;
+import org.springframework.http.ResponseEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -104,16 +104,22 @@ public class EDCAspectHandlerUseCase extends AbstractCsvHandlerUseCase<Aspect, A
                 PolicyDefinitionRequest usagePolicyDefinitionRequest = policyFactory.getPolicy(shellId, subModelId, usageConstraints, extensibleProperties);
 
                 ResponseEntity<EdcCommonResponse> edcPolicyAccess=edcGateway.createPolicyDefinition(accessPolicyDefinitionRequest);
+               
                 ResponseEntity<EdcCommonResponse> edcPolicyUsage=edcGateway.createPolicyDefinition(usagePolicyDefinitionRequest);
 
                 ContractDefinitionRequest contractDefinitionRequest = contractFactory.getContractDefinitionRequest(
                         assetEntryRequest.getAsset().getProperties().get("asset:prop:id"),
                         accessPolicyDefinitionRequest.getId(), usagePolicyDefinitionRequest.getId());
+              
                 ResponseEntity<EdcCommonResponse> edcContractDefinationId=edcGateway.createContractDefinition(contractDefinitionRequest);
-                input.setAssetId(edcAssetId.getBody().getId());
-                input.setAccessPolicyId(edcPolicyAccess.getBody().getId());
-                input.setUsagePolicyId(edcPolicyUsage.getBody().getId());
+               
                 input.setContractDefinationId(edcContractDefinationId.getBody().getId());
+                input.setUsagePolicyId(edcPolicyUsage.getBody().getId());
+
+                input.setAssetId(edcAssetId.getBody().getId());
+                
+                input.setAccessPolicyId(edcPolicyAccess.getBody().getId());
+                
             }
 
             return input;
@@ -130,4 +136,5 @@ public class EDCAspectHandlerUseCase extends AbstractCsvHandlerUseCase<Aspect, A
         }
         return null;
     }
+    
 }

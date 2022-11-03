@@ -63,11 +63,93 @@ spec:
               containerPort: {{ .Values.edc.endpoints.metrics.port }}
               protocol: TCP
           env:
-          - name: EDC_VAULT_CLIENTSECRET
-            valueFrom: 
-              secretKeyRef:
-                name: avp-edc-secret
-                key: azvaultclientsecret
+            - name: EDC_DATASOURCE_ASSET_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.dbSecretName}}
+                  key: dburl
+            - name: EDC_DATASOURCE_ASSET_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.dbSecretName}}
+                  key: dbuser
+            - name: EDC_DATASOURCE_ASSET_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.dbSecretName}}
+                  key: password
+            - name: EDC_DATASOURCE_CONTRACTDEFINITION_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.dbSecretName}}
+                  key: dburl
+            - name: EDC_DATASOURCE_CONTRACTDEFINITION_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.dbSecretName}}
+                  key: dbuser
+            - name: EDC_DATASOURCE_CONTRACTDEFINITION_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.dbSecretName}}
+                  key: password
+            - name: EDC_DATASOURCE_CONTRACTNEGOTIATION_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.dbSecretName}}
+                  key: dburl
+            - name: EDC_DATASOURCE_CONTRACTNEGOTIATION_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.dbSecretName}}
+                  key: dbuser
+            - name: EDC_DATASOURCE_CONTRACTNEGOTIATION_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.dbSecretName}}
+                  key: password
+            - name: EDC_DATASOURCE_POLICY_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.dbSecretName}}
+                  key: dburl
+            - name: EDC_DATASOURCE_POLICY_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.dbSecretName}}
+                  key: dbuser
+            - name: EDC_DATASOURCE_POLICY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.dbSecretName}}
+                  key: password
+            - name: EDC_DATASOURCE_TRANSFERPROCESS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.dbSecretName}}
+                  key: dburl
+            - name: EDC_DATASOURCE_TRANSFERPROCESS_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.dbSecretName}}
+                  key: dbuser
+            - name: EDC_DATASOURCE_TRANSFERPROCESS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.dbSecretName}}
+                  key: password
+            #- name: EDC_VAULT_HASHICORP_URL
+            #  valueFrom:
+            #    secretKeyRef:
+            #      name: {{ .Values.secret.vaultSecretName }}
+            #      key: vaulturl
+            #- name: EDC_VAULT_HASHICORP_TOKEN
+            #  valueFrom:
+            #    secretKeyRef:
+            #      name: {{ .Values.secret.vaultSecretName }}
+            #      key: vaulttoken
+
+                                 
           {{- if .Values.livenessProbe.enabled }}
           livenessProbe:
             httpGet:

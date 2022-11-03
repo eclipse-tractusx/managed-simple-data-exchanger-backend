@@ -1,0 +1,130 @@
+{
+	"$schema": "https://json-schema.org/draft/2019-09/schema",
+	"$id": "http://example.com/example.json",
+	"type": "array",
+	"id": "Aspect",
+	"title": "List of Serial Part Typizations",
+	"items": {
+		"type": "object",
+		"title": "Serial Part Typization",
+		"required": [
+			"part_instance_id",
+			"manufacturing_date",
+			"manufacturer_part_id",
+			"classification",
+			"name_at_manufacturer"
+		],
+		"dependentRequired": {
+			"optional_identifier_key": [
+				"optional_identifier_value"
+			],
+			"optional_identifier_value": [
+				"optional_identifier_key"
+			]
+		},
+		"properties": {
+			"UUID": {
+				"type": "string",
+				"title": "UUID URN",
+				"examples": [
+					"urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2"
+				]
+			},
+			"part_instance_id": {
+				"type": "string",
+				"title": "Part instance ID",
+				"examples": [
+					"NO-159040131155901488695376"
+				]
+			},
+			"manufacturing_date": {
+				"type": "string",
+				"format": "date-time",
+				"title": "Manufacturing Date",
+				"examples": [
+					"2022-02-04T14:48:54"
+				]
+			},
+			"manufacturing_country": {
+				"type": "string",
+				"pattern": "[A-Z]{3}",
+				"title": "Manufacturing country",
+				"examples": [
+					"DEU"
+				]
+			},
+			"manufacturer_part_id": {
+				"type": "string",
+				"title": "Manufacturer part ID",
+				"examples": [
+					"37754B7-76"
+				]
+			},
+			"customer_part_id": {
+				"type": "string",
+				"title": "Customer part ID",
+				"examples": [
+					"37754B7-76"
+				]
+			},
+			"classification": {
+				"type": "string",
+				"enum": [
+					"product",
+					"raw material",
+					"software",
+					"assembly",
+					"tool",
+					"component"
+				],
+				"title": "Classification",
+				"examples": [
+					"component"
+				]
+			},
+			"name_at_manufacturer": {
+				"type": "string",
+				"title": "Name at manufacturer",
+				"examples": [
+					"Sensor"
+				]
+			},
+			"name_at_customer": {
+				"type": "string",
+				"title": "Name at customer",
+				"examples": [
+					"Sensor"
+				]
+			},
+			"optional_identifier_key": {
+				"type": "string",
+				"title": "Optional identifier key",
+				"examples": [
+					"Key"
+				]
+			},
+			"optional_identifier_value": {
+				"type": "string",
+				"title": "Optional identifier value",
+				"examples": [
+					"Value"
+				]
+			}
+		}
+	},
+	"examples": [
+			{
+				"uuid": "urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2",
+				"part_instance_id": "NO-159040131155901488695376",
+				"manufacturing_date": "2022-02-04T14:48:54",
+				"manufacturing_country": "DEU",
+				"manufacturer_part_id": "37754B7-76",
+				"customer_part_id": "37754B7-76",
+				"classification": "component",
+				"name_at_manufacturer": "Sensor",
+				"name_at_customer": "Sensor",
+				"optional_identifier_key": "Key",
+				"optional_identifier_value": "Value"
+			}
+		]
+}

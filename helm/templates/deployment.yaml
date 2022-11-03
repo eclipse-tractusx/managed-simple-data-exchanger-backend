@@ -35,7 +35,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: MANUFACTURERID
-              value: "BPNL00000PN1PROV"
+              value: "BPNL0000000007UH"
             - name: SPRING_DATASOURCE_URL
               valueFrom:
                 secretKeyRef:
@@ -118,7 +118,7 @@ spec:
                 secretKeyRef:
                   name: dtf-digitaltwins-secrets
                   key: keycloakREALM
-            - name: KEYCLOAK_REASOURCE
+            - name: KEYCLOAK_RESOURCE
               valueFrom:
                 secretKeyRef:
                   name: dtf-digitaltwins-secrets
@@ -152,7 +152,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: dft-edc-secrets
-                  key: edcconsapiheader   
+                  key: edcconsapiheader
             - name: CLIENTID
               valueFrom:
                 secretKeyRef:
@@ -162,7 +162,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: dtf-digitaltwins-secrets
-                  key: portalApisecret  
+                  key: portalApisecret
             - name: PARTNER_POOL_HOSTNAME
               valueFrom:
                 secretKeyRef:

@@ -33,6 +33,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.filter.GenericFilterBean;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Configuration
 public class ApiHeaderAuthFilter extends GenericFilterBean {
 
@@ -53,8 +56,10 @@ public class ApiHeaderAuthFilter extends GenericFilterBean {
 		String url = request.getRequestURI();
 
 		if (url.contains("/public") && !apiKeyValue.equals(authHeaderValue)) {
+			log.info("**** ApiHeaderAuthFilter genreated Unauthorized *****************"+apiKeyHeader+" - "+apiKeyValue);
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 		} else {
+			log.info("**** ApiHeaderAuthFilter genreated Authorized *****************"+apiKeyHeader+" - "+apiKeyValue);
 			filterChain.doFilter(servletRequest, servletResponse);
 		}
 	}

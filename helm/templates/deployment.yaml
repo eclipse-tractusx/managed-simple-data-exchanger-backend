@@ -35,22 +35,27 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: MANUFACTURERID
-              value: "BPN00022PRV"
+              value: "BPNL0000000007UH"
             - name: SPRING_DATASOURCE_URL
               valueFrom:
                 secretKeyRef:
-                  name: dft-postgres-secrets
+                  name: dft-postgresql-secrets
                   key: dbUrl
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: dft-postgres-secrets
-                  key: dbUser
+                  name: dft-postgresql-secrets
+                  key: username
             - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: dft-postgres-secrets
-                  key: dbPassword
+                  name: dft-postgresql-secrets
+                  key: password
+            #- name: SPRING_DATASOURCE_POSTGRESPASSWORD
+            #  valueFrom:
+               # secretKeyRef:
+                #  name: dft-postgresql-secrets
+                 # key: postgresPassword
             - name: DIGITAL-TWINS_HOSTNAME
               valueFrom:
                 secretKeyRef:
@@ -71,6 +76,11 @@ spec:
                 secretKeyRef:
                   name: dtf-digitaltwins-secrets
                   key: digitalTwinAuthorizationClientSecret
+            - name: DIGITAL-TWINS_AUTHENTICATION_GRANTTYPE
+              valueFrom:
+                secretKeyRef:
+                  name: dtf-digitaltwins-secrets
+                  key: digitalTwinsAuthenticationGrantType
             - name: EDC_ENABLED
               value: 'true'
             - name: EDC_HOSTNAME
@@ -108,7 +118,7 @@ spec:
                 secretKeyRef:
                   name: dtf-digitaltwins-secrets
                   key: keycloakREALM
-            - name: KEYCLOAK_REASOURCE
+            - name: KEYCLOAK_RESOURCE
               valueFrom:
                 secretKeyRef:
                   name: dtf-digitaltwins-secrets
@@ -142,7 +152,27 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: dft-edc-secrets
-                  key: edcconsapiheader                
+                  key: edcconsapiheader
+            - name: CLIENTID
+              valueFrom:
+                secretKeyRef:
+                  name: dtf-digitaltwins-secrets
+                  key: portalApiID 
+            - name: CLIENTSECRET
+              valueFrom:
+                secretKeyRef:
+                  name: dtf-digitaltwins-secrets
+                  key: portalApisecret  
+            - name: PARTNER_POOL_HOSTNAME
+              valueFrom:
+                secretKeyRef:
+                  name: dtf-digitaltwins-secrets
+                  key: partnerpoolhostURL
+            - name: PORTAL_BACKEND_HOSTNAME 
+              valueFrom:
+                secretKeyRef:
+                  name: dtf-digitaltwins-secrets
+                  key: portalpoolhostURL 
           ports:
             - name: http
               containerPort: 8080

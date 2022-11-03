@@ -1,6 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2022 T-Systems International Gmbh
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -22,7 +22,7 @@ package com.catenax.dft.entities.batch;
 
 import java.util.List;
 
-import com.catenax.dft.entities.UsagePolicyRequest;
+import com.catenax.dft.entities.UsagePolicy;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -44,7 +44,7 @@ public class BatchRequest {
     @JsonIgnore
     private String typeOfAccess;
     @JsonIgnore
-    private List<UsagePolicyRequest> usagePolicies;
+    private List<UsagePolicy> usagePolicies;
 
     @JsonProperty(value = "batch_id")
     private String batchId;

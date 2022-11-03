@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2022 BMW GmbH
  * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -90,7 +90,7 @@ public class EDCGateway {
     }
 
     public void createPolicyDefinition(PolicyDefinitionRequest request) {
-        final String policyResource = "/policies";
+        final String policyResource = "/policydefinitions";
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.add(apiKeyHeader, apiKey);

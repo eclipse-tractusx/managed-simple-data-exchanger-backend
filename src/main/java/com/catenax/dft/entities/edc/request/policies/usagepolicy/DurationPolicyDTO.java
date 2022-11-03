@@ -1,6 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2022 T-Systems International Gmbh
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,17 +20,16 @@
 
 package com.catenax.dft.entities.edc.request.policies.usagepolicy;
 
-import com.catenax.dft.entities.UsagePolicyRequest;
+import com.catenax.dft.entities.UsagePolicy;
 import com.catenax.dft.entities.edc.request.policies.ConstraintRequest;
 import com.catenax.dft.entities.edc.request.policies.Expression;
 import com.catenax.dft.enums.DurationEnum;
 import com.catenax.dft.enums.PolicyAccessEnum;
-import com.catenax.dft.enums.UsagePolicyEnum;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.apache.commons.lang3.StringUtils;
 
 @Data
 @AllArgsConstructor
@@ -40,10 +39,10 @@ public class DurationPolicyDTO extends UsagePolicyDTO{
     private static final String DATASPACECONNECTOR_LITERALEXPRESSION = "dataspaceconnector:literalexpression";
     private DurationEnum durationUnit;
 
-    public static DurationPolicyDTO fromUsagePolicy(UsagePolicyRequest usagePolicyRequest)
+    public static DurationPolicyDTO fromUsagePolicy(UsagePolicy usagePolicy)
     {
-        return DurationPolicyDTO.builder().type(usagePolicyRequest.getType()).typeOfAccess(usagePolicyRequest.getTypeOfAccess())
-                .value(usagePolicyRequest.getValue()).durationUnit(usagePolicyRequest.getDurationUnit()).build();
+        return DurationPolicyDTO.builder().type(usagePolicy.getType()).typeOfAccess(usagePolicy.getTypeOfAccess())
+                .value(usagePolicy.getValue()).durationUnit(usagePolicy.getDurationUnit()).build();
 
     }
     @Override

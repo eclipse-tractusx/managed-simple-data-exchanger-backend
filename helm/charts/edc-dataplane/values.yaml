@@ -10,11 +10,11 @@ replicaCount: 1
 image:
   # -- Which derivate of the edc data-plane to use.
   # One of: [ghcr.io/catenax-ng/product-edc/edc-dataplane-hashicorp-vault, ghcr.io/catenax-ng/product-edc/edc-dataplane-azure-vault]
-  repository: ghcr.io/catenax-ng/product-edc/edc-dataplane
+  repository: ghcr.io/catenax-ng/product-edc/edc-dataplane-azure-vault
   # -- [Kubernetes image pull policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy) to use
   pullPolicy: IfNotPresent
   # -- Overrides the image tag whose default is the chart appVersion
-  tag: "sha-970a09d"
+  tag: "0.1.1"
 
 imagePullSecret:
   # -- Image pull secret to create to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry)
@@ -204,12 +204,13 @@ opentelemetry:
 configuration:
   # -- EDC configuration.properties configuring aspects of the [eclipse-dataspaceconnector](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector)
   properties: |-
-    edc.controlplane.validation-endpoint=http://dft-connector-prv-cp.int.demo.catena-x.net/validation/token
-    edc.hostname=localhost
+    #edc.controlplane.validation-endpoint=https://dft-connector.int.demo.catena-x.net/validation/token
+    edc.dataplane.token.validation.endpoint=https://dft-connector.int.demo.catena-x.net/validation/token
+    edc.hostname=dft-connector-prv-dp.int.demo.catena-x.net
     edc.vault.clientid=2f0e6b4e-de1a-42bd-b30e-453d558d2dd4
     edc.vault.tenantid=495463c3-0991-4659-9cc5-94b4a3f7b1d6
     edc.vault.name=cxtsi-dev010-vault
-    edc.vault.clientsecret=DoKjRi5op~BnuIyXDbQdkgi12kKNsIUWMp
+    edc.vault.clientsecret=
     # edc.api.control.auth.apikey.key=
     # edc.api.control.auth.apikey.value=
     # edc.atomikos.checkpoint.interval=

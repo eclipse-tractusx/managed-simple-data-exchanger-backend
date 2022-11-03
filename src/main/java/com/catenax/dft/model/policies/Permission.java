@@ -1,6 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,6 +20,7 @@
 
 package com.catenax.dft.model.policies;
 
+import com.catenax.dft.entities.edc.request.policies.ConstraintRequest;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -46,7 +47,7 @@ public class Permission {
     private Action action;
     private String assignee;
     private String assigner;
-    private ArrayList<Constraint> constraints;
+    private ArrayList<ConstraintRequest> constraints;
     private ArrayList<Obligation> duties;
     @JsonProperty("edctype")
     private String edcType;

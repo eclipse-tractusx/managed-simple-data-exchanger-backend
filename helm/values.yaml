@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: ghcr.io/catenax/gds-product-dft/product-dft-backend-mod
+  repository: ghcr.io/catenax-ng/product-dft-backend
   pullPolicy: Always
   tag: "latest"
 

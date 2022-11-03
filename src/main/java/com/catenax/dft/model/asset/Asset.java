@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+  * Copyright (c) 2022 T-Systems International GmbH
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -30,7 +30,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
-import java.util.HashMap;
+import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -40,7 +40,7 @@ import java.util.HashMap;
 @JsonInclude(Include.NON_NULL)
 public class Asset {
 
-	public HashMap<String, String> properties;
+	private Map<String, String> properties;
 	
     @SneakyThrows
     public String toJsonString() {

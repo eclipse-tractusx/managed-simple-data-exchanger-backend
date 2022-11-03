@@ -2,7 +2,7 @@
  * Copyright (c) 2022 Critical TechWorks GmbH
  * Copyright (c) 2022 BMW GmbH
  * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -89,19 +89,24 @@ public class EDCAspectRelationshipHandlerUseCase
             if (!edcGateway.assetExistsLookup(assetEntryRequest.getAsset().getProperties().get("asset:prop:id"))) {
                 edcGateway.createAsset(assetEntryRequest);
 
-                List<ConstraintRequest> constraints =  policyConstraintBuilderService.getPolicyConstraints(input.getBpnNumbers(), input.getUsagePolicies());
+                List<ConstraintRequest> usageConstraints =  policyConstraintBuilderService.getUsagePolicyConstraints(input.getUsagePolicies());
+                List<ConstraintRequest> accessConstraints =  policyConstraintBuilderService.getAccessConstraints(input.getBpnNumbers());
 
                 String customValue = getCustomValue(input);
                 if(StringUtils.isNotBlank(customValue))
                 {
-                    extensibleProperties.put("cx-terms-conditions", customValue);
+                    extensibleProperties.put(UsagePolicyEnum.CUSTOM.name(), customValue);
                 }
-                PolicyDefinitionRequest policyDefinitionRequest = policyFactory.getPolicy(shellId, subModelId, constraints, extensibleProperties);
-                edcGateway.createPolicyDefinition(policyDefinitionRequest);
+
+                PolicyDefinitionRequest accessPolicyDefinitionRequest = policyFactory.getPolicy(shellId, subModelId, accessConstraints, new HashMap<>());
+                PolicyDefinitionRequest usagePolicyDefinitionRequest = policyFactory.getPolicy(shellId, subModelId, usageConstraints, extensibleProperties);
+
+                edcGateway.createPolicyDefinition(accessPolicyDefinitionRequest);
+                edcGateway.createPolicyDefinition(usagePolicyDefinitionRequest);
 
                 ContractDefinitionRequest contractDefinitionRequest = contractFactory.getContractDefinitionRequest(
                         assetEntryRequest.getAsset().getProperties().get("asset:prop:id"),
-                        policyDefinitionRequest.getUid());
+                        accessPolicyDefinitionRequest.getId(), usagePolicyDefinitionRequest.getId());
                 edcGateway.createContractDefinition(contractDefinitionRequest);
             }
 

@@ -1,6 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-import com.catenax.dft.entities.UsagePolicyRequest;
+import com.catenax.dft.entities.UsagePolicy;
 import com.catenax.dft.enums.PolicyAccessEnum;
 import com.catenax.dft.enums.UsagePolicyEnum;
 import org.junit.jupiter.api.Test;
@@ -100,10 +100,10 @@ class BatchControllerTest {
 		
 		String typeOfAccess = "restricted";
 		List<String> bpnNumber = Stream.of("BPNL00000005CONS","BPNL00000005PROV").toList();
-		List<UsagePolicyRequest> list = new ArrayList<>();
-		UsagePolicyRequest usagePolicyRequest = UsagePolicyRequest.builder()
+		List<UsagePolicy> list = new ArrayList<>();
+		UsagePolicy usagePolicy = UsagePolicy.builder()
 				.type(UsagePolicyEnum.ROLE).typeOfAccess(PolicyAccessEnum.RESTRICTED).value("ADMIN").build();
-		list.add(usagePolicyRequest);
+		list.add(usagePolicy);
 		List<BatchRequest> rowData = new ArrayList<>();
 		BatchRequest batch = BatchRequest.builder()
 				.uuid("urn:uuid:580d3adf-1981-2022-a214-13d6ccmp9889")

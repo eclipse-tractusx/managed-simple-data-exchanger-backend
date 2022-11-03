@@ -1,6 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,7 +20,7 @@
 
 package com.catenax.dft.mapper;
 
-public interface EDCAssetConstant {
+public final class EDCAssetConstant {
 
 	public static final String ASSET_PROP_PUBLISHER = "asset:prop:publisher";
 	public static final String ASSET_PROP_DESCRIPTION = "asset:prop:description";
@@ -31,4 +31,7 @@ public interface EDCAssetConstant {
 	public static final String ASSET_PROP_VERSION = "asset:prop:version";
 	public static final String ASSET_PROP_CONTENTTYPE = "asset:prop:contenttype";
 	public static final String ASSET_PROP_FILENAME = "asset:prop:fileName";
+	
+	
+	private EDCAssetConstant() {}
 }

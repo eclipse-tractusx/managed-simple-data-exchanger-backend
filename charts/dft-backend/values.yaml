@@ -7,7 +7,7 @@ replicaCount: 1
 image:
   repository: ghcr.io/catenax-ng/product-dft-backend
   pullPolicy: Always
-  tag: "latest"
+  tag: "1.6.0"
 
 imagePullSecrets: []
 
@@ -35,22 +35,15 @@ service:
   type: ClusterIP
   port: 8080
 
-ingress:
-  className: nginx
-  annotations:
-    nginx.ingress.kubernetes.io/backend-protocol: HTTP
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    nginx.ingress.kubernetes.io/affinity: "cookie"
-    nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
-  host: dft-api.int.demo.catena-x.net
+securityContext: 
+   capabilities:
+     drop:
+      - ALL
+   readOnlyRootFilesystem: true
+   runAsNonRoot: true
+   runAsUser: 1000
+   allowPrivilegeEscalation: false
 
-resources:
-  limits:
-    cpu: 800m
-    memory: 2Gi
-  requests:
-    cpu: 300m
-    memory: 1Gi
 
 autoscaling:
   enabled: false
@@ -83,9 +76,28 @@ readinessProbe:
   successThreshold: 1
   timeoutSeconds: 1
 
+ingress:
+  enabled: false
+  host: dft-api.int.demo.catena-x.net
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: HTTP
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
+    nginx.ingress.kubernetes.io/enable-cors: 'false'
+
+ 
 postgres:
   enabled: true
-
-
-
-
+  auth:
+    username: "dftUser"
+    database: "dftdb"
+    existingSecret: dft-postgresql-secrets
+    secretKeys:
+        adminPasswordKey: "postgres-password"
+        userPasswordKey: "password"
+ 
+  
+    
+ 
+  

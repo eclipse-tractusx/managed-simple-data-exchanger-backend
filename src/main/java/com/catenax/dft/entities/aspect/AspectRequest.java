@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2022 Critical TechWorks GmbH
  * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -23,14 +23,16 @@ package com.catenax.dft.entities.aspect;
 
 import java.util.List;
 
-import com.catenax.dft.entities.UsagePolicyRequest;
+import com.catenax.dft.entities.UsagePolicy;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
+@Builder
 public class AspectRequest {
     @JsonIgnore
     private int rowNumber;
@@ -42,7 +44,7 @@ public class AspectRequest {
     @JsonIgnore
     private String typeOfAccess;
     @JsonIgnore
-    private List<UsagePolicyRequest> usagePolicies;
+    private List<UsagePolicy> usagePolicies;
 
     @JsonProperty(value = "part_instance_id")
     private String partInstanceId;

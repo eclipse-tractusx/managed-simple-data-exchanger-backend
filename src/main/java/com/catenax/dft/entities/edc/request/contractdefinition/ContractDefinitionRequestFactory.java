@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2022 BMW GmbH
  * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -31,16 +31,16 @@ import com.catenax.dft.usecases.common.UUIdGenerator;
 @Service
 public class ContractDefinitionRequestFactory {
 
-    public ContractDefinitionRequest getContractDefinitionRequest(String uuid, String policyId) {
+    public ContractDefinitionRequest getContractDefinitionRequest(String uuid, String accessPolicyId, String usagePolicyId) {
         List<Criterion> criteria = new ArrayList<>();
         criteria.add(Criterion.builder()
-                .left("asset:prop:id")
-                .op("=")
-                .right(uuid)
+                .operandLeft("asset:prop:id")
+                .operator("=")
+                .operandRight(uuid)
                 .build());
         return ContractDefinitionRequest.builder()
-                .contractPolicyId(policyId)
-                .accessPolicyId(policyId)
+                .contractPolicyId(usagePolicyId)
+                .accessPolicyId(accessPolicyId)
                 .id(UUIdGenerator.getUuid())
                 .criteria(criteria)
                 .build();

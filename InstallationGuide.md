@@ -39,6 +39,7 @@ The values are in the [Vault](https://vault.vault.demo.catena-x.net/).
 
 ## Upload a file:
 When a file .csv is uploaded, the program checks whether the file is a SerialPartTypization or an AssemblyPartRelationship and there is a pipeline for each one.
+Apart from both upload Batch upload is additional feature were added into DFT.
 
 <b>For Serial Part Typization:</b>
 
@@ -51,6 +52,13 @@ When a file .csv is uploaded, the program checks whether the file is a SerialPar
 
 1. Maps the content of the line with an Aspect Relationship.
 2. checks if an Aspect exists so it can be related to that Aspect.
+3. Registers in DigitalTwins.
+4. Stores the line in the database.
+
+<b>For Batch Upload:</b>
+
+1. Maps the content of the line with an Batch.
+2. Generates the UUID if it does not contain a UUID.
 3. Registers in DigitalTwins.
 4. Stores the line in the database.
 

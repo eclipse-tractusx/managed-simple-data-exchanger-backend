@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2022 BMW GmbH
  * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -27,30 +27,28 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class PolicyRequestFactory {
 
-    public PolicyDefinitionRequest getPolicy(String shellId, String subModelId, List<ConstraintRequest> constraints, HashMap<String, String> extensibleProperties) {
+    public PolicyDefinitionRequest getPolicy(String shellId, String subModelId, List<ConstraintRequest> constraints, Map<String, String> extensibleProperties) {
         String assetId = shellId + "-" + subModelId;
 
-        ArrayList<PermissionRequest> permissions = getPermissions(assetId, constraints);
+        List<PermissionRequest> permissions = getPermissions(assetId, constraints);
         HashMap<String, String> type = new HashMap<>();
         type.put("@policytype", "set");
+        PolicyRequest policyRequest = PolicyRequest.builder().permissions(permissions).obligations(new ArrayList<>())
+                .extensibleProperties(extensibleProperties).inheritsFrom(null).assignee(null).assigner(null)
+                .target(assetId).type(type).prohibitions(new ArrayList<>()).build();
 
         return PolicyDefinitionRequest.builder()
-                .uid(UUIdGenerator.getUrnUuid())
-                .permissions(permissions)
-                .prohibitions(new ArrayList<>())
-                .obligations(new ArrayList<>())
-                .extensibleProperties(extensibleProperties)
-                .inheritsFrom(null)
-                .assigner(null)
-                .assignee(null)
-                .target(assetId).type(type).build();
+                .id(UUIdGenerator.getUrnUuid())
+                .policyRequest(policyRequest)
+                .build();
     }
 
-    private ArrayList<PermissionRequest> getPermissions(String assetId, List<ConstraintRequest> constraints) {
+    public List<PermissionRequest> getPermissions(String assetId, List<ConstraintRequest> constraints) {
         ArrayList<PermissionRequest> permissions = new ArrayList<>();
         ActionRequest action = ActionRequest.builder()
                 .type("USE")

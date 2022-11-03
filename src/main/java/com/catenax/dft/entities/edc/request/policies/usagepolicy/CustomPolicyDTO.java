@@ -1,6 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2022 T-Systems International Gmbh
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,7 +20,7 @@
 
 package com.catenax.dft.entities.edc.request.policies.usagepolicy;
 
-import com.catenax.dft.entities.UsagePolicyRequest;
+import com.catenax.dft.entities.UsagePolicy;
 import com.catenax.dft.entities.edc.request.policies.ConstraintRequest;
 import com.catenax.dft.exceptions.DftException;
 
@@ -34,10 +34,10 @@ import lombok.experimental.SuperBuilder;
 public class CustomPolicyDTO extends UsagePolicyDTO{
     private static final String DATASPACECONNECTOR_LITERALEXPRESSION = "dataspaceconnector:literalexpression";
 
-    public static CustomPolicyDTO fromUsagePolicy(UsagePolicyRequest usagePolicyRequest)
+    public static CustomPolicyDTO fromUsagePolicy(UsagePolicy usagePolicy)
     {
-        return CustomPolicyDTO.builder().type(usagePolicyRequest.getType()).typeOfAccess(usagePolicyRequest.getTypeOfAccess())
-                .value(usagePolicyRequest.getValue()).build();
+        return CustomPolicyDTO.builder().type(usagePolicy.getType()).typeOfAccess(usagePolicy.getTypeOfAccess())
+                .value(usagePolicy.getValue()).build();
 
     }
     @Override

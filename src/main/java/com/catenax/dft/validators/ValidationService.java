@@ -1,6 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -26,25 +26,25 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import com.catenax.dft.entities.UsagePolicyRequest;
+import com.catenax.dft.entities.UsagePolicy;
 import com.catenax.dft.enums.PolicyAccessEnum;
+import com.catenax.dft.enums.UsagePolicyEnum;
 
 @Service
 public class ValidationService {
 
-    public boolean isValid(List<UsagePolicyRequest> usagePolicyRequests) {
-        if(!CollectionUtils.isEmpty(usagePolicyRequests))
+    public boolean isValid(List<UsagePolicy> usagePolicies) {
+        if(!CollectionUtils.isEmpty(usagePolicies))
         {
             boolean validateFlag = false;
-            for(UsagePolicyRequest usagePolicyRequest : usagePolicyRequests) {
-                switch (usagePolicyRequest.getType()) {
-                    case DURATION:
-                        validateFlag = validateDuration(usagePolicyRequest);
-                        break;
-                    default:
-                        validateFlag = validatePolicy(usagePolicyRequest);
-                        break;
-                }
+            for(UsagePolicy usagePolicy : usagePolicies) {
+            	if(usagePolicy.getType().equals(UsagePolicyEnum.DURATION))
+            	{
+            		validateFlag = validateDuration(usagePolicy);
+            	}
+            	else {
+            		 validateFlag = validatePolicy(usagePolicy);
+            	}
                 if(!validateFlag){
                     break;
                 }
@@ -53,30 +53,27 @@ public class ValidationService {
         }
        return true;
     }
-    private boolean validatePolicy(UsagePolicyRequest usagePolicyRequest) {
 
-        boolean isValid = false;
-        if(usagePolicyRequest.getTypeOfAccess() != null && usagePolicyRequest.getTypeOfAccess().equals(PolicyAccessEnum.UNRESTRICTED)) {
-            isValid = true;
-        }
-        else if(usagePolicyRequest.getTypeOfAccess() != null && usagePolicyRequest.getTypeOfAccess().equals(PolicyAccessEnum.RESTRICTED) &&
-                StringUtils.isNotBlank(usagePolicyRequest.getValue())) {
-            isValid= true;
-        }
-        return isValid;
-    }
+	private boolean validatePolicy(UsagePolicy usagePolicy) {
 
-    private boolean validateDuration(UsagePolicyRequest usagePolicyRequest) {
+		boolean isValid = false;
+		if (usagePolicy.getTypeOfAccess().equals(PolicyAccessEnum.UNRESTRICTED)
+				|| (usagePolicy.getTypeOfAccess().equals(PolicyAccessEnum.RESTRICTED)
+						&& StringUtils.isNotBlank(usagePolicy.getValue()))) {
+			isValid = true;
+		}
 
-        boolean isValid = false;
-        if(usagePolicyRequest.getTypeOfAccess() != null && usagePolicyRequest.getTypeOfAccess().equals(PolicyAccessEnum.UNRESTRICTED)) {
-            isValid = true;
-        }
-        else if(usagePolicyRequest.getTypeOfAccess() != null && usagePolicyRequest.getTypeOfAccess().equals(PolicyAccessEnum.RESTRICTED) &&
-                StringUtils.isNotBlank(usagePolicyRequest.getValue()) &&
-                usagePolicyRequest.getDurationUnit() != null) {
-            isValid = true;
-        }
-        return isValid;
-    }
+		return isValid;
+	}
+
+	private boolean validateDuration(UsagePolicy usagePolicy) {
+
+		boolean isValid = false;
+		if (usagePolicy.getTypeOfAccess().equals(PolicyAccessEnum.UNRESTRICTED)
+				|| usagePolicy.getTypeOfAccess().equals(PolicyAccessEnum.RESTRICTED)
+						&& StringUtils.isNotBlank(usagePolicy.getValue()) && usagePolicy.getDurationUnit() != null) {
+			isValid = true;
+		}
+		return isValid;
+	}
 }

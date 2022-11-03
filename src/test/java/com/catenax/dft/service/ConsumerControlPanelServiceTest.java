@@ -1,6 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,61 +20,163 @@
 
 package com.catenax.dft.service;
 
+import com.catenax.dft.api.ConnectorDiscoveryApi;
 import com.catenax.dft.api.ContractOfferCatalogApi;
+import com.catenax.dft.api.LegalEntityDataApi;
+import com.catenax.dft.api.model.connector.ConnectorInfo;
+import com.catenax.dft.entities.UsagePolicy;
+import com.catenax.dft.entities.edc.request.policies.ConstraintRequest;
+import com.catenax.dft.entities.edc.request.policies.Expression;
+import com.catenax.dft.entities.edc.request.policies.PolicyConstraintBuilderService;
+import com.catenax.dft.enums.NegotiationState;
+import com.catenax.dft.enums.PolicyAccessEnum;
+import com.catenax.dft.enums.UsagePolicyEnum;
+import com.catenax.dft.facilitator.ContractNegotiateManagement;
+import com.catenax.dft.gateways.database.ContractNegotiationInfoRepository;
+import com.catenax.dft.model.contractnegotiation.ContractAgreementResponse;
+import com.catenax.dft.model.contractnegotiation.ContractNegotiationDto;
 import com.catenax.dft.model.contractoffers.ContractOffersCatalogResponse;
+import com.catenax.dft.model.legalEntity.LegalEntityData;
+import com.catenax.dft.model.request.ConsumerRequest;
+import com.catenax.dft.model.request.OfferRequest;
+import com.catenax.dft.util.KeycloakUtil;
+import com.catenax.dft.util.UtilityFunctions;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ContextConfiguration(classes = {ConsumerControlPanelService.class, String.class})
 @ExtendWith(SpringExtension.class)
 class ConsumerControlPanelServiceTest {
+    @MockBean
+    private ConnectorDiscoveryApi connectorDiscoveryApi;
+
+    @MockBean
+    private KeycloakUtil keycloakUtil;
+
+    @MockBean
+    private LegalEntityDataApi legalEntityDataApi;
+
+    @MockBean
+    private ContractNegotiateManagement contractNegotiateManagement;
+
+    @MockBean
+    private ContractNegotiationInfoRepository contractNegotiationInfoRepository;
+
     @Autowired
     private ConsumerControlPanelService consumerControlPanelService;
 
     @MockBean
     private ContractOfferCatalogApi contractOfferCatalogApi;
 
+    @MockBean
+    private PolicyConstraintBuilderService policyConstraintBuilderService;
 
     @Test
     void testQueryOnDataOfferEmpty() throws Exception {
         ContractOffersCatalogResponse contractOffersCatalogResponse = new ContractOffersCatalogResponse();
         contractOffersCatalogResponse.setContractOffers(new ArrayList<>());
-        when(contractOfferCatalogApi.getContractOffersCatalog((Map<String, String>) any(), (String) any()))
+        when(contractOfferCatalogApi.getContractOffersCatalog((Map<String, String>) any(), (String) any(), anyInt()))
                 .thenReturn(contractOffersCatalogResponse);
         assertTrue(consumerControlPanelService.queryOnDataOffers("https://example.org/example").isEmpty());
-        verify(contractOfferCatalogApi).getContractOffersCatalog((Map<String, String>) any(), (String) any());
+        verify(contractOfferCatalogApi).getContractOffersCatalog((Map<String, String>) any(), (String) any(), anyInt());
     }
 
     @Test
     void testQueryOnDataOffersWithUsagePolicies() throws Exception {
 
         ContractOffersCatalogResponse contractOffersCatalogResponse = getContractOffersCatalogWithConstraints();
-        when(contractOfferCatalogApi.getContractOffersCatalog((Map<String, String>) any(), (String) any()))
+        when(contractOfferCatalogApi.getContractOffersCatalog((Map<String, String>) any(), (String) any(), anyInt()))
                 .thenReturn(contractOffersCatalogResponse);
         assertEquals(1, consumerControlPanelService.queryOnDataOffers("https://example.org/example").size());
-        verify(contractOfferCatalogApi).getContractOffersCatalog((Map<String, String>) any(), (String) any());
+        verify(contractOfferCatalogApi).getContractOffersCatalog((Map<String, String>) any(), (String) any(), anyInt());
     }
 
     @Test
     void testQueryOnDataOffersWithMissingUsagePolicies() throws Exception {
 
         ContractOffersCatalogResponse contractOffersCatalogResponse = getCatalogObjectWithMissingConstraints();
-        when(contractOfferCatalogApi.getContractOffersCatalog((Map<String, String>) any(), (String) any()))
+        when(contractOfferCatalogApi.getContractOffersCatalog((Map<String, String>) any(), (String) any(), anyInt()))
                 .thenReturn(contractOffersCatalogResponse);
         assertEquals(1, consumerControlPanelService.queryOnDataOffers("https://example.org/example").size());
-        verify(contractOfferCatalogApi).getContractOffersCatalog((Map<String, String>) any(), (String) any());
+        verify(contractOfferCatalogApi).getContractOffersCatalog((Map<String, String>) any(), (String) any(), anyInt());
+    }
+
+    @Test
+    void testSubscribeDataOffers1() {
+        ArrayList<OfferRequest> offerRequestList = new ArrayList<>();
+        List<UsagePolicy> usagePolicies = new ArrayList<>();
+        UsagePolicy usagePolicy = UsagePolicy.builder().type(UsagePolicyEnum.CUSTOM).value("Sample").typeOfAccess(PolicyAccessEnum.RESTRICTED).build();
+        usagePolicies.add(usagePolicy);
+        ConsumerRequest consumerRequest = new ConsumerRequest("42", "https://example.org/example", offerRequestList,
+                usagePolicies);
+        String processId = UUID.randomUUID().toString();
+        consumerControlPanelService.subscribeDataOffers(consumerRequest, processId);
+        assertEquals("42", consumerRequest.getConnectorId());
+        assertEquals("https://example.org/example", consumerRequest.getProviderUrl());
+        List<UsagePolicy> policies = consumerRequest.getPolicies();
+        List<ConstraintRequest> list = new ArrayList<>();
+        ConstraintRequest constraintRequest = ConstraintRequest.builder().edcType("type").leftExpression(new Expression()).rightExpression(new Expression()).operator("EQ").build();
+        list.add(constraintRequest);
+        when(policyConstraintBuilderService.getUsagePolicyConstraints(any())).thenReturn(list);
+        assertEquals(usagePolicies, policies);
+        assertEquals(1, consumerControlPanelService.getAuthHeader().size());
+    }
+
+    @Test
+    void testContractOffer() {
+        List<ContractNegotiationDto> contractNegotiationDtoList = List.of(ContractNegotiationDto.builder().contractAgreementId(null)
+                .id("negotiationId").state(NegotiationState.DECLINED.name()).counterPartyAddress("address").build());
+        when(contractNegotiateManagement.getAllContractNegotiations(anyInt(), anyInt())).thenReturn(contractNegotiationDtoList);
+        List<ContractAgreementResponse> list = consumerControlPanelService.getAllContractOffers(10, 1);
+        assertEquals(1, list.size());
+    }
+
+    @Test
+    void testSubscribeDataOffers2() {
+        List<UsagePolicy> usagePolicies = new ArrayList<>();
+        UsagePolicy usagePolicy = UsagePolicy.builder().type(UsagePolicyEnum.CUSTOM).value("Sample").typeOfAccess(PolicyAccessEnum.RESTRICTED).build();
+        usagePolicies.add(usagePolicy);
+        ConsumerRequest consumerRequest = mock(ConsumerRequest.class);
+        when(consumerRequest.getOffers()).thenReturn(new ArrayList<>());
+        when(consumerRequest.getProviderUrl()).thenReturn("https://example.org/example");
+        when(consumerRequest.getPolicies()).thenReturn(usagePolicies);
+        String processId = UUID.randomUUID().toString();
+        consumerControlPanelService.subscribeDataOffers(consumerRequest, processId);
+        verify(consumerRequest).getProviderUrl();
+        verify(consumerRequest).getOffers();
+    }
+
+    void testFetchLegalEntitiesData() throws Exception {
+        LegalEntityData legalEntityData = getLegalEntityData();
+        when(UtilityFunctions.getAuthToken()).thenReturn("bearer dummytoken1234");
+        when(legalEntityDataApi.fetchLegalEntityData("searchText", 0, 10, UtilityFunctions.getAuthToken())).thenReturn(new ResponseEntity<>(legalEntityData, HttpStatus.OK));
+        assertEquals(consumerControlPanelService.fetchLegalEntitiesData("Search Text", 0, 10).getStatusCodeValue(), 200);
+    }
+
+
+    @Test
+    void testFetchConnectorInfo() {
+        ResponseEntity<ConnectorInfo[]> responseEntity = new ResponseEntity<>(HttpStatus.OK);
+        when(connectorDiscoveryApi.fetchConnectorInfo((String[]) any(), (String) any())).thenReturn(responseEntity);
+        when(keycloakUtil.getKeycloakToken()).thenReturn("ABC123");
+        assertSame(responseEntity, consumerControlPanelService.fetchConnectorInfo(new String[]{"Bpns"}));
+        verify(connectorDiscoveryApi).fetchConnectorInfo((String[]) any(), (String) any());
+        verify(keycloakUtil).getKeycloakToken();
     }
 
     private ContractOffersCatalogResponse getContractOffersCatalogWithConstraints() throws Exception {
@@ -239,5 +341,58 @@ class ConsumerControlPanelServiceTest {
                 = mapper.readValue(contactOfferCatalogResponse, ContractOffersCatalogResponse.class);
         return mockResponse;
     }
-}
 
+    private ConsumerRequest getConsumerRequest() throws Exception {
+        String consumerRequest = "{\n" +
+                "\t\"connectorId\": \"343cdfdfd\",\n" +
+                "\t\"providerUrl\": \"http: //20.218.254.172:7171/\",\n" +
+                "\t\"offers\": [{\n" +
+                "\t\t\t\"offerId\": \"1\",\n" +
+                "\t\t\t\"assetId\": \"12345\",\n" +
+                "\t\t\t\"policyId\": \"343 fdfd\"\n" +
+                "\t\t}\n" +
+                "\t],\n" +
+                "\t\"policies\": [\n" +
+                "\t\t{\n" +
+                "\t\t\t\"type\": \"ROLE\",\n" +
+                "\t\t\t\"value\": \"ADMIN\"\n" +
+                "\t\t},\n" +
+                "        {\n" +
+                "\t\t\t\"type\": \"DURATION\",\n" +
+                "\t\t\t\"value\": \"3 Day(s)\"\n" +
+                "\t\t}\n" +
+                "\t]\n" +
+                "}";
+        ObjectMapper mapper = new ObjectMapper();
+        ConsumerRequest mockRequest
+                = mapper.readValue(consumerRequest, ConsumerRequest.class);
+        return mockRequest;
+    }
+
+    private LegalEntityData getLegalEntityData() throws Exception {
+        String mockResponse = "{\n" +
+                "  \"totalElements\": 7388,\n" +
+                "  \"totalPages\": 739,\n" +
+                "  \"page\": 0,\n" +
+                "  \"content\": [\n" +
+                "    {\n" +
+                "      \"score\": 98.114334,\n" +
+                "      \"legalEntity\": {\n" +
+                "        \"bpn\": \"BPNL00000003B9JR\",\n" +
+                "        \"names\": [\n" +
+                "          {\n" +
+                "            \"value\": \"BMW M GmbH\",\n" +
+                "            \"shortName\": null\n" +
+                "          }\n" +
+                "        ]\n" +
+                "      }\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}";
+        ObjectMapper mapper = new ObjectMapper();
+        LegalEntityData mockData
+                = mapper.readValue(mockResponse, LegalEntityData.class);
+        return mockData;
+
+    }
+}

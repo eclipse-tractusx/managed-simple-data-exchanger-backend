@@ -1,6 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,6 +20,7 @@
 
 package com.catenax.dft.model.response;
 
+import com.catenax.dft.entities.UsagePolicy;
 import com.catenax.dft.enums.PolicyAccessEnum;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
@@ -67,6 +68,6 @@ QueryDataOfferModel {
 
 	private String policyId;
 	
-	private List<UsagePolicyResponse> usagePolicies;
+	private List<UsagePolicy> usagePolicies;
 
 }

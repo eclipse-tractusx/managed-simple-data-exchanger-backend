@@ -1,6 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -24,8 +24,9 @@ import java.util.List;
 
 import javax.validation.constraints.NotBlank;
 
-import com.catenax.dft.entities.UsagePolicyRequest;
+import com.catenax.dft.entities.UsagePolicy;
 import com.catenax.dft.validators.SubmodelValidation;
+import com.catenax.dft.validators.DateValidation;
 import com.catenax.dft.validators.OptionalIdentifierKeyValidation;
 
 import lombok.AllArgsConstructor;
@@ -46,11 +47,12 @@ public class Batch {
     
     private List<String> bpnNumbers;
     private String typeOfAccess;
-    private List<UsagePolicyRequest> usagePolicies;
+    private List<UsagePolicy> usagePolicies;
 
     @NotBlank(message = "batch_id cannot be empty")
     private String batchId;
 
+    @DateValidation
     @NotBlank(message = "manufacturing_date cannot be empty")
     private String manufacturingDate;
 

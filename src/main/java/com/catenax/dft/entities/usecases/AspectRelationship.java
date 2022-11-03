@@ -2,7 +2,7 @@
  * Copyright (c) 2022 Critical TechWorks GmbH
  * Copyright (c) 2022 BMW GmbH
  * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -27,7 +27,9 @@ import java.util.List;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 
-import com.catenax.dft.entities.UsagePolicyRequest;
+import com.catenax.dft.entities.UsagePolicy;
+import com.catenax.dft.validators.DateValidation;
+
 import lombok.Builder;
 import lombok.Data;
 
@@ -43,7 +45,7 @@ public class AspectRelationship {
     private String parentUuid;
     private List<String> bpnNumbers;
     private String typeOfAccess;
-    private List<UsagePolicyRequest> usagePolicies;
+    private List<UsagePolicy> usagePolicies;
     
 
     @NotBlank(message = "parent_part_instance_id cannot be empty")
@@ -77,6 +79,7 @@ public class AspectRelationship {
     @NotBlank(message = "datatype_URI cannot be empty")
     private String dataTypeUri;
 
+    @DateValidation
     @NotBlank(message = "assembled_on cannot be empty")
     private String assembledOn;
 

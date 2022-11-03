@@ -35,22 +35,27 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: MANUFACTURERID
-              value: "BPNL00000005PROV"
+              value: "BPN00022PRV"
             - name: SPRING_DATASOURCE_URL
               valueFrom:
                 secretKeyRef:
-                  name: dft-postgres-secrets
+                  name: dft-postgresql-secrets
                   key: dbUrl
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: dft-postgres-secrets
-                  key: dbUser
+                  name: dft-postgresql-secrets
+                  key: username
             - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: dft-postgres-secrets
-                  key: dbPassword
+                  name: dft-postgresql-secrets
+                  key: password
+            #- name: SPRING_DATASOURCE_POSTGRESPASSWORD
+            #  valueFrom:
+               # secretKeyRef:
+                #  name: dft-postgresql-secrets
+                 # key: postgresPassword
             - name: DIGITAL-TWINS_HOSTNAME
               valueFrom:
                 secretKeyRef:
@@ -103,6 +108,46 @@ spec:
                 secretKeyRef:
                   name: dft-edc-secrets
                   key: edcDftApiKey
+            - name: KEYCLOAK_REALM
+              valueFrom:
+                secretKeyRef:
+                  name: dtf-digitaltwins-secrets
+                  key: keycloakREALM
+            - name: KEYCLOAK_REASOURCE
+              valueFrom:
+                secretKeyRef:
+                  name: dtf-digitaltwins-secrets
+                  key: keycloakAUTH
+            - name: KEYCLOAK_AUTH_SERVER_URL
+              valueFrom:
+                secretKeyRef:
+                  name: dtf-digitaltwins-secrets
+                  key: keycloakURL   
+            - name: KEYCLOAK_SSL-REQUIRED
+              valueFrom:
+                secretKeyRef:
+                  name: dtf-digitaltwins-secrets
+                  key: keycloakSSL  
+            - name: EDC_CONSUMER_HOSTNAME
+              valueFrom:
+                secretKeyRef:
+                  name: dft-edc-secrets
+                  key: edcconshost
+            - name: EDC_CONSUMER_APIKEY
+              valueFrom:
+                secretKeyRef:
+                  name: dft-edc-secrets
+                  key: edcconsapikey
+            - name: EDC_CONSUMER_DATAURI
+              valueFrom:
+                secretKeyRef:
+                  name: dft-edc-secrets
+                  key: edcconsdatauri
+            - name: EDC_CONSUMER_APIKEYHEADER
+              valueFrom:
+                secretKeyRef:
+                  name: dft-edc-secrets
+                  key: edcconsapiheader                
           ports:
             - name: http
               containerPort: 8080

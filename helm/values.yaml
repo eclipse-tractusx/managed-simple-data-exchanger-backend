@@ -88,7 +88,3 @@ postgres:
     secretKeys:
         adminPasswordKey: "postgres-password"
         userPasswordKey: "password"
-
-    
- 
-  

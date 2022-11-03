@@ -157,12 +157,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: dtf-digitaltwins-secrets
-                  key: portalApiID 
+                  key: portalApiID
             - name: CLIENTSECRET
               valueFrom:
                 secretKeyRef:
                   name: dtf-digitaltwins-secrets
-                  key: portalApisecret  
+                  key: portalApisecret
             - name: PARTNER_POOL_HOSTNAME
               valueFrom:
                 secretKeyRef:

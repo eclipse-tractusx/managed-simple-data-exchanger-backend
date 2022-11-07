@@ -78,11 +78,19 @@ public class WebSecurityKeyclockConfig extends KeycloakWebSecurityConfigurerAdap
         return new NullAuthenticatedSessionStrategy();
     }
 
-    @Autowired
+	@Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) {
-    	KeycloakAuthenticationProvider keycloakAuthenticationProvider = keycloakAuthenticationProvider();
-		keycloakAuthenticationProvider.setGrantedAuthoritiesMapper(new SimpleAuthorityMapper());
-		auth.authenticationProvider(keycloakAuthenticationProvider);
+		auth.authenticationProvider(getKeycloakAuthenticationProvider());
+    }
+
+    private KeycloakAuthenticationProvider getKeycloakAuthenticationProvider() {
+        KeycloakAuthenticationProvider authenticationProvider = keycloakAuthenticationProvider();
+        var mapper = new SimpleAuthorityMapper();
+        mapper.setConvertToUpperCase(true);
+        mapper.setPrefix("");
+        authenticationProvider.setGrantedAuthoritiesMapper(mapper);
+
+        return authenticationProvider;
     }
 
     @Bean

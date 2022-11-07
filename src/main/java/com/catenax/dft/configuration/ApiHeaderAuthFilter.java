@@ -62,7 +62,7 @@ public class ApiHeaderAuthFilter extends GenericFilterBean {
 		if (url.contains("/public") && !apiKeyValue.equals(authHeaderValue)) {
 			log.error("**** ApiHeaderAuthFilter genreated Unauthorized response for public api *****************");
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-		} else if(auth.getAuthorities()!=null && auth.getAuthorities().isEmpty()){
+		} else if(auth !=null && auth.getAuthorities()!=null && auth.getAuthorities().isEmpty()){
 			log.error("**** ApiHeaderAuthFilter The resource/client is not allowed to access *****************");
 			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 		}	else {

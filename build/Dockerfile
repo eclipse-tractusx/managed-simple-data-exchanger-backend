@@ -16,8 +16,8 @@ COPY ./src ./src
 RUN mvn package
 
 # our final base image
-FROM eclipse-temurin:18.0.1_10-jre
-
+#FROM eclipse-temurin:18.0.1_10-jre
+FROM eclipse-temurin:19_36-jre
 ARG USERNAME=dftuser
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID

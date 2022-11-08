@@ -22,6 +22,9 @@
 
 package com.catenax.sde.gateways.database;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.repository.CrudRepository;
 
 import com.catenax.sde.entities.database.AspectEntity;
@@ -53,4 +56,6 @@ public interface AspectRepository extends CrudRepository<AspectEntity, String> {
     }
 
     AspectEntity findByUuid(String uuid);
+    
+    List<AspectEntity> findByProcessId(String processId);
 }

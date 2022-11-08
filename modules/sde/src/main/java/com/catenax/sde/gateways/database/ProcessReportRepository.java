@@ -71,6 +71,15 @@ public interface ProcessReportRepository extends JpaRepository<ProcessReportEnti
             "WHERE process_id = ?1", nativeQuery = true)
     void finalizeBatchProgressReport(String processId, LocalDateTime endDate, String status);
 
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE process_report " +
+            "SET end_date = ?2, " +
+            "status = ?3, " +
+            "number_of_deleted_items = ?4," +
+            "number_of_failed_items = (SELECT COUNT(f) FROM failure_log f WHERE f.process_id = ?5) " +
+            "WHERE process_id = ?1", nativeQuery = true)
+    void finalizeNoOfDeletedInProgressReport(String processId, LocalDateTime endDate, String status,int numberOfDeletedItems, String refProcessId);
 
     @Query("SELECT p FROM ProcessReportEntity p ORDER BY p.startDate DESC")
     Page<ProcessReportEntity> findAll(PageRequest pageRequest);

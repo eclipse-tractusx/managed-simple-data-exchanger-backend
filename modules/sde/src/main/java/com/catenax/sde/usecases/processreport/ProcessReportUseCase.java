@@ -72,6 +72,20 @@ public class ProcessReportUseCase {
                 .usagePolicies(usageList)
                 .build());
     }
+    
+    public void startDeleteProcess(String processId, CsvTypeEnum type, int size, String referenceProcessId,
+           int numberOfDeletedItems) throws JsonProcessingException {
+				saveProcessReport(ProcessReport.builder()
+				.processId(processId)
+				.csvType(type)
+				.status(ProgressStatusEnum.IN_PROGRESS)
+				.numberOfItems(size)
+				.startDate(LocalDateTime.now())
+				.referenceProcessId(referenceProcessId)
+				.numberOfDeletedItems(numberOfDeletedItems)
+				.build());
+}
+    
 
     public void finishBuildAspectProgressReport(String processId) {
         repository.finalizeAspectProgressReport(processId, LocalDateTime.now(), ProgressStatusEnum.COMPLETED.toString());
@@ -83,6 +97,11 @@ public class ProcessReportUseCase {
     public void finishBuildChildAspectProgressReport(String processId) {
         repository.finalizeChildAspectProgressReport(processId, LocalDateTime.now(), ProgressStatusEnum.COMPLETED.toString());
     }
+    
+    public void finalizeNoOfDeletedInProgressReport(String processId, int numberOfDeletedItems,String refProcessId) {
+        repository.finalizeNoOfDeletedInProgressReport(processId, LocalDateTime.now(), ProgressStatusEnum.COMPLETED.toString(),numberOfDeletedItems,refProcessId);
+    }
+
 
     public void unknownProcessReport(String processId) {
         LocalDateTime now = LocalDateTime.now();

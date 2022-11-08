@@ -1,4 +1,4 @@
-package com.catenax.sde.submodels;
+package com.catenax.sde.submodels.batch;
 
 import java.io.InputStream;
 

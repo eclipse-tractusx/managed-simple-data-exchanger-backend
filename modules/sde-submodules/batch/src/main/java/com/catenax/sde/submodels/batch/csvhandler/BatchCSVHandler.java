@@ -7,24 +7,20 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.catenax.sde.common.constants.CommonConstants;
 import com.catenax.sde.common.entities.SubmodelFileRequest;
 import com.catenax.sde.common.entities.csv.RowData;
 import com.catenax.sde.common.exception.CsvHandlerUseCaseException;
 import com.catenax.sde.common.extensions.CSVExtension;
-import com.catenax.sde.common.validators.DftDateValidator;
 import com.catenax.sde.submodels.batch.entities.Batch;
 import com.google.gson.JsonObject;
 
 import lombok.SneakyThrows;
 
+
 public class BatchCSVHandler implements CSVExtension<Batch> {
 	
-	@Autowired
-	private DftDateValidator dftDateValidator;
-
+	
 	@Override
     @SneakyThrows
 	public Batch parseCSVDataToSubmodel(RowData rowData, String processId, SubmodelFileRequest submodelFileRequest,
@@ -40,7 +36,7 @@ public class BatchCSVHandler implements CSVExtension<Batch> {
 	                .uuid(rowDataFields[0].trim())
 	                .processId(processId)
 	                .batchId(rowDataFields[1].trim())
-	                .manufacturingDate(dftDateValidator.getIfValidDateTime(rowDataFields[2].trim(),rowData.position()))
+	                .manufacturingDate(rowDataFields[2].trim())
 	                .manufacturingCountry(rowDataFields[3].trim().isBlank() ? null : rowDataFields[3])
 	                .manufacturerPartId(rowDataFields[4].trim())
 	                .customerPartId(rowDataFields[5].trim().isBlank() ? null : rowDataFields[5])

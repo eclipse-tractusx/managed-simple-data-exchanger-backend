@@ -50,6 +50,7 @@ public class Aspect {
     private String usagePolicyId;
     private String assetId; 
     private String accessPolicyId;
+    private String deleted;
 
     
     private List<String> bpnNumbers;

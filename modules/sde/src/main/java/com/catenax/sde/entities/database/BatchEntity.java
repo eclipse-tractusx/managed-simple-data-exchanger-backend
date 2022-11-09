@@ -69,4 +69,6 @@ public class BatchEntity implements Serializable {
     private String accessPolicyId;
     @Column(name = "contract_defination_id")
     private String contractDefinationId;
+    @Column(name = "deleted")
+    private String deleted;
 }

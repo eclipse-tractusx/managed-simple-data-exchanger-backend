@@ -50,6 +50,7 @@ public class AspectRelationship {
     private String assetId; 
     private String accessPolicyId;
     private String contractDefinationId;
+    private String deleted;
     
 
     @NotBlank(message = "parent_part_instance_id cannot be empty")

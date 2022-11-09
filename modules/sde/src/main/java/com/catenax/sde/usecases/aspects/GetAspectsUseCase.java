@@ -21,9 +21,12 @@
 
 package com.catenax.sde.usecases.aspects;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.catenax.sde.entities.aspect.AspectResponse;
+import com.catenax.sde.entities.database.AspectEntity;
 import com.catenax.sde.gateways.database.AspectRepository;
 import com.catenax.sde.mapper.AspectMapper;
 
@@ -42,5 +45,10 @@ public class GetAspectsUseCase {
     public AspectResponse execute(String uuid) {
 
         return mapper.mapToResponse(repository.findByUuid(uuid));
+    }
+    
+    public List<AspectEntity> getListUuidFromProcessId(String processId) {
+
+        return repository.findByProcessId(processId);
     }
 }

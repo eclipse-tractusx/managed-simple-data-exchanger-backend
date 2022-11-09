@@ -48,6 +48,7 @@ public class Batch {
     private String assetId; 
     private String contractDefinationId;
     private String usagePolicyId;
+    private String deleted;
 
     private List<String> bpnNumbers;
     private String typeOfAccess;

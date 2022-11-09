@@ -72,4 +72,13 @@ public class ProcessReportEntity implements Serializable {
 
     @Column(name = "usage_policy", columnDefinition = "jsonb")
     private String usagePolicies;
+    
+    @Column(name = "number_of_updated_items")
+    private int numberOfUpdatedItems;
+    
+    @Column(name = "number_of_deleted_items")
+    private int numberOfDeletedItems;
+    
+    @Column(name = "reference_process_id")
+    private String referenceProcessId;
 }

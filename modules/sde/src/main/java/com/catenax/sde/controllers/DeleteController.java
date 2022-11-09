@@ -29,15 +29,13 @@ import lombok.extern.slf4j.Slf4j;
 @Validated
 public class DeleteController {
 
-    private final GetAspectsUseCase aspectsUseCase;
     private final GetAspectsRelationshipUseCase aspectsRelationshipUseCase;
     private final DeleteUsecaseHandler deleteUsecaseHandler;
 	
     
-	public DeleteController(GetAspectsUseCase aspectsUseCase,
+	public DeleteController(
 			GetAspectsRelationshipUseCase aspectsRelationshipUseCase,DeleteUsecaseHandler deleteUsecaseHandler) {
 		super();
-		this.aspectsUseCase = aspectsUseCase;
 		this.aspectsRelationshipUseCase = aspectsRelationshipUseCase;
 		this.deleteUsecaseHandler=deleteUsecaseHandler;
 	}
@@ -51,11 +49,10 @@ public class DeleteController {
 		 Runnable runnable = () -> {
 	            try {
 	            	if (csvType.equalsIgnoreCase(CsvTypeEnum.ASPECT.toString())) {
-	        			List<AspectEntity> listAspect = aspectsUseCase.getListUuidFromProcessId(processId);
-	        			if (!listAspect.isEmpty()) {
+	        			
 
-	        				deleteUsecaseHandler.deleteAspectDigitalTwinsAndEDC(listAspect, processId,delProcessId);
-	        			} 
+	        				deleteUsecaseHandler.deleteAspectDigitalTwinsAndEDC (processId,delProcessId);
+	        			
 	        		} else if (csvType.equals(CsvTypeEnum.ASPECT_RELATIONSHIP.toString())) {
 
 	        		} else if (csvType.equals(CsvTypeEnum.BATCH.toString())) {

@@ -28,6 +28,7 @@ import com.catenax.sde.entities.database.FailureLogEntity;
 import com.catenax.sde.enums.CsvTypeEnum;
 import com.catenax.sde.exceptions.DftException;
 import com.catenax.sde.gateways.database.AspectRepository;
+import com.catenax.sde.usecases.aspects.GetAspectsUseCase;
 import com.catenax.sde.usecases.logs.FailureLogsUseCase;
 import com.catenax.sde.usecases.processreport.ProcessReportUseCase;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -87,16 +88,17 @@ public class DeleteUsecaseHandler {
     private final ProcessReportUseCase processReportUseCase;
 	
     AspectRepository aspectRepository;
-	
+    private final GetAspectsUseCase aspectsUseCase;
     
-    public DeleteUsecaseHandler(ProcessReportUseCase processReportUseCase,AspectRepository aspectRepository) {
+    public DeleteUsecaseHandler(GetAspectsUseCase aspectsUseCase,ProcessReportUseCase processReportUseCase,AspectRepository aspectRepository) {
 		super();
+		this.aspectsUseCase = aspectsUseCase;
 		this.processReportUseCase = processReportUseCase;
 		this.aspectRepository =aspectRepository;
 	}
     
     
-	public void deleteAspectDigitalTwinsAndEDC(final List<AspectEntity> listOfAspectIds, String refProcessId,String deleteProcessId)
+	public void deleteAspectDigitalTwinsAndEDC(String refProcessId,String deleteProcessId)
 			throws JsonProcessingException {
 
 		/*
@@ -106,9 +108,9 @@ public class DeleteUsecaseHandler {
 		AtomicInteger deletedRecordCount = new AtomicInteger();
 
 	
-		processReportUseCase.startDeleteProcess(deleteProcessId, CsvTypeEnum.ASPECT, listOfAspectIds.size(), refProcessId, 0);
-
-		listOfAspectIds.parallelStream().forEach((o) -> {
+		List<AspectEntity> listAspect = aspectsUseCase.getListUuidFromProcessId(refProcessId);
+		processReportUseCase.startDeleteProcess(deleteProcessId, CsvTypeEnum.ASPECT, listAspect.size(), refProcessId, 0);
+		listAspect.parallelStream().forEach((o) -> {
 			deleteAllDataBySequence(o);
 			deletedRecordCount.incrementAndGet();
 			

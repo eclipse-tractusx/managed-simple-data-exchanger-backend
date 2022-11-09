@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -75,8 +76,6 @@ public class DeleteUsecaseHandler {
     
     private String accessToken;
     
-    private int deletedRecordCount=0;
-    
     
 	@Autowired
 	DigitalTwinsFeignClient digitalTwinsFeignClient;
@@ -97,23 +96,26 @@ public class DeleteUsecaseHandler {
 	}
     
     
-	public String deleteAspectDigitalTwinsAndEDC(final List<AspectEntity> listOfAspectIds, String refProcessId)
+	public void deleteAspectDigitalTwinsAndEDC(final List<AspectEntity> listOfAspectIds, String refProcessId,String deleteProcessId)
 			throws JsonProcessingException {
 
 		/*
 		 * IMP NOTE: in delete case existing processid will be stored into
 		 * referenceProcessid
 		 */
-		String processId = UUID.randomUUID().toString();
-		processReportUseCase.startDeleteProcess(processId, CsvTypeEnum.ASPECT, listOfAspectIds.size(), refProcessId, 0);
+		AtomicInteger deletedRecordCount = new AtomicInteger();
+
+	
+		processReportUseCase.startDeleteProcess(deleteProcessId, CsvTypeEnum.ASPECT, listOfAspectIds.size(), refProcessId, 0);
 
 		listOfAspectIds.parallelStream().forEach((o) -> {
 			deleteAllDataBySequence(o);
+			deletedRecordCount.incrementAndGet();
+			
 		});
 
-		processReportUseCase.finalizeNoOfDeletedInProgressReport(processId, deletedRecordCount, refProcessId);
+		processReportUseCase.finalizeNoOfDeletedInProgressReport(deleteProcessId, deletedRecordCount.get(), refProcessId);
 
-		return processId;
 	}
 	
 	private void deleteAllDataBySequence(AspectEntity aspectEntity) {
@@ -153,7 +155,6 @@ public class DeleteUsecaseHandler {
 	private void saveAspectWithDeleted(AspectEntity aspectEntity) {
 		aspectEntity.setDeleted(DELETED_Y);
 		aspectRepository.save(aspectEntity);
-		++deletedRecordCount;
 	}
 	
 	private Map<String, String> setHeaders() {

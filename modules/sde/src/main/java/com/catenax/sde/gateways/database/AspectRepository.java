@@ -23,7 +23,6 @@
 package com.catenax.sde.gateways.database;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.repository.CrudRepository;
 

@@ -1,6 +1,4 @@
 /********************************************************************************
- * Copyright (c) 2022 Critical TechWorks GmbH
- * Copyright (c) 2022 BMW GmbH
  * Copyright (c) 2022 T-Systems International GmbH
  * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
@@ -20,38 +18,19 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package com.catenax.sde.entities.usecases;
+package com.catenax.sde.common.exception;
 
-import java.time.LocalDateTime;
-import java.util.List;
+public class CsvHandlerUseCaseException extends Exception {
 
-import com.catenax.sde.enums.CsvTypeEnum;
-import com.catenax.sde.enums.ProgressStatusEnum;
+    private final int rowPosition;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+    public CsvHandlerUseCaseException(int rowPosition, String message) {
+        super(message);
+        this.rowPosition = rowPosition;
+    }
 
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class ProcessReport {
-
-    private String processId;
-    private CsvTypeEnum csvType;
-    private int numberOfItems;
-    private int numberOfFailedItems;
-    private int numberOfSucceededItems;
-    private ProgressStatusEnum status;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
-    private List<String> bpnNumbers;
-    private String typeOfAccess;
-    private String usagePolicies;
-	private int numberOfUpdatedItems;
-	private int numberOfDeletedItems;
-	private String referenceProcessId;
-
+    @Override
+    public String getMessage() {
+        return String.format("RowPosition: %s | Description: %s", rowPosition, super.getMessage());
+    }
 }

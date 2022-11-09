@@ -1,6 +1,9 @@
 package com.catenax.sde.common.extensions;
 
+import com.catenax.sde.common.entities.SubmodelFileRequest;
+import com.catenax.sde.common.entities.csv.RowData;
 import com.catenax.sde.common.model.SubmodelPojo;
+import com.google.gson.JsonObject;
 
 public interface CSVExtension<T> {
 
@@ -15,8 +18,10 @@ public interface CSVExtension<T> {
 			//apply val if there idation?
 			//prepare new pojo or JSON object
 		//}
-		return null;
+		return null;x
 	}*/
 
-	SubmodelPojo<T> getCSVData();
+	//SubmodelPojo<T> getCSVData();
+	
+	T parseCSVDataToSubmodel(RowData rowData, String processId, SubmodelFileRequest submodelFileRequest,JsonObject asJsonObject);
 }

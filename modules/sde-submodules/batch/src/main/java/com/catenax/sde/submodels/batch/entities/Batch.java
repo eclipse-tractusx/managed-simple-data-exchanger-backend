@@ -1,6 +1,4 @@
 /********************************************************************************
- * Copyright (c) 2022 Critical TechWorks GmbH
- * Copyright (c) 2022 BMW GmbH
  * Copyright (c) 2022 T-Systems International GmbH
  * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
@@ -20,16 +18,16 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package com.catenax.sde.entities.usecases;
+package com.catenax.sde.submodels.batch.entities;
 
 import java.util.List;
 
 import javax.validation.constraints.NotBlank;
 
-import com.catenax.sde.edc.entities.UsagePolicy;
-import com.catenax.sde.validators.DateValidation;
-import com.catenax.sde.validators.OptionalIdentifierKeyValidation;
-import com.catenax.sde.validators.SubmodelValidation;
+import com.catenax.sde.common.entities.UsagePolicy;
+import com.catenax.sde.common.validators.DateValidation;
+import com.catenax.sde.common.validators.OptionalIdentifierKeyValidation;
+import com.catenax.sde.submodels.batch.validators.BatchValidation;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,27 +36,25 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-@SubmodelValidation
-public class Aspect {
+@BatchValidation
+public class Batch {
 
     private String shellId;
     private String subModelId;
     private int rowNumber;
     private String uuid;
     private String processId;
+    private String accessPolicyId;
+    private String assetId; 
     private String contractDefinationId;
     private String usagePolicyId;
-    private String assetId; 
-    private String accessPolicyId;
-    private String deleted;
 
-    
     private List<String> bpnNumbers;
     private String typeOfAccess;
     private List<UsagePolicy> usagePolicies;
 
-    @NotBlank(message = "part_instance_id cannot be empty")
-    private String partInstanceId;
+    @NotBlank(message = "batch_id cannot be empty")
+    private String batchId;
 
     @DateValidation
     @NotBlank(message = "manufacturing_date cannot be empty")

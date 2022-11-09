@@ -1,6 +1,4 @@
 /********************************************************************************
- * Copyright (c) 2022 Critical TechWorks GmbH
- * Copyright (c) 2022 BMW GmbH
  * Copyright (c) 2022 T-Systems International GmbH
  * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
@@ -20,38 +18,26 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package com.catenax.sde.entities.usecases;
+package com.catenax.sde.submodels.spt.validators;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import com.catenax.sde.enums.CsvTypeEnum;
-import com.catenax.sde.enums.ProgressStatusEnum;
+import javax.validation.Constraint;
+import javax.validation.Payload;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Constraint(validatedBy = {AspectValidator.class})
+public @interface AspectValidation {
 
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class ProcessReport {
+    String message() default "optional_identifier_key and optional_identifier_value have to be either both null or both filled";
 
-    private String processId;
-    private CsvTypeEnum csvType;
-    private int numberOfItems;
-    private int numberOfFailedItems;
-    private int numberOfSucceededItems;
-    private ProgressStatusEnum status;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
-    private List<String> bpnNumbers;
-    private String typeOfAccess;
-    private String usagePolicies;
-	private int numberOfUpdatedItems;
-	private int numberOfDeletedItems;
-	private String referenceProcessId;
+    Class<?>[] groups() default {};
 
+    Class<? extends Payload>[] payload() default {};
 }

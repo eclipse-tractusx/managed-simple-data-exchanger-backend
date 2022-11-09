@@ -20,38 +20,29 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package com.catenax.sde.entities.usecases;
+package com.catenax.sde.submodels.spt.validators;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
 
-import com.catenax.sde.enums.CsvTypeEnum;
-import com.catenax.sde.enums.ProgressStatusEnum;
+import com.catenax.sde.submodels.spt.entities.Aspect;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+public class AspectValidator implements ConstraintValidator<AspectValidation, Aspect> {
+    @Override
+    public void initialize(AspectValidation constraintAnnotation) {
+        ConstraintValidator.super.initialize(constraintAnnotation);
+    }
 
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class ProcessReport {
+    @Override
+    public boolean isValid(Aspect aspect, ConstraintValidatorContext constraintValidatorContext) {
+        if (!(aspect instanceof Aspect)) {
+            throw new IllegalArgumentException("@AspectValidation only applies to Aspect objects");
+        }
 
-    private String processId;
-    private CsvTypeEnum csvType;
-    private int numberOfItems;
-    private int numberOfFailedItems;
-    private int numberOfSucceededItems;
-    private ProgressStatusEnum status;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
-    private List<String> bpnNumbers;
-    private String typeOfAccess;
-    private String usagePolicies;
-	private int numberOfUpdatedItems;
-	private int numberOfDeletedItems;
-	private String referenceProcessId;
+        String optionalIdentifierKey = aspect.getOptionalIdentifierKey();
+        String optionalIdentifierValue = aspect.getOptionalIdentifierValue();
 
+        return optionalIdentifierKey == null && optionalIdentifierValue == null
+                || optionalIdentifierKey != null && optionalIdentifierValue != null;
+    }
 }

@@ -66,6 +66,8 @@ public class AspectRelationshipEntity implements Serializable {
     private String assetId;
     @Column(name = "access_policy_id")
     private String accessPolicyId;
+    @Column(name = "deleted")
+    private String deleted;
 
 }
 

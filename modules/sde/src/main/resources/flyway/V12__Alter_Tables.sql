@@ -1,6 +1,4 @@
 /********************************************************************************
- * Copyright (c) 2022 Critical TechWorks GmbH
- * Copyright (c) 2022 BMW GmbH
  * Copyright (c) 2022 T-Systems International GmbH
  * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
@@ -20,38 +18,16 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package com.catenax.sde.entities.usecases;
+ ALTER TABLE aspect
+    ADD deleted                   TEXT NULL;
 
-import java.time.LocalDateTime;
-import java.util.List;
+ALTER TABLE aspect_relationship
+    ADD deleted                   TEXT NULL;
 
-import com.catenax.sde.enums.CsvTypeEnum;
-import com.catenax.sde.enums.ProgressStatusEnum;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class ProcessReport {
-
-    private String processId;
-    private CsvTypeEnum csvType;
-    private int numberOfItems;
-    private int numberOfFailedItems;
-    private int numberOfSucceededItems;
-    private ProgressStatusEnum status;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
-    private List<String> bpnNumbers;
-    private String typeOfAccess;
-    private String usagePolicies;
-	private int numberOfUpdatedItems;
-	private int numberOfDeletedItems;
-	private String referenceProcessId;
-
-}
+ ALTER TABLE batch
+ 	ADD deleted                   TEXT NULL;
+ 
+  ALTER TABLE process_report
+   ADD number_of_updated_items     INTEGER NULL,
+   ADD number_of_deleted_items     INTEGER NULL,
+   ADD reference_process_id        TEXT NULL;

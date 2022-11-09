@@ -1,4 +1,4 @@
-package com.catenax.sde.submodels;
+package com.catenax.sde.submodels.apr;
 
 import java.io.InputStream;
 
@@ -10,14 +10,14 @@ import com.catenax.sde.common.extensions.SubmodelExtension;
 import com.google.gson.JsonObject;
 
 @Component
-public class SerialPartTypization extends SubmodelExtension {
+public class AssemblyPartRelationship extends SubmodelExtension {
 
 	private JsonObject submodel = null;
 
 	@PostConstruct
 	public void init() {
 
-		String resource = "serial-part-typization.json";
+		String resource = "assembly-part-relationship.json";
 		// this is the path within the jar file
 		InputStream input = this.getClass().getResourceAsStream("/resources/" + resource);
 		if (input == null) {
@@ -27,12 +27,12 @@ public class SerialPartTypization extends SubmodelExtension {
 
 		submodel = loadSubmodel(input);
 		
-		//AdddigitalTwinMappnig
+		//Mapp POJO for Digital twin (UUID+manufacturingI="shellId")
 		
-		//EDCmmaping
-
+		//load custom logic 
 	}
 
+	@Override
 	public JsonObject submodel() {
 		return this.submodel;
 	}

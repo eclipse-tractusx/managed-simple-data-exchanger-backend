@@ -20,15 +20,15 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package com.catenax.sde.entities.usecases;
+package com.catenax.sde.submodels.apr.entities;
 
 import java.util.List;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 
-import com.catenax.sde.edc.entities.UsagePolicy;
-import com.catenax.sde.validators.DateValidation;
+import com.catenax.sde.common.entities.UsagePolicy;
+import com.catenax.sde.common.validators.DateValidation;
 
 import lombok.Builder;
 import lombok.Data;
@@ -37,21 +37,21 @@ import lombok.Data;
 @Data
 public class AspectRelationship {
 
+    private String processId;
     private String shellId;
     private String subModelId;
     private int rowNumber;
-    private String processId;
     private String childUuid;
     private String parentUuid;
+    
+    private String assetId; 
+    private String accessPolicyId;
+    private String usagePolicyId;
+    private String contractDefinationId;
     private List<String> bpnNumbers;
     private String typeOfAccess;
     private List<UsagePolicy> usagePolicies;
-    private String usagePolicyId;
-    private String assetId; 
-    private String accessPolicyId;
-    private String contractDefinationId;
-    private String deleted;
-    
+
 
     @NotBlank(message = "parent_part_instance_id cannot be empty")
     private String parentPartInstanceId;

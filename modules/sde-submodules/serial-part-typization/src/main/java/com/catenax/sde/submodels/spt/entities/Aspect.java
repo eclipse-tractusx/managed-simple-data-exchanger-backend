@@ -20,16 +20,16 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package com.catenax.sde.entities.usecases;
+package com.catenax.sde.submodels.spt.entities;
 
 import java.util.List;
 
 import javax.validation.constraints.NotBlank;
 
-import com.catenax.sde.edc.entities.UsagePolicy;
-import com.catenax.sde.validators.DateValidation;
-import com.catenax.sde.validators.OptionalIdentifierKeyValidation;
-import com.catenax.sde.validators.SubmodelValidation;
+import com.catenax.sde.common.entities.UsagePolicy;
+import com.catenax.sde.common.validators.DateValidation;
+import com.catenax.sde.common.validators.OptionalIdentifierKeyValidation;
+import com.catenax.sde.submodels.spt.validators.AspectValidation;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,21 +38,20 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-@SubmodelValidation
+@AspectValidation
 public class Aspect {
 
+	private String processId;
+    private String uuid;
     private String shellId;
     private String subModelId;
     private int rowNumber;
-    private String uuid;
-    private String processId;
-    private String contractDefinationId;
-    private String usagePolicyId;
+
+    //EDC
     private String assetId; 
     private String accessPolicyId;
-    private String deleted;
-
-    
+    private String usagePolicyId;
+    private String contractDefinationId;    
     private List<String> bpnNumbers;
     private String typeOfAccess;
     private List<UsagePolicy> usagePolicies;

@@ -62,7 +62,10 @@ public class DeleteBatchUseCaseHandler {
 
 		try {
 			List<BatchEntity> listBatch = batchUseCase.getListUuidFromProcessId(refProcessId);
-			
+			if(listBatch.isEmpty())
+			{
+				throw new RuntimeException("No Aspect Id Associated with Processid ");
+			}
 			processReportUseCase.startDeleteProcess(deleteProcessId, CsvTypeEnum.BATCH, listBatch.size(), refProcessId,
 					0);
 			
@@ -86,11 +89,9 @@ public class DeleteBatchUseCaseHandler {
 		String assetId = batchEntity.getAssetId();
 		try {
 			
+			log.info("Inside Delete deleteAllDataBySequence");
 		
-			ResponseEntity<Object> response = digitalTwinsFeignClient.deleteDigitalTwinsById(batchEntity.getShellId(),
-					deleteCommonHelper.getHeaders());
-			
-			if (response.getStatusCode() == HttpStatus.NO_CONTENT) {
+				deleteDigitalTwins(batchEntity);
 
 				deleteContractDefination(batchEntity);
 				
@@ -101,8 +102,7 @@ public class DeleteBatchUseCaseHandler {
 				deleteAssets(assetId);	
 						
 				saveBatchWithDeleted(batchEntity);
-
-				}
+				log.info("End Delete deleteAllDataBySequence");
 			}
 		 catch (Exception e) {
 
@@ -114,6 +114,17 @@ public class DeleteBatchUseCaseHandler {
 
 	}
 	
+	public void deleteDigitalTwins(BatchEntity batchEntity) throws Exception
+	{
+		try {
+			digitalTwinsFeignClient.deleteDigitalTwinsById(batchEntity.getShellId(),
+					deleteCommonHelper.getHeaders());
+		}catch(Exception e)
+		{
+			deleteCommonHelper.parseExceptionMessage(e);
+		}
+		
+	}
 	
 	public void deleteContractDefination(BatchEntity batchEntity) throws Exception
 	{

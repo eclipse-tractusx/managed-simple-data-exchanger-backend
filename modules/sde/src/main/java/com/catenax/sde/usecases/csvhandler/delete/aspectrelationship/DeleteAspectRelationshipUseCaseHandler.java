@@ -63,8 +63,13 @@ public class DeleteAspectRelationshipUseCaseHandler {
 		 */
 		
 		try {
+			log.info("Inside Delete deleteAspectRelationshipDigitalTwinsAndEDC");
 			List<AspectRelationshipEntity> listAspectRelationship = aspectsRelationshipUseCase
 					.getListUuidFromProcessId(refProcessId);
+			if(listAspectRelationship.isEmpty())
+			{
+				throw new RuntimeException("No Aspect Id Associated with Processid ");
+			}
 			processReportUseCase.startDeleteProcess(deleteProcessId, CsvTypeEnum.ASPECT_RELATIONSHIP,
 					listAspectRelationship.size(), refProcessId, 0);
 			listAspectRelationship.parallelStream().forEach((o) -> {
@@ -72,7 +77,7 @@ public class DeleteAspectRelationshipUseCaseHandler {
 				deleteAllDataBySequence(o);
 
 			});
-
+			log.info("Deleted all Data with processID reference.");
 			processReportUseCase.finalizeNoOfDeletedInProgressReport(deleteProcessId, deletedRecordCount, refProcessId);
 		}catch(Exception e) {
 			FailureLogEntity entity = FailureLogEntity.builder().uuid(UUID.randomUUID().toString()).processId(deleteProcessId)
@@ -88,10 +93,9 @@ public class DeleteAspectRelationshipUseCaseHandler {
 		String processId = aspectRelationshipEntity.getProcessId();
 		String assetId = aspectRelationshipEntity.getAssetId();
 		try {
-			ResponseEntity<Object> response = digitalTwinsFeignClient
-					.deleteDigitalTwinsById(aspectRelationshipEntity.getShellId(), deleteCommonHelper.getHeaders());
-			if (response.getStatusCode() == HttpStatus.NO_CONTENT) {
-
+			
+				log.info("Inside Delete deleteAllDataBySequence");
+				deleteDigitalTwins(aspectRelationshipEntity);
 				deleteContractDefination(aspectRelationshipEntity);
 
 				deleteAccessPolicy(aspectRelationshipEntity);
@@ -101,14 +105,26 @@ public class DeleteAspectRelationshipUseCaseHandler {
 				deleteAssets(assetId);
 
 				saveAspectRelationshipWithDeleted(aspectRelationshipEntity);
+				
+				log.info("End Delete deleteAllDataBySequence");
 
-			}
+		
 		} catch (Exception e) {
 
 			FailureLogEntity entity = FailureLogEntity.builder().uuid(UUID.randomUUID().toString()).processId(processId)
 					.log(e.getMessage()).dateTime(LocalDateTime.now()).build();
 			failureLogsUseCase.saveLog(entity);
 			log.error(String.format("[%s] %s", this.getClass().getSimpleName(), String.valueOf(e)));
+		}
+
+	}
+	
+	public void deleteDigitalTwins(AspectRelationshipEntity aspectRelationshipEntity) throws Exception {
+		try {
+			digitalTwinsFeignClient
+					.deleteDigitalTwinsById(aspectRelationshipEntity.getShellId(), deleteCommonHelper.getHeaders());
+		} catch (Exception e) {
+			deleteCommonHelper.parseExceptionMessage(e);
 		}
 
 	}

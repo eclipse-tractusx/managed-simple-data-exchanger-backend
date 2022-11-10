@@ -2,42 +2,28 @@ package com.catenax.sde.usecases.csvhandler.delete;
 
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
-import com.catenax.sde.digitaltwins.entities.request.ShellLookupRequest;
 import com.catenax.sde.digitaltwins.gateways.external.DigitalTwinsFeignClient;
 import com.catenax.sde.edc.api.EDCFeignClientApi;
 import com.catenax.sde.entities.database.AspectEntity;
 import com.catenax.sde.entities.database.FailureLogEntity;
 import com.catenax.sde.enums.CsvTypeEnum;
-import com.catenax.sde.exceptions.DftException;
 import com.catenax.sde.gateways.database.AspectRepository;
 import com.catenax.sde.usecases.aspects.GetAspectsUseCase;
+import com.catenax.sde.usecases.csvhandler.delete.common.DeleteCommonHelper;
 import com.catenax.sde.usecases.logs.FailureLogsUseCase;
 import com.catenax.sde.usecases.processreport.ProcessReportUseCase;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.springframework.beans.factory.annotation.Value;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -45,39 +31,6 @@ import lombok.extern.slf4j.Slf4j;
 public class DeleteUsecaseHandler {
 	
 	
-	//Shell Request
-	
-    private static final String AUTHORIZATION = "Authorization";
-    private static final String ASSET_IDS_QUERY_PARAMETER = "assetIds";
-    private static final String CLIENT_ID_TOKEN_QUERY_PARAMETER = "client_id";
-    private static final String CLIENT_SECRET_TOKEN_QUERY_PARAMETER = "client_secret";
-    private static final String GRANT_TYPE_TOKEN_QUERY_PARAMETER = "grant_type";
-    private static final String ACCESS_TOKEN = "access_token";
-    
-    private static final String DELETED_Y = "Y";
-    private static final String PART_INSTANCE_ID = "PartInstanceID";
-    private static final String MANUFACTURER_PART_ID = "ManufacturerPartID";
-    private static final String MANUFACTURER_ID = "ManufacturerID";
-    
-    @Value(value = "${digital-twins.authentication.clientSecret}")
-    private String clientSecret;
-    @Value(value = "${digital-twins.authentication.clientId}")
-    private String clientId;
-    @Value(value = "${digital-twins.authentication.grantType}")
-    private String grantType;
-    @Value(value = "${digital-twins.hostname}")
-    private String digitalTwinsHost;
-    @Value(value = "${digital-twins.authentication.url}")
-    private String tokenUrl;
-    
-    @Value(value = "${edc.apiKeyHeader}")
-    private String apiKeyHeader;
-    @Value(value = "${edc.apiKey}")
-    private String apiKey;
-    
-    private String accessToken;
-    
-    
 	@Autowired
 	DigitalTwinsFeignClient digitalTwinsFeignClient;
 	@Autowired
@@ -87,14 +40,17 @@ public class DeleteUsecaseHandler {
 	
     private final ProcessReportUseCase processReportUseCase;
 	
-    AspectRepository aspectRepository;
+    private final AspectRepository aspectRepository;
     private final GetAspectsUseCase aspectsUseCase;
-    
-    public DeleteUsecaseHandler(GetAspectsUseCase aspectsUseCase,ProcessReportUseCase processReportUseCase,AspectRepository aspectRepository) {
+    private final DeleteCommonHelper deleteCommonHelper;
+    int deletedRecordCount=0;
+
+    public DeleteUsecaseHandler(GetAspectsUseCase aspectsUseCase,ProcessReportUseCase processReportUseCase,AspectRepository aspectRepository,DeleteCommonHelper deleteCommonHelper) {
 		super();
 		this.aspectsUseCase = aspectsUseCase;
 		this.processReportUseCase = processReportUseCase;
 		this.aspectRepository =aspectRepository;
+		this.deleteCommonHelper = deleteCommonHelper;
 	}
     
     
@@ -105,18 +61,21 @@ public class DeleteUsecaseHandler {
 		 * IMP NOTE: in delete case existing processid will be stored into
 		 * referenceProcessid
 		 */
-		AtomicInteger deletedRecordCount = new AtomicInteger();
+		 try{
 
-	
 		List<AspectEntity> listAspect = aspectsUseCase.getListUuidFromProcessId(refProcessId);
 		processReportUseCase.startDeleteProcess(deleteProcessId, CsvTypeEnum.ASPECT, listAspect.size(), refProcessId, 0);
 		listAspect.parallelStream().forEach((o) -> {
+			o.setProcessId(deleteProcessId);
 			deleteAllDataBySequence(o);
-			deletedRecordCount.incrementAndGet();
-			
 		});
-
-		processReportUseCase.finalizeNoOfDeletedInProgressReport(deleteProcessId, deletedRecordCount.get(), refProcessId);
+		processReportUseCase.finalizeNoOfDeletedInProgressReport(deleteProcessId, deletedRecordCount, refProcessId);
+		} catch (Exception e) {
+			FailureLogEntity entity = FailureLogEntity.builder().uuid(UUID.randomUUID().toString())
+					.processId(deleteProcessId).log(e.getMessage()).dateTime(LocalDateTime.now()).build();
+			failureLogsUseCase.saveLog(entity);
+			log.error(String.format("[%s] %s", this.getClass().getSimpleName(), String.valueOf(e)));
+		}
 
 	}
 	
@@ -125,24 +84,19 @@ public class DeleteUsecaseHandler {
 		String assetId = aspectEntity.getAssetId();
 		try {
 			ResponseEntity<Object> response = digitalTwinsFeignClient.deleteDigitalTwinsById(aspectEntity.getShellId(),
-					setHeaders());
+					deleteCommonHelper.getHeaders());
 			if (response.getStatusCode() == HttpStatus.NO_CONTENT) {
-				ResponseEntity<Object> contractDefinationResponse = eDCFeignClientApi
-						.deleteContractDefinition(aspectEntity.getContractDefinationId(), setEDCHeaders());
-				if (contractDefinationResponse.getStatusCode() == HttpStatus.NO_CONTENT) {
-					ResponseEntity<Object> acessPolicyResponse = eDCFeignClientApi
-							.deletePolicyDefinitions(aspectEntity.getAccessPolicyId(), setEDCHeaders());
-					ResponseEntity<Object> usagePolicyResponse = eDCFeignClientApi
-							.deletePolicyDefinitions(aspectEntity.getUsagePolicyId(), setEDCHeaders());
-					if (acessPolicyResponse.getStatusCode() == HttpStatus.NO_CONTENT
-							&& usagePolicyResponse.getStatusCode() == HttpStatus.NO_CONTENT) {
-						ResponseEntity<Object> assetResponse = eDCFeignClientApi.deleteAssets(assetId, setEDCHeaders());
-						if (assetResponse.getStatusCode() == HttpStatus.NO_CONTENT) {
-							saveAspectWithDeleted(aspectEntity);
 
-						}
-					}
-				}
+				deleteContractDefination(aspectEntity);
+
+				deleteAccessPolicy(aspectEntity);
+
+				deleteUsagePolicy(aspectEntity);
+
+				deleteAssets(assetId);
+
+				saveAspectWithDeleted(aspectEntity);
+
 			}
 		} catch (Exception e) {
 
@@ -153,48 +107,53 @@ public class DeleteUsecaseHandler {
 		}
 
 	}
-	
+
+	public void deleteContractDefination(AspectEntity aspectEntity) throws Exception {
+		try {
+			eDCFeignClientApi.deleteContractDefinition(aspectEntity.getContractDefinationId(),
+					deleteCommonHelper.getEDCHeaders());
+		} catch (Exception e) {
+			deleteCommonHelper.parseExceptionMessage(e);
+		}
+
+	}
+
+	public void deleteAccessPolicy(AspectEntity aspectEntity) throws Exception {
+		try {
+			eDCFeignClientApi.deletePolicyDefinitions(aspectEntity.getAccessPolicyId(),
+					deleteCommonHelper.getEDCHeaders());
+		} catch (Exception e) {
+			deleteCommonHelper.parseExceptionMessage(e);
+		}
+
+	}
+
+	public void deleteUsagePolicy(AspectEntity aspectEntity) throws Exception {
+		try {
+			eDCFeignClientApi.deletePolicyDefinitions(aspectEntity.getUsagePolicyId(),
+					deleteCommonHelper.getEDCHeaders());
+		} catch (Exception e) {
+			deleteCommonHelper.parseExceptionMessage(e);
+		}
+
+	}
+
+	public void deleteAssets(String assetId) throws Exception {
+		try {
+			eDCFeignClientApi.deleteAssets(assetId, deleteCommonHelper.getEDCHeaders());
+		} catch (Exception e) {
+			deleteCommonHelper.parseExceptionMessage(e);
+		}
+
+	}
+
+
+
 	private void saveAspectWithDeleted(AspectEntity aspectEntity) {
-		aspectEntity.setDeleted(DELETED_Y);
+		aspectEntity.setDeleted(DeleteCommonHelper.DELETED_Y);
 		aspectRepository.save(aspectEntity);
+		++deletedRecordCount;
 	}
-	
-	private Map<String, String> setHeaders() {
-		Map<String, String> headers = new HashMap<>();
-		headers.put(AUTHORIZATION, getBearerToken());
-
-		return headers;
-	}
-	
-	private HttpHeaders setEDCHeaders() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.add(apiKeyHeader, apiKey);
-		return headers;
-	}
-	
-	
-	 @SneakyThrows
-	    private String getBearerToken() {
-	       
-	        RestTemplate restTemplate = new RestTemplate();
-	        HttpHeaders headers = new HttpHeaders();
-	        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-	        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-	        map.add(CLIENT_ID_TOKEN_QUERY_PARAMETER, clientId);
-	        map.add(CLIENT_SECRET_TOKEN_QUERY_PARAMETER, clientSecret);
-	        map.add(GRANT_TYPE_TOKEN_QUERY_PARAMETER, grantType);
-
-	        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
-	        ResponseEntity<String> response = restTemplate.postForEntity(tokenUrl, entity, String.class);
-
-	        ObjectMapper mapper = new ObjectMapper();
-	        JsonNode node = mapper.readTree(response.getBody());
-	        accessToken = node.path(ACCESS_TOKEN).asText();
-
-	        return "Bearer " + accessToken;
-	    }
-	 
 
 
 

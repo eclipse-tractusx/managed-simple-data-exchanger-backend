@@ -20,6 +20,8 @@
 
 package com.catenax.sde.gateways.database;
 
+import java.util.List;
+
 import org.springframework.data.repository.CrudRepository;
 
 import com.catenax.sde.entities.database.BatchEntity;
@@ -51,4 +53,6 @@ public interface BatchRepository extends CrudRepository<BatchEntity, String> {
     }
 
     BatchEntity findByUuid(String uuid);
+    
+    List<BatchEntity> findByProcessId(String processId);
 }

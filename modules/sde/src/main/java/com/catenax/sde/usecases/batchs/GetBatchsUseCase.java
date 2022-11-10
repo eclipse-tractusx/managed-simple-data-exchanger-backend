@@ -20,9 +20,13 @@
 
 package com.catenax.sde.usecases.batchs;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.catenax.sde.entities.batch.BatchResponse;
+import com.catenax.sde.entities.database.AspectRelationshipEntity;
+import com.catenax.sde.entities.database.BatchEntity;
 import com.catenax.sde.gateways.database.BatchRepository;
 import com.catenax.sde.mapper.BatchMapper;
 
@@ -41,5 +45,10 @@ public class GetBatchsUseCase {
     public BatchResponse execute(String uuid) {
 
         return mapper.mapToResponse(repository.findByUuid(uuid));
+    }
+    
+    public List<BatchEntity> getListUuidFromProcessId(String processId) {
+
+        return repository.findByProcessId(processId);
     }
 }

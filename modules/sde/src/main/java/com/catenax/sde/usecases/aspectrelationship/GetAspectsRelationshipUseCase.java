@@ -45,4 +45,10 @@ public class GetAspectsRelationshipUseCase {
         List<AspectRelationshipEntity> entities = repository.findByParentCatenaXId(uuid);
         return mapper.mapToResponse(uuid, entities);
     }
+    
+    
+    public List<AspectRelationshipEntity> getListUuidFromProcessId(String processId) {
+
+        return repository.findByProcessId(processId);
+    }
 }

@@ -64,6 +64,11 @@ public class DeleteUsecaseHandler {
 		 try{
 
 		List<AspectEntity> listAspect = aspectsUseCase.getListUuidFromProcessId(refProcessId);
+		
+		if(listAspect.isEmpty())
+		{
+			throw new RuntimeException("No Aspect Id Associated with Processid ");
+		}
 		processReportUseCase.startDeleteProcess(deleteProcessId, CsvTypeEnum.ASPECT, listAspect.size(), refProcessId, 0);
 		listAspect.parallelStream().forEach((o) -> {
 			o.setProcessId(deleteProcessId);
@@ -83,9 +88,8 @@ public class DeleteUsecaseHandler {
 		String processId = aspectEntity.getProcessId();
 		String assetId = aspectEntity.getAssetId();
 		try {
-			ResponseEntity<Object> response = digitalTwinsFeignClient.deleteDigitalTwinsById(aspectEntity.getShellId(),
-					deleteCommonHelper.getHeaders());
-			if (response.getStatusCode() == HttpStatus.NO_CONTENT) {
+				log.info("Inside Delete deleteAllDataBySequence");
+				deleteDigitalTwins(aspectEntity);
 
 				deleteContractDefination(aspectEntity);
 
@@ -96,14 +100,24 @@ public class DeleteUsecaseHandler {
 				deleteAssets(assetId);
 
 				saveAspectWithDeleted(aspectEntity);
+				log.info("Succestully Deleted Delete");
 
-			}
 		} catch (Exception e) {
 
 			FailureLogEntity entity = FailureLogEntity.builder().uuid(UUID.randomUUID().toString()).processId(processId)
 					.log(e.getMessage()).dateTime(LocalDateTime.now()).build();
 			failureLogsUseCase.saveLog(entity);
 			log.error(String.format("[%s] %s", this.getClass().getSimpleName(), String.valueOf(e)));
+		}
+
+	}
+	
+	public void deleteDigitalTwins(AspectEntity aspectEntity) throws Exception {
+		try {
+			digitalTwinsFeignClient.deleteDigitalTwinsById(aspectEntity.getShellId(),
+					deleteCommonHelper.getHeaders());
+		} catch (Exception e) {
+			deleteCommonHelper.parseExceptionMessage(e);
 		}
 
 	}

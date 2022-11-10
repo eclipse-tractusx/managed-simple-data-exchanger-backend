@@ -19,6 +19,8 @@ import com.catenax.sde.exceptions.DftException;
 import com.catenax.sde.usecases.aspectrelationship.GetAspectsRelationshipUseCase;
 import com.catenax.sde.usecases.aspects.GetAspectsUseCase;
 import com.catenax.sde.usecases.csvhandler.delete.DeleteUsecaseHandler;
+import com.catenax.sde.usecases.csvhandler.delete.aspectrelationship.DeleteAspectRelationshipUseCaseHandler;
+import com.catenax.sde.usecases.csvhandler.delete.batch.DeleteBatchUseCaseHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import lombok.extern.slf4j.Slf4j;
@@ -29,40 +31,42 @@ import lombok.extern.slf4j.Slf4j;
 @Validated
 public class DeleteController {
 
-    private final GetAspectsRelationshipUseCase aspectsRelationshipUseCase;
     private final DeleteUsecaseHandler deleteUsecaseHandler;
+    private final DeleteAspectRelationshipUseCaseHandler deleteAspectRelationshipUseCaseHandler;
+    private final DeleteBatchUseCaseHandler deleteBatchUseCaseHandler;
 	
     
 	public DeleteController(
-			GetAspectsRelationshipUseCase aspectsRelationshipUseCase,DeleteUsecaseHandler deleteUsecaseHandler) {
+		DeleteUsecaseHandler deleteUsecaseHandler,DeleteAspectRelationshipUseCaseHandler deleteAspectRelationshipUseCaseHandler,DeleteBatchUseCaseHandler deleteBatchUseCaseHandler) {
 		super();
-		this.aspectsRelationshipUseCase = aspectsRelationshipUseCase;
 		this.deleteUsecaseHandler=deleteUsecaseHandler;
+		this.deleteAspectRelationshipUseCaseHandler=deleteAspectRelationshipUseCaseHandler;
+		this.deleteBatchUseCaseHandler= deleteBatchUseCaseHandler;
 	}
 
 	@DeleteMapping(value = "/{processId}/{csvType}", produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> deleteRecordsWithDigitalTwinAndEDC(@PathVariable("processId") String processId,
-			@PathVariable("csvType") String csvType) throws JsonProcessingException {
+			@PathVariable("csvType") String csvType) {
 		String delProcessId = UUID.randomUUID().toString();
-		
-		
-		 Runnable runnable = () -> {
-	            try {
-	            	if (csvType.equalsIgnoreCase(CsvTypeEnum.ASPECT.toString())) {
-	        			
 
-	        				deleteUsecaseHandler.deleteAspectDigitalTwinsAndEDC (processId,delProcessId);
-	        			
-	        		} else if (csvType.equals(CsvTypeEnum.ASPECT_RELATIONSHIP.toString())) {
+		Runnable runnable = () -> {
+			try {
+				if (csvType.equalsIgnoreCase(CsvTypeEnum.ASPECT.toString())) {
 
-	        		} else if (csvType.equals(CsvTypeEnum.BATCH.toString())) {
+					deleteUsecaseHandler.deleteAspectDigitalTwinsAndEDC(processId, delProcessId);
 
-	        		}
-	            } catch (JsonProcessingException e) {
-	                throw new DftException(e);
-	            }
-	        };
-	        new Thread(runnable).start();
+				} else if (csvType.equals(CsvTypeEnum.ASPECT_RELATIONSHIP.toString())) {
+					deleteAspectRelationshipUseCaseHandler.deleteAspectRelationshipDigitalTwinsAndEDC(processId,
+							delProcessId);
+
+				} else if (csvType.equals(CsvTypeEnum.BATCH.toString())) {
+					deleteBatchUseCaseHandler.deleteBatchDigitalTwinsAndEDC(processId, delProcessId);
+				}
+			} catch (JsonProcessingException e) {
+				throw new DftException(e);
+			}
+		};
+		new Thread(runnable).start();
 
 		return ok().body(delProcessId);
 	}

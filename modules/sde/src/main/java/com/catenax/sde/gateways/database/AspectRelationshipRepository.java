@@ -31,4 +31,6 @@ import com.catenax.sde.entities.database.AspectRelationshipEntity;
 public interface AspectRelationshipRepository extends JpaRepository<AspectRelationshipEntity, String> {
 
     List<AspectRelationshipEntity> findByParentCatenaXId(String parentCatenaXId);
+    
+    List<AspectRelationshipEntity> findByProcessId(String processId);
 }

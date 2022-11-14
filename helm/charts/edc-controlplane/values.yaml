@@ -140,7 +140,7 @@ ingresses:
   ## Public / Internet facing Ingress
   - enabled: true
     # -- The hostname to be used to precisely map incoming traffic onto the underlying network service
-    hostname: "dft-connector-prov-cp-pen.int.demo.catena-x.net"
+    hostname: "dft-connector.dev.demo.catena-x.net"
     # -- Additional ingress annotations to add
     annotations: {}
     # -- EDC endpoints exposed by this ingress resource
@@ -258,57 +258,57 @@ configuration:
     edc.ids.description=Eclipse Dataspace Connector
     edc.ids.id=urn:connector:edc
     edc.ids.security.profile=base
-    edc.ids.endpoint=https://dft-connector-prov-cp-pen.int.demo.catena-x.net/api/v1/ids
-    edc.ids.maintainer=https://dft-connector-prov-cp-pen.int.demo.catena-x.net
-    edc.ids.curator=https://dft-connector-prov-cp-pen.int.demo.catena-x.net
+    edc.ids.endpoint=https://dft-connector.dev.demo.catena-x.net/api/v1/ids
+    edc.ids.maintainer=https://dft-connector.dev.demo.catena-x.net
+    edc.ids.curator=https://dft-connector.dev.demo.catena-x.net
     edc.ids.catalog.id=urn:catalog:default
-    ids.webhook.address=https://dft-connector-prov-cp-pen.int.demo.catena-x.net
+    ids.webhook.address=https://dft-connector.dev.demo.catena-x.net
     edc.api.control.auth.apikey.key=X-Api-Key
     edc.api.control.auth.apikey.value=pass
     edc.api.auth.key=password
     #edc.hostname=dft-connector-prv-cp.int.demo.catena-x.net
-    edc.hostname=dft-connector-prov-cp-pen.int.demo.catena-x.net
+    edc.hostname=dft-connector.dev.demo.catena-x.net
     # DAPS Properties
     edc.oauth.token.url=https://daps-pen.int.demo.catena-x.net/token
-    edc.oauth.client.id=D1:C3:B5:19:14:BB:00:D8:67:ED:D5:BC:B7:02:4C:21:8D:A5:3A:5A:keyid:D1:C3:B5:19:14:BB:00:D8:67:ED:D5:BC:B7:02:4C:21:8D:A5:3A:5A
+    edc.oauth.client.id=98:0A:48:45:30:4A:14:10:89:29:B6:B3:51:49:4D:01:7F:B2:A1:52:keyid:98:0A:48:45:30:4A:14:10:89:29:B6:B3:51:49:4D:01:7F:B2:A1:52
     edc.oauth.provider.audience=idsc:IDS_CONNECTORS_ALL
     edc.oauth.provider.jwks.url=https://daps-pen.int.demo.catena-x.net/.well-known/jwks.json
     # OAUTH Properties
-    edc.oauth.public.key.alias=gds-dft-prov-pen-crt
-    edc.oauth.private.key.alias=gds-dft-prov-pen-key
+    edc.oauth.public.key.alias=dft-connector-dev-cons-cert
+    edc.oauth.private.key.alias=dft-connector-dev-cons-key
     # Azure vault related configuration
     edc.vault.clientid=2f0e6b4e-de1a-42bd-b30e-453d558d2dd4
     edc.vault.tenantid=495463c3-0991-4659-9cc5-94b4a3f7b1d6
     edc.vault.name=cxtsi-dev010-vault
     edc.vault.clientsecret=
     # Control- / Data- Plane configuration
-    edc.ids.endpoint.audience=https://dft-connector-prov-cp-pen.int.demo.catena-x.net/api/v1/ids/data
+    edc.ids.endpoint.audience=https://dft-connector.int.demo.catena-x.net/api/v1/ids/data
     edc.data.encryption.keys.alias=encrypt-edc-alias
-    edc.transfer.proxy.endpoint=https://dft-connector-prov-cp-pen.int.demo.catena-x.net/public
-    edc.transfer.proxy.token.signer.privatekey.alias=dft-data-plane-private-pen-key
-    edc.transfer.dataplane.sync.endpoint=https://dft-connector-prov-cp-pen.int.demo.catena-x.net/public
-    edc.transfer.dataplane.token.signer.privatekey.alias=dft-data-plane-private-pen-key
-    edc.transfer.proxy.token.verifier.publickey.alias=dft-data-plane-public-pen-key
-    edc.public.key.alias=dft-data-plane-public-pen-key
+    edc.transfer.proxy.endpoint=https://dft-connector-prv-dp.dev.demo.catena-x.net/public
+    edc.transfer.proxy.token.signer.privatekey.alias=dft-dev-cons-data-plane-private-key
+    edc.transfer.dataplane.sync.endpoint=https://dft-connector-prv-dp.dev.demo.catena-x.net/public
+    edc.transfer.dataplane.token.signer.privatekey.alias=dft-dev-cons-data-plane-private-key
+    edc.transfer.proxy.token.verifier.publickey.alias=dft-dev-cons-data-plane-public-key
+    edc.public.key.alias=dft-dev-cons-data-plane-public-key
     # Postgresql related configuration
     edc.datasource.asset.name=asset
-    edc.datasource.asset.url=jdbc:postgresql://product-dft-backend-pen-postgresql:5432/edcdb
+    edc.datasource.asset.url=jdbc:postgresql://product-dft-backend-postgresql:5432/edcdb
     edc.datasource.asset.user=edcuser
     edc.datasource.asset.password=Connector@123
     edc.datasource.contractdefinition.name=contractdefinition
-    edc.datasource.contractdefinition.url=jdbc:postgresql://product-dft-backend-pen-postgresql:5432/edcdb
+    edc.datasource.contractdefinition.url=jdbc:postgresql://product-dft-backend-postgresql:5432/edcdb
     edc.datasource.contractdefinition.user=edcuser
     edc.datasource.contractdefinition.password=Connector@123
     edc.datasource.contractnegotiation.name=contractnegotiation
-    edc.datasource.contractnegotiation.url=jdbc:postgresql://product-dft-backend-pen-postgresql:5432/edcdb
+    edc.datasource.contractnegotiation.url=jdbc:postgresql://product-dft-backend-postgresql:5432/edcdb
     edc.datasource.contractnegotiation.user=edcuser
     edc.datasource.contractnegotiation.password=Connector@123
     edc.datasource.policy.name=policy
-    edc.datasource.policy.url=jdbc:postgresql://product-dft-backend-pen-postgresql:5432/edcdb
+    edc.datasource.policy.url=jdbc:postgresql://product-dft-backend-postgresql:5432/edcdb
     edc.datasource.policy.user=edcuser
     edc.datasource.policy.password=Connector@123
     edc.datasource.transferprocess.name=transferprocess
-    edc.datasource.transferprocess.url=jdbc:postgresql://product-dft-backend-pen-postgresql:5432/edcdb
+    edc.datasource.transferprocess.url=jdbc:postgresql://product-dft-backend-postgresql:5432/edcdb
     edc.datasource.transferprocess.user=edcuser
     edc.datasource.transferprocess.password=Connector@123
 

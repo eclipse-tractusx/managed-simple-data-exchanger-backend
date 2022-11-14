@@ -140,7 +140,7 @@ ingresses:
   ## Public / Internet facing Ingress
   - enabled: true
     # -- The hostname to be used to precisely map incoming traffic onto the underlying network service
-    hostname: "dft-connector.int.demo.catena-x.net"
+    hostname: "dft-connector.dev.demo.catena-x.net"
     # -- Additional ingress annotations to add
     annotations: {}
     # -- EDC endpoints exposed by this ingress resource
@@ -260,38 +260,38 @@ configuration:
     edc.ids.description=Eclipse Dataspace Connector
     edc.ids.id=urn:connector:edc
     edc.ids.security.profile=base
-    edc.ids.endpoint=https://dft-connector.int.demo.catena-x.net:7272/api/v1/ids
-    edc.ids.maintainer=https://dft-connector.int.demo.catena-x.net
-    edc.ids.curator=https://dft-connector.int.demo.catena-x.net
+    edc.ids.endpoint=https://dft-connector.dev.demo.catena-x.net/api/v1/ids
+    edc.ids.maintainer=https://dft-connector.dev.demo.catena-x.net
+    edc.ids.curator=https://dft-connector.dev.demo.catena-x.net
     edc.ids.catalog.id=urn:catalog:default
-    ids.webhook.address=https://dft-connector.int.demo.catena-x.net:7272
+    ids.webhook.address=https://dft-connector.dev.demo.catena-x.net/ids
     edc.api.control.auth.apikey.key=X-Api-Key
     edc.api.control.auth.apikey.value=pass
     edc.api.auth.key=password
     #edc.hostname=dft-connector-prv-cp.int.demo.catena-x.net
-    edc.hostname=dft-connector.int.demo.catena-x.net
+    edc.hostname=dft-connector.dev.demo.catena-x.net
     # DAPS Properties
     edc.oauth.token.url=https://daps-pen.int.demo.catena-x.net/token
-    edc.oauth.client.id=B7:61:0F:A1:87:F4:34:56:84:AB:61:23:80:4A:39:89:93:50:B5:38:keyid:B7:61:0F:A1:87:F4:34:56:84:AB:61:23:80:4A:39:89:93:50:B5:38
+    edc.oauth.client.id=98:0A:48:45:30:4A:14:10:89:29:B6:B3:51:49:4D:01:7F:B2:A1:52:keyid:98:0A:48:45:30:4A:14:10:89:29:B6:B3:51:49:4D:01:7F:B2:A1:52
     edc.oauth.provider.audience=idsc:IDS_CONNECTORS_ALL
     edc.oauth.provider.jwks.url=https://daps-pen.int.demo.catena-x.net/.well-known/jwks.json
     # OAUTH Properties
-    edc.oauth.public.key.alias=dft-daps-key
-    edc.oauth.private.key.alias=dft-private-key
+    edc.oauth.public.key.alias=dft-connector-dev-prov-cert
+    edc.oauth.private.key.alias=dft-connector-dev-prov-key
     # Azure vault related configuration
     edc.vault.clientid=2f0e6b4e-de1a-42bd-b30e-453d558d2dd4
     edc.vault.tenantid=495463c3-0991-4659-9cc5-94b4a3f7b1d6
     edc.vault.name=cxtsi-dev010-vault
     edc.vault.clientsecret=
     # Control- / Data- Plane configuration
-    edc.ids.endpoint.audience=https://dft-connector.int.demo.catena-x.net/api/v1/ids/data
+    edc.ids.endpoint.audience=https://dft-connector.dev.demo.catena-x.net/api/v1/ids/data
     edc.data.encryption.keys.alias=encrypt-edc-alias
-    edc.transfer.proxy.endpoint=https://dft-connector.int.demo.catena-x.net/public
-    edc.transfer.proxy.token.signer.privatekey.alias=gds-data-plane-private-key
-    edc.transfer.dataplane.sync.endpoint=https://dft-connector.int.demo.catena-x.net/public
-    edc.transfer.dataplane.token.signer.privatekey.alias=gds-data-plane-private-key
-    edc.transfer.proxy.token.verifier.publickey.alias=gds-data-plane-public-key
-    edc.public.key.alias=gds-data-plane-public-key
+    edc.transfer.proxy.endpoint=https://dft-connector.dev.demo.catena-x.net/public
+    edc.transfer.proxy.token.signer.privatekey.alias=dft-dev-prv-data-plane-private-key
+    edc.transfer.dataplane.sync.endpoint=https://dft-connector.dev.demo.catena-x.net/public
+    edc.transfer.dataplane.token.signer.privatekey.alias=dft-dev-prv-data-plane-private-key
+    edc.transfer.proxy.token.verifier.publickey.alias=dft-dev-prv-data-plane-public-key
+    edc.public.key.alias=dft-dev-prv-data-plane-public-key
     #  Postgresql related configuration
     edc.datasource.asset.name=asset
     edc.datasource.asset.url=

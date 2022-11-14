@@ -127,7 +127,7 @@ ingresses:
   ## Public / Internet facing Ingress
   - enabled: true
     # -- The hostname to be used to precisely map incoming traffic onto the underlying network service
-    hostname: "dft-connector-prv-dp.int.demo.catena-x.net"
+    hostname: "dft-connector-prv-dp.dev.demo.catena-x.net"
     # -- Additional ingress annotations to add
     annotations: {}
     # -- EDC endpoints exposed by this ingress resource
@@ -204,9 +204,9 @@ opentelemetry:
 configuration:
   # -- EDC configuration.properties configuring aspects of the [eclipse-dataspaceconnector](https://github.com/eclipse-dataspaceconnector/DataSpaceConnector)
   properties: |-
-    edc.controlplane.validation-endpoint=https://dft-connector.int.demo.catena-x.net/validation/token
-    edc.dataplane.token.validation.endpoint=https://dft-connector.int.demo.catena-x.net/validation/token
-    edc.hostname=dft-connector-prv-dp.int.demo.catena-x.net
+    edc.controlplane.validation-endpoint=https://dft-connector.dev.demo.catena-x.net/validation/token
+    edc.dataplane.token.validation.endpoint=https://dft-connector.dev.demo.catena-x.net/validation/token
+    edc.hostname=dft-connector-prv-dp.dev.demo.catena-x.net
     edc.vault.clientid=2f0e6b4e-de1a-42bd-b30e-453d558d2dd4
     edc.vault.tenantid=495463c3-0991-4659-9cc5-94b4a3f7b1d6
     edc.vault.name=cxtsi-dev010-vault

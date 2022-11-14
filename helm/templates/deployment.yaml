@@ -35,7 +35,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: MANUFACTURERID
-              value: "BPNL0000000007UH"
+              value: "BPNL00000PRV1DEV"
             - name: SPRING_DATASOURCE_URL
               valueFrom:
                 secretKeyRef:

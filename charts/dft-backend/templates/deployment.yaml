@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "dft-backend.fullname" . }}
+  name: {{ include "helm.fullname" . }}
   labels:
-    {{- include "dft-backend.labels" . | nindent 4 }}
+    {{- include "helm.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "dft-backend.selectorLabels" . | nindent 6 }}
+      {{- include "helm.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -18,7 +18,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "dft-backend.selectorLabels" . | nindent 8 }}
+        {{- include "helm.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -35,7 +35,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: MANUFACTURERID
-              value: "BPN00022PRV"
+              value: "BPNL00000PRV1DEV"
             - name: SPRING_DATASOURCE_URL
               valueFrom:
                 secretKeyRef:
@@ -76,6 +76,11 @@ spec:
                 secretKeyRef:
                   name: dtf-digitaltwins-secrets
                   key: digitalTwinAuthorizationClientSecret
+            - name: DIGITAL-TWINS_AUTHENTICATION_GRANTTYPE
+              valueFrom:
+                secretKeyRef:
+                  name: dtf-digitaltwins-secrets
+                  key: digitalTwinsAuthenticationGrantType
             - name: EDC_ENABLED
               value: 'true'
             - name: EDC_HOSTNAME
@@ -113,7 +118,7 @@ spec:
                 secretKeyRef:
                   name: dtf-digitaltwins-secrets
                   key: keycloakREALM
-            - name: KEYCLOAK_REASOURCE
+            - name: KEYCLOAK_RESOURCE
               valueFrom:
                 secretKeyRef:
                   name: dtf-digitaltwins-secrets
@@ -147,7 +152,27 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: dft-edc-secrets
-                  key: edcconsapiheader                
+                  key: edcconsapiheader
+            - name: CLIENTID
+              valueFrom:
+                secretKeyRef:
+                  name: dtf-digitaltwins-secrets
+                  key: portalApiID
+            - name: CLIENTSECRET
+              valueFrom:
+                secretKeyRef:
+                  name: dtf-digitaltwins-secrets
+                  key: portalApisecret
+            - name: PARTNER_POOL_HOSTNAME
+              valueFrom:
+                secretKeyRef:
+                  name: dtf-digitaltwins-secrets
+                  key: partnerpoolhostURL
+            - name: PORTAL_BACKEND_HOSTNAME 
+              valueFrom:
+                secretKeyRef:
+                  name: dtf-digitaltwins-secrets
+                  key: portalpoolhostURL 
           ports:
             - name: http
               containerPort: 8080

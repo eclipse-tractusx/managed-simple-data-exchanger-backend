@@ -1,6 +1,6 @@
 ingress:
   enabled: true
-  host: dft-api.int.demo.catena-x.net
+  host: dft-api.dev.demo.catena-x.net
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: HTTP
     cert-manager.io/cluster-issuer: "letsencrypt-prod"

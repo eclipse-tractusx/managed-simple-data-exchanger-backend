@@ -1,0 +1,86 @@
+{
+	"$schema": "https://json-schema.org/draft/2019-09/schema",
+	"$id": "http://example.com/example.json",
+	"type": "array",
+	"id": "singleLevelBomAsPlanned",
+	"version":"1.0.1",
+    "semantic_id":"
+urn:bamm:io.catenax.single_level_bom_as_planned:1.0.1",
+	"title": "SingleLevelBomAsPlanned - Submodel SingleLevelBomAsPlanned",
+	"items": {
+		"type": "object",
+		"title": "Aspect Model Single level bill of material as planned",
+		"required": [
+            "manufacturer_part_id",
+            "classification",
+            "name_at_manufacturer"
+		],
+		"properties": {
+			"uuid": {
+				"type": "string",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+				"title": "UUID URN",
+				"examples": [
+					"urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf34dfa4c2"
+				]
+			},
+            "manufacturer_part_id": {
+				"type": "string",
+				"title": "Manufacturer part ID",
+				"examples": [
+					"37754B7-76"
+				]
+			},
+			"child_uuid": {
+				"type": "string",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+				"title": "UUID URN",
+				"examples": [
+					"urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf34dfa4c2"
+				]
+			},
+            "quantity_number": {
+				"type": "string",
+				"format": "date-time",
+				"title": "valid From",
+				"examples": [
+					"2022-06-14T06:55:29.935Z"
+				]
+			},
+            "measurement_unit_lexical_value": {
+				"type": "string",
+				"format": "date-time",
+				"title": "valid To",
+				"examples": [
+					"2022-06-14T06:55:29.935Z"
+				]
+			},
+			 "created_on": {
+				"type": "string",
+				"format": "date-time",
+				"title": "valid To",
+				"examples": [
+					"2022-06-14T06:55:29.935Z"
+				]
+			},
+			 "last_modified_on": {
+				"type": "string",
+				"format": "date-time",
+				"title": "valid To",
+				"examples": [
+					"2022-06-14T06:55:29.935Z"
+				]
+			}
+		}
+	},
+	"examples": [
+			{
+				"uuid": "urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2",
+				"manufacturer_part_id": "37754B7-76",
+				"valid_from": "2021-06-14T06:55:29.935Z",
+				"valid_to": "2022-06-14T06:55:29.935Z",
+                "classification": "component",
+                "name_at_manufacturer": "Sensor"
+			}
+		]
+}

@@ -3,6 +3,8 @@
 	"$id": "http://example.com/example.json",
 	"type": "array",
 	"id": "aspect",
+	"version":"1.0.0",
+    "semantic_id":"urn:bamm:io.catenax.serial_part_typization:1.1.0",
 	"title": "List of Serial Part Typizations",
 	"items": {
 		"type": "object",

@@ -24,6 +24,7 @@ public abstract class SubmodelExtension {
 		return Submodel.builder()
 				.id(schema.get("id").getAsString())
 				.name(schema.get("items").getAsJsonObject().get("title").getAsString())
+				.semanticId(schema.get("semantic_id").getAsString())
 				.schema(schema).build();
 	}
 

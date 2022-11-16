@@ -16,10 +16,10 @@ public class GenerateUrnUUID extends Step {
 
 		String uUID = jsonObject.get("uuid").getAsString();
 		if (uUID == null || uUID.isBlank()) {
-			jsonObject.addProperty("uiid", UUIdGenerator.getUrnUuid());
+			jsonObject.addProperty("uuid", UUIdGenerator.getUrnUuid());
 		} else if (!uUID.startsWith(UUIdGenerator.URN_UUID_PREFIX)) {
 			String concat = UUIdGenerator.URN_UUID_PREFIX.concat(uUID);
-			jsonObject.addProperty("uiid", concat);
+			jsonObject.addProperty("uuid", concat);
 		}
 		return jsonObject;
 	}

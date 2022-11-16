@@ -3,6 +3,8 @@
 	"$id": "http://example.com/example.json",
 	"type": "array",
 	"id": "batch",
+	"version":"1.0.0",
+    "semantic_id":"urn:bamm:org.eclipse.batch:1.0.0",
 	"title": "List of Batch",
 	"items": {
 		"type": "object",

@@ -23,6 +23,22 @@ public abstract class Step {
 	public JsonArray getSubmodelRequiredFields() {
 		return submodelSchema.get("items").getAsJsonObject().get("required").getAsJsonArray();
 	}
+	
+	public String getIdOfModel() {
+		return this.submodelSchema.get("id").getAsString();
+	}
+	
+	public String getVersionOfModel() {
+		return this.submodelSchema.get("version").getAsString();
+	}
+	
+	public String getsemanticIdOfModel() {
+		return this.submodelSchema.get("semantic_id").getAsString();
+	}
+	
+	public String getSubmodelTitleIdOfModel() {
+		return this.submodelSchema.get("title").getAsString();
+	}
 
 	protected void logDebug(String message) {
 		log.debug(String.format("[%s] %s", this.getClass().getSimpleName(), message));

@@ -3,10 +3,12 @@
 	"$id": "http://example.com/example.json",
 	"type": "array",
 	"id": "aspectrelationship",
-	"title": "List of Assembly Part Typization",
+	"version":"1.0.0",
+    "semantic_id":"urn:bamm:io.catenax.assembly_part_relationship:1.1.0",
+	"title": "List of Assembly Part Relationship",
 	"items": {
 		"type": "object",
-		"title": "Assembly Part Typization",
+		"title": "Assembly Part Relationship",
 		"required": [
 			"parent_uuid",
 			"parent_part_instance_id",

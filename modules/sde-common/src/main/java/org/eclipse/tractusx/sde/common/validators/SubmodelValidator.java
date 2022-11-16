@@ -31,12 +31,14 @@ public class SubmodelValidator {
 			throw new ValidationException(String.format("'%s' This is required field", ele));
 		else if (jObject.get("format") != null && jObject.get("format").getAsString().equals("date-time")) {
 			try {
+				if(value.isBlank()) {
 				if(value.endsWith("Z"))
 					LocalDate.parse(value,
 						DateTimeFormatter.ofPattern(DATE_PATTERN_WITHZONE).withResolverStyle(ResolverStyle.STRICT));
 				else
 					LocalDate.parse(value,
 							DateTimeFormatter.ofPattern(DATE_PATTERN).withResolverStyle(ResolverStyle.STRICT));
+				}
 			} catch (DateTimeParseException tecx) {
 				throw new ValidationException(String.format("Field '%s' value '%s' is not valid", ele, value));
 			}

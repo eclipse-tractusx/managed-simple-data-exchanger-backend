@@ -33,6 +33,7 @@
 			"part_instance_id": {
 				"type": "string",
 				"title": "Part instance ID",
+				"minLength":1,
 				"examples": [
 					"NO-159040131155901488695376"
 				]
@@ -55,13 +56,13 @@
 			},
 			"manufacturer_part_id": {
 				"type": "string",
+				"minLength":1,
 				"title": "Manufacturer part ID",
 				"examples": [
 					"37754B7-76"
 				]
 			},
 			"customer_part_id": {
-				"type": "string",
 				"title": "Customer part ID",
 				"examples": [
 					"37754B7-76"
@@ -84,27 +85,25 @@
 			},
 			"name_at_manufacturer": {
 				"type": "string",
+				"minLength":1,
 				"title": "Name at manufacturer",
 				"examples": [
 					"Sensor"
 				]
 			},
 			"name_at_customer": {
-				"type": "string",
 				"title": "Name at customer",
 				"examples": [
 					"Sensor"
 				]
 			},
 			"optional_identifier_key": {
-				"type": "string",
 				"title": "Optional identifier key",
 				"examples": [
 					"Key"
 				]
 			},
 			"optional_identifier_value": {
-				"type": "string",
 				"title": "Optional identifier value",
 				"examples": [
 					"Value"

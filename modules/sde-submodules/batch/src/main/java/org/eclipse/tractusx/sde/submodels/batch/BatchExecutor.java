@@ -16,6 +16,7 @@ import org.eclipse.tractusx.sde.submodels.batch.steps.EDCBatchHandlerUseCase;
 import org.eclipse.tractusx.sde.submodels.batch.steps.StoreBatchCsvHandlerUseCase;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.JsonObject;
 
 import lombok.AllArgsConstructor;
@@ -42,7 +43,7 @@ public class BatchExecutor extends SubmodelExecutor {
 	private final BatchDeleteService batchDeleteService;
 
 	@SneakyThrows
-	public void executeCsvRecord(RowData rowData, JsonObject jsonObject, String processId) {
+	public void executeCsvRecord(RowData rowData, ObjectNode jsonObject, String processId) {
 		csvParseStep.init(getSubmodelSchema());
 
 		csvParseStep.run(rowData, jsonObject, processId);
@@ -51,16 +52,16 @@ public class BatchExecutor extends SubmodelExecutor {
 	}
 
 	@SneakyThrows
-	public void executeJsonRecord(Integer rowIndex, JsonObject jsonObject, String processId) {
+	public void executeJsonRecord(Integer rowIndex, ObjectNode jsonObject, String processId) {
 
 		jsonRecordValidate.init(getSubmodelSchema());
-		jsonRecordValidate.run(rowIndex, jsonObject, processId);
+		jsonRecordValidate.run(rowIndex, jsonObject);
 
 		nextSteps(jsonObject, processId);
 
 	}
 
-	private void nextSteps(JsonObject jsonObject, String processId) throws CsvHandlerDigitalTwinUseCaseException {
+	private void nextSteps(ObjectNode jsonObject, String processId) throws CsvHandlerDigitalTwinUseCaseException {
 
 		generateUrnUUID.run(jsonObject, processId);
 

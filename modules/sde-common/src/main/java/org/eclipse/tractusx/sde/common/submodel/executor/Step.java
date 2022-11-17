@@ -27,6 +27,10 @@ public abstract class Step {
 	public JsonArray getSubmodelRequiredFields() {
 		return getSubmodelItems().get("required").getAsJsonArray();
 	}
+	
+	public JsonObject getSubmodelDependentRequiredFields() {
+		return getSubmodelItems().get("dependentRequired").getAsJsonObject();
+	}
 
 	protected void logDebug(String message) {
 		log.debug(String.format("[%s] %s", this.getClass().getSimpleName(), message));

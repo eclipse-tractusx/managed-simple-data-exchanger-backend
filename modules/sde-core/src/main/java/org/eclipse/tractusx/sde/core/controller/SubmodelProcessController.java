@@ -55,7 +55,7 @@ public class SubmodelProcessController {
 		return ok().body(processId);
 	}
 
-	@PostMapping(value = "/{submodel}", consumes = APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/{submodel}/manualentry", consumes = APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> createSubmodelAssets(@PathVariable("submodel") String submodel,
 			@RequestBody @Valid SubmodelJsonRequest<ObjectNode> submodelJsonRequest) {
 
@@ -73,7 +73,7 @@ public class SubmodelProcessController {
 		return ok().body(submodelOrchestartorService.readCreatedTwinsDetails(submodel, uuid));
 	}
 
-	@DeleteMapping(value = "/{submodel}/{processId}", produces = APPLICATION_JSON_VALUE)
+	@DeleteMapping(value = "/{submodel}/delete/{processId}", produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> deleteRecordsWithDigitalTwinAndEDC(@PathVariable("processId") String processId,
 			@PathVariable("submodel") String submodel) {
 		String delProcessId = UUID.randomUUID().toString();

@@ -32,6 +32,6 @@ public class ServiceException extends RuntimeException {
 
 	public ServiceException(String exceptionstr) {
 		super(exceptionstr);
-		log.error(exceptionstr);
+		log.debug(exceptionstr);
 	}
 }

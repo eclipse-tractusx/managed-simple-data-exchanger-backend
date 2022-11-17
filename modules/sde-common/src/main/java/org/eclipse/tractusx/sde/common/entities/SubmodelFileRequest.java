@@ -23,7 +23,6 @@ package org.eclipse.tractusx.sde.common.entities;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.gson.annotations.SerializedName;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

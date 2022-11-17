@@ -18,7 +18,7 @@ public class SingleLevelBoMAsPlannedSubmodel extends SubmodelExtension {
 	@PostConstruct
 	public void init() {
 
-		String resource = "part-as-planned.json";
+		String resource = "single-level-bom-as-planned.json";
 		// this is the path within the jar file
 		InputStream input = this.getClass().getResourceAsStream("/resources/" + resource);
 		if (input == null) {

@@ -22,7 +22,7 @@ public abstract class PartAsPlannedMapper {
 	
 	@Mapping(target = "rowNumber", ignore = true)
 	@Mapping(target = "subModelId", ignore = true)
-	public abstract PartAsPlanned mapFrom( PartAsPlannedEntity partAsPlanned);
+	public abstract PartAsPlanned mapFrom( PartAsPlannedEntity partAsPlannedEntity);
 
 	public abstract PartAsPlannedEntity mapFrom(PartAsPlanned partAsPlanned);
 
@@ -31,12 +31,12 @@ public abstract class PartAsPlannedMapper {
 		return mapper.readValue(partAsPlanned.toString(), PartAsPlanned.class);
 	}
 	
-	public PartAsPlannedEntity mapforEntity(JsonObject aspect) {
-		return new Gson().fromJson(aspect, PartAsPlannedEntity.class);
+	public PartAsPlannedEntity mapforEntity(JsonObject partAsPlannedAspect) {
+		return new Gson().fromJson(partAsPlannedAspect, PartAsPlannedEntity.class);
 	}
 
-	public JsonObject mapFromEntity(PartAsPlannedEntity aspect) {
-		return new Gson().toJsonTree(aspect).getAsJsonObject();
+	public JsonObject mapFromEntity(PartAsPlannedEntity partAsPlannedAspectAspect) {
+		return new Gson().toJsonTree(partAsPlannedAspectAspect).getAsJsonObject();
 	}
 
 	public JsonObject mapToResponse(PartAsPlannedEntity entity) {

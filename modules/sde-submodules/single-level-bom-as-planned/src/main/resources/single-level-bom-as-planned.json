@@ -4,15 +4,18 @@
 	"type": "array",
 	"id": "singleLevelBomAsPlanned",
 	"version":"1.0.1",
-    "semantic_id":"urn:bamm:io.catenax.single_level_bom_as_planned:1.0.1#singleLevelBomAsPlanned",
+    "semantic_id":"urn:bamm:io.catenax.single_level_bom_as_planned:1.0.1#SingleLevelBomAsPlanned",
 	"title": "SingleLevelBomAsPlanned - Submodel SingleLevelBomAsPlanned",
 	"items": {
 		"type": "object",
 		"title": "Aspect Model Single level bill of material as planned",
 		"required": [
+            "uuid",
             "manufacturer_part_id",
-            "classification",
-            "name_at_manufacturer"
+            "quantity_number",
+            "measurement_unit_lexical_value",
+            "datatype_url",
+            "created_on"
 		],
 		"properties": {
 			"uuid": {
@@ -33,53 +36,62 @@
 			"child_uuid": {
 				"type": "string",
                 "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
-				"title": "UUID URN",
+				"title": "Child UUID",
 				"examples": [
-					"urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf34dfa4c2"
+					"5daB938E-Cafa-92B3-7ca1-9aD7885e9dC8"
 				]
 			},
             "quantity_number": {
-				"type": "string",
-				"format": "date-time",
-				"title": "valid From",
+				"type": "Number",
+                "format":"double",
+				"title": "Quantity Number",
 				"examples": [
-					"2022-06-14T06:55:29.935Z"
+					2.5
 				]
 			},
             "measurement_unit_lexical_value": {
 				"type": "string",
-				"format": "date-time",
-				"title": "valid To",
+				"title": "lexical Value",
 				"examples": [
-					"2022-06-14T06:55:29.935Z"
+					"litre",
+                    "unit"
+				]
+			},
+            "datatype_url": {
+				"type": "string",
+				"title": "datatype URL",
+				"examples": [
+					"urn:bamm:io.openmanufacturing:meta-model:1.0.0#curie"
 				]
 			},
 			 "created_on": {
 				"type": "string",
 				"format": "date-time",
-				"title": "valid To",
+				"title": "created On",
 				"examples": [
-					"2022-06-14T06:55:29.935Z"
+					"2022-02-03T14:48:54.709Z"
 				]
 			},
 			 "last_modified_on": {
 				"type": "string",
 				"format": "date-time",
-				"title": "valid To",
+				"title": "last Modified On",
 				"examples": [
-					"2022-06-14T06:55:29.935Z"
+					"2022-02-03T14:48:54.709Z"
 				]
 			}
 		}
 	},
 	"examples": [
 			{
-				"uuid": "urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2",
+				"uuid": "urn:uuid:055c1128-0375-47c8-98de-7cf802c3241d",
 				"manufacturer_part_id": "37754B7-76",
-				"valid_from": "2021-06-14T06:55:29.935Z",
-				"valid_to": "2022-06-14T06:55:29.935Z",
-                "classification": "component",
-                "name_at_manufacturer": "Sensor"
+                "quantity_number": 2.5,
+                "measurement_unit_lexical_value":"litre",
+				"datatype_url": "urn:bamm:io.openmanufacturing:meta-model:1.0.0#curie",
+				"created_on": "2022-02-03T14:48:54.709Z",
+                "last_modified_on": "2022-02-03T14:48:54.709Z",
+                "child_uuid":"5daB938E-Cafa-92B3-7ca1-9aD7885e9dC8"
 			}
 		]
 }

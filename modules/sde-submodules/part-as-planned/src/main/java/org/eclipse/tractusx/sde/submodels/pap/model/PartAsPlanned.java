@@ -40,6 +40,8 @@ public class PartAsPlanned {
 	
 	@JsonProperty(value ="access_policy_id")
 	private String accessPolicyId;
+	
+	@JsonProperty(value = "deleted")
 	private String deleted;
 
 	@JsonProperty(value ="bpn_numbers")

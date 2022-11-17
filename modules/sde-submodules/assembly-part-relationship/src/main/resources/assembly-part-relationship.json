@@ -3,8 +3,9 @@
 	"$id": "http://example.com/example.json",
 	"type": "array",
 	"id": "aspectrelationship",
+	"idShort":"assemblyPartRelationship",
 	"version":"1.0.0",
-    "semantic_id":"urn:bamm:io.catenax.assembly_part_relationship:1.1.0",
+    "semantic_id":"urn:bamm:io.catenax.assembly_part_relationship:1.1.0#AssemblyPartRelationship",
 	"title": "List of Assembly Part Relationship",
 	"items": {
 		"type": "object",

@@ -5,8 +5,8 @@ import org.springframework.stereotype.Component;
 
 import lombok.Getter;
 
-@Getter
 @Component
+@Getter
 public class PartAsPlannedConstants {
 	
 	@Value(value = "${manufacturerId}")

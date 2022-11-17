@@ -11,9 +11,9 @@ import org.eclipse.tractusx.sde.common.submodel.executor.create.steps.impl.JsonR
 import org.eclipse.tractusx.sde.submodels.pap.mapper.PartAsPlannedMapper;
 import org.eclipse.tractusx.sde.submodels.pap.model.PartAsPlanned;
 import org.eclipse.tractusx.sde.submodels.pap.services.PartAsPlannedService;
-import org.eclipse.tractusx.sde.submodels.pap.steps.DigitalTwinsPartAsPlannedHandlerStep;
-import org.eclipse.tractusx.sde.submodels.pap.steps.EDCPartAsPlannedHandlerStep;
-import org.eclipse.tractusx.sde.submodels.pap.steps.StorePartAsPlannedHandlerStep;
+import org.eclipse.tractusx.sde.submodels.pap.steps.DigitalTwinsPartAsPlannedCsvHandlerUseCase;
+import org.eclipse.tractusx.sde.submodels.pap.steps.EDCPartAsPlannedHandlerUseCase;
+import org.eclipse.tractusx.sde.submodels.pap.steps.StorePartAsPlannedCsvHandlerUseCase;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.JsonObject;
@@ -33,11 +33,11 @@ public class PartAsPlannedExecutor extends SubmodelExecutor {
 
 	private final JsonRecordValidate jsonRecordValidate;
 
-	private final DigitalTwinsPartAsPlannedHandlerStep digitalTwinsPartAsPlannedCsvHandlerUseCase;
+	private final DigitalTwinsPartAsPlannedCsvHandlerUseCase digitalTwinsPartAsPlannedCsvHandlerUseCase;
 
-	private final EDCPartAsPlannedHandlerStep eDCPartAsPlannedHandlerUseCase;
+	private final EDCPartAsPlannedHandlerUseCase eDCPartAsPlannedHandlerUseCase;
 
-	private final StorePartAsPlannedHandlerStep storePartAsPlannedCsvHandlerUseCase;
+	private final StorePartAsPlannedCsvHandlerUseCase storePartAsPlannedCsvHandlerUseCase;
 
 	private final PartAsPlannedService partAsPlannedService;
 

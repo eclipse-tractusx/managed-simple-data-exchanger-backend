@@ -26,52 +26,84 @@ import java.util.List;
 
 import org.eclipse.tractusx.sde.common.entities.UsagePolicy;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class Aspect {
 
+    @JsonProperty(value ="shell_id")
     private String shellId;
+    
     private String subModelId;
+    
+    @JsonProperty(value ="row_number")
     private int rowNumber;
-    private String uuid;
-    private String processId;
-    private String contractDefinationId;
-    private String usagePolicyId;
-    private String assetId; 
-    private String accessPolicyId;
-    private String deleted;
 
+    @JsonProperty(value ="bpn_numbers")
     private List<String> bpnNumbers;
     
+    @JsonProperty(value ="type_of_access")
     private String typeOfAccess;
     
+    @JsonProperty(value ="usage_policy")
     private List<UsagePolicy> usagePolicies;
-
+    
+    @JsonProperty(value ="uuid")
+    private String uuid;
+    
+    @JsonProperty(value ="process_id")
+    private String processId;
+    
+    @JsonProperty(value ="part_instance_id")
     private String partInstanceId;
-
+    
+    @JsonProperty(value ="manufacturing_date")
     private String manufacturingDate;
-
+    
+    @JsonProperty(value ="manufacturing_country")
     private String manufacturingCountry;
-
+    
+    @JsonProperty(value ="manufacturer_part_id")
     private String manufacturerPartId;
-
+    
+    @JsonProperty(value ="customer_part_id")
     private String customerPartId;
-
+    
+    @JsonProperty(value ="classification")
     private String classification;
-
+    
+    @JsonProperty(value ="name_at_manufacturer")
     private String nameAtManufacturer;
-
+    
+    @JsonProperty(value ="name_at_customer")
     private String nameAtCustomer;
-
+    
+    @JsonProperty(value ="optional_identifier_key")
     private String optionalIdentifierKey;
-
+    
+    @JsonProperty(value ="optional_identifier_value")
     private String optionalIdentifierValue;
-
+    
+    @JsonProperty(value ="contract_defination_id")
+    private String contractDefinationId;
+    
+    @JsonProperty(value ="usage_policy_id")
+    private String usagePolicyId;
+    
+    @JsonProperty(value ="access_policy_id")
+    private String accessPolicyId;
+    
+    @JsonProperty(value ="asset_id")
+    private String assetId;
+    
 
     public boolean hasOptionalIdentifier() {
         boolean hasKey = this.getOptionalIdentifierKey() != null && !this.getOptionalIdentifierKey().isBlank();

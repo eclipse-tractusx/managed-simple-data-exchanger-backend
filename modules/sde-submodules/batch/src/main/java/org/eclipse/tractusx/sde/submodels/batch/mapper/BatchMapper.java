@@ -35,15 +35,19 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.springframework.beans.factory.annotation.Value;
 
-import com.google.gson.FieldNamingPolicy;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+
+import lombok.SneakyThrows;
 
 @Mapper(componentModel = "spring")
 public abstract class BatchMapper {
 	@Value(value = "${manufacturerId}")
 	private String manufacturerId;
+	
+	ObjectMapper mapper = new ObjectMapper();
 
 	@Mapping(target = "rowNumber", ignore = true)
 	@Mapping(target = "subModelId", ignore = true)
@@ -52,20 +56,19 @@ public abstract class BatchMapper {
 	@Mapping(source = "optionalIdentifierKey", target = "optionalIdentifierKey", qualifiedByName = "prettyName")
 	public abstract BatchEntity mapFrom(Batch batch);
 
-	public Batch mapFrom(JsonObject batch) {
-		Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-				.setPrettyPrinting().create();
-		return gson.fromJson(batch, Batch.class);
+	@SneakyThrows
+	public Batch mapFrom(ObjectNode batch) {
+		return mapper.readValue(batch.toString(), Batch.class);
 	}
 
 	public BatchEntity mapforEntity(JsonObject batch) {
 		return new Gson().fromJson(batch, BatchEntity.class);
 	}
-	
+
 	public JsonObject mapFromEntity(BatchEntity batch) {
 		return new Gson().toJsonTree(batch).getAsJsonObject();
 	}
-	
+
 	public JsonObject mapToResponse(BatchEntity entity) {
 
 		if (entity == null) {

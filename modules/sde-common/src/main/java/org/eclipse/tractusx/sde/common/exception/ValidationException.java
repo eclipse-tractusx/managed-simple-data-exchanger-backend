@@ -20,11 +20,6 @@
 
 package org.eclipse.tractusx.sde.common.exception;
 
-import org.eclipse.tractusx.sde.common.utils.LogUtil;
-
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 public class ValidationException extends RuntimeException {
 
 	/**
@@ -34,6 +29,6 @@ public class ValidationException extends RuntimeException {
 
 	public ValidationException(String exceptionstr) {
 		super(exceptionstr);
-		log.error(LogUtil.encode(exceptionstr));
 	}
+	
 }

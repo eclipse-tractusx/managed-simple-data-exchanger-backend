@@ -4,7 +4,7 @@ import org.eclipse.tractusx.sde.common.submodel.executor.Step;
 import org.eclipse.tractusx.sde.common.utils.UUIdGenerator;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.JsonObject;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import lombok.SneakyThrows;
 
@@ -12,14 +12,14 @@ import lombok.SneakyThrows;
 public class GenerateUrnUUID extends Step {
 
 	@SneakyThrows
-	public JsonObject run(JsonObject jsonObject, String processId) {
+	public ObjectNode run(ObjectNode jsonObject, String processId) {
 
-		String uUID = jsonObject.get("uuid").getAsString();
+		String uUID = jsonObject.get("uuid").asText();
 		if (uUID == null || uUID.isBlank()) {
-			jsonObject.addProperty("uuid", UUIdGenerator.getUrnUuid());
+			jsonObject.put("uuid", UUIdGenerator.getUrnUuid());
 		} else if (!uUID.startsWith(UUIdGenerator.URN_UUID_PREFIX)) {
 			String concat = UUIdGenerator.URN_UUID_PREFIX.concat(uUID);
-			jsonObject.addProperty("uuid", concat);
+			jsonObject.put("uuid", concat);
 		}
 		return jsonObject;
 	}

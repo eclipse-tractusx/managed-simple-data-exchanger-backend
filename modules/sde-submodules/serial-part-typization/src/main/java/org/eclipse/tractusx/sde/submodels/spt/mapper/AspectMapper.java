@@ -37,16 +37,20 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.springframework.beans.factory.annotation.Value;
 
-import com.google.gson.FieldNamingPolicy;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+
+import lombok.SneakyThrows;
 
 @Mapper(componentModel = "spring")
 public abstract class AspectMapper {
 	@Value(value = "${manufacturerId}")
 	private String manufacturerId;
 
+	ObjectMapper mapper=new ObjectMapper();
+	
 	@Mapping(target = "rowNumber", ignore = true)
 	@Mapping(target = "subModelId", ignore = true)
 	public abstract Aspect mapFrom(AspectEntity aspect);
@@ -54,10 +58,9 @@ public abstract class AspectMapper {
 	@Mapping(source = "optionalIdentifierKey", target = "optionalIdentifierKey", qualifiedByName = "prettyName")
 	public abstract AspectEntity mapFrom(Aspect aspect);
 
-	public Aspect mapFrom(JsonObject aspect) {
-		Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-				.setPrettyPrinting().create();
-		return gson.fromJson(aspect, Aspect.class);
+	@SneakyThrows
+	public Aspect mapFrom(ObjectNode aspect) {
+		return mapper.readValue(aspect.toString(), Aspect.class);
 	}
 	
 	public AspectEntity mapforEntity(JsonObject aspect) {

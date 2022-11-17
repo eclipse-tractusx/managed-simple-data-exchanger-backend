@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import lombok.SneakyThrows;
@@ -40,14 +42,27 @@ public class CsvParse extends Step {
 				String fieldValue = rowDataFields[colomnIndex];
 
 				fieldValue = fieldValue.trim();
-				if (fieldValue.isBlank())
-					fieldValue = null;
 
-				if (jObject.get("type") != null && "number".equals(jObject.get("type").getAsString())
-						&& fieldValue != null)
-					rowjObject.put(ele, Integer.parseInt(fieldValue));
-				else
+				if (jObject.get("format") != null && "date-time".equals(jObject.get("format").getAsString())
+						&& fieldValue != null) {
+					rowjObject.put(ele, fieldValue.toUpperCase().endsWith("Z") ? fieldValue : fieldValue + "Z");
+				} else
 					rowjObject.put(ele, fieldValue);
+
+				if (fieldValue != null && !fieldValue.isBlank()) {
+					if (jObject.get("type") != null && jObject.get("type").isJsonPrimitive()
+							&& "number".equals(jObject.get("type").getAsString())) {
+						rowjObject.put(ele, Integer.parseInt(fieldValue));
+					} else if (jObject.get("type") != null && jObject.get("type").isJsonArray()) {
+						JsonArray types = jObject.get("type").getAsJsonArray();
+						for (JsonElement type : types) {
+							if ("number".equals(type.getAsString())) {
+								rowjObject.put(ele, Integer.parseInt(fieldValue));
+							}
+						}
+					}
+				}
+
 				colomnIndex++;
 
 			} catch (ValidationException errorMessages) {

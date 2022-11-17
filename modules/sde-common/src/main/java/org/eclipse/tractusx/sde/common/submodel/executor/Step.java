@@ -43,6 +43,10 @@ public abstract class Step {
 	public String getSubmodelTitleIdOfModel() {
 		return this.submodelSchema.get("title").getAsString();
 	}
+	
+	public JsonObject getSubmodelDependentRequiredFields() {
+		return getSubmodelItems().get("dependentRequired").getAsJsonObject();
+	}
 
 	protected void logDebug(String message) {
 		log.debug(String.format("[%s] %s", this.getClass().getSimpleName(), message));

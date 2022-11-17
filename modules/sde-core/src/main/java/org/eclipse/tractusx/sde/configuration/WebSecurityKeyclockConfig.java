@@ -64,7 +64,7 @@ public class WebSecurityKeyclockConfig extends KeycloakWebSecurityConfigurerAdap
 		.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 		.and().addFilterAfter(customAuthFilter(),BasicAuthenticationFilter.class).authorizeRequests().anyRequest().authenticated()
  		.and().headers().xssProtection()
- 		.and().contentSecurityPolicy("script-src 'self'");
+ 		.and().contentSecurityPolicy("default-src 'self'; script-src 'self' 'unsafe-inline'");
 
 	}
 	

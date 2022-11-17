@@ -101,7 +101,7 @@ public abstract class AspectMapper {
 
 	@Named("prettyName")
 	String getPrettyName(String optionalIdentifierKey) {
-		return optionalIdentifierKey == null ? null
+		return optionalIdentifierKey == null || optionalIdentifierKey.isBlank()  ? null
 				: Stream.of(OptionalIdentifierKeyEnum.values())
 						.filter(v -> v.getPrettyName().equalsIgnoreCase(optionalIdentifierKey)).findFirst().get()
 						.getPrettyName();

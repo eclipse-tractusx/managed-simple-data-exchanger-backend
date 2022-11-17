@@ -34,7 +34,6 @@
 			"parent_uuid": {
 				"type": "string",
 				"title": "Parent UUID",
-				"minLength":1,
 				"examples": [
 					"NO-159040131155901488695376"
 				]
@@ -42,7 +41,6 @@
 			"parent_part_instance_id": {
 				"type": "string",
 				"title": "Parent Part instance ID",
-				"minLength":1,
 				"examples": [
 					"ParentNO-64534234"
 				]
@@ -50,18 +48,19 @@
 			"parent_manufacturer_part_id": {
 				"type": "string",
 				"title": "Parent Part instance ID",
-				"minLength":1,
 				"examples": [
 					"PART-2345546234"
 				]
 			},
 			"parent_optional_identifier_key": {
+				"type": "string",
 				"title": "Parent optional identifier key",
 				"examples": [
 					"Key"
 				]
 			},
 			"parent_optional_identifier_value": {
+				"type": "string",
 				"title": "Parent Optional identifier value",
 				"examples": [
 					"Value"
@@ -70,14 +69,12 @@
 			"uuid": {
 				"type": "string",
 				"title": "UUID URN",
-				"minLength":1,
 				"examples": [
 					"urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2"
 				]
 			},
 			"part_instance_id": {
 				"type": "string",
-				"minLength":1,
 				"title": "Part instance ID",
 				"examples": [
 					"NO-234523423"
@@ -85,19 +82,20 @@
 			},
 			"manufacturer_part_id": {
 				"type": "string",
-				"minLength":1,
 				"title": "Manufacturer part ID",
 				"examples": [
 					"37754B7-76"
 				]
 			},
 			"optional_identifier_key": {
+				"type": "string",
 				"title": "Optional identifier key",
 				"examples": [
 					"Key"
 				]
 			},
 			"optional_identifier_value": {
+				"type": "string",
 				"title": "Optional identifier value",
 				"examples": [
 					"Value"
@@ -105,7 +103,6 @@
 			},
 			"lifecycle_context": {
 				"type": "string",
-				"minLength":1,
 				"title": "lifecycle_context",
 				"examples": [
 					"lifecycle"
@@ -113,16 +110,14 @@
 			},
 			"quantity_number": {
 				"type": "number",
-				"minLength":1,
 				"title": "quantity_number",
 				"examples": [
 					"123"
 				]
 			},
 			"measurement_unit_lexical_value": {
-				"type": "string",
+				"type": "number",
 				"title": "Measurement unit lexical value",
-				"minLength":1,
 				"examples": [
 					"measurement"
 				]

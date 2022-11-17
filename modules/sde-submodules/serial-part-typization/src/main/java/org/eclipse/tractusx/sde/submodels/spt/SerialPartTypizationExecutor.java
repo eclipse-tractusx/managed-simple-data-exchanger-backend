@@ -43,7 +43,6 @@ public class SerialPartTypizationExecutor extends SubmodelExecutor {
 	private final AspectService aspectService;
 
 	@SneakyThrows
-
 	public void executeCsvRecord(RowData rowData, ObjectNode jsonObject, String processId) {
 		
 		csvParseStep.init(getSubmodelSchema());
@@ -55,16 +54,16 @@ public class SerialPartTypizationExecutor extends SubmodelExecutor {
 	}
 
 	@SneakyThrows
-	public void executeJsonRecord(Integer rowIndex, ObjectNode jsonObject, String processId) {
+	public void executeJsonRecord(Integer rowIndex, JsonObject jsonObject, String processId) {
 
 		jsonRecordValidate.init(getSubmodelSchema());
-		jsonRecordValidate.run(rowIndex, jsonObject);
+		jsonRecordValidate.run(rowIndex, jsonObject, processId);
 
 		nextSteps(jsonObject, processId);
 
 	}
 
-	private void nextSteps(ObjectNode jsonObject, String processId) throws CsvHandlerDigitalTwinUseCaseException {
+	private void nextSteps(JsonObject jsonObject, String processId) throws CsvHandlerDigitalTwinUseCaseException {
 
 		generateUrnUUID.run(jsonObject, processId);
 

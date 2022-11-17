@@ -17,7 +17,6 @@ import org.eclipse.tractusx.sde.submodels.apr.steps.StoreAspectRelationshipCsvHa
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.JsonObject;
 
 import lombok.AllArgsConstructor;
@@ -45,25 +44,27 @@ public class AssemblyPartRelationshipExecutor extends SubmodelExecutor {
 	private final AspectRelationshipService aspectRelationshipService;
 
 	@SneakyThrows
-	public void executeCsvRecord(RowData rowData, ObjectNode jsonObject, String processId) {
+	public void executeCsvRecord(RowData rowData, JsonObject jsonObject, String processId) {
 
 		csvParseStep.init(getSubmodelSchema());
 
 		csvParseStep.run(rowData, jsonObject, processId);
 
 		nextSteps(jsonObject, processId);
+
 	}
 
 	@SneakyThrows
-	public void executeJsonRecord(Integer rowIndex, ObjectNode jsonObject, String processId) {
+	public void executeJsonRecord(Integer rowIndex, JsonObject jsonObject, String processId) {
 
 		jsonRecordValidate.init(getSubmodelSchema());
-		jsonRecordValidate.run(rowIndex, jsonObject);
+		jsonRecordValidate.run(rowIndex, jsonObject, processId);
 
 		nextSteps(jsonObject, processId);
+
 	}
 
-	private void nextSteps(ObjectNode jsonObject, String processId) throws CsvHandlerDigitalTwinUseCaseException {
+	private void nextSteps(JsonObject jsonObject, String processId) throws CsvHandlerDigitalTwinUseCaseException {
 
 		AspectRelationship aspectRelationship = aspectRelationshipMapper.mapFrom(jsonObject);
 

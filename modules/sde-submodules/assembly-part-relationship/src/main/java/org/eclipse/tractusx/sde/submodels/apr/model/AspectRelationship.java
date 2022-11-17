@@ -26,95 +26,87 @@ import java.util.List;
 
 import org.eclipse.tractusx.sde.common.entities.UsagePolicy;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Builder
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class AspectRelationship {
 
-	private String shellId;
-	private String subModelId;
-	private String usagePolicyId;
-	private String assetId;
-	private String accessPolicyId;
-	private String contractDefinationId;
-	private String deleted;
+    private String shellId;
+    private String subModelId;
+    private int rowNumber;
+    private String processId;
+    private String usagePolicyId;
+    private String assetId; 
+    private String accessPolicyId;
+    private String contractDefinationId;
+    private String deleted;
+    
+    private List<String> bpnNumbers;
+    
+    private String typeOfAccess;
+    
+    private List<UsagePolicy> usagePolicies;
 
-	@JsonProperty(value = "row_number")
-	private int rowNumber;
+    @JsonProperty(value = "uuid")
+    @SerializedName(value = "uuid")
+    private String childUuid;
 
-	@JsonProperty(value = "process_id")
-	private String processId;
+    @JsonProperty(value = "parent_uuid")
+    private String parentUuid;
 
-	@JsonProperty(value = "bpn_numbers")
-	private List<String> bpnNumbers;
+    @JsonProperty(value = "parent_part_instance_id")
+    private String parentPartInstanceId;
 
-	@JsonProperty(value = "type_of_access")
-	private String typeOfAccess;
+    @JsonProperty(value = "parent_manufacturer_part_id")
+    private String parentManufacturerPartId;
 
-	@JsonProperty(value = "usage_policy")
-	private List<UsagePolicy> usagePolicies;
+    @JsonProperty(value = "parent_optional_identifier_key")
+    private String parentOptionalIdentifierKey;
 
-	@JsonProperty(value = "uuid")
-	private String childUuid;
+    @JsonProperty(value = "parent_optional_identifier_value")
+    private String parentOptionalIdentifierValue;
 
-	@JsonProperty(value = "parent_uuid")
-	private String parentUuid;
+    @JsonProperty(value = "part_instance_id")
+    @SerializedName(value = "part_instance_id")
+    private String childPartInstanceId;
 
-	@JsonProperty(value = "parent_part_instance_id")
-	private String parentPartInstanceId;
+    @JsonProperty(value = "manufacturer_part_id")
+    @SerializedName(value = "manufacturer_part_id")
+    private String childManufacturerPartId;
 
-	@JsonProperty(value = "parent_manufacturer_part_id")
-	private String parentManufacturerPartId;
+    @JsonProperty(value = "optional_identifier_key")
+    @SerializedName(value = "optional_identifier_key")
+    private String childOptionalIdentifierKey;
 
-	@JsonProperty(value = "parent_optional_identifier_key")
-	private String parentOptionalIdentifierKey;
+    @JsonProperty(value = "optional_identifier_value")
+    @SerializedName(value = "optional_identifier_value")
+    private String childOptionalIdentifierValue;
 
-	@JsonProperty(value = "parent_optional_identifier_value")
-	private String parentOptionalIdentifierValue;
+    @JsonProperty(value = "lifecycle_context")
+    private String lifecycleContext;
 
-	@JsonProperty(value = "part_instance_id")
-	private String childPartInstanceId;
+    @JsonProperty(value = "quantity_number")
+    private String quantityNumber;
 
-	@JsonProperty(value = "manufacturer_part_id")
-	private String childManufacturerPartId;
+    @JsonProperty(value = "measurement_unit_lexical_value")
+    private String measurementUnitLexicalValue;
 
-	@JsonProperty(value = "optional_identifier_key")
-	private String childOptionalIdentifierKey;
+    @JsonProperty(value = "datatype_uri")
+    private String dataTypeUri;
 
-	@JsonProperty(value = "optional_identifier_value")
-	private String childOptionalIdentifierValue;
+    @JsonProperty(value = "assembled_on")
+    private String assembledOn;
 
-	@JsonProperty(value = "lifecycle_context")
-	private String lifecycleContext;
+    public boolean hasOptionalParentIdentifier() {
+        boolean hasKey = this.getParentOptionalIdentifierKey() != null && !this.getParentOptionalIdentifierKey().isBlank();
+        boolean hasValue = this.getParentOptionalIdentifierValue() != null && !this.getParentOptionalIdentifierValue().isBlank();
 
-	@JsonProperty(value = "quantity_number")
-	private String quantityNumber;
-
-	@JsonProperty(value = "measurement_unit_lexical_value")
-	private String measurementUnitLexicalValue;
-
-	@JsonProperty(value = "datatype_uri")
-	private String dataTypeUri;
-
-	@JsonProperty(value = "assembled_on")
-	private String assembledOn;
-
-	public boolean hasOptionalParentIdentifier() {
-		boolean hasKey = this.getParentOptionalIdentifierKey() != null
-				&& !this.getParentOptionalIdentifierKey().isBlank();
-		boolean hasValue = this.getParentOptionalIdentifierValue() != null
-				&& !this.getParentOptionalIdentifierValue().isBlank();
-
-		return hasKey && hasValue;
-	}
+        return hasKey && hasValue;
+    }
 }
+

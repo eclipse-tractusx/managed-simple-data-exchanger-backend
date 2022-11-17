@@ -67,11 +67,20 @@ public class ProcessReportUseCase {
 	}
 
 	@SneakyThrows
-	public void startDeleteProcess(String processId, String type, int size, String referenceProcessId,
-			int numberOfDeletedItems) {
-		saveProcessReport(ProcessReport.builder().processId(processId).csvType(type.toUpperCase())
-				.status(ProgressStatusEnum.IN_PROGRESS).numberOfItems(size).startDate(LocalDateTime.now())
-				.referenceProcessId(referenceProcessId).numberOfDeletedItems(numberOfDeletedItems).build());
+	public void startDeleteProcess(ProcessReport oldProcessReport, String refProcessId, String type, int size,
+			String delProcessId) {
+
+		oldProcessReport.setProcessId(delProcessId);
+		oldProcessReport.setCsvType(type.toUpperCase());
+		oldProcessReport.setStatus(ProgressStatusEnum.IN_PROGRESS);
+		oldProcessReport.setNumberOfItems(size);
+		oldProcessReport.setStartDate(LocalDateTime.now());
+		oldProcessReport.setReferenceProcessId(refProcessId);
+		oldProcessReport.setNumberOfDeletedItems(0);
+		oldProcessReport.setNumberOfSucceededItems(0);
+		oldProcessReport.setNumberOfFailedItems(0);
+
+		saveProcessReport(oldProcessReport);
 	}
 
 	public void unknownProcessReport(String processId) {
@@ -103,7 +112,7 @@ public class ProcessReportUseCase {
 				deletedCount, failedCount);
 
 	}
-	
+
 	public void finishBuildDeleteProgressReport(String processId, int deletedCount, int failedCount) {
 		repository.finalizeProgressDeleteReport(processId, LocalDateTime.now(), ProgressStatusEnum.COMPLETED.toString(),
 				deletedCount, failedCount);

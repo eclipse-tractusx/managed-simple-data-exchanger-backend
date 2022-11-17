@@ -1,6 +1,6 @@
 package org.eclipse.tractusx.sde.core.service;
 
-import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -8,17 +8,18 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.eclipse.tractusx.sde.common.entities.SubmodelFileRequest;
 import org.eclipse.tractusx.sde.common.entities.SubmodelJsonRequest;
 import org.eclipse.tractusx.sde.common.entities.csv.CsvContent;
-import org.eclipse.tractusx.sde.common.enums.ProgressStatusEnum;
 import org.eclipse.tractusx.sde.common.mapper.JsonObjectMapper;
 import org.eclipse.tractusx.sde.common.mapper.SubmodelMapper;
 import org.eclipse.tractusx.sde.common.model.Submodel;
 import org.eclipse.tractusx.sde.common.submodel.executor.SubmodelExecutor;
 import org.eclipse.tractusx.sde.common.validators.SubmodelCSVValidator;
 import org.eclipse.tractusx.sde.core.controller.failurelog.FailureLogs;
+import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
 import org.eclipse.tractusx.sde.core.processreport.ProcessReportUseCase;
 import org.eclipse.tractusx.sde.core.processreport.model.ProcessReport;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.JsonObject;
 
@@ -28,10 +29,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SubmodelOrchestartorService {
 
+	private static final String PROCESS_ID = "process_id";
+
+	private static final String ROW_NUMBER = "row_number";
+
 	private final SubmodelCSVValidator sumodelcsvValidator;
 
 	private final SubmodelService submodelService;
-	
+
 	private final SubmodelMapper submodelMapper;
 
 	private final JsonObjectMapper jsonObjectMapper;
@@ -40,16 +45,19 @@ public class SubmodelOrchestartorService {
 
 	private final FailureLogs failureLogs;
 
-	public void processSubmodelCsv(CsvContent csvContent, SubmodelFileRequest submodelFileRequest, String processId,
-			String submodel) {
+	private final CsvHandlerService csvHandlerService;
+
+	ObjectMapper mapper = new ObjectMapper();
+
+	public void processSubmodelCsv(SubmodelFileRequest submodelFileRequest, String processId, String submodel) {
 
 		Submodel submodelSchemaObject = submodelService.findSubmodelByNameAsSubmdelObject(submodel);
-		JsonObject submodelSchema= submodelSchemaObject.getSchema();
+		JsonObject submodelSchema = submodelSchemaObject.getSchema();
 		JsonObject items = submodelSchema.get("items").getAsJsonObject();
 		JsonObject asJsonObject = items.get("properties").getAsJsonObject();
 
+		CsvContent csvContent = csvHandlerService.processFile(processId, submodel);
 		List<String> columns = csvContent.getColumns();
-
 		sumodelcsvValidator.validate(asJsonObject, columns, submodel);
 
 		Runnable runnable = () -> {
@@ -60,15 +68,17 @@ public class SubmodelOrchestartorService {
 			AtomicInteger successCount = new AtomicInteger();
 			AtomicInteger failureCount = new AtomicInteger();
 
+			SubmodelExecutor executor = submodelSchemaObject.getExecutor();
+			executor.init(submodelSchema);
+
 			csvContent.getRows().parallelStream().forEach(rowjObj -> {
 				try {
-					JsonObject newjObject = jsonObjectMapper.submodelFileRequestToJsonPojo(submodelFileRequest);
-					newjObject.addProperty("row_number", rowjObj.position());
-					newjObject.addProperty("process_id", processId);
-					SubmodelExecutor executor = submodelSchemaObject.getExecutor();
-					executor.init(submodelSchema);
+					ObjectNode newjObject = jsonObjectMapper.submodelFileRequestToJsonNodePojo(submodelFileRequest);
+					newjObject.put(ROW_NUMBER, rowjObj.position());
+					newjObject.put(PROCESS_ID, processId);
 					executor.executeCsvRecord(rowjObj, newjObject, processId);
 					successCount.incrementAndGet();
+
 				} catch (Exception e) {
 					failureLogs.saveLog(processId, e.getMessage());
 					failureCount.incrementAndGet();
@@ -85,7 +95,7 @@ public class SubmodelOrchestartorService {
 			String submodel) {
 
 		Submodel submodelSchemaObject = submodelService.findSubmodelByNameAsSubmdelObject(submodel);
-		JsonObject submodelSchema= submodelSchemaObject.getSchema();
+		JsonObject submodelSchema = submodelSchemaObject.getSchema();
 
 		List<ObjectNode> rowData = submodelJsonRequest.getRowData();
 
@@ -94,20 +104,28 @@ public class SubmodelOrchestartorService {
 			AtomicInteger atInt = new AtomicInteger();
 			AtomicInteger successCount = new AtomicInteger();
 			AtomicInteger failureCount = new AtomicInteger();
-			
+			SubmodelExecutor executor = submodelSchemaObject.getExecutor();
+			executor.init(submodelSchema);
+
+			Map<String, Object> mps = new HashMap<>();
+			mps.put("type_of_access", submodelJsonRequest.getTypeOfAccess());
+			mps.put("bpn_numbers", submodelJsonRequest.getBpnNumbers());
+			mps.put("usage_policy", submodelJsonRequest.getUsagePolicies());
+
 			processReportUseCase.startBuildProcessReport(processId, submodelSchemaObject.getId(), rowData.size(),
 					submodelJsonRequest.getBpnNumbers(), submodelJsonRequest.getTypeOfAccess(),
 					submodelJsonRequest.getUsagePolicies());
+
+			rowData.stream().forEach(obj -> {
+				int andIncrement = atInt.incrementAndGet();
+				obj.put(ROW_NUMBER, andIncrement);
+				obj.put(PROCESS_ID, processId);
+			});
+
 			rowData.parallelStream().forEachOrdered(rowjObj -> {
 				try {
-					JsonObject submodelJsonPojo = jsonObjectMapper.submodelJsonRequestToJsonPojo(rowjObj,
-							submodelJsonRequest);
-					int andIncrement = atInt.incrementAndGet();
-					submodelJsonPojo.addProperty("row_number", andIncrement);
-					submodelJsonPojo.addProperty("process_id", processId);
-					SubmodelExecutor executor = submodelSchemaObject.getExecutor();
-					executor.init(submodelSchema);
-					executor.executeJsonRecord(andIncrement, submodelJsonPojo, processId);
+					ObjectNode submodelJsonPojo = jsonObjectMapper.submodelJsonRequestToJsonPojo(rowjObj, mps);
+					executor.executeJsonRecord(submodelJsonPojo.get(ROW_NUMBER).asInt(), submodelJsonPojo, processId);
 					successCount.incrementAndGet();
 				} catch (Exception e) {
 					failureLogs.saveLog(processId, e.getMessage());
@@ -124,25 +142,18 @@ public class SubmodelOrchestartorService {
 		Submodel submodelSchema = submodelService.findSubmodelByNameAsSubmdelObject(submodel);
 		AtomicInteger deletedCount = new AtomicInteger();
 		AtomicInteger failureCount = new AtomicInteger();
-		
+
 		SubmodelExecutor executor = submodelSchema.getExecutor();
-		
-		ProcessReport processReportById = processReportUseCase.getProcessReportById(refProcessId);
-		
+
+		ProcessReport oldProcessReport = processReportUseCase.getProcessReportById(refProcessId);
+
 		List<JsonObject> readCreatedTwinsforDelete = executor.readCreatedTwinsforDelete(refProcessId);
-		
+
 		Runnable runnable = () -> {
 
-			processReportById.setProcessId(delProcessId);
-			processReportById.setCsvType(submodel.toUpperCase());
-			processReportById.setStatus(ProgressStatusEnum.IN_PROGRESS);
-			processReportById.setNumberOfItems(readCreatedTwinsforDelete.size());
-			processReportById.setStartDate(LocalDateTime.now());
-			processReportById.setReferenceProcessId(refProcessId);
-			processReportById.setNumberOfDeletedItems(0);
-			
-			processReportUseCase.saveProcessReport(processReportById);
-			
+			processReportUseCase.startDeleteProcess(oldProcessReport, refProcessId, submodel,
+					readCreatedTwinsforDelete.size(), delProcessId);
+
 			readCreatedTwinsforDelete.parallelStream().forEach(rowjObj -> {
 				try {
 					executor.executeDeleteRecord(rowjObj, delProcessId, refProcessId);
@@ -158,7 +169,7 @@ public class SubmodelOrchestartorService {
 
 	}
 
-	public Map<Object,Object> readCreatedTwinsDetails(String submodel, String uuid) {
+	public Map<Object, Object> readCreatedTwinsDetails(String submodel, String uuid) {
 		Submodel submodelSchema = submodelService.findSubmodelByNameAsSubmdelObject(submodel);
 		SubmodelExecutor executor = submodelSchema.getExecutor();
 		return submodelMapper.jsonPojoToMap(executor.readCreatedTwinsDetails(uuid));

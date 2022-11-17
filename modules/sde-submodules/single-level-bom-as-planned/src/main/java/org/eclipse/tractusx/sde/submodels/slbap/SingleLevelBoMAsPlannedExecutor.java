@@ -14,6 +14,7 @@ import org.eclipse.tractusx.sde.submodels.slbap.steps.EDCSingleLevelBoMAsPlanned
 import org.eclipse.tractusx.sde.submodels.slbap.steps.StoreSingleLevelBoMAsPlannedStep;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.JsonObject;
 
 import lombok.RequiredArgsConstructor;
@@ -38,13 +39,14 @@ public class SingleLevelBoMAsPlannedExecutor extends SubmodelExecutor {
 
 	private final SingleLevelBoMAsPlannedService singleLevelBoMAsPlannedService;
 
+	
 	@Override
-	public void executeCsvRecord(RowData rowData, JsonObject jsonObject, String processId) {
+	public void executeCsvRecord(RowData rowData, ObjectNode jsonObject, String processId) {
 		
 	}
 
 	@Override
-	public void executeJsonRecord(Integer rowIndex, JsonObject jsonObject, String processId) {
+	public void executeJsonRecord(Integer rowIndex, ObjectNode jsonObject, String processId) {
 		
 	}
 

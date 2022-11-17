@@ -8,24 +8,27 @@ import org.eclipse.tractusx.sde.submodels.pap.model.ValidityPeriod;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import com.google.gson.FieldNamingPolicy;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+
+import lombok.SneakyThrows;
 
 @Mapper(componentModel = "spring")
 public abstract class PartAsPlannedMapper {
 
+	ObjectMapper mapper=new ObjectMapper();
+	
 	@Mapping(target = "rowNumber", ignore = true)
 	@Mapping(target = "subModelId", ignore = true)
 	public abstract PartAsPlanned mapFrom( PartAsPlannedEntity partAsPlanned);
 
 	public abstract PartAsPlannedEntity mapFrom(PartAsPlanned partAsPlanned);
 
-	public PartAsPlanned mapFrom(JsonObject partAsPlanned) {
-		Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-				.setPrettyPrinting().create();
-		return gson.fromJson(partAsPlanned, PartAsPlanned.class);
+	@SneakyThrows
+	public PartAsPlanned mapFrom(ObjectNode partAsPlanned) {
+		return mapper.readValue(partAsPlanned.toString(), PartAsPlanned.class);
 	}
 	
 	public PartAsPlannedEntity mapforEntity(JsonObject aspect) {

@@ -35,15 +35,12 @@ import lombok.NoArgsConstructor;
 public class SubmodelFileRequest {
 
 	@JsonProperty(value = "type_of_access")
-	@SerializedName(value = "type_of_access")
 	private String typeOfAccess;
 	
 	@JsonProperty(value = "bpn_numbers")
-	@SerializedName(value = "bpn_numbers")
 	private List<String> bpnNumbers;
 
 
 	@JsonProperty(value = "usage_policy")
-	@SerializedName(value = "usage_policies")
 	private List<UsagePolicy> usagePolicies;
 }

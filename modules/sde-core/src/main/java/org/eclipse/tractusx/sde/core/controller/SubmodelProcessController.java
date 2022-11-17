@@ -10,7 +10,6 @@ import javax.validation.Valid;
 
 import org.eclipse.tractusx.sde.common.entities.SubmodelFileRequest;
 import org.eclipse.tractusx.sde.common.entities.SubmodelJsonRequest;
-import org.eclipse.tractusx.sde.common.entities.csv.CsvContent;
 import org.eclipse.tractusx.sde.common.validators.UsagePolicyValidation;
 import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
 import org.eclipse.tractusx.sde.core.service.SubmodelOrchestartorService;
@@ -39,7 +38,7 @@ public class SubmodelProcessController {
 	private final SubmodelOrchestartorService submodelOrchestartorService;
 
 	private final CsvHandlerService csvHandlerService;
-
+	
 	private ObjectMapper objectMapper = new ObjectMapper();
 
 	@PostMapping(value = "/{submodel}/upload")
@@ -51,8 +50,7 @@ public class SubmodelProcessController {
 
 		SubmodelFileRequest submodelFileRequest = objectMapper.readValue(metaData, SubmodelFileRequest.class);
 
-		CsvContent csvContent = csvHandlerService.processFile(processId, submodel);
-		submodelOrchestartorService.processSubmodelCsv(csvContent, submodelFileRequest, processId, submodel);
+		submodelOrchestartorService.processSubmodelCsv(submodelFileRequest, processId, submodel);
 
 		return ok().body(processId);
 	}
@@ -62,7 +60,7 @@ public class SubmodelProcessController {
 			@RequestBody @Valid SubmodelJsonRequest<ObjectNode> submodelJsonRequest) {
 
 		String processId = UUID.randomUUID().toString();
-		
+
 		submodelOrchestartorService.processSubmodel(submodelJsonRequest, processId, submodel);
 
 		return ok().body(processId);
@@ -71,7 +69,7 @@ public class SubmodelProcessController {
 	@GetMapping(value = "/{submodel}/public/{uuid}", consumes = APPLICATION_JSON_VALUE)
 	public ResponseEntity<Map<Object, Object>> readCreatedTwinsDetails(@PathVariable("submodel") String submodel,
 			@PathVariable("uuid") String uuid) {
-		
+
 		return ok().body(submodelOrchestartorService.readCreatedTwinsDetails(submodel, uuid));
 	}
 

@@ -16,12 +16,20 @@ public abstract class Step {
 		this.submodelSchema = submodelSchema;
 	}
 
+	public JsonObject getSubmodelItems() {
+		return submodelSchema.get("items").getAsJsonObject();
+	}
+	
 	public JsonObject getSubmodelProperties() {
-		return submodelSchema.get("items").getAsJsonObject().get("properties").getAsJsonObject();
+		return getSubmodelItems().get("properties").getAsJsonObject();
 	}
 
 	public JsonArray getSubmodelRequiredFields() {
-		return submodelSchema.get("items").getAsJsonObject().get("required").getAsJsonArray();
+		return getSubmodelItems().get("required").getAsJsonArray();
+	}
+	
+	public JsonObject getSubmodelDependentRequiredFields() {
+		return getSubmodelItems().get("dependentRequired").getAsJsonObject();
 	}
 
 	protected void logDebug(String message) {

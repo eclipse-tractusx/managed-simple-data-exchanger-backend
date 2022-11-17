@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.eclipse.tractusx.sde.common.entities.csv.RowData;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.JsonObject;
 
 import lombok.Getter;
@@ -20,10 +21,14 @@ public abstract class SubmodelExecutor {
 	public String getNameOfModel() {
 		return this.submodelSchema.get("id").getAsString();
 	}
+	
+	public JsonObject getSubmodelItems() {
+		return submodelSchema.get("items").getAsJsonObject();
+	}
 
-	public abstract void executeCsvRecord(RowData rowData, JsonObject jsonObject, String processId);
+	public abstract void executeCsvRecord(RowData rowData, ObjectNode jsonObject, String processId);
 
-	public abstract void executeJsonRecord(Integer rowIndex, JsonObject jsonObject, String processId);
+	public abstract void executeJsonRecord(Integer rowIndex, ObjectNode jsonObject, String processId);
 
 	public abstract List<JsonObject> readCreatedTwinsforDelete(String refProcessId);
 

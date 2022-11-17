@@ -24,57 +24,93 @@ import java.util.List;
 
 import org.eclipse.tractusx.sde.common.entities.UsagePolicy;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Data
 @Builder
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Batch {
 
-    private String shellId;
-    private String subModelId;
+	@JsonProperty(value = "shell_id")
+	private String shellId;
+	
+	private String subModelId;
+	
+    @JsonProperty(value ="row_number")
     private int rowNumber;
-    private String uuid;
-    private String processId;
-    private String accessPolicyId;
-    private String assetId; 
-    private String contractDefinationId;
-    private String usagePolicyId;
-    private String deleted;
 
+    @JsonProperty(value ="bpn_numbers")
     private List<String> bpnNumbers;
     
+    @JsonProperty(value ="type_of_access")
     private String typeOfAccess;
     
+    @JsonProperty(value ="usage_policy")
     private List<UsagePolicy> usagePolicies;
 
-    private String batchId;
+	@JsonProperty(value = "uuid")
+	private String uuid;
 
-    private String manufacturingDate;
+	@JsonProperty(value = "process_id")
+	private String processId;
 
-    private String manufacturingCountry;
+	@JsonProperty(value = "batch_id")
+	private String batchId;
 
-    private String manufacturerPartId;
+	@JsonProperty(value = "manufacturing_date")
+	private String manufacturingDate;
 
-    private String customerPartId;
+	@JsonProperty(value = "manufacturing_country")
+	private String manufacturingCountry;
 
-    private String classification;
+	@JsonProperty(value = "manufacturer_part_id")
+	private String manufacturerPartId;
 
-    private String nameAtManufacturer;
+	@JsonProperty(value = "customer_part_id")
+	private String customerPartId;
 
-    private String nameAtCustomer;
+	@JsonProperty(value = "classification")
+	private String classification;
 
-    private String optionalIdentifierKey;
+	@JsonProperty(value = "name_at_manufacturer")
+	private String nameAtManufacturer;
 
-    private String optionalIdentifierValue;
+	@JsonProperty(value = "name_at_customer")
+	private String nameAtCustomer;
 
+	@JsonProperty(value = "optional_identifier_key")
+	private String optionalIdentifierKey;
 
-    public boolean hasOptionalIdentifier() {
-        boolean hasKey = this.getOptionalIdentifierKey() != null && !this.getOptionalIdentifierKey().isBlank();
-        boolean hasValue = this.getOptionalIdentifierValue() != null && !this.getOptionalIdentifierValue().isBlank();
+	@JsonProperty(value = "optional_identifier_value")
+	private String optionalIdentifierValue;
 
-        return hasKey && hasValue;
-    }
+	@JsonProperty(value = "asset_id")
+	private String assetId;
+
+	@JsonProperty(value = "usage_policy_id")
+	private String usagePolicyId;
+
+	@JsonProperty(value = "access_policy_id")
+	private String accessPolicyId;
+
+	@JsonProperty(value = "contract_defination_id")
+	private String contractDefinationId;
+
+	@JsonProperty(value = "deleted")
+	private String deleted;
+
+	public boolean hasOptionalIdentifier() {
+		boolean hasKey = this.getOptionalIdentifierKey() != null && !this.getOptionalIdentifierKey().isBlank();
+		boolean hasValue = this.getOptionalIdentifierValue() != null && !this.getOptionalIdentifierValue().isBlank();
+
+		return hasKey && hasValue;
+	}
 }

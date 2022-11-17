@@ -3,6 +3,9 @@
 	"$id": "http://example.com/example.json",
 	"type": "array",
 	"id": "batch",
+	"idShort": "Batch",
+	"version": "1.0.0",
+	"semantic_id": "urn:bamm:org.eclipse.batch:1.0.0#Batch",
 	"title": "List of Batch",
 	"items": {
 		"type": "object",
@@ -24,7 +27,10 @@
 		},
 		"properties": {
 			"uuid": {
-				"type": "string",
+				"type": [
+					"string",
+					"null"
+				],
 				"title": "UUID URN",
 				"examples": [
 					"urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2"
@@ -33,6 +39,7 @@
 			"batch_id": {
 				"type": "string",
 				"title": "Batch ID",
+				"minLength": 1,
 				"examples": [
 					"NO-159040131155901488695376"
 				]
@@ -46,8 +53,11 @@
 				]
 			},
 			"manufacturing_country": {
-				"type": "string",
-				"pattern": "[A-Z]{3}",
+				"type": [
+					"string",
+					"null"
+				],
+				"pattern": "[A-Z]{3}|null|^$",
 				"title": "Manufacturing country",
 				"examples": [
 					"DEU"
@@ -55,13 +65,17 @@
 			},
 			"manufacturer_part_id": {
 				"type": "string",
+				"minLength": 1,
 				"title": "Manufacturer part ID",
 				"examples": [
 					"37754B7-76"
 				]
 			},
 			"customer_part_id": {
-				"type": "string",
+				"type": [
+					"string",
+					"null"
+				],
 				"title": "Customer part ID",
 				"examples": [
 					"37754B7-76"
@@ -84,27 +98,43 @@
 			},
 			"name_at_manufacturer": {
 				"type": "string",
+				"minLength": 1,
 				"title": "Name at manufacturer",
 				"examples": [
 					"Sensor"
 				]
 			},
 			"name_at_customer": {
-				"type": "string",
+				"type": [
+					"string",
+					"null"
+				],
 				"title": "Name at customer",
 				"examples": [
 					"Customer"
 				]
 			},
 			"optional_identifier_key": {
-				"type": "string",
+				"type": [
+					"string",
+					"null"
+				],
+				"enum": [
+					"VAN",
+					"BatchID",
+					null,
+					""
+				],
 				"title": "Optional identifier key",
 				"examples": [
 					"Key"
 				]
 			},
 			"optional_identifier_value": {
-				"type": "string",
+				"type": [
+					"string",
+					"null"
+				],
 				"title": "Optional identifier value",
 				"examples": [
 					"Value"

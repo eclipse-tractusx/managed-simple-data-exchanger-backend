@@ -33,40 +33,45 @@ import org.eclipse.tractusx.sde.submodels.apr.model.Quantity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import com.google.gson.FieldNamingPolicy;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+
+import lombok.SneakyThrows;
 
 @Mapper(componentModel = "spring")
 public abstract class AspectRelationshipMapper {
+	
+	ObjectMapper mapper = new ObjectMapper();
 
 	@Mapping(source = "parentUuid", target = "parentCatenaXId")
 	@Mapping(source = "childUuid", target = "childCatenaXId")
 	public abstract AspectRelationshipEntity mapFrom(AspectRelationship aspectRelationShip);
 
-	public AspectRelationship mapFrom(JsonObject aspectRelationship) {
-		Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-				.setPrettyPrinting().create();
-		return gson.fromJson(aspectRelationship, AspectRelationship.class);
+	@SneakyThrows
+	public AspectRelationship mapFrom(ObjectNode aspectRelationship) {
+		return mapper.readValue(aspectRelationship.toString(), AspectRelationship.class);
 	}
 
-	public AspectRelationshipEntity mapforEntity(JsonObject batch) {
-		return new Gson().fromJson(batch, AspectRelationshipEntity.class);
+	public AspectRelationshipEntity mapforEntity(JsonObject entity) {
+		return new Gson().fromJson(entity, AspectRelationshipEntity.class);
 	}
-	
+
 	public JsonObject mapFromEntity(AspectRelationshipEntity aspectRelationship) {
 		return new Gson().toJsonTree(aspectRelationship).getAsJsonObject();
 	}
-	public JsonObject mapToResponse(String parentCatenaXUuid,
-			List<AspectRelationshipEntity> aspectRelationships) {
+
+	public JsonObject mapToResponse(String parentCatenaXUuid, List<AspectRelationshipEntity> aspectRelationships) {
 
 		if (aspectRelationships == null || aspectRelationships.isEmpty()) {
 			return null;
 		}
 
 		List<ChildPart> childParts = aspectRelationships.stream().map(this::toChildPart).toList();
-		return new Gson().toJsonTree(AspectRelationshipResponse.builder().catenaXId(parentCatenaXUuid).childParts(childParts).build()).getAsJsonObject();
+		return new Gson().toJsonTree(
+				AspectRelationshipResponse.builder().catenaXId(parentCatenaXUuid).childParts(childParts).build())
+				.getAsJsonObject();
 
 	}
 

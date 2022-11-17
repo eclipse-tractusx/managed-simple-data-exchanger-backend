@@ -7,11 +7,12 @@ import org.eclipse.tractusx.sde.common.entities.csv.RowData;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
 import org.eclipse.tractusx.sde.common.exception.ValidationException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
-import org.eclipse.tractusx.sde.common.validators.SubmodelValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import lombok.SneakyThrows;
@@ -20,13 +21,12 @@ import lombok.SneakyThrows;
 public class CsvParse extends Step {
 
 	@Autowired
-	private SubmodelValidator submodelValidator;
+	private JsonRecordValidate jsonRecordValidate;
 
 	@SneakyThrows
-	public JsonObject run(RowData rowData, JsonObject rowjObject, String processId) {
+	public ObjectNode run(RowData rowData, ObjectNode rowjObject, String processId) {
 
 		JsonObject submodelProperties = getSubmodelProperties();
-		JsonArray requiredFields = getSubmodelRequiredFields();
 
 		Set<String> fields = submodelProperties.keySet();
 
@@ -37,27 +37,42 @@ public class CsvParse extends Step {
 
 		int colomnIndex = 0;
 		for (String ele : fields) {
-
 			try {
-
 				JsonObject jObject = submodelProperties.get(ele).getAsJsonObject();
-
 				String fieldValue = rowDataFields[colomnIndex];
 
 				fieldValue = fieldValue.trim();
 
-				submodelValidator.validateField(ele, jObject, requiredFields, fieldValue);
+				if (jObject.get("format") != null && "date-time".equals(jObject.get("format").getAsString())
+						&& fieldValue != null) {
+					rowjObject.put(ele, fieldValue.toUpperCase().endsWith("Z") ? fieldValue : fieldValue + "Z");
+				} else
+					rowjObject.put(ele, fieldValue);
 
-				if (fieldValue.isBlank())
-					fieldValue = null;
+				if (fieldValue != null && !fieldValue.isBlank()) {
+					if (jObject.get("type") != null && jObject.get("type").isJsonPrimitive()
+							&& "number".equals(jObject.get("type").getAsString())) {
+						rowjObject.put(ele, Integer.parseInt(fieldValue));
+					} else if (jObject.get("type") != null && jObject.get("type").isJsonArray()) {
+						JsonArray types = jObject.get("type").getAsJsonArray();
+						for (JsonElement type : types) {
+							if ("number".equals(type.getAsString())) {
+								rowjObject.put(ele, Integer.parseInt(fieldValue));
+							}
+						}
+					}
+				}
 
-				rowjObject.addProperty(ele, fieldValue);
 				colomnIndex++;
 
 			} catch (ValidationException errorMessages) {
 				throw new CsvHandlerUseCaseException(rowData.position(), colomnIndex, errorMessages.toString());
 			}
 		}
+
+		jsonRecordValidate.init(getSubmodelSchema());
+		jsonRecordValidate.run(rowData.position(), rowjObject);
+
 		return rowjObject;
 	}
 }

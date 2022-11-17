@@ -1,4 +1,4 @@
-package org.eclipse.tractusx.sde.submodels.pap.constants;
+package org.eclipse.tractusx.sde.submodels.slbap.constants;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 @Component
-public class PartAsPlannedConstants {
+public class SingleLevelBoMAsPlannedConstants {
 	
 	@Value(value = "${manufacturerId}")
 	public String manufacturerId;

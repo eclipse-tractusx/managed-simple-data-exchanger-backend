@@ -49,7 +49,7 @@ import org.springframework.stereotype.Service;
 import lombok.SneakyThrows;
 
 @Service
-public class DigitalTwinsPartAsPlannedCsvHandlerUseCase extends Step {
+public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 
 	@Autowired
 	private PartAsPlannedConstants  partAsPlannedConstants;

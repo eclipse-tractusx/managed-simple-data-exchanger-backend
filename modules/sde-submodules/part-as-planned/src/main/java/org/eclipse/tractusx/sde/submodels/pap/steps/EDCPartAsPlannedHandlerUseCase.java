@@ -46,7 +46,7 @@ import org.springframework.util.CollectionUtils;
 import lombok.SneakyThrows;
 
 @Service
-public class EDCPartAsPlannedHandlerStep extends Step {
+public class EDCPartAsPlannedHandlerUseCase extends Step {
     
 	private final AssetEntryRequestFactory assetFactory;
 	private final EDCGateway edcGateway;
@@ -54,7 +54,7 @@ public class EDCPartAsPlannedHandlerStep extends Step {
 	private final ContractDefinitionRequestFactory contractFactory;
 	private final PolicyConstraintBuilderService policyConstraintBuilderService;
 
-	public EDCPartAsPlannedHandlerStep(EDCGateway edcGateway, AssetEntryRequestFactory assetFactory,
+	public EDCPartAsPlannedHandlerUseCase(EDCGateway edcGateway, AssetEntryRequestFactory assetFactory,
 			PolicyRequestFactory policyFactory, ContractDefinitionRequestFactory contractFactory,
 			PolicyConstraintBuilderService policyConstraintBuilderService) {
 		this.assetFactory = assetFactory;

@@ -2,8 +2,6 @@ package org.eclipse.tractusx.sde.submodels.pap.model;
 
 import java.util.List;
 
-import javax.persistence.Column;
-
 import org.eclipse.tractusx.sde.common.entities.UsagePolicy;
 
 import lombok.AllArgsConstructor;

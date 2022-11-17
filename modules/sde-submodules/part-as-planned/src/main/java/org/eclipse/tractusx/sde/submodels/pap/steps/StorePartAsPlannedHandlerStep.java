@@ -30,12 +30,12 @@ import org.eclipse.tractusx.sde.submodels.pap.repository.PartAsPlannedRepository
 import org.springframework.stereotype.Service;
 
 @Service
-public class StorePartAsPlannedCsvHandlerUseCase extends Step {
+public class StorePartAsPlannedHandlerStep extends Step {
 
 	private final PartAsPlannedRepository partAsPlannedRepository;
 	private final PartAsPlannedMapper partAsPlannedMapper;
 
-	public StorePartAsPlannedCsvHandlerUseCase(PartAsPlannedRepository partAsPlannedRepository, PartAsPlannedMapper mapper) {
+	public StorePartAsPlannedHandlerStep(PartAsPlannedRepository partAsPlannedRepository, PartAsPlannedMapper mapper) {
 		this.partAsPlannedRepository = partAsPlannedRepository;
 		this.partAsPlannedMapper = mapper;
 	}

@@ -4,8 +4,7 @@
 	"type": "array",
 	"id": "singleLevelBomAsPlanned",
 	"version":"1.0.1",
-    "semantic_id":"
-urn:bamm:io.catenax.single_level_bom_as_planned:1.0.1",
+    "semantic_id":"urn:bamm:io.catenax.single_level_bom_as_planned:1.0.1#singleLevelBomAsPlanned",
 	"title": "SingleLevelBomAsPlanned - Submodel SingleLevelBomAsPlanned",
 	"items": {
 		"type": "object",

@@ -174,9 +174,6 @@ public class DigitalTwinsSingleLevelBoMAsPlannedHandlerStep extends Step {
 		specificIdentifiers.add(new KeyValuePair(SingleLevelBoMAsPlannedConstants.ASSET_LIFECYCLE_PHASE, SingleLevelBoMAsPlannedConstants.AS_PLANNED));
 		specificIdentifiers.add(new KeyValuePair(SingleLevelBoMAsPlannedConstants.MANUFACTURER_PART_ID, partAsPlannedAspect.getManufacturerPartId()));
 		specificIdentifiers.add(new KeyValuePair(SingleLevelBoMAsPlannedConstants.MANUFACTURER_ID, singleLevelBoMAsPlannedConstants.getManufacturerId()));
-		if (!partAsPlannedAspect.getCustomerPartId().isBlank()) {
-			specificIdentifiers.add(new KeyValuePair(SingleLevelBoMAsPlannedConstants.CUSTOMER_PART_ID,partAsPlannedAspect.getCustomerPartId()));
-		}
 
 		List<String> values = new ArrayList<>();
 		values.add(partAsPlannedAspect.getUuid());

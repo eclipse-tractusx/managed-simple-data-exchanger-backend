@@ -18,7 +18,10 @@
 		],
 		"properties": {
 			"uuid": {
-				"type": "string",
+				"type": [
+					"string",
+					"null"
+				],
                 "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
 				"title": "UUID URN",
 				"examples": [
@@ -26,21 +29,28 @@
 				]
 			},
             "manufacturer_part_id": {
-				"type": "string",
+				"type": ["string"],
+				"minLength": 1,
 				"title": "Manufacturer part ID",
 				"examples": [
 					"37754B7-76"
 				]
 			},
 			"customer_part_id": {
-				"type": "string",
+				"type": [
+					"string",
+					"null"
+				],
 				"title": "customer Part Id",
 				"examples": [
 					"Currently missing the syntax"
 				]
 			},
             "valid_from": {
-				"type": "string",
+				"type": [
+					"string",
+					"null"
+				],
 				"format": "date-time",
 				"title": "valid From",
 				"examples": [
@@ -48,7 +58,10 @@
 				]
 			},
             "valid_to": {
-				"type": "string",
+				"type": [
+					"string",
+					"null"
+				],
 				"format": "date-time",
 				"title": "valid To",
 				"examples": [
@@ -56,7 +69,7 @@
 				]
 			},
 			"classification": {
-				"type": "string",
+				"type": ["string"],
 				"enum": [
 					"product",
 					"raw material",
@@ -71,7 +84,8 @@
 				]
 			},
 			"name_at_manufacturer": {
-				"type": "string",
+				"type": ["string"],
+				"minLength": 1,
 				"title": "Name at manufacturer",
 				"examples": [
 					"Sensor"

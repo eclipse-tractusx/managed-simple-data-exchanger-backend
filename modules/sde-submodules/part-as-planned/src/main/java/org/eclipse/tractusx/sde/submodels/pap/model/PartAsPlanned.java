@@ -69,7 +69,7 @@ public class PartAsPlanned {
 	@JsonProperty(value ="type_of_access")
 	private String typeOfAccess;
 	
-	@JsonProperty(value ="usage_policy")
+	@JsonProperty(value ="usage_policies")
 	private List<UsagePolicies> usagePolicies;
 
 	@JsonProperty(value ="manufacturer_part_id")

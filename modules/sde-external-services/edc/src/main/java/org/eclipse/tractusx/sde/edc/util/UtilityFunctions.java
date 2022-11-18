@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.tractusx.sde.common.entities.UsagePolicy;
+import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.DurationEnum;
 import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
 import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
@@ -53,7 +53,7 @@ public class UtilityFunctions {
         }
     }
 
-    public static UsagePolicy getDurationPolicy(String durationValue) {
+    public static UsagePolicies getDurationPolicy(String durationValue) {
         DurationEnum durationUnit;
         //Sample value - P0Y0M3DT0H0M0S - Output - 3 Day(s)
         String value = StringUtils.substringBetween(durationValue, "P", "Y");
@@ -89,9 +89,9 @@ public class UtilityFunctions {
         return null;
     }
 
-    private static UsagePolicy getResponse(String value, DurationEnum durationUnit) {
-        UsagePolicy policyResponse;
-        policyResponse = UsagePolicy.builder().type(UsagePolicyEnum.DURATION)
+    private static UsagePolicies getResponse(String value, DurationEnum durationUnit) {
+        UsagePolicies policyResponse;
+        policyResponse = UsagePolicies.builder().type(UsagePolicyEnum.DURATION)
                 .typeOfAccess(PolicyAccessEnum.RESTRICTED)
                 .value(value)
                 .durationUnit(durationUnit)
@@ -99,16 +99,16 @@ public class UtilityFunctions {
         return policyResponse;
     }
 
-    public static List<UsagePolicy> getUsagePolicies(Stream<ConstraintRequest> constraints) {
-        List<UsagePolicy> usagePolicies = new ArrayList<>();
+    public static List<UsagePolicies> getUsagePolicies(Stream<ConstraintRequest> constraints) {
+        List<UsagePolicies> usagePolicies = new ArrayList<>();
         constraints.forEach(constraint ->
         {
             Object leftExpVal = constraint.getLeftExpression().getValue();
             Object rightExpVal = constraint.getRightExpression().getValue();
-            UsagePolicy policyResponse = null;
+            UsagePolicies policyResponse = null;
             switch (leftExpVal.toString()) {
                 case "idsc:ROLE":
-                    policyResponse = UsagePolicy.builder().type(UsagePolicyEnum.ROLE)
+                    policyResponse = UsagePolicies.builder().type(UsagePolicyEnum.ROLE)
                             .typeOfAccess(PolicyAccessEnum.RESTRICTED)
                             .value(rightExpVal.toString())
                             .build();
@@ -119,7 +119,7 @@ public class UtilityFunctions {
                     usagePolicies.add(policyResponse);
                     break;
                 case "idsc:PURPOSE":
-                    policyResponse = UsagePolicy.builder().type(UsagePolicyEnum.PURPOSE)
+                    policyResponse = UsagePolicies.builder().type(UsagePolicyEnum.PURPOSE)
                             .typeOfAccess(PolicyAccessEnum.RESTRICTED)
                             .value(rightExpVal.toString())
                             .build();
@@ -133,27 +133,27 @@ public class UtilityFunctions {
         return usagePolicies;
     }
 
-    public static void addCustomUsagePolicy(Map<String, String> extensibleProperties, List<UsagePolicy> usagePolicies) {
+    public static void addCustomUsagePolicy(Map<String, String> extensibleProperties, List<UsagePolicies> usagePolicies) {
         if (!CollectionUtils.isEmpty(extensibleProperties) &&
                 extensibleProperties.keySet().contains(UsagePolicyEnum.CUSTOM.name())) {
-            UsagePolicy policyObj = UsagePolicy.builder().type(UsagePolicyEnum.CUSTOM).typeOfAccess(PolicyAccessEnum.RESTRICTED)
+            UsagePolicies policyObj = UsagePolicies.builder().type(UsagePolicyEnum.CUSTOM).typeOfAccess(PolicyAccessEnum.RESTRICTED)
                     .value(extensibleProperties.get(UsagePolicyEnum.CUSTOM.name())).build();
             usagePolicies.add(policyObj);
         }
         else
         {
-            UsagePolicy policyObj = UsagePolicy.builder().type(UsagePolicyEnum.CUSTOM).typeOfAccess(PolicyAccessEnum.UNRESTRICTED)
+            UsagePolicies policyObj = UsagePolicies.builder().type(UsagePolicyEnum.CUSTOM).typeOfAccess(PolicyAccessEnum.UNRESTRICTED)
                     .value("").build();
             usagePolicies.add(policyObj);
         }
     }
-    private static void addMissingPolicies(List<UsagePolicy> usagePolicies) {
+    private static void addMissingPolicies(List<UsagePolicies> usagePolicies) {
         Arrays.stream(UsagePolicyEnum.values()).forEach(
                 policy -> {
                     if (!policy.equals(UsagePolicyEnum.CUSTOM)) {
                         boolean found = usagePolicies.stream().anyMatch(usagePolicy -> usagePolicy.getType().equals(policy));
                         if (!found) {
-                            UsagePolicy policyObj = UsagePolicy.builder().type(policy).typeOfAccess(PolicyAccessEnum.UNRESTRICTED)
+                            UsagePolicies policyObj = UsagePolicies.builder().type(policy).typeOfAccess(PolicyAccessEnum.UNRESTRICTED)
                                     .value("").build();
                             usagePolicies.add(policyObj);
                         }

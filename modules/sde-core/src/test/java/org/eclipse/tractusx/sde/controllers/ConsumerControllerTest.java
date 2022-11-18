@@ -29,7 +29,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.tractusx.sde.common.entities.UsagePolicy;
+import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.core.controller.ConsumerController;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
 import org.eclipse.tractusx.sde.edc.model.request.OfferRequest;
@@ -124,10 +124,10 @@ class ConsumerControllerTest {
     void testSubscribeDataOffers() throws Exception {
         doNothing().when(consumerControlPanelService).subscribeDataOffers((ConsumerRequest) any(), anyString());
         List<OfferRequest> offers = new ArrayList<>();
-        List<UsagePolicy> policies = new ArrayList<>();
+        List<UsagePolicies> policies = new ArrayList<>();
         OfferRequest mockOffer = Mockito.mock(OfferRequest.class);
         offers.add(mockOffer);
-        UsagePolicy mockPolicy = Mockito.mock(UsagePolicy.class);
+        UsagePolicies mockPolicy = Mockito.mock(UsagePolicies.class);
         policies.add(mockPolicy);
         ConsumerRequest consumerRequest = ConsumerRequest.builder().connectorId("42").offers(offers).policies(policies).providerUrl("\"https://example.org/example\"").build();
         String content = (new ObjectMapper()).writeValueAsString(consumerRequest);

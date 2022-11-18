@@ -20,7 +20,7 @@
 
 package org.eclipse.tractusx.sde.edc.entities.request.policies.usagepolicy;
 
-import org.eclipse.tractusx.sde.common.entities.UsagePolicy;
+import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.Expression;
@@ -35,7 +35,7 @@ import lombok.experimental.SuperBuilder;
 public class RolePolicyDTO extends UsagePolicyDTO{
     private static final String DATASPACECONNECTOR_LITERALEXPRESSION = "dataspaceconnector:literalexpression";
 
-    public static RolePolicyDTO fromUsagePolicy(UsagePolicy usagePolicy)
+    public static RolePolicyDTO fromUsagePolicy(UsagePolicies usagePolicy)
     {
     	return RolePolicyDTO.builder().type(usagePolicy.getType()).typeOfAccess(usagePolicy.getTypeOfAccess())
                 .value(usagePolicy.getValue()).build();

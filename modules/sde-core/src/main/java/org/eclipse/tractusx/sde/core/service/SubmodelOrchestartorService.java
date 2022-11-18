@@ -110,7 +110,7 @@ public class SubmodelOrchestartorService {
 			Map<String, Object> mps = new HashMap<>();
 			mps.put("type_of_access", submodelJsonRequest.getTypeOfAccess());
 			mps.put("bpn_numbers", submodelJsonRequest.getBpnNumbers());
-			mps.put("usage_policy", submodelJsonRequest.getUsagePolicies());
+			mps.put("usage_policies", submodelJsonRequest.getUsagePolicies());
 
 			processReportUseCase.startBuildProcessReport(processId, submodelSchemaObject.getId(), rowData.size(),
 					submodelJsonRequest.getBpnNumbers(), submodelJsonRequest.getTypeOfAccess(),

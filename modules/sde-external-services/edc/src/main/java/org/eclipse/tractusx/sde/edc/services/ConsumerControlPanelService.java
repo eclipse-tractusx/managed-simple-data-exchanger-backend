@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.tractusx.sde.common.entities.UsagePolicy;
+import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
 import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.edc.api.ContractOfferCatalogApi;
@@ -116,7 +116,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
             PolicyDefinition policy = contractOffer.getPolicy();
 
             //Populating usage policies response based on usage policy constraints
-            List<UsagePolicy> usagePolicies = new ArrayList<>();
+            List<UsagePolicies> usagePolicies = new ArrayList<>();
             policy.getPermissions().stream().forEach(permission -> {
                 usagePolicies.addAll(UtilityFunctions.getUsagePolicies(permission.getConstraints().stream()));
             });
@@ -166,8 +166,8 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
         AtomicReference<String> negotiateContractId = new AtomicReference<>();
         AtomicReference<ContractNegotiationsResponse> checkContractNegotiationStatus = new AtomicReference<>();
         var recipientURL = recipient + edcDataUri;
-        List<UsagePolicy> policies = consumerRequest.getPolicies();
-        UsagePolicy customPolicy = policies.stream().filter(type -> type.getType().equals(UsagePolicyEnum.CUSTOM)).findFirst().get();
+        List<UsagePolicies> policies = consumerRequest.getPolicies();
+        UsagePolicies customPolicy = policies.stream().filter(type -> type.getType().equals(UsagePolicyEnum.CUSTOM)).findFirst().get();
         if (StringUtils.isNotBlank(customPolicy.getValue())) {
             extensibleProperty.put(customPolicy.getType().name(), customPolicy.getValue());
         }

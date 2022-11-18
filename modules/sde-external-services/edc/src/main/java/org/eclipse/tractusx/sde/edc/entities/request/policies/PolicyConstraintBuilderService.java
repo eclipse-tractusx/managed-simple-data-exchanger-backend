@@ -23,7 +23,7 @@ package org.eclipse.tractusx.sde.edc.entities.request.policies;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.tractusx.sde.common.entities.UsagePolicy;
+import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.accesspolicy.AccessPolicyDTO;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.usagepolicy.DurationPolicyDTO;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.usagepolicy.PurposePolicyDTO;
@@ -43,7 +43,7 @@ public class PolicyConstraintBuilderService {
         return constraints;
     }
 
-    public List<ConstraintRequest> getUsagePolicyConstraints(List<UsagePolicy> usagePolicies) {
+    public List<ConstraintRequest> getUsagePolicyConstraints(List<UsagePolicies> usagePolicies) {
         List<ConstraintRequest> usageConstraintList = new ArrayList<>();
         if (usagePolicies != null && !usagePolicies.isEmpty()) {
             usagePolicies.stream().forEach(policy ->
@@ -54,7 +54,7 @@ public class PolicyConstraintBuilderService {
         return usageConstraintList;
     }
 
-    private void usagePolicy(List<ConstraintRequest> usageConstraintList, UsagePolicy policy) {
+    private void usagePolicy(List<ConstraintRequest> usageConstraintList, UsagePolicies policy) {
         switch (policy.getType()) {
             case DURATION:
                 ConstraintRequest request = DurationPolicyDTO.fromUsagePolicy(policy).toConstraint();

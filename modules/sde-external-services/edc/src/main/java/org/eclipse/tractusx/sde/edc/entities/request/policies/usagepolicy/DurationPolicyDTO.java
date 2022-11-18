@@ -20,7 +20,7 @@
 
 package org.eclipse.tractusx.sde.edc.entities.request.policies.usagepolicy;
 
-import org.eclipse.tractusx.sde.common.entities.UsagePolicy;
+import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.DurationEnum;
 import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
@@ -39,7 +39,7 @@ public class DurationPolicyDTO extends UsagePolicyDTO{
     private static final String DATASPACECONNECTOR_LITERALEXPRESSION = "dataspaceconnector:literalexpression";
     private DurationEnum durationUnit;
 
-    public static DurationPolicyDTO fromUsagePolicy(UsagePolicy usagePolicy)
+    public static DurationPolicyDTO fromUsagePolicy(UsagePolicies usagePolicy)
     {
         return DurationPolicyDTO.builder().type(usagePolicy.getType()).typeOfAccess(usagePolicy.getTypeOfAccess())
                 .value(usagePolicy.getValue()).durationUnit(usagePolicy.getDurationUnit()).build();

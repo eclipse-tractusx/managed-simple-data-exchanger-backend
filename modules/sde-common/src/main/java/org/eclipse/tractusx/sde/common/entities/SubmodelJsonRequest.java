@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.eclipse.tractusx.sde.common.validators.UsagePolicyValidation;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -31,6 +32,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SubmodelJsonRequest<T> {
 	
 	@JsonProperty(value = "row_data")
@@ -44,6 +46,6 @@ public class SubmodelJsonRequest<T> {
 
 	@JsonProperty(value = "usage_policies")
 	@UsagePolicyValidation
-	private List<UsagePolicy> usagePolicies;
+	private List<UsagePolicies> usagePolicies;
 
 }

@@ -122,7 +122,6 @@
 				"enum": [
 					"VAN",
 					"BatchID",
-					null,
 					""
 				],
 				"title": "Optional identifier key",

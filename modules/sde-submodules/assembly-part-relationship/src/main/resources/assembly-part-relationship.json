@@ -70,7 +70,6 @@
 				"enum": [
 					"VAN",
 					"BatchID",
-					null,
 					""
 				],
 				"title": "Parent optional identifier key",
@@ -120,7 +119,6 @@
 				"enum": [
 					"VAN",
 					"BatchID",
-					null,
 					""
 				],
 				"title": "Optional identifier key",

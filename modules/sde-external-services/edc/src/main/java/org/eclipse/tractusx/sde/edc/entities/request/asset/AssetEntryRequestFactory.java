@@ -34,7 +34,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class AssetEntryRequestFactory {
 
     private static final String ASSET_PROP_CONTENT_TYPE = "application/json";
-     private static final String ASSET_PROP_VERSION = "1.0.0";
+    private static final String ASSET_PROP_VERSION = "1.0.0";
     private static final String NAME = "Backend Data Service - AAS Server";
     private static final String TYPE = "HttpData";
     private static final String DATE_FORMATTER = "dd/MM/yyyy HH:mm:ss";

@@ -1,0 +1,116 @@
+{
+	"$schema": "https://json-schema.org/draft/2019-09/schema",
+	"$id": "http://example.com/example.json",
+	"type": "array",
+	"id": "singlelevelbomasplanned",
+	"idShort": "singleLevelBomAsPlanned",
+	"version":"1.0.1",
+    "semantic_id":"urn:bamm:io.catenax.single_level_bom_as_planned:1.0.1#SingleLevelBomAsPlanned",
+	"title": "BoM As-Planned - Submodel SingleLevelBomAsPlanned",
+	"items": {
+		"type": "object",
+		"title": "Aspect Model Single level bill of material as planned",
+		"required": [
+            "parent_uuid",
+            "parent_manufacturer_part_id"
+            "child_uuid",
+            "child_manufacturer_part_id",
+            "quantity_number",
+            "measurement_unit_lexical_value",
+            "datatype_url",
+            "created_on"
+		],
+		"properties": {
+			"parent_uuid": {
+				"type": "string",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+				"title": "UUID URN",
+				"examples": [
+					"urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf34dfa4c2"
+				]
+			},
+            "parent_manufacturer_part_id": {
+				"type": "string",
+				"title": "Parent Manufacturer part ID",
+				"examples": [
+					"37754B7-76"
+				]
+			},
+			"child_uuid": {
+				"type": "string",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+				"title": "Child UUID",
+				"examples": [
+					"urn:uuid:5daB938E-Cafa-92B3-7ca1-9aD7885e9dC8"
+				]
+			},
+			"child_manufacturer_part_id": {
+				"type": "string",
+				"title": "Child Manufacturer part ID",
+				"examples": [
+					"37754B7-76"
+				]
+			},
+			"customer_part_id": {
+				"type": "string",
+				"title": "customer Part Id",
+				"examples": [
+					"Currently missing the syntax"
+				]
+			},
+            "quantity_number": {
+				"type": "Number",
+                "format":"double",
+				"title": "Quantity Number",
+				"examples": [
+					2.5
+				]
+			},
+            "measurement_unit_lexical_value": {
+				"type": "string",
+				"title": "lexical Value",
+				"examples": [
+					"litre",
+                    "unit"
+				]
+			},
+            "datatype_url": {
+				"type": "string",
+				"title": "datatype URL",
+				"examples": [
+					"urn:bamm:io.openmanufacturing:meta-model:1.0.0#curie"
+				]
+			},
+			 "created_on": {
+				"type": "string",
+				"format": "date-time",
+				"title": "created On",
+				"examples": [
+					"2022-02-03T14:48:54.709Z"
+				]
+			},
+			 "last_modified_on": {
+				"type": "string",
+				"format": "date-time",
+				"title": "last Modified On",
+				"examples": [
+					"2022-02-03T14:48:54.709Z"
+				]
+			}
+		}
+	},
+	"examples": [
+			{
+				"parent_uuid": "urn:uuid:055c1128-0375-47c8-98de-7cf802c3241d",
+				"parent_manufacturer_part_id": "37754B7-76",
+				"child_uuid":"urn:uuid:5daB938E-Cafa-92B3-7ca1-9aD7885e9dC8",
+				"child_manufacturer_part_id": "37754B7-76",
+				"customer_part_id" : "AsPlanned",
+                "quantity_number": 2.5,
+                "measurement_unit_lexical_value":"litre",
+				"datatype_url": "urn:bamm:io.openmanufacturing:meta-model:1.0.0#curie",
+				"created_on": "2022-02-03T14:48:54.709Z",
+                "last_modified_on": "2022-02-03T14:48:54.709Z"
+			}
+		]
+}

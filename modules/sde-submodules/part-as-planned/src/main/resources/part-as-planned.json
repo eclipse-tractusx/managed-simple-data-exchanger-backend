@@ -16,6 +16,7 @@
             "classification",
             "name_at_manufacturer"
 		],
+		"dependentRequired": {},
 		"properties": {
 			"uuid": {
 				"type": [

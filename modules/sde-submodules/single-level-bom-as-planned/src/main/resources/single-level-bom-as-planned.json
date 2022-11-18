@@ -20,6 +20,7 @@
             "datatype_url",
             "created_on"
 		],
+		"dependentRequired": {},
 		"properties": {
 			"parent_uuid": {
 				"type": ["string"],

@@ -107,7 +107,7 @@ public class DigitalTwinsSingleLevelBoMAsPlannedHandlerStep extends Step {
 			singleLevelBoMAsPlannedAspect.setSubModelId(createSubModelRequest.getIdentification());
 		} else {
 			throw new CsvHandlerDigitalTwinUseCaseException(
-					String.format("AssemblyPartRelationship submodels already exist/found with Shell id %s for %s",
+					String.format("SingleLevelBoMAsPlanned submodels already exist/found with Shell id %s for %s",
 							shellId, shellLookupRequest.toJsonString()));
 		}
 		return singleLevelBoMAsPlannedAspect;

@@ -43,7 +43,7 @@
 				"title": "Parent UUID",
 				"minLength": 1,
 				"examples": [
-					"NO-159040131155901488695376"
+					"urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2"
 				]
 			},
 			"parent_part_instance_id": {

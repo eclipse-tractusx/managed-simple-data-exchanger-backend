@@ -94,7 +94,7 @@ public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 			partAsPlannedAspect.setSubModelId(createSubModelRequest.getIdentification());
 		} else {
 			throw new CsvHandlerDigitalTwinUseCaseException(
-					String.format("serialPartTypization submodels already exist/found with Shell id %s for %s", shellId,
+					String.format("PartAsPlanned submodels already exist/found with Shell id %s for %s", shellId,
 							shellLookupRequest.toJsonString()));
 		}
 

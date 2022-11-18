@@ -49,19 +49,7 @@ public class CsvParse extends Step {
 				} else
 					rowjObject.put(ele, fieldValue);
 
-				if (fieldValue != null && !fieldValue.isBlank()) {
-					if (jObject.get("type") != null && jObject.get("type").isJsonPrimitive()
-							&& "number".equals(jObject.get("type").getAsString())) {
-						rowjObject.put(ele, Integer.parseInt(fieldValue));
-					} else if (jObject.get("type") != null && jObject.get("type").isJsonArray()) {
-						JsonArray types = jObject.get("type").getAsJsonArray();
-						for (JsonElement type : types) {
-							if ("number".equals(type.getAsString())) {
-								rowjObject.put(ele, Integer.parseInt(fieldValue));
-							}
-						}
-					}
-				}
+				numberFieldFormating(rowjObject, ele, jObject, fieldValue);
 
 				colomnIndex++;
 
@@ -74,5 +62,21 @@ public class CsvParse extends Step {
 		jsonRecordValidate.run(rowData.position(), rowjObject);
 
 		return rowjObject;
+	}
+
+	private void numberFieldFormating(ObjectNode rowjObject, String ele, JsonObject jObject, String fieldValue) {
+		if (fieldValue != null && !fieldValue.isBlank()) {
+			if (jObject.get("type") != null && jObject.get("type").isJsonPrimitive()
+					&& "number".equals(jObject.get("type").getAsString())) {
+				rowjObject.put(ele, Integer.parseInt(fieldValue));
+			} else if (jObject.get("type") != null && jObject.get("type").isJsonArray()) {
+				JsonArray types = jObject.get("type").getAsJsonArray();
+				for (JsonElement type : types) {
+					if ("number".equals(type.getAsString())) {
+						rowjObject.put(ele, Integer.parseInt(fieldValue));
+					}
+				}
+			}
+		}
 	}
 }

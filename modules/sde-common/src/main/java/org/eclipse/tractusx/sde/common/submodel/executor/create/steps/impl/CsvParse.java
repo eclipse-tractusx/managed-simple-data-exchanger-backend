@@ -42,7 +42,11 @@ public class CsvParse extends Step {
 				JsonObject jObject = submodelProperties.get(ele).getAsJsonObject();
 				String fieldValue = rowDataFields[colomnIndex];
 
+				if (fieldValue == null)
+					fieldValue = "";
+
 				fieldValue = fieldValue.trim();
+
 				if (isNumberTypeField(jObject, fieldValue))
 					rowjObject.put(ele, Integer.parseInt(fieldValue));
 				else if (isDateFormatField(jObject, fieldValue)) {

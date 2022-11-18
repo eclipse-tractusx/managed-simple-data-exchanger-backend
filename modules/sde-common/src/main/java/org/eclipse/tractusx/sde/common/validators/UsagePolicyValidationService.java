@@ -25,11 +25,11 @@ import java.util.List;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import org.eclipse.tractusx.sde.common.entities.UsagePolicy;
+import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UsagePolicyValidationService implements ConstraintValidator<UsagePolicyValidation, List<UsagePolicy>> {
+public class UsagePolicyValidationService implements ConstraintValidator<UsagePolicyValidation, List<UsagePolicies>> {
 
     private final ValidationService validationService;
 
@@ -43,7 +43,7 @@ public class UsagePolicyValidationService implements ConstraintValidator<UsagePo
     }
 
     @Override
-    public boolean isValid(List<UsagePolicy> usagePolicies, ConstraintValidatorContext constraintValidatorContext) {
+    public boolean isValid(List<UsagePolicies> usagePolicies, ConstraintValidatorContext constraintValidatorContext) {
         return validationService.isValid(usagePolicies);
     }
 }

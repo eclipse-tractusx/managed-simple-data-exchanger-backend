@@ -23,7 +23,7 @@ package org.eclipse.tractusx.sde.common.validators;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.tractusx.sde.common.entities.UsagePolicy;
+import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
 import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.springframework.stereotype.Service;
@@ -32,28 +32,26 @@ import org.springframework.util.CollectionUtils;
 @Service
 public class ValidationService {
 
-    public boolean isValid(List<UsagePolicy> usagePolicies) {
-        if(!CollectionUtils.isEmpty(usagePolicies))
-        {
-            boolean validateFlag = false;
-            for(UsagePolicy usagePolicy : usagePolicies) {
-            	if(usagePolicy.getType().equals(UsagePolicyEnum.DURATION))
-            	{
-            		validateFlag = validateDuration(usagePolicy);
-            	}
-            	else {
-            		 validateFlag = validatePolicy(usagePolicy);
-            	}
-                if(!validateFlag){
-                    break;
-                }
-            }
-            return validateFlag;
-        }
-       return true;
-    }
+	public boolean isValid(List<UsagePolicies> usagePolicies) {
+		if (usagePolicies != null && !CollectionUtils.isEmpty(usagePolicies)) {
+			boolean validateFlag = false;
+			for (UsagePolicies usagePolicy : usagePolicies) {
+				if (usagePolicy.getType().equals(UsagePolicyEnum.DURATION)) {
+					validateFlag = validateDuration(usagePolicy);
+				} else {
+					validateFlag = validatePolicy(usagePolicy);
+				}
+				if (!validateFlag) {
+					break;
+				}
+			}
+			return validateFlag;
+		} else {
+			return false;
+		}
+	}
 
-	private boolean validatePolicy(UsagePolicy usagePolicy) {
+	private boolean validatePolicy(UsagePolicies usagePolicy) {
 
 		boolean isValid = false;
 		if (usagePolicy.getTypeOfAccess().equals(PolicyAccessEnum.UNRESTRICTED)
@@ -65,7 +63,7 @@ public class ValidationService {
 		return isValid;
 	}
 
-	private boolean validateDuration(UsagePolicy usagePolicy) {
+	private boolean validateDuration(UsagePolicies usagePolicy) {
 
 		boolean isValid = false;
 		if (usagePolicy.getTypeOfAccess().equals(PolicyAccessEnum.UNRESTRICTED)

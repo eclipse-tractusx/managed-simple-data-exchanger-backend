@@ -26,7 +26,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import org.eclipse.tractusx.sde.common.entities.UsagePolicy;
+import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.ProgressStatusEnum;
 import org.eclipse.tractusx.sde.core.processreport.entity.ProcessReportEntity;
 import org.eclipse.tractusx.sde.core.processreport.mapper.ProcessReportMapper;
@@ -57,7 +57,7 @@ public class ProcessReportUseCase {
 
 	@SneakyThrows
 	public void startBuildProcessReport(String processId, String type, int size, List<String> bpnNumbers,
-			String typeOfAccess, List<UsagePolicy> usagePolicies) {
+			String typeOfAccess, List<UsagePolicies> usagePolicies) {
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 		String usageList = objectMapper.writeValueAsString(usagePolicies);

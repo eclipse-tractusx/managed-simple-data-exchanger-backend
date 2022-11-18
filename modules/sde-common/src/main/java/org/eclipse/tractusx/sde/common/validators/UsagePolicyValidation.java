@@ -34,7 +34,7 @@ import java.lang.annotation.Target;
 @Constraint(validatedBy = {UsagePolicyValidationService.class, UploadFileUsagePolicyValidationService.class})
 public @interface UsagePolicyValidation {
 
-    String message() default "Usage Policy Validation Failed";
+    String message() default "Usage Policies Validation Failed";
 
     Class<?>[] groups() default {};
 

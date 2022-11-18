@@ -12,5 +12,7 @@ public interface PartAsPlannedRepository extends CrudRepository<PartAsPlannedEnt
 	PartAsPlannedEntity findByUuid(String uuid);
 
 	List<PartAsPlannedEntity> findByProcessId(String processId);
+	
+	PartAsPlannedEntity findByManufacturerPartId(String manufacturerPartId);
 
 }

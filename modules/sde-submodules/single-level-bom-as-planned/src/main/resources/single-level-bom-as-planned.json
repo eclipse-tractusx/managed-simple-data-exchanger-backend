@@ -6,14 +6,15 @@
 	"idShort": "singleLevelBomAsPlanned",
 	"version":"1.0.1",
     "semantic_id":"urn:bamm:io.catenax.single_level_bom_as_planned:1.0.1#SingleLevelBomAsPlanned",
-	"title": "SingleLevelBomAsPlanned - Submodel SingleLevelBomAsPlanned",
+	"title": "BoM As-Planned - Submodel SingleLevelBomAsPlanned",
 	"items": {
 		"type": "object",
 		"title": "Aspect Model Single level bill of material as planned",
 		"required": [
             "parent_uuid",
-            "manufacturer_part_id",
-            "uuid",
+            "parent_manufacturer_part_id"
+            "child_uuid",
+            "child_manufacturer_part_id",
             "quantity_number",
             "measurement_unit_lexical_value",
             "datatype_url",
@@ -28,19 +29,33 @@
 					"urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf34dfa4c2"
 				]
 			},
-            "manufacturer_part_id": {
+            "parent_manufacturer_part_id": {
 				"type": "string",
-				"title": "Manufacturer part ID",
+				"title": "Parent Manufacturer part ID",
 				"examples": [
 					"37754B7-76"
 				]
 			},
-			"uuid": {
+			"child_uuid": {
 				"type": "string",
                 "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
 				"title": "Child UUID",
 				"examples": [
 					"urn:uuid:5daB938E-Cafa-92B3-7ca1-9aD7885e9dC8"
+				]
+			},
+			"child_manufacturer_part_id": {
+				"type": "string",
+				"title": "Child Manufacturer part ID",
+				"examples": [
+					"37754B7-76"
+				]
+			},
+			"customer_part_id": {
+				"type": "string",
+				"title": "customer Part Id",
+				"examples": [
+					"Currently missing the syntax"
 				]
 			},
             "quantity_number": {
@@ -87,13 +102,15 @@
 	"examples": [
 			{
 				"parent_uuid": "urn:uuid:055c1128-0375-47c8-98de-7cf802c3241d",
-				"manufacturer_part_id": "37754B7-76",
+				"parent_manufacturer_part_id": "37754B7-76",
+				"child_uuid":"urn:uuid:5daB938E-Cafa-92B3-7ca1-9aD7885e9dC8",
+				"child_manufacturer_part_id": "37754B7-76",
+				"customer_part_id" : "AsPlanned",
                 "quantity_number": 2.5,
                 "measurement_unit_lexical_value":"litre",
 				"datatype_url": "urn:bamm:io.openmanufacturing:meta-model:1.0.0#curie",
 				"created_on": "2022-02-03T14:48:54.709Z",
-                "last_modified_on": "2022-02-03T14:48:54.709Z",
-                "uuid":"5daB938E-Cafa-92B3-7ca1-9aD7885e9dC8"
+                "last_modified_on": "2022-02-03T14:48:54.709Z"
 			}
 		]
 }

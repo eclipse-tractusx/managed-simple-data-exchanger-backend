@@ -1,6 +1,4 @@
 /********************************************************************************
- * Copyright (c) 2022 Critical TechWorks GmbH
- * Copyright (c) 2022 BMW GmbH
  * Copyright (c) 2022 T-Systems International GmbH
  * Copyright (c) 2022 Contributors to the Eclipse Foundation
  *
@@ -19,7 +17,6 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-
 package org.eclipse.tractusx.sde.submodels.pap.steps;
 
 import java.util.HashMap;
@@ -38,7 +35,6 @@ import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyConstraintBu
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyDefinitionRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyRequestFactory;
 import org.eclipse.tractusx.sde.edc.gateways.external.EDCGateway;
-import org.eclipse.tractusx.sde.submodels.pap.constants.PartAsPlannedConstants;
 import org.eclipse.tractusx.sde.submodels.pap.model.PartAsPlanned;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;

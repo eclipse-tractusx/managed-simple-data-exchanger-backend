@@ -6,11 +6,12 @@
 	"idShort": "partAsPlanned",
 	"version":"1.0.0",
     "semantic_id":"urn:bamm:io.catenax.part_as_planned:1.0.0#PartAsPlanned",
-	"title": "PartAsPlanned - Submodel PartAsPlanned",
+	"title": "BoM As-Planned - Submodel PartAsPlanned",
 	"items": {
 		"type": "object",
 		"title": "Part As Planned",
 		"required": [
+			"uuid",
             "manufacturer_part_id",
             "classification",
             "name_at_manufacturer"
@@ -29,6 +30,13 @@
 				"title": "Manufacturer part ID",
 				"examples": [
 					"37754B7-76"
+				]
+			},
+			"customer_part_id": {
+				"type": "string",
+				"title": "customer Part Id",
+				"examples": [
+					"Currently missing the syntax"
 				]
 			},
             "valid_from": {
@@ -75,6 +83,7 @@
 			{
 				"uuid": "urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2",
 				"manufacturer_part_id": "37754B7-76",
+				"customer_part_id" : "Currently missing the syntax",
 				"valid_from": "2021-06-14T06:55:29.935Z",
 				"valid_to": "2022-06-14T06:55:29.935Z",
                 "classification": "component",

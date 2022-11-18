@@ -1,7 +1,27 @@
+/********************************************************************************
+ * Copyright (c) 2022 T-Systems International GmbH
+ * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ ********************************************************************************/
 package org.eclipse.tractusx.sde.submodels.slbap.mapper;
 
-import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.tractusx.sde.submodels.slbap.entity.SingleLevelBoMAsPlannedEntity;
 import org.eclipse.tractusx.sde.submodels.slbap.model.ChildParts;
@@ -23,10 +43,6 @@ import lombok.SneakyThrows;
 public abstract class SingleLevelBoMAsPlannedMapper {
 	
 	ObjectMapper mapper=new ObjectMapper();
-	
-	@Mapping(target = "rowNumber", ignore = true)
-	@Mapping(target = "subModelId", ignore = true)
-	public abstract SingleLevelBoMAsPlanned mapFrom(SingleLevelBoMAsPlannedEntity singleLevelBoMAsPlannedEntity);
 
 	@Mapping(source = "parentUuid", target = "parentCatenaXId")
 	@Mapping(source = "childUuid", target = "childCatenaXId")
@@ -45,37 +61,35 @@ public abstract class SingleLevelBoMAsPlannedMapper {
 		return new Gson().toJsonTree(singleLevelBoMAsPlannedEntity).getAsJsonObject();
 	}
 
-	public JsonObject mapToResponse(SingleLevelBoMAsPlannedEntity entity) {
+	public JsonObject mapToResponse(String parentCatenaXUuid, List<SingleLevelBoMAsPlannedEntity> singleLevelBoMAsPlannedEntity) {
 
-		if (entity == null) {
+		if (singleLevelBoMAsPlannedEntity == null || singleLevelBoMAsPlannedEntity.isEmpty()) {
 			return null;
 		}
-
-		MeasurementUnit measurementUnit = MeasurementUnit.builder()
-				.lexicalValue(null)
-				.datatypeURI(null)
-				.build();
-				
-		Quantity quantity = Quantity.builder()
-				.quantityNumber(null)
-				.measurementUnit(measurementUnit)
-				.build();
-				
-		Set<ChildParts> childPartsSet =  new HashSet<>();
-		ChildParts childParts =	ChildParts.builder()
-				.quantity(quantity)
-				.createdOn(null)
-				.lastModifiedOn(null)
-				.childCatenaXId(null)
-				.build();
 		
-		childPartsSet.add(childParts);
-
-
+		Set<ChildParts> childPartsSet = singleLevelBoMAsPlannedEntity.stream().map(this::toChildPart).collect(Collectors.toSet());
+		
 		return new Gson().toJsonTree(SingleLevelBoMAsPlannedAspectResponse.builder()
+				.catenaXId(parentCatenaXUuid)
 				.childParts(childPartsSet)
-				.catenaXId(null)
 				.build()).getAsJsonObject();
+	}
+	
+	private ChildParts toChildPart(SingleLevelBoMAsPlannedEntity entity) {
+		
+		Quantity quantity = Quantity.builder().quantityNumber(entity.getQuantityNumber())
+							.measurementUnit(MeasurementUnit.builder()
+									.lexicalValue(entity.getMeasurementUnitLexicalValue())
+									.datatypeURI(entity.getDataTypeUri())
+									.build())
+							.build();
+
+		return ChildParts.builder()
+				.quantity(quantity)
+				.createdOn(entity.getCreatedOn())
+				.lastModifiedOn(entity.getLastModifiedOn())
+				.childCatenaXId(entity.getChildCatenaXId())
+				.build();
 	}
 
 }

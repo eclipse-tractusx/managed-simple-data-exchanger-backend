@@ -1,6 +1,4 @@
 /********************************************************************************
- * Copyright (c) 2022 Critical TechWorks GmbH
- * Copyright (c) 2022 BMW GmbH
  * Copyright (c) 2022 T-Systems International GmbH
  * Copyright (c) 2022 Contributors to the Eclipse Foundation
  *
@@ -19,7 +17,6 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-
 package org.eclipse.tractusx.sde.submodels.pap.steps;
 
 import java.util.ArrayList;
@@ -105,10 +102,14 @@ public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 	}
 
 	private ShellLookupRequest getShellLookupRequest(PartAsPlanned partAsPlannedAspect) {
-		
+
 		ShellLookupRequest shellLookupRequest = new ShellLookupRequest();
-		shellLookupRequest.addLocalIdentifier(PartAsPlannedConstants.MANUFACTURER_PART_ID, partAsPlannedAspect.getManufacturerPartId());
-		shellLookupRequest.addLocalIdentifier(PartAsPlannedConstants.MANUFACTURER_ID, partAsPlannedConstants.getManufacturerId());
+		shellLookupRequest.addLocalIdentifier(PartAsPlannedConstants.MANUFACTURER_PART_ID,partAsPlannedAspect.getManufacturerPartId());
+		shellLookupRequest.addLocalIdentifier(PartAsPlannedConstants.MANUFACTURER_ID,partAsPlannedConstants.getManufacturerId());
+		shellLookupRequest.addLocalIdentifier(PartAsPlannedConstants.ASSET_LIFECYCLE_PHASE,PartAsPlannedConstants.AS_PLANNED);
+		if (!partAsPlannedAspect.getCustomerPartId().isBlank()) {
+			shellLookupRequest.addLocalIdentifier(PartAsPlannedConstants.CUSTOMER_PART_ID,partAsPlannedAspect.getCustomerPartId());
+		}
 		return shellLookupRequest;
 	}
 
@@ -125,7 +126,9 @@ public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 						.endpointAddress(String.format(String.format("%s%s/%s-%s%s", partAsPlannedConstants.getEdcEndpoint().replace("data", ""),
 								partAsPlannedConstants.getManufacturerId(), partAsPlannedAspect.getShellId(), identification,
 								"/submodel?content=value&extent=WithBLOBValue")))
-						.endpointProtocol(PartAsPlannedConstants.HTTPS).endpointProtocolVersion(PartAsPlannedConstants.ENDPOINT_PROTOCOL_VERSION).build())
+						.endpointProtocol(PartAsPlannedConstants.HTTPS)
+						.endpointProtocolVersion(PartAsPlannedConstants.ENDPOINT_PROTOCOL_VERSION)
+						.build())
 				.build());
 
 		return CreateSubModelRequest.builder()
@@ -141,6 +144,10 @@ public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 		ArrayList<KeyValuePair> specificIdentifiers = new ArrayList<>();
 		specificIdentifiers.add(new KeyValuePair(PartAsPlannedConstants.MANUFACTURER_PART_ID, partAsPlannedAspect.getManufacturerPartId()));
 		specificIdentifiers.add(new KeyValuePair(PartAsPlannedConstants.MANUFACTURER_ID, partAsPlannedConstants.getManufacturerId()));
+		specificIdentifiers.add(new KeyValuePair(PartAsPlannedConstants.ASSET_LIFECYCLE_PHASE,PartAsPlannedConstants.AS_PLANNED));
+		if (!partAsPlannedAspect.getCustomerPartId().isBlank()) {
+			specificIdentifiers.add(new KeyValuePair(PartAsPlannedConstants.CUSTOMER_PART_ID,partAsPlannedAspect.getCustomerPartId()));
+		}
 		List<String> values = new ArrayList<>();
 		values.add(partAsPlannedAspect.getUuid());
 		GlobalAssetId globalIdentifier = new GlobalAssetId(values);

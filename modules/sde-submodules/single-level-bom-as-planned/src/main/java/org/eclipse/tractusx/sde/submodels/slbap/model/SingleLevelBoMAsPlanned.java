@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.eclipse.tractusx.sde.common.entities.UsagePolicy;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -13,6 +14,7 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SingleLevelBoMAsPlanned {
 
 	@JsonProperty(value = "shell_id")
@@ -23,8 +25,8 @@ public class SingleLevelBoMAsPlanned {
 	@JsonProperty(value = "row_number")
 	private int rowNumber;
 
-	@JsonProperty(value = "uuid")
-	private String uuid;
+	@JsonProperty(value = "parent_uuid")
+	private String parentUuid;
 
 	@JsonProperty(value = "process_id")
 	private String processId;
@@ -60,7 +62,7 @@ public class SingleLevelBoMAsPlanned {
 	private String quantityNumber;
 	
 	@JsonProperty(value = "measurement_unit_lexical_value")
-	private String lexicalValue;
+	private String measurementUnitLexicalValue;
 	
 	@JsonProperty(value = "datatype_url")
 	private String datatypeUrl;
@@ -71,7 +73,7 @@ public class SingleLevelBoMAsPlanned {
 	@JsonProperty(value = "last_modified_on")
 	private String lastModifiedOn;
 	
-	@JsonProperty(value = "child_uuid")
+	@JsonProperty(value = "uuid")
 	private String childUuid;
 	
 }

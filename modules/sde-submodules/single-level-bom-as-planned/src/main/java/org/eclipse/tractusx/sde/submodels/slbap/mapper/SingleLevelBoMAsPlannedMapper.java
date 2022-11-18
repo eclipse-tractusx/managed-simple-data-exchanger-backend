@@ -28,6 +28,8 @@ public abstract class SingleLevelBoMAsPlannedMapper {
 	@Mapping(target = "subModelId", ignore = true)
 	public abstract SingleLevelBoMAsPlanned mapFrom(SingleLevelBoMAsPlannedEntity singleLevelBoMAsPlannedEntity);
 
+	@Mapping(source = "parentUuid", target = "parentCatenaXId")
+	@Mapping(source = "childUuid", target = "childCatenaXId")
 	public abstract SingleLevelBoMAsPlannedEntity mapFrom(SingleLevelBoMAsPlanned singleLevelBoMAsPlanned);
 
 	@SneakyThrows

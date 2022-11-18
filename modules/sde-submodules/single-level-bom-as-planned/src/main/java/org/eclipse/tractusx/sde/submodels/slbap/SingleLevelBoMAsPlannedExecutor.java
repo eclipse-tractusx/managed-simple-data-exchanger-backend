@@ -8,10 +8,6 @@ import org.eclipse.tractusx.sde.common.submodel.executor.create.steps.impl.CsvPa
 import org.eclipse.tractusx.sde.common.submodel.executor.create.steps.impl.GenerateUrnUUID;
 import org.eclipse.tractusx.sde.common.submodel.executor.create.steps.impl.JsonRecordValidate;
 import org.eclipse.tractusx.sde.submodels.slbap.mapper.SingleLevelBoMAsPlannedMapper;
-import org.eclipse.tractusx.sde.submodels.slbap.services.SingleLevelBoMAsPlannedService;
-import org.eclipse.tractusx.sde.submodels.slbap.steps.DigitalTwinsSingleLevelBoMAsPlannedHandlerStep;
-import org.eclipse.tractusx.sde.submodels.slbap.steps.EDCSingleLevelBoMAsPlannedHandlerStep;
-import org.eclipse.tractusx.sde.submodels.slbap.steps.StoreSingleLevelBoMAsPlannedStep;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -31,24 +27,46 @@ public class SingleLevelBoMAsPlannedExecutor extends SubmodelExecutor {
 
 	private final JsonRecordValidate jsonRecordValidate;
 
-	private final DigitalTwinsSingleLevelBoMAsPlannedHandlerStep digitalTwinsHandlerStep;
+	//private final DigitalTwinsSingleLevelBoMAsPlannedHandlerStep digitalTwinsHandlerStep;
 
-	private final EDCSingleLevelBoMAsPlannedHandlerStep eDCHandlerStep;
+	//private final EDCSingleLevelBoMAsPlannedHandlerStep eDCHandlerStep;
 
-	private final StoreSingleLevelBoMAsPlannedStep storeSingleLevelBoMAsPlannedStep;
+	//private final StoreSingleLevelBoMAsPlannedStep storeSingleLevelBoMAsPlannedStep;
 
-	private final SingleLevelBoMAsPlannedService singleLevelBoMAsPlannedService;
+	//private final SingleLevelBoMAsPlannedService singleLevelBoMAsPlannedService;
 
 	
 	@Override
 	public void executeCsvRecord(RowData rowData, ObjectNode jsonObject, String processId) {
 		
+		csvParseStep.init(getSubmodelSchema());
+
+		csvParseStep.run(rowData, jsonObject, processId);
+
+		//nextSteps(jsonObject, processId);
 	}
 
 	@Override
 	public void executeJsonRecord(Integer rowIndex, ObjectNode jsonObject, String processId) {
 		
+		jsonRecordValidate.init(getSubmodelSchema());
+		jsonRecordValidate.run(rowIndex, jsonObject);
+
+		//nextSteps(jsonObject, processId);
 	}
+	
+//	private void nextSteps(ObjectNode jsonObject, String processId) throws CsvHandlerDigitalTwinUseCaseException {
+//
+//		SingleLevelBoMAsPlanned singleLevelBoMAsPlanned = singleLevelBoMAsPlannedMapper.mapFrom(jsonObject);
+//
+//		generateUrnUUID.run(aspectRelationship, processId);
+//
+//		digitalTwinsAspectRelationShipCsvHandlerUseCase.run(aspectRelationship);
+//
+//		eDCAspectRelationshipHandlerUseCase.run(getNameOfModel(), aspectRelationship, processId);
+//
+//		storeAspectRelationshipCsvHandlerUseCase.run(aspectRelationship);
+//	}
 
 	@Override
 	public List<JsonObject> readCreatedTwinsforDelete(String refProcessId) {

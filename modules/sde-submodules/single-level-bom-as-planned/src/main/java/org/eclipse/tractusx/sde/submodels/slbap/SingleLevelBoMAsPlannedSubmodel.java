@@ -7,7 +7,9 @@ import javax.annotation.PostConstruct;
 import org.eclipse.tractusx.sde.common.extensions.SubmodelExtension;
 import org.eclipse.tractusx.sde.common.model.Submodel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class SingleLevelBoMAsPlannedSubmodel extends SubmodelExtension {
 
 	private Submodel submodel = null;

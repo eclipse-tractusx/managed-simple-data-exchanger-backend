@@ -90,7 +90,7 @@ public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 		partAsPlannedAspect.setShellId(shellId);
 		SubModelListResponse subModelResponse = gateway.getSubModels(shellId);
 
-		if (subModelResponse == null || subModelResponse.stream().noneMatch(x -> getIdOfModel().equals(x.getIdShort()))) {
+		if (subModelResponse == null || subModelResponse.stream().noneMatch(x -> getIdShortOfModel().equals(x.getIdShort()))) {
 			logDebug(String.format("No submodels for '%s'", shellId));
 			CreateSubModelRequest createSubModelRequest = getCreateSubModelRequest(partAsPlannedAspect);
 			gateway.createSubModel(shellId, createSubModelRequest);
@@ -129,7 +129,7 @@ public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 				.build());
 
 		return CreateSubModelRequest.builder()
-				.idShort(getIdOfModel())
+				.idShort(getIdShortOfModel())
 				.identification(identification)
 				.semanticId(semanticId)
 				.endpoints(endpoints)

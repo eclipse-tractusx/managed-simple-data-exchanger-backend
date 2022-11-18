@@ -28,8 +28,8 @@ public abstract class Step {
 		return getSubmodelItems().get("required").getAsJsonArray();
 	}
 	
-	public String getIdOfModel() {
-		return this.submodelSchema.get("id").getAsString();
+	public String getIdShortOfModel() {
+		return this.submodelSchema.get("idShort").getAsString();
 	}
 	
 	public String getVersionOfModel() {

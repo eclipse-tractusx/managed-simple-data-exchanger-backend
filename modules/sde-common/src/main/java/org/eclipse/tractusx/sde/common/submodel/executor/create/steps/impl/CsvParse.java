@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import lombok.SneakyThrows;
 
@@ -41,15 +42,17 @@ public class CsvParse extends Step {
 				JsonObject jObject = submodelProperties.get(ele).getAsJsonObject();
 				String fieldValue = rowDataFields[colomnIndex];
 
+				if (fieldValue == null)
+					fieldValue = "";
+
 				fieldValue = fieldValue.trim();
 
-				if (jObject.get("format") != null && "date-time".equals(jObject.get("format").getAsString())
-						&& fieldValue != null) {
+				if (isNumberTypeField(jObject, fieldValue))
+					rowjObject.put(ele, Integer.parseInt(fieldValue));
+				else if (isDateFormatField(jObject, fieldValue)) {
 					rowjObject.put(ele, fieldValue.toUpperCase().endsWith("Z") ? fieldValue : fieldValue + "Z");
 				} else
 					rowjObject.put(ele, fieldValue);
-
-				numberFieldFormating(rowjObject, ele, jObject, fieldValue);
 
 				colomnIndex++;
 
@@ -64,19 +67,20 @@ public class CsvParse extends Step {
 		return rowjObject;
 	}
 
-	private void numberFieldFormating(ObjectNode rowjObject, String ele, JsonObject jObject, String fieldValue) {
-		if (fieldValue != null && !fieldValue.isBlank()) {
-			if (jObject.get("type") != null && jObject.get("type").isJsonPrimitive()
-					&& "number".equals(jObject.get("type").getAsString())) {
-				rowjObject.put(ele, Integer.parseInt(fieldValue));
-			} else if (jObject.get("type") != null && jObject.get("type").isJsonArray()) {
-				JsonArray types = jObject.get("type").getAsJsonArray();
-				for (JsonElement type : types) {
-					if ("number".equals(type.getAsString())) {
-						rowjObject.put(ele, Integer.parseInt(fieldValue));
-					}
-				}
-			}
+	private boolean isDateFormatField(JsonObject jObject, String fieldValue) {
+		return jObject.get("format") != null && "date-time".equals(jObject.get("format").getAsString())
+				&& fieldValue != null;
+	}
+
+	private boolean isNumberTypeField(JsonObject jObject, String fieldValue) {
+
+		if (fieldValue != null && !fieldValue.isBlank() && jObject.get("type") != null
+				&& jObject.get("type").isJsonArray()) {
+			JsonArray types = jObject.get("type").getAsJsonArray();
+			JsonElement jsonElement = JsonParser.parseString("number");
+			return types.contains(jsonElement);
 		}
+		return false;
+
 	}
 }

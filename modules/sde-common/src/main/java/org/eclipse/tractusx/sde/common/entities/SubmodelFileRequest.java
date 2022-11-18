@@ -22,6 +22,7 @@ package org.eclipse.tractusx.sde.common.entities;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -31,6 +32,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SubmodelFileRequest {
 
 	@JsonProperty(value = "type_of_access")
@@ -40,6 +42,6 @@ public class SubmodelFileRequest {
 	private List<String> bpnNumbers;
 
 
-	@JsonProperty(value = "usage_policy")
-	private List<UsagePolicy> usagePolicies;
+	@JsonProperty(value = "usage_policies")
+	private List<UsagePolicies> usagePolicies;
 }

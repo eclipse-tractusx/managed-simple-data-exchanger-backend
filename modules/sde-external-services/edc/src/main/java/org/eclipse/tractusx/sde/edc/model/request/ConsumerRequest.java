@@ -24,7 +24,7 @@ import java.util.List;
 
 import javax.validation.constraints.NotEmpty;
 
-import org.eclipse.tractusx.sde.common.entities.UsagePolicy;
+import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.springframework.lang.NonNull;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -52,6 +52,6 @@ public class ConsumerRequest {
     private List<OfferRequest> offers;
     @NonNull
     @NotEmpty
-    private List<UsagePolicy> policies;
+    private List<UsagePolicies> policies;
 
 }

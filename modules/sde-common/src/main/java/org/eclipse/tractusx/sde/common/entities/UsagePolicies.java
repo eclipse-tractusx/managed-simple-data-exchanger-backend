@@ -40,7 +40,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UsagePolicy {
+public class UsagePolicies {
 
 	UsagePolicyEnum type;
 	

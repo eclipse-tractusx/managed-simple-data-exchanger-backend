@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.tractusx.sde.common.entities.UsagePolicy;
+import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.edc.api.ContractApi;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
 import org.eclipse.tractusx.sde.edc.enums.NegotiationState;
@@ -81,7 +81,7 @@ public class ContractNegotiateManagement extends AbstractEDCStepsHelper {
         ContractAgreementResponse agreementResponse = null;
         ContractAgreementDto agreement = contractApi.getAgreementBasedOnNegotiationId(negotiationId, getAuthHeader());
         if(agreement != null) {
-            List<UsagePolicy> policies = new ArrayList<>();
+            List<UsagePolicies> policies = new ArrayList<>();
             agreement.getPolicy().getPermissions().stream().forEach(permission -> {
                 policies.addAll(UtilityFunctions.getUsagePolicies(permission.getConstraints().stream()));
             });

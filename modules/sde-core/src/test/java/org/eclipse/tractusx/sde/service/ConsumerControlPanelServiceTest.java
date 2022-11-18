@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.eclipse.tractusx.sde.common.entities.UsagePolicy;
+import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
 import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.edc.api.ContractOfferCatalogApi;
@@ -127,8 +127,8 @@ class ConsumerControlPanelServiceTest {
     @Test
     void testSubscribeDataOffers1() {
         ArrayList<OfferRequest> offerRequestList = new ArrayList<>();
-        List<UsagePolicy> usagePolicies = new ArrayList<>();
-        UsagePolicy usagePolicy = UsagePolicy.builder().type(UsagePolicyEnum.CUSTOM).value("Sample").typeOfAccess(PolicyAccessEnum.RESTRICTED).build();
+        List<UsagePolicies> usagePolicies = new ArrayList<>();
+        UsagePolicies usagePolicy = UsagePolicies.builder().type(UsagePolicyEnum.CUSTOM).value("Sample").typeOfAccess(PolicyAccessEnum.RESTRICTED).build();
         usagePolicies.add(usagePolicy);
         ConsumerRequest consumerRequest = new ConsumerRequest("42", "https://example.org/example", offerRequestList,
                 usagePolicies);
@@ -136,7 +136,7 @@ class ConsumerControlPanelServiceTest {
         consumerControlPanelService.subscribeDataOffers(consumerRequest, processId);
         assertEquals("42", consumerRequest.getConnectorId());
         assertEquals("https://example.org/example", consumerRequest.getProviderUrl());
-        List<UsagePolicy> policies = consumerRequest.getPolicies();
+        List<UsagePolicies> policies = consumerRequest.getPolicies();
         List<ConstraintRequest> list = new ArrayList<>();
         ConstraintRequest constraintRequest = ConstraintRequest.builder().edcType("type").leftExpression(new Expression()).rightExpression(new Expression()).operator("EQ").build();
         list.add(constraintRequest);
@@ -156,8 +156,8 @@ class ConsumerControlPanelServiceTest {
 
     @Test
     void testSubscribeDataOffers2() {
-        List<UsagePolicy> usagePolicies = new ArrayList<>();
-        UsagePolicy usagePolicy = UsagePolicy.builder().type(UsagePolicyEnum.CUSTOM).value("Sample").typeOfAccess(PolicyAccessEnum.RESTRICTED).build();
+        List<UsagePolicies> usagePolicies = new ArrayList<>();
+        UsagePolicies usagePolicy = UsagePolicies.builder().type(UsagePolicyEnum.CUSTOM).value("Sample").typeOfAccess(PolicyAccessEnum.RESTRICTED).build();
         usagePolicies.add(usagePolicy);
         ConsumerRequest consumerRequest = mock(ConsumerRequest.class);
         when(consumerRequest.getOffers()).thenReturn(new ArrayList<>());

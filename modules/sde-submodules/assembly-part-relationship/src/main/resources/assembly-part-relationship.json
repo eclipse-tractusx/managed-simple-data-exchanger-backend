@@ -39,7 +39,7 @@
 		},
 		"properties": {
 			"parent_uuid": {
-				"type": "string",
+				"type": ["string"],
 				"title": "Parent UUID",
 				"minLength": 1,
 				"examples": [
@@ -47,7 +47,7 @@
 				]
 			},
 			"parent_part_instance_id": {
-				"type": "string",
+				"type": ["string"],
 				"title": "Parent Part instance ID",
 				"minLength": 1,
 				"examples": [
@@ -55,7 +55,7 @@
 				]
 			},
 			"parent_manufacturer_part_id": {
-				"type": "string",
+				"type": ["string"],
 				"title": "Parent Part instance ID",
 				"minLength": 1,
 				"examples": [
@@ -89,7 +89,7 @@
 				]
 			},
 			"uuid": {
-				"type": "string",
+				"type": ["string"],
 				"title": "UUID URN",
 				"minLength": 1,
 				"examples": [
@@ -97,7 +97,7 @@
 				]
 			},
 			"part_instance_id": {
-				"type": "string",
+				"type": ["string"],
 				"minLength": 1,
 				"title": "Part instance ID",
 				"examples": [
@@ -105,7 +105,7 @@
 				]
 			},
 			"manufacturer_part_id": {
-				"type": "string",
+				"type": ["string"],
 				"minLength": 1,
 				"title": "Manufacturer part ID",
 				"examples": [
@@ -139,7 +139,7 @@
 				]
 			},
 			"lifecycle_context": {
-				"type": "string",
+				"type": ["string"],
 				"minLength": 1,
 				"title": "lifecycle_context",
 				"examples": [
@@ -147,7 +147,7 @@
 				]
 			},
 			"quantity_number": {
-				"type": "number",
+				"type": ["number"],
 				"minLength": 1,
 				"title": "quantity_number",
 				"examples": [
@@ -155,7 +155,7 @@
 				]
 			},
 			"measurement_unit_lexical_value": {
-				"type": "string",
+				"type": ["string"],
 				"title": "Measurement unit lexical value",
 				"minLength": 1,
 				"examples": [

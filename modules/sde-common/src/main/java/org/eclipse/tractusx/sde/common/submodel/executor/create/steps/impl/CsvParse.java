@@ -61,15 +61,12 @@ public class CsvParse extends Step {
 			}
 		}
 
-		jsonRecordValidate.init(getSubmodelSchema());
-		jsonRecordValidate.run(rowData.position(), rowjObject);
-
 		return rowjObject;
 	}
 
 	private boolean isDateFormatField(JsonObject jObject, String fieldValue) {
 		return jObject.get("format") != null && "date-time".equals(jObject.get("format").getAsString())
-				&& fieldValue != null;
+				&& fieldValue != null && !fieldValue.isBlank();
 	}
 
 	private boolean isNumberTypeField(JsonObject jObject, String fieldValue) {

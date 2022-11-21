@@ -38,11 +38,10 @@ import lombok.AllArgsConstructor;
 @Service
 @AllArgsConstructor
 public class SingleLevelBoMAsPlannedService {
-	
+
 	private final SingleLevelBoMAsPlannedRepository singleLevelBoMAsPlannedRepository;
 
 	private final SingleLevelBoMAsPlannedMapper singleLevelBoMAsPlannedMapper;
-
 
 	private final DeleteEDCFacilitator deleteEDCFacilitator;
 
@@ -63,7 +62,8 @@ public class SingleLevelBoMAsPlannedService {
 
 	public void deleteAllDataBySequence(JsonObject jsonObject) {
 
-		SingleLevelBoMAsPlannedEntity singleLevelBoMAsPlannedEntity = singleLevelBoMAsPlannedMapper.mapforEntity(jsonObject);
+		SingleLevelBoMAsPlannedEntity singleLevelBoMAsPlannedEntity = singleLevelBoMAsPlannedMapper
+				.mapforEntity(jsonObject);
 
 		deleteDigitalTwinsFacilitator.deleteDigitalTwinsById(singleLevelBoMAsPlannedEntity.getShellId());
 
@@ -84,7 +84,9 @@ public class SingleLevelBoMAsPlannedService {
 	}
 
 	public JsonObject readCreatedTwinsDetails(String uuid) {
-		List<SingleLevelBoMAsPlannedEntity> entities = singleLevelBoMAsPlannedRepository.findByParentCatenaXId(uuid);
+		List<SingleLevelBoMAsPlannedEntity> entities = Optional
+				.ofNullable(singleLevelBoMAsPlannedRepository.findByParentCatenaXId(uuid))
+				.orElseThrow(() -> new NoDataFoundException("No data found uuid " + uuid));
 		return singleLevelBoMAsPlannedMapper.mapToResponse(uuid, entities);
 	}
 

@@ -4,17 +4,17 @@
 	"type": "array",
 	"id": "partasplanned",
 	"idShort": "partAsPlanned",
-	"version":"1.0.0",
-    "semantic_id":"urn:bamm:io.catenax.part_as_planned:1.0.0#PartAsPlanned",
-	"title": "BoM As-Planned - Submodel PartAsPlanned",
+	"version": "1.0.0",
+	"semantic_id": "urn:bamm:io.catenax.part_as_planned:1.0.0#PartAsPlanned",
+	"title": "Part AsPlanned",
+	"description": "BoM As-Planned - Submodel PartAsPlanned",
 	"items": {
 		"type": "object",
-		"title": "Part As Planned",
 		"required": [
 			"uuid",
-            "manufacturer_part_id",
-            "classification",
-            "name_at_manufacturer"
+			"manufacturer_part_id",
+			"classification",
+			"name_at_manufacturer"
 		],
 		"dependentRequired": {},
 		"properties": {
@@ -23,18 +23,42 @@
 					"string",
 					"null"
 				],
-				"pattern": "^[urn:uuid]{8}:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+				"pattern": "^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
 				"title": "UUID URN",
 				"examples": [
 					"urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf34dfa4c2"
 				]
 			},
-            "manufacturer_part_id": {
-				"type": ["string"],
+			"manufacturer_part_id": {
+				"type": [
+					"string"
+				],
 				"minLength": 1,
 				"title": "Manufacturer part ID",
 				"examples": [
 					"37754B7-76"
+				]
+			},
+			"valid_from": {
+				"type": [
+					"string",
+					"null"
+				],
+				"format": "date-time",
+				"title": "Valid From",
+				"examples": [
+					"2022-06-14T06:55:29.935Z"
+				]
+			},
+			"valid_to": {
+				"type": [
+					"string",
+					"null"
+				],
+				"format": "date-time",
+				"title": "Valid To",
+				"examples": [
+					"2022-06-14T06:55:29.935Z"
 				]
 			},
 			"customer_part_id": {
@@ -47,30 +71,10 @@
 					"Currently missing the syntax"
 				]
 			},
-            "valid_from": {
-				"type": [
-					"string",
-					"null"
-				],
-				"format": "date-time",
-				"title": "Valid From",
-				"examples": [
-					"2022-06-14T06:55:29.935Z"
-				]
-			},
-            "valid_to": {
-				"type": [
-					"string",
-					"null"
-				],
-				"format": "date-time",
-				"title": "Valid To",
-				"examples": [
-					"2022-06-14T06:55:29.935Z"
-				]
-			},
 			"classification": {
-				"type": ["string"],
+				"type": [
+					"string"
+				],
 				"enum": [
 					"product",
 					"raw material",
@@ -85,7 +89,9 @@
 				]
 			},
 			"name_at_manufacturer": {
-				"type": ["string"],
+				"type": [
+					"string"
+				],
 				"minLength": 1,
 				"title": "Name at manufacturer",
 				"examples": [
@@ -95,14 +101,14 @@
 		}
 	},
 	"examples": [
-			{
-				"uuid": "urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2",
-				"manufacturer_part_id": "37754B7-76",
-				"customer_part_id" : "Currently missing the syntax",
-				"valid_from": "2021-06-14T06:55:29.935Z",
-				"valid_to": "2022-06-14T06:55:29.935Z",
-                "classification": "component",
-                "name_at_manufacturer": "Sensor"
-			}
-		]
+		{
+			"uuid": "urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2",
+			"manufacturer_part_id": "37754B7-76",
+			"valid_from": "2021-06-14T06:55:29.935Z",
+			"valid_to": "2022-06-14T06:55:29.935Z",
+			"classification": "component",
+			"customer_part_id": "Currently missing the syntax",
+			"name_at_manufacturer": "Sensor"
+		}
+	]
 }

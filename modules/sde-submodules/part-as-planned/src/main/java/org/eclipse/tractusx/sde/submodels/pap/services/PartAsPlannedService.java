@@ -38,7 +38,7 @@ import lombok.AllArgsConstructor;
 @Service
 @AllArgsConstructor
 public class PartAsPlannedService {
-	
+
 	private final PartAsPlannedRepository partAsPlannedRepository;
 
 	private final PartAsPlannedMapper partAsPlannedMapper;
@@ -48,17 +48,17 @@ public class PartAsPlannedService {
 	private final DeleteDigitalTwinsFacilitator deleteDigitalTwinsFacilitator;
 
 	public List<JsonObject> readCreatedTwinsforDelete(String refProcessId) {
-		
-		return Optional.ofNullable(
-				Optional.ofNullable(partAsPlannedRepository.findByProcessId(refProcessId))
-				.filter(a -> !a.isEmpty())
-		        .orElseThrow(() -> new NoDataFoundException(String.format("No data found for processid %s ", refProcessId)))
-				.stream().filter(e -> !PartAsPlannedConstants.DELETED_Y.equals(e.getDeleted()))
-				.map(partAsPlannedMapper::mapFromEntity)
-				.toList())
-				.filter(a -> !a.isEmpty())
-				.orElseThrow(() -> new NoDataFoundException("No data founds for deletion, All records are already deleted"));
-		
+
+		return Optional
+				.ofNullable(Optional.ofNullable(partAsPlannedRepository.findByProcessId(refProcessId))
+						.filter(a -> !a.isEmpty())
+						.orElseThrow(() -> new NoDataFoundException(
+								String.format("No data found for processid %s ", refProcessId)))
+						.stream().filter(e -> !PartAsPlannedConstants.DELETED_Y.equals(e.getDeleted()))
+						.map(partAsPlannedMapper::mapFromEntity).toList())
+				.filter(a -> !a.isEmpty()).orElseThrow(
+						() -> new NoDataFoundException("No data founds for deletion, All records are already deleted"));
+
 	}
 
 	public void deleteAllDataBySequence(JsonObject jsonObject) {
@@ -79,15 +79,14 @@ public class PartAsPlannedService {
 	}
 
 	private void saveAspectWithDeleted(PartAsPlannedEntity aspectEntity) {
-		
+
 		aspectEntity.setDeleted(PartAsPlannedConstants.DELETED_Y);
 		partAsPlannedRepository.save(aspectEntity);
 	}
 
 	public JsonObject readCreatedTwinsDetails(String uuid) {
-		return partAsPlannedMapper.mapToResponse(partAsPlannedRepository.findByUuid(uuid));
+		return partAsPlannedMapper.mapToResponse(Optional.ofNullable(partAsPlannedRepository.findByUuid(uuid))
+				.orElseThrow(() -> new NoDataFoundException("No data found uuid " + uuid)));
 	}
-	
-	
 
 }

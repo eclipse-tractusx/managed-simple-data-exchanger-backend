@@ -40,6 +40,10 @@ public abstract class Step {
 		return this.submodelSchema.get("semantic_id").getAsString();
 	}
 	
+	public String getSubmodelDescriptionOfModel() {
+		return this.submodelSchema.get("description").getAsString();
+	}
+	
 	public String getSubmodelTitleIdOfModel() {
 		return this.submodelSchema.get("title").getAsString();
 	}

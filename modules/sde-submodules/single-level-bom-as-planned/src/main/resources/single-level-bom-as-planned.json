@@ -6,10 +6,10 @@
 	"idShort": "singleLevelBomAsPlanned",
 	"version":"1.0.1",
     "semantic_id":"urn:bamm:io.catenax.single_level_bom_as_planned:1.0.1#SingleLevelBomAsPlanned",
-	"title": "BoM As-Planned - Submodel SingleLevelBomAsPlanned",
+	"title": "Single Level Bom AsPlanned",
+	"description": "BoM As-Planned - Submodel SingleLevelBomAsPlanned",
 	"items": {
 		"type": "object",
-		"title": "Aspect Model Single level bill of material as planned",
 		"required": [
             "parent_uuid",
             "parent_manufacturer_part_id",
@@ -25,7 +25,7 @@
 			"parent_uuid": {
 				"type": ["string"],
 				"minLength": 1,
-				"pattern": "^[urn:uuid]{8}:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+				"pattern": "^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
 				"title": "UUID URN",
 				"examples": [
 					"urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf34dfa4c2"
@@ -43,7 +43,7 @@
 				"type": ["string"],
 				"minLength": 1,
 				"title": "Child UUID",
-				"pattern": "^[urn:uuid]{8}:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+				"pattern": "^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
 				"examples": [
 					"urn:uuid:5daB938E-Cafa-92B3-7ca1-9aD7885e9dC8"
 				]

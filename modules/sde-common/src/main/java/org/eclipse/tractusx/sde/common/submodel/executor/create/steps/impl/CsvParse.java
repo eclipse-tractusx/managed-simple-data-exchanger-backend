@@ -7,7 +7,6 @@ import org.eclipse.tractusx.sde.common.entities.csv.RowData;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
 import org.eclipse.tractusx.sde.common.exception.ValidationException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -20,9 +19,6 @@ import lombok.SneakyThrows;
 
 @Component
 public class CsvParse extends Step {
-
-	@Autowired
-	private JsonRecordValidate jsonRecordValidate;
 
 	@SneakyThrows
 	public ObjectNode run(RowData rowData, ObjectNode rowjObject, String processId) {
@@ -47,12 +43,7 @@ public class CsvParse extends Step {
 
 				fieldValue = fieldValue.trim();
 
-				if (isNumberTypeField(jObject, fieldValue))
-					rowjObject.put(ele, Integer.parseInt(fieldValue));
-				else if (isDateFormatField(jObject, fieldValue)) {
-					rowjObject.put(ele, fieldValue.toUpperCase().endsWith("Z") ? fieldValue : fieldValue + "Z");
-				} else
-					rowjObject.put(ele, fieldValue);
+				setFieldValue(rowjObject, ele, jObject, fieldValue);
 
 				colomnIndex++;
 
@@ -64,9 +55,25 @@ public class CsvParse extends Step {
 		return rowjObject;
 	}
 
-	private boolean isDateFormatField(JsonObject jObject, String fieldValue) {
-		return jObject.get("format") != null && "date-time".equals(jObject.get("format").getAsString())
-				&& fieldValue != null && !fieldValue.isBlank();
+	private void setFieldValue(ObjectNode rowjObject, String ele, JsonObject jObject, String fieldValue) {
+		
+		if (isNumberTypeField(jObject, fieldValue))
+			rowjObject.put(ele, Integer.parseInt(fieldValue));
+		else if (isDateFormatField(jObject)) {
+
+			if (fieldValue.isBlank())
+				fieldValue = null;
+			else
+				fieldValue = fieldValue.toUpperCase().endsWith("Z") ? fieldValue : fieldValue + "Z";
+			
+			rowjObject.put(ele, fieldValue);
+			
+		} else
+			rowjObject.put(ele, fieldValue);
+	}
+
+	private boolean isDateFormatField(JsonObject jObject) {
+		return jObject.get("format") != null && "date-time".equals(jObject.get("format").getAsString());
 	}
 
 	private boolean isNumberTypeField(JsonObject jObject, String fieldValue) {

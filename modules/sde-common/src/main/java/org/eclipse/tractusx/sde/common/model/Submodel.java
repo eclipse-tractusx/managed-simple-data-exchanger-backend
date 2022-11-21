@@ -26,8 +26,6 @@ public class Submodel {
 
 	private String version;
 	
-	private String title;
-	
 	private String semanticId;
 	
 	private String usecases;

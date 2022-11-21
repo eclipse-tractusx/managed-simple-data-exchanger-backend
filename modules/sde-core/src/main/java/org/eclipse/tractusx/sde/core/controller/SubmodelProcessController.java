@@ -66,7 +66,7 @@ public class SubmodelProcessController {
 		return ok().body(processId);
 	}
 
-	@GetMapping(value = "/{submodel}/public/{uuid}", consumes = APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/{submodel}/public/{uuid}")
 	public ResponseEntity<Map<Object, Object>> readCreatedTwinsDetails(@PathVariable("submodel") String submodel,
 			@PathVariable("uuid") String uuid) {
 

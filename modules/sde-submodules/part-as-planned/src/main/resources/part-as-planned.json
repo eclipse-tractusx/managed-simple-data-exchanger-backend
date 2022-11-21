@@ -42,7 +42,7 @@
 					"string",
 					"null"
 				],
-				"title": "customer Part Id",
+				"title": "Customer Part Id",
 				"examples": [
 					"Currently missing the syntax"
 				]
@@ -53,7 +53,7 @@
 					"null"
 				],
 				"format": "date-time",
-				"title": "valid From",
+				"title": "Valid From",
 				"examples": [
 					"2022-06-14T06:55:29.935Z"
 				]
@@ -64,7 +64,7 @@
 					"null"
 				],
 				"format": "date-time",
-				"title": "valid To",
+				"title": "Valid To",
 				"examples": [
 					"2022-06-14T06:55:29.935Z"
 				]

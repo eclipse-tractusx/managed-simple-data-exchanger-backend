@@ -61,15 +61,16 @@
 					"string",
 					"null"
 				],
-				"title": "customer Part Id",
+				"title": "Customer Part Id",
 				"examples": [
 					"Currently missing the syntax"
 				]
 			},
             "quantity_number": {
-				"type": ["Number"],
+				"type": ["number"],
 				"minLength": 1,
-                "format":"double",
+                "format":"number",
+                "multipleOf": 0.01,
 				"title": "Quantity Number",
 				"examples": [
 					2.5
@@ -78,7 +79,7 @@
             "measurement_unit_lexical_value": {
 				"type": ["string"],
 				"minLength": 1,
-				"title": "lexical Value",
+				"title": "Lexical Value",
 				"examples": [
 					"litre",
                     "unit"
@@ -87,7 +88,7 @@
             "datatype_url": {
 				"type": ["string"],
 				"minLength": 1,
-				"title": "datatype URL",
+				"title": "Datatype URL",
 				"examples": [
 					"urn:bamm:io.openmanufacturing:meta-model:1.0.0#curie"
 				]
@@ -96,7 +97,7 @@
 				"type": ["string"],
 				"minLength": 1,
 				"format": "date-time",
-				"title": "created On",
+				"title": "Created On",
 				"examples": [
 					"2022-02-03T14:48:54.709Z"
 				]
@@ -104,7 +105,7 @@
 			 "last_modified_on": {
 				"type": ["string"],
 				"format": "date-time",
-				"title": "last Modified On",
+				"title": "Last Modified On",
 				"examples": [
 					"2022-02-03T14:48:54.709Z"
 				]

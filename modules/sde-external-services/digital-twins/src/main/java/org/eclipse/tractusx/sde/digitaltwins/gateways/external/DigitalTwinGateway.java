@@ -29,9 +29,11 @@ import java.util.Map;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.CreateSubModelRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellDescriptorRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellLookupRequest;
+import org.eclipse.tractusx.sde.digitaltwins.entities.request.UpdateShellAndSubmoduleRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellLookupResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelListResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -61,6 +63,9 @@ public class DigitalTwinGateway {
     private static final String CLIENT_SECRET_TOKEN_QUERY_PARAMETER = "client_secret";
     private static final String GRANT_TYPE_TOKEN_QUERY_PARAMETER = "grant_type";
     private static final String ACCESS_TOKEN = "access_token";
+    
+    @Autowired
+    private DigitalTwinsFeignClient digitalTwinsFeignClient;
 
     private String accessToken;
 
@@ -183,6 +188,22 @@ public class DigitalTwinGateway {
         }
         return responseBody;
     }
+    
+	@SneakyThrows
+	public ResponseEntity<Object> updateDigitalTwinAndSubModuule(String shellId, String subModuleId,
+			UpdateShellAndSubmoduleRequest updateDigitalTwins) {
+		ResponseEntity<Object> response = null;
+		try {
+			Map<String, String> headers = new HashMap<>();
+			headers.put(AUTHORIZATION, getBearerToken());
+
+			response = digitalTwinsFeignClient.updateDigitalTwinAndSubModuule(shellId, headers, updateDigitalTwins);
+		} catch (Exception e) {
+			throw new Exception("Exception in Digital Twins Update request process");
+		}
+		return response;
+	}
+	
 
     @SneakyThrows
     private String getBearerToken() {

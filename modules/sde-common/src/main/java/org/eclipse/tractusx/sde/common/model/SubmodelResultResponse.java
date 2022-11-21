@@ -36,4 +36,8 @@ public class SubmodelResultResponse {
     private ManufacturingInformation manufacturingInformation;
     private String catenaXId;
     private PartTypeInformation partTypeInformation;
+    private String contractDefinationId;
+    private String usagePolicyId;
+    private String assetId; 
+    private String accessPolicyId;
 }

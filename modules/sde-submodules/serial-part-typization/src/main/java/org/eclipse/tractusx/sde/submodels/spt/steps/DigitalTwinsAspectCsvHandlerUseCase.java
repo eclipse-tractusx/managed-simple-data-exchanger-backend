@@ -37,6 +37,7 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.common.SemanticId;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.CreateSubModelRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellDescriptorRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellLookupRequest;
+import org.eclipse.tractusx.sde.digitaltwins.entities.request.UpdateShellAndSubmoduleRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellLookupResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelListResponse;
@@ -108,9 +109,21 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends Step {
 			gateway.createSubModel(shellId, createSubModelRequest);
 			aspect.setSubModelId(createSubModelRequest.getIdentification());
 		} else {
-			throw new CsvHandlerDigitalTwinUseCaseException(
-					String.format("serialPartTypization submodels already exist/found with Shell id %s for %s", shellId,
-							shellLookupRequest.toJsonString()));
+			logDebug("Inside Update Digital Twins");
+			ShellDescriptorRequest aasDescriptorRequest = updateShellDescriptorRequest(aspect);
+			List<CreateSubModelRequest> submodelDescriptors = new ArrayList<>();
+			CreateSubModelRequest createSubModelRequest = updateSubModelRequest(aspect, subModelResponse);
+			submodelDescriptors.add(createSubModelRequest);
+			UpdateShellAndSubmoduleRequest updateDigitalTwins = UpdateShellAndSubmoduleRequest.builder()
+					.idShort(aasDescriptorRequest.getIdShort()).globalAssetId(aasDescriptorRequest.getGlobalAssetId())
+					.specificAssetIds(aasDescriptorRequest.getSpecificAssetIds()).identification(shellId)
+					.submodelDescriptors(submodelDescriptors).build();
+
+			aspect.setSubModelId(createSubModelRequest.getIdentification());
+			gateway.updateDigitalTwinAndSubModuule(shellId,
+					createSubModelRequest.getIdentification(), updateDigitalTwins);
+			logDebug("Complete Digital Twins Update Update Digital Twins");
+
 		}
 
 		return aspect;
@@ -146,16 +159,29 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends Step {
 		return CreateSubModelRequest.builder().idShort(ID_SHORT).identification(identification).semanticId(semanticId)
 				.endpoints(endpoints).build();
 	}
+	
+	private CreateSubModelRequest updateSubModelRequest(Aspect aspect,SubModelListResponse subModelResponse) {
+		ArrayList<String> value = new ArrayList<>();
+		value.add(SEMANTIC_ID);
+		SemanticId semanticId = new SemanticId(value);
+		String identification = subModelResponse.get(0).getIdentification();
+				List<Endpoint> endpoints = new ArrayList<>();
+		endpoints.add(Endpoint.builder().endpointInterface(HTTP)
+				.protocolInformation(ProtocolInformation.builder()
+						.endpointAddress(String.format(String.format("%s%s/%s-%s%s", edcEndpoint.replace("data", ""),
+								manufacturerId, aspect.getShellId(), identification,
+								"/submodel?content=value&extent=WithBLOBValue")))
+						.endpointProtocol(HTTPS).endpointProtocolVersion(ENDPOINT_PROTOCOL_VERSION).build())
+				.build());
+
+		return CreateSubModelRequest.builder().idShort(ID_SHORT).identification(identification).semanticId(semanticId)
+				.endpoints(endpoints).build();
+	}
 
 	private ShellDescriptorRequest getShellDescriptorRequest(Aspect aspect) {
 		ArrayList<KeyValuePair> specificIdentifiers = new ArrayList<>();
-		specificIdentifiers.add(new KeyValuePair(PART_INSTANCE_ID, aspect.getPartInstanceId()));
-		specificIdentifiers.add(new KeyValuePair(MANUFACTURER_PART_ID, aspect.getManufacturerPartId()));
-		specificIdentifiers.add(new KeyValuePair(MANUFACTURER_ID, manufacturerId));
-		if (aspect.hasOptionalIdentifier()) {
-			specificIdentifiers
-					.add(new KeyValuePair(aspect.getOptionalIdentifierKey(), aspect.getOptionalIdentifierValue()));
-		}
+		setSpecifiers(specificIdentifiers,aspect);
+	
 		List<String> values = new ArrayList<>();
 		values.add(aspect.getUuid());
 		GlobalAssetId globalIdentifier = new GlobalAssetId(values);
@@ -166,4 +192,30 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends Step {
 				.globalAssetId(globalIdentifier).specificAssetIds(specificIdentifiers)
 				.identification(PREFIX + UUID.randomUUID()).build();
 	}
+	
+	private ShellDescriptorRequest updateShellDescriptorRequest(Aspect aspect) {
+		ArrayList<KeyValuePair> specificIdentifiers = new ArrayList<>();
+		setSpecifiers(specificIdentifiers,aspect);
+		List<String> values = new ArrayList<>();
+		values.add(aspect.getUuid());
+		GlobalAssetId globalIdentifier = new GlobalAssetId(values);
+
+		return ShellDescriptorRequest.builder()
+				.idShort(String.format("%s_%s_%s", aspect.getNameAtManufacturer(), manufacturerId,
+						aspect.getManufacturerPartId()))
+				.globalAssetId(globalIdentifier).specificAssetIds(specificIdentifiers)
+				.identification(aspect.getShellId()).build();
+	}
+	
+	private void setSpecifiers(final ArrayList<KeyValuePair> specificIdentifiers,Aspect aspect)
+	{
+		specificIdentifiers.add(new KeyValuePair(PART_INSTANCE_ID, aspect.getPartInstanceId()));
+		specificIdentifiers.add(new KeyValuePair(MANUFACTURER_PART_ID, aspect.getManufacturerPartId()));
+		specificIdentifiers.add(new KeyValuePair(MANUFACTURER_ID, manufacturerId));
+		if (aspect.hasOptionalIdentifier()) {
+			specificIdentifiers
+					.add(new KeyValuePair(aspect.getOptionalIdentifierKey(), aspect.getOptionalIdentifierValue()));
+		}
+	}
+	
 }

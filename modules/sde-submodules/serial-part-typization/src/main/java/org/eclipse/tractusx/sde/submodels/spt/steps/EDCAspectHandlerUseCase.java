@@ -37,8 +37,12 @@ import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyConstraintBuilderService;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyDefinitionRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyRequestFactory;
+import org.eclipse.tractusx.sde.edc.facilitator.DeleteEDCFacilitator;
 import org.eclipse.tractusx.sde.edc.gateways.external.EDCGateway;
+import org.eclipse.tractusx.sde.submodels.spt.entity.AspectEntity;
+import org.eclipse.tractusx.sde.submodels.spt.mapper.AspectMapper;
 import org.eclipse.tractusx.sde.submodels.spt.model.Aspect;
+import org.eclipse.tractusx.sde.submodels.spt.service.AspectService;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -54,15 +58,21 @@ public class EDCAspectHandlerUseCase extends Step {
 	private final PolicyRequestFactory policyFactory;
 	private final ContractDefinitionRequestFactory contractFactory;
 	private final PolicyConstraintBuilderService policyConstraintBuilderService;
+	private final DeleteEDCFacilitator deleteEDCFacilitator;
+	private final AspectService aspectService;
+	private final AspectMapper aspectMapper;
 
 	public EDCAspectHandlerUseCase(EDCGateway edcGateway, AssetEntryRequestFactory assetFactory,
 			PolicyRequestFactory policyFactory, ContractDefinitionRequestFactory contractFactory,
-			PolicyConstraintBuilderService policyConstraintBuilderService) {
+			PolicyConstraintBuilderService policyConstraintBuilderService,DeleteEDCFacilitator deleteEDCFacilitator,AspectService aspectService,AspectMapper aspectMapper) {
 		this.assetFactory = assetFactory;
 		this.edcGateway = edcGateway;
 		this.policyFactory = policyFactory;
 		this.contractFactory = contractFactory;
 		this.policyConstraintBuilderService = policyConstraintBuilderService;
+		this.deleteEDCFacilitator=deleteEDCFacilitator;
+		this.aspectService=aspectService;
+		this.aspectMapper=aspectMapper;
 	}
 
 	@SneakyThrows
@@ -73,43 +83,18 @@ public class EDCAspectHandlerUseCase extends Step {
 
 		try {
 
-			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel, ASSET_PROP_NAME_ASPECT,shellId, subModelId,
-					input.getUuid());
+			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel, ASSET_PROP_NAME_ASPECT,
+					shellId, subModelId, input.getUuid());
 			if (!edcGateway.assetExistsLookup(assetEntryRequest.getAsset().getProperties().get("asset:prop:id"))) {
 
-				edcGateway.createAsset(assetEntryRequest);
+				edcProcessingforAspect(assetEntryRequest, input);
 
-				List<ConstraintRequest> usageConstraints = policyConstraintBuilderService
-						.getUsagePolicyConstraints(input.getUsagePolicies());
-				List<ConstraintRequest> accessConstraints = policyConstraintBuilderService
-						.getAccessConstraints(input.getBpnNumbers());
+			} else {
 
-				String customValue = getCustomValue(input);
-				if (StringUtils.isNotBlank(customValue)) {
-					extensibleProperties.put(UsagePolicyEnum.CUSTOM.name(), customValue);
-				}
-
-				PolicyDefinitionRequest accessPolicyDefinitionRequest = policyFactory.getPolicy(shellId, subModelId,
-						accessConstraints, new HashMap<>());
-				PolicyDefinitionRequest usagePolicyDefinitionRequest = policyFactory.getPolicy(shellId, subModelId,
-						usageConstraints, extensibleProperties);
-
-				edcGateway.createPolicyDefinition(accessPolicyDefinitionRequest);
-
-				edcGateway.createPolicyDefinition(usagePolicyDefinitionRequest);
-
-				ContractDefinitionRequest contractDefinitionRequest = contractFactory.getContractDefinitionRequest(
-						assetEntryRequest.getAsset().getProperties().get("asset:prop:id"),
-						accessPolicyDefinitionRequest.getId(), usagePolicyDefinitionRequest.getId());
-
-				edcGateway.createContractDefinition(contractDefinitionRequest);
-
-				// EDC transaction information for DB
-				input.setAssetId(assetEntryRequest.getAsset().getProperties().get("asset:prop:id"));
-				input.setAccessPolicyId(accessPolicyDefinitionRequest.getId());
-				input.setUsagePolicyId(usagePolicyDefinitionRequest.getId());
-				input.setContractDefinationId(contractDefinitionRequest.getId());
-
+				// Delete code Goes here
+				deleteEDCFirstForUpdate(submodel, input, processId);
+				/// Add new COde for asset, contract defination, usage policy, access policy.
+				edcProcessingforAspect(assetEntryRequest, input);
 			}
 
 			return input;
@@ -117,6 +102,59 @@ public class EDCAspectHandlerUseCase extends Step {
 			throw new CsvHandlerUseCaseException(input.getRowNumber(), "EDC: " + e.getMessage());
 		}
 	}
+
+	@SneakyThrows
+	private void deleteEDCFirstForUpdate(String submodel, Aspect input, String processId) {
+		AspectEntity aspectEntity = aspectMapper.mapforEntity(aspectService.readCreatedTwinsDetails(input.getUuid()));
+		deleteEDCFacilitator.deleteContractDefination(aspectEntity.getContractDefinationId());
+
+		deleteEDCFacilitator.deleteAccessPolicy(aspectEntity.getAccessPolicyId());
+
+		deleteEDCFacilitator.deleteUsagePolicy(aspectEntity.getUsagePolicyId());
+
+		deleteEDCFacilitator.deleteAssets(aspectEntity.getAssetId());
+	}
+	
+	@SneakyThrows
+	private void edcProcessingforAspect(AssetEntryRequest assetEntryRequest, Aspect input) {
+		HashMap<String, String> extensibleProperties = new HashMap<>();
+
+		String shellId = input.getShellId();
+		String subModelId = input.getSubModelId();
+		edcGateway.createAsset(assetEntryRequest);
+
+		List<ConstraintRequest> usageConstraints = policyConstraintBuilderService
+				.getUsagePolicyConstraints(input.getUsagePolicies());
+		List<ConstraintRequest> accessConstraints = policyConstraintBuilderService
+				.getAccessConstraints(input.getBpnNumbers());
+
+		String customValue = getCustomValue(input);
+		if (StringUtils.isNotBlank(customValue)) {
+			extensibleProperties.put(UsagePolicyEnum.CUSTOM.name(), customValue);
+		}
+
+		PolicyDefinitionRequest accessPolicyDefinitionRequest = policyFactory.getPolicy(shellId, subModelId,
+				accessConstraints, new HashMap<>());
+		PolicyDefinitionRequest usagePolicyDefinitionRequest = policyFactory.getPolicy(shellId, subModelId,
+				usageConstraints, extensibleProperties);
+
+		edcGateway.createPolicyDefinition(accessPolicyDefinitionRequest);
+
+		edcGateway.createPolicyDefinition(usagePolicyDefinitionRequest);
+
+		ContractDefinitionRequest contractDefinitionRequest = contractFactory.getContractDefinitionRequest(
+				assetEntryRequest.getAsset().getProperties().get("asset:prop:id"),
+				accessPolicyDefinitionRequest.getId(), usagePolicyDefinitionRequest.getId());
+
+		edcGateway.createContractDefinition(contractDefinitionRequest);
+
+		// EDC transaction information for DB
+		input.setAssetId(assetEntryRequest.getAsset().getProperties().get("asset:prop:id"));
+		input.setAccessPolicyId(accessPolicyDefinitionRequest.getId());
+		input.setUsagePolicyId(usagePolicyDefinitionRequest.getId());
+		input.setContractDefinationId(contractDefinitionRequest.getId());
+	}
+
 
 	private String getCustomValue(Aspect input) {
 		if (!CollectionUtils.isEmpty(input.getUsagePolicies())) {

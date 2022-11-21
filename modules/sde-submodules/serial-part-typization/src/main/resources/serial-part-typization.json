@@ -37,7 +37,7 @@
 				]
 			},
 			"part_instance_id": {
-				"type": "string",
+				"type": ["string"],
 				"title": "Part instance ID",
 				"minLength": 1,
 				"examples": [

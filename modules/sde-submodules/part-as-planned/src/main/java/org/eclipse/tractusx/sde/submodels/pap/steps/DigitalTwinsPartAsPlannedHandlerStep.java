@@ -94,7 +94,7 @@ public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 			partAsPlannedAspect.setSubModelId(createSubModelRequest.getIdentification());
 		} else {
 			throw new CsvHandlerDigitalTwinUseCaseException(
-					String.format("serialPartTypization submodels already exist/found with Shell id %s for %s", shellId,
+					String.format("PartAsPlanned submodels already exist/found with Shell id %s for %s", shellId,
 							shellLookupRequest.toJsonString()));
 		}
 
@@ -107,9 +107,7 @@ public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 		shellLookupRequest.addLocalIdentifier(PartAsPlannedConstants.MANUFACTURER_PART_ID,partAsPlannedAspect.getManufacturerPartId());
 		shellLookupRequest.addLocalIdentifier(PartAsPlannedConstants.MANUFACTURER_ID,partAsPlannedConstants.getManufacturerId());
 		shellLookupRequest.addLocalIdentifier(PartAsPlannedConstants.ASSET_LIFECYCLE_PHASE,PartAsPlannedConstants.AS_PLANNED);
-		if (!partAsPlannedAspect.getCustomerPartId().isBlank()) {
-			shellLookupRequest.addLocalIdentifier(PartAsPlannedConstants.CUSTOMER_PART_ID,partAsPlannedAspect.getCustomerPartId());
-		}
+		
 		return shellLookupRequest;
 	}
 
@@ -145,9 +143,7 @@ public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 		specificIdentifiers.add(new KeyValuePair(PartAsPlannedConstants.MANUFACTURER_PART_ID, partAsPlannedAspect.getManufacturerPartId()));
 		specificIdentifiers.add(new KeyValuePair(PartAsPlannedConstants.MANUFACTURER_ID, partAsPlannedConstants.getManufacturerId()));
 		specificIdentifiers.add(new KeyValuePair(PartAsPlannedConstants.ASSET_LIFECYCLE_PHASE,PartAsPlannedConstants.AS_PLANNED));
-		if (!partAsPlannedAspect.getCustomerPartId().isBlank()) {
-			specificIdentifiers.add(new KeyValuePair(PartAsPlannedConstants.CUSTOMER_PART_ID,partAsPlannedAspect.getCustomerPartId()));
-		}
+		
 		List<String> values = new ArrayList<>();
 		values.add(partAsPlannedAspect.getUuid());
 		GlobalAssetId globalIdentifier = new GlobalAssetId(values);

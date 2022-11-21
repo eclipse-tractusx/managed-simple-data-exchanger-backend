@@ -21,17 +21,21 @@ package org.eclipse.tractusx.sde.submodels.pap.model;
 
 import java.util.List;
 
-import org.eclipse.tractusx.sde.common.entities.UsagePolicy;
+import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PartAsPlanned {
 
     @JsonProperty(value ="shell_id")
@@ -69,8 +73,8 @@ public class PartAsPlanned {
 	@JsonProperty(value ="type_of_access")
 	private String typeOfAccess;
 	
-	@JsonProperty(value ="usage_policy")
-	private List<UsagePolicy> usagePolicies;
+	@JsonProperty(value ="usage_policies")
+	private List<UsagePolicies> usagePolicies;
 
 	@JsonProperty(value ="manufacturer_part_id")
 	private String manufacturerPartId;

@@ -12,7 +12,7 @@
 		"title": "Aspect Model Single level bill of material as planned",
 		"required": [
             "parent_uuid",
-            "parent_manufacturer_part_id"
+            "parent_manufacturer_part_id",
             "child_uuid",
             "child_manufacturer_part_id",
             "quantity_number",
@@ -20,9 +20,11 @@
             "datatype_url",
             "created_on"
 		],
+		"dependentRequired": {},
 		"properties": {
 			"parent_uuid": {
-				"type": "string",
+				"type": ["string"],
+				"minLength": 1,
                 "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
 				"title": "UUID URN",
 				"examples": [
@@ -30,14 +32,16 @@
 				]
 			},
             "parent_manufacturer_part_id": {
-				"type": "string",
+				"type": ["string"],
+				"minLength": 1,
 				"title": "Parent Manufacturer part ID",
 				"examples": [
 					"37754B7-76"
 				]
 			},
 			"child_uuid": {
-				"type": "string",
+				"type": ["string"],
+				"minLength": 1,
                 "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
 				"title": "Child UUID",
 				"examples": [
@@ -45,21 +49,26 @@
 				]
 			},
 			"child_manufacturer_part_id": {
-				"type": "string",
+				"type": ["string"],
+				"minLength": 1,
 				"title": "Child Manufacturer part ID",
 				"examples": [
 					"37754B7-76"
 				]
 			},
 			"customer_part_id": {
-				"type": "string",
+				"type": [
+					"string",
+					"null"
+				],
 				"title": "customer Part Id",
 				"examples": [
 					"Currently missing the syntax"
 				]
 			},
             "quantity_number": {
-				"type": "Number",
+				"type": ["Number"],
+				"minLength": 1,
                 "format":"double",
 				"title": "Quantity Number",
 				"examples": [
@@ -67,7 +76,8 @@
 				]
 			},
             "measurement_unit_lexical_value": {
-				"type": "string",
+				"type": ["string"],
+				"minLength": 1,
 				"title": "lexical Value",
 				"examples": [
 					"litre",
@@ -75,14 +85,16 @@
 				]
 			},
             "datatype_url": {
-				"type": "string",
+				"type": ["string"],
+				"minLength": 1,
 				"title": "datatype URL",
 				"examples": [
 					"urn:bamm:io.openmanufacturing:meta-model:1.0.0#curie"
 				]
 			},
 			 "created_on": {
-				"type": "string",
+				"type": ["string"],
+				"minLength": 1,
 				"format": "date-time",
 				"title": "created On",
 				"examples": [
@@ -90,7 +102,7 @@
 				]
 			},
 			 "last_modified_on": {
-				"type": "string",
+				"type": ["string"],
 				"format": "date-time",
 				"title": "last Modified On",
 				"examples": [

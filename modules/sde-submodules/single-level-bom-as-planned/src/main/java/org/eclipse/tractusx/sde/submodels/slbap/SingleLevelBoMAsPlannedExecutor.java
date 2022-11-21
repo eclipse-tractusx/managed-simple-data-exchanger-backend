@@ -70,23 +70,27 @@ public class SingleLevelBoMAsPlannedExecutor extends SubmodelExecutor {
 		csvParseStep.init(getSubmodelSchema());
 		csvParseStep.run(rowData, jsonObject, processId);
 
-		nextSteps(jsonObject, processId);
+		nextSteps(rowData.position(), jsonObject, processId);
 	}
 
 	@SneakyThrows
 	public void executeJsonRecord(Integer rowIndex, ObjectNode jsonObject, String processId) {
-		
-		jsonRecordValidate.init(getSubmodelSchema());
-		jsonRecordValidate.run(rowIndex, jsonObject);
 
-		nextSteps(jsonObject, processId);
+		nextSteps(rowIndex, jsonObject, processId);
+
 	}
 	
-	private void nextSteps(ObjectNode jsonObject, String processId) throws CsvHandlerDigitalTwinUseCaseException {
+	private void nextSteps(Integer rowIndex, ObjectNode jsonObject, String processId) throws CsvHandlerDigitalTwinUseCaseException {
 
 		SingleLevelBoMAsPlanned singleLevelBoMAsPlanned = singleLevelBoMAsPlannedMapper.mapFrom(jsonObject);
 
 		generateUrnUUID.run(singleLevelBoMAsPlanned, processId);
+		
+		jsonObject.put("uuid",singleLevelBoMAsPlanned.getChildUuid());
+		jsonObject.put("parent_uuid",singleLevelBoMAsPlanned.getParentUuid());
+		
+		jsonRecordValidate.init(getSubmodelSchema());
+		jsonRecordValidate.run(rowIndex, jsonObject);
 
 		digitalTwinsHandlerStep.init(getSubmodelSchema());
 		digitalTwinsHandlerStep.run(singleLevelBoMAsPlanned);

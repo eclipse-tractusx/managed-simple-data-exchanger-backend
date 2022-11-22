@@ -35,6 +35,7 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.common.SemanticId;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.CreateSubModelRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellDescriptorRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellLookupRequest;
+import org.eclipse.tractusx.sde.digitaltwins.entities.request.UpdateShellAndSubmoduleRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellLookupResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelListResponse;
@@ -106,9 +107,20 @@ public class DigitalTwinsBatchCsvHandlerUseCase extends Step {
 			gateway.createSubModel(shellId, createSubModelRequest);
 			batch.setSubModelId(createSubModelRequest.getIdentification());
 		} else {
-			throw new CsvHandlerDigitalTwinUseCaseException(
-					String.format("Batch submodels already exist/found with Shell id %s for %s", shellId,
-							shellLookupRequest.toJsonString()));
+			logDebug("Inside Update Digital Twins");
+			ShellDescriptorRequest aasDescriptorRequest = updateShellDescriptorRequest(batch);
+			List<CreateSubModelRequest> submodelDescriptors = new ArrayList<>();
+			CreateSubModelRequest createSubModelRequest = updateSubModelRequest(batch, subModelResponse);
+			submodelDescriptors.add(createSubModelRequest);
+			UpdateShellAndSubmoduleRequest updateDigitalTwins = UpdateShellAndSubmoduleRequest.builder()
+					.idShort(aasDescriptorRequest.getIdShort()).globalAssetId(aasDescriptorRequest.getGlobalAssetId())
+					.specificAssetIds(aasDescriptorRequest.getSpecificAssetIds()).identification(shellId)
+					.submodelDescriptors(submodelDescriptors).build();
+
+			batch.setSubModelId(createSubModelRequest.getIdentification());
+			gateway.updateDigitalTwinAndSubModuule(shellId,
+					createSubModelRequest.getIdentification(), updateDigitalTwins);
+			logDebug("Complete Digital Twins Update Update Digital Twins");
 		}
 
 		return batch;
@@ -146,13 +158,7 @@ public class DigitalTwinsBatchCsvHandlerUseCase extends Step {
 
 	private ShellDescriptorRequest getShellDescriptorRequest(Batch batch) {
 		ArrayList<KeyValuePair> specificIdentifiers = new ArrayList<>();
-		specificIdentifiers.add(new KeyValuePair(BATCH_ID, batch.getBatchId()));
-		specificIdentifiers.add(new KeyValuePair(MANUFACTURER_PART_ID, batch.getManufacturerPartId()));
-		specificIdentifiers.add(new KeyValuePair(MANUFACTURER_ID, manufacturerId));
-		if (batch.hasOptionalIdentifier()) {
-			specificIdentifiers
-					.add(new KeyValuePair(batch.getOptionalIdentifierKey(), batch.getOptionalIdentifierValue()));
-		}
+		setSpecifiers(specificIdentifiers,batch);
 		List<String> values = new ArrayList<>();
 		values.add(batch.getUuid());
 		GlobalAssetId globalIdentifier = new GlobalAssetId(values);
@@ -162,5 +168,48 @@ public class DigitalTwinsBatchCsvHandlerUseCase extends Step {
 						batch.getManufacturerPartId()))
 				.globalAssetId(globalIdentifier).specificAssetIds(specificIdentifiers)
 				.identification(PREFIX + UUID.randomUUID()).build();
+	}
+	
+	private ShellDescriptorRequest updateShellDescriptorRequest(Batch batch) {
+		ArrayList<KeyValuePair> specificIdentifiers = new ArrayList<>();
+		setSpecifiers(specificIdentifiers,batch);
+		List<String> values = new ArrayList<>();
+		values.add(batch.getUuid());
+		GlobalAssetId globalIdentifier = new GlobalAssetId(values);
+
+		return ShellDescriptorRequest.builder()
+				.idShort(String.format("%s_%s_%s", batch.getNameAtManufacturer(), manufacturerId,
+						batch.getManufacturerPartId()))
+				.globalAssetId(globalIdentifier).specificAssetIds(specificIdentifiers)
+				.identification(batch.getShellId()).build();
+	}
+	
+	private CreateSubModelRequest updateSubModelRequest(Batch batch,SubModelListResponse subModelResponse) {
+		ArrayList<String> value = new ArrayList<>();
+		value.add(SEMANTIC_ID);
+		SemanticId semanticId = new SemanticId(value);
+		String identification = subModelResponse.get(0).getIdentification();
+				List<Endpoint> endpoints = new ArrayList<>();
+		endpoints.add(Endpoint.builder().endpointInterface(HTTP)
+				.protocolInformation(ProtocolInformation.builder()
+						.endpointAddress(String.format(String.format("%s%s/%s-%s%s", edcEndpoint.replace("data", ""),
+								manufacturerId, batch.getShellId(), identification,
+								"/submodel?content=value&extent=WithBLOBValue")))
+						.endpointProtocol(HTTPS).endpointProtocolVersion(ENDPOINT_PROTOCOL_VERSION).build())
+				.build());
+
+		return CreateSubModelRequest.builder().idShort(ID_SHORT).identification(identification).semanticId(semanticId)
+				.endpoints(endpoints).build();
+	}
+	
+	private void setSpecifiers(final ArrayList<KeyValuePair> specificIdentifiers,Batch batch)
+	{
+		specificIdentifiers.add(new KeyValuePair(BATCH_ID, batch.getBatchId()));
+		specificIdentifiers.add(new KeyValuePair(MANUFACTURER_PART_ID, batch.getManufacturerPartId()));
+		specificIdentifiers.add(new KeyValuePair(MANUFACTURER_ID, manufacturerId));
+		if (batch.hasOptionalIdentifier()) {
+			specificIdentifiers
+					.add(new KeyValuePair(batch.getOptionalIdentifierKey(), batch.getOptionalIdentifierValue()));
+		}
 	}
 }

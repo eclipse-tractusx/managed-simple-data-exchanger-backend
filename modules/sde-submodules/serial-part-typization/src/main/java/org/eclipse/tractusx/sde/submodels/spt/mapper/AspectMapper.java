@@ -93,10 +93,6 @@ public abstract class AspectMapper {
 				.manufacturerPartID(entity.getManufacturerPartId()).customerPartId(entity.getCustomerPartId())
 				.classification(entity.getClassification()).nameAtManufacturer(entity.getNameAtManufacturer())
 				.nameAtCustomer(entity.getNameAtCustomer()).build();
-	//	entity.getShellId()
-		//entity.getAccessPolicyId()
-	//	entity.getUsagePolicyId()
-	//	entity.getContractDefinationId()
 
 		return new Gson().toJsonTree(SubmodelResultResponse.builder().localIdentifiers(localIdentifiers)
 				.manufacturingInformation(manufacturingInformation).partTypeInformation(partTypeInformation)

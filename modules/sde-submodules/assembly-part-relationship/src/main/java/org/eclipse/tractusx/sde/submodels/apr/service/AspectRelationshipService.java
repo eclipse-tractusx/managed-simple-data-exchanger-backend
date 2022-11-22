@@ -71,5 +71,6 @@ public class AspectRelationshipService {
 
 		return aspectRelationshipMapper.mapToResponse(uuid, entities);
 	}
-
+	
+	
 }

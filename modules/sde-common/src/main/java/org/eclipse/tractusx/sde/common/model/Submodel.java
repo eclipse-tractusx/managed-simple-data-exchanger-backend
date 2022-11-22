@@ -26,6 +26,8 @@ public class Submodel {
 
 	private String version;
 	
+	private String semanticId;
+	
 	private String usecases;
 	
 	private JsonObject schema;

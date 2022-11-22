@@ -15,11 +15,11 @@ public class GenerateUrnUUID extends Step {
 	public ObjectNode run(ObjectNode jsonObject, String processId) {
 
 		String uUID = jsonObject.get("uuid").asText();
-		if (uUID == null || uUID.isBlank()) {
-			jsonObject.put("uiid", UUIdGenerator.getUrnUuid());
+		if (uUID == null || uUID.isBlank() || uUID.equals("null")) {
+			jsonObject.put("uuid", UUIdGenerator.getUrnUuid());
 		} else if (!uUID.startsWith(UUIdGenerator.URN_UUID_PREFIX)) {
 			String concat = UUIdGenerator.URN_UUID_PREFIX.concat(uUID);
-			jsonObject.put("uiid", concat);
+			jsonObject.put("uuid", concat);
 		}
 		return jsonObject;
 	}

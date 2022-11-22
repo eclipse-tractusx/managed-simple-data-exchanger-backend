@@ -30,17 +30,17 @@ public class AspectService {
 	private final DeleteDigitalTwinsFacilitator deleteDigitalTwinsFacilitator;
 
 	public List<JsonObject> readCreatedTwinsforDelete(String refProcessId) {
-		
-		return Optional.ofNullable(
-				Optional.ofNullable(aspectRepository.findByProcessId(refProcessId))
-				.filter(a -> !a.isEmpty())
-		        .orElseThrow(() -> new NoDataFoundException(String.format("No data found for processid %s ", refProcessId)))
-				.stream().filter(e -> !DELETED_Y.equals(e.getDeleted()))
-				.map(aspectMapper::mapFromEntity)
-				.toList())
-				.filter(a -> !a.isEmpty())
-				.orElseThrow(() -> new NoDataFoundException("No data founds for deletion, All records are already deleted"));
-		
+
+		return Optional
+				.ofNullable(Optional.ofNullable(aspectRepository.findByProcessId(refProcessId))
+						.filter(a -> !a.isEmpty())
+						.orElseThrow(() -> new NoDataFoundException(
+								String.format("No data found for processid %s ", refProcessId)))
+						.stream().filter(e -> !DELETED_Y.equals(e.getDeleted())).map(aspectMapper::mapFromEntity)
+						.toList())
+				.filter(a -> !a.isEmpty()).orElseThrow(
+						() -> new NoDataFoundException("No data founds for deletion, All records are already deleted"));
+
 	}
 
 	public void deleteAllDataBySequence(JsonObject jsonObject) {
@@ -66,9 +66,8 @@ public class AspectService {
 	}
 
 	public JsonObject readCreatedTwinsDetails(String uuid) {
-		return aspectMapper.mapToResponse(aspectRepository.findByUuid(uuid));
+		return aspectMapper.mapToResponse(Optional.ofNullable(aspectRepository.findByUuid(uuid)).orElseThrow(
+				() -> new NoDataFoundException("No data found uuid "+uuid)));
 	}
-	
-	
 
 }

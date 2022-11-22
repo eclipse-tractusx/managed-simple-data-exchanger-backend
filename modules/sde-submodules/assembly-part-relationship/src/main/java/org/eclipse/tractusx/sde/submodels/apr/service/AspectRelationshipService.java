@@ -65,7 +65,10 @@ public class AspectRelationshipService {
 	}
 
 	public JsonObject readCreatedTwinsDetails(String uuid) {
-		List<AspectRelationshipEntity> entities = aspectRelationshipRepository.findByParentCatenaXId(uuid);
+		List<AspectRelationshipEntity> entities = Optional
+				.ofNullable(aspectRelationshipRepository.findByParentCatenaXId(uuid))
+				.orElseThrow(() -> new NoDataFoundException("No data found uuid " + uuid));
+
 		return aspectRelationshipMapper.mapToResponse(uuid, entities);
 	}
 

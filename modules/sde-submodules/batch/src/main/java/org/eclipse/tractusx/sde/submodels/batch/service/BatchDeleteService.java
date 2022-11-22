@@ -30,16 +30,15 @@ public class BatchDeleteService {
 	private final DeleteDigitalTwinsFacilitator deleteDigitalTwinsFacilitator;
 
 	public List<JsonObject> readCreatedTwinsforDelete(String refProcessId) {
-		
-		return Optional.ofNullable(
-				Optional.ofNullable(batchRepository.findByProcessId(refProcessId))
-				.filter(a -> !a.isEmpty())
-		        .orElseThrow(() -> new NoDataFoundException(String.format("No data found for processid %s ", refProcessId)))
-				.stream().filter(e -> !DELETED_Y.equals(e.getDeleted()))
-				.map(batchMapper::mapFromEntity)
-				.toList())
-				.filter(a -> !a.isEmpty())
-				.orElseThrow(() -> new NoDataFoundException("No data founds for deletion, All records are already deleted"));
+
+		return Optional
+				.ofNullable(Optional.ofNullable(batchRepository.findByProcessId(refProcessId)).filter(a -> !a.isEmpty())
+						.orElseThrow(() -> new NoDataFoundException(
+								String.format("No data found for processid %s ", refProcessId)))
+						.stream().filter(e -> !DELETED_Y.equals(e.getDeleted())).map(batchMapper::mapFromEntity)
+						.toList())
+				.filter(a -> !a.isEmpty()).orElseThrow(
+						() -> new NoDataFoundException("No data founds for deletion, All records are already deleted"));
 	}
 
 	public void deleteAllDataBySequence(JsonObject jsonObject) {
@@ -65,7 +64,8 @@ public class BatchDeleteService {
 	}
 
 	public JsonObject readCreatedTwinsDetails(String uuid) {
-		return batchMapper.mapToResponse(batchRepository.findByUuid(uuid));
+		return batchMapper.mapToResponse(Optional.ofNullable(batchRepository.findByUuid(uuid))
+				.orElseThrow(() -> new NoDataFoundException("No data found uuid " + uuid)));
 	}
 
 }

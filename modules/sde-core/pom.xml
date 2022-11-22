@@ -115,6 +115,18 @@
 			<version>0.0.1</version>
 		</dependency>
 		
+		<dependency>
+			<groupId>org.eclipse</groupId>
+			<artifactId>part-as-planned</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.eclipse</groupId>
+			<artifactId>single-level-bom-as-planned</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+		
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>

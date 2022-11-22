@@ -6,10 +6,10 @@
 	"idShort": "Batch",
 	"version": "1.0.0",
 	"semantic_id": "urn:bamm:org.eclipse.batch:1.0.0#Batch",
-	"title": "List of Batch",
+	"title": "Batch",
+	"description": "Batch",
 	"items": {
 		"type": "object",
-		"title": "Batch",
 		"required": [
 			"batch_id",
 			"manufacturing_date",
@@ -31,13 +31,16 @@
 					"string",
 					"null"
 				],
+				"pattern": "^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
 				"title": "UUID URN",
 				"examples": [
 					"urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2"
 				]
 			},
 			"batch_id": {
-				"type": ["string"],
+				"type": [
+					"string"
+				],
 				"title": "Batch ID",
 				"minLength": 1,
 				"examples": [
@@ -45,7 +48,9 @@
 				]
 			},
 			"manufacturing_date": {
-				"type": ["string"],
+				"type": [
+					"string"
+				],
 				"format": "date-time",
 				"title": "Manufacturing Date",
 				"examples": [
@@ -64,7 +69,9 @@
 				]
 			},
 			"manufacturer_part_id": {
-				"type": ["string"],
+				"type": [
+					"string"
+				],
 				"minLength": 1,
 				"title": "Manufacturer part ID",
 				"examples": [
@@ -82,7 +89,9 @@
 				]
 			},
 			"classification": {
-				"type": ["string"],
+				"type": [
+					"string"
+				],
 				"enum": [
 					"product",
 					"raw material",
@@ -97,7 +106,9 @@
 				]
 			},
 			"name_at_manufacturer": {
-				"type": ["string"],
+				"type": [
+					"string"
+				],
 				"minLength": 1,
 				"title": "Name at manufacturer",
 				"examples": [
@@ -126,7 +137,7 @@
 				],
 				"title": "Optional identifier key",
 				"examples": [
-					"Key"
+					"VAN"
 				]
 			},
 			"optional_identifier_value": {
@@ -152,7 +163,7 @@
 			"classification": "component",
 			"name_at_manufacturer": "Sensor",
 			"name_at_customer": "Sensor",
-			"optional_identifier_key": "Key",
+			"optional_identifier_key": "VAN",
 			"optional_identifier_value": "Value"
 		}
 	]

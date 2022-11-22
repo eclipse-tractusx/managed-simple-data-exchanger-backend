@@ -46,28 +46,32 @@ public class AssemblyPartRelationshipExecutor extends SubmodelExecutor {
 
 	@SneakyThrows
 	public void executeCsvRecord(RowData rowData, ObjectNode jsonObject, String processId) {
-
+		
 		csvParseStep.init(getSubmodelSchema());
-
 		csvParseStep.run(rowData, jsonObject, processId);
 
-		nextSteps(jsonObject, processId);
+		nextSteps(rowData.position(), jsonObject, processId);
+
 	}
 
 	@SneakyThrows
 	public void executeJsonRecord(Integer rowIndex, ObjectNode jsonObject, String processId) {
 
-		jsonRecordValidate.init(getSubmodelSchema());
-		jsonRecordValidate.run(rowIndex, jsonObject);
+		nextSteps(rowIndex, jsonObject, processId);
 
-		nextSteps(jsonObject, processId);
 	}
 
-	private void nextSteps(ObjectNode jsonObject, String processId) throws CsvHandlerDigitalTwinUseCaseException {
+	private void nextSteps(Integer rowIndex, ObjectNode jsonObject, String processId) throws CsvHandlerDigitalTwinUseCaseException {
 
 		AspectRelationship aspectRelationship = aspectRelationshipMapper.mapFrom(jsonObject);
 
 		generateUrnUUID.run(aspectRelationship, processId);
+		
+		jsonObject.put("uuid",aspectRelationship.getChildUuid());
+		jsonObject.put("parent_uuid",aspectRelationship.getParentUuid());
+		
+		jsonRecordValidate.init(getSubmodelSchema());
+		jsonRecordValidate.run(rowIndex, jsonObject);
 
 		digitalTwinsAspectRelationShipCsvHandlerUseCase.run(aspectRelationship);
 

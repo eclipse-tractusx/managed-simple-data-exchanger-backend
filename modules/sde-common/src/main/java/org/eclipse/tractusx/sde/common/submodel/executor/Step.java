@@ -28,6 +28,26 @@ public abstract class Step {
 		return getSubmodelItems().get("required").getAsJsonArray();
 	}
 	
+	public String getIdShortOfModel() {
+		return this.submodelSchema.get("idShort").getAsString();
+	}
+	
+	public String getVersionOfModel() {
+		return this.submodelSchema.get("version").getAsString();
+	}
+	
+	public String getsemanticIdOfModel() {
+		return this.submodelSchema.get("semantic_id").getAsString();
+	}
+	
+	public String getSubmodelDescriptionOfModel() {
+		return this.submodelSchema.get("description").getAsString();
+	}
+	
+	public String getSubmodelTitleIdOfModel() {
+		return this.submodelSchema.get("title").getAsString();
+	}
+	
 	public JsonObject getSubmodelDependentRequiredFields() {
 		return getSubmodelItems().get("dependentRequired").getAsJsonObject();
 	}

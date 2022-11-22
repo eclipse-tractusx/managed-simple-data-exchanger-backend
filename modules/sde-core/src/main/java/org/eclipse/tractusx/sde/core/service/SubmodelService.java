@@ -31,6 +31,8 @@ public class SubmodelService {
 			Map<String, String> sbBuild = new LinkedHashMap<>();
 			sbBuild.put("id", obj.getId());
 			sbBuild.put("name", obj.getName());
+			sbBuild.put("version", obj.getVersion());
+			sbBuild.put("semanticId", obj.getSemanticId());
 			ls.add(sbBuild);
 		});
 		return ls;

@@ -53,7 +53,7 @@ public class SingleLevelBoMAsPlannedEntity implements Serializable {
     private String measurementUnitLexicalValue;
     
     @Column(name = "datatype_uri")
-    private String dataTypeUri;
+    private String datatypeURI;
     
     @Column(name = "created_on")
 	private String createdOn;

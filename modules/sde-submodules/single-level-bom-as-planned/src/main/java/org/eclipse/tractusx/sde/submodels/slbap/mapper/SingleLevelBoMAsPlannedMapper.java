@@ -80,7 +80,7 @@ public abstract class SingleLevelBoMAsPlannedMapper {
 		Quantity quantity = Quantity.builder().quantityNumber(entity.getQuantityNumber())
 							.measurementUnit(MeasurementUnit.builder()
 									.lexicalValue(entity.getMeasurementUnitLexicalValue())
-									.datatypeURI(entity.getDataTypeUri())
+									.datatypeURI(entity.getDatatypeURI())
 									.build())
 							.build();
 

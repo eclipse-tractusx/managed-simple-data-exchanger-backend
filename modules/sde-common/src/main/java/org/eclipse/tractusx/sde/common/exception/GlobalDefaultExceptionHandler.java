@@ -28,6 +28,7 @@ import javax.validation.ConstraintViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -45,36 +46,41 @@ public class GlobalDefaultExceptionHandler extends ResponseEntityExceptionHandle
 		return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
 	}
 
-	
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<String> handlePSQLException(Exception ex, WebRequest request) {
-		return new ResponseEntity<>("", HttpStatus.INTERNAL_SERVER_ERROR);
+		return new ResponseEntity<>("Internal Server error", HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@ExceptionHandler(ValidationException.class)
 	public ResponseEntity<String> handleValidationException(ValidationException ex, WebRequest request) {
 		return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
 	}
-	
+
 	@ExceptionHandler(ConstraintViolationException.class)
-	public ResponseEntity<String> handleConstraintValidationException(ConstraintViolationException ex, WebRequest request) {
+	public ResponseEntity<String> handleConstraintValidationException(ConstraintViolationException ex,
+			WebRequest request) {
 		return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
 	}
 
-	
-	
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
 			HttpHeaders headers, HttpStatus status, WebRequest request) {
-		
+
 		Map<String, String> errors = new HashMap<>();
 		ex.getBindingResult().getAllErrors().forEach(error -> {
 			String fieldName = ((FieldError) error).getField();
 			String errorMessage = error.getDefaultMessage();
 			errors.put(fieldName, errorMessage);
 		});
-		
+
 		return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
 	}
-	
+
+	@ExceptionHandler(AccessDeniedException.class)
+	public final ResponseEntity<String> handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {
+		return new ResponseEntity<>(
+				"You don't have access to this page or the page doesn't exist. Please contact your admin",
+				HttpStatus.FORBIDDEN);
+	}
+
 }

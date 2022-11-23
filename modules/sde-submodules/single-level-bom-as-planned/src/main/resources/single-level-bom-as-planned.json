@@ -17,7 +17,7 @@
 			"child_manufacturer_part_id",
 			"quantity_number",
 			"measurement_unit_lexical_value",
-			"datatype_url",
+			"datatype_uri",
 			"created_on"
 		],
 		"dependentRequired": {
@@ -136,12 +136,12 @@
 		{
 			"parent_uuid": "urn:uuid:055c1128-0375-47c8-98de-7cf802c3241d",
 			"parent_manufacturer_part_id": "37754B7-76",
-			"uuid": "urn:uuid:5daB938E-Cafa-92B3-7ca1-9aD7885e9dC8",
+			"child_uuid": "urn:uuid:5daB938E-Cafa-92B3-7ca1-9aD7885e9dC8",
 			"child_manufacturer_part_id": "37754B7-76",
 			"customer_part_id": "AsPlanned",
 			"quantity_number": 2.5,
 			"measurement_unit_lexical_value": "litre",
-			"datatype_url": "urn:bamm:io.openmanufacturing:meta-model:1.0.0#curie",
+			"datatype_uri": "urn:bamm:io.openmanufacturing:meta-model:1.0.0#curie",
 			"created_on": "2022-02-03T14:48:54.709Z",
 			"last_modified_on": "2022-02-03T14:48:54.709Z"
 		}

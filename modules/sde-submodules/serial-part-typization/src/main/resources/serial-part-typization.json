@@ -39,7 +39,7 @@
 			},
 			"part_instance_id": {
 				"type": ["string"],
-				"title": "Part instance ID",
+				"title": "Part Instance ID",
 				"minLength": 1,
 				"examples": [
 					"NO-159040131155901488695376"
@@ -59,7 +59,7 @@
 					"null"
 				],
 				"pattern": "[A-Z]{3}|null|^$",
-				"title": "Manufacturing country",
+				"title": "Manufacturing Country",
 				"examples": [
 					"DEU"
 				]
@@ -67,7 +67,7 @@
 			"manufacturer_part_id": {
 				"type": ["string"],
 				"minLength": 1,
-				"title": "Manufacturer part ID",
+				"title": "Manufacturer Part ID",
 				"examples": [
 					"37754B7-76"
 				]
@@ -77,7 +77,7 @@
 					"string",
 					"null"
 				],
-				"title": "Customer part ID",
+				"title": "Customer Part ID",
 				"examples": [
 					"37754B7-76"
 				]
@@ -100,7 +100,7 @@
 			"name_at_manufacturer": {
 				"type": ["string"],
 				"minLength": 1,
-				"title": "Name at manufacturer",
+				"title": "Name At Manufacturer",
 				"examples": [
 					"Sensor"
 				]
@@ -110,7 +110,7 @@
 					"string",
 					"null"
 				],
-				"title": "Name at customer",
+				"title": "Name At Customer",
 				"examples": [
 					"Sensor"
 				]
@@ -125,7 +125,7 @@
 					"BatchID",
 					""
 				],
-				"title": "Optional identifier key",
+				"title": "Optional Identifier Key",
 				"examples": [
 					"VAN"
 				]
@@ -135,7 +135,7 @@
 					"string",
 					"null"
 				],
-				"title": "Optional identifier value",
+				"title": "Optional Identifier Value",
 				"examples": [
 					"Value"
 				]

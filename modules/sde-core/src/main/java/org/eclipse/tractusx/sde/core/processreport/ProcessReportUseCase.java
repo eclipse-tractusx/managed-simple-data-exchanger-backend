@@ -107,9 +107,9 @@ public class ProcessReportUseCase {
 		return result.map(mapper::mapFrom).orElse(null);
 	}
 
-	public void finishBuildProgressReport(String processId, int deletedCount, int failedCount) {
+	public void finishBuildProgressReport(String processId, int deletedCount, int failedCount, int updatedcount) {
 		repository.finalizeProgressReport(processId, LocalDateTime.now(), ProgressStatusEnum.COMPLETED.toString(),
-				deletedCount, failedCount);
+				deletedCount, failedCount,updatedcount);
 
 	}
 

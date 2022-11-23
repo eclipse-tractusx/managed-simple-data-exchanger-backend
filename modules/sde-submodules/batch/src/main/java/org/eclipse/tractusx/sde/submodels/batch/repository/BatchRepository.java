@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.eclipse.tractusx.sde.common.enums.OptionalIdentifierKeyEnum;
 import org.eclipse.tractusx.sde.submodels.batch.entity.BatchEntity;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 public interface BatchRepository extends CrudRepository<BatchEntity, String> {
@@ -48,4 +49,8 @@ public interface BatchRepository extends CrudRepository<BatchEntity, String> {
 	BatchEntity findByUuid(String uuid);
 
 	List<BatchEntity> findByProcessId(String processId);
+	
+	
+	@Query("select count(be) from BatchEntity be where be.updated = ?1 and be.processId = ?2")
+	long countByUpdatedAndProcessId(String updated, String processId);
 }

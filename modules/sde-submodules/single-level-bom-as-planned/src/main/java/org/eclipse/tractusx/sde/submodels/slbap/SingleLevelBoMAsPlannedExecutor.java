@@ -115,4 +115,12 @@ public class SingleLevelBoMAsPlannedExecutor extends SubmodelExecutor {
 	public JsonObject readCreatedTwinsDetails(String uuid) {
 		return singleLevelBoMAsPlannedService.readCreatedTwinsDetails(uuid);
 	}
+
+	@Override
+	public int getUpdatedRecordCount(String updated, String processId) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+
 }

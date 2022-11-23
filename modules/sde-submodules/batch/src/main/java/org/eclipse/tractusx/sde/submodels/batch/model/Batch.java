@@ -106,6 +106,9 @@ public class Batch {
 
 	@JsonProperty(value = "deleted")
 	private String deleted;
+	
+	@JsonProperty(value = "updated")
+	private String updated;
 
 	public boolean hasOptionalIdentifier() {
 		boolean hasKey = this.getOptionalIdentifierKey() != null && !this.getOptionalIdentifierKey().isBlank();

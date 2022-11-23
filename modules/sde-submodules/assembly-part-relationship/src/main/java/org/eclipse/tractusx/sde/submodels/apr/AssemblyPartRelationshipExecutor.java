@@ -94,4 +94,10 @@ public class AssemblyPartRelationshipExecutor extends SubmodelExecutor {
 	public JsonObject readCreatedTwinsDetails(String uuid) {
 		return aspectRelationshipService.readCreatedTwinsDetails(uuid);
 	}
+
+	@Override
+	public int getUpdatedRecordCount(String updated, String processId) {
+		return aspectRelationshipService.getUpdatedData(updated, processId);
+	}
+
 }

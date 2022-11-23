@@ -72,5 +72,11 @@ public class AspectRelationshipService {
 		return aspectRelationshipMapper.mapToResponse(uuid, entities);
 	}
 	
+	public int getUpdatedData(String updated,String refProcessId) {
+		
+		return (int)aspectRelationshipRepository.countByUpdatedAndProcessId(updated,refProcessId);
+	}
+	
+	
 	
 }

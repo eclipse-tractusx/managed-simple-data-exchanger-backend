@@ -1,8 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 Critical TechWorks GmbH
- * Copyright (c) 2022 BMW GmbH
  * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,21 +18,11 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.submodels.apr.repository;
+ ALTER TABLE aspect
+    ADD updated                   TEXT NULL;
 
-import java.util.List;
+ALTER TABLE aspect_relationship
+    ADD updated                   TEXT NULL;
 
-import org.eclipse.tractusx.sde.submodels.apr.entity.AspectRelationshipEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-
-public interface AspectRelationshipRepository extends JpaRepository<AspectRelationshipEntity, String> {
-
-	List<AspectRelationshipEntity> findByParentCatenaXId(String parentCatenaXId);
-
-	List<AspectRelationshipEntity> findByProcessId(String processId);
-
-	@Query("select count(ar) from AspectRelationshipEntity ar where ar.updated = ?1 and ar.processId = ?2")
-	long countByUpdatedAndProcessId(String updated, String processId);
-	
-}
+ ALTER TABLE batch
+ 	ADD updated                   TEXT NULL;

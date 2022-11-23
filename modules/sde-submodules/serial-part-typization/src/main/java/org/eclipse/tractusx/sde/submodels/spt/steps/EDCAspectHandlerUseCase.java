@@ -52,6 +52,7 @@ import lombok.SneakyThrows;
 public class EDCAspectHandlerUseCase extends Step {
 
 	private static final String ASSET_PROP_NAME_ASPECT = "Serialized Part - Submodel SerialPartTypization";
+	private static final String UPDATED_Y = "Y";
     
 	private final AssetEntryRequestFactory assetFactory;
 	private final EDCGateway edcGateway;
@@ -77,7 +78,6 @@ public class EDCAspectHandlerUseCase extends Step {
 
 	@SneakyThrows
 	public Aspect run(String submodel, Aspect input, String processId) {
-		HashMap<String, String> extensibleProperties = new HashMap<>();
 		String shellId = input.getShellId();
 		String subModelId = input.getSubModelId();
 
@@ -91,10 +91,9 @@ public class EDCAspectHandlerUseCase extends Step {
 
 			} else {
 
-				// Delete code Goes here
 				deleteEDCFirstForUpdate(submodel, input, processId);
-				/// Add new COde for asset, contract defination, usage policy, access policy.
 				edcProcessingforAspect(assetEntryRequest, input);
+				input.setUpdated(UPDATED_Y);
 			}
 
 			return input;

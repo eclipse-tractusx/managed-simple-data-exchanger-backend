@@ -67,5 +67,10 @@ public class BatchDeleteService {
 		return batchMapper.mapToResponse(Optional.ofNullable(batchRepository.findByUuid(uuid))
 				.orElseThrow(() -> new NoDataFoundException("No data found uuid " + uuid)));
 	}
+	
+	public int getUpdatedData(String updated,String refProcessId) {
+		
+		return (int)batchRepository.countByUpdatedAndProcessId(updated,refProcessId);
+	}
 
 }

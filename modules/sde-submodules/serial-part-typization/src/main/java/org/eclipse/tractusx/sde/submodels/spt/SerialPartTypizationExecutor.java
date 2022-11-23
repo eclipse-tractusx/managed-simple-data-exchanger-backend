@@ -92,4 +92,10 @@ public class SerialPartTypizationExecutor extends SubmodelExecutor {
 		return aspectService.readCreatedTwinsDetails(uuid);
 	}
 
+
+	@Override
+	public  int  getUpdatedRecordCount(String updated,String processId) {
+		return aspectService.getUpdatedData(updated,processId);
+	}
+
 }

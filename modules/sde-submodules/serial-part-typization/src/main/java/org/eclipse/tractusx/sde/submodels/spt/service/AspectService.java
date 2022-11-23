@@ -70,4 +70,13 @@ public class AspectService {
 				() -> new NoDataFoundException("No data found uuid "+uuid)));
 	}
 
+	
+	
+	public int getUpdatedData(String updated,String refProcessId) {
+		
+		return (int)aspectRepository.countByUpdatedAndProcessId(updated,refProcessId);
+	}
+	
+
+
 }

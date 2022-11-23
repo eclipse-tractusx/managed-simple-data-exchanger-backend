@@ -50,6 +50,7 @@ import lombok.SneakyThrows;
 public class EDCBatchHandlerUseCase extends Step {
 
 	private static final String ASSET_PROP_NAME_BATCH = "Batches - Submodel Batch";
+	private static final String UPDATED_Y = "Y";
     
 	private final AssetEntryRequestFactory assetFactory;
 	private final EDCGateway edcGateway;
@@ -87,14 +88,14 @@ public class EDCBatchHandlerUseCase extends Step {
 					shellId, subModelId, input.getUuid());
 			if (!edcGateway.assetExistsLookup(assetEntryRequest.getAsset().getProperties().get("asset:prop:id"))) {
 
-				edcProcessingforAspect(assetEntryRequest, input);
+				edcProcessingforBatch(assetEntryRequest, input);
 
 			} else {
 
-				// Delete code Goes here
 				deleteEDCFirstForUpdate(submodel, input, processId);
-				/// Add new COde for asset, contract defination, usage policy, access policy.
-				edcProcessingforAspect(assetEntryRequest, input);
+				edcProcessingforBatch(assetEntryRequest, input);
+				input.setUpdated(UPDATED_Y);
+				
 			}
 
 			return input;
@@ -118,7 +119,7 @@ public class EDCBatchHandlerUseCase extends Step {
 
 	
 	@SneakyThrows
-	private void edcProcessingforAspect(AssetEntryRequest assetEntryRequest, Batch input) {
+	private void edcProcessingforBatch(AssetEntryRequest assetEntryRequest, Batch input) {
 		HashMap<String, String> extensibleProperties = new HashMap<>();
 
 		String shellId = input.getShellId();

@@ -1,6 +1,7 @@
 package org.eclipse.tractusx.sde.submodels.batch;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.tractusx.sde.common.entities.csv.RowData;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseException;
@@ -62,7 +63,6 @@ public class BatchExecutor extends SubmodelExecutor {
 
 	
 	private void nextSteps(Integer rowIndex, ObjectNode jsonObject, String processId) throws CsvHandlerDigitalTwinUseCaseException {
-
 		generateUrnUUID.run(jsonObject, processId);
 		
 		jsonRecordValidate.init(getSubmodelSchema());
@@ -75,6 +75,7 @@ public class BatchExecutor extends SubmodelExecutor {
 		eDCBatchHandlerUseCase.run(getNameOfModel(), batch, processId);
 
 		storeBatchCsvHandlerUseCase.run(batch);
+	
 	}
 	
 
@@ -91,6 +92,11 @@ public class BatchExecutor extends SubmodelExecutor {
 	@Override
 	public JsonObject readCreatedTwinsDetails(String uuid) {
 		return batchDeleteService.readCreatedTwinsDetails(uuid);
+	}
+	
+	@Override
+	public int getUpdatedRecordCount(String updated, String processId) {
+		return batchDeleteService.getUpdatedData(updated, processId);
 	}
 
 }

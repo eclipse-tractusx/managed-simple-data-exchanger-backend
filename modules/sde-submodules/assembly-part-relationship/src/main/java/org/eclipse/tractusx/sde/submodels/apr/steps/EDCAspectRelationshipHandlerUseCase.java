@@ -59,7 +59,8 @@ import lombok.SneakyThrows;
 public class EDCAspectRelationshipHandlerUseCase extends Step {
 
 	private static final String ASSET_PROP_NAME_ASPECT_RELATIONSHIP = "Serialized Part - Submodel AssemblyPartRelationship";
-	   
+	private static final String UPDATED_Y = "Y";
+	
 	private final AssetEntryRequestFactory assetFactory;
 	private final EDCGateway edcGateway;
 	private final PolicyRequestFactory policyFactory;
@@ -99,10 +100,9 @@ public class EDCAspectRelationshipHandlerUseCase extends Step {
 
 			} else {
 
-				// Delete code Goes here
 				deleteEDCFirstForUpdate(submodel, input, processId);
-				/// Add new COde for asset, contract defination, usage policy, access policy.
 				edcProcessingforAspectRelationship(assetEntryRequest, input);
+				input.setUpdated(UPDATED_Y);
 			}
 
 			return input;
@@ -167,56 +167,6 @@ public class EDCAspectRelationshipHandlerUseCase extends Step {
 		input.setContractDefinationId(contractDefinitionRequest.getId());
 	}
 
-//	@SneakyThrows
-//	public AspectRelationship run1(String submodel, AspectRelationship input, String processId) {
-//
-//		HashMap<String, String> extensibleProperties = new HashMap<>();
-//		String shellId = input.getShellId();
-//		String subModelId = input.getSubModelId();
-//
-//		try {
-//			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel, ASSET_PROP_NAME_ASPECT_RELATIONSHIP,shellId, subModelId,
-//					input.getParentUuid());
-//			if (!edcGateway.assetExistsLookup(assetEntryRequest.getAsset().getProperties().get("asset:prop:id"))) {
-//
-//				edcGateway.createAsset(assetEntryRequest);
-//
-//				List<ConstraintRequest> usageConstraints = policyConstraintBuilderService
-//						.getUsagePolicyConstraints(input.getUsagePolicies());
-//				List<ConstraintRequest> accessConstraints = policyConstraintBuilderService
-//						.getAccessConstraints(input.getBpnNumbers());
-//
-//				String customValue = getCustomValue(input);
-//				if (StringUtils.isNotBlank(customValue)) {
-//					extensibleProperties.put(UsagePolicyEnum.CUSTOM.name(), customValue);
-//				}
-//
-//				PolicyDefinitionRequest accessPolicyDefinitionRequest = policyFactory.getPolicy(shellId, subModelId,
-//						accessConstraints, new HashMap<>());
-//				PolicyDefinitionRequest usagePolicyDefinitionRequest = policyFactory.getPolicy(shellId, subModelId,
-//						usageConstraints, extensibleProperties);
-//
-//				edcGateway.createPolicyDefinition(accessPolicyDefinitionRequest);
-//				edcGateway.createPolicyDefinition(usagePolicyDefinitionRequest);
-//
-//				ContractDefinitionRequest contractDefinitionRequest = contractFactory.getContractDefinitionRequest(
-//						assetEntryRequest.getAsset().getProperties().get("asset:prop:id"),
-//						accessPolicyDefinitionRequest.getId(), usagePolicyDefinitionRequest.getId());
-//				edcGateway.createContractDefinition(contractDefinitionRequest);
-//
-//				// EDC transaction information for DB
-//				input.setAssetId(assetEntryRequest.getAsset().getProperties().get("asset:prop:id"));
-//				input.setAccessPolicyId(accessPolicyDefinitionRequest.getId());
-//				input.setUsagePolicyId(usagePolicyDefinitionRequest.getId());
-//				input.setContractDefinationId(contractDefinitionRequest.getId());
-//
-//			}
-//
-//			return input;
-//		} catch (Exception e) {
-//			throw new CsvHandlerUseCaseException(input.getRowNumber(), "EDC: " + e.getMessage());
-//		}
-//	}
 
 	private String getCustomValue(AspectRelationship input) {
 		if (!CollectionUtils.isEmpty(input.getUsagePolicies())) {

@@ -106,6 +106,8 @@ public class Aspect {
     @JsonProperty(value ="asset_id")
     private String assetId;
     
+	@JsonProperty(value = "updated")
+	private String updated;
 
     public boolean hasOptionalIdentifier() {
         boolean hasKey = this.getOptionalIdentifierKey() != null && !this.getOptionalIdentifierKey().isBlank();

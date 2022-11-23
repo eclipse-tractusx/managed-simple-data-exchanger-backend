@@ -34,7 +34,7 @@
 					"string"
 				],
 				"minLength": 1,
-				"title": "Manufacturer part ID",
+				"title": "Manufacturer Part ID",
 				"examples": [
 					"37754B7-76"
 				]
@@ -93,7 +93,7 @@
 					"string"
 				],
 				"minLength": 1,
-				"title": "Name at manufacturer",
+				"title": "Name At Manufacturer",
 				"examples": [
 					"Sensor"
 				]

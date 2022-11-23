@@ -39,7 +39,7 @@
 					"string"
 				],
 				"minLength": 1,
-				"title": "Parent Manufacturer part ID",
+				"title": "Parent Manufacturer Part ID",
 				"examples": [
 					"37754B7-76"
 				]
@@ -60,7 +60,7 @@
 					"string"
 				],
 				"minLength": 1,
-				"title": "Child Manufacturer part ID",
+				"title": "Child Manufacturer Part ID",
 				"examples": [
 					"37754B7-76"
 				]
@@ -80,7 +80,6 @@
 					"number"
 				],
 				"minLength": 1,
-				"format": "number",
 				"multipleOf": 0.01,
 				"title": "Quantity Number",
 				"examples": [

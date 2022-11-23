@@ -6,7 +6,7 @@
 	"idShort": "partAsPlanned",
 	"version": "1.0.0",
 	"semantic_id": "urn:bamm:io.catenax.part_as_planned:1.0.0#PartAsPlanned",
-	"title": "Part AsPlanned",
+	"title": "PartAsPlanned",
 	"description": "BoM As-Planned - Submodel PartAsPlanned",
 	"items": {
 		"type": "object",

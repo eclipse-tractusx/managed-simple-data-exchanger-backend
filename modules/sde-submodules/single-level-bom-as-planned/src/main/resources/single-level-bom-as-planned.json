@@ -29,7 +29,7 @@
 				],
 				"minLength": 1,
 				"pattern": "^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
-				"title": "UUID URN",
+				"title": "Parent UUID",
 				"examples": [
 					"urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf34dfa4c2"
 				]
@@ -136,7 +136,7 @@
 		{
 			"parent_uuid": "urn:uuid:055c1128-0375-47c8-98de-7cf802c3241d",
 			"parent_manufacturer_part_id": "37754B7-76",
-			"child_uuid": "urn:uuid:5daB938E-Cafa-92B3-7ca1-9aD7885e9dC8",
+			"uuid": "urn:uuid:5daB938E-Cafa-92B3-7ca1-9aD7885e9dC8",
 			"child_manufacturer_part_id": "37754B7-76",
 			"customer_part_id": "AsPlanned",
 			"quantity_number": 2.5,

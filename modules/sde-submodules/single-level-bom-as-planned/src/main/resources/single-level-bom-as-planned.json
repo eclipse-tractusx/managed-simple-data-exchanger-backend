@@ -80,7 +80,6 @@
 					"number"
 				],
 				"minLength": 1,
-				"format": "number",
 				"multipleOf": 0.01,
 				"title": "Quantity Number",
 				"examples": [

@@ -47,87 +47,88 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 @KeycloakConfiguration
-@EnableGlobalMethodSecurity(jsr250Enabled  = true)
+@EnableGlobalMethodSecurity(jsr250Enabled = true, prePostEnabled = true)
 @Import(KeycloakSpringBootConfigResolver.class)
 public class WebSecurityKeyclockConfig extends KeycloakWebSecurityConfigurerAdapter {
 
-	private static final String[] PUBLIC_URL = {"/ping","/*/public/**", "/api-docs/**","/swagger-ui/**"};
-	
+	private static final String[] PUBLIC_URL = { "/ping", "/*/public/**", "/api-docs/**", "/swagger-ui/**"};
+
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		super.configure(http);
 
-        CryptoIntegration.init(this.getClass().getClassLoader());
-		http.csrf().disable().cors()
-		.and().headers().frameOptions().sameOrigin()
-		.and().authorizeRequests().antMatchers(PUBLIC_URL).permitAll()
-		.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-		.and().addFilterAfter(customAuthFilter(),BasicAuthenticationFilter.class).authorizeRequests().anyRequest().authenticated()
- 		.and().headers().xssProtection()
- 		.and().contentSecurityPolicy("default-src 'self'; script-src 'self' 'unsafe-inline'");
+		CryptoIntegration.init(this.getClass().getClassLoader());
+		http.csrf().disable().cors().and().headers().frameOptions().sameOrigin().and().authorizeRequests()
+				.antMatchers(PUBLIC_URL).permitAll().and().sessionManagement()
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+				.addFilterAfter(customAuthFilter(), BasicAuthenticationFilter.class).authorizeRequests().anyRequest()
+				.authenticated().and().headers().xssProtection().and()
+				.contentSecurityPolicy("default-src 'self'; script-src 'self' 'unsafe-inline'");
 
 	}
-	
+
 	@Bean
-	public ApiHeaderAuthFilter customAuthFilter(){
-	  return new ApiHeaderAuthFilter();
+	public ApiHeaderAuthFilter customAuthFilter() {
+		return new ApiHeaderAuthFilter();
 	}
 
 	@Override
-    protected SessionAuthenticationStrategy sessionAuthenticationStrategy() {
-        return new NullAuthenticatedSessionStrategy();
-    }
+	protected SessionAuthenticationStrategy sessionAuthenticationStrategy() {
+		return new NullAuthenticatedSessionStrategy();
+	}
 
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) {
-    	KeycloakAuthenticationProvider keycloakAuthenticationProvider = keycloakAuthenticationProvider();
-		keycloakAuthenticationProvider.setGrantedAuthoritiesMapper(new SimpleAuthorityMapper());
-		auth.authenticationProvider(keycloakAuthenticationProvider);
-    }
+	@Autowired
+	public void configureGlobal(AuthenticationManagerBuilder auth) {
+		KeycloakAuthenticationProvider authenticationProvider = keycloakAuthenticationProvider();
+        var mapper = new SimpleAuthorityMapper();
+        mapper.setPrefix("");
+        authenticationProvider.setGrantedAuthoritiesMapper(mapper);
+        auth.authenticationProvider(authenticationProvider);
+	}
 
-    @Bean
-    public FilterRegistrationBean<Filter> keycloakAuthenticationProcessingFilterRegistrationBean(
-            KeycloakAuthenticationProcessingFilter filter) {
-        FilterRegistrationBean<Filter> registrationBean = new FilterRegistrationBean<>(filter);
+	@Bean
+	public FilterRegistrationBean<Filter> keycloakAuthenticationProcessingFilterRegistrationBean(
+			KeycloakAuthenticationProcessingFilter filter) {
+		FilterRegistrationBean<Filter> registrationBean = new FilterRegistrationBean<>(filter);
 
-        registrationBean.setEnabled(false);
-        return registrationBean;
-    }
+		registrationBean.setEnabled(false);
+		return registrationBean;
+	}
 
-    @Bean
-    public FilterRegistrationBean<Filter> keycloakPreAuthActionsFilterRegistrationBean(
-            KeycloakPreAuthActionsFilter filter) {
+	@Bean
+	public FilterRegistrationBean<Filter> keycloakPreAuthActionsFilterRegistrationBean(
+			KeycloakPreAuthActionsFilter filter) {
 
-        FilterRegistrationBean<Filter> registrationBean = new FilterRegistrationBean<>(filter);
-        registrationBean.setEnabled(false);
-        return registrationBean;
-    }
+		FilterRegistrationBean<Filter> registrationBean = new FilterRegistrationBean<>(filter);
+		registrationBean.setEnabled(false);
+		return registrationBean;
+	}
 
-    @Bean
-    public FilterRegistrationBean<Filter> keycloakAuthenticatedActionsFilterBean(
-            KeycloakAuthenticatedActionsFilter filter) {
+	@Bean
+	public FilterRegistrationBean<Filter> keycloakAuthenticatedActionsFilterBean(
+			KeycloakAuthenticatedActionsFilter filter) {
 
-        FilterRegistrationBean<Filter> registrationBean = new FilterRegistrationBean<>(filter);
+		FilterRegistrationBean<Filter> registrationBean = new FilterRegistrationBean<>(filter);
 
-        registrationBean.setEnabled(false);
-        return registrationBean;
-    }
+		registrationBean.setEnabled(false);
+		return registrationBean;
+	}
 
-    @Bean
-    public FilterRegistrationBean<Filter> keycloakSecurityContextRequestFilterBean(
-            KeycloakSecurityContextRequestFilter filter) {
+	@Bean
+	public FilterRegistrationBean<Filter> keycloakSecurityContextRequestFilterBean(
+			KeycloakSecurityContextRequestFilter filter) {
 
-        FilterRegistrationBean<Filter> registrationBean = new FilterRegistrationBean<>(filter);
+		FilterRegistrationBean<Filter> registrationBean = new FilterRegistrationBean<>(filter);
 
-        registrationBean.setEnabled(false);
+		registrationBean.setEnabled(false);
 
-        return registrationBean;
-    }
+		return registrationBean;
+	}
 
-    @Bean
-    @Override
-    @ConditionalOnMissingBean(HttpSessionManager.class)
-    protected HttpSessionManager httpSessionManager() {
-        return new HttpSessionManager();
-    }
+	@Bean
+	@Override
+	@ConditionalOnMissingBean(HttpSessionManager.class)
+	protected HttpSessionManager httpSessionManager() {
+		return new HttpSessionManager();
+	}
 }

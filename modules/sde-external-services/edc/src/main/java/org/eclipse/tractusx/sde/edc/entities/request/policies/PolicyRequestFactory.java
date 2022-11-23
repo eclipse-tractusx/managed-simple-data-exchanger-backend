@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.tractusx.sde.edc.util.UUIdGenerator;
+import org.eclipse.tractusx.sde.common.utils.UUIdGenerator;
 import org.springframework.stereotype.Service;
 
 @Service

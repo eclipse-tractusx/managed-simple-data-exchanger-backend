@@ -24,7 +24,7 @@ package org.eclipse.tractusx.sde.edc.entities.request.contractdefinition;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.tractusx.sde.edc.util.UUIdGenerator;
+import org.eclipse.tractusx.sde.common.utils.UUIdGenerator;
 import org.springframework.stereotype.Service;
 
 @Service

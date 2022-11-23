@@ -92,8 +92,8 @@ public class SingleLevelBoMAsPlanned {
 	@JsonProperty(value = "measurement_unit_lexical_value")
 	private String measurementUnitLexicalValue;
 	
-	@JsonProperty(value = "datatype_url")
-	private String datatypeUrl;
+	@JsonProperty(value = "datatype_uri")
+	private String datatypeURI;
 	
 	@JsonProperty(value = "created_on")
 	private String createdOn;

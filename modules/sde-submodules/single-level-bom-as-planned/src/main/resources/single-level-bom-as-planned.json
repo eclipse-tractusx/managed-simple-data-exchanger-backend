@@ -13,7 +13,7 @@
 		"required": [
             "parent_uuid",
             "parent_manufacturer_part_id",
-            "child_uuid",
+            "uuid",
             "child_manufacturer_part_id",
             "quantity_number",
             "measurement_unit_lexical_value",
@@ -39,7 +39,7 @@
 					"37754B7-76"
 				]
 			},
-			"child_uuid": {
+			"uuid": {
 				"type": ["string"],
 				"minLength": 1,
 				"title": "Child UUID",
@@ -116,7 +116,7 @@
 			{
 				"parent_uuid": "urn:uuid:055c1128-0375-47c8-98de-7cf802c3241d",
 				"parent_manufacturer_part_id": "37754B7-76",
-				"child_uuid":"urn:uuid:5daB938E-Cafa-92B3-7ca1-9aD7885e9dC8",
+				"uuid":"urn:uuid:5daB938E-Cafa-92B3-7ca1-9aD7885e9dC8",
 				"child_manufacturer_part_id": "37754B7-76",
 				"customer_part_id" : "AsPlanned",
                 "quantity_number": 2.5,

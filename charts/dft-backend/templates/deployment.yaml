@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "helm.fullname" . }}
+  name: {{ include "dft-backend.fullname" . }}
   labels:
-    {{- include "helm.labels" . | nindent 4 }}
+    {{- include "dft-backend.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "helm.selectorLabels" . | nindent 6 }}
+      {{- include "dft-backend.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -18,7 +18,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "helm.selectorLabels" . | nindent 8 }}
+        {{- include "dft-backend.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -35,7 +35,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: MANUFACTURERID
-              value: "BPNL00000PRV1DEV"
+              value: "BPNL00000PN1PROV"
             - name: SPRING_DATASOURCE_URL
               valueFrom:
                 secretKeyRef:
@@ -118,7 +118,7 @@ spec:
                 secretKeyRef:
                   name: dtf-digitaltwins-secrets
                   key: keycloakREALM
-            - name: KEYCLOAK_RESOURCE
+            - name: KEYCLOAK_REASOURCE
               valueFrom:
                 secretKeyRef:
                   name: dtf-digitaltwins-secrets
@@ -173,6 +173,7 @@ spec:
                 secretKeyRef:
                   name: dtf-digitaltwins-secrets
                   key: portalpoolhostURL 
+                  key: edcconsapiheader                
           ports:
             - name: http
               containerPort: 8080

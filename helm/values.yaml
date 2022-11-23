@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: ghcr.io/catenax-ng/product-dft-backend-dev
+  repository: ghcr.io/catenax-ng/product-dft-backend-mod
   pullPolicy: Always
   tag: "latest"
 
@@ -88,7 +88,3 @@ postgres:
     secretKeys:
         adminPasswordKey: "postgres-password"
         userPasswordKey: "password"
-
-    
- 
-  

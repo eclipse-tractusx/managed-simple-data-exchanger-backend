@@ -13,7 +13,7 @@
 		"required": [
 			"parent_uuid",
 			"parent_manufacturer_part_id",
-			"child_uuid",
+			"uuid",
 			"child_manufacturer_part_id",
 			"quantity_number",
 			"measurement_unit_lexical_value",
@@ -44,7 +44,7 @@
 					"37754B7-76"
 				]
 			},
-			"child_uuid": {
+			"uuid": {
 				"type": [
 					"string"
 				],
@@ -141,7 +141,7 @@
 			"customer_part_id": "AsPlanned",
 			"quantity_number": 2.5,
 			"measurement_unit_lexical_value": "litre",
-			"datatype_url": "urn:bamm:io.openmanufacturing:meta-model:1.0.0#curie",
+			"datatype_uri": "urn:bamm:io.openmanufacturing:meta-model:1.0.0#curie",
 			"created_on": "2022-02-03T14:48:54.709Z",
 			"last_modified_on": "2022-02-03T14:48:54.709Z"
 		}

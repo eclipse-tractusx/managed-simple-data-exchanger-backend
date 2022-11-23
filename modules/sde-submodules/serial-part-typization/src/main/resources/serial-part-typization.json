@@ -2,17 +2,20 @@
 	"$schema": "https://json-schema.org/draft/2019-09/schema",
 	"$id": "http://example.com/example.json",
 	"type": "array",
-	"id": "Aspect",
-	"title": "List of Serial Part Typizations",
+	"id": "aspect",
+	"idShort": "serialPartTypization",
+	"version": "1.0.0",
+	"semantic_id": "urn:bamm:io.catenax.serial_part_typization:1.1.0#SerialPartTypization",
+	"title": "Serial Part Typizations",
+	"description": "Serial Part Typizations",
 	"items": {
 		"type": "object",
-		"title": "Serial Part Typization",
 		"required": [
 			"part_instance_id",
 			"manufacturing_date",
 			"manufacturer_part_id",
-			"classification",
-			"name_at_manufacturer"
+			"name_at_manufacturer",
+			"classification"
 		],
 		"dependentRequired": {
 			"optional_identifier_key": [
@@ -23,22 +26,27 @@
 			]
 		},
 		"properties": {
-			"UUID": {
-				"type": "string",
+			"uuid": {
+				"type": [
+					"string",
+					"null"
+				],
+				"pattern": "^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
 				"title": "UUID URN",
 				"examples": [
 					"urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2"
 				]
 			},
 			"part_instance_id": {
-				"type": "string",
+				"type": ["string"],
 				"title": "Part instance ID",
+				"minLength": 1,
 				"examples": [
 					"NO-159040131155901488695376"
 				]
 			},
 			"manufacturing_date": {
-				"type": "string",
+				"type": ["string"],
 				"format": "date-time",
 				"title": "Manufacturing Date",
 				"examples": [
@@ -46,29 +54,36 @@
 				]
 			},
 			"manufacturing_country": {
-				"type": "string",
-				"pattern": "[A-Z]{3}",
+				"type": [
+					"string",
+					"null"
+				],
+				"pattern": "[A-Z]{3}|null|^$",
 				"title": "Manufacturing country",
 				"examples": [
 					"DEU"
 				]
 			},
 			"manufacturer_part_id": {
-				"type": "string",
+				"type": ["string"],
+				"minLength": 1,
 				"title": "Manufacturer part ID",
 				"examples": [
 					"37754B7-76"
 				]
 			},
 			"customer_part_id": {
-				"type": "string",
+				"type": [
+					"string",
+					"null"
+				],
 				"title": "Customer part ID",
 				"examples": [
 					"37754B7-76"
 				]
 			},
 			"classification": {
-				"type": "string",
+				"type": ["string"],
 				"enum": [
 					"product",
 					"raw material",
@@ -83,28 +98,43 @@
 				]
 			},
 			"name_at_manufacturer": {
-				"type": "string",
+				"type": ["string"],
+				"minLength": 1,
 				"title": "Name at manufacturer",
 				"examples": [
 					"Sensor"
 				]
 			},
 			"name_at_customer": {
-				"type": "string",
+				"type": [
+					"string",
+					"null"
+				],
 				"title": "Name at customer",
 				"examples": [
 					"Sensor"
 				]
 			},
 			"optional_identifier_key": {
-				"type": "string",
+				"type": [
+					"string",
+					"null"
+				],
+				"enum": [
+					"VAN",
+					"BatchID",
+					""
+				],
 				"title": "Optional identifier key",
 				"examples": [
-					"Key"
+					"VAN"
 				]
 			},
 			"optional_identifier_value": {
-				"type": "string",
+				"type": [
+					"string",
+					"null"
+				],
 				"title": "Optional identifier value",
 				"examples": [
 					"Value"
@@ -113,18 +143,18 @@
 		}
 	},
 	"examples": [
-			{
-				"uuid": "urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2",
-				"part_instance_id": "NO-159040131155901488695376",
-				"manufacturing_date": "2022-02-04T14:48:54",
-				"manufacturing_country": "DEU",
-				"manufacturer_part_id": "37754B7-76",
-				"customer_part_id": "37754B7-76",
-				"classification": "component",
-				"name_at_manufacturer": "Sensor",
-				"name_at_customer": "Sensor",
-				"optional_identifier_key": "Key",
-				"optional_identifier_value": "Value"
-			}
-		]
+		{
+			"uuid": "urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2",
+			"part_instance_id": "NO-159040131155901488695376",
+			"manufacturing_date": "2022-02-04T14:48:54",
+			"manufacturing_country": "DEU",
+			"manufacturer_part_id": "37754B7-76",
+			"customer_part_id": "37754B7-76",
+			"classification": "component",
+			"name_at_manufacturer": "Sensor",
+			"name_at_customer": "Sensor",
+			"optional_identifier_key": "VAN",
+			"optional_identifier_value": "Value"
+		}
+	]
 }

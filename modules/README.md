@@ -14,7 +14,6 @@ SDE backend splited into multiple services loosely-coupled Maven modules.
 - modules/sde-external-services/portal
 - modules/sde-common
 - modules/sde-core
-- modules/sde
 - modules/sde-submodules/serial-part-typization
 - modules/sde-submodules/batch
 - modules/sde-submodules/assembly-part-relationship

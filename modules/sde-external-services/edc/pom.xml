@@ -3,8 +3,8 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.catenax</groupId>
-		<artifactId>dft</artifactId>
+		<groupId>org.eclipse</groupId>
+		<artifactId>sde</artifactId>
 		<version>0.0.1</version>
 		<relativePath>../../../</relativePath>
 	</parent>
@@ -13,8 +13,13 @@
 	<description>edc for CatenaX</description>
 
 	<dependencies>
+	   <dependency>
+			<groupId>org.eclipse</groupId>
+			<artifactId>sde-common</artifactId>
+			<version>0.0.1</version>
+		</dependency>
 		<dependency>
-			<groupId>com.catenax</groupId>
+			<groupId>org.eclipse</groupId>
 			<artifactId>portal</artifactId>
 			<version>0.0.1</version>
 		</dependency>

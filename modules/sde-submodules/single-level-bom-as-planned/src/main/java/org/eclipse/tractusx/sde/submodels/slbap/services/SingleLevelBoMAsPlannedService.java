@@ -22,6 +22,7 @@ package org.eclipse.tractusx.sde.submodels.slbap.services;
 import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
 import org.eclipse.tractusx.sde.digitaltwins.facilitator.DeleteDigitalTwinsFacilitator;
 import org.eclipse.tractusx.sde.edc.facilitator.DeleteEDCFacilitator;
@@ -67,13 +68,7 @@ public class SingleLevelBoMAsPlannedService {
 
 		deleteDigitalTwinsFacilitator.deleteDigitalTwinsById(singleLevelBoMAsPlannedEntity.getShellId());
 
-		deleteEDCFacilitator.deleteContractDefination(singleLevelBoMAsPlannedEntity.getContractDefinationId());
-
-		deleteEDCFacilitator.deleteAccessPolicy(singleLevelBoMAsPlannedEntity.getAccessPolicyId());
-
-		deleteEDCFacilitator.deleteUsagePolicy(singleLevelBoMAsPlannedEntity.getUsagePolicyId());
-
-		deleteEDCFacilitator.deleteAssets(singleLevelBoMAsPlannedEntity.getAssetId());
+		deleteEDCAsset(singleLevelBoMAsPlannedEntity);
 
 		saveSingleLevelBoMAsPlannedWithDeleted(singleLevelBoMAsPlannedEntity);
 	}
@@ -88,6 +83,28 @@ public class SingleLevelBoMAsPlannedService {
 				.ofNullable(singleLevelBoMAsPlannedRepository.findByParentCatenaXId(uuid))
 				.orElseThrow(() -> new NoDataFoundException("No data found uuid " + uuid));
 		return singleLevelBoMAsPlannedMapper.mapToResponse(uuid, entities);
+	}
+
+	public SingleLevelBoMAsPlannedEntity readEntity(String uuid) {
+		return Optional.ofNullable(singleLevelBoMAsPlannedRepository.findByChildCatenaXId(uuid))
+						.orElseThrow(() -> new NoDataFoundException("No data found uuid " + uuid));
+	}
+
+	public void deleteEDCAsset(SingleLevelBoMAsPlannedEntity singleLevelBoMAsPlannedEntity) {
+
+		deleteEDCFacilitator.deleteContractDefination(singleLevelBoMAsPlannedEntity.getContractDefinationId());
+
+		deleteEDCFacilitator.deleteAccessPolicy(singleLevelBoMAsPlannedEntity.getAccessPolicyId());
+
+		deleteEDCFacilitator.deleteUsagePolicy(singleLevelBoMAsPlannedEntity.getUsagePolicyId());
+
+		deleteEDCFacilitator.deleteAssets(singleLevelBoMAsPlannedEntity.getAssetId());
+	}
+
+	public int getUpdatedData(String refProcessId) {
+
+		return (int) singleLevelBoMAsPlannedRepository.countByUpdatedAndProcessId(CommonConstants.UPDATED_Y,
+				refProcessId);
 	}
 
 }

@@ -3,6 +3,7 @@ package org.eclipse.tractusx.sde.digitaltwins.facilitator;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.digitaltwins.gateways.external.DigitalTwinsFeignClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -84,10 +85,10 @@ public class DeleteDigitalTwinsFacilitator {
 		return "Bearer " + accessToken;
 	}
 
-	public void parseExceptionMessage(Exception e) throws Exception {
+	public void parseExceptionMessage(Exception e) throws ServiceException {
 
 		if (!e.toString().contains("FeignException$NotFound") || !e.toString().contains("404 Not Found")) {
-			throw new Exception("Exception in Digital delete request process");
+			throw new ServiceException("Exception in Digital delete request process: " + e.getMessage());
 		}
 	}
 }

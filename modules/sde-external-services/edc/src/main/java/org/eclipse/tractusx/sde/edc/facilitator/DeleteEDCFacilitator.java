@@ -1,5 +1,6 @@
 package org.eclipse.tractusx.sde.edc.facilitator;
 
+import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.edc.api.EDCFeignClientApi;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -26,7 +27,7 @@ public class DeleteEDCFacilitator {
 		headers.add(apiKeyHeader, apiKey);
 		return headers;
 	}
-	
+
 	@SneakyThrows
 	public void deleteContractDefination(String contractDefinationId) {
 		try {
@@ -36,7 +37,7 @@ public class DeleteEDCFacilitator {
 		}
 
 	}
-	
+
 	@SneakyThrows
 	public void deleteAccessPolicy(String accessPolicyId) {
 		try {
@@ -46,7 +47,7 @@ public class DeleteEDCFacilitator {
 		}
 
 	}
-	
+
 	@SneakyThrows
 	public void deleteUsagePolicy(String usagePolicyId) {
 		try {
@@ -62,16 +63,15 @@ public class DeleteEDCFacilitator {
 		try {
 			eDCFeignClientApi.deleteAssets(assetId, getEDCHeaders());
 		} catch (Exception e) {
-			throw new Exception("Exception in EDC delete request process:"+e.getMessage());
+			throw new ServiceException("Exception in EDC delete request process:" + e.getMessage());
 		}
 
 	}
 
-	
-	private void parseExceptionMessage(Exception e) throws Exception {
+	private void parseExceptionMessage(Exception e) throws ServiceException {
 
 		if (!e.toString().contains("FeignException$NotFound") || !e.toString().contains("404 Not Found")) {
-			throw new Exception("Exception in EDC delete request process");
+			throw new ServiceException("Exception in EDC delete request process:" + e.getMessage());
 		}
 	}
 }

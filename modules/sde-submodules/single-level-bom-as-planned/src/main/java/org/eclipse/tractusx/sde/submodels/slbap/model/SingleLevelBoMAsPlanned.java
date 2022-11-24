@@ -83,7 +83,7 @@ public class SingleLevelBoMAsPlanned {
 	@JsonProperty(value = "uuid")
 	private String childUuid;
 	
-	@JsonProperty(value = "child_manufacturer_part_id")
+	@JsonProperty(value = "manufacturer_part_id")
 	private String childManufacturerPartId;
 
 	@JsonProperty(value = "quantity_number")
@@ -100,5 +100,8 @@ public class SingleLevelBoMAsPlanned {
 
 	@JsonProperty(value = "last_modified_on")
 	private String lastModifiedOn;
+	
+	@JsonProperty(value = "updated")
+	private String updated;
 	
 }

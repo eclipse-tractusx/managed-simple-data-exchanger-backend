@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface RolePermissionRepository extends JpaRepository<RolePermissionEntity, RolePermissionMappingId> {
 
-	@Query("SELECT p FROM RolePermissionEntity p Where p.sdeRole IN (?1)")
+	@Query("SELECT p FROM RolePermissionEntity p Where p.sdeRole IN ?1")
 	List<RolePermissionEntity> findAll(String sdeRole);
 
 }

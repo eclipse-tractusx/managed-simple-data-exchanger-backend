@@ -55,12 +55,13 @@ public interface ProcessReportRepository extends JpaRepository<ProcessReportEnti
             "SET end_date = ?2, " +
             "status = ?3, " +
             "number_of_succeeded_items =?4, " +
-            "number_of_failed_items = ?5 " +
+            "number_of_failed_items = ?5, " +
+            "number_of_updated_items = ?6 " +            
             "WHERE process_id = ?1", nativeQuery = true)
-	void finalizeProgressReport(String processId, LocalDateTime endDate, String status, int deletedCount,
-			int noOfFailed);
+	void finalizeProgressReport(String processId, LocalDateTime endDate, String status, int successCount,
+			int noOfFailed,long noOfUpdated);
 
-
+    
     @Query("SELECT p FROM ProcessReportEntity p ORDER BY p.startDate DESC")
     Page<ProcessReportEntity> findAll(PageRequest pageRequest);
 }

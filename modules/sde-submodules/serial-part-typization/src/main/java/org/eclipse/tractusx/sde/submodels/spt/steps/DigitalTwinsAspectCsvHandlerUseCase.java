@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseException;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
@@ -40,6 +41,7 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellLookupRequest
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellLookupResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelListResponse;
+import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelResponse;
 import org.eclipse.tractusx.sde.digitaltwins.gateways.external.DigitalTwinGateway;
 import org.eclipse.tractusx.sde.submodels.spt.model.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,16 +103,22 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends Step {
 
 		aspect.setShellId(shellId);
 		SubModelListResponse subModelResponse = gateway.getSubModels(shellId);
+		SubModelResponse foundSubmodel = null;
+		if (subModelResponse != null) {
+			foundSubmodel = subModelResponse.stream().filter(x -> getIdShortOfModel().equals(x.getIdShort()))
+					.findFirst().orElse(null);
+			if (foundSubmodel != null)
+				aspect.setSubModelId(foundSubmodel.getIdentification());
+		}
 
-		if (subModelResponse == null || subModelResponse.stream().noneMatch(x -> ID_SHORT.equals(x.getIdShort()))) {
+		if (subModelResponse == null || foundSubmodel == null) {
 			logDebug(String.format("No submodels for '%s'", shellId));
 			CreateSubModelRequest createSubModelRequest = getCreateSubModelRequest(aspect);
 			gateway.createSubModel(shellId, createSubModelRequest);
 			aspect.setSubModelId(createSubModelRequest.getIdentification());
 		} else {
-			throw new CsvHandlerDigitalTwinUseCaseException(
-					String.format("serialPartTypization submodels already exist/found with Shell id %s for %s", shellId,
-							shellLookupRequest.toJsonString()));
+			aspect.setUpdated(CommonConstants.UPDATED_Y);
+			logDebug("Complete Digital Twins Update Update Digital Twins");
 		}
 
 		return aspect;
@@ -149,13 +157,8 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends Step {
 
 	private ShellDescriptorRequest getShellDescriptorRequest(Aspect aspect) {
 		ArrayList<KeyValuePair> specificIdentifiers = new ArrayList<>();
-		specificIdentifiers.add(new KeyValuePair(PART_INSTANCE_ID, aspect.getPartInstanceId()));
-		specificIdentifiers.add(new KeyValuePair(MANUFACTURER_PART_ID, aspect.getManufacturerPartId()));
-		specificIdentifiers.add(new KeyValuePair(MANUFACTURER_ID, manufacturerId));
-		if (aspect.hasOptionalIdentifier()) {
-			specificIdentifiers
-					.add(new KeyValuePair(aspect.getOptionalIdentifierKey(), aspect.getOptionalIdentifierValue()));
-		}
+		setSpecifiers(specificIdentifiers, aspect);
+
 		List<String> values = new ArrayList<>();
 		values.add(aspect.getUuid());
 		GlobalAssetId globalIdentifier = new GlobalAssetId(values);
@@ -166,4 +169,15 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends Step {
 				.globalAssetId(globalIdentifier).specificAssetIds(specificIdentifiers)
 				.identification(PREFIX + UUID.randomUUID()).build();
 	}
+
+	private void setSpecifiers(final ArrayList<KeyValuePair> specificIdentifiers, Aspect aspect) {
+		specificIdentifiers.add(new KeyValuePair(PART_INSTANCE_ID, aspect.getPartInstanceId()));
+		specificIdentifiers.add(new KeyValuePair(MANUFACTURER_PART_ID, aspect.getManufacturerPartId()));
+		specificIdentifiers.add(new KeyValuePair(MANUFACTURER_ID, manufacturerId));
+		if (aspect.hasOptionalIdentifier()) {
+			specificIdentifiers
+					.add(new KeyValuePair(aspect.getOptionalIdentifierKey(), aspect.getOptionalIdentifierValue()));
+		}
+	}
+
 }

@@ -26,10 +26,19 @@ import java.util.List;
 
 import org.eclipse.tractusx.sde.submodels.apr.entity.AspectRelationshipEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 public interface AspectRelationshipRepository extends JpaRepository<AspectRelationshipEntity, String> {
 
-    List<AspectRelationshipEntity> findByParentCatenaXId(String parentCatenaXId);
-    
-    List<AspectRelationshipEntity> findByProcessId(String processId);
+	List<AspectRelationshipEntity> findByParentCatenaXId(String parentCatenaXId);
+	
+	AspectRelationshipEntity findByChildCatenaXId(String uuid);
+
+	List<AspectRelationshipEntity> findByProcessId(String processId);
+
+	@Query("select count(ar) from AspectRelationshipEntity ar where ar.updated = ?1 and ar.processId = ?2")
+	long countByUpdatedAndProcessId(String updated, String processId);
+
+	
+	
 }

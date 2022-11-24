@@ -32,8 +32,8 @@ import lombok.Data;
 @AllArgsConstructor
 public class SubmodelResultResponse {
 
-    private List<LocalIdentifier> localIdentifiers;
-    private ManufacturingInformation manufacturingInformation;
-    private String catenaXId;
-    private PartTypeInformation partTypeInformation;
+	private List<LocalIdentifier> localIdentifiers;
+	private ManufacturingInformation manufacturingInformation;
+	private String catenaXId;
+	private PartTypeInformation partTypeInformation;
 }

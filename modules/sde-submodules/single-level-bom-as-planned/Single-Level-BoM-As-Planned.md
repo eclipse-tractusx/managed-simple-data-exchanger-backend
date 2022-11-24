@@ -4,12 +4,10 @@
 
 This module use for SingleLevelBomAsPlanned submodel specification and descriptors. It's contain the codes related to SingleLevelBomAsPlanned to validate, parse and transfer data for DigitalTwins and EDC to create aspect twins and data offer.
 
+---
 #### Version: 1.0.1
-
 #### SingleLevelBomAsPlanned Aspect Model URN: urn:bamm:io.catenax.single_level_bom_as_planned:1.0.1#SingleLevelBomAsPlanned
-
 #### Semantic Id: urn:bamm:io.catenax.single_level_bom_as_planned:1.0.1
-
 ---
 
 ### Schema

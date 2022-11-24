@@ -1,7 +1,6 @@
 package org.eclipse.tractusx.sde.configuration.role;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.tractusx.sde.core.service.RoleManagementService;
@@ -23,9 +22,7 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
 		if ((auth == null) || (targetDomainObject == null) || !(permission instanceof String)) {
 			return false;
 		}
-		String targetType = targetDomainObject.getClass().getSimpleName().toUpperCase();
-
-		return hasPrivilege(auth, targetType, permission.toString().toUpperCase());
+		return hasPrivilege(auth, permission.toString().toUpperCase());
 	}
 
 	@Override
@@ -33,28 +30,15 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
 		if ((auth == null) || (targetType == null) || !(permission instanceof String)) {
 			return false;
 		}
-		return hasPrivilege(auth, targetType.toUpperCase(), permission.toString().toUpperCase());
+		return hasPrivilege(auth, permission.toString().toUpperCase());
 	}
 
-	private boolean hasPrivilege(Authentication auth, String targetType, String permission) {
+	private boolean hasPrivilege(Authentication auth, String permission) {
 
 		String[] permissionLs = permission.toLowerCase().split("@");
 
-		// List<String> list = auth.getAuthorities().stream().map(grantedAuth ->
-		// grantedAuth.getAuthority()).toList();
+		List<String> list = auth.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
 
-		// String permissionStr = String.join("','", permissionLs);
-
-		// String authorityStr = String.join("','", list);
-
-		// List<RolePermissionEntity> findAll =
-		// rolePermissionRepository.findAll(authorityStr);
-
-		List<? extends GrantedAuthority> list = auth.getAuthorities().stream().filter(grantedAuth -> {
-			List<String> allPermission = roleManagementService.getRolePermission(grantedAuth.getAuthority());
-			return !List.of(permissionLs).stream().filter(permissionon -> allPermission.contains(permissionon)).toList()
-					.isEmpty();
-		}).toList();
-		return !list.isEmpty();
+		return !roleManagementService.findAll(list, List.of(permissionLs)).isEmpty();
 	}
 }

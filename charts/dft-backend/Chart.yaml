@@ -25,8 +25,25 @@ appVersion: "1.7.0"
 
 
 dependencies:
-  - condition: postgres.enabled
+  - condition: dftpostgresql.enabled
     name: postgresql
-    alias: postgres
+    alias: dftpostgresql
     repository: https://charts.bitnami.com/bitnami
     version: 11.x.x
+  - condition: edcpostgresql.enabled
+    name: postgresql
+    alias: edcpostgres
+    repository: https://charts.bitnami.com/bitnami
+    version: 11.x.x
+  - condition: edccontrolplane.enabled
+    name: edc-controlplane
+    alias: edccontrolplane
+    repository: https://catenax-ng.github.io/product-edc
+    version: 0.1.1
+  - condition: edcdataplane.enabled
+    name: edc-dataplane
+    alias: edcdataplane
+    repository: https://catenax-ng.github.io/product-edc
+    version: 0.1.1
+  
+  

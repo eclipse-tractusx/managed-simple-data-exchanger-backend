@@ -31,6 +31,7 @@ import org.eclipse.tractusx.sde.core.processreport.model.ProcessReport;
 import org.eclipse.tractusx.sde.core.processreport.model.ProcessReportPageResponse;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,6 +48,7 @@ public class ProcessReportController {
     }
 
     @GetMapping(produces = APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasPermission('','provider_view_history')")
     public ResponseEntity<ProcessReportPageResponse> getProcessingReportsByDateDesc(@Param("page") Integer page, @Param("pageSize") Integer pageSize) {
         page = page == null ? 0 : page;
         pageSize = pageSize == null ? 10 : pageSize;
@@ -55,6 +57,7 @@ public class ProcessReportController {
     }
 
     @GetMapping(value = "/{id}", produces = APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasPermission('','provider_view_history')")
     public ResponseEntity<ProcessReport> getProcessReportById(@PathVariable("id") String id) {
         ProcessReport processReportById = processReportUseCase.getProcessReportById(id);
         if (processReportById == null) {

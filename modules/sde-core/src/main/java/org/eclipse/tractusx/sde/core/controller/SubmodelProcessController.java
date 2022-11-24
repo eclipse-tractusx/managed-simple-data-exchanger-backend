@@ -14,6 +14,7 @@ import org.eclipse.tractusx.sde.common.validators.UsagePolicyValidation;
 import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
 import org.eclipse.tractusx.sde.core.service.SubmodelOrchestartorService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,6 +43,7 @@ public class SubmodelProcessController {
 	private ObjectMapper objectMapper = new ObjectMapper();
 
 	@PostMapping(value = "/{submodel}/upload")
+	@PreAuthorize("hasPermission(#submodel,'provider_create_contract_offer@provider_update_contract_offer')")
 	public ResponseEntity<String> fileUpload(@PathVariable("submodel") String submodel,
 			@RequestParam("file") MultipartFile file, @UsagePolicyValidation @RequestParam("meta_data") String metaData)
 			throws JsonProcessingException {
@@ -56,6 +58,7 @@ public class SubmodelProcessController {
 	}
 
 	@PostMapping(value = "/{submodel}/manualentry", consumes = APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasPermission(#submodel,'provider_create_contract_offer@provider_update_contract_offer')")
 	public ResponseEntity<String> createSubmodelAssets(@PathVariable("submodel") String submodel,
 			@RequestBody @Valid SubmodelJsonRequest<ObjectNode> submodelJsonRequest) {
 
@@ -69,11 +72,11 @@ public class SubmodelProcessController {
 	@GetMapping(value = "/{submodel}/public/{uuid}")
 	public ResponseEntity<Map<Object, Object>> readCreatedTwinsDetails(@PathVariable("submodel") String submodel,
 			@PathVariable("uuid") String uuid) {
-
 		return ok().body(submodelOrchestartorService.readCreatedTwinsDetails(submodel, uuid));
 	}
 
 	@DeleteMapping(value = "/{submodel}/delete/{processId}", produces = APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasPermission(#submodel,'provider_delete_contract_offer')")
 	public ResponseEntity<String> deleteRecordsWithDigitalTwinAndEDC(@PathVariable("processId") String processId,
 			@PathVariable("submodel") String submodel) {
 		String delProcessId = UUID.randomUUID().toString();

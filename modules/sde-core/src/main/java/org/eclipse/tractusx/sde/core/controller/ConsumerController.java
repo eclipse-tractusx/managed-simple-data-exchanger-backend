@@ -35,6 +35,7 @@ import org.eclipse.tractusx.sde.portal.model.ConnectorInfo;
 import org.eclipse.tractusx.sde.portal.model.response.LegalEntityResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -56,6 +57,7 @@ public class ConsumerController {
     }
 
     @GetMapping(value = "/query-data-offers")
+    @PreAuthorize("hasPermission('','consumer_view_contract_offers')")
     public ResponseEntity<Object> queryOnDataOffers(@RequestParam String providerUrl)
             throws Exception {
         log.info("Request received : /api/query-data-Offers");
@@ -63,6 +65,7 @@ public class ConsumerController {
     }
 
     @PostMapping(value = "/subscribe-data-offers")
+    @PreAuthorize("hasPermission('','consumer_establish_contract_agreement')")
     public ResponseEntity<Object> subscribeDataOffers(@Valid @RequestBody ConsumerRequest consumerRequest) {
         String processId = UUID.randomUUID().toString();
         log.info("Request recevied : /api/subscribe-data-offers");
@@ -71,6 +74,7 @@ public class ConsumerController {
     }
 
     @GetMapping(value = "/contract-offers", produces = APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasPermission('','consumer_view_contract_agreement')")
     public ResponseEntity<Object> queryOnDataOffersStatus(@RequestParam(value = "limit", required = false) Integer limit, @RequestParam(value = "offset", required = false) Integer offset) {
         log.info("Request received : /api/contract-offer");
         if (limit == null) {
@@ -84,6 +88,7 @@ public class ConsumerController {
     }
 
     @GetMapping(value = "/legal-entities")
+    @PreAuthorize("hasPermission('','consumer_search_connectors')")
     public ResponseEntity<LegalEntityResponse[]> fetchLegalEntitiesData(@RequestParam String searchText, @RequestParam Integer page, @RequestParam Integer size)
             throws Exception {
         log.info("Request received : /api/legal-entities");
@@ -91,6 +96,7 @@ public class ConsumerController {
     }
 
     @PostMapping(value = "/connectors-discovery")
+    @PreAuthorize("hasPermission('','consumer_search_connectors')")
     public ResponseEntity<ConnectorInfo[]> fetchConnectorInfo(@RequestBody String[] bpns)
             throws Exception {
         log.info("Request received : /api/connectors-discovery");

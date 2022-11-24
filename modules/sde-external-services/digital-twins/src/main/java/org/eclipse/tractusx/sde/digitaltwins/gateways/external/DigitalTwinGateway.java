@@ -29,11 +29,9 @@ import java.util.Map;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.CreateSubModelRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellDescriptorRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellLookupRequest;
-import org.eclipse.tractusx.sde.digitaltwins.entities.request.UpdateShellAndSubmoduleRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellLookupResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelListResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -64,9 +62,6 @@ public class DigitalTwinGateway {
     private static final String GRANT_TYPE_TOKEN_QUERY_PARAMETER = "grant_type";
     private static final String ACCESS_TOKEN = "access_token";
     
-    @Autowired
-    private DigitalTwinsFeignClient digitalTwinsFeignClient;
-
     private String accessToken;
 
     @Value(value = "${digital-twins.authentication.clientSecret}")

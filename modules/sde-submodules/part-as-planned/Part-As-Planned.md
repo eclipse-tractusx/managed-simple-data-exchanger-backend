@@ -6,9 +6,7 @@ This module use for PartAsPlanned submodel specification and descriptors. It's c
 
 ---
 #### Version: 1.0.0
-
 #### PartAsPlanned Aspect Model URN: urn:bamm:io.catenax.part_as_planned:1.0.0#PartAsPlanned
-
 #### Semantic Id: urn:bamm:io.catenax.part_as_planned:1.0.0
 ---
 

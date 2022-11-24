@@ -30,9 +30,9 @@ Please find below links for schema details:
 | customer_part_id 		      		| No                           	| 	 5	  	|
 | quantity_number    		 		| Yes                     		| 	 6	 	|
 | measurement_unit_lexical_value	 	| Yes                           	|    7 	 	|
-| datatype_uri	 					| Yes                           	|    7 	 	|
-| created_on	 						| Yes                           	|    7 	 	|
-| last_modified_on	 				| No                           	|    7 	 	|
+| datatype_uri	 					| Yes                           	|    8 	 	|
+| created_on	 						| Yes                           	|    9 	 	|
+| last_modified_on	 				| No                           	|    10 	 	|
 
 
 ### Work Flow 

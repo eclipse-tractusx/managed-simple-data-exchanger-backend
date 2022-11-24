@@ -82,6 +82,10 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
 		<!-- Update snakeyaml manually to avoid vulnerability CVE-2022-25857; can 
 			be removed after Spring updates their dependency -->
 		<dependency>

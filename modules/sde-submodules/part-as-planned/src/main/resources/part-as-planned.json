@@ -6,7 +6,7 @@
 	"idShort": "partAsPlanned",
 	"version": "1.0.0",
 	"semantic_id": "urn:bamm:io.catenax.part_as_planned:1.0.0#PartAsPlanned",
-	"title": "Part AsPlanned",
+	"title": "PartAsPlanned",
 	"description": "BoM As-Planned - Submodel PartAsPlanned",
 	"items": {
 		"type": "object",
@@ -24,7 +24,7 @@
 					"null"
 				],
 				"pattern": "^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
-				"title": "UUID URN",
+				"title": "UUID",
 				"examples": [
 					"urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf34dfa4c2"
 				]

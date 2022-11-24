@@ -22,6 +22,7 @@ package org.eclipse.tractusx.sde.submodels.slbap.steps;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseException;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
@@ -38,6 +39,7 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellLookupRequest
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellLookupResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelListResponse;
+import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelResponse;
 import org.eclipse.tractusx.sde.digitaltwins.gateways.external.DigitalTwinGateway;
 import org.eclipse.tractusx.sde.submodels.pap.constants.PartAsPlannedConstants;
 import org.eclipse.tractusx.sde.submodels.pap.entity.PartAsPlannedEntity;
@@ -98,16 +100,22 @@ public class DigitalTwinsSingleLevelBoMAsPlannedHandlerStep extends Step {
 
 		singleLevelBoMAsPlannedAspect.setShellId(shellId);
 		SubModelListResponse subModelResponse = gateway.getSubModels(shellId);
+		SubModelResponse foundSubmodel = null;
+		if (subModelResponse != null) {
+			foundSubmodel = subModelResponse.stream().filter(x -> getIdShortOfModel().equals(x.getIdShort()))
+					.findFirst().orElse(null);
+			if (foundSubmodel != null)
+				singleLevelBoMAsPlannedAspect.setSubModelId(foundSubmodel.getIdentification());
+		}
 
-		if (subModelResponse == null || subModelResponse.stream().noneMatch(x -> getIdShortOfModel().equals(x.getIdShort()))) {
+		if (subModelResponse == null || foundSubmodel == null) {
 			logDebug(String.format("No submodels for '%s'", shellId));
 			CreateSubModelRequest createSubModelRequest = getCreateSubModelRequest(singleLevelBoMAsPlannedAspect);
 			gateway.createSubModel(shellId, createSubModelRequest);
 			singleLevelBoMAsPlannedAspect.setSubModelId(createSubModelRequest.getIdentification());
 		} else {
-			throw new CsvHandlerDigitalTwinUseCaseException(
-					String.format("SingleLevelBoMAsPlanned submodels already exist/found with Shell id %s for %s",
-							shellId, shellLookupRequest.toJsonString()));
+			singleLevelBoMAsPlannedAspect.setUpdated(CommonConstants.UPDATED_Y);
+			logDebug("Complete Digital Twins Update Update Digital Twins");
 		}
 		return singleLevelBoMAsPlannedAspect;
 	}

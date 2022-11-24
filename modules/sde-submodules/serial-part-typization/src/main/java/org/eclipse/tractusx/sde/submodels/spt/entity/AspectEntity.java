@@ -72,4 +72,6 @@ public class AspectEntity implements Serializable {
     private String assetId;
     @Column(name = "deleted")
     private String deleted;
+    @Column(name = "updated")
+    private String updated;
 }

@@ -22,6 +22,7 @@ package org.eclipse.tractusx.sde.submodels.pap.repository;
 import java.util.List;
 
 import org.eclipse.tractusx.sde.submodels.pap.entity.PartAsPlannedEntity;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 public interface PartAsPlannedRepository extends CrudRepository<PartAsPlannedEntity, String> {
@@ -38,4 +39,7 @@ public interface PartAsPlannedRepository extends CrudRepository<PartAsPlannedEnt
 	
 	PartAsPlannedEntity findByManufacturerPartId(String manufacturerPartId);
 
+	@Query("select count(pe) from PartAsPlannedEntity pe where pe.updated = ?1 and pe.processId = ?2")
+	long countByUpdatedAndProcessId(String updated, String processId);
+	
 }

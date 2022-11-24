@@ -93,4 +93,7 @@ public class PartAsPlanned {
 	
 	@JsonProperty(value ="valid_to")
     private String validTo;
+	
+	@JsonProperty(value = "updated")
+	private String updated;
 }

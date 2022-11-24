@@ -48,6 +48,7 @@ public class AspectRelationship {
 	private String accessPolicyId;
 	private String contractDefinationId;
 	private String deleted;
+	private String updated;
 
 	@JsonProperty(value = "row_number")
 	private int rowNumber;

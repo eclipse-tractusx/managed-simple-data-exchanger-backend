@@ -61,7 +61,7 @@ public class DigitalTwinGateway {
     private static final String CLIENT_SECRET_TOKEN_QUERY_PARAMETER = "client_secret";
     private static final String GRANT_TYPE_TOKEN_QUERY_PARAMETER = "grant_type";
     private static final String ACCESS_TOKEN = "access_token";
-
+    
     private String accessToken;
 
     @Value(value = "${digital-twins.authentication.clientSecret}")
@@ -183,6 +183,7 @@ public class DigitalTwinGateway {
         }
         return responseBody;
     }
+    
 
     @SneakyThrows
     private String getBearerToken() {

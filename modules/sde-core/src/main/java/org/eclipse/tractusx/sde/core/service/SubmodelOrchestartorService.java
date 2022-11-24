@@ -61,9 +61,9 @@ public class SubmodelOrchestartorService {
 		sumodelcsvValidator.validate(asJsonObject, columns, submodel);
 
 		Runnable runnable = () -> {
-			processReportUseCase.startBuildProcessReport(processId, submodelSchemaObject.getId(), csvContent.getRows().size(),
-					submodelFileRequest.getBpnNumbers(), submodelFileRequest.getTypeOfAccess(),
-					submodelFileRequest.getUsagePolicies());
+			processReportUseCase.startBuildProcessReport(processId, submodelSchemaObject.getId(),
+					csvContent.getRows().size(), submodelFileRequest.getBpnNumbers(),
+					submodelFileRequest.getTypeOfAccess(), submodelFileRequest.getUsagePolicies());
 
 			AtomicInteger successCount = new AtomicInteger();
 			AtomicInteger failureCount = new AtomicInteger();
@@ -77,6 +77,7 @@ public class SubmodelOrchestartorService {
 					newjObject.put(ROW_NUMBER, rowjObj.position());
 					newjObject.put(PROCESS_ID, processId);
 					executor.executeCsvRecord(rowjObj, newjObject, processId);
+					// fetch by ID and check it if it is success then its updated.
 					successCount.incrementAndGet();
 
 				} catch (Exception e) {
@@ -84,7 +85,11 @@ public class SubmodelOrchestartorService {
 					failureCount.incrementAndGet();
 				}
 			});
-			processReportUseCase.finishBuildProgressReport(processId, successCount.get(), failureCount.get());
+
+			int updatedcount = executor.getUpdatedRecordCount(processId);
+			successCount.set(successCount.get() - updatedcount);
+			processReportUseCase.finishBuildProgressReport(processId, successCount.get(), failureCount.get(),
+					updatedcount);
 		};
 
 		new Thread(runnable).start();
@@ -93,7 +98,6 @@ public class SubmodelOrchestartorService {
 
 	public void processSubmodel(SubmodelJsonRequest<ObjectNode> submodelJsonRequest, String processId,
 			String submodel) {
-
 		Submodel submodelSchemaObject = submodelService.findSubmodelByNameAsSubmdelObject(submodel);
 		JsonObject submodelSchema = submodelSchemaObject.getSchema();
 
@@ -133,7 +137,10 @@ public class SubmodelOrchestartorService {
 				}
 			});
 
-			processReportUseCase.finishBuildProgressReport(processId, successCount.get(), failureCount.get());
+			int updatedcount = executor.getUpdatedRecordCount(processId);
+			successCount.set(successCount.get() - updatedcount);
+			processReportUseCase.finishBuildProgressReport(processId, successCount.get(), failureCount.get(),
+					updatedcount);
 		};
 		new Thread(runnable).start();
 	}

@@ -113,6 +113,7 @@ public class EDCAspectRelationshipHandlerUseCase extends Step {
 	private void deleteEDCFirstForUpdate(String submodel, AspectRelationship input, String processId) {
 		AspectRelationshipResponse aspectRelationshipResponse = aspectRelationshipMapper
 				.mapforResponse(aspectRelationshipService.readCreatedTwinsDetails(input.getParentUuid()));
+		
 		/* IMP NOTE: THis will delete only First Occurance at EDC */
 
 		if (Optional.ofNullable(aspectRelationshipResponse).isPresent()

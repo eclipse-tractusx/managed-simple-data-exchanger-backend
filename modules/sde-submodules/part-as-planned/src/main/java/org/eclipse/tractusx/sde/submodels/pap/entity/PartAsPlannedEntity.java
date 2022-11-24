@@ -75,4 +75,7 @@ public class PartAsPlannedEntity implements Serializable {
     
     @Column(name = "deleted")
     private String deleted;
+    
+    @Column(name = "updated")
+    private String updated;
 }

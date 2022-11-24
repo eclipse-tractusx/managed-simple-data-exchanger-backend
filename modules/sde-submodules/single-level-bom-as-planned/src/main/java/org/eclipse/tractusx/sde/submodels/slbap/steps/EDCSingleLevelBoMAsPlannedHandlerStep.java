@@ -21,8 +21,9 @@ package org.eclipse.tractusx.sde.submodels.slbap.steps;
 
 import java.util.HashMap;
 import java.util.List;
-
+import static org.eclipse.tractusx.sde.common.constants.CommonConstants.ASSET_PROP_ID;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
@@ -35,7 +36,12 @@ import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyConstraintBu
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyDefinitionRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyRequestFactory;
 import org.eclipse.tractusx.sde.edc.gateways.external.EDCGateway;
+import org.eclipse.tractusx.sde.submodels.pap.entity.PartAsPlannedEntity;
+import org.eclipse.tractusx.sde.submodels.pap.model.PartAsPlanned;
+import org.eclipse.tractusx.sde.submodels.slbap.entity.SingleLevelBoMAsPlannedEntity;
+import org.eclipse.tractusx.sde.submodels.slbap.mapper.SingleLevelBoMAsPlannedMapper;
 import org.eclipse.tractusx.sde.submodels.slbap.model.SingleLevelBoMAsPlanned;
+import org.eclipse.tractusx.sde.submodels.slbap.services.SingleLevelBoMAsPlannedService;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -49,66 +55,91 @@ public class EDCSingleLevelBoMAsPlannedHandlerStep extends Step {
 	private final PolicyRequestFactory policyFactory;
 	private final ContractDefinitionRequestFactory contractFactory;
 	private final PolicyConstraintBuilderService policyConstraintBuilderService;
+	private final SingleLevelBoMAsPlannedService singleLevelBoMAsPlannedService;
+	private final SingleLevelBoMAsPlannedMapper singleLevelBoMAsPlannedMapper;
 
 	public EDCSingleLevelBoMAsPlannedHandlerStep(EDCGateway edcGateway, AssetEntryRequestFactory assetFactory,
 			PolicyRequestFactory policyFactory, ContractDefinitionRequestFactory contractFactory,
-			PolicyConstraintBuilderService policyConstraintBuilderService) {
+			PolicyConstraintBuilderService policyConstraintBuilderService, SingleLevelBoMAsPlannedService singleLevelBoMAsPlannedService, SingleLevelBoMAsPlannedMapper singleLevelBoMAsPlannedMapper) {
 		this.assetFactory = assetFactory;
 		this.edcGateway = edcGateway;
 		this.policyFactory = policyFactory;
 		this.contractFactory = contractFactory;
 		this.policyConstraintBuilderService = policyConstraintBuilderService;
+		this.singleLevelBoMAsPlannedService = singleLevelBoMAsPlannedService;
+		this.singleLevelBoMAsPlannedMapper = singleLevelBoMAsPlannedMapper;
 	}
 
 	@SneakyThrows
 	public SingleLevelBoMAsPlanned run(String submodel, SingleLevelBoMAsPlanned input, String processId) {
 
-		HashMap<String, String> extensibleProperties = new HashMap<>();
 		String shellId = input.getShellId();
 		String subModelId = input.getSubModelId();
 
 		try {
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel, getSubmodelDescriptionOfModel(),shellId, subModelId,
 					input.getParentUuid());
-			if (!edcGateway.assetExistsLookup(assetEntryRequest.getAsset().getProperties().get("asset:prop:id"))) {
-
-				edcGateway.createAsset(assetEntryRequest);
-
-				List<ConstraintRequest> usageConstraints = policyConstraintBuilderService
-						.getUsagePolicyConstraints(input.getUsagePolicies());
-				List<ConstraintRequest> accessConstraints = policyConstraintBuilderService
-						.getAccessConstraints(input.getBpnNumbers());
-
-				String customValue = getCustomValue(input);
-				if (StringUtils.isNotBlank(customValue)) {
-					extensibleProperties.put(UsagePolicyEnum.CUSTOM.name(), customValue);
-				}
-
-				PolicyDefinitionRequest accessPolicyDefinitionRequest = policyFactory.getPolicy(shellId, subModelId,
-						accessConstraints, new HashMap<>());
-				PolicyDefinitionRequest usagePolicyDefinitionRequest = policyFactory.getPolicy(shellId, subModelId,
-						usageConstraints, extensibleProperties);
-
-				edcGateway.createPolicyDefinition(accessPolicyDefinitionRequest);
-				edcGateway.createPolicyDefinition(usagePolicyDefinitionRequest);
-
-				ContractDefinitionRequest contractDefinitionRequest = contractFactory.getContractDefinitionRequest(
-						assetEntryRequest.getAsset().getProperties().get("asset:prop:id"),
-						accessPolicyDefinitionRequest.getId(), usagePolicyDefinitionRequest.getId());
-				edcGateway.createContractDefinition(contractDefinitionRequest);
-
-				// EDC transaction information for DB
-				input.setAssetId(assetEntryRequest.getAsset().getProperties().get("asset:prop:id"));
-				input.setAccessPolicyId(accessPolicyDefinitionRequest.getId());
-				input.setUsagePolicyId(usagePolicyDefinitionRequest.getId());
-				input.setContractDefinationId(contractDefinitionRequest.getId());
-
+			if (!edcGateway.assetExistsLookup(assetEntryRequest.getAsset().getProperties().get(ASSET_PROP_ID))) {
+				edcProcessingforSingleLevelBoMAsPlanned(assetEntryRequest,input);
+			}else {
+				deleteEDCFirstForUpdate(submodel, input, processId);
+				edcProcessingforSingleLevelBoMAsPlanned(assetEntryRequest, input);
+				input.setUpdated(CommonConstants.UPDATED_Y);
 			}
 
 			return input;
 		} catch (Exception e) {
 			throw new CsvHandlerUseCaseException(input.getRowNumber(), "EDC: " + e.getMessage());
 		}
+	}
+	
+	
+	@SneakyThrows
+	private void deleteEDCFirstForUpdate(String submodel, SingleLevelBoMAsPlanned input, String processId) {
+		SingleLevelBoMAsPlannedEntity singleLevelBoMAsPlannedEntity = singleLevelBoMAsPlannedMapper
+				.mapforEntity(singleLevelBoMAsPlannedService.findByUUID(input.getChildUuid()));
+		singleLevelBoMAsPlannedService.deleteEDCAsset(singleLevelBoMAsPlannedEntity);
+
+	}
+	
+	@SneakyThrows
+	private void edcProcessingforSingleLevelBoMAsPlanned(AssetEntryRequest assetEntryRequest, SingleLevelBoMAsPlanned input) {
+		HashMap<String, String> extensibleProperties = new HashMap<>();
+
+		String shellId = input.getShellId();
+		String subModelId = input.getSubModelId();
+		edcGateway.createAsset(assetEntryRequest);
+
+		List<ConstraintRequest> usageConstraints = policyConstraintBuilderService
+				.getUsagePolicyConstraints(input.getUsagePolicies());
+		List<ConstraintRequest> accessConstraints = policyConstraintBuilderService
+				.getAccessConstraints(input.getBpnNumbers());
+
+		String customValue = getCustomValue(input);
+		if (StringUtils.isNotBlank(customValue)) {
+			extensibleProperties.put(UsagePolicyEnum.CUSTOM.name(), customValue);
+		}
+
+		PolicyDefinitionRequest accessPolicyDefinitionRequest = policyFactory.getPolicy(shellId, subModelId,
+				accessConstraints, new HashMap<>());
+		PolicyDefinitionRequest usagePolicyDefinitionRequest = policyFactory.getPolicy(shellId, subModelId,
+				usageConstraints, extensibleProperties);
+
+		edcGateway.createPolicyDefinition(accessPolicyDefinitionRequest);
+
+		edcGateway.createPolicyDefinition(usagePolicyDefinitionRequest);
+
+		ContractDefinitionRequest contractDefinitionRequest = contractFactory.getContractDefinitionRequest(
+				assetEntryRequest.getAsset().getProperties().get("asset:prop:id"),
+				accessPolicyDefinitionRequest.getId(), usagePolicyDefinitionRequest.getId());
+
+		edcGateway.createContractDefinition(contractDefinitionRequest);
+
+		// EDC transaction information for DB
+		input.setAssetId(assetEntryRequest.getAsset().getProperties().get("asset:prop:id"));
+		input.setAccessPolicyId(accessPolicyDefinitionRequest.getId());
+		input.setUsagePolicyId(usagePolicyDefinitionRequest.getId());
+		input.setContractDefinationId(contractDefinitionRequest.getId());
 	}
 
 	private String getCustomValue(SingleLevelBoMAsPlanned input) {

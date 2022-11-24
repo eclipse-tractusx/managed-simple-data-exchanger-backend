@@ -117,9 +117,8 @@ public class PartAsPlannedExecutor extends SubmodelExecutor {
 
 
 	@Override
-	public int getUpdatedRecordCount(String updated, String processId) {
-		// TODO Auto-generated method stub
-		return 0;
+	public  int  getUpdatedRecordCount(String updated,String processId) {
+		return partAsPlannedService.getUpdatedData(updated,processId);
 	}
 
 

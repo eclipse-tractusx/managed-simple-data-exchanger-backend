@@ -54,6 +54,7 @@ public class AspectRelationshipService {
 	}
 
 	public void deleteEDCAsset(AspectRelationshipEntity aspectRelationshipEntity) {
+		
 		deleteEDCFacilitator.deleteContractDefination(aspectRelationshipEntity.getContractDefinationId());
 
 		deleteEDCFacilitator.deleteAccessPolicy(aspectRelationshipEntity.getAccessPolicyId());

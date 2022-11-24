@@ -67,13 +67,7 @@ public class SingleLevelBoMAsPlannedService {
 
 		deleteDigitalTwinsFacilitator.deleteDigitalTwinsById(singleLevelBoMAsPlannedEntity.getShellId());
 
-		deleteEDCFacilitator.deleteContractDefination(singleLevelBoMAsPlannedEntity.getContractDefinationId());
-
-		deleteEDCFacilitator.deleteAccessPolicy(singleLevelBoMAsPlannedEntity.getAccessPolicyId());
-
-		deleteEDCFacilitator.deleteUsagePolicy(singleLevelBoMAsPlannedEntity.getUsagePolicyId());
-
-		deleteEDCFacilitator.deleteAssets(singleLevelBoMAsPlannedEntity.getAssetId());
+		deleteEDCAsset(singleLevelBoMAsPlannedEntity);
 
 		saveSingleLevelBoMAsPlannedWithDeleted(singleLevelBoMAsPlannedEntity);
 	}
@@ -89,5 +83,35 @@ public class SingleLevelBoMAsPlannedService {
 				.orElseThrow(() -> new NoDataFoundException("No data found uuid " + uuid));
 		return singleLevelBoMAsPlannedMapper.mapToResponse(uuid, entities);
 	}
+	
+	public JsonObject findByUUID(String uuid) {
+		return singleLevelBoMAsPlannedMapper.mapFromEntity(Optional.ofNullable(singleLevelBoMAsPlannedRepository.findByChildCatenaXId(uuid)).orElseThrow(
+				() -> new NoDataFoundException("No data found uuid "+uuid)));
+	}
+	
+	
+	
+	public void deleteEDCAsset(SingleLevelBoMAsPlannedEntity singleLevelBoMAsPlannedEntity) {
+
+		deleteEDCFacilitator.deleteContractDefination(singleLevelBoMAsPlannedEntity.getContractDefinationId());
+
+		deleteEDCFacilitator.deleteAccessPolicy(singleLevelBoMAsPlannedEntity.getAccessPolicyId());
+
+		deleteEDCFacilitator.deleteUsagePolicy(singleLevelBoMAsPlannedEntity.getUsagePolicyId());
+
+		deleteEDCFacilitator.deleteAssets(singleLevelBoMAsPlannedEntity.getAssetId());
+	}
+
+
+	
+
+	
+	
+	public int getUpdatedData(String updated,String refProcessId) {
+		
+		return (int)singleLevelBoMAsPlannedRepository.countByUpdatedAndProcessId(updated,refProcessId);
+	}
+	
+
 
 }

@@ -67,6 +67,12 @@ public class PartAsPlannedService {
 
 		deleteDigitalTwinsFacilitator.deleteDigitalTwinsById(partAsPlannedEntity.getShellId());
 
+		deleteEDCAsset(partAsPlannedEntity);
+		saveAspectWithDeleted(partAsPlannedEntity);
+	}
+	
+	public void deleteEDCAsset(PartAsPlannedEntity partAsPlannedEntity) {
+
 		deleteEDCFacilitator.deleteContractDefination(partAsPlannedEntity.getContractDefinationId());
 
 		deleteEDCFacilitator.deleteAccessPolicy(partAsPlannedEntity.getAccessPolicyId());
@@ -74,8 +80,6 @@ public class PartAsPlannedService {
 		deleteEDCFacilitator.deleteUsagePolicy(partAsPlannedEntity.getUsagePolicyId());
 
 		deleteEDCFacilitator.deleteAssets(partAsPlannedEntity.getAssetId());
-
-		saveAspectWithDeleted(partAsPlannedEntity);
 	}
 
 	private void saveAspectWithDeleted(PartAsPlannedEntity aspectEntity) {
@@ -87,6 +91,11 @@ public class PartAsPlannedService {
 	public JsonObject readCreatedTwinsDetails(String uuid) {
 		return partAsPlannedMapper.mapToResponse(Optional.ofNullable(partAsPlannedRepository.findByUuid(uuid))
 				.orElseThrow(() -> new NoDataFoundException("No data found uuid " + uuid)));
+	}
+	
+	public int getUpdatedData(String updated,String refProcessId) {
+		
+		return (int)partAsPlannedRepository.countByUpdatedAndProcessId(updated,refProcessId);
 	}
 
 }

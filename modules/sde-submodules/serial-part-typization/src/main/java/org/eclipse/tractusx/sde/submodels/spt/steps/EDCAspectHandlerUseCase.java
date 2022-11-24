@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
@@ -85,7 +86,7 @@ public class EDCAspectHandlerUseCase extends Step {
 
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel, ASSET_PROP_NAME_ASPECT,
 					shellId, subModelId, input.getUuid());
-			if (!edcGateway.assetExistsLookup(assetEntryRequest.getAsset().getProperties().get("asset:prop:id"))) {
+			if (!edcGateway.assetExistsLookup(assetEntryRequest.getAsset().getProperties().get(CommonConstants.ASSET_PROP_ID))) {
 
 				edcProcessingforAspect(assetEntryRequest, input);
 
@@ -93,7 +94,7 @@ public class EDCAspectHandlerUseCase extends Step {
 
 				deleteEDCFirstForUpdate(submodel, input, processId);
 				edcProcessingforAspect(assetEntryRequest, input);
-				input.setUpdated(UPDATED_Y);
+				input.setUpdated(CommonConstants.UPDATED_Y);
 			}
 
 			return input;
@@ -105,13 +106,8 @@ public class EDCAspectHandlerUseCase extends Step {
 	@SneakyThrows
 	private void deleteEDCFirstForUpdate(String submodel, Aspect input, String processId) {
 		AspectEntity aspectEntity = aspectMapper.mapforEntity(aspectService.readCreatedTwinsDetails(input.getUuid()));
-		deleteEDCFacilitator.deleteContractDefination(aspectEntity.getContractDefinationId());
+		aspectService.deleteEDCAsset(aspectEntity);
 
-		deleteEDCFacilitator.deleteAccessPolicy(aspectEntity.getAccessPolicyId());
-
-		deleteEDCFacilitator.deleteUsagePolicy(aspectEntity.getUsagePolicyId());
-
-		deleteEDCFacilitator.deleteAssets(aspectEntity.getAssetId());
 	}
 	
 	@SneakyThrows

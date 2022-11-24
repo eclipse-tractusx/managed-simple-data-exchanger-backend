@@ -11,6 +11,8 @@ Currently SDE supports below submodels.
 #### [serial-part-typization in Version 1.1.0]
 #### [batch in Version 1.0.0]
 #### [assembly-part-relationship in Version 1.1.0]
+#### [partAsPlanned in Version 1.0.0]
+#### [singleLevelBoMAsPlanned in Version 1.0.1]
 
 ### How we can add Submodels?
 
@@ -31,7 +33,8 @@ Once your maven module ready just do the clean build and install so submodel wil
 
 
 
-
 [serial-part-typization in Version 1.1.0]: https://github.com/catenax-ng/product-dft-backend/blob/modules-branch/modules/sde-submodules/serial-part-typization/README.md
 [batch in Version 1.0.0]: https://github.com/catenax-ng/product-dft-backend/blob/modules-branch/modules/sde-submodules/batch/README.md
 [assembly-part-relationship in Version 1.1.0]: https://github.com/catenax-ng/product-dft-backend/blob/modules-branch/modules/sde-submodules/assembly-part-relationship/README.md
+[partAsPlanned in Version 1.0.0]: https://github.com/catenax-ng/product-dft-backend/blob/modules-branch/modules/sde-submodules/part-as-planned/Part-As-Planned.md
+[singleLevelBoMAsPlanned in Version 1.0.1]: https://github.com/catenax-ng/product-dft-backend/blob/modules-branch/modules/sde-submodules/single-level-bom-as-planned/Single-Level-BoM-As-Planned.md

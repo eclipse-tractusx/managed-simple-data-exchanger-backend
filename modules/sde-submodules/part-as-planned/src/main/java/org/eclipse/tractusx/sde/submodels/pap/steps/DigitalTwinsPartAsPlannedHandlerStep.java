@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseException;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
@@ -37,6 +38,7 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellLookupRequest
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellLookupResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelListResponse;
+import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelResponse;
 import org.eclipse.tractusx.sde.digitaltwins.gateways.external.DigitalTwinGateway;
 import org.eclipse.tractusx.sde.submodels.pap.constants.PartAsPlannedConstants;
 import org.eclipse.tractusx.sde.submodels.pap.model.PartAsPlanned;
@@ -49,13 +51,13 @@ import lombok.SneakyThrows;
 public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 
 	@Autowired
-	private PartAsPlannedConstants  partAsPlannedConstants;
-	
+	private PartAsPlannedConstants partAsPlannedConstants;
+
 	@Autowired
 	private DigitalTwinGateway gateway;
 
 	@SneakyThrows
-	public  PartAsPlanned run(PartAsPlanned partAsPlannedAspect) throws CsvHandlerDigitalTwinUseCaseException {
+	public PartAsPlanned run(PartAsPlanned partAsPlannedAspect) throws CsvHandlerDigitalTwinUseCaseException {
 		try {
 			return doRun(partAsPlannedAspect);
 		} catch (Exception e) {
@@ -86,14 +88,21 @@ public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 
 		partAsPlannedAspect.setShellId(shellId);
 		SubModelListResponse subModelResponse = gateway.getSubModels(shellId);
+		SubModelResponse foundSubmodel = null;
+		if (subModelResponse != null) {
+			foundSubmodel = subModelResponse.stream().filter(x -> getIdShortOfModel().equals(x.getIdShort()))
+					.findFirst().orElse(null);
+			if (foundSubmodel != null)
+				partAsPlannedAspect.setSubModelId(foundSubmodel.getIdentification());
+		}
 
-		if (subModelResponse == null || subModelResponse.stream().noneMatch(x -> getIdShortOfModel().equals(x.getIdShort()))) {
+		if (subModelResponse == null || foundSubmodel == null) {
 			logDebug(String.format("No submodels for '%s'", shellId));
 			CreateSubModelRequest createSubModelRequest = getCreateSubModelRequest(partAsPlannedAspect);
 			gateway.createSubModel(shellId, createSubModelRequest);
 			partAsPlannedAspect.setSubModelId(createSubModelRequest.getIdentification());
 		} else {
-			partAsPlannedAspect.setUpdated("Y");
+			partAsPlannedAspect.setUpdated(CommonConstants.UPDATED_Y);
 			logDebug("Complete Digital Twins Update Update Digital Twins");
 		}
 
@@ -103,15 +112,18 @@ public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 	private ShellLookupRequest getShellLookupRequest(PartAsPlanned partAsPlannedAspect) {
 
 		ShellLookupRequest shellLookupRequest = new ShellLookupRequest();
-		shellLookupRequest.addLocalIdentifier(PartAsPlannedConstants.MANUFACTURER_PART_ID,partAsPlannedAspect.getManufacturerPartId());
-		shellLookupRequest.addLocalIdentifier(PartAsPlannedConstants.MANUFACTURER_ID,partAsPlannedConstants.getManufacturerId());
-		shellLookupRequest.addLocalIdentifier(PartAsPlannedConstants.ASSET_LIFECYCLE_PHASE,PartAsPlannedConstants.AS_PLANNED);
-		
+		shellLookupRequest.addLocalIdentifier(PartAsPlannedConstants.MANUFACTURER_PART_ID,
+				partAsPlannedAspect.getManufacturerPartId());
+		shellLookupRequest.addLocalIdentifier(PartAsPlannedConstants.MANUFACTURER_ID,
+				partAsPlannedConstants.getManufacturerId());
+		shellLookupRequest.addLocalIdentifier(PartAsPlannedConstants.ASSET_LIFECYCLE_PHASE,
+				PartAsPlannedConstants.AS_PLANNED);
+
 		return shellLookupRequest;
 	}
 
 	private CreateSubModelRequest getCreateSubModelRequest(PartAsPlanned partAsPlannedAspect) {
-		
+
 		ArrayList<String> value = new ArrayList<>();
 		value.add(getsemanticIdOfModel());
 		SemanticId semanticId = new SemanticId(value);
@@ -120,39 +132,36 @@ public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 		List<Endpoint> endpoints = new ArrayList<>();
 		endpoints.add(Endpoint.builder().endpointInterface(PartAsPlannedConstants.HTTP)
 				.protocolInformation(ProtocolInformation.builder()
-						.endpointAddress(String.format(String.format("%s%s/%s-%s%s", partAsPlannedConstants.getEdcEndpoint().replace("data", ""),
-								partAsPlannedConstants.getManufacturerId(), partAsPlannedAspect.getShellId(), identification,
-								"/submodel?content=value&extent=WithBLOBValue")))
+						.endpointAddress(String.format(String.format("%s%s/%s-%s%s",
+								partAsPlannedConstants.getEdcEndpoint().replace("data", ""),
+								partAsPlannedConstants.getManufacturerId(), partAsPlannedAspect.getShellId(),
+								identification, "/submodel?content=value&extent=WithBLOBValue")))
 						.endpointProtocol(PartAsPlannedConstants.HTTPS)
-						.endpointProtocolVersion(PartAsPlannedConstants.ENDPOINT_PROTOCOL_VERSION)
-						.build())
+						.endpointProtocolVersion(PartAsPlannedConstants.ENDPOINT_PROTOCOL_VERSION).build())
 				.build());
 
-		return CreateSubModelRequest.builder()
-				.idShort(getIdShortOfModel())
-				.identification(identification)
-				.semanticId(semanticId)
-				.endpoints(endpoints)
-				.build();
+		return CreateSubModelRequest.builder().idShort(getIdShortOfModel()).identification(identification)
+				.semanticId(semanticId).endpoints(endpoints).build();
 	}
 
 	private ShellDescriptorRequest getShellDescriptorRequest(PartAsPlanned partAsPlannedAspect) {
-		
+
 		ArrayList<KeyValuePair> specificIdentifiers = new ArrayList<>();
-		specificIdentifiers.add(new KeyValuePair(PartAsPlannedConstants.MANUFACTURER_PART_ID, partAsPlannedAspect.getManufacturerPartId()));
-		specificIdentifiers.add(new KeyValuePair(PartAsPlannedConstants.MANUFACTURER_ID, partAsPlannedConstants.getManufacturerId()));
-		specificIdentifiers.add(new KeyValuePair(PartAsPlannedConstants.ASSET_LIFECYCLE_PHASE,PartAsPlannedConstants.AS_PLANNED));
-		
+		specificIdentifiers.add(new KeyValuePair(PartAsPlannedConstants.MANUFACTURER_PART_ID,
+				partAsPlannedAspect.getManufacturerPartId()));
+		specificIdentifiers.add(
+				new KeyValuePair(PartAsPlannedConstants.MANUFACTURER_ID, partAsPlannedConstants.getManufacturerId()));
+		specificIdentifiers
+				.add(new KeyValuePair(PartAsPlannedConstants.ASSET_LIFECYCLE_PHASE, PartAsPlannedConstants.AS_PLANNED));
+
 		List<String> values = new ArrayList<>();
 		values.add(partAsPlannedAspect.getUuid());
 		GlobalAssetId globalIdentifier = new GlobalAssetId(values);
 
 		return ShellDescriptorRequest.builder()
-				.idShort(String.format("%s_%s_%s", partAsPlannedAspect.getNameAtManufacturer(), partAsPlannedConstants.getManufacturerId(),
-						partAsPlannedAspect.getManufacturerPartId()))
-				.globalAssetId(globalIdentifier)
-				.specificAssetIds(specificIdentifiers)
-				.identification(PartAsPlannedConstants.PREFIX + UUID.randomUUID())
-				.build();
+				.idShort(String.format("%s_%s_%s", partAsPlannedAspect.getNameAtManufacturer(),
+						partAsPlannedConstants.getManufacturerId(), partAsPlannedAspect.getManufacturerPartId()))
+				.globalAssetId(globalIdentifier).specificAssetIds(specificIdentifiers)
+				.identification(PartAsPlannedConstants.PREFIX + UUID.randomUUID()).build();
 	}
 }

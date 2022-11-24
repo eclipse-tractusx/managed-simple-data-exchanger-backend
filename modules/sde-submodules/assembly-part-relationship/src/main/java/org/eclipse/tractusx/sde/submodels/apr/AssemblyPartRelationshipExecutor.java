@@ -46,7 +46,7 @@ public class AssemblyPartRelationshipExecutor extends SubmodelExecutor {
 
 	@SneakyThrows
 	public void executeCsvRecord(RowData rowData, ObjectNode jsonObject, String processId) {
-		
+
 		csvParseStep.init(getSubmodelSchema());
 		csvParseStep.run(rowData, jsonObject, processId);
 
@@ -61,20 +61,23 @@ public class AssemblyPartRelationshipExecutor extends SubmodelExecutor {
 
 	}
 
-	private void nextSteps(Integer rowIndex, ObjectNode jsonObject, String processId) throws CsvHandlerDigitalTwinUseCaseException {
+	private void nextSteps(Integer rowIndex, ObjectNode jsonObject, String processId)
+			throws CsvHandlerDigitalTwinUseCaseException {
 
 		AspectRelationship aspectRelationship = aspectRelationshipMapper.mapFrom(jsonObject);
 
 		generateUrnUUID.run(aspectRelationship, processId);
-		
-		jsonObject.put("uuid",aspectRelationship.getChildUuid());
-		jsonObject.put("parent_uuid",aspectRelationship.getParentUuid());
-		
+
+		jsonObject.put("uuid", aspectRelationship.getChildUuid());
+		jsonObject.put("parent_uuid", aspectRelationship.getParentUuid());
+
 		jsonRecordValidate.init(getSubmodelSchema());
 		jsonRecordValidate.run(rowIndex, jsonObject);
-
+		
+		digitalTwinsAspectRelationShipCsvHandlerUseCase.init(getSubmodelSchema());
 		digitalTwinsAspectRelationShipCsvHandlerUseCase.run(aspectRelationship);
 
+		eDCAspectRelationshipHandlerUseCase.init(getSubmodelSchema());
 		eDCAspectRelationshipHandlerUseCase.run(getNameOfModel(), aspectRelationship, processId);
 
 		storeAspectRelationshipCsvHandlerUseCase.run(aspectRelationship);
@@ -96,8 +99,8 @@ public class AssemblyPartRelationshipExecutor extends SubmodelExecutor {
 	}
 
 	@Override
-	public int getUpdatedRecordCount(String updated, String processId) {
-		return aspectRelationshipService.getUpdatedData(updated, processId);
+	public int getUpdatedRecordCount(String processId) {
+		return aspectRelationshipService.getUpdatedData(processId);
 	}
 
 }

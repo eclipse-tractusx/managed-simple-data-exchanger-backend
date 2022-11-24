@@ -117,9 +117,8 @@ public class SingleLevelBoMAsPlannedExecutor extends SubmodelExecutor {
 	}
 
 	@Override
-	public int getUpdatedRecordCount(String updated, String processId) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int getUpdatedRecordCount(String processId) {
+		return singleLevelBoMAsPlannedService.getUpdatedData(processId);
 	}
 
 

@@ -23,7 +23,7 @@ package org.eclipse.tractusx.sde.common.exception;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class ServiceException extends RuntimeException {
+public class ServiceException extends Exception {
 
 	/**
 	 * 

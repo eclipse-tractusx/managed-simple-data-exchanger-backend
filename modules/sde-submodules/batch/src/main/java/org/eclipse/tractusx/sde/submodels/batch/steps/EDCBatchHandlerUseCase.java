@@ -27,6 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
+import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequestFactory;
@@ -38,7 +39,6 @@ import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyDefinitionRe
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyRequestFactory;
 import org.eclipse.tractusx.sde.edc.gateways.external.EDCGateway;
 import org.eclipse.tractusx.sde.submodels.batch.entity.BatchEntity;
-import org.eclipse.tractusx.sde.submodels.batch.mapper.BatchMapper;
 import org.eclipse.tractusx.sde.submodels.batch.model.Batch;
 import org.eclipse.tractusx.sde.submodels.batch.service.BatchDeleteService;
 import org.springframework.stereotype.Service;
@@ -49,7 +49,6 @@ import lombok.SneakyThrows;
 @Service
 public class EDCBatchHandlerUseCase extends Step {
 
-	
 	private static final String ASSET_PROP_NAME_BATCH = "Batches - Submodel Batch";
 
 	private final AssetEntryRequestFactory assetFactory;
@@ -57,19 +56,16 @@ public class EDCBatchHandlerUseCase extends Step {
 	private final PolicyRequestFactory policyFactory;
 	private final ContractDefinitionRequestFactory contractFactory;
 	private final PolicyConstraintBuilderService policyConstraintBuilderService;
-	private final BatchMapper batchMapper;
 	private final BatchDeleteService batchDeleteService;
 
 	public EDCBatchHandlerUseCase(EDCGateway edcGateway, AssetEntryRequestFactory assetFactory,
 			PolicyRequestFactory policyFactory, ContractDefinitionRequestFactory contractFactory,
-			PolicyConstraintBuilderService policyConstraintBuilderService, BatchMapper batchMapper,
-			BatchDeleteService batchDeleteService) {
+			PolicyConstraintBuilderService policyConstraintBuilderService, BatchDeleteService batchDeleteService) {
 		this.assetFactory = assetFactory;
 		this.edcGateway = edcGateway;
 		this.policyFactory = policyFactory;
 		this.contractFactory = contractFactory;
 		this.policyConstraintBuilderService = policyConstraintBuilderService;
-		this.batchMapper = batchMapper;
 		this.batchDeleteService = batchDeleteService;
 
 	}
@@ -83,7 +79,8 @@ public class EDCBatchHandlerUseCase extends Step {
 
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel, ASSET_PROP_NAME_BATCH, shellId,
 					subModelId, input.getUuid());
-			if (!edcGateway.assetExistsLookup(assetEntryRequest.getAsset().getProperties().get(CommonConstants.ASSET_PROP_ID))) {
+			if (!edcGateway.assetExistsLookup(
+					assetEntryRequest.getAsset().getProperties().get(CommonConstants.ASSET_PROP_ID))) {
 				edcProcessingforBatch(assetEntryRequest, input);
 
 			} else {
@@ -100,8 +97,14 @@ public class EDCBatchHandlerUseCase extends Step {
 
 	@SneakyThrows
 	private void deleteEDCFirstForUpdate(String submodel, Batch input, String processId) {
-		BatchEntity batchEntity = batchMapper.mapforEntity(batchDeleteService.readCreatedTwinsDetails(input.getUuid()));
-		batchDeleteService.deleteEDCAsset(batchEntity);
+		try {
+			BatchEntity batchEntity = batchDeleteService.readEntity(input.getUuid());
+			batchDeleteService.deleteEDCAsset(batchEntity);
+		} catch (Exception e) {
+			if (!e.getMessage().contains("404 Not Found") && !e.getMessage().contains("No data found")) {
+				throw new ServiceException("Exception in EDC delete request process:"+e.getMessage());
+			}
+		}
 	}
 
 	@SneakyThrows

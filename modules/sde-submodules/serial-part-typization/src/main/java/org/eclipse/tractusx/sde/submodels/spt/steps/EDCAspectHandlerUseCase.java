@@ -29,6 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
+import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequestFactory;
@@ -38,10 +39,8 @@ import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyConstraintBuilderService;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyDefinitionRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyRequestFactory;
-import org.eclipse.tractusx.sde.edc.facilitator.DeleteEDCFacilitator;
 import org.eclipse.tractusx.sde.edc.gateways.external.EDCGateway;
 import org.eclipse.tractusx.sde.submodels.spt.entity.AspectEntity;
-import org.eclipse.tractusx.sde.submodels.spt.mapper.AspectMapper;
 import org.eclipse.tractusx.sde.submodels.spt.model.Aspect;
 import org.eclipse.tractusx.sde.submodels.spt.service.AspectService;
 import org.springframework.stereotype.Service;
@@ -53,28 +52,23 @@ import lombok.SneakyThrows;
 public class EDCAspectHandlerUseCase extends Step {
 
 	private static final String ASSET_PROP_NAME_ASPECT = "Serialized Part - Submodel SerialPartTypization";
-	private static final String UPDATED_Y = "Y";
-    
+
 	private final AssetEntryRequestFactory assetFactory;
 	private final EDCGateway edcGateway;
 	private final PolicyRequestFactory policyFactory;
 	private final ContractDefinitionRequestFactory contractFactory;
 	private final PolicyConstraintBuilderService policyConstraintBuilderService;
-	private final DeleteEDCFacilitator deleteEDCFacilitator;
 	private final AspectService aspectService;
-	private final AspectMapper aspectMapper;
 
 	public EDCAspectHandlerUseCase(EDCGateway edcGateway, AssetEntryRequestFactory assetFactory,
 			PolicyRequestFactory policyFactory, ContractDefinitionRequestFactory contractFactory,
-			PolicyConstraintBuilderService policyConstraintBuilderService,DeleteEDCFacilitator deleteEDCFacilitator,AspectService aspectService,AspectMapper aspectMapper) {
+			PolicyConstraintBuilderService policyConstraintBuilderService, AspectService aspectService) {
 		this.assetFactory = assetFactory;
 		this.edcGateway = edcGateway;
 		this.policyFactory = policyFactory;
 		this.contractFactory = contractFactory;
 		this.policyConstraintBuilderService = policyConstraintBuilderService;
-		this.deleteEDCFacilitator=deleteEDCFacilitator;
-		this.aspectService=aspectService;
-		this.aspectMapper=aspectMapper;
+		this.aspectService = aspectService;
 	}
 
 	@SneakyThrows
@@ -86,7 +80,8 @@ public class EDCAspectHandlerUseCase extends Step {
 
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel, ASSET_PROP_NAME_ASPECT,
 					shellId, subModelId, input.getUuid());
-			if (!edcGateway.assetExistsLookup(assetEntryRequest.getAsset().getProperties().get(CommonConstants.ASSET_PROP_ID))) {
+			if (!edcGateway.assetExistsLookup(
+					assetEntryRequest.getAsset().getProperties().get(CommonConstants.ASSET_PROP_ID))) {
 
 				edcProcessingforAspect(assetEntryRequest, input);
 
@@ -105,11 +100,16 @@ public class EDCAspectHandlerUseCase extends Step {
 
 	@SneakyThrows
 	private void deleteEDCFirstForUpdate(String submodel, Aspect input, String processId) {
-		AspectEntity aspectEntity = aspectMapper.mapforEntity(aspectService.readCreatedTwinsDetails(input.getUuid()));
-		aspectService.deleteEDCAsset(aspectEntity);
-
+		try {
+			AspectEntity entity = aspectService.readEntity(input.getUuid());
+			aspectService.deleteEDCAsset(entity);
+		} catch (Exception e) {
+			if (!e.getMessage().contains("404 Not Found") && !e.getMessage().contains("No data found")) {
+				throw new ServiceException("Exception in EDC delete request process:" + e.getMessage());
+			}
+		}
 	}
-	
+
 	@SneakyThrows
 	private void edcProcessingforAspect(AssetEntryRequest assetEntryRequest, Aspect input) {
 		HashMap<String, String> extensibleProperties = new HashMap<>();
@@ -138,18 +138,17 @@ public class EDCAspectHandlerUseCase extends Step {
 		edcGateway.createPolicyDefinition(usagePolicyDefinitionRequest);
 
 		ContractDefinitionRequest contractDefinitionRequest = contractFactory.getContractDefinitionRequest(
-				assetEntryRequest.getAsset().getProperties().get("asset:prop:id"),
+				assetEntryRequest.getAsset().getProperties().get(CommonConstants.ASSET_PROP_ID),
 				accessPolicyDefinitionRequest.getId(), usagePolicyDefinitionRequest.getId());
 
 		edcGateway.createContractDefinition(contractDefinitionRequest);
 
 		// EDC transaction information for DB
-		input.setAssetId(assetEntryRequest.getAsset().getProperties().get("asset:prop:id"));
+		input.setAssetId(assetEntryRequest.getAsset().getProperties().get(CommonConstants.ASSET_PROP_ID));
 		input.setAccessPolicyId(accessPolicyDefinitionRequest.getId());
 		input.setUsagePolicyId(usagePolicyDefinitionRequest.getId());
 		input.setContractDefinationId(contractDefinitionRequest.getId());
 	}
-
 
 	private String getCustomValue(Aspect input) {
 		if (!CollectionUtils.isEmpty(input.getUsagePolicies())) {

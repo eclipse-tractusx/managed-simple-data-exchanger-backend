@@ -19,13 +19,16 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.submodels.slbap.steps;
 
+import static org.eclipse.tractusx.sde.common.constants.CommonConstants.ASSET_PROP_ID;
+
 import java.util.HashMap;
 import java.util.List;
-import static org.eclipse.tractusx.sde.common.constants.CommonConstants.ASSET_PROP_ID;
+
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
+import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequestFactory;
@@ -36,10 +39,7 @@ import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyConstraintBu
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyDefinitionRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyRequestFactory;
 import org.eclipse.tractusx.sde.edc.gateways.external.EDCGateway;
-import org.eclipse.tractusx.sde.submodels.pap.entity.PartAsPlannedEntity;
-import org.eclipse.tractusx.sde.submodels.pap.model.PartAsPlanned;
 import org.eclipse.tractusx.sde.submodels.slbap.entity.SingleLevelBoMAsPlannedEntity;
-import org.eclipse.tractusx.sde.submodels.slbap.mapper.SingleLevelBoMAsPlannedMapper;
 import org.eclipse.tractusx.sde.submodels.slbap.model.SingleLevelBoMAsPlanned;
 import org.eclipse.tractusx.sde.submodels.slbap.services.SingleLevelBoMAsPlannedService;
 import org.springframework.stereotype.Service;
@@ -49,25 +49,24 @@ import lombok.SneakyThrows;
 
 @Service
 public class EDCSingleLevelBoMAsPlannedHandlerStep extends Step {
-	   
+
 	private final AssetEntryRequestFactory assetFactory;
 	private final EDCGateway edcGateway;
 	private final PolicyRequestFactory policyFactory;
 	private final ContractDefinitionRequestFactory contractFactory;
 	private final PolicyConstraintBuilderService policyConstraintBuilderService;
 	private final SingleLevelBoMAsPlannedService singleLevelBoMAsPlannedService;
-	private final SingleLevelBoMAsPlannedMapper singleLevelBoMAsPlannedMapper;
 
 	public EDCSingleLevelBoMAsPlannedHandlerStep(EDCGateway edcGateway, AssetEntryRequestFactory assetFactory,
 			PolicyRequestFactory policyFactory, ContractDefinitionRequestFactory contractFactory,
-			PolicyConstraintBuilderService policyConstraintBuilderService, SingleLevelBoMAsPlannedService singleLevelBoMAsPlannedService, SingleLevelBoMAsPlannedMapper singleLevelBoMAsPlannedMapper) {
+			PolicyConstraintBuilderService policyConstraintBuilderService,
+			SingleLevelBoMAsPlannedService singleLevelBoMAsPlannedService) {
 		this.assetFactory = assetFactory;
 		this.edcGateway = edcGateway;
 		this.policyFactory = policyFactory;
 		this.contractFactory = contractFactory;
 		this.policyConstraintBuilderService = policyConstraintBuilderService;
 		this.singleLevelBoMAsPlannedService = singleLevelBoMAsPlannedService;
-		this.singleLevelBoMAsPlannedMapper = singleLevelBoMAsPlannedMapper;
 	}
 
 	@SneakyThrows
@@ -77,11 +76,11 @@ public class EDCSingleLevelBoMAsPlannedHandlerStep extends Step {
 		String subModelId = input.getSubModelId();
 
 		try {
-			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel, getSubmodelDescriptionOfModel(),shellId, subModelId,
-					input.getParentUuid());
+			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
+					getSubmodelDescriptionOfModel(), shellId, subModelId, input.getParentUuid());
 			if (!edcGateway.assetExistsLookup(assetEntryRequest.getAsset().getProperties().get(ASSET_PROP_ID))) {
-				edcProcessingforSingleLevelBoMAsPlanned(assetEntryRequest,input);
-			}else {
+				edcProcessingforSingleLevelBoMAsPlanned(assetEntryRequest, input);
+			} else {
 				deleteEDCFirstForUpdate(submodel, input, processId);
 				edcProcessingforSingleLevelBoMAsPlanned(assetEntryRequest, input);
 				input.setUpdated(CommonConstants.UPDATED_Y);
@@ -92,18 +91,24 @@ public class EDCSingleLevelBoMAsPlannedHandlerStep extends Step {
 			throw new CsvHandlerUseCaseException(input.getRowNumber(), "EDC: " + e.getMessage());
 		}
 	}
-	
-	
+
 	@SneakyThrows
 	private void deleteEDCFirstForUpdate(String submodel, SingleLevelBoMAsPlanned input, String processId) {
-		SingleLevelBoMAsPlannedEntity singleLevelBoMAsPlannedEntity = singleLevelBoMAsPlannedMapper
-				.mapforEntity(singleLevelBoMAsPlannedService.findByUUID(input.getChildUuid()));
-		singleLevelBoMAsPlannedService.deleteEDCAsset(singleLevelBoMAsPlannedEntity);
+		try {
+			SingleLevelBoMAsPlannedEntity singleLevelBoMAsPlannedEntity = singleLevelBoMAsPlannedService
+					.readEntity(input.getChildUuid());
+			singleLevelBoMAsPlannedService.deleteEDCAsset(singleLevelBoMAsPlannedEntity);
 
+		} catch (Exception e) {
+			if (!e.getMessage().contains("404 Not Found") && !e.getMessage().contains("No data found")) {
+				throw new ServiceException("Exception in EDC delete request process:"+e.getMessage());
+			}
+		}
 	}
-	
+
 	@SneakyThrows
-	private void edcProcessingforSingleLevelBoMAsPlanned(AssetEntryRequest assetEntryRequest, SingleLevelBoMAsPlanned input) {
+	private void edcProcessingforSingleLevelBoMAsPlanned(AssetEntryRequest assetEntryRequest,
+			SingleLevelBoMAsPlanned input) {
 		HashMap<String, String> extensibleProperties = new HashMap<>();
 
 		String shellId = input.getShellId();

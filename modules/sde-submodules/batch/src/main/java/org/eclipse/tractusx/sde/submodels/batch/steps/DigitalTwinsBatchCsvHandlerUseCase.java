@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseException;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
@@ -35,10 +36,10 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.common.SemanticId;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.CreateSubModelRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellDescriptorRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellLookupRequest;
-import org.eclipse.tractusx.sde.digitaltwins.entities.request.UpdateShellAndSubmoduleRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellLookupResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelListResponse;
+import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelResponse;
 import org.eclipse.tractusx.sde.digitaltwins.gateways.external.DigitalTwinGateway;
 import org.eclipse.tractusx.sde.submodels.batch.model.Batch;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,14 +101,21 @@ public class DigitalTwinsBatchCsvHandlerUseCase extends Step {
 
 		batch.setShellId(shellId);
 		SubModelListResponse subModelResponse = gateway.getSubModels(shellId);
+		SubModelResponse foundSubmodel = null;
+		if (subModelResponse != null) {
+			foundSubmodel = subModelResponse.stream().filter(x -> ID_SHORT.equals(x.getIdShort())).findFirst()
+					.orElse(null);
+			if (foundSubmodel != null)
+				batch.setSubModelId(foundSubmodel.getIdentification());
+		}
 
-		if (subModelResponse == null || subModelResponse.stream().noneMatch(x -> ID_SHORT.equals(x.getIdShort()))) {
+		if (subModelResponse == null || foundSubmodel == null) {
 			logDebug(String.format("No submodels for '%s'", shellId));
 			CreateSubModelRequest createSubModelRequest = getCreateSubModelRequest(batch);
 			gateway.createSubModel(shellId, createSubModelRequest);
 			batch.setSubModelId(createSubModelRequest.getIdentification());
 		} else {
-			batch.setUpdated("Y");
+			batch.setUpdated(CommonConstants.UPDATED_Y);
 			logDebug("Complete Digital Twins Update Update Digital Twins");
 		}
 
@@ -146,7 +154,7 @@ public class DigitalTwinsBatchCsvHandlerUseCase extends Step {
 
 	private ShellDescriptorRequest getShellDescriptorRequest(Batch batch) {
 		ArrayList<KeyValuePair> specificIdentifiers = new ArrayList<>();
-		setSpecifiers(specificIdentifiers,batch);
+		setSpecifiers(specificIdentifiers, batch);
 		List<String> values = new ArrayList<>();
 		values.add(batch.getUuid());
 		GlobalAssetId globalIdentifier = new GlobalAssetId(values);
@@ -157,10 +165,8 @@ public class DigitalTwinsBatchCsvHandlerUseCase extends Step {
 				.globalAssetId(globalIdentifier).specificAssetIds(specificIdentifiers)
 				.identification(PREFIX + UUID.randomUUID()).build();
 	}
-	
-	
-	private void setSpecifiers(final ArrayList<KeyValuePair> specificIdentifiers,Batch batch)
-	{
+
+	private void setSpecifiers(final ArrayList<KeyValuePair> specificIdentifiers, Batch batch) {
 		specificIdentifiers.add(new KeyValuePair(BATCH_ID, batch.getBatchId()));
 		specificIdentifiers.add(new KeyValuePair(MANUFACTURER_PART_ID, batch.getManufacturerPartId()));
 		specificIdentifiers.add(new KeyValuePair(MANUFACTURER_ID, manufacturerId));

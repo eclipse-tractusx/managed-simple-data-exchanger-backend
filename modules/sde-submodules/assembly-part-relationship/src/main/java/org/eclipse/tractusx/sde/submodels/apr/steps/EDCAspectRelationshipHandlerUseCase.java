@@ -26,12 +26,12 @@ import static org.eclipse.tractusx.sde.common.constants.CommonConstants.ASSET_PR
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
+import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequestFactory;
@@ -41,12 +41,9 @@ import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyConstraintBuilderService;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyDefinitionRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyRequestFactory;
-import org.eclipse.tractusx.sde.edc.facilitator.DeleteEDCFacilitator;
 import org.eclipse.tractusx.sde.edc.gateways.external.EDCGateway;
-import org.eclipse.tractusx.sde.submodels.apr.mapper.AspectRelationshipMapper;
+import org.eclipse.tractusx.sde.submodels.apr.entity.AspectRelationshipEntity;
 import org.eclipse.tractusx.sde.submodels.apr.model.AspectRelationship;
-import org.eclipse.tractusx.sde.submodels.apr.model.AspectRelationshipResponse;
-import org.eclipse.tractusx.sde.submodels.apr.model.ChildPart;
 import org.eclipse.tractusx.sde.submodels.apr.service.AspectRelationshipService;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -64,22 +61,17 @@ public class EDCAspectRelationshipHandlerUseCase extends Step {
 	private final ContractDefinitionRequestFactory contractFactory;
 	private final PolicyConstraintBuilderService policyConstraintBuilderService;
 	private final AspectRelationshipService aspectRelationshipService;
-	private final DeleteEDCFacilitator deleteEDCFacilitator;
-	private final AspectRelationshipMapper aspectRelationshipMapper;
 
 	public EDCAspectRelationshipHandlerUseCase(EDCGateway edcGateway, AssetEntryRequestFactory assetFactory,
 			PolicyRequestFactory policyFactory, ContractDefinitionRequestFactory contractFactory,
 			PolicyConstraintBuilderService policyConstraintBuilderService,
-			AspectRelationshipService aspectRelationshipService, DeleteEDCFacilitator deleteEDCFacilitator,
-			AspectRelationshipMapper aspectRelationshipMapper) {
+			AspectRelationshipService aspectRelationshipService) {
 		this.assetFactory = assetFactory;
 		this.edcGateway = edcGateway;
 		this.policyFactory = policyFactory;
 		this.contractFactory = contractFactory;
 		this.policyConstraintBuilderService = policyConstraintBuilderService;
 		this.aspectRelationshipService = aspectRelationshipService;
-		this.deleteEDCFacilitator = deleteEDCFacilitator;
-		this.aspectRelationshipMapper = aspectRelationshipMapper;
 	}
 
 	@SneakyThrows
@@ -91,8 +83,7 @@ public class EDCAspectRelationshipHandlerUseCase extends Step {
 
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
 					ASSET_PROP_NAME_ASPECT_RELATIONSHIP, shellId, subModelId, input.getParentUuid());
-			if (!edcGateway.assetExistsLookup(
-					assetEntryRequest.getAsset().getProperties().get(ASSET_PROP_ID))) {
+			if (!edcGateway.assetExistsLookup(assetEntryRequest.getAsset().getProperties().get(ASSET_PROP_ID))) {
 
 				edcProcessingforAspectRelationship(assetEntryRequest, input);
 
@@ -111,22 +102,14 @@ public class EDCAspectRelationshipHandlerUseCase extends Step {
 
 	@SneakyThrows
 	private void deleteEDCFirstForUpdate(String submodel, AspectRelationship input, String processId) {
-		AspectRelationshipResponse aspectRelationshipResponse = aspectRelationshipMapper
-				.mapforResponse(aspectRelationshipService.readCreatedTwinsDetails(input.getParentUuid()));
-		
-		/* IMP NOTE: THis will delete only First Occurance at EDC */
-
-		if (Optional.ofNullable(aspectRelationshipResponse).isPresent()
-				&& !aspectRelationshipResponse.getChildParts().isEmpty()) {
-			ChildPart childPart = aspectRelationshipResponse.getChildParts().get(0);
-
-			deleteEDCFacilitator.deleteContractDefination(childPart.getContractDefinationId());
-
-			deleteEDCFacilitator.deleteAccessPolicy(childPart.getAccessPolicyId());
-
-			deleteEDCFacilitator.deleteUsagePolicy(childPart.getUsagePolicyId());
-
-			deleteEDCFacilitator.deleteAssets(childPart.getAssetId());
+		try {
+			AspectRelationshipEntity aspectRelationshipEntity = aspectRelationshipService
+					.readEntity(input.getChildUuid());
+			aspectRelationshipService.deleteEDCAsset(aspectRelationshipEntity);
+		} catch (Exception e) {
+			if (!e.getMessage().contains("404 Not Found") && !e.getMessage().contains("No data found")) {
+				throw new ServiceException("Exception in EDC delete request process");
+			}
 		}
 	}
 

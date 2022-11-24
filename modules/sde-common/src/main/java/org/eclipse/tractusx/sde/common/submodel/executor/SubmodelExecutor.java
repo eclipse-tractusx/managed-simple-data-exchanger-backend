@@ -36,6 +36,6 @@ public abstract class SubmodelExecutor {
 
 	public abstract JsonObject readCreatedTwinsDetails(String uuid);
 
-	public abstract int  getUpdatedRecordCount(String updated, String processId);
+	public abstract int  getUpdatedRecordCount(String processId);
 
 }

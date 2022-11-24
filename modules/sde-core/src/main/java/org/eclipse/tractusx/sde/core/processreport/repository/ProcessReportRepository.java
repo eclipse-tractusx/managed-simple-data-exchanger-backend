@@ -58,7 +58,7 @@ public interface ProcessReportRepository extends JpaRepository<ProcessReportEnti
             "number_of_failed_items = ?5, " +
             "number_of_updated_items = ?6 " +            
             "WHERE process_id = ?1", nativeQuery = true)
-	void finalizeProgressReport(String processId, LocalDateTime endDate, String status, int deletedCount,
+	void finalizeProgressReport(String processId, LocalDateTime endDate, String status, int successCount,
 			int noOfFailed,long noOfUpdated);
 
     

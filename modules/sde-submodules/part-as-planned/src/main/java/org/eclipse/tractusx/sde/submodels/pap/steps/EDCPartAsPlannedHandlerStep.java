@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
+import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequestFactory;
@@ -37,7 +38,6 @@ import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyDefinitionRe
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyRequestFactory;
 import org.eclipse.tractusx.sde.edc.gateways.external.EDCGateway;
 import org.eclipse.tractusx.sde.submodels.pap.entity.PartAsPlannedEntity;
-import org.eclipse.tractusx.sde.submodels.pap.mapper.PartAsPlannedMapper;
 import org.eclipse.tractusx.sde.submodels.pap.model.PartAsPlanned;
 import org.eclipse.tractusx.sde.submodels.pap.services.PartAsPlannedService;
 import org.springframework.stereotype.Service;
@@ -47,25 +47,23 @@ import lombok.SneakyThrows;
 
 @Service
 public class EDCPartAsPlannedHandlerStep extends Step {
-    
+
 	private final AssetEntryRequestFactory assetFactory;
 	private final EDCGateway edcGateway;
 	private final PolicyRequestFactory policyFactory;
 	private final ContractDefinitionRequestFactory contractFactory;
 	private final PolicyConstraintBuilderService policyConstraintBuilderService;
 	private final PartAsPlannedService partAsPlannedService;
-	private final  PartAsPlannedMapper partAsPlannedMapper;
 
 	public EDCPartAsPlannedHandlerStep(EDCGateway edcGateway, AssetEntryRequestFactory assetFactory,
 			PolicyRequestFactory policyFactory, ContractDefinitionRequestFactory contractFactory,
-			PolicyConstraintBuilderService policyConstraintBuilderService,PartAsPlannedService partAsPlannedService, PartAsPlannedMapper partAsPlannedMapper) {
+			PolicyConstraintBuilderService policyConstraintBuilderService, PartAsPlannedService partAsPlannedService) {
 		this.assetFactory = assetFactory;
 		this.edcGateway = edcGateway;
 		this.policyFactory = policyFactory;
 		this.contractFactory = contractFactory;
 		this.policyConstraintBuilderService = policyConstraintBuilderService;
 		this.partAsPlannedService = partAsPlannedService;
-		this.partAsPlannedMapper = partAsPlannedMapper;
 	}
 
 	@SneakyThrows
@@ -77,7 +75,8 @@ public class EDCPartAsPlannedHandlerStep extends Step {
 
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
 					getSubmodelDescriptionOfModel(), shellId, subModelId, input.getUuid());
-			if (!edcGateway.assetExistsLookup(assetEntryRequest.getAsset().getProperties().get(CommonConstants.ASSET_PROP_ID))) {
+			if (!edcGateway.assetExistsLookup(
+					assetEntryRequest.getAsset().getProperties().get(CommonConstants.ASSET_PROP_ID))) {
 				edcProcessingforPartAsPlanned(assetEntryRequest, input);
 			} else {
 
@@ -94,10 +93,15 @@ public class EDCPartAsPlannedHandlerStep extends Step {
 
 	@SneakyThrows
 	private void deleteEDCFirstForUpdate(String submodel, PartAsPlanned input, String processId) {
-		PartAsPlannedEntity partAsPlannedEntity = partAsPlannedMapper
-				.mapforEntity(partAsPlannedService.readCreatedTwinsDetails(input.getUuid()));
-		partAsPlannedService.deleteEDCAsset(partAsPlannedEntity);
+		try {
+			PartAsPlannedEntity partAsPlannedEntity = partAsPlannedService.readEntity(input.getUuid());
+			partAsPlannedService.deleteEDCAsset(partAsPlannedEntity);
 
+		} catch (Exception e) {
+			if (!e.getMessage().contains("404 Not Found") && !e.getMessage().contains("No data found")) {
+				throw new ServiceException("Exception in EDC delete request process:" + e.getMessage());
+			}
+		}
 	}
 
 	@SneakyThrows
@@ -128,13 +132,13 @@ public class EDCPartAsPlannedHandlerStep extends Step {
 		edcGateway.createPolicyDefinition(usagePolicyDefinitionRequest);
 
 		ContractDefinitionRequest contractDefinitionRequest = contractFactory.getContractDefinitionRequest(
-				assetEntryRequest.getAsset().getProperties().get("asset:prop:id"),
+				assetEntryRequest.getAsset().getProperties().get(CommonConstants.ASSET_PROP_ID),
 				accessPolicyDefinitionRequest.getId(), usagePolicyDefinitionRequest.getId());
 
 		edcGateway.createContractDefinition(contractDefinitionRequest);
 
 		// EDC transaction information for DB
-		input.setAssetId(assetEntryRequest.getAsset().getProperties().get("asset:prop:id"));
+		input.setAssetId(assetEntryRequest.getAsset().getProperties().get(CommonConstants.ASSET_PROP_ID));
 		input.setAccessPolicyId(accessPolicyDefinitionRequest.getId());
 		input.setUsagePolicyId(usagePolicyDefinitionRequest.getId());
 		input.setContractDefinationId(contractDefinitionRequest.getId());

@@ -95,10 +95,6 @@ public abstract class BatchMapper {
 		return new Gson().toJsonTree(SubmodelResultResponse.builder().localIdentifiers(localIdentifiers)
 				.manufacturingInformation(manufacturingInformation).partTypeInformation(partTypeInformation)
 				.catenaXId(entity.getUuid())
-				.contractDefinationId(entity.getContractDefinationId())
-				.usagePolicyId(entity.getUsagePolicyId())
-				.accessPolicyId(entity.getAccessPolicyId())
-				.assetId(entity.getAssetId())
 				.build()).getAsJsonObject();
 	}
 

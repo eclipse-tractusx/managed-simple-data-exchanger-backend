@@ -25,6 +25,7 @@ package org.eclipse.tractusx.sde.submodels.apr.steps;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseException;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
@@ -38,10 +39,10 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.common.SemanticId;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.CreateSubModelRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellDescriptorRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellLookupRequest;
-import org.eclipse.tractusx.sde.digitaltwins.entities.request.UpdateShellAndSubmoduleRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellLookupResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelListResponse;
+import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelResponse;
 import org.eclipse.tractusx.sde.digitaltwins.gateways.external.DigitalTwinGateway;
 import org.eclipse.tractusx.sde.submodels.apr.model.AspectRelationship;
 import org.eclipse.tractusx.sde.submodels.spt.entity.AspectEntity;
@@ -110,14 +111,21 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 
 		aspectRelationShip.setShellId(shellId);
 		SubModelListResponse subModelResponse = gateway.getSubModels(shellId);
+		SubModelResponse foundSubmodel = null;
+		if (subModelResponse != null) {
+			foundSubmodel = subModelResponse.stream().filter(x -> ID_SHORT.equals(x.getIdShort())).findFirst()
+					.orElse(null);
+			if (foundSubmodel != null)
+				aspectRelationShip.setSubModelId(foundSubmodel.getIdentification());
+		}
 
-		if (subModelResponse == null || subModelResponse.stream().noneMatch(x -> ID_SHORT.equals(x.getIdShort()))) {
+		if (subModelResponse == null || foundSubmodel == null) {
 			logDebug(String.format("No submodels for '%s'", shellId));
 			CreateSubModelRequest createSubModelRequest = getCreateSubModelRequest(aspectRelationShip);
 			gateway.createSubModel(shellId, createSubModelRequest);
 			aspectRelationShip.setSubModelId(createSubModelRequest.getIdentification());
 		} else {
-			aspectRelationShip.setUpdated("Y");
+			aspectRelationShip.setUpdated(CommonConstants.UPDATED_Y);
 			logDebug("Complete Digital Twins Update Update Digital Twins");
 
 		}
@@ -187,7 +195,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 
 	private ShellDescriptorRequest getShellDescriptorRequest(Aspect aspect) {
 		ArrayList<KeyValuePair> specificIdentifiers = new ArrayList<>();
-		setSpecifiers(specificIdentifiers,aspect);
+		setSpecifiers(specificIdentifiers, aspect);
 		List<String> values = new ArrayList<>();
 		values.add(aspect.getUuid());
 		GlobalAssetId globalIdentifier = new GlobalAssetId(values);
@@ -199,9 +207,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 				.identification(UUIdGenerator.getUrnUuid()).build();
 	}
 
-	
-	private void setSpecifiers(final ArrayList<KeyValuePair> specificIdentifiers,Aspect aspect)
-	{
+	private void setSpecifiers(final ArrayList<KeyValuePair> specificIdentifiers, Aspect aspect) {
 		specificIdentifiers.add(new KeyValuePair(PART_INSTANCE_ID, aspect.getPartInstanceId()));
 		specificIdentifiers.add(new KeyValuePair(MANUFACTURER_PART_ID, aspect.getManufacturerPartId()));
 		specificIdentifiers.add(new KeyValuePair(MANUFACTURER_ID, manufacturerId));

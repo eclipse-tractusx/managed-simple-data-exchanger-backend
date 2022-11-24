@@ -77,6 +77,7 @@ public class ProcessReportUseCase {
 		oldProcessReport.setStartDate(LocalDateTime.now());
 		oldProcessReport.setReferenceProcessId(refProcessId);
 		oldProcessReport.setNumberOfDeletedItems(0);
+		oldProcessReport.setNumberOfUpdatedItems(0);
 		oldProcessReport.setNumberOfSucceededItems(0);
 		oldProcessReport.setNumberOfFailedItems(0);
 
@@ -107,9 +108,9 @@ public class ProcessReportUseCase {
 		return result.map(mapper::mapFrom).orElse(null);
 	}
 
-	public void finishBuildProgressReport(String processId, int deletedCount, int failedCount) {
+	public void finishBuildProgressReport(String processId, int successCount, int failedCount, int updatedcount) {
 		repository.finalizeProgressReport(processId, LocalDateTime.now(), ProgressStatusEnum.COMPLETED.toString(),
-				deletedCount, failedCount);
+				successCount, failedCount,updatedcount);
 
 	}
 

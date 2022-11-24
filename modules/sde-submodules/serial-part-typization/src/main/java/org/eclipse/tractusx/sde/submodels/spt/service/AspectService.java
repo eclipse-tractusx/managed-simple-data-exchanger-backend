@@ -3,6 +3,7 @@ package org.eclipse.tractusx.sde.submodels.spt.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
 import org.eclipse.tractusx.sde.digitaltwins.facilitator.DeleteDigitalTwinsFacilitator;
 import org.eclipse.tractusx.sde.edc.facilitator.DeleteEDCFacilitator;
@@ -48,6 +49,12 @@ public class AspectService {
 		AspectEntity aspectEntity = aspectMapper.mapforEntity(jsonObject);
 
 		deleteDigitalTwinsFacilitator.deleteDigitalTwinsById(aspectEntity.getShellId());
+		deleteEDCAsset(aspectEntity);
+
+		saveAspectWithDeleted(aspectEntity);
+	}
+
+	public void deleteEDCAsset(AspectEntity aspectEntity) {
 
 		deleteEDCFacilitator.deleteContractDefination(aspectEntity.getContractDefinationId());
 
@@ -56,8 +63,6 @@ public class AspectService {
 		deleteEDCFacilitator.deleteUsagePolicy(aspectEntity.getUsagePolicyId());
 
 		deleteEDCFacilitator.deleteAssets(aspectEntity.getAssetId());
-
-		saveAspectWithDeleted(aspectEntity);
 	}
 
 	private void saveAspectWithDeleted(AspectEntity aspectEntity) {
@@ -66,8 +71,17 @@ public class AspectService {
 	}
 
 	public JsonObject readCreatedTwinsDetails(String uuid) {
-		return aspectMapper.mapToResponse(Optional.ofNullable(aspectRepository.findByUuid(uuid)).orElseThrow(
-				() -> new NoDataFoundException("No data found uuid "+uuid)));
+		return aspectMapper.mapToResponse(readEntity(uuid));
+	}
+
+	public AspectEntity readEntity(String uuid) {
+		return Optional.ofNullable(aspectRepository.findByUuid(uuid))
+				.orElseThrow(() -> new NoDataFoundException("No data found uuid " + uuid));
+	}
+
+	public int getUpdatedData(String refProcessId) {
+
+		return (int) aspectRepository.countByUpdatedAndProcessId(CommonConstants.UPDATED_Y, refProcessId);
 	}
 
 }

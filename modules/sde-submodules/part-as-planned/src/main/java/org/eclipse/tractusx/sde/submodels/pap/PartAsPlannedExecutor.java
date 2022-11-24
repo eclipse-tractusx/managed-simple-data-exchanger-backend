@@ -44,7 +44,7 @@ import lombok.SneakyThrows;
 @Service
 @RequiredArgsConstructor
 public class PartAsPlannedExecutor extends SubmodelExecutor {
-	
+
 	private final PartAsPlannedMapper partAsPlannedMapper;
 
 	private final CsvParse csvParseStep;
@@ -61,10 +61,9 @@ public class PartAsPlannedExecutor extends SubmodelExecutor {
 
 	private final PartAsPlannedService partAsPlannedService;
 
-
 	@SneakyThrows
 	public void executeCsvRecord(RowData rowData, ObjectNode jsonObject, String processId) {
-		
+
 		csvParseStep.init(getSubmodelSchema());
 		csvParseStep.run(rowData, jsonObject, processId);
 
@@ -72,7 +71,6 @@ public class PartAsPlannedExecutor extends SubmodelExecutor {
 
 	}
 
-	
 	@SneakyThrows
 	public void executeJsonRecord(Integer rowIndex, ObjectNode jsonObject, String processId) {
 
@@ -80,12 +78,11 @@ public class PartAsPlannedExecutor extends SubmodelExecutor {
 
 	}
 
-	
-	private void nextSteps(Integer rowIndex, ObjectNode jsonObject, String processId) throws CsvHandlerDigitalTwinUseCaseException {
-
+	private void nextSteps(Integer rowIndex, ObjectNode jsonObject, String processId)
+			throws CsvHandlerDigitalTwinUseCaseException {
 
 		generateUrnUUID.run(jsonObject, processId);
-		
+
 		jsonRecordValidate.init(getSubmodelSchema());
 		jsonRecordValidate.run(rowIndex, jsonObject);
 
@@ -113,6 +110,11 @@ public class PartAsPlannedExecutor extends SubmodelExecutor {
 	@Override
 	public JsonObject readCreatedTwinsDetails(String uuid) {
 		return partAsPlannedService.readCreatedTwinsDetails(uuid);
+	}
+
+	@Override
+	public int getUpdatedRecordCount(String processId) {
+		return partAsPlannedService.getUpdatedData(processId);
 	}
 
 }

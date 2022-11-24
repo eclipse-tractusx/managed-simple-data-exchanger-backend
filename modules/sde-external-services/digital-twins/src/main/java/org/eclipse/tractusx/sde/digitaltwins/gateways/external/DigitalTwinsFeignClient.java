@@ -15,5 +15,4 @@ public interface DigitalTwinsFeignClient {
 	  ResponseEntity<Object> deleteDigitalTwinsById(@PathVariable("id") String shellId,
               @RequestHeader Map<String, String> requestHeader);
 
-
 }

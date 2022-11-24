@@ -22,6 +22,7 @@ package org.eclipse.tractusx.sde.submodels.slbap.repository;
 import java.util.List;
 
 import org.eclipse.tractusx.sde.submodels.slbap.entity.SingleLevelBoMAsPlannedEntity;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 public interface SingleLevelBoMAsPlannedRepository extends CrudRepository<SingleLevelBoMAsPlannedEntity, String> {
@@ -29,6 +30,13 @@ public interface SingleLevelBoMAsPlannedRepository extends CrudRepository<Single
 	List<SingleLevelBoMAsPlannedEntity> findByProcessId(String processId);
 	
     List<SingleLevelBoMAsPlannedEntity> findByParentCatenaXId(String parentCatenaXId);
+    
+	@Query("select count(ae) from SingleLevelBoMAsPlannedEntity ae where ae.updated = ?1 and ae.processId = ?2")
+	long countByUpdatedAndProcessId(String updated, String processId);
+	
+	SingleLevelBoMAsPlannedEntity findByChildCatenaXId(String uuid);
+	
+
     
 
 }

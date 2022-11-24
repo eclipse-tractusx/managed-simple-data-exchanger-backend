@@ -96,7 +96,8 @@ public abstract class AspectMapper {
 
 		return new Gson().toJsonTree(SubmodelResultResponse.builder().localIdentifiers(localIdentifiers)
 				.manufacturingInformation(manufacturingInformation).partTypeInformation(partTypeInformation)
-				.catenaXId(entity.getUuid()).build()).getAsJsonObject();
+				.catenaXId(entity.getUuid())
+				.build()).getAsJsonObject();
 	}
 
 	@Named("prettyName")

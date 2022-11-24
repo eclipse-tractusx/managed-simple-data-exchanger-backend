@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.eclipse.tractusx.sde.common.enums.OptionalIdentifierKeyEnum;
 import org.eclipse.tractusx.sde.submodels.spt.entity.AspectEntity;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 public interface AspectRepository extends CrudRepository<AspectEntity, String> {
@@ -53,5 +54,10 @@ public interface AspectRepository extends CrudRepository<AspectEntity, String> {
 	AspectEntity findByUuid(String uuid);
 
 	List<AspectEntity> findByProcessId(String processId);
+
+
+	@Query("select count(ae) from AspectEntity ae where ae.updated = ?1 and ae.processId = ?2")
+	long countByUpdatedAndProcessId(String updated, String processId);
+	
 
 }

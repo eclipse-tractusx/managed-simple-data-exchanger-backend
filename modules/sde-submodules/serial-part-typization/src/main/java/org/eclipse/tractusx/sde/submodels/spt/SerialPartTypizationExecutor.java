@@ -44,7 +44,7 @@ public class SerialPartTypizationExecutor extends SubmodelExecutor {
 
 	@SneakyThrows
 	public void executeCsvRecord(RowData rowData, ObjectNode jsonObject, String processId) {
-		
+
 		csvParseStep.init(getSubmodelSchema());
 		csvParseStep.run(rowData, jsonObject, processId);
 
@@ -52,7 +52,6 @@ public class SerialPartTypizationExecutor extends SubmodelExecutor {
 
 	}
 
-	
 	@SneakyThrows
 	public void executeJsonRecord(Integer rowIndex, ObjectNode jsonObject, String processId) {
 
@@ -60,19 +59,22 @@ public class SerialPartTypizationExecutor extends SubmodelExecutor {
 
 	}
 
-	
-	private void nextSteps(Integer rowIndex, ObjectNode jsonObject, String processId) throws CsvHandlerDigitalTwinUseCaseException {
+	private void nextSteps(Integer rowIndex, ObjectNode jsonObject, String processId)
+			throws CsvHandlerDigitalTwinUseCaseException {
 
 		generateUrnUUID.run(jsonObject, processId);
-		
+
 		jsonRecordValidate.init(getSubmodelSchema());
 		jsonRecordValidate.run(rowIndex, jsonObject);
 
 		Aspect aspect = aspectMapper.mapFrom(jsonObject);
 
+		digitalTwinsAspectCsvHandlerUseCase.init(getSubmodelSchema());
 		digitalTwinsAspectCsvHandlerUseCase.run(aspect);
 
+		eDCAspectHandlerUseCase.init(getSubmodelSchema());
 		eDCAspectHandlerUseCase.run(getNameOfModel(), aspect, processId);
+		
 
 		storeAspectCsvHandlerUseCase.run(aspect);
 	}
@@ -90,6 +92,11 @@ public class SerialPartTypizationExecutor extends SubmodelExecutor {
 	@Override
 	public JsonObject readCreatedTwinsDetails(String uuid) {
 		return aspectService.readCreatedTwinsDetails(uuid);
+	}
+
+	@Override
+	public int getUpdatedRecordCount(String processId) {
+		return aspectService.getUpdatedData(processId);
 	}
 
 }

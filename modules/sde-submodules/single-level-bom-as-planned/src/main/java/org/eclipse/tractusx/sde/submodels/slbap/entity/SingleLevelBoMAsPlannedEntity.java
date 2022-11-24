@@ -78,6 +78,9 @@ public class SingleLevelBoMAsPlannedEntity implements Serializable {
     
     @Column(name = "deleted")
     private String deleted;
+    
+    @Column(name = "updated")
+    private String updated;
 }
 
 @Data

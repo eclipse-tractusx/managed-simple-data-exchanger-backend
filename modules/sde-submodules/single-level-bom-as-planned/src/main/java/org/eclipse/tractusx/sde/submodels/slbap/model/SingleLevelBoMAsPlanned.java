@@ -101,4 +101,7 @@ public class SingleLevelBoMAsPlanned {
 	@JsonProperty(value = "last_modified_on")
 	private String lastModifiedOn;
 	
+	@JsonProperty(value = "updated")
+	private String updated;
+	
 }

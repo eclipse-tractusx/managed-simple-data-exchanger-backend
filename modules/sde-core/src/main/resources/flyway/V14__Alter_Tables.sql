@@ -1,6 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -18,20 +18,16 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.common.exception;
+ ALTER TABLE aspect
+    ADD updated                   TEXT NULL;
 
-import lombok.extern.slf4j.Slf4j;
+ALTER TABLE aspect_relationship
+    ADD updated                   TEXT NULL;
 
-@Slf4j
-public class ServiceException extends Exception {
+ ALTER TABLE batch
+ 	ADD updated                   TEXT NULL;
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	public ServiceException(String exceptionstr) {
-		super(exceptionstr);
-		log.debug(exceptionstr);
-	}
-}
+ALTER TABLE part_as_planned
+   ADD updated                   TEXT NULL;
+ ALTER TABLE single_level_bom_as_planned
+   ADD updated                   TEXT NULL;

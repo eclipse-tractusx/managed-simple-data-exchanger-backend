@@ -68,6 +68,8 @@ public class AspectRelationshipEntity implements Serializable {
     private String accessPolicyId;
     @Column(name = "deleted")
     private String deleted;
+    @Column(name = "updated")
+    private String updated;
 
 }
 

@@ -11,7 +11,13 @@
 	<artifactId>digital-twins</artifactId>
 	<name>digital-twins</name>
 	<packaging>jar</packaging>
-	
+	<dependencies>
+		<dependency>
+			<groupId>org.eclipse</groupId>
+			<artifactId>sde-common</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+	</dependencies>
 	<build>
 		<plugins>
 			<plugin>

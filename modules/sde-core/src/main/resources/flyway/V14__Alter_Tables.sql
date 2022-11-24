@@ -26,3 +26,8 @@ ALTER TABLE aspect_relationship
 
  ALTER TABLE batch
  	ADD updated                   TEXT NULL;
+
+ALTER TABLE part_as_planned
+   ADD updated                   TEXT NULL;
+ ALTER TABLE single_level_bom_as_planned
+   ADD updated                   TEXT NULL;

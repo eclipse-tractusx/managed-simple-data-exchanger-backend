@@ -32,12 +32,8 @@ import lombok.Data;
 @AllArgsConstructor
 public class SubmodelResultResponse {
 
-    private List<LocalIdentifier> localIdentifiers;
-    private ManufacturingInformation manufacturingInformation;
-    private String catenaXId;
-    private PartTypeInformation partTypeInformation;
-    private String contractDefinationId;
-    private String usagePolicyId;
-    private String assetId; 
-    private String accessPolicyId;
+	private List<LocalIdentifier> localIdentifiers;
+	private ManufacturingInformation manufacturingInformation;
+	private String catenaXId;
+	private PartTypeInformation partTypeInformation;
 }

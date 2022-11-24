@@ -34,8 +34,4 @@ public class ChildPart {
     private String assembledOn;
     private String lastModifiedOn;
     private String childCatenaXId;
-    private String contractDefinationId;
-    private String usagePolicyId;
-    private String assetId; 
-    private String accessPolicyId;
 }

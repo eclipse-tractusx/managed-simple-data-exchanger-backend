@@ -42,7 +42,7 @@ import lombok.SneakyThrows;
 
 @Mapper(componentModel = "spring")
 public abstract class AspectRelationshipMapper {
-	
+
 	ObjectMapper mapper = new ObjectMapper();
 
 	@Mapping(source = "parentUuid", target = "parentCatenaXId")
@@ -70,12 +70,11 @@ public abstract class AspectRelationshipMapper {
 
 		List<ChildPart> childParts = aspectRelationships.stream().map(this::toChildPart).toList();
 		return new Gson().toJsonTree(
-				AspectRelationshipResponse.builder().catenaXId(parentCatenaXUuid).childParts(childParts)
-				.build())
+				AspectRelationshipResponse.builder().catenaXId(parentCatenaXUuid).childParts(childParts).build())
 				.getAsJsonObject();
 
 	}
-	
+
 	public AspectRelationshipResponse mapforResponse(JsonObject entity) {
 		return new Gson().fromJson(entity, AspectRelationshipResponse.class);
 	}
@@ -86,12 +85,7 @@ public abstract class AspectRelationshipMapper {
 				.build();
 
 		return ChildPart.builder().lifecycleContext(entity.getLifecycleContext()).assembledOn(entity.getAssembledOn())
-				.childCatenaXId(entity.getChildCatenaXId()).quantity(quantity)
-				.assetId(entity.getAssetId())
-				.contractDefinationId(entity.getContractDefinationId())
-				.usagePolicyId(entity.getUsagePolicyId())
-				.accessPolicyId(entity.getAccessPolicyId())
-				.build();
+				.childCatenaXId(entity.getChildCatenaXId()).quantity(quantity).build();
 	}
 
 }

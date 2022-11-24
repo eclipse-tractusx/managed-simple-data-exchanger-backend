@@ -93,9 +93,8 @@ public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 			gateway.createSubModel(shellId, createSubModelRequest);
 			partAsPlannedAspect.setSubModelId(createSubModelRequest.getIdentification());
 		} else {
-			throw new CsvHandlerDigitalTwinUseCaseException(
-					String.format("PartAsPlanned submodels already exist/found with Shell id %s for %s", shellId,
-							shellLookupRequest.toJsonString()));
+			partAsPlannedAspect.setUpdated("Y");
+			logDebug("Complete Digital Twins Update Update Digital Twins");
 		}
 
 		return partAsPlannedAspect;

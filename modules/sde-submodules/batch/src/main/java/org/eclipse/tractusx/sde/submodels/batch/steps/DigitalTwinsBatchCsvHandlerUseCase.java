@@ -107,19 +107,7 @@ public class DigitalTwinsBatchCsvHandlerUseCase extends Step {
 			gateway.createSubModel(shellId, createSubModelRequest);
 			batch.setSubModelId(createSubModelRequest.getIdentification());
 		} else {
-			logDebug("Inside Update Digital Twins");
-			ShellDescriptorRequest aasDescriptorRequest = updateShellDescriptorRequest(batch);
-			List<CreateSubModelRequest> submodelDescriptors = new ArrayList<>();
-			CreateSubModelRequest createSubModelRequest = updateSubModelRequest(batch, subModelResponse);
-			submodelDescriptors.add(createSubModelRequest);
-			UpdateShellAndSubmoduleRequest updateDigitalTwins = UpdateShellAndSubmoduleRequest.builder()
-					.idShort(aasDescriptorRequest.getIdShort()).globalAssetId(aasDescriptorRequest.getGlobalAssetId())
-					.specificAssetIds(aasDescriptorRequest.getSpecificAssetIds()).identification(shellId)
-					.submodelDescriptors(submodelDescriptors).build();
-
-			batch.setSubModelId(createSubModelRequest.getIdentification());
-			gateway.updateDigitalTwinAndSubModuule(shellId,
-					createSubModelRequest.getIdentification(), updateDigitalTwins);
+			batch.setUpdated("Y");
 			logDebug("Complete Digital Twins Update Update Digital Twins");
 		}
 
@@ -170,37 +158,6 @@ public class DigitalTwinsBatchCsvHandlerUseCase extends Step {
 				.identification(PREFIX + UUID.randomUUID()).build();
 	}
 	
-	private ShellDescriptorRequest updateShellDescriptorRequest(Batch batch) {
-		ArrayList<KeyValuePair> specificIdentifiers = new ArrayList<>();
-		setSpecifiers(specificIdentifiers,batch);
-		List<String> values = new ArrayList<>();
-		values.add(batch.getUuid());
-		GlobalAssetId globalIdentifier = new GlobalAssetId(values);
-
-		return ShellDescriptorRequest.builder()
-				.idShort(String.format("%s_%s_%s", batch.getNameAtManufacturer(), manufacturerId,
-						batch.getManufacturerPartId()))
-				.globalAssetId(globalIdentifier).specificAssetIds(specificIdentifiers)
-				.identification(batch.getShellId()).build();
-	}
-	
-	private CreateSubModelRequest updateSubModelRequest(Batch batch,SubModelListResponse subModelResponse) {
-		ArrayList<String> value = new ArrayList<>();
-		value.add(SEMANTIC_ID);
-		SemanticId semanticId = new SemanticId(value);
-		String identification = subModelResponse.get(0).getIdentification();
-				List<Endpoint> endpoints = new ArrayList<>();
-		endpoints.add(Endpoint.builder().endpointInterface(HTTP)
-				.protocolInformation(ProtocolInformation.builder()
-						.endpointAddress(String.format(String.format("%s%s/%s-%s%s", edcEndpoint.replace("data", ""),
-								manufacturerId, batch.getShellId(), identification,
-								"/submodel?content=value&extent=WithBLOBValue")))
-						.endpointProtocol(HTTPS).endpointProtocolVersion(ENDPOINT_PROTOCOL_VERSION).build())
-				.build());
-
-		return CreateSubModelRequest.builder().idShort(ID_SHORT).identification(identification).semanticId(semanticId)
-				.endpoints(endpoints).build();
-	}
 	
 	private void setSpecifiers(final ArrayList<KeyValuePair> specificIdentifiers,Batch batch)
 	{

@@ -189,21 +189,6 @@ public class DigitalTwinGateway {
         return responseBody;
     }
     
-	@SneakyThrows
-	public ResponseEntity<Object> updateDigitalTwinAndSubModuule(String shellId, String subModuleId,
-			UpdateShellAndSubmoduleRequest updateDigitalTwins) {
-		ResponseEntity<Object> response = null;
-		try {
-			Map<String, String> headers = new HashMap<>();
-			headers.put(AUTHORIZATION, getBearerToken());
-
-			response = digitalTwinsFeignClient.updateDigitalTwinAndSubModuule(shellId, headers, updateDigitalTwins);
-		} catch (Exception e) {
-			throw new Exception("Exception in Digital Twins Update request process");
-		}
-		return response;
-	}
-	
 
     @SneakyThrows
     private String getBearerToken() {

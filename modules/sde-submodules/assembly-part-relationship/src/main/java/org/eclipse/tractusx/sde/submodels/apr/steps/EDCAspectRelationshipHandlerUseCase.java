@@ -22,11 +22,14 @@
 
 package org.eclipse.tractusx.sde.submodels.apr.steps;
 
+import static org.eclipse.tractusx.sde.common.constants.CommonConstants.ASSET_PROP_ID;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
@@ -40,18 +43,13 @@ import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyDefinitionRe
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyRequestFactory;
 import org.eclipse.tractusx.sde.edc.facilitator.DeleteEDCFacilitator;
 import org.eclipse.tractusx.sde.edc.gateways.external.EDCGateway;
-import org.eclipse.tractusx.sde.submodels.apr.entity.AspectRelationshipEntity;
 import org.eclipse.tractusx.sde.submodels.apr.mapper.AspectRelationshipMapper;
 import org.eclipse.tractusx.sde.submodels.apr.model.AspectRelationship;
 import org.eclipse.tractusx.sde.submodels.apr.model.AspectRelationshipResponse;
 import org.eclipse.tractusx.sde.submodels.apr.model.ChildPart;
 import org.eclipse.tractusx.sde.submodels.apr.service.AspectRelationshipService;
-import org.eclipse.tractusx.sde.submodels.spt.entity.AspectEntity;
-import org.eclipse.tractusx.sde.submodels.spt.model.Aspect;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-
-import com.google.gson.JsonObject;
 
 import lombok.SneakyThrows;
 
@@ -59,8 +57,7 @@ import lombok.SneakyThrows;
 public class EDCAspectRelationshipHandlerUseCase extends Step {
 
 	private static final String ASSET_PROP_NAME_ASPECT_RELATIONSHIP = "Serialized Part - Submodel AssemblyPartRelationship";
-	private static final String UPDATED_Y = "Y";
-	
+
 	private final AssetEntryRequestFactory assetFactory;
 	private final EDCGateway edcGateway;
 	private final PolicyRequestFactory policyFactory;
@@ -69,7 +66,7 @@ public class EDCAspectRelationshipHandlerUseCase extends Step {
 	private final AspectRelationshipService aspectRelationshipService;
 	private final DeleteEDCFacilitator deleteEDCFacilitator;
 	private final AspectRelationshipMapper aspectRelationshipMapper;
-	
+
 	public EDCAspectRelationshipHandlerUseCase(EDCGateway edcGateway, AssetEntryRequestFactory assetFactory,
 			PolicyRequestFactory policyFactory, ContractDefinitionRequestFactory contractFactory,
 			PolicyConstraintBuilderService policyConstraintBuilderService,
@@ -84,7 +81,7 @@ public class EDCAspectRelationshipHandlerUseCase extends Step {
 		this.deleteEDCFacilitator = deleteEDCFacilitator;
 		this.aspectRelationshipMapper = aspectRelationshipMapper;
 	}
-	
+
 	@SneakyThrows
 	public AspectRelationship run(String submodel, AspectRelationship input, String processId) {
 		String shellId = input.getShellId();
@@ -92,9 +89,10 @@ public class EDCAspectRelationshipHandlerUseCase extends Step {
 
 		try {
 
-			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel, ASSET_PROP_NAME_ASPECT_RELATIONSHIP,
-					shellId, subModelId, input.getParentUuid());
-			if (!edcGateway.assetExistsLookup(assetEntryRequest.getAsset().getProperties().get("asset:prop:id"))) {
+			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
+					ASSET_PROP_NAME_ASPECT_RELATIONSHIP, shellId, subModelId, input.getParentUuid());
+			if (!edcGateway.assetExistsLookup(
+					assetEntryRequest.getAsset().getProperties().get(ASSET_PROP_ID))) {
 
 				edcProcessingforAspectRelationship(assetEntryRequest, input);
 
@@ -102,7 +100,7 @@ public class EDCAspectRelationshipHandlerUseCase extends Step {
 
 				deleteEDCFirstForUpdate(submodel, input, processId);
 				edcProcessingforAspectRelationship(assetEntryRequest, input);
-				input.setUpdated(UPDATED_Y);
+				input.setUpdated(CommonConstants.UPDATED_Y);
 			}
 
 			return input;
@@ -110,13 +108,17 @@ public class EDCAspectRelationshipHandlerUseCase extends Step {
 			throw new CsvHandlerUseCaseException(input.getRowNumber(), "EDC: " + e.getMessage());
 		}
 	}
-	
+
 	@SneakyThrows
 	private void deleteEDCFirstForUpdate(String submodel, AspectRelationship input, String processId) {
-		AspectRelationshipResponse aspectRelationshipResponse=aspectRelationshipMapper.mapforResponse(aspectRelationshipService.readCreatedTwinsDetails(input.getParentUuid()));
+		AspectRelationshipResponse aspectRelationshipResponse = aspectRelationshipMapper
+				.mapforResponse(aspectRelationshipService.readCreatedTwinsDetails(input.getParentUuid()));
 		/* IMP NOTE: THis will delete only First Occurance at EDC */
-		if(Optional.ofNullable(aspectRelationshipResponse).isPresent() && !aspectRelationshipResponse.getChildParts().isEmpty()) {
-			ChildPart childPart=aspectRelationshipResponse.getChildParts().get(0);
+
+		if (Optional.ofNullable(aspectRelationshipResponse).isPresent()
+				&& !aspectRelationshipResponse.getChildParts().isEmpty()) {
+			ChildPart childPart = aspectRelationshipResponse.getChildParts().get(0);
+
 			deleteEDCFacilitator.deleteContractDefination(childPart.getContractDefinationId());
 
 			deleteEDCFacilitator.deleteAccessPolicy(childPart.getAccessPolicyId());
@@ -126,7 +128,7 @@ public class EDCAspectRelationshipHandlerUseCase extends Step {
 			deleteEDCFacilitator.deleteAssets(childPart.getAssetId());
 		}
 	}
-	
+
 	@SneakyThrows
 	private void edcProcessingforAspectRelationship(AssetEntryRequest assetEntryRequest, AspectRelationship input) {
 		HashMap<String, String> extensibleProperties = new HashMap<>();
@@ -155,18 +157,17 @@ public class EDCAspectRelationshipHandlerUseCase extends Step {
 		edcGateway.createPolicyDefinition(usagePolicyDefinitionRequest);
 
 		ContractDefinitionRequest contractDefinitionRequest = contractFactory.getContractDefinitionRequest(
-				assetEntryRequest.getAsset().getProperties().get("asset:prop:id"),
-				accessPolicyDefinitionRequest.getId(), usagePolicyDefinitionRequest.getId());
+				assetEntryRequest.getAsset().getProperties().get(ASSET_PROP_ID), accessPolicyDefinitionRequest.getId(),
+				usagePolicyDefinitionRequest.getId());
 
 		edcGateway.createContractDefinition(contractDefinitionRequest);
 
 		// EDC transaction information for DB
-		input.setAssetId(assetEntryRequest.getAsset().getProperties().get("asset:prop:id"));
+		input.setAssetId(assetEntryRequest.getAsset().getProperties().get(ASSET_PROP_ID));
 		input.setAccessPolicyId(accessPolicyDefinitionRequest.getId());
 		input.setUsagePolicyId(usagePolicyDefinitionRequest.getId());
 		input.setContractDefinationId(contractDefinitionRequest.getId());
 	}
-
 
 	private String getCustomValue(AspectRelationship input) {
 		if (!CollectionUtils.isEmpty(input.getUsagePolicies())) {

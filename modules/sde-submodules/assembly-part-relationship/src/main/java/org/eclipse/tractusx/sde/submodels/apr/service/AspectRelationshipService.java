@@ -48,6 +48,12 @@ public class AspectRelationshipService {
 
 		deleteDigitalTwinsFacilitator.deleteDigitalTwinsById(aspectRelationshipEntity.getShellId());
 
+		deleteEDCAsset(aspectRelationshipEntity);
+
+		saveAspectRelationshipWithDeleted(aspectRelationshipEntity);
+	}
+
+	public void deleteEDCAsset(AspectRelationshipEntity aspectRelationshipEntity) {
 		deleteEDCFacilitator.deleteContractDefination(aspectRelationshipEntity.getContractDefinationId());
 
 		deleteEDCFacilitator.deleteAccessPolicy(aspectRelationshipEntity.getAccessPolicyId());
@@ -55,8 +61,6 @@ public class AspectRelationshipService {
 		deleteEDCFacilitator.deleteUsagePolicy(aspectRelationshipEntity.getUsagePolicyId());
 
 		deleteEDCFacilitator.deleteAssets(aspectRelationshipEntity.getAssetId());
-
-		saveAspectRelationshipWithDeleted(aspectRelationshipEntity);
 	}
 
 	private void saveAspectRelationshipWithDeleted(AspectRelationshipEntity aspectRelationshipEntity) {

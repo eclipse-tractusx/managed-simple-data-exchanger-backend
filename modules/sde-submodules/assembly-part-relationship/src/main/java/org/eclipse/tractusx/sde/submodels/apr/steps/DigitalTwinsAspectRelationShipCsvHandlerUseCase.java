@@ -117,19 +117,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 			gateway.createSubModel(shellId, createSubModelRequest);
 			aspectRelationShip.setSubModelId(createSubModelRequest.getIdentification());
 		} else {
-			logDebug("Inside Update Digital Twins");
-			ShellDescriptorRequest aasDescriptorRequest = updateShellDescriptorRequest(aspectRelationShip);
-			List<CreateSubModelRequest> submodelDescriptors = new ArrayList<>();
-			CreateSubModelRequest createSubModelRequest = updateSubModelRequest(aspectRelationShip, subModelResponse);
-			submodelDescriptors.add(createSubModelRequest);
-			UpdateShellAndSubmoduleRequest updateDigitalTwins = UpdateShellAndSubmoduleRequest.builder()
-					.idShort(aasDescriptorRequest.getIdShort()).globalAssetId(aasDescriptorRequest.getGlobalAssetId())
-					.specificAssetIds(aasDescriptorRequest.getSpecificAssetIds()).identification(shellId)
-					.submodelDescriptors(submodelDescriptors).build();
-
-			aspectRelationShip.setSubModelId(createSubModelRequest.getIdentification());
-			gateway.updateDigitalTwinAndSubModuule(shellId,
-					createSubModelRequest.getIdentification(), updateDigitalTwins);
+			aspectRelationShip.setUpdated("Y");
 			logDebug("Complete Digital Twins Update Update Digital Twins");
 
 		}
@@ -211,35 +199,6 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 				.identification(UUIdGenerator.getUrnUuid()).build();
 	}
 
-	private ShellDescriptorRequest updateShellDescriptorRequest(AspectRelationship aspectRelationShip)
-			throws CsvHandlerUseCaseException {
-		ArrayList<KeyValuePair> specificIdentifiers = new ArrayList<>();
-		List<String> values = new ArrayList<>();
-	
-		GlobalAssetId globalIdentifier = new GlobalAssetId(values);
-		AspectEntity aspectEntity = null;
-		if (aspectRelationShip.hasOptionalParentIdentifier()) {
-			aspectEntity = aspectRepository.findByIdentifiers(aspectRelationShip.getParentPartInstanceId(),
-					aspectRelationShip.getParentManufacturerPartId(),
-					aspectRelationShip.getParentOptionalIdentifierKey(),
-					aspectRelationShip.getParentOptionalIdentifierValue());
-		} else {
-			aspectEntity = aspectRepository.findByIdentifiers(aspectRelationShip.getParentPartInstanceId(),
-					aspectRelationShip.getParentManufacturerPartId());
-		}
-
-		if (aspectEntity == null) {
-			throw new CsvHandlerUseCaseException(aspectRelationShip.getRowNumber(), "No parent aspect found");
-		}
-		values.add(aspectEntity.getUuid());
-		setSpecifiers(specificIdentifiers,aspectMapper.mapFrom(aspectEntity));
-		return ShellDescriptorRequest.builder()
-				.idShort(String.format("%s_%s_%s", aspectEntity.getNameAtManufacturer(), manufacturerId,
-						aspectEntity.getManufacturerPartId()))
-				.globalAssetId(globalIdentifier).specificAssetIds(specificIdentifiers)
-				.identification(aspectEntity.getShellId()).build();
-
-	}
 	
 	private void setSpecifiers(final ArrayList<KeyValuePair> specificIdentifiers,Aspect aspect)
 	{
@@ -251,24 +210,5 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 					.add(new KeyValuePair(aspect.getOptionalIdentifierKey(), aspect.getOptionalIdentifierValue()));
 		}
 	}
-
-	private CreateSubModelRequest updateSubModelRequest(AspectRelationship aspectRelationShip,SubModelListResponse subModelResponse) {
-		ArrayList<String> value = new ArrayList<>();
-		value.add(SEMANTIC_ID);
-		SemanticId semanticId = new SemanticId(value);
-		String identification = subModelResponse.get(0).getIdentification();
-		List<Endpoint> endpoints = new ArrayList<>();
-		endpoints.add(Endpoint.builder().endpointInterface(HTTP)
-				.protocolInformation(ProtocolInformation.builder()
-						.endpointAddress(String.format(String.format("%s%s/%s-%s%s", edcEndpoint.replace("data", ""),
-								manufacturerId, aspectRelationShip.getShellId(), identification,
-								"/submodel?content=value&extent=WithBLOBValue")))
-						.endpointProtocol(HTTPS).endpointProtocolVersion(ENDPOINT_PROTOCOL_VERSION).build())
-				.build());
-
-		return CreateSubModelRequest.builder().idShort(ID_SHORT).identification(identification).semanticId(semanticId)
-				.endpoints(endpoints).build();
-	}
-	
 
 }

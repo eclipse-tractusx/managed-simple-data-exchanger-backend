@@ -105,9 +105,8 @@ public class DigitalTwinsSingleLevelBoMAsPlannedHandlerStep extends Step {
 			gateway.createSubModel(shellId, createSubModelRequest);
 			singleLevelBoMAsPlannedAspect.setSubModelId(createSubModelRequest.getIdentification());
 		} else {
-			throw new CsvHandlerDigitalTwinUseCaseException(
-					String.format("SingleLevelBoMAsPlanned submodels already exist/found with Shell id %s for %s",
-							shellId, shellLookupRequest.toJsonString()));
+			singleLevelBoMAsPlannedAspect.setUpdated("Y");
+			logDebug("Complete Digital Twins Update Update Digital Twins");
 		}
 		return singleLevelBoMAsPlannedAspect;
 	}

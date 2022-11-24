@@ -47,6 +47,13 @@ public class BatchDeleteService {
 
 		deleteDigitalTwinsFacilitator.deleteDigitalTwinsById(batchEntity.getShellId());
 
+		deleteEDCAsset(batchEntity);
+
+		saveBatchWithDeleted(batchEntity);
+	}
+
+	public void deleteEDCAsset(BatchEntity batchEntity) {
+		
 		deleteEDCFacilitator.deleteContractDefination(batchEntity.getContractDefinationId());
 
 		deleteEDCFacilitator.deleteAccessPolicy(batchEntity.getAccessPolicyId());
@@ -54,8 +61,6 @@ public class BatchDeleteService {
 		deleteEDCFacilitator.deleteUsagePolicy(batchEntity.getUsagePolicyId());
 
 		deleteEDCFacilitator.deleteAssets(batchEntity.getAssetId());
-
-		saveBatchWithDeleted(batchEntity);
 	}
 
 	private void saveBatchWithDeleted(BatchEntity batchEntity) {

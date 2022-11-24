@@ -4,12 +4,12 @@
 
 This module use for PartAsPlanned submodel specification and descriptors. It's contain the codes related to PartAsPlanned to validate, parse and transfer data for DigitalTwins and EDC to create aspect twins and data offer.
 
+---
 #### Version: 1.0.0
 
 #### PartAsPlanned Aspect Model URN: urn:bamm:io.catenax.part_as_planned:1.0.0#PartAsPlanned
 
 #### Semantic Id: urn:bamm:io.catenax.part_as_planned:1.0.0
-
 ---
 
 ### Schema

@@ -57,4 +57,4 @@ Please find below links for schema details:
  - DigitalTwins
  - EDC Connectors
  
-[CSV Sample File Link]: src/main/resources/batch.csv
+[CSV Sample File Link]: src/main/resources/serialPartTypization.csv

@@ -40,7 +40,9 @@ Please find below links for schema details:
 
 #### Example for submodel Batch
 
-<br/><br/><img src="images/batch.png" height="60%" width="80%"/><br/><br/>
+![Example for submodel Batch](src/main/resources/images/batch.png)
+
+<br/><br/><img src="src/main/resources/images/batch.png" height="60%" width="80%" /><br/><br/>
 
 ### Work Flow 
 
@@ -57,4 +59,4 @@ Please find below links for schema details:
  - DigitalTwins
  - EDC Connectors
  
-[CSV Sample File Link]: https://github.com/catenax-ng/product-dft-backend/blob/modules-branch/modules/sde-submodules/batch/src/main/resources/batch.csv
+[CSV Sample File Link]: src/main/resources/batch.csv

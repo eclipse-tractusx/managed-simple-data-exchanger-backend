@@ -44,7 +44,7 @@ Please find below links for schema details:
 
 #### Example for submodel AssemblyPartRelationship
 
-<br/><br/><img src="images/assemblypartrelationship.png" height="60%" width="80%"/><br/><br/>
+<br/><br/><img src="src/main/resources/images/assemblypartrelationship.png" height="60%" width="80%"/><br/><br/>
 
 ### Work Flow 
 
@@ -61,4 +61,4 @@ Please find below links for schema details:
  - DigitalTwins
  - EDC Connectors
  
-[CSV Sample File Link]: https://github.com/catenax-ng/product-dft-backend/blob/modules-branch/modules/sde-submodules/assembly-part-relationship/src/main/resources/assemblyPartRelationship.csv
+[CSV Sample File Link]: src/main/resources/assemblyPartRelationship.csv

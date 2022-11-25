@@ -40,7 +40,7 @@ Please find below links for schema details:
 
 #### Example for submodel SerialPartTypization
 
-<br/><br/><img src="images/serialparttypization.png" height="60%" width="80%"/><br/><br/>
+<br/><br/><img src="src/main/resources/images/serialparttypization.png" height="60%" width="80%"/><br/><br/>
 
 ### Work Flow 
 
@@ -57,4 +57,4 @@ Please find below links for schema details:
  - DigitalTwins
  - EDC Connectors
  
-[CSV Sample File Link]: https://github.com/catenax-ng/product-dft-backend/blob/modules-branch/modules/sde-submodules/batch/src/main/resources/batch.csv
+[CSV Sample File Link]: src/main/resources/batch.csv

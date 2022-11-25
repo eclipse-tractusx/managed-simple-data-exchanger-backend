@@ -1,0 +1,114 @@
+{
+	"$schema": "https://json-schema.org/draft/2019-09/schema",
+	"$id": "http://example.com/example.json",
+	"type": "array",
+	"id": "partasplanned",
+	"idShort": "partAsPlanned",
+	"version": "1.0.0",
+	"semantic_id": "urn:bamm:io.catenax.part_as_planned:1.0.0#PartAsPlanned",
+	"title": "PartAsPlanned",
+	"description": "BoM As-Planned - Submodel PartAsPlanned",
+	"items": {
+		"type": "object",
+		"required": [
+			"uuid",
+			"manufacturer_part_id",
+			"classification",
+			"name_at_manufacturer"
+		],
+		"dependentRequired": {},
+		"properties": {
+			"uuid": {
+				"type": [
+					"string",
+					"null"
+				],
+				"pattern": "^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+				"title": "UUID",
+				"examples": [
+					"urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf34dfa4c2"
+				]
+			},
+			"manufacturer_part_id": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"title": "Manufacturer Part ID",
+				"examples": [
+					"37754B7-76"
+				]
+			},
+			"valid_from": {
+				"type": [
+					"string",
+					"null"
+				],
+				"format": "date-time",
+				"title": "Valid From",
+				"examples": [
+					"2022-06-14T06:55:29.935Z"
+				]
+			},
+			"valid_to": {
+				"type": [
+					"string",
+					"null"
+				],
+				"format": "date-time",
+				"title": "Valid To",
+				"examples": [
+					"2022-06-14T06:55:29.935Z"
+				]
+			},
+			"customer_part_id": {
+				"type": [
+					"string",
+					"null"
+				],
+				"title": "Customer Part Id",
+				"examples": [
+					"Currently missing the syntax"
+				]
+			},
+			"classification": {
+				"type": [
+					"string"
+				],
+				"enum": [
+					"product",
+					"raw material",
+					"software",
+					"assembly",
+					"tool",
+					"component"
+				],
+				"title": "Classification",
+				"examples": [
+					"component"
+				]
+			},
+			"name_at_manufacturer": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"title": "Name At Manufacturer",
+				"examples": [
+					"Sensor"
+				]
+			}
+		}
+	},
+	"examples": [
+		{
+			"uuid": "urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2",
+			"manufacturer_part_id": "37754B7-76",
+			"valid_from": "2021-06-14T06:55:29.935Z",
+			"valid_to": "2022-06-14T06:55:29.935Z",
+			"classification": "component",
+			"customer_part_id": "Currently missing the syntax",
+			"name_at_manufacturer": "Sensor"
+		}
+	]
+}

@@ -56,7 +56,7 @@ public class DigitalTwinsBatchCsvHandlerUseCase extends Step {
 	private static final String MANUFACTURER_ID = "ManufacturerID";
 	private static final String HTTP = "HTTP";
 	private static final String HTTPS = "HTTPS";
-	private static final String SEMANTIC_ID = "urn:bamm:org.eclipse.batch:1.0.0#Batch";
+	private static final String SEMANTIC_ID = "urn:bamm:com.catenax.batch:1.0.0#Batch";
 	private static final String ID_SHORT = "Batch";
 	private static final String ENDPOINT_PROTOCOL_VERSION = "1.0";
 	private static final String PREFIX = "urn:uuid:";

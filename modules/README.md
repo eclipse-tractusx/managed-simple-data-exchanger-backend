@@ -17,4 +17,6 @@ SDE backend splited into multiple services loosely-coupled Maven modules.
 - modules/sde-submodules/serial-part-typization
 - modules/sde-submodules/batch
 - modules/sde-submodules/assembly-part-relationship
+- modules/sde-submodules/part-as-planned
+- modules/sde-submodules/single-level-bom-as-planned
 - modules/sde-usecases/traceability

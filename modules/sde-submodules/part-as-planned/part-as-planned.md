@@ -30,7 +30,11 @@ Please find below links for schema details:
 | classification    		 	| Yes                     		| 	 6	 	|
 | name_at_manufacturer	 	| Yes                           	|    7 	 	|
 
-#### [CSV Sample File Link] 
+#### [CSV Sample File Link]
+
+#### Example for submodel PartAsPlanned
+
+<br/><br/><img src="partasplanned.png" height="60%" width="80%"/><br/><br/>
 
 ### Work Flow 
 

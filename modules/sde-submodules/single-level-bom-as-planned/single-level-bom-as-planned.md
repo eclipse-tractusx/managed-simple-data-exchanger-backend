@@ -34,7 +34,11 @@ Please find below links for schema details:
 | created_on	 						| Yes                           	|    9 	 	|
 | last_modified_on	 				| No                           	|    10 	 	|
 
-#### [CSV Sample File Link] 
+#### [CSV Sample File Link]
+
+#### Example for submodel SingleLevelBomAsPlanned
+
+<br/><br/><img src="images/singlelevelbomasplanned.png" height="60%" width="80%"/><br/><br/>
 
 ### Work Flow 
 

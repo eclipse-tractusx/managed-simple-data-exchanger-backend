@@ -1,0 +1,173 @@
+
+The following files have been resolved:
+   org.eclipse.persistence:eclipselink:jar:2.7.10:compile[36m -- module org.eclipse.persistence.asm[m
+   org.eclipse.persistence:jakarta.persistence:jar:2.2.3:compile[36m -- module java.persistence[0;1m [auto][m
+   org.eclipse.persistence:javax.persistence:jar:2.0.0:compile[36m -- module javax.persistence[0;1;33m (auto)[m
+   org.springframework.boot:spring-boot-starter-web:jar:2.7.0:compile[36m -- module spring.boot.starter.web[0;1m [auto][m
+   org.springframework.boot:spring-boot-starter:jar:2.7.0:compile[36m -- module spring.boot.starter[0;1m [auto][m
+   org.springframework.boot:spring-boot-starter-logging:jar:2.7.0:compile[36m -- module spring.boot.starter.logging[0;1m [auto][m
+   ch.qos.logback:logback-classic:jar:1.2.11:compile[36m -- module logback.classic[0;1;33m (auto)[m
+   ch.qos.logback:logback-core:jar:1.2.11:compile[36m -- module logback.core[0;1;33m (auto)[m
+   org.apache.logging.log4j:log4j-to-slf4j:jar:2.17.1:compile[36m -- module org.apache.logging.slf4j[0;1m [auto][m
+   org.apache.logging.log4j:log4j-api:jar:2.17.1:compile[36m -- module org.apache.logging.log4j[m
+   org.slf4j:jul-to-slf4j:jar:1.7.36:compile[36m -- module jul.to.slf4j[0;1;33m (auto)[m
+   jakarta.annotation:jakarta.annotation-api:jar:1.3.5:compile[36m -- module java.annotation[0;1m [auto][m
+   org.springframework.boot:spring-boot-starter-json:jar:2.7.0:compile[36m -- module spring.boot.starter.json[0;1m [auto][m
+   com.fasterxml.jackson.datatype:jackson-datatype-jdk8:jar:2.13.3:compile[36m -- module com.fasterxml.jackson.datatype.jdk8[m
+   com.fasterxml.jackson.datatype:jackson-datatype-jsr310:jar:2.13.3:compile[36m -- module com.fasterxml.jackson.datatype.jsr310[m
+   com.fasterxml.jackson.module:jackson-module-parameter-names:jar:2.13.3:compile[36m -- module com.fasterxml.jackson.module.paramnames[m
+   org.springframework.boot:spring-boot-starter-tomcat:jar:2.7.0:compile[36m -- module spring.boot.starter.tomcat[0;1m [auto][m
+   org.apache.tomcat.embed:tomcat-embed-core:jar:9.0.63:compile[36m -- module org.apache.tomcat.embed.core[m
+   org.apache.tomcat.embed:tomcat-embed-websocket:jar:9.0.63:compile[36m -- module org.apache.tomcat.embed.websocket[m
+   org.springframework:spring-web:jar:5.3.20:compile[36m -- module spring.web[0;1m [auto][m
+   org.springframework:spring-webmvc:jar:5.3.20:compile[36m -- module spring.webmvc[0;1m [auto][m
+   org.yaml:snakeyaml:jar:1.32:compile[36m -- module org.yaml.snakeyaml[0;1m [auto][m
+   com.fasterxml.jackson.core:jackson-databind:jar:2.14.0-rc1:compile[36m -- module com.fasterxml.jackson.databind[m
+   com.fasterxml.jackson.core:jackson-annotations:jar:2.13.3:compile[36m -- module com.fasterxml.jackson.annotation[m
+   com.fasterxml.jackson.core:jackson-core:jar:2.13.3:compile[36m -- module com.fasterxml.jackson.core[m
+   org.springframework.boot:spring-boot-starter-data-jpa:jar:2.7.0:compile[36m -- module spring.boot.starter.data.jpa[0;1m [auto][m
+   org.springframework.boot:spring-boot-starter-aop:jar:2.7.0:compile[36m -- module spring.boot.starter.aop[0;1m [auto][m
+   org.aspectj:aspectjweaver:jar:1.9.7:compile[36m -- module org.aspectj.weaver[0;1m [auto][m
+   org.springframework.boot:spring-boot-starter-jdbc:jar:2.7.0:compile[36m -- module spring.boot.starter.jdbc[0;1m [auto][m
+   com.zaxxer:HikariCP:jar:4.0.3:compile[36m -- module com.zaxxer.hikari[m
+   org.springframework:spring-jdbc:jar:5.3.20:compile[36m -- module spring.jdbc[0;1m [auto][m
+   jakarta.transaction:jakarta.transaction-api:jar:1.3.3:compile[36m -- module java.transaction[0;1m [auto][m
+   jakarta.persistence:jakarta.persistence-api:jar:2.2.3:compile[36m -- module java.persistence[0;1m [auto][m
+   org.springframework.data:spring-data-jpa:jar:2.7.0:compile[36m -- module spring.data.jpa[0;1m [auto][m
+   org.springframework.data:spring-data-commons:jar:2.7.0:compile[36m -- module spring.data.commons[0;1m [auto][m
+   org.springframework:spring-orm:jar:5.3.20:compile[36m -- module spring.orm[0;1m [auto][m
+   org.springframework:spring-tx:jar:5.3.20:compile[36m -- module spring.tx[0;1m [auto][m
+   org.slf4j:slf4j-api:jar:1.7.36:compile[36m -- module org.slf4j[0;1m [auto][m
+   org.springframework:spring-aspects:jar:5.3.20:compile[36m -- module spring.aspects[0;1m [auto][m
+   org.springframework.boot:spring-boot-devtools:jar:2.7.0:runtime (optional)[36m -- module spring.boot.devtools[0;1m [auto][m
+   org.springframework.boot:spring-boot:jar:2.7.0:compile[36m -- module spring.boot[0;1m [auto][m
+   org.springframework.boot:spring-boot-autoconfigure:jar:2.7.0:compile[36m -- module spring.boot.autoconfigure[0;1m [auto][m
+   org.projectlombok:lombok:jar:1.18.24:compile (optional)[36m -- module lombok[m
+   org.springframework.boot:spring-boot-starter-test:jar:2.7.0:test[36m -- module spring.boot.starter.test[0;1m [auto][m
+   org.springframework.boot:spring-boot-test:jar:2.7.0:test[36m -- module spring.boot.test[0;1m [auto][m
+   org.springframework.boot:spring-boot-test-autoconfigure:jar:2.7.0:test[36m -- module spring.boot.test.autoconfigure[0;1m [auto][m
+   com.jayway.jsonpath:json-path:jar:2.7.0:test[36m -- module json.path[0;1;33m (auto)[m
+   net.minidev:json-smart:jar:2.4.8:compile[36m -- module json.smart[0;1;33m (auto)[m
+   net.minidev:accessors-smart:jar:2.4.8:compile[36m -- module accessors.smart[0;1;33m (auto)[m
+   org.ow2.asm:asm:jar:9.1:compile[36m -- module org.objectweb.asm[m
+   jakarta.xml.bind:jakarta.xml.bind-api:jar:2.3.3:compile[36m -- module java.xml.bind[m
+   jakarta.activation:jakarta.activation-api:jar:1.2.2:compile[36m -- module jakarta.activation[m
+   org.assertj:assertj-core:jar:3.22.0:test[36m -- module org.assertj.core[m
+   org.hamcrest:hamcrest:jar:2.2:test[36m -- module org.hamcrest[0;1m [auto][m
+   org.junit.jupiter:junit-jupiter:jar:5.8.2:test[36m -- module org.junit.jupiter[m
+   org.junit.jupiter:junit-jupiter-api:jar:5.8.2:test[36m -- module org.junit.jupiter.api[m
+   org.opentest4j:opentest4j:jar:1.2.0:test[36m -- module org.opentest4j[m
+   org.junit.platform:junit-platform-commons:jar:1.8.2:test[36m -- module org.junit.platform.commons[m
+   org.apiguardian:apiguardian-api:jar:1.1.2:test[36m -- module org.apiguardian.api[m
+   org.junit.jupiter:junit-jupiter-params:jar:5.8.2:test[36m -- module org.junit.jupiter.params[m
+   org.junit.jupiter:junit-jupiter-engine:jar:5.8.2:test[36m -- module org.junit.jupiter.engine[m
+   org.junit.platform:junit-platform-engine:jar:1.8.2:test[36m -- module org.junit.platform.engine[m
+   org.mockito:mockito-core:jar:4.5.1:test[36m -- module org.mockito[0;1m [auto][m
+   net.bytebuddy:byte-buddy:jar:1.12.10:test[36m -- module net.bytebuddy[m
+   net.bytebuddy:byte-buddy-agent:jar:1.12.10:test[36m -- module net.bytebuddy.agent[m
+   org.objenesis:objenesis:jar:3.2:test[36m -- module org.objenesis[0;1m [auto][m
+   org.mockito:mockito-junit-jupiter:jar:4.5.1:test[36m -- module org.mockito.junit.jupiter[0;1m [auto][m
+   org.skyscreamer:jsonassert:jar:1.5.0:test[36m -- module jsonassert[0;1;33m (auto)[m
+   com.vaadin.external.google:android-json:jar:0.0.20131108.vaadin1:test[36m -- module android.json[0;1;33m (auto)[m
+   org.springframework:spring-core:jar:5.3.20:compile[36m -- module spring.core[0;1m [auto][m
+   org.springframework:spring-jcl:jar:5.3.20:compile[36m -- module spring.jcl[0;1m [auto][m
+   org.springframework:spring-test:jar:5.3.20:test[36m -- module spring.test[0;1m [auto][m
+   org.xmlunit:xmlunit-core:jar:2.9.0:test[36m -- module org.xmlunit[0;1m [auto][m
+   org.springframework.boot:spring-boot-starter-security:jar:2.7.0:compile[36m -- module spring.boot.starter.security[0;1m [auto][m
+   org.springframework:spring-aop:jar:5.3.20:compile[36m -- module spring.aop[0;1m [auto][m
+   org.springframework.security:spring-security-config:jar:5.7.1:compile[36m -- module spring.security.config[0;1m [auto][m
+   org.springframework.security:spring-security-web:jar:5.7.1:compile[36m -- module spring.security.web[0;1m [auto][m
+   org.springframework.boot:spring-boot-starter-validation:jar:2.7.0:compile[36m -- module spring.boot.starter.validation[0;1m [auto][m
+   org.apache.tomcat.embed:tomcat-embed-el:jar:9.0.63:compile[36m -- module org.apache.tomcat.embed.el[m
+   org.hibernate.validator:hibernate-validator:jar:6.2.3.Final:compile[36m -- module org.hibernate.validator[0;1m [auto][m
+   jakarta.validation:jakarta.validation-api:jar:2.0.2:compile[36m -- module java.validation[0;1m [auto][m
+   org.jboss.logging:jboss-logging:jar:3.4.3.Final:compile[36m -- module org.jboss.logging[0;1m [auto][m
+   com.fasterxml:classmate:jar:1.5.1:compile[36m -- module com.fasterxml.classmate[m
+   org.springdoc:springdoc-openapi-ui:jar:1.6.6:compile[36m -- module org.springdoc.openapi.ui[0;1m [auto][m
+   org.springdoc:springdoc-openapi-webmvc-core:jar:1.6.6:compile[36m -- module org.springdoc.openapi.webmvc.core[0;1m [auto][m
+   org.springdoc:springdoc-openapi-common:jar:1.6.6:compile[36m -- module org.springdoc.openapi.common[0;1m [auto][m
+   io.swagger.core.v3:swagger-core:jar:2.1.12:compile[36m -- module io.swagger.v3.core[0;1m [auto][m
+   org.apache.commons:commons-lang3:jar:3.12.0:compile[36m -- module org.apache.commons.lang3[0;1m [auto][m
+   com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:jar:2.13.3:compile[36m -- module com.fasterxml.jackson.dataformat.yaml[m
+   io.swagger.core.v3:swagger-annotations:jar:2.1.12:compile[36m -- module io.swagger.v3.oas.annotations[0;1m [auto][m
+   io.swagger.core.v3:swagger-models:jar:2.1.12:compile[36m -- module io.swagger.v3.oas.models[0;1m [auto][m
+   org.webjars:swagger-ui:jar:4.5.0:compile[36m -- module swagger.ui[0;1;33m (auto)[m
+   org.webjars:webjars-locator-core:jar:0.50:compile[36m -- module webjars.locator.core[0;1;33m (auto)[m
+   io.github.classgraph:classgraph:jar:4.8.138:compile[36m -- module io.github.classgraph[m
+   org.mapstruct:mapstruct:jar:1.4.2.Final:compile[36m -- module org.mapstruct[0;1m [auto][m
+   com.github.ben-manes.caffeine:caffeine:jar:3.0.6:compile[36m -- module com.github.benmanes.caffeine[m
+   org.checkerframework:checker-qual:jar:3.21.3:compile[36m -- module org.checkerframework.checker.qual[0;1m [auto][m
+   com.google.errorprone:error_prone_annotations:jar:2.11.0:compile[36m -- module com.google.errorprone.annotations[0;1m [auto][m
+   commons-codec:commons-codec:jar:1.15:compile[36m -- module org.apache.commons.codec[0;1m [auto][m
+   org.flywaydb:flyway-core:jar:8.5.5:compile[36m -- module org.flywaydb.core[0;1m [auto][m
+   org.postgresql:postgresql:jar:42.4.1:compile[36m -- module org.postgresql.jdbc[0;1m [auto][m
+   org.keycloak:keycloak-spring-boot-starter:jar:19.0.3:compile[36m -- module keycloak.spring.boot.starter[0;1;33m (auto)[m
+   org.keycloak:keycloak-spring-boot-2-adapter:jar:19.0.3:compile
+   org.keycloak:keycloak-spring-boot-adapter-core:jar:19.0.3:compile[36m -- module keycloak.spring.boot.adapter.core[0;1;33m (auto)[m
+   org.keycloak:keycloak-authz-client:jar:19.0.3:compile[36m -- module keycloak.authz.client[0;1;33m (auto)[m
+   org.apache.httpcomponents:httpclient:jar:4.5.13:compile[36m -- module org.apache.httpcomponents.httpclient[0;1m [auto][m
+   org.apache.httpcomponents:httpcore:jar:4.4.15:compile[36m -- module org.apache.httpcomponents.httpcore[0;1m [auto][m
+   org.keycloak:spring-boot-container-bundle:jar:19.0.3:compile[36m -- module spring.boot.container.bundle[0;1;33m (auto)[m
+   org.keycloak:keycloak-adapter-core:jar:19.0.3:compile[36m -- module keycloak.adapter.core[0;1;33m (auto)[m
+   org.keycloak:keycloak-crypto-default:jar:19.0.3:compile
+   org.keycloak:keycloak-spring-security-adapter:jar:19.0.3:compile[36m -- module keycloak.spring.security.adapter[0;1;33m (auto)[m
+   org.keycloak:keycloak-adapter-spi:jar:19.0.3:compile[36m -- module keycloak.adapter.spi[0;1;33m (auto)[m
+   org.bouncycastle:bcprov-jdk15on:jar:1.68:compile[36m -- module org.bouncycastle.provider[m
+   org.springframework.boot:spring-boot-starter-oauth2-client:jar:2.7.0:compile[36m -- module spring.boot.starter.oauth2.client[0;1m [auto][m
+   org.springframework.security:spring-security-oauth2-jose:jar:5.7.1:compile[36m -- module spring.security.oauth2.jose[0;1m [auto][m
+   com.nimbusds:nimbus-jose-jwt:jar:9.22:compile[36m -- module com.nimbusds.jose.jwt[0;1m [auto][m
+   org.springframework.boot:spring-boot-starter-oauth2-resource-server:jar:2.7.0:compile[36m -- module spring.boot.starter.oauth2.resource.server[0;1m [auto][m
+   org.springframework.security:spring-security-oauth2-resource-server:jar:5.7.1:compile[36m -- module spring.security.oauth2.resource.server[0;1m [auto][m
+   org.springframework.cloud:spring-cloud-starter-openfeign:jar:3.1.3:compile[36m -- module spring.cloud.starter.openfeign[0;1;33m (auto)[m
+   org.springframework.cloud:spring-cloud-starter:jar:3.1.3:compile[36m -- module spring.cloud.starter[0;1;33m (auto)[m
+   org.springframework.cloud:spring-cloud-context:jar:3.1.3:compile[36m -- module spring.cloud.context[0;1;33m (auto)[m
+   org.springframework.security:spring-security-rsa:jar:1.0.10.RELEASE:compile[36m -- module spring.security.rsa[0;1;33m (auto)[m
+   org.bouncycastle:bcpkix-jdk15on:jar:1.68:compile[36m -- module org.bouncycastle.pkix[m
+   org.springframework.cloud:spring-cloud-openfeign-core:jar:3.1.3:compile[36m -- module spring.cloud.openfeign.core[0;1;33m (auto)[m
+   io.github.openfeign.form:feign-form-spring:jar:3.8.0:compile[36m -- module feign.form.spring[0;1;33m (auto)[m
+   io.github.openfeign.form:feign-form:jar:3.8.0:compile[36m -- module feign.form[0;1;33m (auto)[m
+   commons-fileupload:commons-fileupload:jar:1.4:compile[36m -- module commons.fileupload[0;1;33m (auto)[m
+   org.springframework.cloud:spring-cloud-commons:jar:3.1.3:compile[36m -- module spring.cloud.commons[0;1;33m (auto)[m
+   io.github.openfeign:feign-core:jar:11.8:compile[36m -- module feign.core[0;1;33m (auto)[m
+   io.github.openfeign:feign-slf4j:jar:11.8:compile[36m -- module feign.slf4j[0;1;33m (auto)[m
+   commons-io:commons-io:jar:2.7:compile[36m -- module org.apache.commons.io[0;1m [auto][m
+   org.keycloak:keycloak-admin-client:jar:19.0.3:compile[36m -- module keycloak.admin.client[0;1;33m (auto)[m
+   org.keycloak:keycloak-common:jar:19.0.3:compile[36m -- module keycloak.common[0;1;33m (auto)[m
+   org.jboss.resteasy:resteasy-client:jar:3.13.2.Final:compile[36m -- module resteasy.client[0;1;33m (auto)[m
+   org.jboss.spec.javax.ws.rs:jboss-jaxrs-api_2.1_spec:jar:2.0.1.Final:compile[36m -- module java.ws.rs[m
+   org.jboss.resteasy:resteasy-jaxrs:jar:3.13.2.Final:compile[36m -- module resteasy.jaxrs[0;1;33m (auto)[m
+   org.reactivestreams:reactive-streams:jar:1.0.3:compile[36m -- module org.reactivestreams[0;1m [auto][m
+   org.jboss.spec.javax.annotation:jboss-annotations-api_1.3_spec:jar:2.0.1.Final:compile[36m -- module java.annotation[0;1m [auto][m
+   com.sun.activation:jakarta.activation:jar:1.2.2:compile[36m -- module jakarta.activation[m
+   org.jboss.resteasy:resteasy-multipart-provider:jar:3.13.2.Final:compile[36m -- module resteasy.multipart.provider[0;1;33m (auto)[m
+   com.sun.mail:jakarta.mail:jar:1.6.7:compile[36m -- module jakarta.mail[m
+   org.apache.james:apache-mime4j:jar:0.6:compile[36m -- module apache.mime4j[0;1;33m (auto)[m
+   org.jboss.resteasy:resteasy-jackson2-provider:jar:3.13.2.Final:compile[36m -- module resteasy.jackson2.provider[0;1;33m (auto)[m
+   com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:jar:2.13.3:compile[36m -- module com.fasterxml.jackson.jaxrs.json[m
+   com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:jar:2.13.3:compile[36m -- module com.fasterxml.jackson.jaxrs.base[m
+   com.fasterxml.jackson.module:jackson-module-jaxb-annotations:jar:2.13.3:compile[36m -- module com.fasterxml.jackson.module.jaxb[m
+   com.github.fge:json-patch:jar:1.9:compile[36m -- module json.patch[0;1;33m (auto)[m
+   com.github.fge:jackson-coreutils:jar:1.6:compile[36m -- module jackson.coreutils[0;1;33m (auto)[m
+   com.github.fge:msg-simple:jar:1.1:compile[36m -- module msg.simple[0;1;33m (auto)[m
+   com.github.fge:btf:jar:1.2:compile[36m -- module btf[0;1;33m (auto)[m
+   com.google.guava:guava:jar:28.1-jre:compile[36m -- module com.google.common[0;1m [auto][m
+   com.google.guava:failureaccess:jar:1.0.1:compile[36m -- module failureaccess[0;1;33m (auto)[m
+   com.google.guava:listenablefuture:jar:9999.0-empty-to-avoid-conflict-with-guava:compile[36m -- module listenablefuture[0;1;33m (auto)[m
+   org.jboss.resteasy:resteasy-jaxb-provider:jar:3.13.2.Final:compile[36m -- module resteasy.jaxb.provider[0;1;33m (auto)[m
+   org.jboss.spec.javax.xml.bind:jboss-jaxb-api_2.3_spec:jar:2.0.0.Final:compile[36m -- module java.xml.bind[0;1m [auto][m
+   org.glassfish.jaxb:jaxb-runtime:jar:2.3.6:compile[36m -- module org.glassfish.jaxb.runtime[m
+   org.glassfish.jaxb:txw2:jar:2.3.6:compile[36m -- module com.sun.xml.txw2[m
+   com.sun.istack:istack-commons-runtime:jar:3.0.12:compile[36m -- module com.sun.istack.runtime[m
+   org.keycloak:keycloak-core:jar:19.0.3:compile[36m -- module keycloak.core[0;1;33m (auto)[m
+   org.springframework.security:spring-security-oauth2-client:jar:5.7.5:compile[36m -- module spring.security.oauth2.client[0;1m [auto][m
+   org.springframework.security:spring-security-oauth2-core:jar:5.7.1:compile[36m -- module spring.security.oauth2.core[0;1m [auto][m
+   com.nimbusds:oauth2-oidc-sdk:jar:9.35:compile[36m -- module oauth2.oidc.sdk[0;1;33m (auto)[m
+   com.github.stephenc.jcip:jcip-annotations:jar:1.0-1:compile[36m -- module jcip.annotations[0;1;33m (auto)[m
+   com.nimbusds:content-type:jar:2.2:compile[36m -- module content.type[0;1;33m (auto)[m
+   com.nimbusds:lang-tag:jar:1.6:compile[36m -- module lang.tag[0;1;33m (auto)[m
+   org.springframework.security:spring-security-core:jar:5.7.5:compile[36m -- module spring.security.core[0;1m [auto][m
+   org.springframework.security:spring-security-crypto:jar:5.7.1:compile[36m -- module spring.security.crypto[0;1m [auto][m
+   org.springframework:spring-beans:jar:5.3.20:compile[36m -- module spring.beans[0;1m [auto][m
+   org.springframework:spring-context:jar:5.3.20:compile[36m -- module spring.context[0;1m [auto][m
+   org.springframework:spring-expression:jar:5.3.20:compile[36m -- module spring.expression[0;1m [auto][m
+

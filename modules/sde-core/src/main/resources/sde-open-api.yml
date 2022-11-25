@@ -1,0 +1,662 @@
+openapi: 3.0.1
+info:
+  title: DFT/SDE API information
+  description: This Service handles all DFT data provider and consumer operations
+  version: '1.0'
+servers:
+  - url: https://dft-api.dev.demo.catena-x.net/api
+    description: Generated server url
+security:
+  - Authentication: []
+paths:
+  /{submodel}/upload:
+    post:
+      tags:
+        - submodel-process-controller
+      operationId: fileUpload
+      parameters:
+        - name: submodel
+          in: path
+          required: true
+          schema:
+            type: string
+            example: null
+        - name: meta_data
+          in: query
+          required: true
+          schema:
+            type: string
+            example: null
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+                - file
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  example: null
+              example: null
+            example: null
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+                example: null
+              example: null
+  /{submodel}/manualentry:
+    post:
+      tags:
+        - submodel-process-controller
+      operationId: createSubmodelAssets
+      parameters:
+        - name: submodel
+          in: path
+          required: true
+          schema:
+            type: string
+            example: null
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmodelJsonRequestObjectNode'
+            example: null
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+                example: null
+              example: null
+  /subscribe-data-offers:
+    post:
+      tags:
+        - consumer-controller
+      operationId: subscribeDataOffers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConsumerRequest'
+            example: null
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+                example: null
+              example: null
+  /role/{role}/permissions:
+    get:
+      tags:
+        - role-management-controller
+      operationId: getRolePermission
+      parameters:
+        - name: role
+          in: path
+          required: true
+          schema:
+            type: string
+            example: null
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                example: null
+                items:
+                  type: string
+                  example: null
+              example: null
+    post:
+      tags:
+        - role-management-controller
+      operationId: fileUpload_1
+      parameters:
+        - name: role
+          in: path
+          required: true
+          schema:
+            type: string
+            example: null
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              example: null
+              items:
+                type: string
+                example: null
+            example: null
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+                example: null
+              example: null
+  /connectors-discovery:
+    post:
+      tags:
+        - consumer-controller
+      operationId: fetchConnectorInfo
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              example: null
+              items:
+                type: string
+                example: null
+            example: null
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                example: null
+                items:
+                  $ref: '#/components/schemas/ConnectorInfo'
+              example: null
+  /{submodel}/public/{uuid}:
+    get:
+      tags:
+        - submodel-process-controller
+      operationId: readCreatedTwinsDetails
+      parameters:
+        - name: submodel
+          in: path
+          required: true
+          schema:
+            type: string
+            example: null
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            type: string
+            example: null
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+                  example: null
+                example: null
+              example: null
+  /user/role/permissions:
+    get:
+      tags:
+        - role-management-controller
+      operationId: getAllRolePermissions
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                example: null
+                items:
+                  type: string
+                  example: null
+              example: null
+  /submodels:
+    get:
+      tags:
+        - submodel-controller
+      operationId: getAllSubmodels
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                example: null
+                items:
+                  type: object
+                  additionalProperties:
+                    type: string
+                    example: null
+                  example: null
+              example: null
+  /submodels/{submodelName}:
+    get:
+      tags:
+        - submodel-controller
+      operationId: getSubmodelByName
+      parameters:
+        - name: submodelName
+          in: path
+          required: true
+          schema:
+            type: string
+            example: null
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+                  example: null
+                example: null
+              example: null
+  /query-data-offers:
+    get:
+      tags:
+        - consumer-controller
+      operationId: queryOnDataOffers
+      parameters:
+        - name: providerUrl
+          in: query
+          required: true
+          schema:
+            type: string
+            example: null
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+                example: null
+              example: null
+  /processing-report:
+    get:
+      tags:
+        - process-report-controller
+      operationId: getProcessingReportsByDateDesc
+      parameters:
+        - name: page
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+            example: null
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+            example: null
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProcessReportPageResponse'
+              example: null
+  /processing-report/{id}:
+    get:
+      tags:
+        - process-report-controller
+      operationId: getProcessReportById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: null
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProcessReport'
+              example: null
+  /ping:
+    get:
+      tags:
+        - ping-controller
+      operationId: getProcessReportById_1
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+                example: null
+              example: null
+  /legal-entities:
+    get:
+      tags:
+        - consumer-controller
+      operationId: fetchLegalEntitiesData
+      parameters:
+        - name: searchText
+          in: query
+          required: true
+          schema:
+            type: string
+            example: null
+        - name: page
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+            example: null
+        - name: size
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+            example: null
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                example: null
+                items:
+                  $ref: '#/components/schemas/LegalEntityResponse'
+              example: null
+  /contract-offers:
+    get:
+      tags:
+        - consumer-controller
+      operationId: queryOnDataOffersStatus
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            example: null
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            example: null
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                example: null
+              example: null
+  /{submodel}/delete/{processId}:
+    delete:
+      tags:
+        - submodel-process-controller
+      operationId: deleteRecordsWithDigitalTwinAndEDC
+      parameters:
+        - name: processId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: null
+        - name: submodel
+          in: path
+          required: true
+          schema:
+            type: string
+            example: null
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+                example: null
+              example: null
+components:
+  schemas:
+    SubmodelJsonRequestObjectNode:
+      type: object
+      properties:
+        row_data:
+          type: array
+          example: null
+          items:
+            type: object
+            example: null
+        type_of_access:
+          type: string
+          example: null
+        bpn_numbers:
+          type: array
+          example: null
+          items:
+            type: string
+            example: null
+        usage_policies:
+          type: array
+          example: null
+          items:
+            $ref: '#/components/schemas/UsagePolicies'
+      example: null
+    UsagePolicies:
+      type: object
+      properties:
+        type:
+          type: string
+          example: null
+          enum:
+            - DURATION
+            - PURPOSE
+            - ROLE
+            - CUSTOM
+        value:
+          type: string
+          example: null
+        typeOfAccess:
+          type: string
+          example: null
+          enum:
+            - RESTRICTED
+            - UNRESTRICTED
+        durationUnit:
+          type: string
+          example: null
+          enum:
+            - YEAR
+            - MONTH
+            - DAY
+            - HOUR
+            - MINUTE
+            - SECOND
+      example: null
+    ConsumerRequest:
+      required:
+        - connectorId
+        - offers
+        - policies
+        - providerUrl
+      type: object
+      properties:
+        connectorId:
+          type: string
+          example: null
+        providerUrl:
+          type: string
+          example: null
+        offers:
+          type: array
+          example: null
+          items:
+            $ref: '#/components/schemas/OfferRequest'
+        policies:
+          type: array
+          example: null
+          items:
+            $ref: '#/components/schemas/UsagePolicies'
+      example: null
+    OfferRequest:
+      required:
+        - assetId
+        - offerId
+      type: object
+      properties:
+        offerId:
+          type: string
+          example: null
+        assetId:
+          type: string
+          example: null
+        policyId:
+          type: string
+          example: null
+      example: null
+    ConnectorInfo:
+      type: object
+      properties:
+        bpn:
+          type: string
+          example: null
+        connectorEndpoint:
+          type: array
+          example: null
+          items:
+            type: string
+            example: null
+      example: null
+    ProcessReport:
+      type: object
+      properties:
+        processId:
+          type: string
+          example: null
+        csvType:
+          type: string
+          example: null
+        numberOfItems:
+          type: integer
+          format: int32
+          example: null
+        numberOfFailedItems:
+          type: integer
+          format: int32
+          example: null
+        numberOfSucceededItems:
+          type: integer
+          format: int32
+          example: null
+        status:
+          type: string
+          example: null
+          enum:
+            - IN_PROGRESS
+            - COMPLETED
+            - FAILED
+        startDate:
+          type: string
+          format: date-time
+          example: null
+        endDate:
+          type: string
+          format: date-time
+          example: null
+        bpnNumbers:
+          type: array
+          example: null
+          items:
+            type: string
+            example: null
+        typeOfAccess:
+          type: string
+          example: null
+        usagePolicies:
+          type: string
+          example: null
+        numberOfUpdatedItems:
+          type: integer
+          format: int32
+          example: null
+        numberOfDeletedItems:
+          type: integer
+          format: int32
+          example: null
+        referenceProcessId:
+          type: string
+          example: null
+      example: null
+    ProcessReportPageResponse:
+      type: object
+      properties:
+        pageNumber:
+          type: integer
+          format: int32
+          example: null
+        pageSize:
+          type: integer
+          format: int32
+          example: null
+        totalItems:
+          type: integer
+          format: int64
+          example: null
+        items:
+          type: array
+          example: null
+          items:
+            $ref: '#/components/schemas/ProcessReport'
+      example: null
+    LegalEntityResponse:
+      type: object
+      properties:
+        name:
+          type: string
+          example: null
+        bpn:
+          type: string
+          example: null
+      example: null
+  securitySchemes:
+    Authentication:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://centralidp.dev.demo.catena-x.net/auth/realms/CX-Central/protocol/openid-connect/auth
+          tokenUrl: https://centralidp.dev.demo.catena-x.net/auth/realms/CX-Central/protocol/openid-connect/token
+          scopes:
+           read: read access for user
+           write: write access for user

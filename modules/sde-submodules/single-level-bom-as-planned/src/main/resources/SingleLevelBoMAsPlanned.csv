@@ -1,0 +1,3 @@
+parent_uuid;parent_manufacturer_part_id;uuid;child_manufacturer_part_id;customer_part_id;quantity_number;measurement_unit_lexical_value;datatype_uri;created_on;last_modified_on
+urn:uuid:07a3946c-59c6-41ae-9580-cb43a6e4c67e;ZX-07;urn:uuid:f7cf62fe-9e25-472b-9148-66ebcc271f31;CHLD-1;;1;unit:piece;urn:bamm:io.openmanufacturing:meta-model:1.0.0#curie;2022-02-03T14:48:54.709Z;2022-02-03T14:48:54.709Z
+urn:uuid:07b3946c-59c6-41ae-9590-cb43a6e4c68f;ZX-06;urn:uuid:07cb071f-8716-45fe-89f1-f2f77a1be93b;CHLD-2;;1;unit:piece;urn:bamm:io.openmanufacturing:meta-model:1.0.0#curie;2022-02-03T14:48:54.709Z;2022-02-03T14:48:54.709Z

@@ -14,7 +14,7 @@ This module use for Batch submodel specification and descriptors. It's contain t
 
 Please find below links for schema details:
 
-- https:https://portal.int.demo.catena-x.net/semantichub/urn%3Abamm%3Aio.catenax.batch%3A1.0.0%23Batch
+- https://portal.int.demo.catena-x.net/semantichub/urn%3Abamm%3Aio.catenax.batch%3A1.0.0%23Batch
 - blob:https://portal.int.demo.catena-x.net/10dadf03-8062-4369-87c8-6f8f570df2c4
 - https://github.com/catenax-ng/product-dft-backend/blob/modules-branch/modules/sde-submodules/batch/src/main/resources/batch.json
 

@@ -1,0 +1,3 @@
+uuid;manufacturer_part_id;valid_from;valid_to;customer_part_id;classification;name_at_manufacturer
+07a3946c-59c6-41ae-9580-cb43a6e4c67e;ZX-07;2013-04-11T16:17:30.000Z;2032-10-14T02:03:33.000Z;;product;Vehicle Model A
+07b3946c-59c6-41ae-9590-cb43a6e4c68f;ZX-06;2016-04-11T14:17:30.000Z;;;product;Vehicle Model Z

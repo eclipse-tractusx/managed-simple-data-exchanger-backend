@@ -25,16 +25,16 @@ public class RoleManagementService {
 		rolePermissionRepository.saveAll(allentity);
 		return "Role Permission saved successfully";
 	}
-	
+
 	@SneakyThrows
 	public List<RolePermissionEntity> findAll(List<String> role, List<String> permission) {
 		return rolePermissionCustomRepository.findAll(role, permission);
 	}
 
 	@SneakyThrows
-	public List<String> getRolePermission(String role) {
+	public List<String> getRolePermission(List<String> role) {
 		List<RolePermissionEntity> allPermission = Optional.ofNullable(rolePermissionRepository.findAll(role))
 				.orElseThrow(() -> new NoDataFoundException(role + " Role not found to update permission"));
-		return allPermission.stream().map(roleObje -> roleObje.getSdePermission()).toList();
+		return allPermission.stream().map(RolePermissionEntity::getSdePermission).toList();
 	}
 }

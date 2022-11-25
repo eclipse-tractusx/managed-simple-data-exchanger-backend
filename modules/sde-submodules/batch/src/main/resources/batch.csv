@@ -1,0 +1,2 @@
+uuid;batch_id;manufacturing_date;manufacturing_country;manufacturer_part_id;customer_part_id;classification;name_at_manufacturer;name_at_customer;optional_identifier_key;optional_identifier_value
+urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1f8ff4c2;BIDNO345678;2022-02-05T14:48:54;HUR;122-0.740-3430-A;PRT-NO345;product;Mirror left;side element A;;

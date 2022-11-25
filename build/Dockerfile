@@ -40,7 +40,9 @@ USER $USERNAME
 WORKDIR /dft
 
 # copy over the built artifact from the maven image
-COPY --chown=${UID}:${GID} --from=build target/*.jar ./app.jar
+#COPY --chown=${UID}:${GID} --from=build target/*.jar ./app.jar
+
+COPY --from=build target/*.jar ./app.jar
 
 RUN chown ${UID}:${GID} /dft
 

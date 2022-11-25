@@ -39,9 +39,6 @@ Please find below links for schema details:
 #### [CSV Sample File Link]
 
 #### Example for submodel Batch
-
-![Example for submodel Batch](src/main/resources/images/batch.png)
-
 <br/><br/><img src="src/main/resources/images/batch.png" height="60%" width="80%" /><br/><br/>
 
 ### Work Flow 

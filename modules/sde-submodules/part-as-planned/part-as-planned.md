@@ -34,7 +34,7 @@ Please find below links for schema details:
 
 #### Example for submodel PartAsPlanned
 
-<br/><br/><img src="src/main/resources/iamges/partasplanned.png" height="60%" width="80%"/><br/><br/>
+<br/><br/><img src="src/main/resources/images/partasplanned.png" height="60%" width="80%"/><br/><br/>
 
 ### Work Flow 
 

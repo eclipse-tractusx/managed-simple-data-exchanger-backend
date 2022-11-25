@@ -33,8 +33,8 @@ Once your maven module ready just do the clean build and install so submodel wil
 
 
 
-[serial-part-typization in Version 1.1.0]: https://github.com/catenax-ng/product-dft-backend/blob/modules-branch/modules/sde-submodules/serial-part-typization/serial-part-typization.md
-[batch in Version 1.0.0]: https://github.com/catenax-ng/product-dft-backend/blob/modules-branch/modules/sde-submodules/batch/batch.md
-[assembly-part-relationship in Version 1.1.0]: https://github.com/catenax-ng/product-dft-backend/blob/modules-branch/modules/sde-submodules/assembly-part-relationship/assembly-part-relationship.md
-[partAsPlanned in Version 1.0.0]: https://github.com/catenax-ng/product-dft-backend/blob/modules-branch/modules/sde-submodules/part-as-planned/part-as-planned.md
-[singleLevelBoMAsPlanned in Version 1.0.1]: https://github.com/catenax-ng/product-dft-backend/blob/modules-branch/modules/sde-submodules/single-level-bom-as-planned/single-level-bom-as-planned.md
+[serial-part-typization in Version 1.1.0]: serial-part-typization/serial-part-typization.md
+[batch in Version 1.0.0]: batch/batch.md
+[assembly-part-relationship in Version 1.1.0]: assembly-part-relationship/assembly-part-relationship.md
+[partAsPlanned in Version 1.0.0]: part-as-planned/part-as-planned.md
+[singleLevelBoMAsPlanned in Version 1.0.1]: single-level-bom-as-planned/single-level-bom-as-planned.md

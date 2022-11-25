@@ -51,4 +51,4 @@ Please find below links for schema details:
  - DigitalTwins
  - EDC Connectors
  
-[CSV Sample File]: https://github.com/catenax-ng/product-dft-backend/blob/modules-branch/modules/sde-submodules/single-level-bom-as-planned/src/main/resources/SingleLevelBoMAsPlanned.csv
+[CSV Sample File Link]: https://github.com/catenax-ng/product-dft-backend/blob/modules-branch/modules/sde-submodules/single-level-bom-as-planned/src/main/resources/SingleLevelBoMAsPlanned.csv

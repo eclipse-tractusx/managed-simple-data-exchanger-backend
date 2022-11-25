@@ -48,4 +48,4 @@ Please find below links for schema details:
  - EDC Connectors
  
  
-[CSV Sample File]: https://github.com/catenax-ng/product-dft-backend/blob/modules-branch/modules/sde-submodules/part-asplanned/src/main/resources/partAsPlanned.csv
+[CSV Sample File Link]: https://github.com/catenax-ng/product-dft-backend/blob/modules-branch/modules/sde-submodules/part-asplanned/src/main/resources/partAsPlanned.csv

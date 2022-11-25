@@ -30,6 +30,8 @@ Please find below links for schema details:
 | classification    		 	| Yes                     		| 	 6	 	|
 | name_at_manufacturer	 	| Yes                           	|    7 	 	|
 
+#### [CSV Sample File Link] 
+
 ### Work Flow 
 
  - CSV to POJO
@@ -46,3 +48,4 @@ Please find below links for schema details:
  - EDC Connectors
  
  
+[CSV Sample File]: https://github.com/catenax-ng/product-dft-backend/blob/modules-branch/modules/sde-submodules/part-asplanned/src/main/resources/partAsPlanned.csv

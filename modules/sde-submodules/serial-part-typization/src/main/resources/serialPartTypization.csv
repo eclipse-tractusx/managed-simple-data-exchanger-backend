@@ -1,0 +1,8 @@
+uuid;part_instance_id;manufacturing_date;manufacturing_country;manufacturer_part_id;customer_part_id;classification;name_at_manufacturer;name_at_customer;optional_identifier_key;optional_identifier_value
+urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2;NO-159040131155901488695376;2022-02-04T14:48:54;DEU;37754B7-76;37754B7-76;component;Sensor;Sensor;;
+urn:uuid:1ae94880-e6b0-4bf3-ab74-8148b63c0640;NO-628797496367807957077265;2022-02-04T14:48:54;DEU;65847F9-69;65847F9-69;component;Sensor;Sensor;;
+urn:uuid:b3a873f5-2353-4791-85a1-689ea4446638;NO-624546268167012592194637;2022-02-04T14:48:54;DEU;85247P7-99;85247P7-99;component;Sensor;Sensor;;
+urn:uuid:19ce947f-2770-48f6-be0d-c7e022edb052;NO-679033572320049836536380;2022-02-04T14:48:54;DEU;42490J7-07;42490J7-07;component;Sensor;Sensor;;
+urn:uuid:f245cd8c-8b26-4b99-ade1-66cbd3c7e97a;NO-330953226933311026148593;2022-02-04T14:48:54;DEU;75138D1-59;75138D1-59;component;Sensor;Sensor;;
+urn:uuid:62386a1e-d65f-4c9c-a8fb-b5312eb0c45f;NO-675561205246441889324847;2022-02-04T14:48:54;DEU;26137H6-30;26137H6-30;component;Sensor;Sensor;;
+

@@ -1,0 +1,148 @@
+{
+	"$schema": "https://json-schema.org/draft/2019-09/schema",
+	"$id": "http://example.com/example.json",
+	"type": "array",
+	"id": "singlelevelbomasplanned",
+	"idShort": "singleLevelBomAsPlanned",
+	"version": "1.0.1",
+	"semantic_id": "urn:bamm:io.catenax.single_level_bom_as_planned:1.0.1#SingleLevelBomAsPlanned",
+	"title": "Single Level Bom AsPlanned",
+	"description": "BoM As-Planned - Submodel SingleLevelBomAsPlanned",
+	"items": {
+		"type": "object",
+		"required": [
+			"parent_uuid",
+			"parent_manufacturer_part_id",
+			"uuid",
+			"manufacturer_part_id",
+			"quantity_number",
+			"measurement_unit_lexical_value",
+			"datatype_uri",
+			"created_on"
+		],
+		"dependentRequired": {
+		},
+		"properties": {
+			"parent_uuid": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"pattern": "^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+				"title": "Parent UUID",
+				"examples": [
+					"urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf34dfa4c2"
+				]
+			},
+			"parent_manufacturer_part_id": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"title": "Parent Manufacturer Part ID",
+				"examples": [
+					"37754B7-76"
+				]
+			},
+			"uuid": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"title": "UUID",
+				"pattern": "^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+				"examples": [
+					"urn:uuid:5daB938E-Cafa-92B3-7ca1-9aD7885e9dC8"
+				]
+			},
+			"manufacturer_part_id": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"title": "Manufacturer Part ID",
+				"examples": [
+					"37754B7-76"
+				]
+			},
+			"customer_part_id": {
+				"type": [
+					"string",
+					"null"
+				],
+				"title": "Customer Part Id",
+				"examples": [
+					"Currently missing the syntax"
+				]
+			},
+			"quantity_number": {
+				"type": [
+					"number"
+				],
+				"minLength": 1,
+				"multipleOf": 0.01,
+				"title": "Quantity Number",
+				"examples": [
+					2.5
+				]
+			},
+			"measurement_unit_lexical_value": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"title": "Lexical Value",
+				"examples": [
+					"litre",
+					"unit"
+				]
+			},
+			"datatype_uri": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"title": "Datatype URI",
+				"examples": [
+					"urn:bamm:io.openmanufacturing:meta-model:1.0.0#curie"
+				]
+			},
+			"created_on": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"format": "date-time",
+				"title": "Created On",
+				"examples": [
+					"2022-02-03T14:48:54.709Z"
+				]
+			},
+			"last_modified_on": {
+				"type": [
+					"string",
+					"null"
+				],
+				"format": "date-time",
+				"title": "Last Modified On",
+				"examples": [
+					"2022-02-03T14:48:54.709Z"
+				]
+			}
+		}
+	},
+	"examples": [
+		{
+			"parent_uuid": "urn:uuid:055c1128-0375-47c8-98de-7cf802c3241d",
+			"parent_manufacturer_part_id": "37754B7-76",
+			"uuid": "urn:uuid:5daB938E-Cafa-92B3-7ca1-9aD7885e9dC8",
+			"manufacturer_part_id": "37754B7-76",
+			"customer_part_id": "AsPlanned",
+			"quantity_number": 2.5,
+			"measurement_unit_lexical_value": "litre",
+			"datatype_uri": "urn:bamm:io.openmanufacturing:meta-model:1.0.0#curie",
+			"created_on": "2022-02-03T14:48:54.709Z",
+			"last_modified_on": "2022-02-03T14:48:54.709Z"
+		}
+	]
+}

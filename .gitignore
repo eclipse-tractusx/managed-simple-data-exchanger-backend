@@ -12,6 +12,8 @@ temp/
 .settings
 .springBeans
 .sts4-cache
+.DS_Store
+!**/.DS_Store
 
 ### IntelliJ IDEA ###
 .idea
@@ -24,3 +26,5 @@ temp/
 
 ##
 */application-*.properties
+.github
+

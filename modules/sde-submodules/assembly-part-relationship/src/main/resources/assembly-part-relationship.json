@@ -1,0 +1,226 @@
+{
+	"$schema": "https://json-schema.org/draft/2019-09/schema",
+	"$id": "http://example.com/example.json",
+	"type": "array",
+	"id": "aspectrelationship",
+	"idShort": "assemblyPartRelationship",
+	"version": "1.0.0",
+	"semantic_id": "urn:bamm:io.catenax.assembly_part_relationship:1.1.0#AssemblyPartRelationship",
+	"title": "Assembly Part Relationship",
+	"description": "Assembly Part Relationship",
+	"items": {
+		"type": "object",
+		"required": [
+			"parent_uuid",
+			"parent_part_instance_id",
+			"parent_manufacturer_part_id",
+			"uuid",
+			"part_instance_id",
+			"manufacturer_part_id",
+			"lifecycle_context",
+			"quantity_number",
+			"measurement_unit_lexical_value",
+			"datatype_uri",
+			"assembled_on"
+		],
+		"dependentRequired": {
+			"parent_optional_identifier_key": [
+				"parent_optional_identifier_value"
+			],
+			"parent_optional_identifier_value": [
+				"parent_optional_identifier_key"
+			],
+			"optional_identifier_key": [
+				"optional_identifier_value"
+			],
+			"optional_identifier_value": [
+				"optional_identifier_key"
+			]
+		},
+		"properties": {
+			"parent_uuid": {
+				"type": [
+					"string"
+				],
+				"title": "Parent UUID",
+				"minLength": 1,
+				"pattern": "^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+				"examples": [
+					"urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2"
+				]
+			},
+			"parent_part_instance_id": {
+				"type": [
+					"string"
+				],
+				"title": "Parent Part Instance ID",
+				"minLength": 1,
+				"examples": [
+					"ParentNO-64534234"
+				]
+			},
+			"parent_manufacturer_part_id": {
+				"type": [
+					"string"
+				],
+				"title": "Parent Manufacturer Part ID",
+				"minLength": 1,
+				"examples": [
+					"PART-2345546234"
+				]
+			},
+			"parent_optional_identifier_key": {
+				"type": [
+					"string",
+					"null"
+				],
+				"enum": [
+					"VAN",
+					"BatchID",
+					""
+				],
+				"title": "Parent Optional Identifier Key",
+				"examples": [
+					"VAN"
+				]
+			},
+			"parent_optional_identifier_value": {
+				"type": [
+					"string",
+					"null"
+				],
+				"title": "Parent Optional Identifier Value",
+				"examples": [
+					"Value"
+				]
+			},
+			"uuid": {
+				"type": [
+					"string"
+				],
+				"title": "UUID URN",
+				"minLength": 1,
+				"pattern": "^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+				"examples": [
+					"urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2"
+				]
+			},
+			"part_instance_id": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"title": "Part Instance ID",
+				"examples": [
+					"NO-234523423"
+				]
+			},
+			"manufacturer_part_id": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"title": "Manufacturer Part ID",
+				"examples": [
+					"37754B7-76"
+				]
+			},
+			"optional_identifier_key": {
+				"type": [
+					"string",
+					"null"
+				],
+				"enum": [
+					"VAN",
+					"BatchID",
+					""
+				],
+				"title": "Optional Identifier Key",
+				"examples": [
+					"VAN"
+				]
+			},
+			"optional_identifier_value": {
+				"type": [
+					"string",
+					"null"
+				],
+				"title": "Optional Identifier Value",
+				"examples": [
+					"Value"
+				]
+			},
+			"lifecycle_context": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"title": "Lifecycle Context",
+				"examples": [
+					"lifecycle"
+				]
+			},
+			"quantity_number": {
+				"type": [
+					"number"
+				],
+				"minLength": 1,
+				"title": "Quantity Number",
+				"multipleOf": 0.01,
+				"examples": [
+					123
+				]
+			},
+			"measurement_unit_lexical_value": {
+				"type": [
+					"string"
+				],
+				"title": "Measurement Unit Lexical Value",
+				"minLength": 1,
+				"examples": [
+					"measurement"
+				]
+			},
+			"datatype_uri": {
+				"type": [
+					"string",
+					"null"
+				],
+				"title": "Datatype URI",
+				"examples": [
+					"http://xyz.com"
+				]
+			},
+			"assembled_on": {
+				"type": [
+					"string",
+					"null"
+				],
+				"format": "date-time",
+				"title": "Assembled On",
+				"examples": [
+					"2022-02-04T14:48:54"
+				]
+			}
+		}
+	},
+	"examples": [
+		{
+			"parent_uuid": "urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2",
+			"parent_part_instance_id": "NO-159040131155901488695376",
+			"parent_manufacturer_part_id": "MAN-159040131155901488695376",
+			"parent_optional_identifier_key": "VAN",
+			"parent_optional_identifier_value": "Value",
+			"uuid": "urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2",
+			"part_instance_id": "NO-159040131155901488695376",
+			"manufacturer_part_id": "PART-123412416",
+			"optional_identifier_key": "",
+			"optional_identifier_value": "",
+			"lifecycle_context": "Context",
+			"quantity_number": 123,
+			"measurement_unit_lexical_value": "ASW",
+			"datatype_uri": "http://xyz.com",
+			"assembled_on": "2022-02-04T14:48:54"
+		}
+	]
+}

@@ -1,0 +1,23 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.eclipse</groupId>
+		<artifactId>sde</artifactId>
+		<version>0.0.1</version>
+		<relativePath>../../../</relativePath>
+	</parent>
+	<artifactId>traceability</artifactId>
+	<name>traceability</name>
+	<description>traceability</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.eclipse</groupId>
+			<artifactId>sde-common</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+	</dependencies>
+	
+</project>

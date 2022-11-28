@@ -31,19 +31,16 @@ RUN groupadd --gid $USER_GID $USERNAME \
 
 USER $USERNAME
 
-ARG UID=7000
-ARG GID=7000
-
 # set deployment directory
-WORKDIR /dft
+WORKDIR /home/user/dftuser/dftapp
 
 # copy over the built artifact from the maven image
 
-COPY --chown=${UID}:${GID} --from=build modules/sde-core/target/*.jar ./app.jar
+COPY --from=build modules/sde-core/target/*.jar ./app.jar
 
-RUN chown ${UID}:${GID} /dft
+#RUN chown ${UID}:${GID} /dft
 
-USER ${UID}:${GID}
+#USER ${UID}:${GID}
 
 EXPOSE 8080
 # set the startup command to run your binary

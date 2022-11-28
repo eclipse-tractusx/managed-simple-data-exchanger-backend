@@ -29,8 +29,6 @@ RUN groupadd --gid $USER_GID $USERNAME \
     && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
     && chmod 0440 /etc/sudoers.d/$USERNAME
 
-USER $USERNAME
-
 ARG UID=7000
 ARG GID=7000
 
@@ -44,6 +42,8 @@ COPY  --from=build modules/sde-core/target/*.jar ./app.jar
 #RUN chown ${UID}:${GID} /dft
 
 USER ${UID}:${GID}
+
+USER $USERNAME
 
 EXPOSE 8080
 # set the startup command to run your binary

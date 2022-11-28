@@ -38,7 +38,7 @@ ARG GID=7000
 WORKDIR /dft
 
 # copy over the built artifact from the maven image
-COPY --chown=${UID}:${GID} --from=build modules/sde-core/target/*.jar ./app.jar
+COPY  --from=build modules/sde-core/target/*.jar ./app.jar
 
 RUN chown ${UID}:${GID} /dft
 

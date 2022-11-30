@@ -31,7 +31,7 @@ USER ${UID}:${GID}
 
 EXPOSE 8080
 # set the startup command to run your binary
-#CMD ["java", "-jar", "./app.jar"]
+CMD ["java", "-jar", "./app.jar"]
 
-CMD ["java", "-jar", "./app.jar","--spring.config.location=file:/app/configuration.properties"]
+#CMD ["java", "-jar", "./app.jar","--spring.config.location=file:/app/configuration.properties"]
 

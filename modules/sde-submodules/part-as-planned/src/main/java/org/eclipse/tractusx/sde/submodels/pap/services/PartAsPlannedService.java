@@ -66,9 +66,10 @@ public class PartAsPlannedService {
 
 		PartAsPlannedEntity partAsPlannedEntity = partAsPlannedMapper.mapforEntity(jsonObject);
 
+		deleteEDCAsset(partAsPlannedEntity);
+
 		deleteDigitalTwinsFacilitator.deleteDigitalTwinsById(partAsPlannedEntity.getShellId());
 
-		deleteEDCAsset(partAsPlannedEntity);
 		saveAspectWithDeleted(partAsPlannedEntity);
 	}
 

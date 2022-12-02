@@ -48,9 +48,9 @@ public class AspectRelationshipService {
 
 		AspectRelationshipEntity aspectRelationshipEntity = aspectRelationshipMapper.mapforEntity(jsonObject);
 
-		deleteDigitalTwinsFacilitator.deleteDigitalTwinsById(aspectRelationshipEntity.getShellId());
-
 		deleteEDCAsset(aspectRelationshipEntity);
+
+		deleteDigitalTwinsFacilitator.deleteDigitalTwinsById(aspectRelationshipEntity.getShellId());
 
 		saveAspectRelationshipWithDeleted(aspectRelationshipEntity);
 	}

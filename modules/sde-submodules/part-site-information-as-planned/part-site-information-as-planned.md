@@ -1,51 +1,48 @@
- # SingleLevelBomAsPlanned (SDE Maven module)
+ # PartSiteInformationAsPlanned (SDE Maven module)
 ---
 ## Description
 
-This module use for SingleLevelBomAsPlanned submodel specification and descriptors. It's contain the codes related to SingleLevelBomAsPlanned to validate, parse and transfer data for DigitalTwins and EDC to create aspect twins and data offer.
+This module use for PartSiteInformationAsPlanned submodel specification and descriptors. It's contain the codes related to PartSiteInformationAsPlanned to validate, parse and transfer data for DigitalTwins and EDC to create aspect twins and data offer.
 
 ---
-#### Version: 1.0.1
-#### SingleLevelBomAsPlanned Aspect Model URN: urn:bamm:io.catenax.single_level_bom_as_planned:1.0.1#SingleLevelBomAsPlanned
-#### Semantic Id: urn:bamm:io.catenax.single_level_bom_as_planned:1.0.1
+#### Version: 1.0.0
+#### PartSiteInformationAsPlanned Aspect Model URN: urn:bamm:io.catenax.part_site_information_as_planned:1.0.0#PartSiteInformationAsPlanned
+#### Semantic Id: urn:bamm:io.catenax.part_site_information_as_planned:1.0.0
 ---
 
 ### Schema
 
 Please find below links for schema details:
 
-- https://portal.int.demo.catena-x.net/semantichub/urn%3Abamm%3Aio.catenax.single_level_bom_as_planned%3A1.0.1%23SingleLevelBomAsPlanned
-- blob:https://portal.int.demo.catena-x.net/e565320b-0153-4554-ba5c-9673962c0097
-- https://github.com/catenax-ng/product-dft-backend/blob/modules-branch/modules/sde-submodules/single-level-bom-as-planned/src/main/resources/single-level-bom-as-planned.json
+- https://portal.int.demo.catena-x.net/semantichub/urn%3Abamm%3Aio.catenax.part_site_information_as_planned%3A1.0.0%23PartSiteInformationAsPlanned
+- blob:https://portal.int.demo.catena-x.net/5e30d83f-24bb-4a2a-a26a-48bf20b41860
+- https://github.com/catenax-ng/product-dft-backend/blob/modules-branch/modules/sde-submodules/part-site-information-as-planned/src/main/resources/part-site-information-as-planned.json
 
 
 ### CSV file headers
 
 | Headers Name       	       		| Mandatory                     	| Position 	|
 |-------------------------------		|-----------------------------	|--------	|
-| parent_uuid                   		| Yes		             	    |    1     	|
-| parent_manufacturer_part_id   		| Yes					      	|    2    	|
-| uuid 			     				| Yes 							| 	 3	   	|
-| manufacturer_part_id  	       		| Yes                           	| 	 4	  	|
-| customer_part_id 		      		| No                           	| 	 5	  	|
-| quantity_number    		 		| Yes                     		| 	 6	 	|
-| measurement_unit_lexical_value	 	| Yes                           	|    7 	 	|
-| datatype_uri	 					| Yes                           	|    8 	 	|
-| created_on	 						| Yes                           	|    9 	 	|
-| last_modified_on	 				| No                           	|    10 	 	|
+| uuid 			     				| Yes 							| 	 1	   	|
+| manufacturer_part_id  	       		| Yes                           	| 	 2	  	|
+| catenax_site_id 		      		| Yes                           	| 	 3	  	|
+| name_at_manufacturer    		 	| Yes                     		| 	 4	 	|
+| function						 	| Yes                           	|    5 	 	|
+| function_valid_from	 			| No                           	|    6 	 	|
+| function_valid_until	 			| No                           	|    7 	 	|
 
 #### [CSV Sample File Link]
 
-#### Example for submodel SingleLevelBomAsPlanned
+#### Example for submodel PartSiteInformationAsPlanned
 
-<br/><br/><img src="src/main/resources/images/singlelevelbomasplanned.png" height="60%" width="80%"/><br/><br/>
+<br/><br/><img src="src/main/resources/images/partsiteinformationasplanned.png" height="60%" width="80%"/><br/><br/>
 
 ### Work Flow 
 
  - CSV to POJO
  - CSV column validation and mandatory field validation
  - POJO TO DTO
- - Lookup parent UUID and child UUID
+ - UUID generate v4
  - DigitalTwins API's calls 
  - EDC API's calls
  - DB Store
@@ -55,4 +52,4 @@ Please find below links for schema details:
  - DigitalTwins
  - EDC Connectors
  
-[CSV Sample File Link]: src/main/resources/SingleLevelBoMAsPlanned.csv
+[CSV Sample File Link]: src/main/resources/partSiteInformationAsPlanned.csv

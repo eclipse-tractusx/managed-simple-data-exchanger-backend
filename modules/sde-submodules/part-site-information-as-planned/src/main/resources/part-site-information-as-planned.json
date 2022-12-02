@@ -14,6 +14,7 @@
 			"uuid",
 			"manufacturer_part_id",
 			"catenax_site_id",
+			"name_at_manufacturer",
 			"function"
 		],
 		"dependentRequired": {
@@ -48,6 +49,16 @@
 				"title": "catenaX Site Id",
 				"examples": [
 					"BPNS1234567890ZZ"
+				]
+			},
+			"name_at_manufacturer": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"title": "Name At Manufacturer",
+				"examples": [
+					"Sensor"
 				]
 			},
 			"function": {
@@ -91,6 +102,7 @@
 			"uuid": "urn:uuid:580d3adf-1981-44a0-a214-13d6ceed9379",
 			"manufacturer_part_id": "37754B7-76",
 			"catenax_site_id": "BPNS1234567890ZZ",
+			"name_at_manufacturer": "Sensor",
 			"function": "production",
 			"function_valid_from": "2022-11-28T09:39:44.673Z",
 			"function_valid_until": "2022-11-28T09:39:44.673Z"

@@ -17,23 +17,29 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-package org.eclipse.tractusx.sde.submodels.slbap.repository;
+package org.eclipse.tractusx.sde.submodels.psiap.repository;
 
 import java.util.List;
 
-import org.eclipse.tractusx.sde.submodels.slbap.entity.SingleLevelBoMAsPlannedEntity;
+import org.eclipse.tractusx.sde.submodels.psiap.entity.PartSiteInformationAsPlannedEntity;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
-public interface SingleLevelBoMAsPlannedRepository extends CrudRepository<SingleLevelBoMAsPlannedEntity, String> {
+public interface PartSiteInformationAsPlannedRepository extends CrudRepository<PartSiteInformationAsPlannedEntity, String> {
+	
+	default PartSiteInformationAsPlannedEntity findByIdentifiers(String manufacturerPartId) {
+		return findByManufacturerPartId(manufacturerPartId);
+	}
+	
+	PartSiteInformationAsPlannedEntity findByUuid(String uuid);
+	
+	List<PartSiteInformationAsPlannedEntity> findAllByUuid(String uuid);
+	
+	List<PartSiteInformationAsPlannedEntity> findByProcessId(String processId);
+	
+	PartSiteInformationAsPlannedEntity findByManufacturerPartId(String manufacturerPartId);
 
-	List<SingleLevelBoMAsPlannedEntity> findByProcessId(String processId);
-	
-    List<SingleLevelBoMAsPlannedEntity> findByParentCatenaXId(String parentCatenaXId);
-    
-	@Query("select count(ae) from SingleLevelBoMAsPlannedEntity ae where ae.updated = ?1 and ae.processId = ?2")
+	@Query("select count(pe) from PartAsPlannedEntity pe where pe.updated = ?1 and pe.processId = ?2")
 	long countByUpdatedAndProcessId(String updated, String processId);
-	
-	SingleLevelBoMAsPlannedEntity findByChildCatenaXId(String uuid);
 
 }

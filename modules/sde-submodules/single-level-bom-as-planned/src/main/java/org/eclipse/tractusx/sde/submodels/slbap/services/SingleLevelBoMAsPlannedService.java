@@ -66,9 +66,9 @@ public class SingleLevelBoMAsPlannedService {
 		SingleLevelBoMAsPlannedEntity singleLevelBoMAsPlannedEntity = singleLevelBoMAsPlannedMapper
 				.mapforEntity(jsonObject);
 
-		deleteDigitalTwinsFacilitator.deleteDigitalTwinsById(singleLevelBoMAsPlannedEntity.getShellId());
-
 		deleteEDCAsset(singleLevelBoMAsPlannedEntity);
+
+		deleteDigitalTwinsFacilitator.deleteDigitalTwinsById(singleLevelBoMAsPlannedEntity.getShellId());
 
 		saveSingleLevelBoMAsPlannedWithDeleted(singleLevelBoMAsPlannedEntity);
 	}

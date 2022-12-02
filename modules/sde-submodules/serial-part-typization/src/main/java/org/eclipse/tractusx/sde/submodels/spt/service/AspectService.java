@@ -48,8 +48,9 @@ public class AspectService {
 
 		AspectEntity aspectEntity = aspectMapper.mapforEntity(jsonObject);
 
-		deleteDigitalTwinsFacilitator.deleteDigitalTwinsById(aspectEntity.getShellId());
 		deleteEDCAsset(aspectEntity);
+
+		deleteDigitalTwinsFacilitator.deleteDigitalTwinsById(aspectEntity.getShellId());
 
 		saveAspectWithDeleted(aspectEntity);
 	}

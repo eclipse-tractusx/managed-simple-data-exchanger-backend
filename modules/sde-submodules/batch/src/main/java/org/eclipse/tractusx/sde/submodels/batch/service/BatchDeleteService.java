@@ -48,9 +48,9 @@ public class BatchDeleteService {
 
 		BatchEntity batchEntity = batchMapper.mapforEntity(jsonObject);
 
-		deleteDigitalTwinsFacilitator.deleteDigitalTwinsById(batchEntity.getShellId());
-
 		deleteEDCAsset(batchEntity);
+
+		deleteDigitalTwinsFacilitator.deleteDigitalTwinsById(batchEntity.getShellId());
 
 		saveBatchWithDeleted(batchEntity);
 	}

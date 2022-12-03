@@ -39,7 +39,7 @@ public interface PartSiteInformationAsPlannedRepository extends CrudRepository<P
 	
 	PartSiteInformationAsPlannedEntity findByManufacturerPartId(String manufacturerPartId);
 
-	@Query("select count(pe) from PartAsPlannedEntity pe where pe.updated = ?1 and pe.processId = ?2")
+	@Query("select count(pe) from PartSiteInformationAsPlannedEntity pe where pe.updated = ?1 and pe.processId = ?2")
 	long countByUpdatedAndProcessId(String updated, String processId);
 
 }

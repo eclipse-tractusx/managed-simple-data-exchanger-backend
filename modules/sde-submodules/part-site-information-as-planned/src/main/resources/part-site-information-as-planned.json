@@ -79,7 +79,7 @@
 					"null"
 				],
 				"format": "date-time",
-				"title": "function Valid From",
+				"title": "Function Valid From",
 				"examples": [
 					"2022-11-28T09:39:44.673Z"
 				]
@@ -90,7 +90,7 @@
 					"null"
 				],
 				"format": "date-time",
-				"title": "function Valid Until",
+				"title": "Function Valid Until",
 				"examples": [
 					"2022-11-28T09:39:44.673Z"
 				]

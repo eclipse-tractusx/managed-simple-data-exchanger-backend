@@ -17,7 +17,7 @@ public class SubmodelCSVValidator {
 		Set<String> keySet = asJsonObject.keySet();
 		Set<String> targetSet = new LinkedHashSet<>(columns);
 		if (!keySet.equals(targetSet))
-			throw new ValidationException(String.format("Csv coloumn header is not matching %s submodel", submodel));
+			throw new ValidationException(String.format("Csv column header is not matching %s submodel", submodel));
 
 		return true;
 

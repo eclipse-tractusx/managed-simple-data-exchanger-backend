@@ -17,23 +17,20 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-package org.eclipse.tractusx.sde.submodels.slbap.repository;
+package org.eclipse.tractusx.sde.submodels.psiap.model;
 
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 
-import org.eclipse.tractusx.sde.submodels.slbap.entity.SingleLevelBoMAsPlannedEntity;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-
-public interface SingleLevelBoMAsPlannedRepository extends CrudRepository<SingleLevelBoMAsPlannedEntity, String> {
-
-	List<SingleLevelBoMAsPlannedEntity> findByProcessId(String processId);
+@Data
+@Builder
+@AllArgsConstructor
+public class Sites {
 	
-    List<SingleLevelBoMAsPlannedEntity> findByParentCatenaXId(String parentCatenaXId);
-    
-	@Query("select count(ae) from SingleLevelBoMAsPlannedEntity ae where ae.updated = ?1 and ae.processId = ?2")
-	long countByUpdatedAndProcessId(String updated, String processId);
-	
-	SingleLevelBoMAsPlannedEntity findByChildCatenaXId(String uuid);
+	private String catenaXSiteId;
+    private String functionValidUntil;
+    private String function;
+    private String functionValidFrom;
 
 }

@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: ghcr.io/catenax-ng/tx-dft-backend:latest
+  repository: ghcr.io/catenax-ng/tx-dft-backend
   pullPolicy: Always
   tag: "1.7.0"
 

@@ -29,7 +29,6 @@ jobs:
         with:
           version: v3.9.1
           
-
       - name: Add Helm repos
         run: |
           helm repo add bitnami https://charts.bitnami.com/bitnami

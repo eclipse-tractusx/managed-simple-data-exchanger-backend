@@ -29,12 +29,12 @@ jobs:
         with:
           version: v3.9.1
           
-
       - name: Add Helm repos
         run: |
           helm repo add bitnami https://charts.bitnami.com/bitnami
+          helm repo add catenax-ng-product-edc https://catenax-ng.github.io/product-edc
           
       - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1.4.0
+        uses: helm/chart-releaser-action@v1.7.0
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"

@@ -27,7 +27,7 @@ You can find the standard credentials as well as further database configurations
 - Docker
 
 ### Steps
-1. Clone the GitHub Repository - https://github.com/catenax-ng/product-dft-backend
+1. Clone the GitHub Repository - https://github.com/eclipse-tractusx/dft-backend
 2. Get your instance of postgres running.(Create **dftdb** new database)
 3. Setup your project environment to JDK 18
 4. Start the application from your IDE.

@@ -58,7 +58,7 @@ maven/mavencentral/net.bytebuddy/byte-buddy/1.12.10, Apache-2.0 AND BSD-3-Clause
 maven/mavencentral/net.minidev/accessors-smart/2.4.8, Apache-2.0, approved, clearlydefined
 maven/mavencentral/net.minidev/json-smart/2.4.8, Apache-2.0, approved, #3288
 maven/mavencentral/org.apache.commons/commons-lang3/3.12.0, Apache-2.0, approved, clearlydefined
-maven/mavencentral/org.apache.commons/commons-text/1.10.0, Apache-2.0, approved, clearlydefined
+maven/mavencentral/org.apache.commons/commons-text/1.9, , approved, CQ22603
 maven/mavencentral/org.apache.httpcomponents/httpclient/4.5.13, EPL-1.0, approved, rt.ebr
 maven/mavencentral/org.apache.httpcomponents/httpcore/4.4.15, Apache-2.0, approved, CQ23528
 maven/mavencentral/org.apache.james/apache-mime4j/0.6, Apache-2.0, approved, clearlydefined
@@ -77,15 +77,16 @@ maven/mavencentral/org.checkerframework/checker-qual/3.21.3, MIT, approved, clea
 maven/mavencentral/org.eclipse.persistence/eclipselink/2.7.10, EPL-2.0 OR BSD-3-Clause, approved, ee4j.eclipselink
 maven/mavencentral/org.eclipse.persistence/jakarta.persistence/2.2.3, EPL-2.0 OR BSD-3-Clause, approved, ee4j.eclipselink
 maven/mavencentral/org.eclipse.persistence/javax.persistence/2.0.0, EPL-1.0, approved, clearlydefined
-maven/mavencentral/org.eclipse/assembly-part-relationship/0.0.1, , restricted, clearlydefined
-maven/mavencentral/org.eclipse/batch/0.0.1, , restricted, clearlydefined
-maven/mavencentral/org.eclipse/digital-twins/0.0.1, , restricted, clearlydefined
-maven/mavencentral/org.eclipse/edc/0.0.1, , restricted, clearlydefined
-maven/mavencentral/org.eclipse/part-as-planned/0.0.1, , restricted, clearlydefined
-maven/mavencentral/org.eclipse/portal/0.0.1, , restricted, clearlydefined
-maven/mavencentral/org.eclipse/sde-common/0.0.1, , restricted, clearlydefined
-maven/mavencentral/org.eclipse/serial-part-typization/0.0.1, , restricted, clearlydefined
-maven/mavencentral/org.eclipse/single-level-bom-as-planned/0.0.1, , restricted, clearlydefined
+maven/mavencentral/org.eclipse.tractusx/assembly-part-relationship/0.0.1, Apache-2.0, approved, automotive.tractusx
+maven/mavencentral/org.eclipse.tractusx/batch/0.0.1, Apache-2.0, approved, automotive.tractusx
+maven/mavencentral/org.eclipse.tractusx/digital-twins/0.0.1, Apache-2.0, approved, automotive.tractusx
+maven/mavencentral/org.eclipse.tractusx/edc/0.0.1, Apache-2.0, approved, automotive.tractusx
+maven/mavencentral/org.eclipse.tractusx/part-as-planned/0.0.1, Apache-2.0, approved, automotive.tractusx
+maven/mavencentral/org.eclipse.tractusx/part-site-information-as-planned/0.0.1, Apache-2.0, approved, automotive.tractusx
+maven/mavencentral/org.eclipse.tractusx/portal/0.0.1, Apache-2.0, approved, automotive.tractusx
+maven/mavencentral/org.eclipse.tractusx/sde-common/0.0.1, Apache-2.0, approved, automotive.tractusx
+maven/mavencentral/org.eclipse.tractusx/serial-part-typization/0.0.1, Apache-2.0, approved, automotive.tractusx
+maven/mavencentral/org.eclipse.tractusx/single-level-bom-as-planned/0.0.1, Apache-2.0, approved, automotive.tractusx
 maven/mavencentral/org.flywaydb/flyway-core/8.5.5, Apache-2.0, approved, #2764
 maven/mavencentral/org.glassfish.jaxb/jaxb-runtime/2.3.6, BSD-3-Clause, approved, ee4j.jaxb-impl
 maven/mavencentral/org.glassfish.jaxb/txw2/2.3.6, BSD-3-Clause, approved, ee4j.jaxb-impl
@@ -124,7 +125,7 @@ maven/mavencentral/org.mockito/mockito-junit-jupiter/4.5.1, MIT, approved, clear
 maven/mavencentral/org.objenesis/objenesis/3.2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.opentest4j/opentest4j/1.2.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.ow2.asm/asm/9.1, BSD-3-Clause, approved, CQ23029
-maven/mavencentral/org.postgresql/postgresql/42.4.3, BSD-2-Clause, approved, #3112
+maven/mavencentral/org.postgresql/postgresql/42.4.1, BSD-2-Clause, approved, #3112
 maven/mavencentral/org.projectlombok/lombok/1.18.24, MIT AND LicenseRef-Public-Domain, approved, CQ23907
 maven/mavencentral/org.reactivestreams/reactive-streams/1.0.3, CC0-1.0, approved, CQ16332
 maven/mavencentral/org.skyscreamer/jsonassert/1.5.0, Apache-2.0, approved, clearlydefined

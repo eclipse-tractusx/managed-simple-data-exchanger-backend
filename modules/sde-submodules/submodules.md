@@ -13,6 +13,7 @@ Currently SDE supports below submodels.
 #### [assembly-part-relationship in Version 1.1.0]
 #### [partAsPlanned in Version 1.0.0]
 #### [singleLevelBoMAsPlanned in Version 1.0.1]
+#### [partSiteInformationAsPlanned in Version 1.0.0]
 
 ### How we can add Submodels?
 
@@ -38,3 +39,4 @@ Once your maven module ready just do the clean build and install so submodel wil
 [assembly-part-relationship in Version 1.1.0]: assembly-part-relationship/assembly-part-relationship.md
 [partAsPlanned in Version 1.0.0]: part-as-planned/part-as-planned.md
 [singleLevelBoMAsPlanned in Version 1.0.1]: single-level-bom-as-planned/single-level-bom-as-planned.md
+[partSiteInformationAsPlanned in Version 1.0.0]: part-site-information-as-planned/part-site-information-as-planned.md

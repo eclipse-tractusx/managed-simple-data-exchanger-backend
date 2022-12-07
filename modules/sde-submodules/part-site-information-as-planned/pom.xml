@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>org.eclipse</groupId>
+		<groupId>org.eclipse.tractusx</groupId>
 		<artifactId>sde</artifactId>
 		<version>0.0.1</version>
 		<relativePath>../../../</relativePath>
@@ -14,17 +14,17 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.eclipse</groupId>
+			<groupId>org.eclipse.tractusx</groupId>
 			<artifactId>sde-common</artifactId>
 			<version>0.0.1</version>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse</groupId>
+			<groupId>org.eclipse.tractusx</groupId>
 			<artifactId>edc</artifactId>
 			<version>0.0.1</version>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse</groupId>
+			<groupId>org.eclipse.tractusx</groupId>
 			<artifactId>digital-twins</artifactId>
 			<version>0.0.1</version>
 		</dependency>

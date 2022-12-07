@@ -15,6 +15,10 @@ temp/
 .DS_Store
 !**/.DS_Store
 
+./maven.deps
+**maven.deps
+
+
 ### IntelliJ IDEA ###
 .idea
 *.iws
@@ -28,3 +32,5 @@ temp/
 */application-*.properties
 .github
 
+/helm/
+/.DS_Store

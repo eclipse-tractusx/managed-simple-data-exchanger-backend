@@ -1,7 +1,7 @@
 # Community Code of Conduct
 
 **Version 1.2  
-October 12, 2022**
+August 19, 2020**
 
 ## Our Pledge
 

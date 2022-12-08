@@ -21,9 +21,6 @@
 
 package org.eclipse.tractusx.sde.edc.entities.request.policies;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

@@ -1,10 +1,11 @@
-name: Release Chart
+name: Release - Helm Charts
 
 on:
-  workflow_dispatch:
   push:
-    tags:
-      - 'v*'
+    paths:
+      - 'charts/**'
+    branches:
+      - main
 
 jobs:
   release:
@@ -25,9 +26,9 @@ jobs:
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
           
       - name: Install Helm
-        uses: azure/setup-helm@v1
+        uses: azure/setup-helm@v3
         with:
-          version: v3.9.1
+          token: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Add Helm repos
         run: |

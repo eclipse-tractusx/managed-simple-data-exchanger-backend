@@ -37,18 +37,27 @@ You can find the standard credentials as well as further database configurations
 
 ## DFT(Simple Data Exchanger) Compatible with :=
 1. ***File Uploads***
-    * SerialTypezation
-    * AssemblyRelationship
+    * SerialPartTypization
+    * AssemblyPartRelationship
     * Batch
+    * PartAsPlanned
+    * SingleLevelBoMAsPlanned
+    * PartSiteInformationAsPlanned
 2. ***Json Update***
     * SerialTypezation
     * AssemblyRelationship
     * Batch
+    * PartAsPlanned
+    * SingleLevelBoMAsPlanned
+    * PartSiteInformationAsPlanned
 
 3. ***Application UI***
     * SerialTypezation
     * AssemblyRelationship
     * Batch
+    * PartAsPlanned
+    * SingleLevelBoMAsPlanned
+    * PartSiteInformationAsPlanned
 
 
  ---   
@@ -58,15 +67,23 @@ You can find the standard credentials as well as further database configurations
 ---
 | API | Description |  Request body | Response body |
 | ------ | ------ | ------ | ------ |
-| **POST:- localhost:8080/api/aspect** |This API Is Used For Uploading Data From JSon/Tabular form | Refer Api Doc |4ca03d5f-9e37-4c12-a8b8-6583b81892c8|
-| **POST:- localhost:8080/api/upload** |This API Is Used For Uploading Data From CSV file(Serial/Aspect Relationship) form | Refer Api Doc |4ca03d5f-9e37-4c12-a8b8-6583b81892c8|
-| **POST:- localhost:8080/api/batch** |This API Is Used For Uploading Data From CSV file(Batch) form | Refer Api Doc |4ca03d5f-9e37-4c12-a8b8-6583b81892c8|
-| **GET:- localhost:8080/api/aspect/{{aspect_r_Id}}/relationship** |This API Is Used For fetch Data on Relationship Id | Refer Api Doc |Refer Api Doc|
-| **GET:- localhost:8080/api/batch/urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1ffff4c2** |This API Is Used For fetch Data on Batch Id | Refer Api Doc |Refer Api Doc|
-| **GET:- localhost:8080/api/public/aspect/urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1ffff4c2** |This API Is Used For fetch Data on Aspect Id| Refer Api Doc |Refer Api Doc|
+| **GET:- localhost:8080/api/submodels |This API is used to get all submodels list which is implemented/supported by SDE | Refer Api Doc | Refer Api Doc |
+| **GET:- localhost:8080/api/submodels/{submodelName} |This API is used to get the schema data of specific model | Refer Api Doc | Refer Api Doc |
+| **POST:- localhost:8080/api/{submodel}/upload |This API is used to uploading data From CSV file for particular selected submodel | Refer Api Doc |4ca03d5f-9e37-4c12-a8b8-6583b81892c8 |
+| **POST:- localhost:8080/api/{submodel}/manualentry |This API is used for uploading data From JSon/Tabular form | Refer Api Doc | 4ca03d5f-9e37-4c12-a8b8-6583b81892c8 |
+| **GET:- localhost:8080/api/{submodel}/public/{uuid} |This API is used for to get the specific submodel data | Refer Api Doc | Refer Api Doc |
+| **DELETE:- localhost:8080/api/{submodel}/delete/{processId} |This API is used to delete processed data from EDC and DigitalTwins | Refer Api Doc | Refer Api Doc |
+| **GET:- localhost:8080/api/role/{role}/permissions |This API is used to fetch all permissions associate with particular role | Refer Api Doc |Refer Api Doc|
+| **GET:- localhost:8080/api/user/role/permissions |This API is used to fetch all list of permissions | Refer Api Doc |Refer Api Doc|
+| **POST:- localhost:8080/api/role/{role}/permissions |This API is used to apply list of permissions to the specific role | Refer Api Doc |Refer Api Doc|
 | **GET:- localhost:8080/api/processing-report/87d0aece-ae46-4006-904d-9ec41cddee8b** |This API Is Used For fetch Process Report by Process ID| Refer Api Doc |Refer Api Doc|
 | **GET:- localhost:8080/api/ping** |This API Is Used For Health Check| -- |2022-09-30T16:21:02.630868|
 | **GET:- localhost:8080/api/processing-report?page=&pageSize=50** |This API Is Used For fetch Process Report| Refer Api Doc |Refer Api Doc|
+| **GET:- localhost:8080/api/query-data-offers |This API is used to fetch all data offers of provider URL | Refer Api Doc |Refer Api Doc|
+| **POST:- localhost:8080/api/subscribe-data-offers |This API is used to subscribe data offers | Refer Api Doc |Refer Api Doc|
+| **GET:- localhost:8080/api/contract-offers |This API is used to get all contract offers | Refer Api Doc |Refer Api Doc|
+| **GET:- localhost:8080/api/legal-entities |This API is used to fetch legal entities (list of company's) for Process| Refer Api Doc |Refer Api Doc|
+| **POST:- localhost:8080/api/connectors-discovery |This API is used to fetch  connectores information | Refer Api Doc |Refer Api Doc|
 
 ---
 #### **Response Status**
@@ -88,23 +105,28 @@ You can find the standard credentials as well as further database configurations
 |403 Forbidden| Unauthorized request.  |
 |404 Not Found| The server can not find the requested resource.  |
 |405 Method Not Allowed| The request HTTP method is known by the server but has been disabled and cannot be used for that resource  |
-| 500 Internal Server Error| The server encountered an unexpected condition that prevented it from fulfilling the request.|
-| 502 Bad Gateway | The server got an invalid response while working as a gateway to get the response needed to handle the request.|
-| 503 Service Unavailable | The server is not ready to handle the request.|
-| 504 Gateway Timeout|The server is acting as a gateway and cannot get a response in time for a request. |
+|500 Internal Server Error| The server encountered an unexpected condition that prevented it from fulfilling the request.|
+|502 Bad Gateway | The server got an invalid response while working as a gateway to get the response needed to handle the request.|
+|503 Service Unavailable | The server is not ready to handle the request.|
+|504 Gateway Timeout|The server is acting as a gateway and cannot get a response in time for a request. |
 
 ---
 ## Database
 | Tables | Description |  Unique Id |
 | ------ | ------ | ------ |
-| **ASPECT** | Table used to Store Date about Serialized Part |  **Primary Key**:UUID |
-| **Aspect_Relationship** |Data about the relationship of parts to its child-components. | **Primary Key**:parent_catenax_id, child_catenax_id |
-| **Batch** |Table used to Store Date about Serialized Part. |  **Primary Key**:UUID |
-| **Contract_Negotiation_Info** |Tables Contains Cntract Negotiotion Info and offerid |  **Primary Key**: connector_id, offer_id |
-| **Failure Log** |Table Contains Data About Failure Entries |  **Primary Key**:UUID |
+| **aspect** | Table used to Store Date About Serialized Part |  **Primary Key**:UUID |
+| **aspect_relationship** |Data about the relationship of parts to its child-components. | **Primary Key**:parent_catenax_id, child_catenax_id |
+| **batch** |Table used to Store Date about Serialized Part. |  **Primary Key**:UUID |
+| **part_as_planned** |Table used to Store Date about Part As Planned. |  **Primary Key**:UUID |
+| **single_level_bom_as_planned** |Data about the relationship of part As Planned to its child-components. | **Primary Key**:parent_catenax_id, child_catenax_id |
+| **part_site_information_as_planned** |Table used to Store Date about Part Site Information As Planned. |  **Primary Key**:UUID |
+| **contract_negotiation_info** |Tables Contains Cntract Negotiotion Info and offerid |  **Primary Key**: connector_id, offer_id |
+| **failure_log** |Table Contains Data About Failure Entries |  **Primary Key**:UUID |
 | **Flyway_Schema_History** |Table Contains data Migration History |  **Primary Key**:installed_rank |
-| **Process_Report** |Table Contains status of Processing upliad |  **Primary Key**:process_id |
-
+| **Process_Report** |Table Contains status of Processing upload |  **Primary Key**:process_id |
+| **sde_role** |Table Contains list of roles |  **Primary Key**:sde_role |
+| **sde_permission** |Table Contains list of permissions |  **Primary Key**:sde_permission |
+| **sde_role_permission_mapping** |Table Contains mapping of role with permissions |  **Primary Key**:sde_role, sde_permission |
 
 ---
 ## flyway

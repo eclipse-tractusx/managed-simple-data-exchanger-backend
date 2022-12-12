@@ -232,24 +232,21 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
         return contractAgreementResponses;
     }
 
-    public ResponseEntity<LegalEntityResponse[]> fetchLegalEntitiesData(String searchText, Integer page, Integer size) {
-        ResponseEntity<LegalEntityData> apiResponse = legalEntityDataApi.fetchLegalEntityData(searchText, page, size, UtilityFunctions.getAuthToken());
-        LegalEntityData legalEntity = apiResponse.getBody();
-        LegalEntityResponse[] legalEntitiesResponse = new LegalEntityResponse[legalEntity != null ? legalEntity.getContent().size() : 0];
-        if (null != legalEntity) {
-            final int[] counter = {0};
-            legalEntity.getContent().stream().forEach(companyData -> {
-                companyData.getLegalEntity().getNames().stream().forEach(name -> {
-                    LegalEntityResponse legalEntityResponse = LegalEntityResponse.builder().bpn(companyData.getLegalEntity().getBpn()).name(name.getValue()).build();
-                    legalEntitiesResponse[counter[0]] = legalEntityResponse;
-                    counter[0]++;
-                });
-            });
-        }
-        return new ResponseEntity(legalEntitiesResponse, apiResponse.getStatusCode());
-    }
+    public List<LegalEntityResponse> fetchLegalEntitiesData(String searchText, Integer page, Integer size) {
+        List<LegalEntityResponse> result= new ArrayList<>();
+      	LegalEntityData legalEntity = legalEntityDataApi.fetchLegalEntityData(searchText, page, size, UtilityFunctions.getAuthToken());
+         if (null != legalEntity) {
+             legalEntity.getContent().stream().forEach(companyData -> {
+                 companyData.getLegalEntity().getNames().stream().forEach(name -> {
+                     LegalEntityResponse legalEntityResponse = LegalEntityResponse.builder().bpn(companyData.getLegalEntity().getBpn()).name(name.getValue()).build();
+                     result.add(legalEntityResponse);
+                 });
+             });
+         }
+         return result;
+     }
 
-    public ResponseEntity<ConnectorInfo[]> fetchConnectorInfo(String[] bpns) {
+    public List<ConnectorInfo> fetchConnectorInfo(List<String> bpns) {
         String token = keycloakUtil.getKeycloakToken();
         return connectorDiscoveryApi.fetchConnectorInfo(bpns, "Bearer " + token);
     }

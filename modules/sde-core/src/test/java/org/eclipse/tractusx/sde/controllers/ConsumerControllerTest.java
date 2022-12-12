@@ -35,14 +35,13 @@ import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
 import org.eclipse.tractusx.sde.edc.model.request.OfferRequest;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.eclipse.tractusx.sde.edc.services.ConsumerControlPanelService;
+import org.eclipse.tractusx.sde.portal.model.ConnectorInfo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.ResultActions;
@@ -143,7 +142,7 @@ class ConsumerControllerTest {
     @Test
     void testFetchLegalEntitiesData() throws Exception {
         when(consumerControlPanelService.fetchLegalEntitiesData((String) any(), (Integer) any(), (Integer) any()))
-                .thenReturn(new ResponseEntity<>(HttpStatus.OK));
+                .thenReturn(List.of());
         MockHttpServletRequestBuilder getResult = MockMvcRequestBuilders.get("/legal-entities");
         MockHttpServletRequestBuilder paramResult = getResult.param("page", String.valueOf(0)).param("searchText", "bmw");
         MockHttpServletRequestBuilder requestBuilder = paramResult.param("size", String.valueOf(10));
@@ -155,8 +154,8 @@ class ConsumerControllerTest {
 
     @Test
     void testFetchConnectorInfo() throws Exception {
-        when(consumerControlPanelService.fetchConnectorInfo((String[]) any()))
-                .thenReturn(new ResponseEntity<>(HttpStatus.OK));
+        List<ConnectorInfo> connectorInfo = List.of(ConnectorInfo.builder().bpn("Bpns").connectorEndpoint(List.of("http://localhost:8080")).build());
+        when(consumerControlPanelService.fetchConnectorInfo(List.of("Bpns"))).thenReturn(connectorInfo);
         MockHttpServletRequestBuilder contentTypeResult = MockMvcRequestBuilders.post("/connectors-discovery")
                 .contentType(MediaType.APPLICATION_JSON);
 

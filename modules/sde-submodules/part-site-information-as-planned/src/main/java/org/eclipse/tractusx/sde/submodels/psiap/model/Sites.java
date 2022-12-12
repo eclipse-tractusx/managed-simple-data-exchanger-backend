@@ -1,5 +1,4 @@
 /********************************************************************************
-
  * Copyright (c) 2022 T-Systems International GmbH
  * Copyright (c) 2022 Contributors to the Eclipse Foundation
  *
@@ -18,28 +17,20 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
+package org.eclipse.tractusx.sde.submodels.psiap.model;
 
-package org.eclipse.tractusx.sde.configuration;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 
-import feign.RequestInterceptor;
-import feign.RequestTemplate;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
-@Configuration
-public class EDCConfiguration {
-
-	@Bean
-	public EDCRequestInterceptor edcRequestInterceptor() {
-		return new EDCRequestInterceptor();
-	}
-}
-
-class EDCRequestInterceptor implements RequestInterceptor {
-
-	@Override
-	public void apply(RequestTemplate template) {
-		// TODO document why this method is empty
-	}
+@Data
+@Builder
+@AllArgsConstructor
+public class Sites {
+	
+	private String catenaXSiteId;
+    private String functionValidUntil;
+    private String function;
+    private String functionValidFrom;
 
 }

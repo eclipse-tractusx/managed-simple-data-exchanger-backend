@@ -35,8 +35,5 @@ public interface SingleLevelBoMAsPlannedRepository extends CrudRepository<Single
 	long countByUpdatedAndProcessId(String updated, String processId);
 	
 	SingleLevelBoMAsPlannedEntity findByChildCatenaXId(String uuid);
-	
-
-    
 
 }

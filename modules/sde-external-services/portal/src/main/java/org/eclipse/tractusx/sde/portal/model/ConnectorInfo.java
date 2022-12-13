@@ -20,6 +20,8 @@
 
 package org.eclipse.tractusx.sde.portal.model;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -32,5 +34,5 @@ import lombok.NoArgsConstructor;
 public class ConnectorInfo {
 
     String bpn;
-    String[] connectorEndpoint;
+    List<String> connectorEndpoint;
 }

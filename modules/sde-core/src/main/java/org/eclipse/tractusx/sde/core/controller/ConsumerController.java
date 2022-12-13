@@ -89,17 +89,19 @@ public class ConsumerController {
 
     @GetMapping(value = "/legal-entities")
     @PreAuthorize("hasPermission('','consumer_search_connectors')")
-    public ResponseEntity<LegalEntityResponse[]> fetchLegalEntitiesData(@RequestParam String searchText, @RequestParam Integer page, @RequestParam Integer size)
+    public ResponseEntity<List<LegalEntityResponse>> fetchLegalEntitiesData(@RequestParam String searchText, @RequestParam Integer page, @RequestParam Integer size)
             throws Exception {
         log.info("Request received : /api/legal-entities");
-        return consumerControlPanelService.fetchLegalEntitiesData(searchText, page, size);
+        List<LegalEntityResponse> legalEntitiesResponse = consumerControlPanelService.fetchLegalEntitiesData(searchText, page, size);
+        return ok().body(legalEntitiesResponse);
     }
 
     @PostMapping(value = "/connectors-discovery")
     @PreAuthorize("hasPermission('','consumer_search_connectors')")
-    public ResponseEntity<ConnectorInfo[]> fetchConnectorInfo(@RequestBody String[] bpns)
+    public ResponseEntity<List<ConnectorInfo>> fetchConnectorInfo(@RequestBody List<String> bpns)
             throws Exception {
         log.info("Request received : /api/connectors-discovery");
-        return consumerControlPanelService.fetchConnectorInfo(bpns);
+        List<ConnectorInfo> fetchConnectorInfoResponse = consumerControlPanelService.fetchConnectorInfo(bpns);
+        return ok().body(fetchConnectorInfoResponse);
     }
 }

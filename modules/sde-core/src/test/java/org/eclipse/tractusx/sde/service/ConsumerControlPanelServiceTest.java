@@ -169,21 +169,20 @@ class ConsumerControlPanelServiceTest {
         verify(consumerRequest).getOffers();
     }
 
-    void testFetchLegalEntitiesData() throws Exception {
-        LegalEntityData legalEntityData = getLegalEntityData();
-        when(UtilityFunctions.getAuthToken()).thenReturn("bearer dummytoken1234");
-        when(legalEntityDataApi.fetchLegalEntityData("searchText", 0, 10, UtilityFunctions.getAuthToken())).thenReturn(new ResponseEntity<>(legalEntityData, HttpStatus.OK));
-        assertEquals(consumerControlPanelService.fetchLegalEntitiesData("Search Text", 0, 10).getStatusCodeValue(), 200);
-    }
+//    void testFetchLegalEntitiesData() throws Exception {
+//        LegalEntityData legalEntityData = getLegalEntityData();
+//        when(UtilityFunctions.getAuthToken()).thenReturn("bearer dummytoken1234");
+//        when(legalEntityDataApi.fetchLegalEntityData("searchText", 0, 10, UtilityFunctions.getAuthToken())).thenReturn(new ResponseEntity<>(legalEntityData, HttpStatus.OK));
+//        assertEquals(consumerControlPanelService.fetchLegalEntitiesData("Search Text", 0, 10).getStatusCodeValue(), 200);
+//    }
 
 
     @Test
     void testFetchConnectorInfo() {
-        ResponseEntity<ConnectorInfo[]> responseEntity = new ResponseEntity<>(HttpStatus.OK);
-        when(connectorDiscoveryApi.fetchConnectorInfo((String[]) any(), (String) any())).thenReturn(responseEntity);
+        List<ConnectorInfo> connectorInfo = List.of(ConnectorInfo.builder().bpn("Bpns").connectorEndpoint(List.of("http://localhost:8080")).build());
+        when(connectorDiscoveryApi.fetchConnectorInfo(List.of("Bpns"), "Bearer ABC123")).thenReturn(connectorInfo);
         when(keycloakUtil.getKeycloakToken()).thenReturn("ABC123");
-        assertSame(responseEntity, consumerControlPanelService.fetchConnectorInfo(new String[]{"Bpns"}));
-        verify(connectorDiscoveryApi).fetchConnectorInfo((String[]) any(), (String) any());
+        assertEquals(connectorInfo, consumerControlPanelService.fetchConnectorInfo(List.of("Bpns")));
         verify(keycloakUtil).getKeycloakToken();
     }
 

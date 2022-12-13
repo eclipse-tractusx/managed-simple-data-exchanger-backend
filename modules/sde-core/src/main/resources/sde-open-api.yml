@@ -118,6 +118,7 @@ paths:
             '*/*':
               schema:
                 type: array
+				maxItems: 3
                 example: null
                 items:
                   type: string
@@ -177,6 +178,7 @@ paths:
             '*/*':
               schema:
                 type: array
+				maxItems: 3
                 example: null
                 items:
                   $ref: '#/components/schemas/ConnectorInfo'
@@ -223,6 +225,7 @@ paths:
             '*/*':
               schema:
                 type: array
+				maxItems: 3
                 example: null
                 items:
                   type: string
@@ -240,6 +243,7 @@ paths:
             '*/*':
               schema:
                 type: array
+				maxItems: 3
                 example: null
                 items:
                   type: object
@@ -388,6 +392,7 @@ paths:
             '*/*':
               schema:
                 type: array
+				maxItems: 3
                 example: null
                 items:
                   $ref: '#/components/schemas/LegalEntityResponse'

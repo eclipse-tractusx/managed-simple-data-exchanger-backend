@@ -34,6 +34,6 @@ jobs:
         with:
           appname: "DFT Backend"
           createprofile: false
-          filepath: "./target/dft-*.jar"
+          filepath: "./modules/sde-core/target/sde-*.jar"
           vid: "${{ secrets.ORG_VERACODE_API_ID }}"
           vkey: "${{ secrets.ORG_VERACODE_API_KEY }}"

@@ -18,38 +18,27 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.core.discovery;
+package org.eclipse.tractusx.sde.common.model;
 
-import java.io.InputStream;
-
-import javax.annotation.PostConstruct;
-
-import org.eclipse.tractusx.sde.common.mapper.UsecaseMapper;
-import org.eclipse.tractusx.sde.core.registry.UsecaseRegistration;
-import org.springframework.stereotype.Component;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Component
+@Data
+@Builder
 @AllArgsConstructor
-public class UseCaseDiscovery {
+@NoArgsConstructor
+public class Usecase {
 
-	private final UsecaseRegistration usecaseRegistration;
+	private String id;
 
-	private final UsecaseMapper usecaseMapper;
+	private String title;
 
-	@PostConstruct
-	private void loadUsecase() {
+	private String description;
 
-		String resource = "use-case.json";
-		// this is the path within the jar file
-		InputStream input = this.getClass().getResourceAsStream("/resources/" + resource);
-		if (input == null) {
-			// this is how we load file within editor (eg eclipse)
-			input = this.getClass().getClassLoader().getResourceAsStream(resource);
-		}
-
-		usecaseRegistration.register(usecaseMapper.jsonfileToJsonPojo(input));
-	}
+	private List<Submodel> submodules;
 
 }

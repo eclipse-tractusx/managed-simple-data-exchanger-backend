@@ -12,8 +12,6 @@ import org.eclipse.tractusx.sde.common.exception.CsvException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.JsonObject;
-
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,24 +20,17 @@ import lombok.extern.slf4j.Slf4j;
 public class CsvUtil {
 
 	@SneakyThrows
-	public void generateCSV(HttpServletResponse response, String fileName, List<JsonObject> data) {
+	public void generateCSV(HttpServletResponse response, String fileName, List<List<String>> data) {
 
-		response.setContentType("text/csv");
+		response.setContentType("application/csv");
 		response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"");
 		writeCsv(response, data);
 	}
 
-	private void writeCsv(HttpServletResponse response, List<JsonObject> data) throws CsvException {
+	private void writeCsv(HttpServletResponse response, List<List<String>> data) throws CsvException {
 		try (CSVPrinter csvPrinter = new CSVPrinter(response.getWriter(),
-				CSVFormat.DEFAULT.withEscape(' ').withQuoteMode(QuoteMode.NONE).withDelimiter(';'))) {
-			data.forEach(json -> {
-				List<String> list = json.entrySet().stream().map(e -> {
-
-					if (e != null)
-						return e.getValue().toString().replace("\"", "");
-					else
-						return "";
-				}).toList();
+				CSVFormat.EXCEL.withEscape(' ').withQuoteMode(QuoteMode.NONE).withDelimiter(';'))) {
+			data.forEach(list -> {
 				try {
 					csvPrinter.printRecord(list);
 				} catch (IOException e1) {

@@ -58,6 +58,4 @@ public abstract class SubmodelExecutor {
 
 	public abstract int  getUpdatedRecordCount(String processId);
 	
-	public abstract List<JsonObject> readSubmodelProcessedIdDataFromDb(String processId);
-
 }

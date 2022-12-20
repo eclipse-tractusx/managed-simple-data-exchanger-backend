@@ -68,7 +68,8 @@ public class SingleLevelBoMAsPlannedService {
 
 		deleteEDCAsset(singleLevelBoMAsPlannedEntity);
 
-		deleteDigitalTwinsFacilitator.deleteDigitalTwinsById(singleLevelBoMAsPlannedEntity.getShellId());
+		deleteDigitalTwinsFacilitator.deleteDigitalTwinsById(singleLevelBoMAsPlannedEntity.getShellId(),
+				singleLevelBoMAsPlannedEntity.getSubModelId());
 
 		saveSingleLevelBoMAsPlannedWithDeleted(singleLevelBoMAsPlannedEntity);
 	}
@@ -87,7 +88,7 @@ public class SingleLevelBoMAsPlannedService {
 
 	public SingleLevelBoMAsPlannedEntity readEntity(String uuid) {
 		return Optional.ofNullable(singleLevelBoMAsPlannedRepository.findByChildCatenaXId(uuid))
-						.orElseThrow(() -> new NoDataFoundException("No data found uuid " + uuid));
+				.orElseThrow(() -> new NoDataFoundException("No data found uuid " + uuid));
 	}
 
 	public void deleteEDCAsset(SingleLevelBoMAsPlannedEntity singleLevelBoMAsPlannedEntity) {
@@ -105,18 +106,6 @@ public class SingleLevelBoMAsPlannedService {
 
 		return (int) singleLevelBoMAsPlannedRepository.countByUpdatedAndProcessId(CommonConstants.UPDATED_Y,
 				refProcessId);
-	}
-	
-	public List<JsonObject> readSubmodelProcessedData(String processId) {
-
-		return Optional
-				.ofNullable(Optional.ofNullable(singleLevelBoMAsPlannedRepository.findByProcessId(processId))
-						.filter(a -> !a.isEmpty())
-						.orElseThrow(() -> new NoDataFoundException(
-								String.format("No data found for processid %s ", processId)))
-						.stream().map(singleLevelBoMAsPlannedMapper::mapFromEntity).toList())
-				.filter(a -> !a.isEmpty())
-				.orElseThrow(() -> new NoDataFoundException("No data founds"));
 	}
 
 }

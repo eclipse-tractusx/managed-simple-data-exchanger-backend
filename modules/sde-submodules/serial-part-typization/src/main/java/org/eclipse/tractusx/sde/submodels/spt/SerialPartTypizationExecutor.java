@@ -99,9 +99,4 @@ public class SerialPartTypizationExecutor extends SubmodelExecutor {
 		return aspectService.getUpdatedData(processId);
 	}
 
-	@Override
-	public List<JsonObject> readSubmodelProcessedIdDataFromDb(String processId) {
-		return aspectService.readSubmodelProcessedData(processId);
-	}
-
 }

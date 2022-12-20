@@ -50,7 +50,7 @@ public class BatchService {
 
 		deleteEDCAsset(batchEntity);
 
-		deleteDigitalTwinsFacilitator.deleteDigitalTwinsById(batchEntity.getShellId());
+		deleteDigitalTwinsFacilitator.deleteDigitalTwinsById(batchEntity.getShellId(), batchEntity.getSubModelId());
 
 		saveBatchWithDeleted(batchEntity);
 	}
@@ -84,18 +84,6 @@ public class BatchService {
 	public int getUpdatedData(String refProcessId) {
 
 		return (int) batchRepository.countByUpdatedAndProcessId(CommonConstants.UPDATED_Y, refProcessId);
-	}
-	
-	public List<JsonObject> readSubmodelProcessedData(String processId) {
-
-		return Optional
-				.ofNullable(Optional.ofNullable(batchRepository.findByProcessId(processId))
-						.filter(a -> !a.isEmpty())
-						.orElseThrow(() -> new NoDataFoundException(
-								String.format("No data found for processid %s ", processId)))
-						.stream().map(batchMapper::mapFromEntity).toList())
-				.filter(a -> !a.isEmpty())
-				.orElseThrow(() -> new NoDataFoundException("No data founds"));
 	}
 
 }

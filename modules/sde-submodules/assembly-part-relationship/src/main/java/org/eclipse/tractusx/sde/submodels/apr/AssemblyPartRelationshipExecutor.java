@@ -93,7 +93,7 @@ public class AssemblyPartRelationshipExecutor extends SubmodelExecutor {
 
 		jsonRecordValidate.init(getSubmodelSchema());
 		jsonRecordValidate.run(rowIndex, jsonObject);
-		
+
 		digitalTwinsAspectRelationShipCsvHandlerUseCase.init(getSubmodelSchema());
 		digitalTwinsAspectRelationShipCsvHandlerUseCase.run(aspectRelationship);
 
@@ -121,11 +121,6 @@ public class AssemblyPartRelationshipExecutor extends SubmodelExecutor {
 	@Override
 	public int getUpdatedRecordCount(String processId) {
 		return aspectRelationshipService.getUpdatedData(processId);
-	}
-
-	@Override
-	public List<JsonObject> readSubmodelProcessedIdDataFromDb(String processId) {
-		return aspectRelationshipService.readSubmodelProcessedData(processId);
 	}
 
 }

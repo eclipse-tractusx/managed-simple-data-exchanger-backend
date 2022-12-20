@@ -49,6 +49,8 @@ public class SingleLevelBoMAsPlannedSubmodel extends SubmodelExtension {
 
 		submodel = loadSubmodel(input);
 		submodel.setExecutor(singleLevelBoMAsPlannedExecutor);
+		
+		submodel.addProperties("tableName", "single_level_bom_as_planned");
 	}
 	
 	@Override

@@ -18,11 +18,20 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
- ALTER TABLE aspect
-    ADD sub_model_id                  TEXT NULL;
+ALTER TABLE aspect
+ADD sub_model_id                  TEXT NULL;
 
 ALTER TABLE aspect_relationship
-    ADD sub_model_id                  TEXT NULL;
+ADD sub_model_id                  TEXT NULL;
 
- ALTER TABLE batch
- 	ADD sub_model_id                  TEXT NULL;
+ALTER TABLE batch
+ADD sub_model_id                  TEXT NULL;
+
+ALTER TABLE part_as_planned
+ADD sub_model_id                  TEXT NULL;
+		
+ALTER TABLE Part_site_information_as_planned
+ADD sub_model_id                  TEXT NULL;
+
+ALTER TABLE single_level_bom_as_planned
+ADD sub_model_id                  TEXT NULL;

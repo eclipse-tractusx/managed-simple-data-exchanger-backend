@@ -1,8 +1,9 @@
 package org.eclipse.tractusx.sde.core.controller;
 
+import static org.eclipse.tractusx.sde.common.constants.CommonConstants.CSV_FILE_EXTENSION;
+
 import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.core.service.SubmodelCsvService;
 import org.eclipse.tractusx.sde.core.utils.CsvUtil;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,9 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Controller
 @ControllerAdvice
 @RequiredArgsConstructor
@@ -31,17 +30,18 @@ public class SubmodelCsvController {
 	public void getSubmodelCSV(@PathVariable String submodelName, @RequestParam("type") String type,
 			HttpServletResponse response) {
 
-		String filename = submodelName + CommonConstants.CSV_FILE_EXTENSION;
+		String filename = submodelName + type + CSV_FILE_EXTENSION;
 		csvUtil.generateCSV(response, filename, submodelCsvService.findSubmodelCsv(submodelName, type));
 	}
 
 	@GetMapping(value = "/{submodel}/download/{processId}/csv")
-	//@PreAuthorize("hasPermission('','provider_download_own_data')")
+	@PreAuthorize("hasPermission('','provider_download_own_data')")
 	public void getDownloadFileByProcessId(@PathVariable("processId") String processId,
 			@PathVariable("submodel") String submodel, HttpServletResponse response) {
 
-		String filename = submodel + "_" + processId + CommonConstants.CSV_FILE_EXTENSION;
-		csvUtil.generateCSV(response, filename, submodelCsvService.findByProcessedIdSubmodelCsv(submodel, processId));
+		String filename = submodel + "_" + processId + CSV_FILE_EXTENSION;
+		csvUtil.generateCSV(response, filename, submodelCsvService.findAllSubmodelCsvHistory(submodel, processId));
+
 	}
 
 }

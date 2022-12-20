@@ -117,9 +117,4 @@ public class PartAsPlannedExecutor extends SubmodelExecutor {
 		return partAsPlannedService.getUpdatedData(processId);
 	}
 
-	@Override
-	public List<JsonObject> readSubmodelProcessedIdDataFromDb(String processId) {
-		return partAsPlannedService.readSubmodelProcessedData(processId);
-	}
-
 }

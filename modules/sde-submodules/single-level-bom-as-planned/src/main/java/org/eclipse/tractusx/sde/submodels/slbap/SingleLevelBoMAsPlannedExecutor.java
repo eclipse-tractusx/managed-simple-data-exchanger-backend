@@ -121,10 +121,4 @@ public class SingleLevelBoMAsPlannedExecutor extends SubmodelExecutor {
 		return singleLevelBoMAsPlannedService.getUpdatedData(processId);
 	}
 
-	@Override
-	public List<JsonObject> readSubmodelProcessedIdDataFromDb(String processId) {
-		return singleLevelBoMAsPlannedService.readSubmodelProcessedData(processId);
-	}
-
-
 }

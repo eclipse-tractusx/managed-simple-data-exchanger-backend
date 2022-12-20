@@ -98,9 +98,4 @@ public class BatchExecutor extends SubmodelExecutor {
 		return batchDeleteService.getUpdatedData(processId);
 	}
 
-	@Override
-	public List<JsonObject> readSubmodelProcessedIdDataFromDb(String processId) {	
-		return batchDeleteService.readSubmodelProcessedData(processId);
-	}
-
 }

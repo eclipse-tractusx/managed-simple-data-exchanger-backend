@@ -70,7 +70,7 @@ public class AspectRelationshipService {
 
 		deleteEDCAsset(aspectRelationshipEntity);
 
-		deleteDigitalTwinsFacilitator.deleteDigitalTwinsById(aspectRelationshipEntity.getShellId());
+		deleteDigitalTwinsFacilitator.deleteDigitalTwinsById(aspectRelationshipEntity.getShellId(),aspectRelationshipEntity.getSubModelId());
 
 		saveAspectRelationshipWithDeleted(aspectRelationshipEntity);
 	}
@@ -108,18 +108,6 @@ public class AspectRelationshipService {
 	public int getUpdatedData(String refProcessId) {
 
 		return (int) aspectRelationshipRepository.countByUpdatedAndProcessId(CommonConstants.UPDATED_Y, refProcessId);
-	}
-	
-	public List<JsonObject> readSubmodelProcessedData(String processId) {
-
-		return Optional
-				.ofNullable(Optional.ofNullable(aspectRelationshipRepository.findByProcessId(processId))
-						.filter(a -> !a.isEmpty())
-						.orElseThrow(() -> new NoDataFoundException(
-								String.format("No data found for processid %s ", processId)))
-						.stream().map(aspectRelationshipMapper::mapFromEntity).toList())
-				.filter(a -> !a.isEmpty())
-				.orElseThrow(() -> new NoDataFoundException("No data founds"));
 	}
 
 }

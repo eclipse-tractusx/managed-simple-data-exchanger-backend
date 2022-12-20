@@ -103,5 +103,17 @@ public class PartAsPlannedService {
 		return Optional.ofNullable(partAsPlannedRepository.findByUuid(uuid))
 				.orElseThrow(() -> new NoDataFoundException("No data found uuid " + uuid));
 	}
+	
+	public List<JsonObject> readSubmodelProcessedData(String processId) {
+
+		return Optional
+				.ofNullable(Optional.ofNullable(partAsPlannedRepository.findByProcessId(processId))
+						.filter(a -> !a.isEmpty())
+						.orElseThrow(() -> new NoDataFoundException(
+								String.format("No data found for processid %s ", processId)))
+						.stream().map(partAsPlannedMapper::mapFromEntity).toList())
+				.filter(a -> !a.isEmpty())
+				.orElseThrow(() -> new NoDataFoundException("No data founds"));
+	}
 
 }

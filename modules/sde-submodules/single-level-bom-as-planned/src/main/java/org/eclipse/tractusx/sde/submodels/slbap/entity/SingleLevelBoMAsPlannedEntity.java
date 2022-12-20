@@ -64,6 +64,9 @@ public class SingleLevelBoMAsPlannedEntity implements Serializable {
     @Column(name = "shell_id")
     private String shellId;
     
+    @Column(name = "sub_model_id")
+    private String subModelId;
+    
     @Column(name = "usage_policy_id")
     private String usagePolicyId;
     

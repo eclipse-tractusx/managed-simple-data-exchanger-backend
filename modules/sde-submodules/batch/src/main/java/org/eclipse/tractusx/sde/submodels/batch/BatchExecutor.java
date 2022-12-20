@@ -10,7 +10,7 @@ import org.eclipse.tractusx.sde.common.submodel.executor.create.steps.impl.Gener
 import org.eclipse.tractusx.sde.common.submodel.executor.create.steps.impl.JsonRecordValidate;
 import org.eclipse.tractusx.sde.submodels.batch.mapper.BatchMapper;
 import org.eclipse.tractusx.sde.submodels.batch.model.Batch;
-import org.eclipse.tractusx.sde.submodels.batch.service.BatchDeleteService;
+import org.eclipse.tractusx.sde.submodels.batch.service.BatchService;
 import org.eclipse.tractusx.sde.submodels.batch.steps.DigitalTwinsBatchCsvHandlerUseCase;
 import org.eclipse.tractusx.sde.submodels.batch.steps.EDCBatchHandlerUseCase;
 import org.eclipse.tractusx.sde.submodels.batch.steps.StoreBatchCsvHandlerUseCase;
@@ -40,7 +40,7 @@ public class BatchExecutor extends SubmodelExecutor {
 
 	private final BatchMapper batchMapper;
 
-	private final BatchDeleteService batchDeleteService;
+	private final BatchService batchDeleteService;
 
 	@SneakyThrows
 	public void executeCsvRecord(RowData rowData, ObjectNode jsonObject, String processId) {
@@ -96,6 +96,11 @@ public class BatchExecutor extends SubmodelExecutor {
 	@Override
 	public int getUpdatedRecordCount(String processId) {
 		return batchDeleteService.getUpdatedData(processId);
+	}
+
+	@Override
+	public List<JsonObject> readSubmodelProcessedIdDataFromDb(String processId) {	
+		return batchDeleteService.readSubmodelProcessedData(processId);
 	}
 
 }

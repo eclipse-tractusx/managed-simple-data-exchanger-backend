@@ -123,4 +123,9 @@ public class AssemblyPartRelationshipExecutor extends SubmodelExecutor {
 		return aspectRelationshipService.getUpdatedData(processId);
 	}
 
+	@Override
+	public List<JsonObject> readSubmodelProcessedIdDataFromDb(String processId) {
+		return aspectRelationshipService.readSubmodelProcessedData(processId);
+	}
+
 }

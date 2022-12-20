@@ -106,5 +106,17 @@ public class SingleLevelBoMAsPlannedService {
 		return (int) singleLevelBoMAsPlannedRepository.countByUpdatedAndProcessId(CommonConstants.UPDATED_Y,
 				refProcessId);
 	}
+	
+	public List<JsonObject> readSubmodelProcessedData(String processId) {
+
+		return Optional
+				.ofNullable(Optional.ofNullable(singleLevelBoMAsPlannedRepository.findByProcessId(processId))
+						.filter(a -> !a.isEmpty())
+						.orElseThrow(() -> new NoDataFoundException(
+								String.format("No data found for processid %s ", processId)))
+						.stream().map(singleLevelBoMAsPlannedMapper::mapFromEntity).toList())
+				.filter(a -> !a.isEmpty())
+				.orElseThrow(() -> new NoDataFoundException("No data founds"));
+	}
 
 }

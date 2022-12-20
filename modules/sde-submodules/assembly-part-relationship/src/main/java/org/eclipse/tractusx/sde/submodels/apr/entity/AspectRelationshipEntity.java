@@ -56,6 +56,8 @@ public class AspectRelationshipEntity implements Serializable {
     private String measurementUnitLexicalValue;
     @Column(name = "shell_id")
     private String shellId;
+    @Column(name = "sub_model_id")
+    private String subModelId;
     @Column(name = "data_type_uri")
     private String dataTypeUri;
     @Column(name = "usage_policy_id")

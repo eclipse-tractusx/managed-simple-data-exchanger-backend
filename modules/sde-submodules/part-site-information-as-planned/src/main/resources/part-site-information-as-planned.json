@@ -1,0 +1,111 @@
+{
+	"$schema": "https://json-schema.org/draft/2019-09/schema",
+	"$id": "http://example.com/example.json",
+	"type": "array",
+	"id": "partsiteinformationasplanned",
+	"idShort": "partSiteInformationAsPlanned",
+	"version": "1.0.0",
+	"semantic_id": "urn:bamm:io.catenax.part_site_information_as_planned:1.0.0#PartSiteInformationAsPlanned",
+	"title": "PartSiteInformationAsPlanned",
+	"description": "BoM As-Planned - Submodel PartSiteInformationAsPlanned",
+	"items": {
+		"type": "object",
+		"required": [
+			"uuid",
+			"manufacturer_part_id",
+			"catenax_site_id",
+			"name_at_manufacturer",
+			"function"
+		],
+		"dependentRequired": {
+		},
+		"properties": {
+			"uuid": {
+				"type": [
+					"string",
+					"null"
+				],
+				"pattern": "^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+				"title": "UUID",
+				"examples": [
+					"urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf34dfa4c2"
+				]
+			},
+			"manufacturer_part_id": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"title": "Manufacturer Part ID",
+				"examples": [
+					"37754B7-76"
+				]
+			},
+			"catenax_site_id": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"title": "catenaX Site Id",
+				"examples": [
+					"BPNS1234567890ZZ"
+				]
+			},
+			"name_at_manufacturer": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"title": "Name At Manufacturer",
+				"examples": [
+					"Sensor"
+				]
+			},
+			"function": {
+				"type": [
+					"string"
+				],
+				"enum": [
+					"production"
+				],
+				"title": "Function",
+				"examples": [
+					"production"
+				]
+			},
+			"function_valid_from": {
+				"type": [
+					"string",
+					"null"
+				],
+				"format": "date-time",
+				"title": "Function Valid From",
+				"examples": [
+					"2022-11-28T09:39:44.673Z"
+				]
+			},
+			"function_valid_until": {
+				"type": [
+					"string",
+					"null"
+				],
+				"format": "date-time",
+				"title": "Function Valid Until",
+				"examples": [
+					"2022-11-28T09:39:44.673Z"
+				]
+			}
+		}
+	},
+	"examples": [
+		{
+			"uuid": "urn:uuid:580d3adf-1981-44a0-a214-13d6ceed9379",
+			"manufacturer_part_id": "37754B7-76",
+			"catenax_site_id": "BPNS1234567890ZZ",
+			"name_at_manufacturer": "Sensor",
+			"function": "production",
+			"function_valid_from": "2022-11-28T09:39:44.673Z",
+			"function_valid_until": "2022-11-28T09:39:44.673Z"
+		}
+	]
+}

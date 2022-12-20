@@ -31,8 +31,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Configuration
 public class ApiHeaderAuthFilter extends GenericFilterBean {
 
@@ -52,9 +57,15 @@ public class ApiHeaderAuthFilter extends GenericFilterBean {
 		String authHeaderValue = request.getHeader(apiKeyHeader);
 		String url = request.getRequestURI();
 
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        
 		if (url.contains("/public") && !apiKeyValue.equals(authHeaderValue)) {
+			log.error("**** ApiHeaderAuthFilter genreated Unauthorized response for public api *****************");
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-		} else {
+		} else if(auth !=null && auth.getAuthorities()!=null && auth.getAuthorities().isEmpty()){
+			log.error("**** ApiHeaderAuthFilter The resource/client is not allowed to access *****************");
+			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+		}	else {
 			filterChain.doFilter(servletRequest, servletResponse);
 		}
 	}

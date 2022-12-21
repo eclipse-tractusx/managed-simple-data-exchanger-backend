@@ -68,7 +68,8 @@ public class SingleLevelBoMAsPlannedService {
 
 		deleteEDCAsset(singleLevelBoMAsPlannedEntity);
 
-		deleteDigitalTwinsFacilitator.deleteDigitalTwinsById(singleLevelBoMAsPlannedEntity.getShellId());
+		deleteDigitalTwinsFacilitator.deleteDigitalTwinsById(singleLevelBoMAsPlannedEntity.getShellId(),
+				singleLevelBoMAsPlannedEntity.getSubModelId());
 
 		saveSingleLevelBoMAsPlannedWithDeleted(singleLevelBoMAsPlannedEntity);
 	}
@@ -87,7 +88,7 @@ public class SingleLevelBoMAsPlannedService {
 
 	public SingleLevelBoMAsPlannedEntity readEntity(String uuid) {
 		return Optional.ofNullable(singleLevelBoMAsPlannedRepository.findByChildCatenaXId(uuid))
-						.orElseThrow(() -> new NoDataFoundException("No data found uuid " + uuid));
+				.orElseThrow(() -> new NoDataFoundException("No data found uuid " + uuid));
 	}
 
 	public void deleteEDCAsset(SingleLevelBoMAsPlannedEntity singleLevelBoMAsPlannedEntity) {

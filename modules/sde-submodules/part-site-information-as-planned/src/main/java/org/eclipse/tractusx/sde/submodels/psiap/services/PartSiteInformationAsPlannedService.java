@@ -63,11 +63,13 @@ public class PartSiteInformationAsPlannedService {
 
 	public void deleteAllDataBySequence(JsonObject jsonObject) {
 
-		PartSiteInformationAsPlannedEntity partSiteInformationAsPlannedEntity = partSiteInformationAsPlannedMapper.mapforEntity(jsonObject);
+		PartSiteInformationAsPlannedEntity partSiteInformationAsPlannedEntity = partSiteInformationAsPlannedMapper
+				.mapforEntity(jsonObject);
 
 		deleteEDCAsset(partSiteInformationAsPlannedEntity);
 
-		deleteDigitalTwinsFacilitator.deleteDigitalTwinsById(partSiteInformationAsPlannedEntity.getShellId());
+		deleteDigitalTwinsFacilitator.deleteDigitalTwinsById(partSiteInformationAsPlannedEntity.getShellId(),
+				partSiteInformationAsPlannedEntity.getSubModelId());
 
 		saveAspectWithDeleted(partSiteInformationAsPlannedEntity);
 	}
@@ -93,17 +95,19 @@ public class PartSiteInformationAsPlannedService {
 		List<PartSiteInformationAsPlannedEntity> entities = Optional
 				.ofNullable(partSiteInformationAsPlannedRepository.findAllByUuid(uuid))
 				.orElseThrow(() -> new NoDataFoundException("No data found uuid " + uuid));
-		
-		return partSiteInformationAsPlannedMapper.mapToResponse(uuid,entities);
+
+		return partSiteInformationAsPlannedMapper.mapToResponse(uuid, entities);
 	}
 
 	public int getUpdatedData(String refProcessId) {
 
-		return (int) partSiteInformationAsPlannedRepository.countByUpdatedAndProcessId(CommonConstants.UPDATED_Y, refProcessId);
+		return (int) partSiteInformationAsPlannedRepository.countByUpdatedAndProcessId(CommonConstants.UPDATED_Y,
+				refProcessId);
 	}
-	
+
 	public PartSiteInformationAsPlannedEntity readEntity(String uuid) {
 		return Optional.ofNullable(partSiteInformationAsPlannedRepository.findByUuid(uuid))
 				.orElseThrow(() -> new NoDataFoundException("No data found uuid " + uuid));
 	}
+
 }

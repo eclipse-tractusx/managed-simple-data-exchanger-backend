@@ -1,54 +1,82 @@
 package org.eclipse.tractusx.sde.core.utils;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
-
-import javax.servlet.http.HttpServletResponse;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.QuoteMode;
-import org.eclipse.tractusx.sde.common.exception.CsvException;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.eclipse.tractusx.sde.common.exception.ServiceException;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.JsonObject;
-
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Component
 public class CsvUtil {
 
-	@SneakyThrows
-	public void generateCSV(HttpServletResponse response, String fileName, List<JsonObject> data) {
+	public static String TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
-		response.setContentType("text/csv");
-		response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"");
-		writeCsv(response, data);
+	@SneakyThrows
+	public ResponseEntity<Resource> generateCSV(String fileName, List<List<String>> data) {
+
+		InputStreamResource file = new InputStreamResource(writeCsv(data));
+
+		return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
+				.contentType(MediaType.parseMediaType("application/vnd.ms-excel")).body(file);
 	}
 
-	private void writeCsv(HttpServletResponse response, List<JsonObject> data) throws CsvException {
-		try (CSVPrinter csvPrinter = new CSVPrinter(response.getWriter(),
-				CSVFormat.DEFAULT.withEscape(' ').withQuoteMode(QuoteMode.NONE).withDelimiter(';'))) {
-			data.forEach(json -> {
-				List<String> list = json.entrySet().stream().map(e -> {
+	@SneakyThrows
+	public static ByteArrayInputStream writeCsv1(List<List<String>> data) {
+		final CSVFormat format = CSVFormat.EXCEL.withEscape(' ').withQuoteMode(QuoteMode.NONE).withDelimiter(';');
 
-					if (e != null)
-						return e.getValue().toString().replace("\"", "");
-					else
-						return "";
-				}).toList();
+		try (ByteArrayOutputStream out = new ByteArrayOutputStream();
+				CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format);) {
+			data.forEach(list -> {
 				try {
 					csvPrinter.printRecord(list);
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
 			});
-		} catch (IOException ioException) {
-			log.error(ioException.getMessage());
-			throw new CsvException(ioException.getMessage());
+
+			csvPrinter.flush();
+			return new ByteArrayInputStream(out.toByteArray());
+		} catch (IOException e) {
+			throw new ServiceException("fail to import data to CSV file: " + e.getMessage());
 		}
 	}
+
+	@SneakyThrows
+	public static ByteArrayInputStream writeCsv(List<List<String>> data) {
+
+		try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream();) {
+			Sheet sheet = workbook.createSheet("HISTORY");
+
+			AtomicInteger rowIdx = new AtomicInteger(0);
+			data.forEach(list -> {
+				Row row = sheet.createRow(rowIdx.getAndIncrement());
+				AtomicInteger cellNo = new AtomicInteger(0);
+				list.forEach(data1 -> row.createCell(cellNo.getAndIncrement()).setCellValue(data1));
+			});
+
+			workbook.write(out);
+			return new ByteArrayInputStream(out.toByteArray());
+		} catch (IOException e) {
+			throw new ServiceException("fail to import data to Excel file: " + e.getMessage());
+		}
+	}
+
 }

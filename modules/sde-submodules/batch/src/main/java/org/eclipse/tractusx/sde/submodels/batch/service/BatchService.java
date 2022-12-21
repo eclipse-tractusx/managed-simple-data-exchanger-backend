@@ -19,7 +19,7 @@ import lombok.SneakyThrows;
 
 @Service
 @AllArgsConstructor
-public class BatchDeleteService {
+public class BatchService {
 
 	private final BatchRepository batchRepository;
 
@@ -50,7 +50,7 @@ public class BatchDeleteService {
 
 		deleteEDCAsset(batchEntity);
 
-		deleteDigitalTwinsFacilitator.deleteDigitalTwinsById(batchEntity.getShellId());
+		deleteDigitalTwinsFacilitator.deleteDigitalTwinsById(batchEntity.getShellId(), batchEntity.getSubModelId());
 
 		saveBatchWithDeleted(batchEntity);
 	}

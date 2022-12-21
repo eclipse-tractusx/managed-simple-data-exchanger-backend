@@ -50,7 +50,7 @@ public class AspectService {
 
 		deleteEDCAsset(aspectEntity);
 
-		deleteDigitalTwinsFacilitator.deleteDigitalTwinsById(aspectEntity.getShellId());
+		deleteDigitalTwinsFacilitator.deleteDigitalTwinsById(aspectEntity.getShellId(), aspectEntity.getSubModelId());
 
 		saveAspectWithDeleted(aspectEntity);
 	}

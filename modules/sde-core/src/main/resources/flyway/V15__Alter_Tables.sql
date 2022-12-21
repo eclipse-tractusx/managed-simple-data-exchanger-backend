@@ -1,6 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -18,22 +18,20 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.digitaltwins.gateways.external;
+ALTER TABLE IF EXISTS aspect
+ADD sub_model_id                  TEXT NULL;
 
-import java.util.Map;
+ALTER TABLE IF EXISTS aspect_relationship
+ADD sub_model_id                  TEXT NULL;
 
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
+ALTER TABLE IF EXISTS batch
+ADD sub_model_id                  TEXT NULL;
 
-@FeignClient(value = "DigitalTwinsFeignClient", url = "${digital-twins.hostname}")
-public interface DigitalTwinsFeignClient {
+ALTER TABLE IF EXISTS part_as_planned
+ADD sub_model_id                  TEXT NULL;
+		
+ALTER TABLE IF EXISTS Part_site_information_as_planned
+ADD sub_model_id                  TEXT NULL;
 
-	@DeleteMapping(path = "/shell-descriptors/{aasIdentifier}/submodel-descriptors/{submodelIdentifier}")
-	ResponseEntity<Object> deleteDigitalTwinsById(@PathVariable("aasIdentifier") String shellId,
-			@PathVariable("submodelIdentifier") String submodelIdentifier,
-			@RequestHeader Map<String, String> requestHeader);
-
-}
+ALTER TABLE IF EXISTS single_level_bom_as_planned
+ADD sub_model_id                  TEXT NULL;

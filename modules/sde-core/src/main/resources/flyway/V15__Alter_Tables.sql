@@ -19,19 +19,75 @@
  ********************************************************************************/
 
 ALTER TABLE IF EXISTS aspect
-ADD sub_model_id                  TEXT NULL;
+ADD COLUMN sub_model_id                  		TEXT NULL;
 
 ALTER TABLE IF EXISTS aspect_relationship
-ADD sub_model_id                  TEXT NULL;
+ADD COLUMN sub_model_id                  		TEXT NULL;
 
 ALTER TABLE IF EXISTS batch
-ADD sub_model_id                  TEXT NULL;
+ADD COLUMN sub_model_id                  		TEXT NULL;
 
 ALTER TABLE IF EXISTS part_as_planned
-ADD sub_model_id                  TEXT NULL;
+ADD COLUMN sub_model_id                  		TEXT NULL;
 		
 ALTER TABLE IF EXISTS Part_site_information_as_planned
-ADD sub_model_id                  TEXT NULL;
+ADD COLUMN sub_model_id                  		TEXT NULL;
 
 ALTER TABLE IF EXISTS single_level_bom_as_planned
-ADD sub_model_id                  TEXT NULL;
+ADD COLUMN sub_model_id                  		TEXT NULL;
+
+ALTER TABLE IF EXISTS aspect_relationship
+ADD COLUMN parent_part_instance_id  			TEXT NULL;
+
+ALTER TABLE IF EXISTS aspect_relationship
+ADD COLUMN parent_manufacturer_part_id  		TEXT NULL;
+
+ALTER TABLE IF EXISTS aspect_relationship 
+ADD COLUMN parent_optional_identifier_key  		TEXT NULL;
+
+ALTER TABLE IF EXISTS aspect_relationship
+ADD COLUMN parent_optional_identifier_value 	TEXT NULL;
+
+ALTER TABLE IF EXISTS aspect_relationship
+ADD COLUMN part_instance_id  					TEXT NULL;
+
+ALTER TABLE IF EXISTS aspect_relationship
+ADD COLUMN manufacturer_part_id  				TEXT NULL;
+
+ALTER TABLE IF EXISTS aspect_relationship 
+ADD COLUMN optional_identifier_key  			TEXT NULL;
+
+ALTER TABLE IF EXISTS aspect_relationship
+ADD COLUMN optional_identifier_value 			TEXT NULL;
+
+ALTER TABLE IF EXISTS aspect_relationship 
+RENAME COLUMN parent_catenax_id TO parent_uuid;
+
+ALTER TABLE IF EXISTS aspect_relationship
+RENAME COLUMN child_catenax_id TO uuid;
+
+ALTER TABLE IF EXISTS aspect_relationship
+RENAME COLUMN data_type_uri TO datatype_uri;
+
+ALTER TABLE IF EXISTS single_level_bom_as_planned
+RENAME COLUMN parent_catenax_id TO parent_uuid;
+
+ALTER TABLE IF EXISTS single_level_bom_as_planned
+RENAME COLUMN child_catenax_id TO uuid;
+
+ALTER TABLE IF EXISTS single_level_bom_as_planned
+ADD COLUMN manufacturer_part_id  				TEXT NULL;
+
+ALTER TABLE IF EXISTS single_level_bom_as_planned
+ADD COLUMN parent_manufacturer_part_id  		TEXT NULL;
+
+ALTER TABLE IF EXISTS single_level_bom_as_planned
+ADD COLUMN customer_part_id  					TEXT NULL;
+
+
+
+
+
+
+
+

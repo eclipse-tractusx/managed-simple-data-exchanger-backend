@@ -5,15 +5,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.QuoteMode;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -27,19 +22,17 @@ import lombok.SneakyThrows;
 @Component
 public class CsvUtil {
 
-	public static String TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-
 	@SneakyThrows
 	public ResponseEntity<Resource> generateCSV(String fileName, List<List<String>> data) {
 
 		InputStreamResource file = new InputStreamResource(writeCsv(data));
 
 		return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
-				.contentType(MediaType.parseMediaType("application/vnd.ms-excel")).body(file);
+				.contentType(MediaType.parseMediaType("application/csv")).body(file);
 	}
 
 	@SneakyThrows
-	public static ByteArrayInputStream writeCsv1(List<List<String>> data) {
+	public static ByteArrayInputStream writeCsv(List<List<String>> data) {
 		final CSVFormat format = CSVFormat.EXCEL.withEscape(' ').withQuoteMode(QuoteMode.NONE).withDelimiter(';');
 
 		try (ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -59,24 +52,5 @@ public class CsvUtil {
 		}
 	}
 
-	@SneakyThrows
-	public static ByteArrayInputStream writeCsv(List<List<String>> data) {
-
-		try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream();) {
-			Sheet sheet = workbook.createSheet("HISTORY");
-
-			AtomicInteger rowIdx = new AtomicInteger(0);
-			data.forEach(list -> {
-				Row row = sheet.createRow(rowIdx.getAndIncrement());
-				AtomicInteger cellNo = new AtomicInteger(0);
-				list.forEach(data1 -> row.createCell(cellNo.getAndIncrement()).setCellValue(data1));
-			});
-
-			workbook.write(out);
-			return new ByteArrayInputStream(out.toByteArray());
-		} catch (IOException e) {
-			throw new ServiceException("fail to import data to Excel file: " + e.getMessage());
-		}
-	}
 
 }

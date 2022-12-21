@@ -36,12 +36,21 @@ import lombok.Data;
 public class SingleLevelBoMAsPlannedEntity implements Serializable {
 	
     @Id
-    @Column(name = "parent_catenax_id")
+    @Column(name = "parent_uuid")
     private String parentCatenaXId;
     
+    @Column(name = "parent_manufacturer_part_id")
+	private String parentManufacturerPartId;
+    
     @Id
-    @Column(name = "child_catenax_id")
+    @Column(name = "uuid")
     private String childCatenaXId;
+    
+    @Column(name = "manufacturer_part_id")
+	private String childManufacturerPartId;
+    
+    @Column(name = "customer_part_id")
+	private String customerPartId;
     
     @Column(name = "process_id")
     private String processId;

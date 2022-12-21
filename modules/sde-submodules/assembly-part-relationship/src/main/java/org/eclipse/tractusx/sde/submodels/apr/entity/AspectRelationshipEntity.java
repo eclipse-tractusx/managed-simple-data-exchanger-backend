@@ -38,14 +38,30 @@ import lombok.Data;
 @IdClass(AspectRelationshipPrimaryKey.class)
 public class AspectRelationshipEntity implements Serializable {
 
-    @Id
-    @Column(name = "parent_catenax_id")
-    private String parentCatenaXId;
     @Column(name = "process_id")
     private String processId;
     @Id
-    @Column(name = "child_catenax_id")
+    @Column(name = "parent_uuid")
+    private String parentCatenaXId;
+    @Column(name = "parent_part_instance_id")
+	private String parentPartInstanceId;
+    @Column(name = "parent_manufacturer_part_id")
+	private String parentManufacturerPartId;
+    @Column(name = "parent_optional_identifier_key")
+	private String parentOptionalIdentifierKey;
+    @Column(name = "parent_optional_identifier_value")
+	private String parentOptionalIdentifierValue;
+    @Id
+    @Column(name = "uuid")
     private String childCatenaXId;
+    @Column(name = "part_instance_id")
+	private String childPartInstanceId;
+    @Column(name = "manufacturer_part_id")
+	private String childManufacturerPartId;
+    @Column(name = "optional_identifier_key")
+	private String childOptionalIdentifierKey;
+    @Column(name = "optional_identifier_value")
+	private String childOptionalIdentifierValue;
     @Column(name = "lifecycle_context")
     private String lifecycleContext;
     @Column(name = "assembled_on")
@@ -58,7 +74,7 @@ public class AspectRelationshipEntity implements Serializable {
     private String shellId;
     @Column(name = "sub_model_id")
     private String subModelId;
-    @Column(name = "data_type_uri")
+    @Column(name = "datatype_uri")
     private String dataTypeUri;
     @Column(name = "usage_policy_id")
     private String usagePolicyId;

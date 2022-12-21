@@ -1,6 +1,9 @@
 package org.eclipse.tractusx.sde.core.utils;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -8,28 +11,35 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.QuoteMode;
-import org.eclipse.tractusx.sde.common.exception.CsvException;
+import org.eclipse.tractusx.sde.common.exception.ServiceException;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Component
 public class CsvUtil {
 
 	@SneakyThrows
-	public void generateCSV(HttpServletResponse response, String fileName, List<List<String>> data) {
+	public ResponseEntity<Resource> generateCSV(String fileName,
+			List<List<String>> data) {
 
-		response.setContentType("application/csv");
-		response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"");
-		writeCsv(response, data);
+		InputStreamResource file = new InputStreamResource(writeCsv(data));
+
+		return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
+				.contentType(MediaType.parseMediaType("application/csv")).body(file);
 	}
 
-	private void writeCsv(HttpServletResponse response, List<List<String>> data) throws CsvException {
-		try (CSVPrinter csvPrinter = new CSVPrinter(response.getWriter(),
-				CSVFormat.EXCEL.withEscape(' ').withQuoteMode(QuoteMode.NONE).withDelimiter(';'))) {
+	@SneakyThrows
+	public static ByteArrayInputStream writeCsv(List<List<String>> data) {
+		final CSVFormat format = CSVFormat.EXCEL.withEscape(' ').withQuoteMode(QuoteMode.NONE).withDelimiter(';');
+
+		try (ByteArrayOutputStream out = new ByteArrayOutputStream();
+				CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format);) {
 			data.forEach(list -> {
 				try {
 					csvPrinter.printRecord(list);
@@ -37,9 +47,11 @@ public class CsvUtil {
 					e1.printStackTrace();
 				}
 			});
-		} catch (IOException ioException) {
-			log.error(ioException.getMessage());
-			throw new CsvException(ioException.getMessage());
+
+			csvPrinter.flush();
+			return new ByteArrayInputStream(out.toByteArray());
+		} catch (IOException e) {
+			throw new ServiceException("fail to import data to CSV file: " + e.getMessage());
 		}
 	}
 }

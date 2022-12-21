@@ -77,6 +77,7 @@ public class SubmodelCsvService {
 		List<String> headerName = new LinkedList<>();
 		headerName.addAll(headerList);
 		headerName.add("shell_id");
+		headerName.add("sub_model_id");
 		headerName.add("asset_id");
 		headerName.add("usage_policy_id");
 		headerName.add("access_policy_id");

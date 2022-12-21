@@ -18,20 +18,20 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-ALTER TABLE aspect
+ALTER TABLE IF EXISTS aspect
 ADD sub_model_id                  TEXT NULL;
 
-ALTER TABLE aspect_relationship
+ALTER TABLE IF EXISTS aspect_relationship
 ADD sub_model_id                  TEXT NULL;
 
-ALTER TABLE batch
+ALTER TABLE IF EXISTS batch
 ADD sub_model_id                  TEXT NULL;
 
-ALTER TABLE part_as_planned
+ALTER TABLE IF EXISTS part_as_planned
 ADD sub_model_id                  TEXT NULL;
 		
-ALTER TABLE Part_site_information_as_planned
+ALTER TABLE IF EXISTS Part_site_information_as_planned
 ADD sub_model_id                  TEXT NULL;
 
-ALTER TABLE single_level_bom_as_planned
+ALTER TABLE IF EXISTS single_level_bom_as_planned
 ADD sub_model_id                  TEXT NULL;

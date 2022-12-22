@@ -6,7 +6,7 @@
 	"idShort": "partSiteInformationAsPlanned",
 	"version": "1.0.0",
 	"semantic_id": "urn:bamm:io.catenax.part_site_information_as_planned:1.0.0#PartSiteInformationAsPlanned",
-	"title": "PartSiteInformationAsPlanned",
+	"title": "Part Site Information AsPlanned",
 	"description": "BoM As-Planned - Submodel PartSiteInformationAsPlanned",
 	"items": {
 		"type": "object",

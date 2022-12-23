@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.tractusx.sde.common.exception.ValidationException;
 import org.eclipse.tractusx.sde.core.service.SubmodelCsvService;
@@ -35,102 +36,120 @@ class SubmodelCsvControllerTest {
     @MockBean
 	private CsvUtil csvUtil;
     
+    private static final List<String> SUBMODEL_LIST = List.of("aspectrelationship",
+    															"batch",
+    															"partasplanned",
+    															"partsiteinformationasplanned",
+    															"singlelevelbomasplanned");
+    
     private static final String SAMPLE_TYPE = "sample";
     private static final String TEMPLATE_TYPE = "template";
     
-    @Test
-    void testGetSubmodelCSVSampleSuccess() throws Exception {
+	@Test
+	void testGetSubmodelCSVSampleSuccess() throws Exception {
 
-        when(submodelCsvService.findSubmodelCsv((String) any(),(String) any())).thenReturn(new ArrayList<>());
-        when(csvUtil.generateCSV(SAMPLE_TYPE,new ArrayList<>())).thenReturn(csvResponseGenerator("aspect"));
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/submodels/csvfile/aspect")
-                .param("type", SAMPLE_TYPE)
-                .contentType(MediaType.APPLICATION_JSON);
-        MockMvcBuilders.standaloneSetup(submodelCsvController)
-                .build()
-                .perform(requestBuilder)
-                .andExpect(MockMvcResultMatchers.status().isOk());
-        }
+		for (String submodel : SUBMODEL_LIST) {
+			when(submodelCsvService.findSubmodelCsv((String) any(), (String) any())).thenReturn(new ArrayList<>());
+			when(csvUtil.generateCSV(SAMPLE_TYPE, new ArrayList<>())).thenReturn(csvResponseGenerator(submodel));
+			
+			MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/submodels/csvfile/" + submodel)
+					.param("type", SAMPLE_TYPE)
+					.contentType(MediaType.APPLICATION_JSON);
+			
+			MockMvcBuilders.standaloneSetup(submodelCsvController).build()
+					.perform(requestBuilder)
+					.andExpect(MockMvcResultMatchers.status().isOk());
+		}
+	}
     
-    @Test
-    void testGetSubmodelCSVTemplateSuccess() throws Exception {
+	@Test
+	void testGetSubmodelCSVTemplateSuccess() throws Exception {
 
-        when(submodelCsvService.findSubmodelCsv((String) any(),(String) any())).thenReturn(new ArrayList<>());
-        when(csvUtil.generateCSV(TEMPLATE_TYPE,new ArrayList<>())).thenReturn(csvResponseGenerator("aspect"));
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/submodels/csvfile/aspect")
-                .param("type", TEMPLATE_TYPE)
-                .contentType(MediaType.APPLICATION_JSON);
-        MockMvcBuilders.standaloneSetup(submodelCsvController)
-                .build()
-                .perform(requestBuilder)
-                .andExpect(MockMvcResultMatchers.status().isOk());
-        }
-
-    @Test
-    void testGetSubmodelCSVTypeValidationError() throws Exception {
-
-        when(csvUtil.generateCSV("error",new ArrayList<>())).thenThrow(new ValidationException("Unknown CSV type: error for submodel: aspect"));
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/submodels/csvfile/aspect")
-                .param("type", "error")
-                .contentType(MediaType.APPLICATION_JSON);
-        MockMvcBuilders.standaloneSetup(submodelCsvController)
-                .build()
-                .perform(requestBuilder)
-                .andExpect(MockMvcResultMatchers.status().isOk());
-        }
-    
-    @Test
-    void testGetSubmodelCSVSubmodelNameValidationError() throws Exception {
-
-    	 when(submodelCsvService.findSubmodelCsv("Demo",SAMPLE_TYPE)).thenThrow(new ValidationException("demo submodel is not supported"));
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/submodels/csvfile/aspect")
-                .param("type", SAMPLE_TYPE)
-                .contentType(MediaType.APPLICATION_JSON);
-        MockMvcBuilders.standaloneSetup(submodelCsvController)
-                .build()
-                .perform(requestBuilder)
-                .andExpect(MockMvcResultMatchers.status().isOk());
-        }
-    
-    @Test
-    void testGetDownloadFileByProcessIdSuccess() throws Exception {
-
-    	String processId = "7e4ff341-0a9a-4247-890c-2600f74cc81b";
-    	String submodelName = "aspect";
-        when(submodelCsvService.findAllSubmodelCsvHistory(submodelName, processId)).thenReturn(new ArrayList<>());
-        when(csvUtil.generateCSV(submodelName,new ArrayList<>())).thenReturn(csvResponseGenerator(submodelName));
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/"+submodelName+"/download/"+processId+"/csv")
-                .contentType(MediaType.APPLICATION_JSON);
-        MockMvcBuilders.standaloneSetup(submodelCsvController)
-                .build()
-                .perform(requestBuilder)
-                .andExpect(MockMvcResultMatchers.status().isOk());
-        }
-    
-    @Test
-    void testGetDownloadFileByProcessIdFailure() throws Exception {
-
-    	String processId = "7e4ff341-0a9a-4247-890c-2600f74cc81b";
-    	String submodelName = "demo";
-        when(csvUtil.generateCSV(submodelName,new ArrayList<>())).thenThrow(new ValidationException("Unknown CSV type: error for submodel: aspect"));
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/"+submodelName+"/download/"+processId+"/csv")
-                .contentType(MediaType.APPLICATION_JSON);
-        MockMvcBuilders.standaloneSetup(submodelCsvController)
-                .build()
-                .perform(requestBuilder)
-                .andExpect(MockMvcResultMatchers.status().isOk());
-        }
-    
-    
-	private ResponseEntity<Resource> csvResponseGenerator(String submodelName) {
-		
-		InputStreamResource file = new InputStreamResource(CsvUtil.writeCsv(new ArrayList<>()));
-		ResponseEntity<Resource> response = ResponseEntity.ok()
-    			.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+submodelName)
-    			.contentType(MediaType.parseMediaType("application/csv"))
-    			.body(file);
-		return response;
+		for (String submodel : SUBMODEL_LIST) {
+			when(submodelCsvService.findSubmodelCsv((String) any(), (String) any())).thenReturn(new ArrayList<>());
+			when(csvUtil.generateCSV(TEMPLATE_TYPE, new ArrayList<>())).thenReturn(csvResponseGenerator(submodel));
+			
+			MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/submodels/csvfile/"+submodel)
+					.param("type", TEMPLATE_TYPE)
+					.contentType(MediaType.APPLICATION_JSON);
+			
+			MockMvcBuilders.standaloneSetup(submodelCsvController).build()
+					.perform(requestBuilder)
+					.andExpect(MockMvcResultMatchers.status().isOk());
+		}
 	}
 
+	@Test
+	void testGetSubmodelCSVTypeValidationError() throws Exception {
+
+			when(csvUtil.generateCSV("error", new ArrayList<>()))
+					.thenThrow(new ValidationException("Unknown CSV type: error for submodel: aspect"));
+			
+			MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/submodels/csvfile/aspect")
+					.param("type", "error")
+					.contentType(MediaType.APPLICATION_JSON);
+			
+			MockMvcBuilders.standaloneSetup(submodelCsvController).build()
+					.perform(requestBuilder)
+					.andExpect(MockMvcResultMatchers.status().isOk());
+	}
+
+	@Test
+	void testGetSubmodelCSVSubmodelNameValidationError() throws Exception {
+
+			when(csvUtil.generateCSV("error", new ArrayList<>()))
+			.thenThrow(new ValidationException("Demo submodel is not supported"));
+			
+			MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/submodels/csvfile/Demo")
+					.param("type", SAMPLE_TYPE)
+					.contentType(MediaType.APPLICATION_JSON);
+			
+			MockMvcBuilders.standaloneSetup(submodelCsvController).build()
+					.perform(requestBuilder)
+					.andExpect(MockMvcResultMatchers.status().isOk());
+	}
+
+	@Test
+	void testGetDownloadFileByProcessIdSuccess() throws Exception {
+
+		for (String submodelName : SUBMODEL_LIST) {
+			String processId = "7e4ff341-0a9a-4247-890c-2600f74cc81b";
+			when(submodelCsvService.findAllSubmodelCsvHistory(submodelName, processId)).thenReturn(new ArrayList<>());
+			when(csvUtil.generateCSV(submodelName, new ArrayList<>())).thenReturn(csvResponseGenerator(submodelName));
+			
+			MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+					.get("/" + submodelName + "/download/" + processId + "/csv")
+					.contentType(MediaType.APPLICATION_JSON);
+			
+			MockMvcBuilders.standaloneSetup(submodelCsvController).build()
+					.perform(requestBuilder)
+					.andExpect(MockMvcResultMatchers.status().isOk());
+		}
+	}
+
+	@Test
+	void testGetDownloadFileByProcessIdFailure() throws Exception {
+
+		String processId = "7e4ff341-0a9a-4247-890c-2600f74cc81b";
+		String submodelName = "demo";
+		when(csvUtil.generateCSV(submodelName, new ArrayList<>()))
+				.thenThrow(new ValidationException("Unknown CSV type: error for submodel: aspect"));
+		
+		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+				.get("/" + submodelName + "/download/" + processId + "/csv")
+				.contentType(MediaType.APPLICATION_JSON);
+		MockMvcBuilders.standaloneSetup(submodelCsvController).build()
+				.perform(requestBuilder)
+				.andExpect(MockMvcResultMatchers.status().isOk());
+	}
+
+	private ResponseEntity<Resource> csvResponseGenerator(String submodelName) {
+
+		InputStreamResource file = new InputStreamResource(CsvUtil.writeCsv(new ArrayList<>()));
+		ResponseEntity<Resource> response = ResponseEntity.ok()
+				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + submodelName)
+				.contentType(MediaType.parseMediaType("application/csv")).body(file);
+		return response;
+	}
 
 }

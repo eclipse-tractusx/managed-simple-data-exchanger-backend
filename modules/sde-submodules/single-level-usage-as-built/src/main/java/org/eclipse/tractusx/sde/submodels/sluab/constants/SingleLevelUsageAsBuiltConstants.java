@@ -1,5 +1,4 @@
 /********************************************************************************
- * Copyright (c) 2022 BMW GmbH
  * Copyright (c) 2022 T-Systems International GmbH
  * Copyright (c) 2022 Contributors to the Eclipse Foundation
  *
@@ -18,15 +17,30 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-package org.eclipse.tractusx.sde.common.constants;
+package org.eclipse.tractusx.sde.submodels.sluab.constants;
 
-public class CommonConstants {
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import lombok.Getter;
+
+@Getter
+@Component
+public class SingleLevelUsageAsBuiltConstants {
+
+	@Value(value = "${manufacturerId}")
+	public String manufacturerId;
 	
-    public static final String CSV_FILE_EXTENSION = ".csv";
-    public static final String SEPARATOR = ";";
-    
-    public static final String ASSET_PROP_ID = "asset:prop:id";
-    public static final String UPDATED_Y = "Y";
-    public static final String DELETED_Y = "Y";
-
+	@Value(value = "${edc.hostname}")
+	public String edcEndpoint;
+	
+	public static final String MANUFACTURER_PART_ID = "manufacturerPartId";
+	public static final String MANUFACTURER_ID = "manufacturerId";
+	public static final String PART_INSTANCE_ID = "partInstanceId";
+	public static final String CUSTOMER_PART_ID = "customerPartId";
+	public static final String HTTP = "HTTP";
+	public static final String HTTPS = "HTTPS";
+	public static final String ENDPOINT_PROTOCOL_VERSION = "0.0.1-SNAPSHOT";
+	public static final String PREFIX = "urn:uuid:";
+	public static final String DELETED_Y = "Y";
 }

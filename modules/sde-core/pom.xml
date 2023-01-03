@@ -157,7 +157,11 @@
 			<artifactId>part-site-information-as-planned</artifactId>
 			<version>0.0.1</version>
 		</dependency>
-		
+		<dependency>
+			<groupId>org.eclipse.tractusx</groupId>
+			<artifactId>single-level-usage-as-built</artifactId>
+			<version>0.0.1</version>
+		</dependency>
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>

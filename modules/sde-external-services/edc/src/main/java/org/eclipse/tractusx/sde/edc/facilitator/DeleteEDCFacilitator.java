@@ -1,0 +1,97 @@
+/********************************************************************************
+ * Copyright (c) 2022 T-Systems International GmbH
+ * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ ********************************************************************************/
+
+package org.eclipse.tractusx.sde.edc.facilitator;
+
+import org.eclipse.tractusx.sde.common.exception.ServiceException;
+import org.eclipse.tractusx.sde.edc.api.EDCFeignClientApi;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.stereotype.Service;
+
+import lombok.SneakyThrows;
+
+@Service
+public class DeleteEDCFacilitator {
+
+	@Value(value = "${edc.apiKeyHeader}")
+	private String apiKeyHeader;
+	@Value(value = "${edc.apiKey}")
+	private String apiKey;
+
+	private final EDCFeignClientApi eDCFeignClientApi;
+
+	public DeleteEDCFacilitator(EDCFeignClientApi eDCFeignClientApi) {
+		this.eDCFeignClientApi = eDCFeignClientApi;
+	}
+
+	public HttpHeaders getEDCHeaders() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(apiKeyHeader, apiKey);
+		return headers;
+	}
+
+	@SneakyThrows
+	public void deleteContractDefination(String contractDefinationId) {
+		try {
+			eDCFeignClientApi.deleteContractDefinition(contractDefinationId, getEDCHeaders());
+		} catch (Exception e) {
+			parseExceptionMessage(e);
+		}
+
+	}
+
+	@SneakyThrows
+	public void deleteAccessPolicy(String accessPolicyId) {
+		try {
+			eDCFeignClientApi.deletePolicyDefinitions(accessPolicyId, getEDCHeaders());
+		} catch (Exception e) {
+			parseExceptionMessage(e);
+		}
+
+	}
+
+	@SneakyThrows
+	public void deleteUsagePolicy(String usagePolicyId) {
+		try {
+			eDCFeignClientApi.deletePolicyDefinitions(usagePolicyId, getEDCHeaders());
+		} catch (Exception e) {
+			parseExceptionMessage(e);
+		}
+
+	}
+
+	@SneakyThrows
+	public void deleteAssets(String assetId) {
+		try {
+			eDCFeignClientApi.deleteAssets(assetId, getEDCHeaders());
+		} catch (Exception e) {
+			throw new ServiceException("Exception in EDC delete request process:" + e.getMessage());
+		}
+
+	}
+
+	private void parseExceptionMessage(Exception e) throws ServiceException {
+
+		if (!e.toString().contains("FeignException$NotFound") || !e.toString().contains("404 Not Found")) {
+			throw new ServiceException("Exception in EDC delete request process:" + e.getMessage());
+		}
+	}
+}

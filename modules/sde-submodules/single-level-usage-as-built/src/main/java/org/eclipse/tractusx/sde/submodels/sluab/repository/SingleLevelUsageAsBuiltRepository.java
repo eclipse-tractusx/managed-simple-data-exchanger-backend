@@ -1,5 +1,4 @@
 /********************************************************************************
- * Copyright (c) 2022 BMW GmbH
  * Copyright (c) 2022 T-Systems International GmbH
  * Copyright (c) 2022 Contributors to the Eclipse Foundation
  *
@@ -18,15 +17,23 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-package org.eclipse.tractusx.sde.common.constants;
+package org.eclipse.tractusx.sde.submodels.sluab.repository;
 
-public class CommonConstants {
+import java.util.List;
+
+import org.eclipse.tractusx.sde.submodels.sluab.entity.SingleLevelUsageAsBuiltEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+public interface SingleLevelUsageAsBuiltRepository extends JpaRepository<SingleLevelUsageAsBuiltEntity, String> {
+
+	List<SingleLevelUsageAsBuiltEntity> findByParentCatenaXId(String parentCatenaXId);
 	
-    public static final String CSV_FILE_EXTENSION = ".csv";
-    public static final String SEPARATOR = ";";
-    
-    public static final String ASSET_PROP_ID = "asset:prop:id";
-    public static final String UPDATED_Y = "Y";
-    public static final String DELETED_Y = "Y";
+	SingleLevelUsageAsBuiltEntity findByChildCatenaXId(String uuid);
+
+	List<SingleLevelUsageAsBuiltEntity> findByProcessId(String processId);
+
+	@Query("select count(ar) from SingleLevelUsageAsBuiltEntity ar where ar.updated = ?1 and ar.processId = ?2")
+	long countByUpdatedAndProcessId(String updated, String processId);
 
 }

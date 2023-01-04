@@ -1,5 +1,4 @@
 /********************************************************************************
- * Copyright (c) 2022 BMW GmbH
  * Copyright (c) 2022 T-Systems International GmbH
  * Copyright (c) 2022 Contributors to the Eclipse Foundation
  *
@@ -18,15 +17,20 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-package org.eclipse.tractusx.sde.common.constants;
+package org.eclipse.tractusx.sde.submodels.sluab.model;
 
-public class CommonConstants {
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor
+@Builder
+public class ParentParts {
 	
-    public static final String CSV_FILE_EXTENSION = ".csv";
-    public static final String SEPARATOR = ";";
-    
-    public static final String ASSET_PROP_ID = "asset:prop:id";
-    public static final String UPDATED_Y = "Y";
-    public static final String DELETED_Y = "Y";
+	private String parentCatenaXId;
+	private Quantity quantity;
+    private String createdOn;
+    private String lastModifiedOn;
 
 }

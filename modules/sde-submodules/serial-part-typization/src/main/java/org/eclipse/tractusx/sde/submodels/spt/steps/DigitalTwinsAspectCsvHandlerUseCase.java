@@ -53,9 +53,9 @@ import lombok.SneakyThrows;
 @Service
 public class DigitalTwinsAspectCsvHandlerUseCase extends Step {
 
-	private static final String PART_INSTANCE_ID = "PartInstanceID";
-	private static final String MANUFACTURER_PART_ID = "ManufacturerPartID";
-	private static final String MANUFACTURER_ID = "ManufacturerID";
+	private static final String PART_INSTANCE_ID = "partInstanceId";
+	private static final String MANUFACTURER_PART_ID = "manufacturerPartId";
+	private static final String MANUFACTURER_ID = "manufacturerId";
 	private static final String HTTP = "HTTP";
 	private static final String HTTPS = "HTTPS";
 	private static final String SEMANTIC_ID = "urn:bamm:io.catenax.serial_part_typization:1.1.0#SerialPartTypization";

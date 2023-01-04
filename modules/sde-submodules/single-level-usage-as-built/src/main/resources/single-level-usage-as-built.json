@@ -19,8 +19,7 @@
 			"manufacturer_part_id",
 			"quantity_number",
 			"measurement_unit",
-			"created_on",
-			"last_modified_on"
+			"created_on"
 		],
 		"dependentRequired": {
 			"parent_optional_identifier_key": [

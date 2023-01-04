@@ -78,7 +78,7 @@ public class CsvParse extends Step {
 	private void setFieldValue(ObjectNode rowjObject, String ele, JsonObject jObject, String fieldValue) {
 		
 		if (isNumberTypeField(jObject, fieldValue))
-			rowjObject.put(ele, Integer.parseInt(fieldValue));
+			rowjObject.put(ele, Double.parseDouble(fieldValue));
 		else if (isDateFormatField(jObject)) {
 
 			if (fieldValue.isBlank())

@@ -1,11 +1,4 @@
-package org.eclipse.tractusx.sde.submodels.sluab.entity;
-
-import java.io.Serializable;
-
-import javax.persistence.Column;
 /********************************************************************************
- * Copyright (c) 2022 Critical TechWorks GmbH
- * Copyright (c) 2022 BMW GmbH
  * Copyright (c) 2022 T-Systems International GmbH
  * Copyright (c) 2022 Contributors to the Eclipse Foundation
  *
@@ -24,6 +17,11 @@ import javax.persistence.Column;
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
+package org.eclipse.tractusx.sde.submodels.sluab.entity;
+
+import java.io.Serializable;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;

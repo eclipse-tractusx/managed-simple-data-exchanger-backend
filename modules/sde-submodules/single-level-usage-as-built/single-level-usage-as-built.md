@@ -36,7 +36,7 @@ Please find below links for schema details:
 | quantity_number		 			| Yes                           	|    11	 	|
 | measurement_unit 					| Yes                           	|    12	 	|
 | created_on	 						| Yes                          	|    13	 	|
-| last_modified_on	 				| Yes                           	|    14	 	|
+| last_modified_on	 				| No                           	|    14	 	|
 
 
 #### [CSV Sample File Link]

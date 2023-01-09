@@ -75,7 +75,7 @@ public class EDCSingleLevelUsageAsBuiltHandlerUseCase extends Step {
 		try {
 
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
-					getSubmodelDescriptionOfModel(), shellId, subModelId, input.getParentUuid());
+					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getParentUuid());
 			if (!edcGateway.assetExistsLookup(assetEntryRequest.getAsset().getProperties().get(CommonConstants.ASSET_PROP_ID))) {
 
 				edcProcessingforAspectRelationship(assetEntryRequest, input);

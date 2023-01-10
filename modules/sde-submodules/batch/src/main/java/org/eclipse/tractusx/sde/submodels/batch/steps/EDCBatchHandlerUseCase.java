@@ -40,7 +40,7 @@ import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyRequestFacto
 import org.eclipse.tractusx.sde.edc.gateways.external.EDCGateway;
 import org.eclipse.tractusx.sde.submodels.batch.entity.BatchEntity;
 import org.eclipse.tractusx.sde.submodels.batch.model.Batch;
-import org.eclipse.tractusx.sde.submodels.batch.service.BatchDeleteService;
+import org.eclipse.tractusx.sde.submodels.batch.service.BatchService;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -56,11 +56,11 @@ public class EDCBatchHandlerUseCase extends Step {
 	private final PolicyRequestFactory policyFactory;
 	private final ContractDefinitionRequestFactory contractFactory;
 	private final PolicyConstraintBuilderService policyConstraintBuilderService;
-	private final BatchDeleteService batchDeleteService;
+	private final BatchService batchDeleteService;
 
 	public EDCBatchHandlerUseCase(EDCGateway edcGateway, AssetEntryRequestFactory assetFactory,
 			PolicyRequestFactory policyFactory, ContractDefinitionRequestFactory contractFactory,
-			PolicyConstraintBuilderService policyConstraintBuilderService, BatchDeleteService batchDeleteService) {
+			PolicyConstraintBuilderService policyConstraintBuilderService, BatchService batchDeleteService) {
 		this.assetFactory = assetFactory;
 		this.edcGateway = edcGateway;
 		this.policyFactory = policyFactory;

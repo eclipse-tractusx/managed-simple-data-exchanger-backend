@@ -20,6 +20,36 @@
 
 package org.eclipse.tractusx.sde.core.discovery;
 
+import java.io.InputStream;
+
+import javax.annotation.PostConstruct;
+
+import org.eclipse.tractusx.sde.common.mapper.UsecaseMapper;
+import org.eclipse.tractusx.sde.core.registry.UsecaseRegistration;
+import org.springframework.stereotype.Component;
+
+import lombok.AllArgsConstructor;
+
+@Component
+@AllArgsConstructor
 public class UseCaseDiscovery {
+
+	private final UsecaseRegistration usecaseRegistration;
+
+	private final UsecaseMapper usecaseMapper;
+
+	@PostConstruct
+	private void loadUsecase() {
+
+		String resource = "use-case.json";
+		// this is the path within the jar file
+		InputStream input = this.getClass().getResourceAsStream("/resources/" + resource);
+		if (input == null) {
+			// this is how we load file within editor (eg eclipse)
+			input = this.getClass().getClassLoader().getResourceAsStream(resource);
+		}
+
+		usecaseRegistration.register(usecaseMapper.jsonfileToJsonPojo(input));
+	}
 
 }

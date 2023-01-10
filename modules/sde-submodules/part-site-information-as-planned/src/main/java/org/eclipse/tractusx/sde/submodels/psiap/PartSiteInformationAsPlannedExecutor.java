@@ -117,4 +117,5 @@ public class PartSiteInformationAsPlannedExecutor extends SubmodelExecutor {
 		return partSiteInformationAsPlannedService.getUpdatedData(processId);
 	}
 
+
 }

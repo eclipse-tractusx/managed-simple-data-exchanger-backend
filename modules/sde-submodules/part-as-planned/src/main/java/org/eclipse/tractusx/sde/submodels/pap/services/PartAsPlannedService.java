@@ -68,7 +68,8 @@ public class PartAsPlannedService {
 
 		deleteEDCAsset(partAsPlannedEntity);
 
-		deleteDigitalTwinsFacilitator.deleteDigitalTwinsById(partAsPlannedEntity.getShellId());
+		deleteDigitalTwinsFacilitator.deleteDigitalTwinsById(partAsPlannedEntity.getShellId(),
+				partAsPlannedEntity.getSubModelId());
 
 		saveAspectWithDeleted(partAsPlannedEntity);
 	}

@@ -31,6 +31,8 @@ public class BatchSubmodel extends SubmodelExtension {
 		submodel = loadSubmodel(input);
 
 		submodel.setExecutor(batchWorkflow);
+		
+		submodel.addProperties("tableName", "batch");
 	}
 
 	@Override

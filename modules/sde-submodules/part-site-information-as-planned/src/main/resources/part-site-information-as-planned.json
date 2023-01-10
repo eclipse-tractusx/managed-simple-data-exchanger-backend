@@ -7,7 +7,8 @@
 	"version": "1.0.0",
 	"semantic_id": "urn:bamm:io.catenax.part_site_information_as_planned:1.0.0#PartSiteInformationAsPlanned",
 	"title": "Part Site Information AsPlanned",
-	"description": "BoM As-Planned - Submodel PartSiteInformationAsPlanned",
+	"shortDescription": "BoM As-Planned - Submodel PartSiteInformationAsPlanned",
+	"description": "The aspect provides site related information for a given as planned item (i.e. a part type or part instance that is uniquely identifiable within Catena-X via its Catena-X ID). A site is a delimited geographical area where a legal entity does business. In the 'as planned' lifecycle context all potentially related sites are listed including all sites where e.g. production of this part (type) is planned.",
 	"items": {
 		"type": "object",
 		"required": [
@@ -27,6 +28,7 @@
 				],
 				"pattern": "^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
 				"title": "UUID",
+				"description": "The Catena-X ID of the given item (i.e. a part type or part instance), valid for the Catena-X dataspace.",
 				"examples": [
 					"urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf34dfa4c2"
 				]
@@ -37,6 +39,7 @@
 				],
 				"minLength": 1,
 				"title": "Manufacturer Part ID",
+				"description": "The ID of the type/catalog part (of which the part site information as planned are instances of) from the manufacturer.",
 				"examples": [
 					"37754B7-76"
 				]
@@ -47,6 +50,7 @@
 				],
 				"minLength": 1,
 				"title": "catenaX Site Id",
+				"description": "The identifier of the site according to Catena-X BPDM. The catenaXsiteId must be a valid Catena-X BPN. The BPN is a unique, unchangeable identifier for Business Partners / company locations from foundation to closure, regardless of the different business relationships / structures between or within the Business Partners or company locations.",
 				"examples": [
 					"BPNS1234567890ZZ"
 				]
@@ -57,6 +61,7 @@
 				],
 				"minLength": 1,
 				"title": "Name At Manufacturer",
+				"description": "Name of the part as assigned by the manufacturer",
 				"examples": [
 					"Sensor"
 				]
@@ -69,6 +74,7 @@
 					"production"
 				],
 				"title": "Function",
+				"description": "The function of the site in relation to the part (i.e. the activity within the value chain of the part that is performed at the site)",
 				"examples": [
 					"production"
 				]
@@ -80,6 +86,7 @@
 				],
 				"format": "date-time",
 				"title": "Function Valid From",
+				"description": "Timestamp, from when the site has the specified function for the given part",
 				"examples": [
 					"2022-11-28T09:39:44.673Z"
 				]
@@ -91,6 +98,7 @@
 				],
 				"format": "date-time",
 				"title": "Function Valid Until",
+				"description": "Timestamp, until when the site has the specified function for the given part",
 				"examples": [
 					"2022-11-28T09:39:44.673Z"
 				]

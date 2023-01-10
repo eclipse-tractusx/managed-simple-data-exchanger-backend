@@ -7,7 +7,8 @@
 	"version": "1.1.0",
 	"semantic_id": "urn:bamm:io.catenax.assembly_part_relationship:1.1.0#AssemblyPartRelationship",
 	"title": "Assembly Part Relationship",
-	"description": "Assembly Part Relationship",
+	"shortDescription": "BoM AsBuilt - Submodel AssemblyPartRelationship",
+	"description": "The aspect provides the child parts (one structural level down) which the given object assembles.",
 	"items": {
 		"type": "object",
 		"required": [
@@ -43,6 +44,7 @@
 					"string"
 				],
 				"title": "Parent UUID",
+				"description": "The Catena-X ID of the parent object, into which the given child object is assembled in.",
 				"minLength": 1,
 				"pattern": "^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
 				"examples": [
@@ -54,6 +56,7 @@
 					"string"
 				],
 				"title": "Parent Part Instance ID",
+				"description": "The Parent Part Instance ID of the parent object Part Instance ID, to identify parent object in digital twins.",
 				"minLength": 1,
 				"examples": [
 					"ParentNO-64534234"
@@ -64,6 +67,7 @@
 					"string"
 				],
 				"title": "Parent Manufacturer Part ID",
+				"description": "The Parent Manufacturer Part ID of the parent object Manufacturer Part ID, to identify parent object in digital twins.",
 				"minLength": 1,
 				"examples": [
 					"PART-2345546234"
@@ -80,6 +84,7 @@
 					""
 				],
 				"title": "Parent Optional Identifier Key",
+				"description": "The Parent Optional Identifier Key of the parent object Optional Identifier Key, to identify parent object in digital twins.",
 				"examples": [
 					"VAN"
 				]
@@ -90,6 +95,7 @@
 					"null"
 				],
 				"title": "Parent Optional Identifier Value",
+				"description": "The Parent Optional Identifier Value of the parent object Optional Identifier Value, to identify parent object in digital twins.",
 				"examples": [
 					"Value"
 				]
@@ -99,6 +105,7 @@
 					"string"
 				],
 				"title": "UUID URN",
+				"description": "The Catena-X ID of the child object which is assembled into the given parent part.",
 				"minLength": 1,
 				"pattern": "^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
 				"examples": [
@@ -111,6 +118,7 @@
 				],
 				"minLength": 1,
 				"title": "Part Instance ID",
+				"description": "The serial number of the serialized part from the manufacturer. We assume here that the customer does not have or create its own serial number for a part, but just used the manufacturer's serial number.",
 				"examples": [
 					"NO-234523423"
 				]
@@ -121,6 +129,7 @@
 				],
 				"minLength": 1,
 				"title": "Manufacturer Part ID",
+				"description": "The ID of the type/catalog part (of which the serialized part is an instance of) from the manufacturer.",
 				"examples": [
 					"37754B7-76"
 				]
@@ -136,6 +145,7 @@
 					""
 				],
 				"title": "Optional Identifier Key",
+				"description": "The Optional Identifier Key is used for create optional identifier for shell in digital twins. If you ha Identifier Key provided.",
 				"examples": [
 					"VAN"
 				]
@@ -146,6 +156,7 @@
 					"null"
 				],
 				"title": "Optional Identifier Value",
+				"description": "The Optional Identifier Value is used for create optional identifier for shell in digital twins. If you ha Identifier Key provided.",
 				"examples": [
 					"Value"
 				]
@@ -156,6 +167,7 @@
 				],
 				"minLength": 1,
 				"title": "Lifecycle Context",
+				"description": "The lifecycle context in which the child part was assembled into the parent part.",
 				"examples": [
 					"lifecycle"
 				]
@@ -166,6 +178,7 @@
 				],
 				"minLength": 1,
 				"title": "Quantity Number",
+				"description": "The number of objects related to the measurement unit",
 				"multipleOf": 0.01,
 				"examples": [
 					123
@@ -176,6 +189,7 @@
 					"string"
 				],
 				"title": "Measurement Unit Lexical Value",
+				"description": "Unit of Measurement for the quantity of serialized objects",
 				"minLength": 1,
 				"examples": [
 					"measurement"
@@ -187,6 +201,7 @@
 					"null"
 				],
 				"title": "Datatype URI",
+				"description": "",
 				"examples": [
 					"http://xyz.com"
 				]
@@ -198,6 +213,7 @@
 				],
 				"format": "date-time",
 				"title": "Assembled On",
+				"description": "Timestamp when the assembly relationship between parent part and child part was Assembled.",
 				"examples": [
 					"2022-02-04T14:48:54"
 				]

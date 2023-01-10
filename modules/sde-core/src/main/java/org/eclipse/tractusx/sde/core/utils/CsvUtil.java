@@ -18,7 +18,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 public class CsvUtil {
 
@@ -41,7 +43,7 @@ public class CsvUtil {
 				try {
 					csvPrinter.printRecord(list);
 				} catch (IOException e1) {
-					e1.printStackTrace();
+					log.error(e1.getMessage());
 				}
 			});
 

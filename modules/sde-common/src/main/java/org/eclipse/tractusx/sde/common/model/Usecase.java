@@ -20,15 +20,7 @@
 
 package org.eclipse.tractusx.sde.common.model;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import org.eclipse.tractusx.sde.common.submodel.executor.SubmodelExecutor;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.google.gson.JsonObject;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,32 +28,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(Include.NON_NULL)
-public class Submodel {
+public class Usecase {
 
 	private String id;
 
-	private String name;
+	private String title;
 
-	private String version;
+	private String description;
 
-	private String semanticId;
+	private List<Submodel> submodules;
 
-	private String usecases;
-
-	private JsonObject schema;
-
-	private Map<String, String> properties;
-
-	private SubmodelExecutor executor;
-
-	public void addProperties(String key, String value) {
-		if (properties == null)
-			properties = new LinkedHashMap<>();
-		properties.put(key, value);
-	}
 }

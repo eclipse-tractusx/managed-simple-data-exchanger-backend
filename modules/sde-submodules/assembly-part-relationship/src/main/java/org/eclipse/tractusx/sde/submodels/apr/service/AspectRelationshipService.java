@@ -70,7 +70,7 @@ public class AspectRelationshipService {
 
 		deleteEDCAsset(aspectRelationshipEntity);
 
-		deleteDigitalTwinsFacilitator.deleteDigitalTwinsById(aspectRelationshipEntity.getShellId());
+		deleteDigitalTwinsFacilitator.deleteDigitalTwinsById(aspectRelationshipEntity.getShellId(),aspectRelationshipEntity.getSubModelId());
 
 		saveAspectRelationshipWithDeleted(aspectRelationshipEntity);
 	}

@@ -61,6 +61,8 @@ public class BatchEntity implements Serializable {
     private String optionalIdentifierValue;
     @Column(name = "shell_id")
     private String shellId;
+    @Column(name = "sub_model_id")
+    private String subModelId;
     @Column(name = "asset_id")
     private String assetId;
     @Column(name = "usage_policy_id")

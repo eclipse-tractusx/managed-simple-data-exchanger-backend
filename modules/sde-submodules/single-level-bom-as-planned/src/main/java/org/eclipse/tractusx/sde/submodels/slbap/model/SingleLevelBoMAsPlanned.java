@@ -86,6 +86,9 @@ public class SingleLevelBoMAsPlanned {
 	@JsonProperty(value = "manufacturer_part_id")
 	private String childManufacturerPartId;
 
+	@JsonProperty(value = "customer_part_id")
+	private String customerPartId;
+	
 	@JsonProperty(value = "quantity_number")
 	private String quantityNumber;
 	

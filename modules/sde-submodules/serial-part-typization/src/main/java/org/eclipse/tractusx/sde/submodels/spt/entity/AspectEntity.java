@@ -62,6 +62,8 @@ public class AspectEntity implements Serializable {
     private String optionalIdentifierValue;
     @Column(name = "shell_id")
     private String shellId;
+    @Column(name = "sub_model_id")
+    private String subModelId;
     @Column(name = "contract_defination_id")
     private String contractDefinationId;
     @Column(name = "usage_policy_id")

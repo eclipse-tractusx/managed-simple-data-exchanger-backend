@@ -50,6 +50,8 @@ public class AssemblyPartRelationship extends SubmodelExtension {
 
 		submodel = loadSubmodel(input);
 		submodel.setExecutor(assemblyPartRelationshipWorkflow);
+		
+		submodel.addProperties("tableName", "aspect_relationship");
 	}
 
 	@Override

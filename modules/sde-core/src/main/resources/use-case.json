@@ -1,0 +1,48 @@
+[
+	{
+		"id": "traceability",
+		"title": "Traceability",
+		"description": "Traceability",
+		"submodules": [
+			"aspect",
+			"aspectrelationship",
+			"batch",
+			"partasplanned",
+			"singlelevelbomasplanned",
+			"singlelevelusageasbuilt",
+			"partsiteinformationasplanned"
+		]
+	},
+	{
+		"id": "circulareconomy",
+		"title": "Circular Economy",
+		"description": "Circular Economy",
+		"submodules": [
+			"aspect",
+			"aspectrelationship",
+			"batch"
+		]
+	},
+	{
+		"id": "quality",
+		"title": "Quality",
+		"description": "Quality",
+		"submodules": [
+			"aspect",
+			"aspectrelationship",
+			"batch",
+			"singlelevelusageasbuilt"
+		]
+	},
+	{
+		"id": "sustainability",
+		"title": "Sustainability",
+		"description": "Sustainability",
+		"submodules": [
+			"partasplanned",
+			"partsiteinformationasplanned",
+			"singlelevelbomasplanned",
+			"singlelevelusageasplanned"
+		]
+	}
+]

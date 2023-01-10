@@ -50,6 +50,8 @@ private Submodel submodel = null;
 		submodel = loadSubmodel(input);
 
 		submodel.setExecutor(partSiteInformationAsPlannedExecutor);
+		
+		submodel.addProperties("tableName", "Part_site_information_as_planned");
 	}
 	
 	@Override

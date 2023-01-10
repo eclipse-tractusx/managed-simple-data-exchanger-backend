@@ -30,6 +30,8 @@ public class SerialPartTypization extends SubmodelExtension {
 
 		submodel = loadSubmodel(input);
 		submodel.setExecutor(serialPartTypizationWorkflow);
+		
+		submodel.addProperties("tableName", "aspect");
 	}
 
 	@Override

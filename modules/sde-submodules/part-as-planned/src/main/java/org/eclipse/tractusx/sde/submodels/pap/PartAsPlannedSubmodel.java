@@ -50,6 +50,8 @@ public class PartAsPlannedSubmodel extends SubmodelExtension {
 		submodel = loadSubmodel(input);
 
 		submodel.setExecutor(partAsPlannedExecutor);
+		
+		submodel.addProperties("tableName", "part_as_planned");
 	}
 	
 	@Override

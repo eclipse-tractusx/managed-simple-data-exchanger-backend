@@ -36,29 +36,36 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import lombok.extern.slf4j.Slf4j;
+
 @ControllerAdvice
+@Slf4j
 public class GlobalDefaultExceptionHandler extends ResponseEntityExceptionHandler {
 
 	public static final String DEFAULT_ERROR_VIEW = "error";
 
 	@ExceptionHandler(NoDataFoundException.class)
 	public ResponseEntity<String> handleNodataFoundException(NoDataFoundException ex, WebRequest request) {
+		log.error("NoDataFoundException "+ex.getMessage());
 		return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
 	}
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<String> handlePSQLException(Exception ex, WebRequest request) {
+		log.error("Internal server error "+ex.getMessage());
 		return new ResponseEntity<>("Internal Server error", HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@ExceptionHandler(ValidationException.class)
 	public ResponseEntity<String> handleValidationException(ValidationException ex, WebRequest request) {
+		log.error("ValidationException "+ex.getMessage());
 		return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(ConstraintViolationException.class)
 	public ResponseEntity<String> handleConstraintValidationException(ConstraintViolationException ex,
 			WebRequest request) {
+		log.error("ConstraintViolationException "+ex.getMessage());
 		return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
 	}
 
@@ -72,12 +79,13 @@ public class GlobalDefaultExceptionHandler extends ResponseEntityExceptionHandle
 			String errorMessage = error.getDefaultMessage();
 			errors.put(fieldName, errorMessage);
 		});
-
+		log.error("MethodArgumentNotValidException "+errors);
 		return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(AccessDeniedException.class)
 	public final ResponseEntity<String> handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {
+		log.error("MethodArgumentNotValidException- You don't have access to this page or the page doesn't exist. Please contact your admin");
 		return new ResponseEntity<>(
 				"You don't have access to this page or the page doesn't exist. Please contact your admin",
 				HttpStatus.FORBIDDEN);

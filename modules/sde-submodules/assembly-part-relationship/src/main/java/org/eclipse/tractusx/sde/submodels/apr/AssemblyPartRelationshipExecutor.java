@@ -93,7 +93,7 @@ public class AssemblyPartRelationshipExecutor extends SubmodelExecutor {
 
 		jsonRecordValidate.init(getSubmodelSchema());
 		jsonRecordValidate.run(rowIndex, jsonObject);
-		
+
 		digitalTwinsAspectRelationShipCsvHandlerUseCase.init(getSubmodelSchema());
 		digitalTwinsAspectRelationShipCsvHandlerUseCase.run(aspectRelationship);
 

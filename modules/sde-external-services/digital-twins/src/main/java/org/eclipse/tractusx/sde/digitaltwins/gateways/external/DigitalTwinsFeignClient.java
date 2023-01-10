@@ -30,9 +30,10 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 @FeignClient(value = "DigitalTwinsFeignClient", url = "${digital-twins.hostname}")
 public interface DigitalTwinsFeignClient {
-	
-	  @DeleteMapping(path = "/lookup/shells/{id}")
-	  ResponseEntity<Object> deleteDigitalTwinsById(@PathVariable("id") String shellId,
-              @RequestHeader Map<String, String> requestHeader);
+
+	@DeleteMapping(path = "/registry/shell-descriptors/{aasIdentifier}/submodel-descriptors/{submodelIdentifier}")
+	ResponseEntity<Object> deleteDigitalTwinsById(@PathVariable("aasIdentifier") String shellId,
+			@PathVariable("submodelIdentifier") String submodelIdentifier,
+			@RequestHeader Map<String, String> requestHeader);
 
 }

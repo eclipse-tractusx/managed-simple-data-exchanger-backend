@@ -20,6 +20,7 @@
 
 package org.eclipse.tractusx.sde.edc.facilitator;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,7 @@ import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.edc.api.ContractApi;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
 import org.eclipse.tractusx.sde.edc.enums.NegotiationState;
+import org.eclipse.tractusx.sde.edc.enums.Type;
 import org.eclipse.tractusx.sde.edc.mapper.ContractMapper;
 import org.eclipse.tractusx.sde.edc.model.contractnegotiation.AcknowledgementId;
 import org.eclipse.tractusx.sde.edc.model.contractnegotiation.ContractAgreementDto;
@@ -47,53 +49,68 @@ import lombok.SneakyThrows;
 @RequiredArgsConstructor
 public class ContractNegotiateManagement extends AbstractEDCStepsHelper {
 
-    private final ContractApi contractApi;
-    private final ContractMapper contractMapper;
+	private final ContractApi contractApi;
+	private final ContractMapper contractMapper;
 
-    @SneakyThrows
-    public String negotiateContract(String offerId, String provider, String assetId, List<ConstraintRequest> constraintRequests, Map<String, String> extensibleProperty) {
+	@SneakyThrows
+	public String negotiateContract(String offerId, String provider, String assetId,
+			List<ConstraintRequest> constraintRequests, Map<String, String> extensibleProperty) {
 
-        ContractNegotiations contractNegotiations = contractMapper.prepareContractNegotiations(offerId,
-                assetId, provider, constraintRequests);
-        contractNegotiations.getOffer().getPolicy().setExtensibleProperties(extensibleProperty);
+		ContractNegotiations contractNegotiations = contractMapper.prepareContractNegotiations(offerId, assetId,
+				provider, constraintRequests);
+		contractNegotiations.getOffer().getPolicy().setExtensibleProperties(extensibleProperty);
 
-        AcknowledgementId acknowledgementId = contractApi.contractnegotiations(contractNegotiations,
-                getAuthHeader());
-        return acknowledgementId.getId();
-    }
+		AcknowledgementId acknowledgementId = contractApi.contractnegotiations(consumerHost, contractNegotiations,
+				getAuthHeader());
+		return acknowledgementId.getId();
+	}
 
-    @SneakyThrows
-    public ContractNegotiationsResponse checkContractNegotiationStatus(String negotiateContractId) {
+	@SneakyThrows
+	public ContractNegotiationsResponse checkContractNegotiationStatus(String negotiateContractId) {
 
-        return contractApi.checkContractNegotiationsStatus(negotiateContractId, getAuthHeader());
+		return contractApi.checkContractNegotiationsStatus(consumerHost, negotiateContractId, getAuthHeader());
 
-    }
+	}
 
-    @SneakyThrows
-    public List<ContractNegotiationDto> getAllContractNegotiations(Integer limit, Integer offset) {
+	@SneakyThrows
+	public List<ContractNegotiationDto> getAllContractNegotiations(String type, Integer limit, Integer offset) {
+		if (StringUtils.isBlank(type) || Type.PROVIDER.name().equals(type))
+			return contractApi.getAllContractNegotiations(providerHost, limit, offset, getProviderAuthHeader());
+		else
+			return contractApi.getAllContractNegotiations(new URI(consumerHost.toString() + "/data"), limit, offset,
+					getAuthHeader());
 
-        return contractApi.getAllContractNegotiations(limit, offset, getAuthHeader());
+	}
 
-    }
+	@SneakyThrows
+	public ContractAgreementResponse getAgreementBasedOnNegotiationId(String type, String negotiationId) {
+		ContractAgreementResponse agreementResponse = null;
+		ContractAgreementDto agreement = null;
 
-    @SneakyThrows
-    public ContractAgreementResponse getAgreementBasedOnNegotiationId(String negotiationId) {
-        ContractAgreementResponse agreementResponse = null;
-        ContractAgreementDto agreement = contractApi.getAgreementBasedOnNegotiationId(negotiationId, getAuthHeader());
-        if(agreement != null) {
-            List<UsagePolicies> policies = new ArrayList<>();
-            agreement.getPolicy().getPermissions().stream().forEach(permission -> {
-                policies.addAll(UtilityFunctions.getUsagePolicies(permission.getConstraints().stream()));
-            });
-            UtilityFunctions.addCustomUsagePolicy(agreement.getPolicy().getExtensibleProperties(), policies);
-            ContractAgreementInfo agreementInfo = ContractAgreementInfo.builder().contractEndDate(agreement.getContractEndDate())
-                    .contractSigningDate(agreement.getContractSigningDate()).contractStartDate(agreement.getContractStartDate())
-                    .assetId(agreement.getAssetId()).policies(policies).build();
-            agreementResponse = ContractAgreementResponse.builder().contractAgreementId(agreement.getId()).organizationName(StringUtils.EMPTY)
-                    .title(StringUtils.EMPTY).negotiationId(negotiationId).state(NegotiationState.CONFIRMED.name())
-                    .contractAgreementInfo(agreementInfo).build();
+		if (StringUtils.isBlank(type) || Type.PROVIDER.name().equals(type)) {
+			agreement = contractApi.getAgreementBasedOnNegotiationId(providerHost, negotiationId,
+					getProviderAuthHeader());
+		} else {
+			agreement = contractApi.getAgreementBasedOnNegotiationId(new URI(consumerHost.toString() + "/data"),
+					negotiationId, getAuthHeader());
+		}
 
-        }
-        return agreementResponse;
-    }
+		if (agreement != null) {
+			List<UsagePolicies> policies = new ArrayList<>();
+			agreement.getPolicy().getPermissions().stream().forEach(permission -> {
+				policies.addAll(UtilityFunctions.getUsagePolicies(permission.getConstraints().stream()));
+			});
+			UtilityFunctions.addCustomUsagePolicy(agreement.getPolicy().getExtensibleProperties(), policies);
+			ContractAgreementInfo agreementInfo = ContractAgreementInfo.builder()
+					.contractEndDate(agreement.getContractEndDate())
+					.contractSigningDate(agreement.getContractSigningDate())
+					.contractStartDate(agreement.getContractStartDate()).assetId(agreement.getAssetId())
+					.policies(policies).build();
+			agreementResponse = ContractAgreementResponse.builder().contractAgreementId(agreement.getId())
+					.organizationName(StringUtils.EMPTY).title(StringUtils.EMPTY).negotiationId(negotiationId)
+					.state(NegotiationState.CONFIRMED.name()).contractAgreementInfo(agreementInfo).build();
+
+		}
+		return agreementResponse;
+	}
 }

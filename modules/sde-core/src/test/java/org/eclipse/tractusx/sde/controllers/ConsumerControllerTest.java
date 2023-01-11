@@ -27,6 +27,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
@@ -76,14 +77,14 @@ class ConsumerControllerTest {
 
     @Test
     void testQueryOnDataOffersStatus() throws Exception {
-        when(consumerControlPanelService.getAllContractOffers(anyInt(), anyInt())).thenReturn(new ArrayList<>());
+        when(consumerControlPanelService.getAllContractOffers(any(), anyInt(), anyInt())).thenReturn(new HashMap<>());
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/contract-offers");
         MockMvcBuilders.standaloneSetup(consumerController)
                 .build()
                 .perform(requestBuilder)
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.content().string("[]"));
+                .andExpect(MockMvcResultMatchers.content().string("{}"));
     }
 
 

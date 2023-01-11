@@ -20,35 +20,35 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.core.controller.failurelog.entity;
+package org.eclipse.tractusx.sde.core.failurelog;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
-@Data
-@Entity
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Table(name = "failure_log")
-public class FailureLogEntity implements Serializable {
+import org.eclipse.tractusx.sde.core.failurelog.entity.FailureLogEntity;
+import org.eclipse.tractusx.sde.core.failurelog.repository.FailureLogRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-    @Id
-    @Column(name = "uuid")
-    private String uuid;
-    @Column(name = "process_id")
-    private String processId;
-    @Column(name = "log")
-    private String log;
-    @Column(name = "date_time")
-    private LocalDateTime dateTime;
+import lombok.extern.slf4j.Slf4j;
+
+@Service
+@Slf4j
+public class FailureLogs {
+
+	@Autowired
+	private FailureLogRepository repository;
+
+	public void saveLog(String processId, String error) {
+
+		FailureLogEntity entity = FailureLogEntity.builder()
+				.uuid(UUID.randomUUID().toString())
+				.processId(processId)
+				.log(error)
+				.dateTime(LocalDateTime.now())
+				.build();
+
+		log.error("Error in process {}, {}", entity.getProcessId(), entity.getLog());
+		repository.save(entity);
+	}
 }

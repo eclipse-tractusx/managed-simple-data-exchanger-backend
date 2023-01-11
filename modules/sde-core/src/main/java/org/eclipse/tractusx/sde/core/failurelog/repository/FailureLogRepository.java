@@ -20,10 +20,10 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.core.controller.failurelog.repository;
+package org.eclipse.tractusx.sde.core.failurelog.repository;
 
 
-import org.eclipse.tractusx.sde.core.controller.failurelog.entity.FailureLogEntity;
+import org.eclipse.tractusx.sde.core.failurelog.entity.FailureLogEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface FailureLogRepository extends JpaRepository<FailureLogEntity, String> {

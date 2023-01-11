@@ -20,6 +20,8 @@
 
 package org.eclipse.tractusx.sde.edc.model.contractnegotiation;
 
+import org.eclipse.tractusx.sde.edc.enums.Type;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,6 +36,7 @@ public class ContractAgreementResponse {
     private String counterPartyAddress;
     private String state;
     private String title;
+    private Type type;
     private String organizationName;
     private String contractAgreementId;
     private ContractAgreementInfo contractAgreementInfo;

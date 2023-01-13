@@ -122,19 +122,19 @@ maven/mavencentral/org.junit.jupiter/junit-jupiter/5.8.2, EPL-2.0, approved, cle
 maven/mavencentral/org.junit.platform/junit-platform-commons/1.8.2, EPL-2.0, approved, #1288
 maven/mavencentral/org.junit.platform/junit-platform-engine/1.8.2, EPL-2.0, approved, #1289
 maven/mavencentral/org.keycloak/keycloak-adapter-core/20.0.2, Apache-2.0, approved, clearlydefined
-maven/mavencentral/org.keycloak/keycloak-adapter-spi/20.0.2, , restricted, clearlydefined
-maven/mavencentral/org.keycloak/keycloak-admin-client/20.0.2, , restricted, clearlydefined
-maven/mavencentral/org.keycloak/keycloak-authz-client/20.0.2, , restricted, clearlydefined
+maven/mavencentral/org.keycloak/keycloak-adapter-spi/20.0.2, Apache-2.0, approved, #6338
+maven/mavencentral/org.keycloak/keycloak-admin-client/20.0.2, Apache-2.0, approved, #6341
+maven/mavencentral/org.keycloak/keycloak-authz-client/20.0.2, Apache-2.0, approved, #6339
 maven/mavencentral/org.keycloak/keycloak-common/20.0.2, Apache-2.0, approved, clearlydefined
-maven/mavencentral/org.keycloak/keycloak-core/20.0.2, , restricted, clearlydefined
-maven/mavencentral/org.keycloak/keycloak-crypto-default/20.0.2, , restricted, clearlydefined
+maven/mavencentral/org.keycloak/keycloak-core/20.0.2, Apache-2.0, approved, #6337
+maven/mavencentral/org.keycloak/keycloak-crypto-default/20.0.2, Apache-2.0, approved, #6340
 maven/mavencentral/org.keycloak/keycloak-server-spi-private/20.0.2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.keycloak/keycloak-server-spi/20.0.2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.keycloak/keycloak-spring-boot-2-adapter/20.0.2, Apache-2.0, approved, clearlydefined
-maven/mavencentral/org.keycloak/keycloak-spring-boot-adapter-core/20.0.2, , restricted, clearlydefined
+maven/mavencentral/org.keycloak/keycloak-spring-boot-adapter-core/20.0.2, Apache-2.0, approved, #6342
 maven/mavencentral/org.keycloak/keycloak-spring-boot-starter/20.0.2, Apache-2.0, approved, clearlydefined
-maven/mavencentral/org.keycloak/keycloak-spring-security-adapter/20.0.2, , restricted, clearlydefined
-maven/mavencentral/org.keycloak/spring-boot-container-bundle/20.0.2, , restricted, clearlydefined
+maven/mavencentral/org.keycloak/keycloak-spring-security-adapter/20.0.2, Apache-2.0, approved, #6344
+maven/mavencentral/org.keycloak/spring-boot-container-bundle/20.0.2, Apache-2.0, approved, #6343
 maven/mavencentral/org.mapstruct/mapstruct/1.4.2.Final, Apache-2.0, approved, #2483
 maven/mavencentral/org.mockito/mockito-core/4.5.1, MIT AND (Apache-2.0 AND MIT) AND Apache-2.0, approved, #2360
 maven/mavencentral/org.mockito/mockito-junit-jupiter/4.5.1, MIT, approved, clearlydefined

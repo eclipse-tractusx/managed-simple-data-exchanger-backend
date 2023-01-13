@@ -20,7 +20,6 @@
 
 package org.eclipse.tractusx.sde.edc.facilitator;
 
-import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,7 +28,7 @@ import org.springframework.beans.factory.annotation.Value;
 public class AbstractEDCStepsHelper {
 
 	@Value("${edc.consumer.hostname}")
-	protected URI consumerHost;
+	protected String consumerHost;
 
 	@Value("${edc.consumer.apikeyheader}")
 	private String edcApiKeyHeader;
@@ -38,7 +37,7 @@ public class AbstractEDCStepsHelper {
 	private String edcApiKeyValue;
 
 	@Value("${edc.hostname}")
-	protected URI providerHost;
+	protected String providerHost;
 
 	@Value("${edc.apiKeyHeader}")
 	private String edcProviderApiKeyHeader;

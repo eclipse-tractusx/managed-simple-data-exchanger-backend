@@ -78,7 +78,7 @@ class ConsumerControllerTest {
     @Test
     void testQueryOnDataOffersStatus() throws Exception {
         when(consumerControlPanelService.getAllContractOffers(any(), anyInt(), anyInt())).thenReturn(new HashMap<>());
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/contract-offers");
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/contract-agreements");
         MockMvcBuilders.standaloneSetup(consumerController)
                 .build()
                 .perform(requestBuilder)

@@ -20,6 +20,8 @@
 
 package org.eclipse.tractusx.sde.edc.facilitator;
 
+import java.net.URI;
+
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.edc.api.EDCFeignClientApi;
 import org.springframework.stereotype.Service;
@@ -38,7 +40,7 @@ public class DeleteEDCFacilitator extends AbstractEDCStepsHelper {
 	@SneakyThrows
 	public void deleteContractDefination(String contractDefinationId) {
 		try {
-			eDCFeignClientApi.deleteContractDefinition(providerHost, contractDefinationId, getProviderAuthHeader());
+			eDCFeignClientApi.deleteContractDefinition(new URI(providerHost), contractDefinationId, getProviderAuthHeader());
 		} catch (Exception e) {
 			parseExceptionMessage(e);
 		}
@@ -48,7 +50,7 @@ public class DeleteEDCFacilitator extends AbstractEDCStepsHelper {
 	@SneakyThrows
 	public void deleteAccessPolicy(String accessPolicyId) {
 		try {
-			eDCFeignClientApi.deletePolicyDefinitions(providerHost, accessPolicyId, getProviderAuthHeader());
+			eDCFeignClientApi.deletePolicyDefinitions(new URI(providerHost), accessPolicyId, getProviderAuthHeader());
 		} catch (Exception e) {
 			parseExceptionMessage(e);
 		}
@@ -58,7 +60,7 @@ public class DeleteEDCFacilitator extends AbstractEDCStepsHelper {
 	@SneakyThrows
 	public void deleteUsagePolicy(String usagePolicyId) {
 		try {
-			eDCFeignClientApi.deletePolicyDefinitions(providerHost, usagePolicyId, getProviderAuthHeader());
+			eDCFeignClientApi.deletePolicyDefinitions(new URI(providerHost), usagePolicyId, getProviderAuthHeader());
 		} catch (Exception e) {
 			parseExceptionMessage(e);
 		}
@@ -68,7 +70,7 @@ public class DeleteEDCFacilitator extends AbstractEDCStepsHelper {
 	@SneakyThrows
 	public void deleteAssets(String assetId) {
 		try {
-			eDCFeignClientApi.deleteAssets(providerHost, assetId, getProviderAuthHeader());
+			eDCFeignClientApi.deleteAssets(new URI(providerHost), assetId, getProviderAuthHeader());
 		} catch (Exception e) {
 			throw new ServiceException("Exception in EDC delete request process:" + e.getMessage());
 		}

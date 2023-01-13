@@ -60,24 +60,25 @@ public class ContractNegotiateManagement extends AbstractEDCStepsHelper {
 				provider, constraintRequests);
 		contractNegotiations.getOffer().getPolicy().setExtensibleProperties(extensibleProperty);
 
-		AcknowledgementId acknowledgementId = contractApi.contractnegotiations(consumerHost, contractNegotiations,
-				getAuthHeader());
+		AcknowledgementId acknowledgementId = contractApi.contractnegotiations(new URI(consumerHost),
+				contractNegotiations, getAuthHeader());
 		return acknowledgementId.getId();
 	}
 
 	@SneakyThrows
 	public ContractNegotiationsResponse checkContractNegotiationStatus(String negotiateContractId) {
 
-		return contractApi.checkContractNegotiationsStatus(consumerHost, negotiateContractId, getAuthHeader());
+		return contractApi.checkContractNegotiationsStatus(new URI(consumerHost), negotiateContractId, getAuthHeader());
 
 	}
 
 	@SneakyThrows
 	public List<ContractNegotiationDto> getAllContractNegotiations(String type, Integer limit, Integer offset) {
 		if (UtilityFunctions.checkTypeOfConnector(type))
-			return contractApi.getAllContractNegotiations(providerHost, limit, offset, getProviderAuthHeader());
+			return contractApi.getAllContractNegotiations(new URI(providerHost), limit, offset,
+					getProviderAuthHeader());
 		else
-			return contractApi.getAllContractNegotiations(new URI(consumerHost.toString() + "/data"), limit, offset,
+			return contractApi.getAllContractNegotiations(new URI(consumerHost + "/data"), limit, offset,
 					getAuthHeader());
 
 	}
@@ -88,11 +89,11 @@ public class ContractNegotiateManagement extends AbstractEDCStepsHelper {
 		ContractAgreementDto agreement = null;
 
 		if (UtilityFunctions.checkTypeOfConnector(type)) {
-			agreement = contractApi.getAgreementBasedOnNegotiationId(providerHost, negotiationId,
+			agreement = contractApi.getAgreementBasedOnNegotiationId(new URI(providerHost), negotiationId,
 					getProviderAuthHeader());
 		} else {
-			agreement = contractApi.getAgreementBasedOnNegotiationId(new URI(consumerHost.toString() + "/data"),
-					negotiationId, getAuthHeader());
+			agreement = contractApi.getAgreementBasedOnNegotiationId(new URI(consumerHost + "/data"), negotiationId,
+					getAuthHeader());
 		}
 
 		if (agreement != null) {

@@ -39,7 +39,6 @@ import org.eclipse.tractusx.sde.edc.entities.database.ContractNegotiationInfoEnt
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyConstraintBuilderService;
 import org.eclipse.tractusx.sde.edc.enums.NegotiationState;
-import org.eclipse.tractusx.sde.edc.enums.Type;
 import org.eclipse.tractusx.sde.edc.facilitator.AbstractEDCStepsHelper;
 import org.eclipse.tractusx.sde.edc.facilitator.ContractNegotiateManagement;
 import org.eclipse.tractusx.sde.edc.gateways.database.ContractNegotiationInfoRepository;
@@ -82,12 +81,6 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 	private ConnectorDiscoveryApi connectorDiscoveryApi;
 
 	private KeycloakUtil keycloakUtil;
-
-	@Value(value = "${edc.hostname}")
-	private String edcProviderHost;
-
-	@Value(value = "${edc.consumer.hostname}")
-	private String edcConsumerHost;
 
 	@Autowired
 	public ConsumerControlPanelService(@Value("${edc.consumer.datauri}") String edcDataUri,
@@ -242,9 +235,9 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 		});
 		Map<String, Object> res = new HashMap<>();
 		if (UtilityFunctions.checkTypeOfConnector(type))
-			res.put("connector", edcProviderHost);
+			res.put("connector", providerHost);
 		else
-			res.put("connector", edcConsumerHost);
+			res.put("connector", consumerHost);
 		
 		res.put("contracts", contractAgreementResponses);
 		return res;

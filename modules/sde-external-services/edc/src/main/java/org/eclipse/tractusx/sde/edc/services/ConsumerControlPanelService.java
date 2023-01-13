@@ -241,7 +241,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 			}
 		});
 		Map<String, Object> res = new HashMap<>();
-		if (StringUtils.isBlank(type) || Type.PROVIDER.name().equals(type))
+		if (UtilityFunctions.checkTypeOfConnector(type))
 			res.put("connector", edcProviderHost);
 		else
 			res.put("connector", edcConsumerHost);

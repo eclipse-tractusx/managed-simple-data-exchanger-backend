@@ -74,7 +74,7 @@ public class ContractNegotiateManagement extends AbstractEDCStepsHelper {
 
 	@SneakyThrows
 	public List<ContractNegotiationDto> getAllContractNegotiations(String type, Integer limit, Integer offset) {
-		if (StringUtils.isBlank(type) || Type.PROVIDER.name().equals(type))
+		if (UtilityFunctions.checkTypeOfConnector(type))
 			return contractApi.getAllContractNegotiations(providerHost, limit, offset, getProviderAuthHeader());
 		else
 			return contractApi.getAllContractNegotiations(new URI(consumerHost.toString() + "/data"), limit, offset,
@@ -87,7 +87,7 @@ public class ContractNegotiateManagement extends AbstractEDCStepsHelper {
 		ContractAgreementResponse agreementResponse = null;
 		ContractAgreementDto agreement = null;
 
-		if (StringUtils.isBlank(type) || Type.PROVIDER.name().equals(type)) {
+		if (UtilityFunctions.checkTypeOfConnector(type)) {
 			agreement = contractApi.getAgreementBasedOnNegotiationId(providerHost, negotiationId,
 					getProviderAuthHeader());
 		} else {

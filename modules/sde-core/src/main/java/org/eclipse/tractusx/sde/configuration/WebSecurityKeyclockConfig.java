@@ -45,6 +45,7 @@ import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper
 import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 
 @KeycloakConfiguration
 @EnableGlobalMethodSecurity(jsr250Enabled = true, prePostEnabled = true)
@@ -63,7 +64,8 @@ public class WebSecurityKeyclockConfig extends KeycloakWebSecurityConfigurerAdap
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 				.addFilterAfter(customAuthFilter(), BasicAuthenticationFilter.class).authorizeRequests().anyRequest()
 				.authenticated().and().headers().xssProtection().and()
-				.contentSecurityPolicy("default-src 'self'; script-src 'self' 'unsafe-inline'");
+				.contentSecurityPolicy("default-src 'self'; script-src 'self' 'unsafe-inline'")
+				.and().httpStrictTransportSecurity().requestMatcher(AnyRequestMatcher.INSTANCE);
 
 	}
 

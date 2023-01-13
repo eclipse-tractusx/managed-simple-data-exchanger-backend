@@ -25,7 +25,6 @@
 		<org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
 		<org.mapstruct.processor.version>1.3.1.Final</org.mapstruct.processor.version>
 		<spring-security.version>5.7.5</spring-security.version>
-		<spring-web.version>6.0.3</spring-web.version>
 	</properties>
 
 	<modules>
@@ -101,6 +100,11 @@
 			<artifactId>spring-boot-devtools</artifactId>
 			<scope>runtime</scope>
 			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<version>5.3.25</version>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>

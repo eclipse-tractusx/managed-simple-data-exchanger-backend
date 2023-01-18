@@ -67,7 +67,6 @@ You can find the standard credentials as well as further database configurations
 ---
 | API | Description |  Request body | Response body |
 | ------ | ------ | ------ | ------ |
-
 | **GET:- localhost:8080/api/submodels** |This API is used to get all submodels list which is implemented/supported by SDE | Refer Api Doc | Refer Api Doc |
 | **GET:- localhost:8080/api/submodels/{submodelName}** |This API is used to get the schema data of specific model | Refer Api Doc | Refer Api Doc |
 | **POST:- localhost:8080/api/{submodel}/upload** |This API is used to uploading data From CSV file for particular selected submodel | Refer Api Doc |4ca03d5f-9e37-4c12-a8b8-6583b81892c8 |
@@ -101,7 +100,7 @@ You can find the standard credentials as well as further database configurations
 | **POST:- localhost:8080/api/subscribe-data-offers** |This API is used to subscribe data offers | Refer Api Doc |Refer Api Doc|
 | **GET:- localhost:8080/api/contract-offers** |This API is used to get all contract offers | Refer Api Doc |Refer Api Doc|
 | **GET:- localhost:8080/api/legal-entities** |This API is used to fetch legal entities (list of company's) for Process| Refer Api Doc |Refer Api Doc|
-| **POST:- localhost:8080/api/connectors-discovery** |This API is used to fetch  connectores information | Refer Api Doc |Refer Api Doc|
+| **POST:- localhost:8080/api/connectors-discovery** |This API is used to fetch connectors information | Refer Api Doc |Refer Api Doc|
 
 
 ---

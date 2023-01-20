@@ -30,7 +30,6 @@ import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.edc.api.ContractApi;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
 import org.eclipse.tractusx.sde.edc.enums.NegotiationState;
-import org.eclipse.tractusx.sde.edc.enums.Type;
 import org.eclipse.tractusx.sde.edc.mapper.ContractMapper;
 import org.eclipse.tractusx.sde.edc.model.contractnegotiation.AcknowledgementId;
 import org.eclipse.tractusx.sde.edc.model.contractnegotiation.ContractAgreementDto;
@@ -78,8 +77,7 @@ public class ContractNegotiateManagement extends AbstractEDCStepsHelper {
 			return contractApi.getAllContractNegotiations(new URI(providerHost), limit, offset,
 					getProviderAuthHeader());
 		else
-			return contractApi.getAllContractNegotiations(new URI(consumerHost + "/data"), limit, offset,
-					getAuthHeader());
+			return contractApi.getAllContractNegotiations(new URI(consumerHost), limit, offset, getAuthHeader());
 
 	}
 
@@ -92,7 +90,7 @@ public class ContractNegotiateManagement extends AbstractEDCStepsHelper {
 			agreement = contractApi.getAgreementBasedOnNegotiationId(new URI(providerHost), negotiationId,
 					getProviderAuthHeader());
 		} else {
-			agreement = contractApi.getAgreementBasedOnNegotiationId(new URI(consumerHost + "/data"), negotiationId,
+			agreement = contractApi.getAgreementBasedOnNegotiationId(new URI(consumerHost), negotiationId,
 					getAuthHeader());
 		}
 

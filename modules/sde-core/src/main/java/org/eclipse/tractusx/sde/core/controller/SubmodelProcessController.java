@@ -26,8 +26,6 @@ import static org.springframework.http.ResponseEntity.ok;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.validation.Valid;
-
 import org.eclipse.tractusx.sde.common.entities.SubmodelFileRequest;
 import org.eclipse.tractusx.sde.common.entities.SubmodelJsonRequest;
 import org.eclipse.tractusx.sde.common.validators.UsagePolicyValidation;
@@ -49,6 +47,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController

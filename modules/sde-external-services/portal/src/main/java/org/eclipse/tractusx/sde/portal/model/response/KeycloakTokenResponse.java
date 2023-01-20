@@ -1,3 +1,4 @@
+
 /********************************************************************************
  * Copyright (c) 2022 T-Systems International GmbH
  * Copyright (c) 2022 Contributors to the Eclipse Foundation
@@ -17,28 +18,21 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-
-package org.eclipse.tractusx.sde.core.processreport.entity;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import jakarta.persistence.AttributeConverter;
-import jakarta.persistence.Converter;
+package org.eclipse.tractusx.sde.portal.model.response;
 
 
-@Converter
-public class ListToStringConverter implements AttributeConverter<List<String>, String> {
-	
-    @Override
-    public String convertToDatabaseColumn(List<String> attribute) {
-        return attribute == null ? null : String.join(",",attribute);
-    }
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 
-    @Override
-    public List<String> convertToEntityAttribute(String dbData) {
-        return dbData == null ? Collections.emptyList() : Arrays.asList(dbData.split(","));
-    }
-    
+@Data
+public class KeycloakTokenResponse {
+
+	@JsonProperty("access_token")
+	private String accessToken;
+	@JsonProperty("expires_in")
+	private Integer expiresIn;
+	@JsonProperty("token_type")
+	private String tokenType;
+	private String scope;
+
 }

@@ -20,13 +20,12 @@
 
 package org.eclipse.tractusx.sde.common.validators;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
-
 import org.eclipse.tractusx.sde.common.entities.SubmodelFileRequest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import lombok.SneakyThrows;
 
 public class UploadFileUsagePolicyValidationService implements ConstraintValidator<UsagePolicyValidation, String> {

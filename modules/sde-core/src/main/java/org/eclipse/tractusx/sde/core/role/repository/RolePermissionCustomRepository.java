@@ -22,14 +22,14 @@ package org.eclipse.tractusx.sde.core.role.repository;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-
 import org.eclipse.tractusx.sde.core.role.entity.RolePermissionEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 
 @Component
 public class RolePermissionCustomRepository {

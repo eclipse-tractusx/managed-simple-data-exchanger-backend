@@ -27,8 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.validation.Valid;
-
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
 import org.eclipse.tractusx.sde.edc.services.ConsumerControlPanelService;
 import org.eclipse.tractusx.sde.portal.model.ConnectorInfo;
@@ -42,6 +40,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

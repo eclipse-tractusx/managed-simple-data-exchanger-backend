@@ -50,7 +50,7 @@ public interface ContractApi {
 			@PathVariable("contractnegotiationsId") String contractnegotiationsId,
 			@RequestHeader Map<String, String> requestHeader);
 
-	@GetMapping(path = "/contractnegotiations")
+	@GetMapping(path = "/data/contractnegotiations")
 	List<ContractNegotiationDto> getAllContractNegotiations(URI url, @RequestParam("limit") Integer limit,
 			@RequestParam("offset") Integer offset, @RequestHeader Map<String, String> requestHeader);
 

@@ -10,7 +10,6 @@ import org.eclipse.tractusx.sde.common.model.Submodel;
 import org.eclipse.tractusx.sde.core.processreport.repository.SubmodelCustomHistoryGenerator;
 import org.springframework.stereotype.Service;
 
-import com.google.common.base.Joiner;
 import com.google.gson.JsonObject;
 
 import lombok.AllArgsConstructor;
@@ -58,7 +57,7 @@ public class SubmodelCsvService {
 
 		List<String> headerName = createCSVColumnHeader(schemaObject);
 		records.add(headerName);
-		String coloumns = Joiner.on(",").join(headerName);
+		String coloumns = String.join(processId, headerName);
 
 		String tableName = schemaObj.getProperties().get("tableName");
 		if (tableName == null)

@@ -57,7 +57,7 @@ public class SubmodelCsvService {
 
 		List<String> headerName = createCSVColumnHeader(schemaObject);
 		records.add(headerName);
-		String coloumns = String.join(processId, headerName);
+		String coloumns = String.join(",", headerName);
 
 		String tableName = schemaObj.getProperties().get("tableName");
 		if (tableName == null)

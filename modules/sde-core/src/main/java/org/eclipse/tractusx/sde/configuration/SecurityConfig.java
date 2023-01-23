@@ -48,6 +48,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import lombok.SneakyThrows;
+
 @SuppressWarnings("deprecation")
 @Configuration
 @EnableWebSecurity
@@ -93,9 +95,10 @@ public class SecurityConfig {
 		return jwt -> new JwtAuthenticationToken(jwt, authoritiesConverter.convert(jwt));
 	}
 
+	@SneakyThrows
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http, Jwt2AuthenticationConverter authenticationConverter,
-			ServerProperties serverProperties) throws Exception {
+			ServerProperties serverProperties) {
 
 		// Enable OAuth2 with custom authorities mapping
 		http.oauth2ResourceServer().jwt().jwtAuthenticationConverter(authenticationConverter);

@@ -21,6 +21,7 @@
 package org.eclipse.tractusx.sde.edc.services;
 
 import java.io.File;
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,6 +64,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -238,7 +240,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 			res.put("connector", providerHost);
 		else
 			res.put("connector", consumerHost);
-		
+
 		res.put("contracts", contractAgreementResponses);
 		return res;
 	}
@@ -259,6 +261,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 		return result;
 	}
 
+	@SneakyThrows
 	public List<ConnectorInfo> fetchConnectorInfo(List<String> bpns) {
 		String token = keycloakUtil.getKeycloakToken();
 		return connectorDiscoveryApi.fetchConnectorInfo(bpns, "Bearer " + token);

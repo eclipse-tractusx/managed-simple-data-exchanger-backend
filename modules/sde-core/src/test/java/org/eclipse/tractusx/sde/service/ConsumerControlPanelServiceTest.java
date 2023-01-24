@@ -62,6 +62,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.SneakyThrows;
+
 @ContextConfiguration(classes = { ConsumerControlPanelService.class, String.class })
 @ExtendWith(SpringExtension.class)
 class ConsumerControlPanelServiceTest {
@@ -178,10 +180,11 @@ class ConsumerControlPanelServiceTest {
 //    }
 
 	@Test
+	@SneakyThrows
 	void testFetchConnectorInfo() {
 		List<ConnectorInfo> connectorInfo = List
 				.of(ConnectorInfo.builder().bpn("Bpns").connectorEndpoint(List.of("http://localhost:8080")).build());
-		when(connectorDiscoveryApi.fetchConnectorInfo(List.of("Bpns"), "Bearer ABC123")).thenReturn(connectorInfo);
+		when(connectorDiscoveryApi.fetchConnectorInfo( List.of("Bpns"), "Bearer ABC123")).thenReturn(connectorInfo);
 		when(keycloakUtil.getKeycloakToken()).thenReturn("ABC123");
 		assertEquals(connectorInfo, consumerControlPanelService.fetchConnectorInfo(List.of("Bpns")));
 		verify(keycloakUtil).getKeycloakToken();

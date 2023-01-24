@@ -2,12 +2,12 @@ package org.eclipse.tractusx.sde.submodels.batch;
 
 import java.io.InputStream;
 
-import javax.annotation.PostConstruct;
-
 import org.eclipse.tractusx.sde.common.extensions.SubmodelExtension;
 import org.eclipse.tractusx.sde.common.model.Submodel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import jakarta.annotation.PostConstruct;
 
 @Component
 public class BatchSubmodel extends SubmodelExtension {

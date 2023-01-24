@@ -145,7 +145,7 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends Step {
 		List<Endpoint> endpoints = new ArrayList<>();
 		endpoints.add(Endpoint.builder().endpointInterface(HTTP)
 				.protocolInformation(ProtocolInformation.builder()
-						.endpointAddress(String.format(String.format("%s%s/%s-%s%s", edcEndpoint.replace("data", ""),
+						.endpointAddress(String.format(String.format("%s%s/%s-%s%s", edcEndpoint,
 								manufacturerId, aspect.getShellId(), identification,
 								"/submodel?content=value&extent=WithBLOBValue")))
 						.endpointProtocol(HTTPS).endpointProtocolVersion(ENDPOINT_PROTOCOL_VERSION).build())

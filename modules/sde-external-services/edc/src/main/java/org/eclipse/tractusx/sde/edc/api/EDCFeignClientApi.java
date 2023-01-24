@@ -20,7 +20,6 @@
 
 package org.eclipse.tractusx.sde.edc.api;
 
-import java.net.URI;
 import java.util.Map;
 
 import org.springframework.cloud.openfeign.FeignClient;
@@ -29,19 +28,19 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-@FeignClient(value = "EDCFeignClientApi", url = "placeholder")
+@FeignClient(value = "EDCFeignClientApi", url = "${edc.hostname}")
 public interface EDCFeignClientApi {
 
-	@DeleteMapping(path = "/contractdefinitions/{id}")
-	ResponseEntity<Object> deleteContractDefinition(URI url, @PathVariable("id") String contractdefinitionsId,
+	@DeleteMapping(path = "/data/contractdefinitions/{id}")
+	ResponseEntity<Object> deleteContractDefinition( @PathVariable("id") String contractdefinitionsId,
 			@RequestHeader Map<String, String> requestHeader);
 
-	@DeleteMapping(path = "/policydefinitions/{id}")
-	ResponseEntity<Object> deletePolicyDefinitions(URI url, @PathVariable("id") String policydefinitionsId,
+	@DeleteMapping(path = "/data/policydefinitions/{id}")
+	ResponseEntity<Object> deletePolicyDefinitions( @PathVariable("id") String policydefinitionsId,
 			@RequestHeader Map<String, String> requestHeader);
 
-	@DeleteMapping(path = "/assets/{id}")
-	ResponseEntity<Object> deleteAssets(URI url, @PathVariable("id") String assetsId,
+	@DeleteMapping(path = "/data/assets/{id}")
+	ResponseEntity<Object> deleteAssets( @PathVariable("id") String assetsId,
 			@RequestHeader Map<String, String> requestHeader);
 
 }

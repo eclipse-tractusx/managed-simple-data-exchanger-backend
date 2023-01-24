@@ -22,11 +22,11 @@ package org.eclipse.tractusx.sde.common.validators;
 
 import java.util.List;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
-
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.springframework.stereotype.Service;
+
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 @Service
 public class UsagePolicyValidationService implements ConstraintValidator<UsagePolicyValidation, List<UsagePolicies>> {

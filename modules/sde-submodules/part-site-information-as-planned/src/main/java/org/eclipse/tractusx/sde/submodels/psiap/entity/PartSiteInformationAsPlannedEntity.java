@@ -61,6 +61,9 @@ public class PartSiteInformationAsPlannedEntity implements Serializable {
 	    @Column(name = "shell_id")
 	    private String shellId;
 	    
+	    @Column(name = "sub_model_id")
+	    private String subModelId;
+	    
 	    @Column(name = "contract_defination_id")
 	    private String contractDefinationId;
 	    

@@ -25,12 +25,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
 import org.eclipse.tractusx.sde.common.exception.ValidationException;
 import org.eclipse.tractusx.sde.common.mapper.SubmodelMapper;
 import org.eclipse.tractusx.sde.common.model.Submodel;
 import org.eclipse.tractusx.sde.core.registry.SubmodelRegistration;
+import org.eclipse.tractusx.sde.core.registry.UsecaseRegistration;
 import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
@@ -41,19 +43,39 @@ public class SubmodelService {
 
 	private final SubmodelRegistration submodelRegistration;
 
+	private final UsecaseRegistration usecaseRegistry;
+
 	private final SubmodelMapper submodelMapper;
 
-	public List<Map<String, String>> findAllSubmodels() {
+	public List<Map<String, String>> findAllSubmodels(List<String> usecases) {
+
+		Set<String> neededSubmodelList = usecaseRegistry.neededSubmodelList(usecases);
 
 		List<Map<String, String>> ls = new ArrayList<>();
 
 		submodelRegistration.getModels().forEach(obj -> {
-			Map<String, String> sbBuild = new LinkedHashMap<>();
-			sbBuild.put("id", obj.getId());
-			sbBuild.put("name", obj.getName());
-			sbBuild.put("version", obj.getVersion());
-			sbBuild.put("semanticId", obj.getSemanticId());
-			ls.add(sbBuild);
+			if (neededSubmodelList.contains(obj.getId()) || usecases == null || usecases.isEmpty()) {
+				Map<String, String> sbBuild = new LinkedHashMap<>();
+				sbBuild.put("id", obj.getId());
+				sbBuild.put("name", obj.getName());
+				sbBuild.put("version", obj.getVersion());
+				sbBuild.put("semanticId", obj.getSemanticId());
+				ls.add(sbBuild);
+			}
+		});
+		return ls;
+	}
+
+	public List<Map<Object, Object>> getAllSubmodelswithDetails(List<String> usecases) {
+
+		Set<String> neededSubmodelList = usecaseRegistry.neededSubmodelList(usecases);
+
+		List<Map<Object, Object>> ls = new ArrayList<>();
+
+		submodelRegistration.getModels().forEach(obj -> {
+			if (neededSubmodelList.contains(obj.getId()) || usecases == null || usecases.isEmpty()) {
+				ls.add(submodelMapper.jsonPojoToMap(obj.getSchema()));
+			}
 		});
 		return ls;
 	}
@@ -70,7 +92,8 @@ public class SubmodelService {
 	}
 
 	public Submodel findSubmodelByNameAsSubmdelObject(String submodelName) {
-		return readValue(submodelName).orElseThrow(() -> new ValidationException(submodelName+" submodel is not supported"));
+		return readValue(submodelName)
+				.orElseThrow(() -> new ValidationException(submodelName + " submodel is not supported"));
 	}
 
 }

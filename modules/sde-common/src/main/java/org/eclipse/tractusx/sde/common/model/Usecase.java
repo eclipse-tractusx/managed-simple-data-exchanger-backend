@@ -18,5 +18,27 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-ALTER TABLE process_report ADD type_of_access varchar NULL;
-ALTER TABLE process_report ADD bpn_numbers TEXT NULL;
+package org.eclipse.tractusx.sde.common.model;
+
+import java.util.List;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class Usecase {
+
+	private String id;
+
+	private String title;
+
+	private String description;
+
+	private List<Submodel> submodules;
+
+}

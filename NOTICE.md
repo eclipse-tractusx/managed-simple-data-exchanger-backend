@@ -1,4 +1,4 @@
-# Notices for Eclipse Tractus-X
+## Notices for Eclipse Tractus-X
 
 This content is produced and maintained by the Eclipse Tractus-X project.
 

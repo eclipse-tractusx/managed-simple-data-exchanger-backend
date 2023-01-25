@@ -23,10 +23,12 @@ package org.eclipse.tractusx.sde.core.controller;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.tractusx.sde.core.registry.UsecaseRegistration;
 import org.eclipse.tractusx.sde.core.service.SubmodelService;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -38,14 +40,28 @@ public class SubmodelController {
 
 	private final SubmodelService submodelService;
 
+	private final UsecaseRegistration usecaseRegistry;
+
 	@GetMapping("/submodels")
-	public List<Map<String, String>> getAllSubmodels() {
-		return submodelService.findAllSubmodels();
+	public List<Map<String, String>> getAllSubmodels(
+			@RequestParam(name = "usecases", required = false) List<String> selectedUsecase) {
+		return submodelService.findAllSubmodels(selectedUsecase == null ? List.of() : selectedUsecase);
+	}
+
+	@GetMapping("/submodels/schema-details")
+	public List<Map<Object, Object>> getAllSubmodelswithDetails(
+			@RequestParam(name = "usecases", required = false) List<String> selectedUsecase) {
+		return submodelService.getAllSubmodelswithDetails(selectedUsecase == null ? List.of() : selectedUsecase);
 	}
 
 	@GetMapping("/submodels/{submodelName}")
 	public Map<Object, Object> getSubmodelByName(@PathVariable String submodelName) {
 		return submodelService.findSubmodelByName(submodelName);
+	}
+
+	@GetMapping("/usecases")
+	public List<Map<Object, Object>> getAllUsecases() {
+		return usecaseRegistry.getUsecases();
 	}
 
 }

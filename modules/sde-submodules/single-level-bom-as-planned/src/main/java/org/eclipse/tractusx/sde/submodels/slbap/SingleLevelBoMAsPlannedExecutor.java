@@ -121,5 +121,4 @@ public class SingleLevelBoMAsPlannedExecutor extends SubmodelExecutor {
 		return singleLevelBoMAsPlannedService.getUpdatedData(processId);
 	}
 
-
 }

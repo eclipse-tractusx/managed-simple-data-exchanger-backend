@@ -20,7 +20,7 @@
 
 package org.eclipse.tractusx.sde.portal.utils;
 
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
@@ -48,7 +48,7 @@ public class KeycloakUtil {
                 .realm(realm)
                 .clientId(clientId)
                 .clientSecret(clientSecret)
-                .resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build())
+                .resteasyClient(new ResteasyClientBuilderImpl().connectionPoolSize(10).build())
                 .build();
         AccessTokenResponse accessTokenResponse = getAccessTokenResponse(keycloak);
         return (accessTokenResponse == null ? null : accessTokenResponse.getToken());

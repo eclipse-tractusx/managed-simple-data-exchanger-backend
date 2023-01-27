@@ -20,7 +20,8 @@
 
 package org.eclipse.tractusx.sde.submodels.batch.mapper;
 
-import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.eclipse.tractusx.sde.common.enums.OptionalIdentifierKeyEnum;
@@ -75,7 +76,7 @@ public abstract class BatchMapper {
 			return null;
 		}
 
-		ArrayList<LocalIdentifier> localIdentifiers = new ArrayList<>();
+		Set<LocalIdentifier> localIdentifiers = new HashSet<>();
 		localIdentifiers.add(new LocalIdentifier("BatchID", entity.getBatchId()));
 		localIdentifiers.add(new LocalIdentifier("ManufacturerPartID", entity.getManufacturerPartId()));
 		localIdentifiers.add(new LocalIdentifier("ManufacturerID", manufacturerId));

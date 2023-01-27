@@ -67,7 +67,6 @@ You can find the standard credentials as well as further database configurations
 ---
 | API | Description |  Request body | Response body |
 | ------ | ------ | ------ | ------ |
-
 | **GET:- localhost:8080/api/submodels** |This API is used to get all submodels list which is implemented/supported by SDE | Refer Api Doc | Refer Api Doc |
 | **GET:- localhost:8080/api/submodels/{submodelName}** |This API is used to get the schema data of specific model | Refer Api Doc | Refer Api Doc |
 | **POST:- localhost:8080/api/{submodel}/upload** |This API is used to uploading data From CSV file for particular selected submodel | Refer Api Doc |4ca03d5f-9e37-4c12-a8b8-6583b81892c8 |
@@ -85,23 +84,23 @@ You can find the standard credentials as well as further database configurations
 | **GET:- localhost:8080/api/contract-offers** |This API is used to get all contract offers | Refer Api Doc |Refer Api Doc|
 | **GET:- localhost:8080/api/legal-entities** |This API is used to fetch legal entities (list of company's) for Process| Refer Api Doc |Refer Api Doc|
 | **POST:- localhost:8080/api/connectors-discovery** |This API is used to fetch  connectores information | Refer Api Doc |Refer Api Doc|
-| **GET:- localhost:8080/api/submodels |This API is used to get all submodels list which is implemented/supported by SDE | Refer Api Doc | Refer Api Doc |
-| **GET:- localhost:8080/api/submodels/{submodelName} |This API is used to get the schema data of specific model | Refer Api Doc | Refer Api Doc |
-| **POST:- localhost:8080/api/{submodel}/upload |This API is used to uploading data From CSV file for particular selected submodel | Refer Api Doc |4ca03d5f-9e37-4c12-a8b8-6583b81892c8 |
-| **POST:- localhost:8080/api/{submodel}/manualentry |This API is used for uploading data From JSon/Tabular form | Refer Api Doc | 4ca03d5f-9e37-4c12-a8b8-6583b81892c8 |
-| **GET:- localhost:8080/api/{submodel}/public/{uuid} |This API is used for to get the specific submodel data | Refer Api Doc | Refer Api Doc |
-| **DELETE:- localhost:8080/api/{submodel}/delete/{processId} |This API is used to delete processed data from EDC and DigitalTwins | Refer Api Doc | Refer Api Doc |
-| **GET:- localhost:8080/api/role/{role}/permissions |This API is used to fetch all permissions associate with particular role | Refer Api Doc |Refer Api Doc|
-| **GET:- localhost:8080/api/user/role/permissions |This API is used to fetch all list of permissions | Refer Api Doc |Refer Api Doc|
-| **POST:- localhost:8080/api/role/{role}/permissions |This API is used to apply list of permissions to the specific role | Refer Api Doc |Refer Api Doc|
+| **GET:- localhost:8080/api/submodels** |This API is used to get all submodels list which is implemented/supported by SDE | Refer Api Doc | Refer Api Doc |
+| **GET:- localhost:8080/api/submodels/{submodelName}** |This API is used to get the schema data of specific model | Refer Api Doc | Refer Api Doc |
+| **POST:- localhost:8080/api/{submodel}/upload** |This API is used to uploading data From CSV file for particular selected submodel | Refer Api Doc |4ca03d5f-9e37-4c12-a8b8-6583b81892c8 |
+| **POST:- localhost:8080/api/{submodel}/manualentry** |This API is used for uploading data From JSon/Tabular form | Refer Api Doc | 4ca03d5f-9e37-4c12-a8b8-6583b81892c8 |
+| **GET:- localhost:8080/api/{submodel}/public/{uuid}** |This API is used for to get the specific submodel data | Refer Api Doc | Refer Api Doc |
+| **DELETE:- localhost:8080/api/{submodel}/delete/{processId}**|This API is used to delete processed data from EDC and DigitalTwins | Refer Api Doc | Refer Api Doc |
+| **GET:- localhost:8080/api/role/{role}/permissions** |This API is used to fetch all permissions associate with particular role | Refer Api Doc |Refer Api Doc|
+| **GET:- localhost:8080/api/user/role/permissions** |This API is used to fetch all list of permissions | Refer Api Doc |Refer Api Doc|
+| **POST:- localhost:8080/api/role/{role}/permissions** |This API is used to apply list of permissions to the specific role | Refer Api Doc |Refer Api Doc|
 | **GET:- localhost:8080/api/processing-report/87d0aece-ae46-4006-904d-9ec41cddee8b** |This API Is Used For fetch Process Report by Process ID| Refer Api Doc |Refer Api Doc|
 | **GET:- localhost:8080/api/ping** |This API Is Used For Health Check| -- |2022-09-30T16:21:02.630868|
 | **GET:- localhost:8080/api/processing-report?page=&pageSize=50** |This API Is Used For fetch Process Report| Refer Api Doc |Refer Api Doc|
-| **GET:- localhost:8080/api/query-data-offers |This API is used to fetch all data offers of provider URL | Refer Api Doc |Refer Api Doc|
-| **POST:- localhost:8080/api/subscribe-data-offers |This API is used to subscribe data offers | Refer Api Doc |Refer Api Doc|
-| **GET:- localhost:8080/api/contract-offers |This API is used to get all contract offers | Refer Api Doc |Refer Api Doc|
-| **GET:- localhost:8080/api/legal-entities |This API is used to fetch legal entities (list of company's) for Process| Refer Api Doc |Refer Api Doc|
-| **POST:- localhost:8080/api/connectors-discovery |This API is used to fetch  connectores information | Refer Api Doc |Refer Api Doc|
+| **GET:- localhost:8080/api/query-data-offers** |This API is used to fetch all data offers of provider URL | Refer Api Doc |Refer Api Doc|
+| **POST:- localhost:8080/api/subscribe-data-offers** |This API is used to subscribe data offers | Refer Api Doc |Refer Api Doc|
+| **GET:- localhost:8080/api/contract-offers** |This API is used to get all contract offers | Refer Api Doc |Refer Api Doc|
+| **GET:- localhost:8080/api/legal-entities** |This API is used to fetch legal entities (list of company's) for Process| Refer Api Doc |Refer Api Doc|
+| **POST:- localhost:8080/api/connectors-discovery** |This API is used to fetch connectors information | Refer Api Doc |Refer Api Doc|
 
 
 ---

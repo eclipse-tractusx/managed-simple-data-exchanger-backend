@@ -46,21 +46,40 @@ Apart from both upload Batch upload is additional feature were added into DFT.
 1. Maps the content of the line with an Aspect.
 2. Generates the UUID if it does not contain a UUID.
 3. Registers in DigitalTwins.
-4. Stores the line in the database.
+4. Create Asset in EDC Connector.
+5. Stores the line in the database.
 
 <b>For Assembly Part Relationship:</b>
 
 1. Maps the content of the line with an Aspect Relationship.
 2. checks if an Aspect exists so it can be related to that Aspect.
 3. Registers in DigitalTwins.
-4. Stores the line in the database.
+4. Create Asset in EDC Connector.
+5. Stores the line in the database.
 
 <b>For Batch Upload:</b>
 
 1. Maps the content of the line with an Batch.
 2. Generates the UUID if it does not contain a UUID.
 3. Registers in DigitalTwins.
-4. Stores the line in the database.
+4. Create Asset in EDC Connector.
+5. Stores the line in the database.
+
+<b>For PartAsPlanned Upload:</b>
+
+1. Maps the content of the line with an PartAsPlanned.
+2. Generates the UUID if it does not contain a UUID.
+3. Registers in DigitalTwins.
+4. Create Asset in EDC Connector.
+5. Stores the line in the database.
+
+<b>For SingleLevelBoMAsPlanned Upload:</b>
+
+1. Maps the content of the line with an SingleLevelBoMAsPlanned.
+2. checks if an Aspect exists so it can be related to that Aspect.
+3. Registers in DigitalTwins.
+4. Create Asset in EDC Connector.
+5. Stores the line in the database.
 
 The file .csv is loaded in memory, the content is saved and then, the file is removed from memory.
 

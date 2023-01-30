@@ -1,4 +1,4 @@
-name: Release - Helm Charts
+name: Release-Helm Charts
 
 on:
   push:
@@ -7,6 +7,7 @@ on:
     branches:
       - main
 
+  workflow_dispatch:
 jobs:
   release:
     # depending on default permission settings for your org (contents being read-only or read-write for workloads), you will have to add permissions
@@ -14,9 +15,11 @@ jobs:
     permissions:
       contents: write
     runs-on: ubuntu-latest
+
     steps:
+      # fetch-depth: 0 is required to determine differences in chart(s)
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
@@ -24,19 +27,19 @@ jobs:
         run: |
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-          
+
       - name: Install Helm
         uses: azure/setup-helm@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          
+      
       - name: Add Helm repos
         run: |
           cd charts/dft-backend
           helm repo add bitnami https://charts.bitnami.com/bitnami
           helm repo add catenax-ng-product-edc https://catenax-ng.github.io/product-edc
           helm dependency update
-          
+
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.4.1
         env:

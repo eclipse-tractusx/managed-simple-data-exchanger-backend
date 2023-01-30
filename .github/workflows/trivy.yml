@@ -54,7 +54,7 @@ jobs:
           # Path to Docker image
           image-ref: "ghcr.io/catenax-ng/tx-dft-backend:latest"
           format: "sarif"
-          output: "trivy-results2.sarif"
+          output: "trivy-results.sarif"
           exit-code: "1"
           severity: "CRITICAL,HIGH"
 
@@ -62,4 +62,4 @@ jobs:
         if: always()
         uses: github/codeql-action/upload-sarif@v2
         with:
-          sarif_file: "trivy-results2.sarif"
+          sarif_file: "trivy-results.sarif"

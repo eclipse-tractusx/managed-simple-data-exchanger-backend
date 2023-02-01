@@ -91,9 +91,12 @@ public abstract class AspectMapper {
 				.country(entity.getManufacturingCountry()).date(entity.getManufacturingDate()).build();
 
 		PartTypeInformation partTypeInformation = PartTypeInformation.builder()
-				.manufacturerPartID(entity.getManufacturerPartId()).customerPartId(entity.getCustomerPartId())
-				.classification(entity.getClassification()).nameAtManufacturer(entity.getNameAtManufacturer())
-				.nameAtCustomer(entity.getNameAtCustomer()).build();
+				.manufacturerPartId(entity.getManufacturerPartId())
+				.customerPartId(entity.getCustomerPartId())
+				.classification(entity.getClassification())
+				.nameAtManufacturer(entity.getNameAtManufacturer())
+				.nameAtCustomer(entity.getNameAtCustomer())
+				.build();
 
 		return new Gson().toJsonTree(SubmodelResultResponse.builder().localIdentifiers(localIdentifiers)
 				.manufacturingInformation(manufacturingInformation).partTypeInformation(partTypeInformation)

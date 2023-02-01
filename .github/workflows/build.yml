@@ -18,14 +18,14 @@ name: build
 on:
   push:
     branches:
-      - 'main'
+      - 'autosetup/SDE-Backend'
     tags:
       - 'v*.*.*'
       - 'v*.*.*-*'
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: ghcr.io/catenax-ng/tx-sde-autosetup-backend
 
 jobs:
   build-and-push-image:

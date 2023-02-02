@@ -93,10 +93,3 @@ public class SingleLevelBoMAsPlannedEntity implements Serializable {
     @Column(name = "updated")
     private String updated;
 }
-
-@Data
-class SingleLevelBoMAsPlannedPrimaryKey implements Serializable {
-
-    private String parentCatenaXId;
-    private String childCatenaXId;
-}

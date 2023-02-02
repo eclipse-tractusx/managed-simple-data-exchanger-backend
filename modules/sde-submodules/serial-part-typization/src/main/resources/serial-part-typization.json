@@ -58,7 +58,7 @@
 					"string",
 					"null"
 				],
-				"pattern": "[A-Z]{3}|null|^$",
+				"pattern": "^[A-Z]{3}$|^null$|^$",
 				"title": "Manufacturing Country",
 				"examples": [
 					"DEU"

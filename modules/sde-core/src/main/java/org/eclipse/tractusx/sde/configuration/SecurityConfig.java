@@ -20,7 +20,6 @@
 
 package org.eclipse.tractusx.sde.configuration;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -31,10 +30,8 @@ import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -50,10 +47,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import lombok.SneakyThrows;
 
-@SuppressWarnings("deprecation")
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
 	private static final String[] PUBLIC_URL = { "/ping", "/*/public/**", "/api-docs/**", "/swagger-ui/**",
@@ -115,10 +111,9 @@ public class SecurityConfig {
 		// Disable CSRF because of state-less session-management
 		http.csrf().disable();
 
-		
 		// Route security: authenticated to all routes but actuator and Swagger-UI
 		// @formatter:off
-        http.authorizeRequests()
+        http.authorizeHttpRequests()
             .requestMatchers(PUBLIC_URL).permitAll()
             .anyRequest().authenticated();
         // @formatter:on
@@ -132,8 +127,8 @@ public class SecurityConfig {
 
 	@Bean
 	protected CorsConfigurationSource corsConfigurationSource() {
-	    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-	    source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
-	    return source;
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
+		return source;
 	}
 }

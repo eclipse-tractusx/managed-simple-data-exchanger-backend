@@ -45,8 +45,6 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import lombok.SneakyThrows;
 
@@ -107,7 +105,13 @@ public class SecurityConfig {
 		http.anonymous();
 
 		// Enable and configure CORS
-		http.cors().configurationSource(corsConfigurationSource());
+		http.cors().configurationSource(request -> {
+			CorsConfiguration cors = new CorsConfiguration();
+			cors.setAllowedOrigins(Arrays.asList("*"));
+			cors.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+			cors.setAllowedHeaders(Arrays.asList("*"));
+			return cors;
+		});
 
 		// State-less session (state in access-token only)
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
@@ -143,18 +147,4 @@ public class SecurityConfig {
 		return http.build();
 	}
 
-	private CorsConfigurationSource corsConfigurationSource() {
-		
-		// Very permissive CORS config...
-		final var configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(Arrays.asList("*"));
-		configuration.setAllowedMethods(Arrays.asList("*"));
-		configuration.setAllowedHeaders(Arrays.asList("*"));
-		configuration.setExposedHeaders(Arrays.asList("*"));
-		
-		final var source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", configuration);
-
-		return source;
-	}
 }

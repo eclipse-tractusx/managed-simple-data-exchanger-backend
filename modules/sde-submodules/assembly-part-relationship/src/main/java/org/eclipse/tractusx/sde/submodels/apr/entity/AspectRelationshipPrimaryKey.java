@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022,2023 T-Systems International GmbH
+ * Copyright (c) 2022,2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,23 +17,19 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
+package org.eclipse.tractusx.sde.submodels.apr.entity;
 
-package org.eclipse.tractusx.sde.submodels.batch.repository;
+import java.io.Serializable;
 
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import org.eclipse.tractusx.sde.submodels.batch.entity.BatchEntity;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class AspectRelationshipPrimaryKey implements Serializable {
 
-public interface BatchRepository extends CrudRepository<BatchEntity, String> {
-
-
-	BatchEntity findByUuid(String uuid);
-
-	List<BatchEntity> findByProcessId(String processId);
-	
-	
-	@Query("select count(be) from BatchEntity be where be.updated = ?1 and be.processId = ?2")
-	long countByUpdatedAndProcessId(String updated, String processId);
+    private String parentCatenaXId;
+    private String childCatenaXId;
 }

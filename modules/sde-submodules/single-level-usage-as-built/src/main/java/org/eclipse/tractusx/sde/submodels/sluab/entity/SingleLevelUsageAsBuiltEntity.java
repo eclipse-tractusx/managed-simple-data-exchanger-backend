@@ -84,10 +84,3 @@ public class SingleLevelUsageAsBuiltEntity implements Serializable {
     private String updated;
 
 }
-
-@Data
-class SingleLevelUsageAsBuiltPrimaryKey implements Serializable {
-
-    private String parentCatenaXId;
-    private String childCatenaXId;
-}

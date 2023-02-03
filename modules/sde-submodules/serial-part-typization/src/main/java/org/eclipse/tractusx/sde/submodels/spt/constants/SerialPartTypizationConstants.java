@@ -17,23 +17,23 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
+package org.eclipse.tractusx.sde.submodels.spt.constants;
 
-package org.eclipse.tractusx.sde.submodels.batch.repository;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
-import java.util.List;
+import lombok.Getter;
 
-import org.eclipse.tractusx.sde.submodels.batch.entity.BatchEntity;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-
-public interface BatchRepository extends CrudRepository<BatchEntity, String> {
-
-
-	BatchEntity findByUuid(String uuid);
-
-	List<BatchEntity> findByProcessId(String processId);
+@Getter
+@Component
+public class SerialPartTypizationConstants {
 	
+	@Value(value = "${manufacturerId}")
+	public String manufacturerId;
 	
-	@Query("select count(be) from BatchEntity be where be.updated = ?1 and be.processId = ?2")
-	long countByUpdatedAndProcessId(String updated, String processId);
+	@Value(value = "${edc.hostname}")
+	public String edcEndpoint;
+	
+	public static final String AS_PLANNED = "AsBuilt";
+
 }

@@ -147,12 +147,9 @@ public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 	private ShellDescriptorRequest getShellDescriptorRequest(PartAsPlanned partAsPlannedAspect) {
 
 		ArrayList<KeyValuePair> specificIdentifiers = new ArrayList<>();
-		specificIdentifiers.add(new KeyValuePair(PartAsPlannedConstants.MANUFACTURER_PART_ID,
-				partAsPlannedAspect.getManufacturerPartId()));
-		specificIdentifiers.add(
-				new KeyValuePair(PartAsPlannedConstants.MANUFACTURER_ID, partAsPlannedConstants.getManufacturerId()));
-		specificIdentifiers
-				.add(new KeyValuePair(PartAsPlannedConstants.ASSET_LIFECYCLE_PHASE, PartAsPlannedConstants.AS_PLANNED));
+		specificIdentifiers.add(new KeyValuePair(PartAsPlannedConstants.MANUFACTURER_PART_ID,partAsPlannedAspect.getManufacturerPartId()));
+		specificIdentifiers.add(new KeyValuePair(PartAsPlannedConstants.MANUFACTURER_ID, partAsPlannedConstants.getManufacturerId()));
+		specificIdentifiers.add(new KeyValuePair(PartAsPlannedConstants.ASSET_LIFECYCLE_PHASE, PartAsPlannedConstants.AS_PLANNED));
 
 		List<String> values = new ArrayList<>();
 		values.add(partAsPlannedAspect.getUuid());

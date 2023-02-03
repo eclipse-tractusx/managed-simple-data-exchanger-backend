@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022 T-Systems International GmbH
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -18,15 +18,30 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.submodels.apr.model;
+ALTER TABLE IF EXISTS batch
+DROP COLUMN optional_identifier_key;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+ALTER TABLE IF EXISTS batch
+DROP COLUMN optional_identifier_value;
 
-@Data
-@AllArgsConstructor
-public class MeasurementUnit {
+ALTER TABLE IF EXISTS aspect_relationship 
+RENAME COLUMN measurement_unit_lexical_value TO measurement_unit;
 
-    private String lexicalValue;
-    private String datatypeURI;
-}
+ALTER TABLE IF EXISTS aspect_relationship 
+RENAME COLUMN assembled_on TO created_on;
+
+ALTER TABLE IF EXISTS aspect_relationship
+DROP COLUMN datatype_uri;
+
+ALTER TABLE IF EXISTS aspect_relationship
+ADD COLUMN last_modified_on  			TEXT NULL;
+
+
+
+
+
+
+
+
+
+

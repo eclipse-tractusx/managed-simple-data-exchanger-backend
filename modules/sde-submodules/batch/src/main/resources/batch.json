@@ -4,8 +4,8 @@
 	"type": "array",
 	"id": "batch",
 	"idShort": "Batch",
-	"version": "1.0.0",
-	"semantic_id": "urn:bamm:org.eclipse.batch:1.0.0#Batch",
+	"version": "1.0.2",
+	"semantic_id": "urn:bamm:io.catenax.batch:1.0.2#Batch",
 	"title": "Batch",
 	"shortDescription": "BoM AsBuilt - Submodel Batch",
 	"description": "A batch is a quantity of (semi-) finished products or (raw) material product that have been produced under the same circumstances (e.g. same production location), as specified groups or amounts, within a certain time frame. Every batch can differ in the number or amount of products. Different batches can have varied specifications, e.g., different colors. A batch is identified via a Batch ID.",
@@ -18,14 +18,7 @@
 			"classification",
 			"name_at_manufacturer"
 		],
-		"dependentRequired": {
-			"optional_identifier_key": [
-				"optional_identifier_value"
-			],
-			"optional_identifier_value": [
-				"optional_identifier_key"
-			]
-		},
+		"dependentRequired": {},
 		"properties": {
 			"uuid": {
 				"type": [
@@ -34,7 +27,7 @@
 				],
 				"pattern": "^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
 				"title": "UUID URN",
-				"description": "The fully anonymous Catena-X ID of the batch, valid for the Catena-X dataspace.",
+				"description": "The fully anonymous Catena-X ID of the batch, valid for the Catena-X dataspace. The provided regular expression ensures that the UUID is composed of five groups of characters separated by hyphens, in the form 8-4-4-4-12 for a total of 36 characters (32 hexadecimal characters and 4 hyphens), optionally prefixed by 'urn:uuid:' to make it an IRI.",
 				"examples": [
 					"urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2"
 				]
@@ -134,33 +127,6 @@
 				"examples": [
 					"Customer"
 				]
-			},
-			"optional_identifier_key": {
-				"type": [
-					"string",
-					"null"
-				],
-				"enum": [
-					"VAN",
-					"BatchID",
-					""
-				],
-				"title": "Optional Identifier Key",
-				"description": "The Optional Identifier Key is used for create optional identifier for shell in digital twins. If you ha Identifier Key provided.",
-				"examples": [
-					"VAN"
-				]
-			},
-			"optional_identifier_value": {
-				"type": [
-					"string",
-					"null"
-				],
-				"title": "Optional Identifier Value",
-				"description": "The Optional Identifier Value is used for create optional identifier for shell in digital twins. If you ha Identifier Key provided.",
-				"examples": [
-					"Value"
-				]
 			}
 		}
 	},
@@ -174,9 +140,7 @@
 			"customer_part_id": "37754B7-76",
 			"classification": "component",
 			"name_at_manufacturer": "Sensor",
-			"name_at_customer": "Sensor",
-			"optional_identifier_key": "VAN",
-			"optional_identifier_value": "Value"
+			"name_at_customer": "Sensor"
 		}
 	]
 }

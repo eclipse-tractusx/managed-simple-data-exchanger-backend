@@ -73,7 +73,7 @@ public class ConsumerController {
 	@GetMapping(value = "/contract-agreements", produces = APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasPermission('','consumer_view_contract_agreement@provider_view_contract_agreement')")
 	public ResponseEntity<Object> queryOnDataOffersStatus(@RequestParam(value = "type", required = false) String type,
-			@RequestParam(value = "limit", required = false) Integer limit,
+			@RequestParam(value = "maxLimit", required = false) Integer limit,
 			@RequestParam(value = "offset", required = false) Integer offset) {
 		log.info("Request received : /api/contract-agreements");
 		if (limit == null) {

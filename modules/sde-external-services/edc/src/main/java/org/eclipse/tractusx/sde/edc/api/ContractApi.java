@@ -54,7 +54,7 @@ public interface ContractApi {
 	List<ContractNegotiationDto> getAllContractNegotiations(URI url, @RequestParam("limit") Integer limit,
 			@RequestParam("offset") Integer offset, @RequestHeader Map<String, String> requestHeader);
 
-	@GetMapping(path = "/contractnegotiations/{contractnegotiationsId}/agreement")
+	@GetMapping(path = "/data/contractnegotiations/{contractnegotiationsId}/agreement")
 	ContractAgreementDto getAgreementBasedOnNegotiationId(URI url,
 			@PathVariable("contractnegotiationsId") String contractnegotiationsId,
 			@RequestHeader Map<String, String> requestHeader);

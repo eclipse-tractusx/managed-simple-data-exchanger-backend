@@ -21,7 +21,6 @@
 package org.eclipse.tractusx.sde.edc.services;
 
 import java.io.File;
-import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -213,7 +212,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 				.getAllContractNegotiations(type, limit, offset);
 		contractNegotiationDtoList.stream().forEach((contract) -> {
 			if (StringUtils.isBlank(type) || contract.getType().name().equals(type)) {
-				if (contract.getState().equals(NegotiationState.CONFIRMED.name())) {
+				if (contract.getState().equals(NegotiationState.CONFIRMED.name()) || contract.getState().equals(NegotiationState.DECLINED.name())) {
 					String negotiationId = contract.getId();
 					if (StringUtils.isNotBlank(contract.getContractAgreementId())) {
 						ContractAgreementResponse agreementResponse = contractNegotiateManagement
@@ -222,6 +221,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 						agreementResponse.setDateCreated(contract.getCreatedAt());
 						agreementResponse.setDateUpdated(contract.getUpdatedAt());
 						agreementResponse.setType(contract.getType());
+						agreementResponse.setState(contract.getState());
 						contractAgreementResponses.add(agreementResponse);
 					}
 				} else {

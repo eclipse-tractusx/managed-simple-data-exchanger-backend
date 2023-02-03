@@ -29,7 +29,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.edc.api.ContractApi;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
-import org.eclipse.tractusx.sde.edc.enums.NegotiationState;
 import org.eclipse.tractusx.sde.edc.mapper.ContractMapper;
 import org.eclipse.tractusx.sde.edc.model.contractnegotiation.AcknowledgementId;
 import org.eclipse.tractusx.sde.edc.model.contractnegotiation.ContractAgreementDto;
@@ -107,7 +106,7 @@ public class ContractNegotiateManagement extends AbstractEDCStepsHelper {
 					.policies(policies).build();
 			agreementResponse = ContractAgreementResponse.builder().contractAgreementId(agreement.getId())
 					.organizationName(StringUtils.EMPTY).title(StringUtils.EMPTY).negotiationId(negotiationId)
-					.state(NegotiationState.CONFIRMED.name()).contractAgreementInfo(agreementInfo).build();
+					.contractAgreementInfo(agreementInfo).build();
 
 		}
 		return agreementResponse;

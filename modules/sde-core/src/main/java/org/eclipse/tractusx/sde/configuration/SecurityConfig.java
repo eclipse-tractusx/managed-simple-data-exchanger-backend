@@ -115,20 +115,7 @@ public class SecurityConfig {
 		// Disable CSRF because of state-less session-management
 		http.csrf().disable();
 
-		// Return 401 (unauthorized) instead of 403 (redirect to login) when
-		// authorization is missing or invalid
-		http.exceptionHandling().authenticationEntryPoint((request, response, authException) -> {
-			response.addHeader(HttpHeaders.WWW_AUTHENTICATE, "Basic realm=\"Restricted Content\"");
-			response.sendError(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase());
-		});
-
-		// If SSL enabled, disable http (https only)
-		if (serverProperties.getSsl() != null && serverProperties.getSsl().isEnabled()) {
-			http.requiresChannel().anyRequest().requiresSecure();
-		} else {
-			http.requiresChannel().anyRequest().requiresInsecure();
-		}
-
+		
 		// Route security: authenticated to all routes but actuator and Swagger-UI
 		// @formatter:off
         http.authorizeRequests()

@@ -144,16 +144,16 @@ public class SecurityConfig {
 	}
 
 	private CorsConfigurationSource corsConfigurationSource() {
+		
 		// Very permissive CORS config...
 		final var configuration = new CorsConfiguration();
 		configuration.setAllowedOrigins(Arrays.asList("*"));
 		configuration.setAllowedMethods(Arrays.asList("*"));
 		configuration.setAllowedHeaders(Arrays.asList("*"));
 		configuration.setExposedHeaders(Arrays.asList("*"));
-
-		// Limited to API routes (neither actuator nor Swagger-UI)
+		
 		final var source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/api/**", configuration);
+		source.registerCorsConfiguration("/**", configuration);
 
 		return source;
 	}

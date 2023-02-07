@@ -54,7 +54,7 @@
 				"title": "Manufacturing Date",
 				"description": "Timestamp of the manufacturing date as the final step in production process (e.g. final quality check, ready-for-shipment event)",
 				"examples": [
-					"2022-02-04T14:48:54"
+					"2022-02-04T14:48:54.709Z"
 				]
 			},
 			"manufacturing_country": {
@@ -158,7 +158,7 @@
 		{
 			"uuid": "urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2",
 			"part_instance_id": "NO-159040131155901488695376",
-			"manufacturing_date": "2022-02-04T14:48:54",
+			"manufacturing_date": "2022-02-04T14:48:54.709Z",
 			"manufacturing_country": "DEU",
 			"manufacturer_part_id": "37754B7-76",
 			"customer_part_id": "37754B7-76",

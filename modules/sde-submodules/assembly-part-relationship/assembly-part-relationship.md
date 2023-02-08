@@ -5,17 +5,17 @@
 This module use for AssemblyPartRelationship submodel specification and descriptors. It's contain the codes related to AssemblyPartRelationship to validate, parse and transfer data for DigitalTwins and EDC to create aspect twins and data offer.
 
 ---
-#### Version: 1.1.0
-#### AssemblyPartRelationship Aspect Model URN: urn:bamm:io.catenax.assembly_part_relationship:1.1.0#AssemblyPartRelationship
-#### Semantic Id: urn:bamm:io.catenax.assembly_part_relationship:1.1.0
+#### Version: 1.1.1
+#### AssemblyPartRelationship Aspect Model URN: urn:bamm:io.catenax.assembly_part_relationship:1.1.1#AssemblyPartRelationship
+#### Semantic Id: urn:bamm:io.catenax.assembly_part_relationship:1.1.1
 ---
 
 ### Schema
 
 Please find below links for schema details:
 
-- https://portal.int.demo.catena-x.net/semantichub/urn%3Abamm%3Aio.catenax.assembly_part_relationship%3A1.1.0%23AssemblyPartRelationship
-- blob:https://portal.int.demo.catena-x.net/cf9f1c9f-2d31-4b41-82e3-5285e410f76f
+- https://portal.int.demo.catena-x.net/semantichub/urn%3Abamm%3Aio.catenax.assembly_part_relationship%3A1.1.1%23AssemblyPartRelationship
+- blob:https://portal.int.demo.catena-x.net/83e06ce8-21f8-4e31-9349-7a6c2e38a641
 - https://github.com/catenax-ng/product-dft-backend/blob/modules-branch/modules/sde-submodules/serial-part-typization/src/main/resources/serial-part-typization.json
 
 
@@ -35,9 +35,9 @@ Please find below links for schema details:
 | optional_identifier_value			| No                           	|    10 	 	|
 | lifecycle_context		    		 	| Yes                     		| 	 11	 	|
 | quantity_number		 			| Yes                           	|    12	 	|
-| measurement_unit_lexical_value	 	| Yes                           	|    13	 	|
-| datatype_URI	 					| Yes                          	|    14	 	|
-| assembled_on	 					| Yes                           	|    15	 	|
+| measurement_unit				 	| Yes                           	|    13	 	|
+| created_on	 						| Yes                          	|    14	 	|
+| last_modified_on	 				| Yes                           	|    15	 	|
 
 
 #### [CSV Sample File Link]

@@ -1,5 +1,6 @@
+
 /********************************************************************************
- * Copyright (c) 2022 BMW GmbH
+ * Copyright (c) 2022 T-Systems International GmbH
  * Copyright (c) 2022 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -17,16 +18,21 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
+package org.eclipse.tractusx.sde.portal.model.response;
 
-package org.eclipse.tractusx.sde.submodels.apr.model;
 
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
-public class MeasurementUnit {
+public class KeycloakTokenResponse {
 
-    private String lexicalValue;
-    private String datatypeURI;
+	@JsonProperty("access_token")
+	private String accessToken;
+	@JsonProperty("expires_in")
+	private Integer expiresIn;
+	@JsonProperty("token_type")
+	private String tokenType;
+	private String scope;
+
 }

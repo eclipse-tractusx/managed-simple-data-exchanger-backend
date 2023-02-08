@@ -20,13 +20,13 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.core.controller.failurelog;
+package org.eclipse.tractusx.sde.core.failurelog;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import org.eclipse.tractusx.sde.core.controller.failurelog.entity.FailureLogEntity;
-import org.eclipse.tractusx.sde.core.controller.failurelog.repository.FailureLogRepository;
+import org.eclipse.tractusx.sde.core.failurelog.entity.FailureLogEntity;
+import org.eclipse.tractusx.sde.core.failurelog.repository.FailureLogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

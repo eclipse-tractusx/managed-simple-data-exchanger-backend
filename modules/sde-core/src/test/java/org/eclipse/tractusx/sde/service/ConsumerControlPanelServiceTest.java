@@ -21,7 +21,6 @@
 package org.eclipse.tractusx.sde.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -44,13 +43,11 @@ import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyConstraintBu
 import org.eclipse.tractusx.sde.edc.enums.NegotiationState;
 import org.eclipse.tractusx.sde.edc.facilitator.ContractNegotiateManagement;
 import org.eclipse.tractusx.sde.edc.gateways.database.ContractNegotiationInfoRepository;
-import org.eclipse.tractusx.sde.edc.model.contractnegotiation.ContractAgreementResponse;
 import org.eclipse.tractusx.sde.edc.model.contractnegotiation.ContractNegotiationDto;
 import org.eclipse.tractusx.sde.edc.model.contractoffers.ContractOffersCatalogResponse;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
 import org.eclipse.tractusx.sde.edc.model.request.OfferRequest;
 import org.eclipse.tractusx.sde.edc.services.ConsumerControlPanelService;
-import org.eclipse.tractusx.sde.edc.util.UtilityFunctions;
 import org.eclipse.tractusx.sde.portal.api.ConnectorDiscoveryApi;
 import org.eclipse.tractusx.sde.portal.api.LegalEntityDataApi;
 import org.eclipse.tractusx.sde.portal.model.ConnectorInfo;
@@ -60,114 +57,120 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@ContextConfiguration(classes = {ConsumerControlPanelService.class, String.class})
+import lombok.SneakyThrows;
+
+@ContextConfiguration(classes = { ConsumerControlPanelService.class, String.class })
 @ExtendWith(SpringExtension.class)
 class ConsumerControlPanelServiceTest {
-    @MockBean
-    private ConnectorDiscoveryApi connectorDiscoveryApi;
+	@MockBean
+	private ConnectorDiscoveryApi connectorDiscoveryApi;
 
-    @MockBean
-    private KeycloakUtil keycloakUtil;
+	@MockBean
+	private KeycloakUtil keycloakUtil;
 
-    @MockBean
-    private LegalEntityDataApi legalEntityDataApi;
+	@MockBean
+	private LegalEntityDataApi legalEntityDataApi;
 
-    @MockBean
-    private ContractNegotiateManagement contractNegotiateManagement;
+	@MockBean
+	private ContractNegotiateManagement contractNegotiateManagement;
 
-    @MockBean
-    private ContractNegotiationInfoRepository contractNegotiationInfoRepository;
+	@MockBean
+	private ContractNegotiationInfoRepository contractNegotiationInfoRepository;
 
-    @Autowired
-    private ConsumerControlPanelService consumerControlPanelService;
+	@Autowired
+	private ConsumerControlPanelService consumerControlPanelService;
 
-    @MockBean
-    private ContractOfferCatalogApi contractOfferCatalogApi;
+	@MockBean
+	private ContractOfferCatalogApi contractOfferCatalogApi;
 
-    @MockBean
-    private PolicyConstraintBuilderService policyConstraintBuilderService;
+	@MockBean
+	private PolicyConstraintBuilderService policyConstraintBuilderService;
 
-    @Test
-    void testQueryOnDataOfferEmpty() throws Exception {
-        ContractOffersCatalogResponse contractOffersCatalogResponse = new ContractOffersCatalogResponse();
-        contractOffersCatalogResponse.setContractOffers(new ArrayList<>());
-        when(contractOfferCatalogApi.getContractOffersCatalog((Map<String, String>) any(), (String) any(), anyInt()))
-                .thenReturn(contractOffersCatalogResponse);
-        assertTrue(consumerControlPanelService.queryOnDataOffers("https://example.org/example").isEmpty());
-        verify(contractOfferCatalogApi).getContractOffersCatalog((Map<String, String>) any(), (String) any(), anyInt());
-    }
+	@Test
+	void testQueryOnDataOfferEmpty() throws Exception {
+		ContractOffersCatalogResponse contractOffersCatalogResponse = new ContractOffersCatalogResponse();
+		contractOffersCatalogResponse.setContractOffers(new ArrayList<>());
+		when(contractOfferCatalogApi.getContractOffersCatalog((Map<String, String>) any(), (String) any(), anyInt()))
+				.thenReturn(contractOffersCatalogResponse);
+		assertTrue(consumerControlPanelService.queryOnDataOffers("https://example.org/example").isEmpty());
+		verify(contractOfferCatalogApi).getContractOffersCatalog((Map<String, String>) any(), (String) any(), anyInt());
+	}
 
-    @Test
-    void testQueryOnDataOffersWithUsagePolicies() throws Exception {
+	@Test
+	void testQueryOnDataOffersWithUsagePolicies() throws Exception {
 
-        ContractOffersCatalogResponse contractOffersCatalogResponse = getContractOffersCatalogWithConstraints();
-        when(contractOfferCatalogApi.getContractOffersCatalog((Map<String, String>) any(), (String) any(), anyInt()))
-                .thenReturn(contractOffersCatalogResponse);
-        assertEquals(1, consumerControlPanelService.queryOnDataOffers("https://example.org/example").size());
-        verify(contractOfferCatalogApi).getContractOffersCatalog((Map<String, String>) any(), (String) any(), anyInt());
-    }
+		ContractOffersCatalogResponse contractOffersCatalogResponse = getContractOffersCatalogWithConstraints();
+		when(contractOfferCatalogApi.getContractOffersCatalog((Map<String, String>) any(), (String) any(), anyInt()))
+				.thenReturn(contractOffersCatalogResponse);
+		assertEquals(1, consumerControlPanelService.queryOnDataOffers("https://example.org/example").size());
+		verify(contractOfferCatalogApi).getContractOffersCatalog((Map<String, String>) any(), (String) any(), anyInt());
+	}
 
-    @Test
-    void testQueryOnDataOffersWithMissingUsagePolicies() throws Exception {
+	@Test
+	void testQueryOnDataOffersWithMissingUsagePolicies() throws Exception {
 
-        ContractOffersCatalogResponse contractOffersCatalogResponse = getCatalogObjectWithMissingConstraints();
-        when(contractOfferCatalogApi.getContractOffersCatalog((Map<String, String>) any(), (String) any(), anyInt()))
-                .thenReturn(contractOffersCatalogResponse);
-        assertEquals(1, consumerControlPanelService.queryOnDataOffers("https://example.org/example").size());
-        verify(contractOfferCatalogApi).getContractOffersCatalog((Map<String, String>) any(), (String) any(), anyInt());
-    }
+		ContractOffersCatalogResponse contractOffersCatalogResponse = getCatalogObjectWithMissingConstraints();
+		when(contractOfferCatalogApi.getContractOffersCatalog((Map<String, String>) any(), (String) any(), anyInt()))
+				.thenReturn(contractOffersCatalogResponse);
+		assertEquals(1, consumerControlPanelService.queryOnDataOffers("https://example.org/example").size());
+		verify(contractOfferCatalogApi).getContractOffersCatalog((Map<String, String>) any(), (String) any(), anyInt());
+	}
 
-    @Test
-    void testSubscribeDataOffers1() {
-        ArrayList<OfferRequest> offerRequestList = new ArrayList<>();
-        List<UsagePolicies> usagePolicies = new ArrayList<>();
-        UsagePolicies usagePolicy = UsagePolicies.builder().type(UsagePolicyEnum.CUSTOM).value("Sample").typeOfAccess(PolicyAccessEnum.RESTRICTED).build();
-        usagePolicies.add(usagePolicy);
-        ConsumerRequest consumerRequest = new ConsumerRequest("42", "https://example.org/example", offerRequestList,
-                usagePolicies);
-        String processId = UUID.randomUUID().toString();
-        consumerControlPanelService.subscribeDataOffers(consumerRequest, processId);
-        assertEquals("42", consumerRequest.getConnectorId());
-        assertEquals("https://example.org/example", consumerRequest.getProviderUrl());
-        List<UsagePolicies> policies = consumerRequest.getPolicies();
-        List<ConstraintRequest> list = new ArrayList<>();
-        ConstraintRequest constraintRequest = ConstraintRequest.builder().edcType("type").leftExpression(new Expression()).rightExpression(new Expression()).operator("EQ").build();
-        list.add(constraintRequest);
-        when(policyConstraintBuilderService.getUsagePolicyConstraints(any())).thenReturn(list);
-        assertEquals(usagePolicies, policies);
-        assertEquals(1, consumerControlPanelService.getAuthHeader().size());
-    }
+	@Test
+	void testSubscribeDataOffers1() {
+		ArrayList<OfferRequest> offerRequestList = new ArrayList<>();
+		List<UsagePolicies> usagePolicies = new ArrayList<>();
+		UsagePolicies usagePolicy = UsagePolicies.builder().type(UsagePolicyEnum.CUSTOM).value("Sample")
+				.typeOfAccess(PolicyAccessEnum.RESTRICTED).build();
+		usagePolicies.add(usagePolicy);
+		ConsumerRequest consumerRequest = new ConsumerRequest("42", "https://example.org/example", offerRequestList,
+				usagePolicies);
+		String processId = UUID.randomUUID().toString();
+		consumerControlPanelService.subscribeDataOffers(consumerRequest, processId);
+		assertEquals("42", consumerRequest.getConnectorId());
+		assertEquals("https://example.org/example", consumerRequest.getProviderUrl());
+		List<UsagePolicies> policies = consumerRequest.getPolicies();
+		List<ConstraintRequest> list = new ArrayList<>();
+		ConstraintRequest constraintRequest = ConstraintRequest.builder().edcType("type")
+				.leftExpression(new Expression()).rightExpression(new Expression()).operator("EQ").build();
+		list.add(constraintRequest);
+		when(policyConstraintBuilderService.getUsagePolicyConstraints(any())).thenReturn(list);
+		assertEquals(usagePolicies, policies);
+		assertEquals(1, consumerControlPanelService.getAuthHeader().size());
+	}
 
-    @Test
-    void testContractOffer() {
-        List<ContractNegotiationDto> contractNegotiationDtoList = List.of(ContractNegotiationDto.builder().contractAgreementId(null)
-                .id("negotiationId").state(NegotiationState.DECLINED.name()).counterPartyAddress("address").build());
-        when(contractNegotiateManagement.getAllContractNegotiations(anyInt(), anyInt())).thenReturn(contractNegotiationDtoList);
-        List<ContractAgreementResponse> list = consumerControlPanelService.getAllContractOffers(10, 1);
-        assertEquals(1, list.size());
-    }
+	@Test
+	void testContractOffer() {
+		String type = any();
+		List<ContractNegotiationDto> contractNegotiationDtoList = List
+				.of(ContractNegotiationDto.builder().contractAgreementId(null).id("negotiationId")
+						.state(NegotiationState.DECLINED.name()).counterPartyAddress("address").build());
+		when(contractNegotiateManagement.getAllContractNegotiations(type, anyInt(), anyInt()))
+				.thenReturn(contractNegotiationDtoList);
+		Map<String, Object> list = consumerControlPanelService.getAllContractOffers(type, 10, 1);
+		assertEquals(2, list.size());
+	}
 
-    @Test
-    void testSubscribeDataOffers2() {
-        List<UsagePolicies> usagePolicies = new ArrayList<>();
-        UsagePolicies usagePolicy = UsagePolicies.builder().type(UsagePolicyEnum.CUSTOM).value("Sample").typeOfAccess(PolicyAccessEnum.RESTRICTED).build();
-        usagePolicies.add(usagePolicy);
-        ConsumerRequest consumerRequest = mock(ConsumerRequest.class);
-        when(consumerRequest.getOffers()).thenReturn(new ArrayList<>());
-        when(consumerRequest.getProviderUrl()).thenReturn("https://example.org/example");
-        when(consumerRequest.getPolicies()).thenReturn(usagePolicies);
-        String processId = UUID.randomUUID().toString();
-        consumerControlPanelService.subscribeDataOffers(consumerRequest, processId);
-        verify(consumerRequest).getProviderUrl();
-        verify(consumerRequest).getOffers();
-    }
+	@Test
+	void testSubscribeDataOffers2() {
+		List<UsagePolicies> usagePolicies = new ArrayList<>();
+		UsagePolicies usagePolicy = UsagePolicies.builder().type(UsagePolicyEnum.CUSTOM).value("Sample")
+				.typeOfAccess(PolicyAccessEnum.RESTRICTED).build();
+		usagePolicies.add(usagePolicy);
+		ConsumerRequest consumerRequest = mock(ConsumerRequest.class);
+		when(consumerRequest.getOffers()).thenReturn(new ArrayList<>());
+		when(consumerRequest.getProviderUrl()).thenReturn("https://example.org/example");
+		when(consumerRequest.getPolicies()).thenReturn(usagePolicies);
+		String processId = UUID.randomUUID().toString();
+		consumerControlPanelService.subscribeDataOffers(consumerRequest, processId);
+		verify(consumerRequest).getProviderUrl();
+		verify(consumerRequest).getOffers();
+	}
 
 //    void testFetchLegalEntitiesData() throws Exception {
 //        LegalEntityData legalEntityData = getLegalEntityData();
@@ -176,230 +179,143 @@ class ConsumerControlPanelServiceTest {
 //        assertEquals(consumerControlPanelService.fetchLegalEntitiesData("Search Text", 0, 10).getStatusCodeValue(), 200);
 //    }
 
+	@Test
+	@SneakyThrows
+	void testFetchConnectorInfo() {
+		List<ConnectorInfo> connectorInfo = List
+				.of(ConnectorInfo.builder().bpn("Bpns").connectorEndpoint(List.of("http://localhost:8080")).build());
+		when(connectorDiscoveryApi.fetchConnectorInfo( List.of("Bpns"), "Bearer ABC123")).thenReturn(connectorInfo);
+		when(keycloakUtil.getKeycloakToken()).thenReturn("ABC123");
+		assertEquals(connectorInfo, consumerControlPanelService.fetchConnectorInfo(List.of("Bpns")));
+		verify(keycloakUtil).getKeycloakToken();
+	}
 
-    @Test
-    void testFetchConnectorInfo() {
-        List<ConnectorInfo> connectorInfo = List.of(ConnectorInfo.builder().bpn("Bpns").connectorEndpoint(List.of("http://localhost:8080")).build());
-        when(connectorDiscoveryApi.fetchConnectorInfo(List.of("Bpns"), "Bearer ABC123")).thenReturn(connectorInfo);
-        when(keycloakUtil.getKeycloakToken()).thenReturn("ABC123");
-        assertEquals(connectorInfo, consumerControlPanelService.fetchConnectorInfo(List.of("Bpns")));
-        verify(keycloakUtil).getKeycloakToken();
-    }
+	private ContractOffersCatalogResponse getContractOffersCatalogWithConstraints() throws Exception {
+		String contactOfferCatalogResponse = "{\n" + "    \"id\": \"default\",\n" + "    \"contractOffers\": [ "
+				+ "       {\n"
+				+ "            \"id\": \"5ff29ec1-90ae-4e75-adf1-afb19ed8c686:cf0fc8c3-c7d6-4b52-baac-764f62312778\",\n"
+				+ "            \"policy\": {\n" + "                \"uid\": \"5dc869fc-9b30-4622-8e25-310033b3b927\",\n"
+				+ "                \"permissions\": [\n" + "                    {\n"
+				+ "                        \"edctype\": \"dataspaceconnector:permission\",\n"
+				+ "                        \"uid\": null,\n"
+				+ "                        \"target\": \"urn:uuid:4cfaf444-ba35-4971-9b02-162a1c8cdfe5-urn:uuid:7b5a2bfc-36ae-49b3-a7a1-c3bb6cfed190\",\n"
+				+ "                        \"action\": {\n" + "                            \"type\": \"USE\",\n"
+				+ "                            \"includedIn\": null,\n"
+				+ "                            \"constraint\": null\n" + "                        },\n"
+				+ "                        \"assignee\": null,\n" + "                        \"assigner\": null,\n"
+				+ "                        \"constraints\": [\n" + "                            {\n"
+				+ "                                \"edctype\": \"AtomicConstraint\",\n"
+				+ "                                \"leftExpression\": {\n"
+				+ "                                    \"edctype\": \"dataspaceconnector:literalexpression\",\n"
+				+ "                                    \"value\": \"BusinessPartnerNumber\"\n"
+				+ "                                },\n" + "                                \"rightExpression\": {\n"
+				+ "                                    \"edctype\": \"dataspaceconnector:literalexpression\",\n"
+				+ "                                    \"value\": \"[BPNL00000005CONS, BPNL00000005PROV]\"\n"
+				+ "                                },\n" + "                                \"operator\": \"IN\"\n"
+				+ "                            },\n" + "                            {\n"
+				+ "                                \"edctype\": \"AtomicConstraint\",\n"
+				+ "                                \"leftExpression\": {\n"
+				+ "                                    \"edctype\": \"dataspaceconnector:literalexpression\",\n"
+				+ "                                    \"value\": \"idsc:ELAPSED_TIME\"\n"
+				+ "                                },\n" + "                                \"rightExpression\": {\n"
+				+ "                                    \"edctype\": \"dataspaceconnector:literalexpression\",\n"
+				+ "                                    \"value\": \"P0Y0M3DT00H00M00S\"\n"
+				+ "                                },\n" + "                                \"operator\": \"LEQ\"\n"
+				+ "                            },\n" + "                            {\n"
+				+ "                                \"edctype\": \"AtomicConstraint\",\n"
+				+ "                                \"leftExpression\": {\n"
+				+ "                                    \"edctype\": \"dataspaceconnector:literalexpression\",\n"
+				+ "                                    \"value\": \"idsc:ROLE\"\n"
+				+ "                                },\n" + "                                \"rightExpression\": {\n"
+				+ "                                    \"edctype\": \"dataspaceconnector:literalexpression\",\n"
+				+ "                                    \"value\": \"ADMIN\"\n" + "                                },\n"
+				+ "                                \"operator\": \"EQ\"\n" + "                            }\n"
+				+ "                        ],\n" + "                        \"duties\": []\n"
+				+ "                    }\n" + "                ],\n" + "                \"prohibitions\": [],\n"
+				+ "                \"obligations\": [],\n" + "                \"extensibleProperties\": {},\n"
+				+ "                \"inheritsFrom\": null,\n" + "                \"assigner\": null,\n"
+				+ "                \"assignee\": null,\n" + "                \"target\": null,\n"
+				+ "                \"@type\": {\n" + "                    \"@policytype\": \"set\"\n"
+				+ "                }\n" + "            },\n" + "            \"asset\": {\n"
+				+ "                \"properties\": {\n"
+				+ "                    \"asset:prop:name\": \"Serialized Part - Submodel SerialPartTypization\",\n"
+				+ "                    \"asset:prop:contenttype\": \"application/json\",\n"
+				+ "                    \"asset:prop:description\": \"Serialized Part - Submodel SerialPartTypization\",\n"
+				+ "                    \"ids:byteSize\": null,\n"
+				+ "                    \"asset:prop:version\": \"1.0.0\",\n"
+				+ "                    \"asset:prop:id\": \"urn:uuid:4cfaf444-ba35-4971-9b02-162a1c8cdfe5-urn:uuid:7b5a2bfc-36ae-49b3-a7a1-c3bb6cfed190\",\n"
+				+ "                    \"ids:fileName\": null\n" + "                }\n" + "            },\n"
+				+ "            \"policyId\": null,\n" + "            \"assetId\": null,\n"
+				+ "            \"provider\": \"urn:connector:provider\",\n"
+				+ "            \"consumer\": \"urn:connector:consumer\",\n" + "            \"offerStart\": null,\n"
+				+ "            \"offerEnd\": null,\n" + "            \"contractStart\": null,\n"
+				+ "            \"contractEnd\": null\n" + "                }\n" + "       ]\n" + "}";
+		ObjectMapper mapper = new ObjectMapper();
+		ContractOffersCatalogResponse mockResponse = mapper.readValue(contactOfferCatalogResponse,
+				ContractOffersCatalogResponse.class);
+		return mockResponse;
+	}
 
-    private ContractOffersCatalogResponse getContractOffersCatalogWithConstraints() throws Exception {
-        String contactOfferCatalogResponse = "{\n" +
-                "    \"id\": \"default\",\n" +
-                "    \"contractOffers\": [ " +
-                "       {\n" +
-                "            \"id\": \"5ff29ec1-90ae-4e75-adf1-afb19ed8c686:cf0fc8c3-c7d6-4b52-baac-764f62312778\",\n" +
-                "            \"policy\": {\n" +
-                "                \"uid\": \"5dc869fc-9b30-4622-8e25-310033b3b927\",\n" +
-                "                \"permissions\": [\n" +
-                "                    {\n" +
-                "                        \"edctype\": \"dataspaceconnector:permission\",\n" +
-                "                        \"uid\": null,\n" +
-                "                        \"target\": \"urn:uuid:4cfaf444-ba35-4971-9b02-162a1c8cdfe5-urn:uuid:7b5a2bfc-36ae-49b3-a7a1-c3bb6cfed190\",\n" +
-                "                        \"action\": {\n" +
-                "                            \"type\": \"USE\",\n" +
-                "                            \"includedIn\": null,\n" +
-                "                            \"constraint\": null\n" +
-                "                        },\n" +
-                "                        \"assignee\": null,\n" +
-                "                        \"assigner\": null,\n" +
-                "                        \"constraints\": [\n" +
-                "                            {\n" +
-                "                                \"edctype\": \"AtomicConstraint\",\n" +
-                "                                \"leftExpression\": {\n" +
-                "                                    \"edctype\": \"dataspaceconnector:literalexpression\",\n" +
-                "                                    \"value\": \"BusinessPartnerNumber\"\n" +
-                "                                },\n" +
-                "                                \"rightExpression\": {\n" +
-                "                                    \"edctype\": \"dataspaceconnector:literalexpression\",\n" +
-                "                                    \"value\": \"[BPNL00000005CONS, BPNL00000005PROV]\"\n" +
-                "                                },\n" +
-                "                                \"operator\": \"IN\"\n" +
-                "                            },\n" +
-                "                            {\n" +
-                "                                \"edctype\": \"AtomicConstraint\",\n" +
-                "                                \"leftExpression\": {\n" +
-                "                                    \"edctype\": \"dataspaceconnector:literalexpression\",\n" +
-                "                                    \"value\": \"idsc:ELAPSED_TIME\"\n" +
-                "                                },\n" +
-                "                                \"rightExpression\": {\n" +
-                "                                    \"edctype\": \"dataspaceconnector:literalexpression\",\n" +
-                "                                    \"value\": \"P0Y0M3DT00H00M00S\"\n" +
-                "                                },\n" +
-                "                                \"operator\": \"LEQ\"\n" +
-                "                            },\n" +
-                "                            {\n" +
-                "                                \"edctype\": \"AtomicConstraint\",\n" +
-                "                                \"leftExpression\": {\n" +
-                "                                    \"edctype\": \"dataspaceconnector:literalexpression\",\n" +
-                "                                    \"value\": \"idsc:ROLE\"\n" +
-                "                                },\n" +
-                "                                \"rightExpression\": {\n" +
-                "                                    \"edctype\": \"dataspaceconnector:literalexpression\",\n" +
-                "                                    \"value\": \"ADMIN\"\n" +
-                "                                },\n" +
-                "                                \"operator\": \"EQ\"\n" +
-                "                            }\n" +
-                "                        ],\n" +
-                "                        \"duties\": []\n" +
-                "                    }\n" +
-                "                ],\n" +
-                "                \"prohibitions\": [],\n" +
-                "                \"obligations\": [],\n" +
-                "                \"extensibleProperties\": {},\n" +
-                "                \"inheritsFrom\": null,\n" +
-                "                \"assigner\": null,\n" +
-                "                \"assignee\": null,\n" +
-                "                \"target\": null,\n" +
-                "                \"@type\": {\n" +
-                "                    \"@policytype\": \"set\"\n" +
-                "                }\n" +
-                "            },\n" +
-                "            \"asset\": {\n" +
-                "                \"properties\": {\n" +
-                "                    \"asset:prop:name\": \"Serialized Part - Submodel SerialPartTypization\",\n" +
-                "                    \"asset:prop:contenttype\": \"application/json\",\n" +
-                "                    \"asset:prop:description\": \"Serialized Part - Submodel SerialPartTypization\",\n" +
-                "                    \"ids:byteSize\": null,\n" +
-                "                    \"asset:prop:version\": \"1.0.0\",\n" +
-                "                    \"asset:prop:id\": \"urn:uuid:4cfaf444-ba35-4971-9b02-162a1c8cdfe5-urn:uuid:7b5a2bfc-36ae-49b3-a7a1-c3bb6cfed190\",\n" +
-                "                    \"ids:fileName\": null\n" +
-                "                }\n" +
-                "            },\n" +
-                "            \"policyId\": null,\n" +
-                "            \"assetId\": null,\n" +
-                "            \"provider\": \"urn:connector:provider\",\n" +
-                "            \"consumer\": \"urn:connector:consumer\",\n" +
-                "            \"offerStart\": null,\n" +
-                "            \"offerEnd\": null,\n" +
-                "            \"contractStart\": null,\n" +
-                "            \"contractEnd\": null\n" +
-                "                }\n" +
-                "       ]\n" +
-                "}";
-        ObjectMapper mapper = new ObjectMapper();
-        ContractOffersCatalogResponse mockResponse
-                = mapper.readValue(contactOfferCatalogResponse, ContractOffersCatalogResponse.class);
-        return mockResponse;
-    }
+	private ContractOffersCatalogResponse getCatalogObjectWithMissingConstraints() throws Exception {
+		String contactOfferCatalogResponse = "{\n" + "    \"id\": \"default\",\n" + "    \"contractOffers\": [ "
+				+ "       {\n"
+				+ "            \"id\": \"5ff29ec1-90ae-4e75-adf1-afb19ed8c686:cf0fc8c3-c7d6-4b52-baac-764f62312778\",\n"
+				+ "            \"policy\": {\n" + "                \"uid\": \"5dc869fc-9b30-4622-8e25-310033b3b927\",\n"
+				+ "                \"permissions\": [\n" + "                    {\n"
+				+ "                        \"edctype\": \"dataspaceconnector:permission\",\n"
+				+ "                        \"uid\": null,\n"
+				+ "                        \"target\": \"urn:uuid:4cfaf444-ba35-4971-9b02-162a1c8cdfe5-urn:uuid:7b5a2bfc-36ae-49b3-a7a1-c3bb6cfed190\",\n"
+				+ "                        \"action\": {\n" + "                            \"type\": \"USE\",\n"
+				+ "                            \"includedIn\": null,\n"
+				+ "                            \"constraint\": null\n" + "                        },\n"
+				+ "                        \"assignee\": null,\n" + "                        \"assigner\": null,\n"
+				+ "                        \"constraints\": [],\n" + "                        \"duties\": []\n"
+				+ "                    }\n" + "                ],\n" + "                \"prohibitions\": [],\n"
+				+ "                \"obligations\": [],\n" + "                \"extensibleProperties\": {},\n"
+				+ "                \"inheritsFrom\": null,\n" + "                \"assigner\": null,\n"
+				+ "                \"assignee\": null,\n" + "                \"target\": null,\n"
+				+ "                \"@type\": {\n" + "                    \"@policytype\": \"set\"\n"
+				+ "                }\n" + "            },\n" + "            \"asset\": {\n"
+				+ "                \"properties\": {\n"
+				+ "                    \"asset:prop:name\": \"Serialized Part - Submodel SerialPartTypization\",\n"
+				+ "                    \"asset:prop:contenttype\": \"application/json\",\n"
+				+ "                    \"asset:prop:description\": \"Serialized Part - Submodel SerialPartTypization\",\n"
+				+ "                    \"ids:byteSize\": null,\n"
+				+ "                    \"asset:prop:version\": \"1.0.0\",\n"
+				+ "                    \"asset:prop:id\": \"urn:uuid:4cfaf444-ba35-4971-9b02-162a1c8cdfe5-urn:uuid:7b5a2bfc-36ae-49b3-a7a1-c3bb6cfed190\",\n"
+				+ "                    \"ids:fileName\": null\n" + "                }\n" + "            },\n"
+				+ "            \"policyId\": null,\n" + "            \"assetId\": null,\n"
+				+ "            \"provider\": \"urn:connector:provider\",\n"
+				+ "            \"consumer\": \"urn:connector:consumer\",\n" + "            \"offerStart\": null,\n"
+				+ "            \"offerEnd\": null,\n" + "            \"contractStart\": null,\n"
+				+ "            \"contractEnd\": null\n" + "                }\n" + "       ]\n" + "}";
+		ObjectMapper mapper = new ObjectMapper();
+		ContractOffersCatalogResponse mockResponse = mapper.readValue(contactOfferCatalogResponse,
+				ContractOffersCatalogResponse.class);
+		return mockResponse;
+	}
 
-    private ContractOffersCatalogResponse getCatalogObjectWithMissingConstraints() throws Exception {
-        String contactOfferCatalogResponse = "{\n" +
-                "    \"id\": \"default\",\n" +
-                "    \"contractOffers\": [ " +
-                "       {\n" +
-                "            \"id\": \"5ff29ec1-90ae-4e75-adf1-afb19ed8c686:cf0fc8c3-c7d6-4b52-baac-764f62312778\",\n" +
-                "            \"policy\": {\n" +
-                "                \"uid\": \"5dc869fc-9b30-4622-8e25-310033b3b927\",\n" +
-                "                \"permissions\": [\n" +
-                "                    {\n" +
-                "                        \"edctype\": \"dataspaceconnector:permission\",\n" +
-                "                        \"uid\": null,\n" +
-                "                        \"target\": \"urn:uuid:4cfaf444-ba35-4971-9b02-162a1c8cdfe5-urn:uuid:7b5a2bfc-36ae-49b3-a7a1-c3bb6cfed190\",\n" +
-                "                        \"action\": {\n" +
-                "                            \"type\": \"USE\",\n" +
-                "                            \"includedIn\": null,\n" +
-                "                            \"constraint\": null\n" +
-                "                        },\n" +
-                "                        \"assignee\": null,\n" +
-                "                        \"assigner\": null,\n" +
-                "                        \"constraints\": [],\n" +
-                "                        \"duties\": []\n" +
-                "                    }\n" +
-                "                ],\n" +
-                "                \"prohibitions\": [],\n" +
-                "                \"obligations\": [],\n" +
-                "                \"extensibleProperties\": {},\n" +
-                "                \"inheritsFrom\": null,\n" +
-                "                \"assigner\": null,\n" +
-                "                \"assignee\": null,\n" +
-                "                \"target\": null,\n" +
-                "                \"@type\": {\n" +
-                "                    \"@policytype\": \"set\"\n" +
-                "                }\n" +
-                "            },\n" +
-                "            \"asset\": {\n" +
-                "                \"properties\": {\n" +
-                "                    \"asset:prop:name\": \"Serialized Part - Submodel SerialPartTypization\",\n" +
-                "                    \"asset:prop:contenttype\": \"application/json\",\n" +
-                "                    \"asset:prop:description\": \"Serialized Part - Submodel SerialPartTypization\",\n" +
-                "                    \"ids:byteSize\": null,\n" +
-                "                    \"asset:prop:version\": \"1.0.0\",\n" +
-                "                    \"asset:prop:id\": \"urn:uuid:4cfaf444-ba35-4971-9b02-162a1c8cdfe5-urn:uuid:7b5a2bfc-36ae-49b3-a7a1-c3bb6cfed190\",\n" +
-                "                    \"ids:fileName\": null\n" +
-                "                }\n" +
-                "            },\n" +
-                "            \"policyId\": null,\n" +
-                "            \"assetId\": null,\n" +
-                "            \"provider\": \"urn:connector:provider\",\n" +
-                "            \"consumer\": \"urn:connector:consumer\",\n" +
-                "            \"offerStart\": null,\n" +
-                "            \"offerEnd\": null,\n" +
-                "            \"contractStart\": null,\n" +
-                "            \"contractEnd\": null\n" +
-                "                }\n" +
-                "       ]\n" +
-                "}";
-        ObjectMapper mapper = new ObjectMapper();
-        ContractOffersCatalogResponse mockResponse
-                = mapper.readValue(contactOfferCatalogResponse, ContractOffersCatalogResponse.class);
-        return mockResponse;
-    }
+	private ConsumerRequest getConsumerRequest() throws Exception {
+		String consumerRequest = "{\n" + "\t\"connectorId\": \"343cdfdfd\",\n"
+				+ "\t\"providerUrl\": \"http: //20.218.254.172:7171/\",\n" + "\t\"offers\": [{\n"
+				+ "\t\t\t\"offerId\": \"1\",\n" + "\t\t\t\"assetId\": \"12345\",\n"
+				+ "\t\t\t\"policyId\": \"343 fdfd\"\n" + "\t\t}\n" + "\t],\n" + "\t\"policies\": [\n" + "\t\t{\n"
+				+ "\t\t\t\"type\": \"ROLE\",\n" + "\t\t\t\"value\": \"ADMIN\"\n" + "\t\t},\n" + "        {\n"
+				+ "\t\t\t\"type\": \"DURATION\",\n" + "\t\t\t\"value\": \"3 Day(s)\"\n" + "\t\t}\n" + "\t]\n" + "}";
+		ObjectMapper mapper = new ObjectMapper();
+		ConsumerRequest mockRequest = mapper.readValue(consumerRequest, ConsumerRequest.class);
+		return mockRequest;
+	}
 
-    private ConsumerRequest getConsumerRequest() throws Exception {
-        String consumerRequest = "{\n" +
-                "\t\"connectorId\": \"343cdfdfd\",\n" +
-                "\t\"providerUrl\": \"http: //20.218.254.172:7171/\",\n" +
-                "\t\"offers\": [{\n" +
-                "\t\t\t\"offerId\": \"1\",\n" +
-                "\t\t\t\"assetId\": \"12345\",\n" +
-                "\t\t\t\"policyId\": \"343 fdfd\"\n" +
-                "\t\t}\n" +
-                "\t],\n" +
-                "\t\"policies\": [\n" +
-                "\t\t{\n" +
-                "\t\t\t\"type\": \"ROLE\",\n" +
-                "\t\t\t\"value\": \"ADMIN\"\n" +
-                "\t\t},\n" +
-                "        {\n" +
-                "\t\t\t\"type\": \"DURATION\",\n" +
-                "\t\t\t\"value\": \"3 Day(s)\"\n" +
-                "\t\t}\n" +
-                "\t]\n" +
-                "}";
-        ObjectMapper mapper = new ObjectMapper();
-        ConsumerRequest mockRequest
-                = mapper.readValue(consumerRequest, ConsumerRequest.class);
-        return mockRequest;
-    }
+	private LegalEntityData getLegalEntityData() throws Exception {
+		String mockResponse = "{\n" + "  \"totalElements\": 7388,\n" + "  \"totalPages\": 739,\n" + "  \"page\": 0,\n"
+				+ "  \"content\": [\n" + "    {\n" + "      \"score\": 98.114334,\n" + "      \"legalEntity\": {\n"
+				+ "        \"bpn\": \"BPNL00000003B9JR\",\n" + "        \"names\": [\n" + "          {\n"
+				+ "            \"value\": \"BMW M GmbH\",\n" + "            \"shortName\": null\n" + "          }\n"
+				+ "        ]\n" + "      }\n" + "    }\n" + "  ]\n" + "}";
+		ObjectMapper mapper = new ObjectMapper();
+		LegalEntityData mockData = mapper.readValue(mockResponse, LegalEntityData.class);
+		return mockData;
 
-    private LegalEntityData getLegalEntityData() throws Exception {
-        String mockResponse = "{\n" +
-                "  \"totalElements\": 7388,\n" +
-                "  \"totalPages\": 739,\n" +
-                "  \"page\": 0,\n" +
-                "  \"content\": [\n" +
-                "    {\n" +
-                "      \"score\": 98.114334,\n" +
-                "      \"legalEntity\": {\n" +
-                "        \"bpn\": \"BPNL00000003B9JR\",\n" +
-                "        \"names\": [\n" +
-                "          {\n" +
-                "            \"value\": \"BMW M GmbH\",\n" +
-                "            \"shortName\": null\n" +
-                "          }\n" +
-                "        ]\n" +
-                "      }\n" +
-                "    }\n" +
-                "  ]\n" +
-                "}";
-        ObjectMapper mapper = new ObjectMapper();
-        LegalEntityData mockData
-                = mapper.readValue(mockResponse, LegalEntityData.class);
-        return mockData;
-
-    }
+	}
 }

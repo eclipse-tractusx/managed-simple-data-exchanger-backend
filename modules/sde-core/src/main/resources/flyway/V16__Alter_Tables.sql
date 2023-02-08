@@ -1,8 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 Critical TechWorks GmbH
- * Copyright (c) 2022 BMW GmbH
  * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,12 +18,30 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.core.controller.failurelog.repository;
+ALTER TABLE IF EXISTS batch
+DROP COLUMN optional_identifier_key;
+
+ALTER TABLE IF EXISTS batch
+DROP COLUMN optional_identifier_value;
+
+ALTER TABLE IF EXISTS aspect_relationship 
+RENAME COLUMN measurement_unit_lexical_value TO measurement_unit;
+
+ALTER TABLE IF EXISTS aspect_relationship 
+RENAME COLUMN assembled_on TO created_on;
+
+ALTER TABLE IF EXISTS aspect_relationship
+DROP COLUMN datatype_uri;
+
+ALTER TABLE IF EXISTS aspect_relationship
+ADD COLUMN last_modified_on  			TEXT NULL;
 
 
-import org.eclipse.tractusx.sde.core.controller.failurelog.entity.FailureLogEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface FailureLogRepository extends JpaRepository<FailureLogEntity, String> {
 
-}
+
+
+
+
+
+

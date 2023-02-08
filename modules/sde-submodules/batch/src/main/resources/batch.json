@@ -4,10 +4,11 @@
 	"type": "array",
 	"id": "batch",
 	"idShort": "Batch",
-	"version": "1.0.0",
-	"semantic_id": "urn:bamm:org.eclipse.batch:1.0.0#Batch",
+	"version": "1.0.2",
+	"semantic_id": "urn:bamm:io.catenax.batch:1.0.2#Batch",
 	"title": "Batch",
-	"description": "Batch",
+	"shortDescription": "BoM AsBuilt - Submodel Batch",
+	"description": "A batch is a quantity of (semi-) finished products or (raw) material product that have been produced under the same circumstances (e.g. same production location), as specified groups or amounts, within a certain time frame. Every batch can differ in the number or amount of products. Different batches can have varied specifications, e.g., different colors. A batch is identified via a Batch ID.",
 	"items": {
 		"type": "object",
 		"required": [
@@ -17,14 +18,7 @@
 			"classification",
 			"name_at_manufacturer"
 		],
-		"dependentRequired": {
-			"optional_identifier_key": [
-				"optional_identifier_value"
-			],
-			"optional_identifier_value": [
-				"optional_identifier_key"
-			]
-		},
+		"dependentRequired": {},
 		"properties": {
 			"uuid": {
 				"type": [
@@ -33,6 +27,7 @@
 				],
 				"pattern": "^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
 				"title": "UUID URN",
+				"description": "The fully anonymous Catena-X ID of the batch, valid for the Catena-X dataspace. The provided regular expression ensures that the UUID is composed of five groups of characters separated by hyphens, in the form 8-4-4-4-12 for a total of 36 characters (32 hexadecimal characters and 4 hyphens), optionally prefixed by 'urn:uuid:' to make it an IRI.",
 				"examples": [
 					"urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2"
 				]
@@ -42,6 +37,7 @@
 					"string"
 				],
 				"title": "Batch ID",
+				"description": "The batch number of the batch from the manufacturer. We assume here that the customer does not have or create its own batch number for a batch, but just used the manufacturer's batch number.",
 				"minLength": 1,
 				"examples": [
 					"NO-159040131155901488695376"
@@ -53,6 +49,7 @@
 				],
 				"format": "date-time",
 				"title": "Manufacturing Date",
+				"description": "Timestamp of the manufacturing date as the final step in production process (e.g. final quality check, ready-for-shipment event)",
 				"examples": [
 					"2022-02-04T14:48:54"
 				]
@@ -64,6 +61,7 @@
 				],
 				"pattern": "[A-Z]{3}|null|^$",
 				"title": "Manufacturing Country",
+				"description": "Country code where the part was manufactured",
 				"examples": [
 					"DEU"
 				]
@@ -74,6 +72,7 @@
 				],
 				"minLength": 1,
 				"title": "Manufacturer Part ID",
+				"description": "Part ID as assigned by the manufacturer of the part. The Part ID identifies the part (as designed) in the manufacturer`s dataspace. The Part ID does not reference a specific instance of a part and thus should not be confused with the serial number or batch number.",
 				"examples": [
 					"37754B7-76"
 				]
@@ -84,6 +83,7 @@
 					"null"
 				],
 				"title": "Customer Part ID",
+				"description": "Part ID as assigned by the manufacturer of the part. The Part ID identifies the part (as designed) in the customer`s dataspace. The Part ID does not reference a specific instance of a part and thus should not be confused with the serial number or batch number. Note: This property may only be populated in case there is a single customer for the batch.",
 				"examples": [
 					"37754B7-76"
 				]
@@ -101,6 +101,7 @@
 					"component"
 				],
 				"title": "Classification",
+				"description": "The classification of the part type according to STEP standard definition",
 				"examples": [
 					"component"
 				]
@@ -111,6 +112,7 @@
 				],
 				"minLength": 1,
 				"title": "Name At Manufacturer",
+				"description": "Name of the part as assigned by the manufacturer",
 				"examples": [
 					"Sensor"
 				]
@@ -121,33 +123,9 @@
 					"null"
 				],
 				"title": "Name At Customer",
+				"description": "Name of the part as assigned by the customer",
 				"examples": [
 					"Customer"
-				]
-			},
-			"optional_identifier_key": {
-				"type": [
-					"string",
-					"null"
-				],
-				"enum": [
-					"VAN",
-					"BatchID",
-					""
-				],
-				"title": "Optional Identifier Key",
-				"examples": [
-					"VAN"
-				]
-			},
-			"optional_identifier_value": {
-				"type": [
-					"string",
-					"null"
-				],
-				"title": "Optional Identifier Value",
-				"examples": [
-					"Value"
 				]
 			}
 		}
@@ -162,9 +140,7 @@
 			"customer_part_id": "37754B7-76",
 			"classification": "component",
 			"name_at_manufacturer": "Sensor",
-			"name_at_customer": "Sensor",
-			"optional_identifier_key": "VAN",
-			"optional_identifier_value": "Value"
+			"name_at_customer": "Sensor"
 		}
 	]
 }

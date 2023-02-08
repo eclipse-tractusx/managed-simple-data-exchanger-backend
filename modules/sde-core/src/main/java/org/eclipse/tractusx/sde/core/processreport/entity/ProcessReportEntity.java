@@ -26,17 +26,16 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import javax.persistence.Cacheable;
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
 import org.eclipse.tractusx.sde.common.enums.ProgressStatusEnum;
 
+import jakarta.persistence.Cacheable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Data;
 
 @Table(name = "process_report")
@@ -55,9 +54,11 @@ public class ProcessReportEntity implements Serializable {
     private int numberOfFailedItems;
     @Column(name = "number_of_succeeded_items")
     private int numberOfSucceededItems;
+    
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private ProgressStatusEnum status;
+    
     @Column(name = "start_date")
     private LocalDateTime startDate;
     @Column(name = "end_date")

@@ -28,7 +28,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-class SingleLevelBoMAsPlannedPrimaryKey implements Serializable {
+public class SingleLevelBoMAsPlannedPrimaryKey implements Serializable {
 
     private String parentCatenaXId;
     private String childCatenaXId;

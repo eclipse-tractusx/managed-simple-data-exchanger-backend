@@ -4,8 +4,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
+- Dynamic generation of CSV (Sample,template) file for implemented submodule. 
+- New api for transaction history download function for each process id.
+- Create api to support dynamic submodule help page.
+
+## [1.8.0] - 2022-12-12
+### Added
 - Uploaded submodel data update/delete.
 - SDE Backend code Stabilization for easy to add new submodels. 
+- Added new submodel PartAsPlanned aspect.
+- Added new submodel SingleLevelBoMAsPlanned aspect.
+- Added new submodel PartSiteInformationAsPlanned aspect.
+- Added new functionality update and Delete with exists aspect. 
+- Added new api for user role permission access managament.
+- Enabled api level permissions.
+
+### Fixed
+- Bug fixes.
 
 ## [1.7.0] - 2022-11-07
 ### Added
@@ -71,7 +86,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Integration with Digital Twin registry service.
 
 
-[Unreleased]: https://github.com/catenax-ng/product-dft-backend/compare/dft-backend-1.7.0...main
+[Unreleased]: https://github.com/catenax-ng/tx-dft-backend/compare/dft-backend-1.8.0...main
+[1.8.0]: https://github.com/catenax-ng/tx-dft-backend/compare/dft-backend-1.7.0...dft-backend-1.8.0
 [1.7.0]: https://github.com/catenax-ng/product-dft-backend/compare/dft-backend-1.6.0...dft-backend-1.7.0
 [1.6.0]: https://github.com/catenax-ng/product-dft-backend/compare/dft-backend-1.5.0...dft-backend-1.6.0
 [1.5.0]: https://github.com/catenax-ng/product-dft-backend/compare/dftbackend-1.3.0...dft-backend-1.5.0

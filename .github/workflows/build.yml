@@ -20,7 +20,8 @@ on:
     branches:
       - 'main'
     tags:
-      - v1.*
+      - 'v*.*.*'
+      - 'v*.*.*-*'
 
 env:
   REGISTRY: ghcr.io
@@ -53,13 +54,19 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract Metadata (tags, labels) for Docker
+      # Create SemVer or ref tags dependent of trigger event
+      - name: Docker meta
         id: meta
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@v4
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=semver,pattern={{version}},value=v1.8.0
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}
+            type=semver,pattern={{major}}.{{minor}}
           flavor: |
               latest=true
               

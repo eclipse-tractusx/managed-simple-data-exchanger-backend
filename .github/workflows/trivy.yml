@@ -1,4 +1,4 @@
-name: "Trivy Scan"
+name: "Trivy"
 on:
   push:
     branches: [main]
@@ -18,7 +18,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Run Trivy vulnerability scanner in repo mode
         uses: aquasecurity/trivy-action@master
@@ -52,14 +52,15 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           # Path to Docker image
-          image-ref: "ghcr.io/catenax-ng/product-dft-backend:latest"
-          format: "json"
-         # output: "trivy-results2.sarif"
+          image-ref: "ghcr.io/catenax-ng/tx-dft-backend:latest"
+          format: "sarif"
+          output: "trivy-results.sarif"
           exit-code: "1"
           severity: "CRITICAL,HIGH"
 
-    #  - name: Upload Trivy scan results to GitHub Security tab
-    #    if: always()
-    #    uses: github/codeql-action/upload-sarif@v2
-    #    with:
-    #     sarif_file: "trivy-results2.sarif"
+      - name: Upload Trivy scan results to GitHub Security tab
+        if: always()
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: "trivy-results.sarif"
+

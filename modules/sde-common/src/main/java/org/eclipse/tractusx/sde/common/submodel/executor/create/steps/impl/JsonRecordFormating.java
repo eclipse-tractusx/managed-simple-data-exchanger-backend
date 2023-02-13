@@ -7,6 +7,7 @@ import org.eclipse.tractusx.sde.common.exception.ValidationException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.JsonObject;
 
@@ -30,7 +31,10 @@ public class JsonRecordFormating extends Step {
 			try {
 				JsonObject jObject = submodelProperties.get(ele).getAsJsonObject();
 
-				String fieldValue = rowjObject.get(jObject.getAsString()).asText();
+				String fieldValue = null;
+				JsonNode jsonValuenode = rowjObject.get(ele);
+				if (!jsonValuenode.isNull())
+					fieldValue = jsonValuenode.asText();
 
 				recordProcessUtils.setFieldValue(rowjObject, ele, jObject, fieldValue);
 

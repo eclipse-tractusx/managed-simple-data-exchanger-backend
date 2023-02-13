@@ -13,7 +13,6 @@ public class RecordProcessUtils {
 
 	public void setFieldValue(ObjectNode rowjObject, String ele, JsonObject jObject, String fieldValue) {
 
-
 		if (fieldValue == null)
 			fieldValue = "";
 

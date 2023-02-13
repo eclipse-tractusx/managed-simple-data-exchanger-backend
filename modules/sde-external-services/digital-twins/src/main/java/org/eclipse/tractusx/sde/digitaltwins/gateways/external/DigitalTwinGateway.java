@@ -126,15 +126,20 @@ public class DigitalTwinGateway {
 		return deleteResponse;
 	}
 
+	@SneakyThrows
 	public SubmodelDescriptionListResponse getShellDescriptorsWithSubmodelDetails(List<String> shellIds) {
+		return digitalTwinsFeignClient.getShellDescriptorsWithSubmodelDetails(getHeaders(), shellIds);
+	}
 
+	@SneakyThrows
+	public void deleteSubmodelfromShellById(String shellId, String subModelId) {
+		digitalTwinsFeignClient.deleteSubmodelfromShellById(shellId, subModelId, getHeaders());
+	}
+
+	private Map<String, String> getHeaders() {
 		Map<String, String> headers = new HashMap<>();
 		headers.put(AUTHORIZATION, getBearerToken());
-
-		SubmodelDescriptionListResponse shellDescriptorWithsubmodelDetails = digitalTwinsFeignClient
-				.getShellDescriptorsWithSubmodelDetails(headers, shellIds);
-
-		return shellDescriptorWithsubmodelDetails;
+		return headers;
 	}
 
 	public ShellDescriptorResponse createShellDescriptor(ShellDescriptorRequest request) {
@@ -222,4 +227,5 @@ public class DigitalTwinGateway {
 
 		return tokenExpirationTime - 20000 > currentTime;
 	}
+
 }

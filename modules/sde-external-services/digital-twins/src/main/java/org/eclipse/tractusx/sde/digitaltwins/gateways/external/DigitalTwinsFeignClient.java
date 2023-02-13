@@ -36,12 +36,13 @@ import org.springframework.web.bind.annotation.RequestHeader;
 public interface DigitalTwinsFeignClient {
 
 	@DeleteMapping(path = "/registry/shell-descriptors/{aasIdentifier}/submodel-descriptors/{submodelIdentifier}")
-	ResponseEntity<Object> deleteDigitalTwinsById(@PathVariable("aasIdentifier") String shellId,
+	ResponseEntity<Object> deleteSubmodelfromShellById(@PathVariable("aasIdentifier") String shellId,
 			@PathVariable("submodelIdentifier") String submodelIdentifier,
 			@RequestHeader Map<String, String> requestHeader);
 
 	@PostMapping(path = "/registry/shell-descriptors/fetch")
 	SubmodelDescriptionListResponse getShellDescriptorsWithSubmodelDetails(@RequestHeader Map<String, String> requestHeader,
 			@RequestBody List<String> body);
+	
 
 }

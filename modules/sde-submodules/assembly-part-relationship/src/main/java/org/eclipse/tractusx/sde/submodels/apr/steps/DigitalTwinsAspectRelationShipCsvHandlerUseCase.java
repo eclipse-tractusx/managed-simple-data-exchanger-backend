@@ -103,7 +103,6 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 
 			List<String> submodelExistinceCount = new ArrayList<>();
 
-
 			for (ShellDescriptorResponse shellDescriptorResponse : shellDescriptorWithsubmodelDetails.getItems()) {
 
 				aspectRelationShip.setShellId(shellDescriptorResponse.getIdentification());
@@ -117,7 +116,6 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 						foundSubmodel = subModelResponse;
 						submodelExistinceCount.add(aspectRelationShip.getShellId());
 					}
-
 				}
 			}
 
@@ -131,20 +129,29 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 
 		}
 
-		shellId= aspectRelationShip.getShellId();
-		
+		shellId = aspectRelationShip.getShellId();
+		CreateSubModelRequest createSubModelRequest = getCreateSubModelRequest(aspectRelationShip);
+
 		if (foundSubmodel == null) {
 			logDebug(String.format("No submodels for '%s'", shellId));
-			CreateSubModelRequest createSubModelRequest = getCreateSubModelRequest(aspectRelationShip);
-			gateway.createSubModel(shellId, createSubModelRequest);
-			aspectRelationShip.setSubModelId(createSubModelRequest.getIdentification());
-			aspectRelationShip.setChildUuid(createSubModelRequest.getIdentification());
+			createSubModelSteps(aspectRelationShip, shellId, createSubModelRequest);
 		} else {
+			if (!aspectRelationShip.getChildUuid().equals(createSubModelRequest.getIdentification())) {
+				gateway.deleteSubmodelfromShellById(shellId, createSubModelRequest.getIdentification());
+				createSubModelSteps(aspectRelationShip, shellId, createSubModelRequest);
+			}
 			aspectRelationShip.setUpdated(CommonConstants.UPDATED_Y);
 			logDebug("Complete Digital Twins Update Update Digital Twins");
 		}
 
 		return aspectRelationShip;
+	}
+
+	private void createSubModelSteps(AspectRelationship aspectRelationShip, String shellId,
+			CreateSubModelRequest createSubModelRequest) {
+		gateway.createSubModel(shellId, createSubModelRequest);
+		aspectRelationShip.setSubModelId(createSubModelRequest.getIdentification());
+		aspectRelationShip.setChildUuid(createSubModelRequest.getIdentification());
 	}
 
 	private ShellDescriptorResponse createShellDescriptor(AspectRelationship aspectRelationShip,
@@ -190,11 +197,51 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 		return shellLookupRequest;
 	}
 
+	private ShellLookupRequest getShellLookupRequestforChild(AspectRelationship aspectRelationShip) {
+		ShellLookupRequest shellLookupRequest = new ShellLookupRequest();
+		shellLookupRequest.addLocalIdentifier(CommonConstants.PART_INSTANCE_ID,
+				aspectRelationShip.getChildPartInstanceId());
+		shellLookupRequest.addLocalIdentifier(CommonConstants.MANUFACTURER_PART_ID,
+				aspectRelationShip.getChildManufacturerPartId());
+		shellLookupRequest.addLocalIdentifier(CommonConstants.MANUFACTURER_ID,
+				aspectRelationShip.getChildManufacturerId());
+
+		if (aspectRelationShip.hasOptionalParentIdentifier()) {
+			shellLookupRequest.addLocalIdentifier(aspectRelationShip.getChildOptionalIdentifierKey(),
+					aspectRelationShip.getChildOptionalIdentifierValue());
+		}
+
+		return shellLookupRequest;
+	}
+
 	@SneakyThrows
 	private CreateSubModelRequest getCreateSubModelRequest(AspectRelationship aspectRelationShip) {
 		ArrayList<String> value = new ArrayList<>();
 		value.add(getsemanticIdOfModel());
-		String identification = UUIdGenerator.getUrnUuid();
+
+		ShellLookupRequest shellLookupRequest = getShellLookupRequestforChild(aspectRelationShip);
+		ShellLookupResponse childshellIds = gateway.shellLookup(shellLookupRequest);
+
+		String childUUID = null;
+
+		if (childshellIds.isEmpty()) {
+			throw new CsvHandlerUseCaseException(aspectRelationShip.getRowNumber(),
+					"No child aspect found for " + shellLookupRequest.toJsonString());
+		}
+
+		if (childshellIds.size() > 1) {
+			throw new CsvHandlerDigitalTwinUseCaseException(
+					String.format("Multiple shell id's found on childAspect %s", shellLookupRequest.toJsonString()));
+		}
+
+		SubmodelDescriptionListResponse shellDescriptorWithsubmodelDetails = gateway
+				.getShellDescriptorsWithSubmodelDetails(childshellIds);
+
+		for (ShellDescriptorResponse shellDescriptorResponse : shellDescriptorWithsubmodelDetails.getItems()) {
+			childUUID = shellDescriptorResponse.getGlobalAssetId().getValue().get(0);
+		}
+
+		String identification = childUUID;
 		SemanticId semanticId = new SemanticId(value);
 
 		List<Endpoint> endpoints = new ArrayList<>();

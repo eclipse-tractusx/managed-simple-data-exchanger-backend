@@ -16,6 +16,7 @@
 			"parent_manufacturer_part_id",
 			"part_instance_id",
 			"manufacturer_part_id",
+			"manufacturer_id",
 			"lifecycle_context",
 			"quantity_number",
 			"measurement_unit",
@@ -105,6 +106,17 @@
 				"description": "The ID of the type/catalog part (of which the serialized part is an instance of) from the manufacturer.",
 				"examples": [
 					"37754B7-76"
+				]
+			},
+			"manufacturer_id": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"title": "Manufacturer id",
+				"description": "The Business Partner Number (BPNL) of the manufacturer of the serialized part, i.e., the companies main entry.",
+				"examples": [
+					"BPNL00000000001"
 				]
 			},
 			"optional_identifier_key": {
@@ -209,13 +221,14 @@
 			"parent_optional_identifier_value": "Value",
 			"part_instance_id": "NO-159040131155901488695376",
 			"manufacturer_part_id": "PART-123412416",
+			"manufacturer_id": "BPNL00000000001",
 			"optional_identifier_key": "",
 			"optional_identifier_value": "",
 			"lifecycle_context": "AsRequired",
 			"quantity_number": 2.5,
 			"measurement_unit": "litre",
 			"created_on": "2022-02-04T14:48:54",
-			"last_modified_on":"2022-02-03T14:48:54.709Z"
+			"last_modified_on": "2022-02-03T14:48:54.709Z"
 		}
 	]
 }

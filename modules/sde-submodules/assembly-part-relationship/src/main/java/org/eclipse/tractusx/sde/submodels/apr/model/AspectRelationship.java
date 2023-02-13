@@ -89,6 +89,9 @@ public class AspectRelationship {
 	@JsonProperty(value = "manufacturer_part_id")
 	private String childManufacturerPartId;
 
+	@JsonProperty(value = "manufacturer_id")
+	private String childManufacturerId;
+	
 	@JsonProperty(value = "optional_identifier_key")
 	private String childOptionalIdentifierKey;
 

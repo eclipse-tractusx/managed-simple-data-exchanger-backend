@@ -26,6 +26,7 @@ import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseExc
 import org.eclipse.tractusx.sde.common.submodel.executor.SubmodelExecutor;
 import org.eclipse.tractusx.sde.common.submodel.executor.create.steps.impl.CsvParse;
 import org.eclipse.tractusx.sde.common.submodel.executor.create.steps.impl.GenerateUrnUUID;
+import org.eclipse.tractusx.sde.common.submodel.executor.create.steps.impl.JsonRecordFormating;
 import org.eclipse.tractusx.sde.common.submodel.executor.create.steps.impl.JsonRecordValidate;
 import org.eclipse.tractusx.sde.submodels.psiap.mapper.PartSiteInformationAsPlannedMapper;
 import org.eclipse.tractusx.sde.submodels.psiap.model.PartSiteInformationAsPlanned;
@@ -48,6 +49,8 @@ public class PartSiteInformationAsPlannedExecutor extends SubmodelExecutor {
 	private final PartSiteInformationAsPlannedMapper partSiteInformationAsPlannedMapper;
 
 	private final CsvParse csvParseStep;
+	
+	private final JsonRecordFormating jsonRecordformater;
 
 	private final GenerateUrnUUID generateUrnUUID;
 
@@ -74,6 +77,9 @@ public class PartSiteInformationAsPlannedExecutor extends SubmodelExecutor {
 	@SneakyThrows
 	public void executeJsonRecord(Integer rowIndex, ObjectNode jsonObject, String processId) {
 
+		jsonRecordformater.init(getSubmodelSchema());
+		jsonRecordformater.run(rowIndex, jsonObject, processId);
+		
 		nextSteps(rowIndex, jsonObject, processId);
 
 	}

@@ -14,7 +14,7 @@ temp/
 .sts4-cache
 .DS_Store
 !**/.DS_Store
-
+*.DS_Store
 ./maven.deps
 **maven.deps
 

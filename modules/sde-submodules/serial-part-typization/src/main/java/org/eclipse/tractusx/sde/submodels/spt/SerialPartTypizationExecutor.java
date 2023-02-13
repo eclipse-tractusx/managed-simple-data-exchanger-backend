@@ -28,6 +28,7 @@ import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseExc
 import org.eclipse.tractusx.sde.common.submodel.executor.SubmodelExecutor;
 import org.eclipse.tractusx.sde.common.submodel.executor.create.steps.impl.CsvParse;
 import org.eclipse.tractusx.sde.common.submodel.executor.create.steps.impl.GenerateUrnUUID;
+import org.eclipse.tractusx.sde.common.submodel.executor.create.steps.impl.JsonRecordFormating;
 import org.eclipse.tractusx.sde.common.submodel.executor.create.steps.impl.JsonRecordValidate;
 import org.eclipse.tractusx.sde.submodels.spt.mapper.AspectMapper;
 import org.eclipse.tractusx.sde.submodels.spt.model.Aspect;
@@ -50,6 +51,8 @@ public class SerialPartTypizationExecutor extends SubmodelExecutor {
 	private final AspectMapper aspectMapper;
 
 	private final CsvParse csvParseStep;
+
+	private final JsonRecordFormating jsonRecordformater;
 
 	private final GenerateUrnUUID generateUrnUUID;
 
@@ -76,6 +79,9 @@ public class SerialPartTypizationExecutor extends SubmodelExecutor {
 	@SneakyThrows
 	public void executeJsonRecord(Integer rowIndex, ObjectNode jsonObject, String processId) {
 
+		jsonRecordformater.init(getSubmodelSchema());
+		jsonRecordformater.run(rowIndex, jsonObject, processId);
+
 		nextSteps(rowIndex, jsonObject, processId);
 
 	}
@@ -95,7 +101,6 @@ public class SerialPartTypizationExecutor extends SubmodelExecutor {
 
 		eDCAspectHandlerUseCase.init(getSubmodelSchema());
 		eDCAspectHandlerUseCase.run(getNameOfModel(), aspect, processId);
-		
 
 		storeAspectCsvHandlerUseCase.run(aspect);
 	}

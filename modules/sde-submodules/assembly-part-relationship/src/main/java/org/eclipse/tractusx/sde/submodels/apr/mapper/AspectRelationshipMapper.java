@@ -33,6 +33,7 @@ import org.eclipse.tractusx.sde.submodels.apr.model.Quantity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.Gson;
@@ -41,6 +42,7 @@ import com.google.gson.JsonObject;
 import lombok.SneakyThrows;
 
 @Mapper(componentModel = "spring")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class AspectRelationshipMapper {
 
 	ObjectMapper mapper = new ObjectMapper();

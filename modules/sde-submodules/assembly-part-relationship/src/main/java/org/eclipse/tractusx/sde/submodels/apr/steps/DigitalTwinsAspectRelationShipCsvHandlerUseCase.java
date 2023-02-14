@@ -98,34 +98,8 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 
 		} else {
 
-			SubmodelDescriptionListResponse shellDescriptorWithsubmodelDetails = gateway
-					.getShellDescriptorsWithSubmodelDetails(shellIds);
-
-			List<String> submodelExistinceCount = new ArrayList<>();
-
-			for (ShellDescriptorResponse shellDescriptorResponse : shellDescriptorWithsubmodelDetails.getItems()) {
-
-				aspectRelationShip.setShellId(shellDescriptorResponse.getIdentification());
-				aspectRelationShip.setParentUuid(shellDescriptorResponse.getGlobalAssetId().getValue().get(0));
-
-				for (SubModelResponse subModelResponse : shellDescriptorResponse.getSubmodelDescriptors()) {
-
-					if (subModelResponse != null && getIdShortOfModel().equals(subModelResponse.getIdShort())) {
-						aspectRelationShip.setSubModelId(subModelResponse.getIdentification());
-						aspectRelationShip.setChildUuid(subModelResponse.getIdentification());
-						foundSubmodel = subModelResponse;
-						submodelExistinceCount.add(aspectRelationShip.getShellId());
-					}
-				}
-			}
-
-			if (foundSubmodel == null && shellIds.size() > 1)
-				throw new CsvHandlerDigitalTwinUseCaseException(String
-						.format("Multiple shell id's found on childAspect %s", shellLookupRequest.toJsonString()));
-
-			if (submodelExistinceCount.size() > 1)
-				throw new CsvHandlerDigitalTwinUseCaseException(String.format(
-						"%s submodel found multiple times in shells %s", getIdShortOfModel(), submodelExistinceCount));
+			foundSubmodel = checkShellforSubmodelExistorNot(aspectRelationShip, shellLookupRequest, shellIds,
+					foundSubmodel);
 
 		}
 
@@ -145,6 +119,47 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 		}
 
 		return aspectRelationShip;
+	}
+
+	private SubModelResponse checkShellforSubmodelExistorNot(AspectRelationship aspectRelationShip,
+			ShellLookupRequest shellLookupRequest, ShellLookupResponse shellIds, SubModelResponse foundSubmodel)
+			throws CsvHandlerDigitalTwinUseCaseException {
+		SubmodelDescriptionListResponse shellDescriptorWithsubmodelDetails = gateway
+				.getShellDescriptorsWithSubmodelDetails(shellIds);
+
+		List<String> submodelExistinceCount = new ArrayList<>();
+
+		for (ShellDescriptorResponse shellDescriptorResponse : shellDescriptorWithsubmodelDetails.getItems()) {
+
+			foundSubmodel = findMatchingSubmodel(aspectRelationShip, foundSubmodel, submodelExistinceCount,
+					shellDescriptorResponse);
+		}
+
+		if (foundSubmodel == null && shellIds.size() > 1)
+			throw new CsvHandlerDigitalTwinUseCaseException(String
+					.format("Multiple shell id's found on childAspect %s", shellLookupRequest.toJsonString()));
+
+		if (submodelExistinceCount.size() > 1)
+			throw new CsvHandlerDigitalTwinUseCaseException(String.format(
+					"%s submodel found multiple times in shells %s", getIdShortOfModel(), submodelExistinceCount));
+		return foundSubmodel;
+	}
+
+	private SubModelResponse findMatchingSubmodel(AspectRelationship aspectRelationShip, SubModelResponse foundSubmodel,
+			List<String> submodelExistinceCount, ShellDescriptorResponse shellDescriptorResponse) {
+		aspectRelationShip.setShellId(shellDescriptorResponse.getIdentification());
+		aspectRelationShip.setParentUuid(shellDescriptorResponse.getGlobalAssetId().getValue().get(0));
+
+		for (SubModelResponse subModelResponse : shellDescriptorResponse.getSubmodelDescriptors()) {
+
+			if (subModelResponse != null && getIdShortOfModel().equals(subModelResponse.getIdShort())) {
+				aspectRelationShip.setSubModelId(subModelResponse.getIdentification());
+				aspectRelationShip.setChildUuid(subModelResponse.getIdentification());
+				foundSubmodel = subModelResponse;
+				submodelExistinceCount.add(aspectRelationShip.getShellId());
+			}
+		}
+		return foundSubmodel;
 	}
 
 	private void createSubModelSteps(AspectRelationship aspectRelationShip, String shellId,

@@ -1,7 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 BMW GmbH
  * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022 Contributors to the CatenaX (ng) GitHub Organisation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,27 +18,15 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.digitaltwins.entities.response;
+ALTER TABLE IF EXISTS aspect_relationship
+ADD COLUMN IF NOT EXISTS manufacturer_id  			TEXT NULL;
 
-import java.util.List;
 
-import org.eclipse.tractusx.sde.digitaltwins.entities.common.Description;
-import org.eclipse.tractusx.sde.digitaltwins.entities.common.GlobalAssetId;
-import org.eclipse.tractusx.sde.digitaltwins.entities.common.KeyValuePair;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class ShellDescriptorResponse {
-	private String idShort;
-	private String identification;
-	private List<Description> description;
-	private GlobalAssetId globalAssetId;
-	private List<KeyValuePair> specificAssetIds;
 
-	private List<SubModelResponse> submodelDescriptors;
-}
+
+
+
+
+

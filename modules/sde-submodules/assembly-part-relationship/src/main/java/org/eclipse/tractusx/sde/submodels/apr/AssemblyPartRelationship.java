@@ -21,6 +21,7 @@
 package org.eclipse.tractusx.sde.submodels.apr;
 
 import java.io.InputStream;
+import java.util.List;
 
 import org.eclipse.tractusx.sde.common.extensions.SubmodelExtension;
 import org.eclipse.tractusx.sde.common.model.Submodel;
@@ -50,8 +51,9 @@ public class AssemblyPartRelationship extends SubmodelExtension {
 
 		submodel = loadSubmodel(input);
 		submodel.setExecutor(assemblyPartRelationshipWorkflow);
-		
+
 		submodel.addProperties("tableName", "aspect_relationship");
+		submodel.addProperties("autoPopulatedfields", List.of("parent_uuid", "uuid"));
 	}
 
 	@Override

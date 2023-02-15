@@ -1,5 +1,4 @@
 /********************************************************************************
- * Copyright (c) 2022 BMW GmbH
  * Copyright (c) 2022 T-Systems International GmbH
  * Copyright (c) 2022 Contributors to the Eclipse Foundation
  *
@@ -19,27 +18,30 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.digitaltwins.entities.response;
+package org.eclipse.tractusx.sde.common.exception;
 
-import java.util.List;
+public class JsonRecordHandlerUseCaseException extends Exception {
 
-import org.eclipse.tractusx.sde.digitaltwins.entities.common.Description;
-import org.eclipse.tractusx.sde.digitaltwins.entities.common.GlobalAssetId;
-import org.eclipse.tractusx.sde.digitaltwins.entities.common.KeyValuePair;
+	private static final long serialVersionUID = 1L;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+	private final int rowPosition;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class ShellDescriptorResponse {
-	private String idShort;
-	private String identification;
-	private List<Description> description;
-	private GlobalAssetId globalAssetId;
-	private List<KeyValuePair> specificAssetIds;
+	private final int colomn;
 
-	private List<SubModelResponse> submodelDescriptors;
+	public JsonRecordHandlerUseCaseException(int rowPosition, String message) {
+		super(message);
+		this.rowPosition = rowPosition;
+		this.colomn = 0;
+	}
+
+	public JsonRecordHandlerUseCaseException(int rowPosition, int colomn, String message) {
+		super(message);
+		this.rowPosition = rowPosition;
+		this.colomn = colomn;
+	}
+
+	@Override
+	public String getMessage() {
+		return String.format("RowPosition: %s | Colomn: %s | Description: %s", rowPosition, colomn, super.getMessage());
+	}
 }

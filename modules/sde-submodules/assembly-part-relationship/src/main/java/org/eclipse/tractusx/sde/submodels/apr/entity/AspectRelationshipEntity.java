@@ -56,6 +56,8 @@ public class AspectRelationshipEntity implements Serializable {
 	private String childPartInstanceId;
     @Column(name = "manufacturer_part_id")
 	private String childManufacturerPartId;
+    @Column(name = "manufacturer_id")
+	private String childManufacturerId;
     @Column(name = "optional_identifier_key")
 	private String childOptionalIdentifierKey;
     @Column(name = "optional_identifier_value")

@@ -25,6 +25,7 @@ import org.eclipse.tractusx.sde.common.entities.csv.RowData;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseException;
 import org.eclipse.tractusx.sde.common.submodel.executor.SubmodelExecutor;
 import org.eclipse.tractusx.sde.common.submodel.executor.create.steps.impl.CsvParse;
+import org.eclipse.tractusx.sde.common.submodel.executor.create.steps.impl.JsonRecordFormating;
 import org.eclipse.tractusx.sde.common.submodel.executor.create.steps.impl.JsonRecordValidate;
 import org.eclipse.tractusx.sde.submodels.sluab.mapper.SingleLevelUsageAsBuiltMapper;
 import org.eclipse.tractusx.sde.submodels.sluab.model.SingleLevelUsageAsBuilt;
@@ -49,6 +50,8 @@ public class SingleLevelUsageAsBuiltExecutor extends SubmodelExecutor {
 
 	private final JsonRecordValidate jsonRecordValidate;
 
+	private final JsonRecordFormating jsonRecordformater;
+	
 	private final SingleLevelUsageAsBuiltUUIDUrnUUID generateUrnUUID;
 
 	private final DigitalTwinsSingleLevelUsageAsBuiltCsvHandlerUseCase digitalTwinsSingleLevelUsageAsBuiltCsvHandlerUseCase;
@@ -74,6 +77,9 @@ public class SingleLevelUsageAsBuiltExecutor extends SubmodelExecutor {
 	@SneakyThrows
 	public void executeJsonRecord(Integer rowIndex, ObjectNode jsonObject, String processId) {
 
+		jsonRecordformater.init(getSubmodelSchema());
+		jsonRecordformater.run(rowIndex, jsonObject, processId);
+		
 		nextSteps(rowIndex, jsonObject, processId);
 
 	}

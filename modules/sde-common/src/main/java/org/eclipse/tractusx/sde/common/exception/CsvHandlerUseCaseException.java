@@ -22,6 +22,8 @@ package org.eclipse.tractusx.sde.common.exception;
 
 public class CsvHandlerUseCaseException extends Exception {
 
+	private static final long serialVersionUID = 1L;
+
 	private final int rowPosition;
 
 	private final int colomn;

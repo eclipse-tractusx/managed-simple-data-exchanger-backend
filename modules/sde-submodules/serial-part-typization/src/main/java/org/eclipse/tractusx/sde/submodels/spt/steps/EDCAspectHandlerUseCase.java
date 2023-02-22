@@ -102,7 +102,7 @@ public class EDCAspectHandlerUseCase extends Step {
 			AspectEntity entity = aspectService.readEntity(input.getUuid());
 			aspectService.deleteEDCAsset(entity);
 		} catch (Exception e) {
-			if (!e.getMessage().contains("404 Not Found") && !e.getMessage().contains("No data found")) {
+			if (!e.getMessage().contains("404 Not Found")) {
 				throw new ServiceException("Exception in EDC delete request process:" + e.getMessage());
 			}
 		}

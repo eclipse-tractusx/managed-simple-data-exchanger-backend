@@ -24,6 +24,7 @@ package org.eclipse.tractusx.sde.digitaltwins.gateways.external;
 
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.CreateSubModelRequest;
@@ -32,6 +33,7 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellLookupRequest
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellLookupResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelListResponse;
+import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubmodelDescriptionListResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -48,179 +50,182 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class DigitalTwinGateway {
 
-    private static final String AUTHORIZATION = "Authorization";
-    private static final String ASSET_IDS_QUERY_PARAMETER = "assetIds";
-    private static final String CLIENT_ID_TOKEN_QUERY_PARAMETER = "client_id";
-    private static final String CLIENT_SECRET_TOKEN_QUERY_PARAMETER = "client_secret";
-    private static final String GRANT_TYPE_TOKEN_QUERY_PARAMETER = "grant_type";
-    private static final String ACCESS_TOKEN = "access_token";
-    
-    private String accessToken;
+	private static final String AUTHORIZATION = "Authorization";
+	private static final String ASSET_IDS_QUERY_PARAMETER = "assetIds";
+	private static final String CLIENT_ID_TOKEN_QUERY_PARAMETER = "client_id";
+	private static final String CLIENT_SECRET_TOKEN_QUERY_PARAMETER = "client_secret";
+	private static final String GRANT_TYPE_TOKEN_QUERY_PARAMETER = "grant_type";
+	private static final String ACCESS_TOKEN = "access_token";
 
-    @Value(value = "${digital-twins.authentication.clientSecret}")
-    private String clientSecret;
-    @Value(value = "${digital-twins.authentication.clientId}")
-    private String clientId;
-    @Value(value = "${digital-twins.authentication.grantType}")
-    private String grantType;
-    @Value(value = "${digital-twins.hostname}")
-    private String digitalTwinsHost;
-    @Value(value = "${digital-twins.authentication.url}")
-    private String tokenUrl;
+	private final DigitalTwinsFeignClient digitalTwinsFeignClient;
 
-    public ShellLookupResponse shellLookup(ShellLookupRequest request) {
+	private String accessToken;
 
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(AUTHORIZATION, getBearerToken());
-        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(headers);
+	@Value(value = "${digital-twins.authentication.clientSecret}")
+	private String clientSecret;
+	@Value(value = "${digital-twins.authentication.clientId}")
+	private String clientId;
+	@Value(value = "${digital-twins.authentication.grantType}")
+	private String grantType;
+	@Value(value = "${digital-twins.hostname}")
+	private String digitalTwinsHost;
+	@Value(value = "${digital-twins.authentication.url}")
+	private String tokenUrl;
 
-        Map<String, String> queryParameters = new HashMap<>();
-        queryParameters.put(ASSET_IDS_QUERY_PARAMETER, request.toJsonString());
+	public ShellLookupResponse shellLookup(ShellLookupRequest request) {
 
-        String url = digitalTwinsHost + "/lookup/shells";
-        String urlTemplate = UriComponentsBuilder
-                .fromHttpUrl(url)
-                .queryParam(ASSET_IDS_QUERY_PARAMETER, "{assetIds}")
-                .encode()
-                .toUriString();
+		RestTemplate restTemplate = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(AUTHORIZATION, getBearerToken());
+		HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(headers);
 
-        ResponseEntity<ShellLookupResponse> response = restTemplate.exchange(
-                urlTemplate,
-                HttpMethod.GET,
-                entity,
-                ShellLookupResponse.class,
-                queryParameters);
+		Map<String, String> queryParameters = new HashMap<>();
+		queryParameters.put(ASSET_IDS_QUERY_PARAMETER, request.toJsonString());
 
-        ShellLookupResponse responseBody;
-        if (response.getStatusCode() != HttpStatus.OK) {
-            responseBody = new ShellLookupResponse();
-        } else {
-            responseBody = response.getBody();
-        }
-        return responseBody;
-    }
-    
-    public String deleteShell(String assetId) {
+		String url = digitalTwinsHost + "/lookup/shells";
+		String urlTemplate = UriComponentsBuilder.fromHttpUrl(url).queryParam(ASSET_IDS_QUERY_PARAMETER, "{assetIds}")
+				.encode().toUriString();
 
-        RestTemplate restTemplate = new RestTemplate();
-        String deleteResponse = "";
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(AUTHORIZATION, getBearerToken());
-        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(headers);
+		ResponseEntity<ShellLookupResponse> response = restTemplate.exchange(urlTemplate, HttpMethod.GET, entity,
+				ShellLookupResponse.class, queryParameters);
 
-        String url = digitalTwinsHost + "/lookup/shells/";
-        String urlTemplate = UriComponentsBuilder
-                .fromHttpUrl(url)
-                .path(assetId)
-                .encode()
-                .toUriString();
+		ShellLookupResponse responseBody;
+		if (response.getStatusCode() != HttpStatus.OK) {
+			responseBody = new ShellLookupResponse();
+		} else {
+			responseBody = response.getBody();
+		}
+		return responseBody;
+	}
 
-        ResponseEntity<Void> response = restTemplate.exchange(
-                urlTemplate,
-                HttpMethod.DELETE,
-                entity,
-                Void.class);
+	public String deleteShell(String assetId) {
 
-        if (response.getStatusCode() == HttpStatus.NO_CONTENT) {
-        	deleteResponse = "Asset identifier"+ assetId +"deleted successfully";
-        }
-        return deleteResponse;
-    }
+		RestTemplate restTemplate = new RestTemplate();
+		String deleteResponse = "";
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(AUTHORIZATION, getBearerToken());
+		HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(headers);
 
-    public ShellDescriptorResponse createShellDescriptor(ShellDescriptorRequest request) {
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(AUTHORIZATION, getBearerToken());
-        HttpEntity<ShellDescriptorRequest> entity = new HttpEntity<>(request, headers);
-        String url = digitalTwinsHost + "/registry/shell-descriptors";
-        ResponseEntity<ShellDescriptorResponse> response = restTemplate.postForEntity(url, entity, ShellDescriptorResponse.class);
+		String url = digitalTwinsHost + "/lookup/shells/";
+		String urlTemplate = UriComponentsBuilder.fromHttpUrl(url).path(assetId).encode().toUriString();
 
-        ShellDescriptorResponse responseBody;
-        if (response.getStatusCode() != HttpStatus.CREATED) {
-            responseBody = null;
-        } else {
-            responseBody = response.getBody();
-        }
-        return responseBody;
-    }
+		ResponseEntity<Void> response = restTemplate.exchange(urlTemplate, HttpMethod.DELETE, entity, Void.class);
 
-    public void createSubModel(String shellId, CreateSubModelRequest request) {
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(AUTHORIZATION, getBearerToken());
-        HttpEntity<CreateSubModelRequest> entity = new HttpEntity<>(request, headers);
-        String url = digitalTwinsHost + "/registry/shell-descriptors/" + shellId + "/submodel-descriptors";
-        ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
+		if (response.getStatusCode() == HttpStatus.NO_CONTENT) {
+			deleteResponse = "Asset identifier" + assetId + "deleted successfully";
+		}
+		return deleteResponse;
+	}
 
-        if (response.getStatusCode() != HttpStatus.CREATED) {
-            log.error("Unable to create shell descriptor");
-        }
-    }
+	@SneakyThrows
+	public SubmodelDescriptionListResponse getShellDescriptorsWithSubmodelDetails(List<String> shellIds) {
+		return digitalTwinsFeignClient.getShellDescriptorsWithSubmodelDetails(getHeaders(), shellIds);
+	}
 
-    public SubModelListResponse getSubModels(String shellId) {
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(AUTHORIZATION, getBearerToken());
-        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(headers);
-        String url = digitalTwinsHost + "/registry/shell-descriptors/" + shellId + "/submodel-descriptors";
-        ResponseEntity<SubModelListResponse> response = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                entity,
-                SubModelListResponse.class);
+	@SneakyThrows
+	public void deleteSubmodelfromShellById(String shellId, String subModelId) {
+		digitalTwinsFeignClient.deleteSubmodelfromShellById(shellId, subModelId, getHeaders());
+	}
 
-        SubModelListResponse responseBody = null;
-        if (response.getStatusCode() == HttpStatus.OK) {
-            responseBody = response.getBody();
-        }
-        return responseBody;
-    }
-    
+	private Map<String, String> getHeaders() {
+		Map<String, String> headers = new HashMap<>();
+		headers.put(AUTHORIZATION, getBearerToken());
+		return headers;
+	}
 
-    @SneakyThrows
-    private String getBearerToken() {
-        if (accessToken != null && isTokenValid()) {
-            return "Bearer " + accessToken;
-        }
+	public ShellDescriptorResponse createShellDescriptor(ShellDescriptorRequest request) {
+		RestTemplate restTemplate = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(AUTHORIZATION, getBearerToken());
+		HttpEntity<ShellDescriptorRequest> entity = new HttpEntity<>(request, headers);
+		String url = digitalTwinsHost + "/registry/shell-descriptors";
+		ResponseEntity<ShellDescriptorResponse> response = restTemplate.postForEntity(url, entity,
+				ShellDescriptorResponse.class);
 
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		ShellDescriptorResponse responseBody;
+		if (response.getStatusCode() != HttpStatus.CREATED) {
+			responseBody = null;
+		} else {
+			responseBody = response.getBody();
+		}
+		return responseBody;
+	}
 
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add(CLIENT_ID_TOKEN_QUERY_PARAMETER, clientId);
-        map.add(CLIENT_SECRET_TOKEN_QUERY_PARAMETER, clientSecret);
-        map.add(GRANT_TYPE_TOKEN_QUERY_PARAMETER, grantType);
+	public void createSubModel(String shellId, CreateSubModelRequest request) {
+		RestTemplate restTemplate = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(AUTHORIZATION, getBearerToken());
+		HttpEntity<CreateSubModelRequest> entity = new HttpEntity<>(request, headers);
+		String url = digitalTwinsHost + "/registry/shell-descriptors/" + shellId + "/submodel-descriptors";
+		ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
 
-        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
-        ResponseEntity<String> response = restTemplate.postForEntity(tokenUrl, entity, String.class);
+		if (response.getStatusCode() != HttpStatus.CREATED) {
+			log.error("Unable to create shell descriptor");
+		}
+	}
 
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode node = mapper.readTree(response.getBody());
-        accessToken = node.path(ACCESS_TOKEN).asText();
+	public SubModelListResponse getSubModels(String shellId) {
+		RestTemplate restTemplate = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(AUTHORIZATION, getBearerToken());
+		HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(headers);
+		String url = digitalTwinsHost + "/registry/shell-descriptors/" + shellId + "/submodel-descriptors";
+		ResponseEntity<SubModelListResponse> response = restTemplate.exchange(url, HttpMethod.GET, entity,
+				SubModelListResponse.class);
 
-        return "Bearer " + accessToken;
-    }
+		SubModelListResponse responseBody = null;
+		if (response.getStatusCode() == HttpStatus.OK) {
+			responseBody = response.getBody();
+		}
+		return responseBody;
+	}
 
-    @SneakyThrows
-    private boolean isTokenValid() {
-        String[] str = accessToken.split("\\.");
-        Base64.Decoder decoder = Base64.getUrlDecoder();
-        String body = new String(decoder.decode(str[1]));
+	@SneakyThrows
+	private String getBearerToken() {
+		if (accessToken != null && isTokenValid()) {
+			return "Bearer " + accessToken;
+		}
 
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode actualObj = mapper.readTree(body);
-        long tokenExpirationTime = actualObj.get("exp").asLong() * 1000;
-        long currentTime = System.currentTimeMillis();
+		RestTemplate restTemplate = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        return tokenExpirationTime - 20000 > currentTime;
-    }
+		MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+		map.add(CLIENT_ID_TOKEN_QUERY_PARAMETER, clientId);
+		map.add(CLIENT_SECRET_TOKEN_QUERY_PARAMETER, clientSecret);
+		map.add(GRANT_TYPE_TOKEN_QUERY_PARAMETER, grantType);
+
+		HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
+		ResponseEntity<String> response = restTemplate.postForEntity(tokenUrl, entity, String.class);
+
+		ObjectMapper mapper = new ObjectMapper();
+		JsonNode node = mapper.readTree(response.getBody());
+		accessToken = node.path(ACCESS_TOKEN).asText();
+
+		return "Bearer " + accessToken;
+	}
+
+	@SneakyThrows
+	private boolean isTokenValid() {
+		String[] str = accessToken.split("\\.");
+		Base64.Decoder decoder = Base64.getUrlDecoder();
+		String body = new String(decoder.decode(str[1]));
+
+		ObjectMapper mapper = new ObjectMapper();
+		JsonNode actualObj = mapper.readTree(body);
+		long tokenExpirationTime = actualObj.get("exp").asLong() * 1000;
+		long currentTime = System.currentTimeMillis();
+
+		return tokenExpirationTime - 20000 > currentTime;
+	}
+
 }

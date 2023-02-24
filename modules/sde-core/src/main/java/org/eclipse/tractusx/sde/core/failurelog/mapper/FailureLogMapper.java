@@ -1,6 +1,4 @@
 /********************************************************************************
- * Copyright (c) 2022 Critical TechWorks GmbH
- * Copyright (c) 2022 BMW GmbH
  * Copyright (c) 2022 T-Systems International GmbH
  * Copyright (c) 2022 Contributors to the Eclipse Foundation
  *
@@ -20,16 +18,14 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.core.failurelog.repository;
-
-
-import java.util.List;
+package org.eclipse.tractusx.sde.core.failurelog.mapper;
 
 import org.eclipse.tractusx.sde.core.failurelog.entity.FailureLogEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.eclipse.tractusx.sde.core.processreport.model.ProcessFailureDetails;
+import org.mapstruct.Mapper;
 
-public interface FailureLogRepository extends JpaRepository<FailureLogEntity, String> {
+@Mapper(componentModel = "spring")
+public interface FailureLogMapper {
 
-	List<FailureLogEntity> findByProcessId(String id);
-
+    ProcessFailureDetails mapFrom(FailureLogEntity failureLogReportEntity);
 }

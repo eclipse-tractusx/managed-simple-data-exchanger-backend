@@ -26,9 +26,13 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.ok;
 
+import java.util.List;
+
 import org.eclipse.tractusx.sde.core.processreport.ProcessReportUseCase;
+import org.eclipse.tractusx.sde.core.processreport.model.ProcessFailureDetails;
 import org.eclipse.tractusx.sde.core.processreport.model.ProcessReport;
 import org.eclipse.tractusx.sde.core.processreport.model.ProcessReportPageResponse;
+import org.eclipse.tractusx.sde.core.service.SubmodelCsvService;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -41,28 +45,48 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("processing-report")
 public class ProcessReportController {
 
-    private final ProcessReportUseCase processReportUseCase;
+	private final ProcessReportUseCase processReportUseCase;
 
-    public ProcessReportController(ProcessReportUseCase processReportUseCase) {
-        this.processReportUseCase = processReportUseCase;
-    }
+	private final SubmodelCsvService submodelCsvService;
 
-    @GetMapping(produces = APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasPermission('','provider_view_history')")
-    public ResponseEntity<ProcessReportPageResponse> getProcessingReportsByDateDesc(@Param("page") Integer page, @Param("pageSize") Integer pageSize) {
-        page = page == null ? 0 : page;
-        pageSize = pageSize == null ? 10 : pageSize;
+	public ProcessReportController(ProcessReportUseCase processReportUseCase, SubmodelCsvService submodelCsvService) {
+		this.processReportUseCase = processReportUseCase;
+		this.submodelCsvService = submodelCsvService;
+	}
 
-        return ok().body(processReportUseCase.listAllProcessReports(page, pageSize));
-    }
+	@GetMapping(produces = APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasPermission('','provider_view_history')")
+	public ResponseEntity<ProcessReportPageResponse> getProcessingReportsByDateDesc(@Param("page") Integer page,
+			@Param("pageSize") Integer pageSize) {
+		page = page == null ? 0 : page;
+		pageSize = pageSize == null ? 10 : pageSize;
 
-    @GetMapping(value = "/{id}", produces = APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasPermission('','provider_view_history')")
-    public ResponseEntity<ProcessReport> getProcessReportById(@PathVariable("id") String id) {
-        ProcessReport processReportById = processReportUseCase.getProcessReportById(id);
-        if (processReportById == null) {
-            return notFound().build();
-        }
-        return ok().body(processReportById);
-    }
+		return ok().body(processReportUseCase.listAllProcessReports(page, pageSize));
+	}
+
+	@GetMapping(value = "/{id}", produces = APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasPermission('','provider_view_history')")
+	public ResponseEntity<ProcessReport> getProcessReportById(@PathVariable("id") String id) {
+		ProcessReport processReportById = processReportUseCase.getProcessReportById(id);
+		if (processReportById == null) {
+			return notFound().build();
+		}
+		return ok().body(processReportById);
+	}
+
+	@GetMapping(value = "/failure-details/{id}", produces = APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasPermission('','provider_view_history')")
+	public ResponseEntity<List<ProcessFailureDetails>> getProcessFailureDetailsReportById(
+			@PathVariable("id") String id) {
+		List<ProcessFailureDetails> processDetails = processReportUseCase.getProcessFailureDetailsReportById(id);
+		return ok().body(processDetails);
+	}
+
+	@GetMapping(value = "{submodel}/success-details/{id}", produces = APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasPermission('','provider_view_history')")
+	public ResponseEntity<List<List<String>>> getProcessSuccessDetailsReportById(@PathVariable("id") String processId,
+			@PathVariable("submodel") String submodel) {
+		List<List<String>> processDetails = submodelCsvService.findAllSubmodelCsvHistory(submodel, processId);
+		return ok().body(processDetails);
+	}
 }

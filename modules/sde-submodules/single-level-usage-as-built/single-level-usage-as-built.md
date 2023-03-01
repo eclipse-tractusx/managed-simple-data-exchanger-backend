@@ -21,21 +21,21 @@ Please find below links for schema details:
 
 ### SingleLevelUsageAsBuilt CSV file headers
 
-| Headers Name       	       		| Mandatory                     	| Position 	|
-|-------------------------------		|-----------------------------	|--------	|
-| parent_uuid		                	| Yes		             	    |    1     	|
+| Headers Name       	       		| Mandatory                     | Position 	|
+|-----------------------------------|-------------------------------|--------	|
+| parent_uuid		                | Yes		             	    |    1     	|
 | parent_part_instance_id	     	| Yes		             	    |    2    	|
-| parent_manufacturer_part_id	    	| Yes		             	    |    3    	|
-| parent_optional_identifier_key	    	| No			             	    |    4    	|
-| parent_optional_identifier_value 	| No			             	    |    5    	|
+| parent_manufacturer_part_id	    | Yes		             	    |    3    	|
+| parent_optional_identifier_key	| No			             	|    4    	|
+| parent_optional_identifier_value 	| No			             	|    5    	|
 | uuid		                   		| Yes		             	    |    6     	|
 | part_instance_id			   		| Yes					      	|    7    	|
-| manufacturer_part_id 		      	| Yes                           	| 	 8	  	|
+| manufacturer_part_id 		      	| Yes                           | 	 8	  	|
 | optional_identifier_key	 		| No                           	|    9 	 	|
-| optional_identifier_value			| No                           	|    10 	 	|
-| quantity_number		 			| Yes                           	|    11	 	|
-| measurement_unit 					| Yes                           	|    12	 	|
-| created_on	 						| Yes                          	|    13	 	|
+| optional_identifier_value			| No                           	|    10 	|
+| quantity_number		 			| Yes                           |    11	 	|
+| measurement_unit 					| Yes                           |    12	 	|
+| created_on	 					| Yes                          	|    13	 	|
 | last_modified_on	 				| No                           	|    14	 	|
 
 

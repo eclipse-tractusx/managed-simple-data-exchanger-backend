@@ -148,6 +148,7 @@ You can find the standard credentials as well as further database configurations
 | **sde_role** |Table Contains list of roles |  **Primary Key**:sde_role |
 | **sde_permission** |Table Contains list of permissions |  **Primary Key**:sde_permission |
 | **sde_role_permission_mapping** |Table Contains mapping of role with permissions |  **Primary Key**:sde_role, sde_permission |
+| **single_level_usage_as_built** |Data about the relationship of parts to its child-components. | **Primary Key**:parent_catenax_id, child_catenax_id |
 
 ---
 ## flyway

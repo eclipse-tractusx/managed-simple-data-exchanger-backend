@@ -9,6 +9,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Cancel contract agreement on provider side.
 - BPN validation in SDE.
 
+## [1.9.0] - 2023-01-23
+### Added
+- Added new submodel SingleLevelUsageAsBuilt 1.0.1 aspect.
+- Updated Batch submodel to support 1.0.2 version.
+- Updated SerialPartTypization in Version 1.1.0 submodel support.
+- Updated AssemblyPartRelationship in Version 1.1.1 submodel support.
+- Added Look-Up process for AssemblyPartRelationship submodel.
+
+### Fixed
+- Bug fixes.
+
 ## [1.8.1] - 2023-01-23
 ### Added
 - Added use case selection.
@@ -16,11 +27,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added new API for transaction history download function for each processId.
 - Added new API to Dynamic generation of CSV sample and CSV template per submode.
 - Added new API to support dynamic submodel help page.
-- Added new submodel SingleLevelUsageAsBuilt 1.0.1 aspect.
-- Updated Batch submodel to support 1.0.2 version.
-- Updated SerialPartTypization in Version 1.1.0 submodel support.
-- Updated AssemblyPartRelationship in Version 1.1.1 submodel support.
-- Added Look-Up process for AssemblyPartRelationship submodel.
 
 ### Fixed
 - Bug fixes.
@@ -103,7 +109,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Integration with Digital Twin registry service.
 
 
-[Unreleased]: https://github.com/catenax-ng/tx-dft-backend/compare/dft-backend-1.8.1...main
+[Unreleased]: https://github.com/catenax-ng/tx-dft-backend/compare/dft-backend-1.9.0...main
+[1.9.0]: https://github.com/catenax-ng/tx-dft-backend/compare/dft-backend-1.9.0...dft-backend-1.8.1
 [1.8.1]: https://github.com/catenax-ng/tx-dft-backend/compare/dft-backend-1.8.0...dft-backend-1.8.1
 [1.8.0]: https://github.com/catenax-ng/tx-dft-backend/compare/dft-backend-1.7.0...dft-backend-1.8.0
 [1.7.0]: https://github.com/catenax-ng/product-dft-backend/compare/dft-backend-1.6.0...dft-backend-1.7.0

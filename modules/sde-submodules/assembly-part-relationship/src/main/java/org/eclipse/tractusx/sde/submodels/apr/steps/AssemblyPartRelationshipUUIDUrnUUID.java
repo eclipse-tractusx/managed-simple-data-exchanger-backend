@@ -27,20 +27,18 @@ import org.eclipse.tractusx.sde.submodels.spt.entity.AspectEntity;
 import org.eclipse.tractusx.sde.submodels.spt.repository.AspectRepository;
 import org.springframework.stereotype.Component;
 
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 @Component
+@RequiredArgsConstructor
 public class AssemblyPartRelationshipUUIDUrnUUID extends Step {
 
 	private final AspectRepository repository;
-
-
-	public AssemblyPartRelationshipUUIDUrnUUID(AspectRepository repository) {
-		this.repository = repository;
-	}
 	
 	@SneakyThrows
 	public AspectRelationship run(AspectRelationship input, String processId) {
+		
 		if (input.getParentUuid() == null || input.getParentUuid().isBlank()) {
 			String parentUuid = getUuidIfAspectExists(input.getRowNumber(), input.getParentPartInstanceId(),
 					input.getParentManufacturerPartId(), input.getParentOptionalIdentifierKey(),

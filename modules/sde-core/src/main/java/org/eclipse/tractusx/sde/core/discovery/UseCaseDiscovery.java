@@ -22,12 +22,11 @@ package org.eclipse.tractusx.sde.core.discovery;
 
 import java.io.InputStream;
 
-import javax.annotation.PostConstruct;
-
 import org.eclipse.tractusx.sde.common.mapper.UsecaseMapper;
 import org.eclipse.tractusx.sde.core.registry.UsecaseRegistration;
 import org.springframework.stereotype.Component;
 
+import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 
 @Component

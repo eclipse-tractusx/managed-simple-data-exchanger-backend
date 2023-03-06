@@ -77,7 +77,7 @@ public class EDCSingleLevelBoMAsPlannedHandlerStep extends Step {
 
 		try {
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
-					getSubmodelDescriptionOfModel(), shellId, subModelId, input.getParentUuid());
+					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getParentUuid());
 			if (!edcGateway.assetExistsLookup(assetEntryRequest.getAsset().getProperties().get(ASSET_PROP_ID))) {
 				edcProcessingforSingleLevelBoMAsPlanned(assetEntryRequest, input);
 			} else {

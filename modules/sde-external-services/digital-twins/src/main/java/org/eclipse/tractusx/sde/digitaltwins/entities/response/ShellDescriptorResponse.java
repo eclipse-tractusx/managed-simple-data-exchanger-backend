@@ -35,9 +35,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ShellDescriptorResponse {
-    private String idShort;
-    private String identification;
-    private List<Description> description;
-    private GlobalAssetId globalAssetId;
-    private List<KeyValuePair> specificAssetIds;
+	private String idShort;
+	private String identification;
+	private List<Description> description;
+	private GlobalAssetId globalAssetId;
+	private List<KeyValuePair> specificAssetIds;
+
+	private List<SubModelResponse> submodelDescriptors;
 }

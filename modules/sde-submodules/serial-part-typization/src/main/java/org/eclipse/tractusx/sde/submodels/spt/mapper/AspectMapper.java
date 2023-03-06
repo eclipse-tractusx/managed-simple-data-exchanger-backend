@@ -22,7 +22,8 @@
 
 package org.eclipse.tractusx.sde.submodels.spt.mapper;
 
-import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.eclipse.tractusx.sde.common.enums.OptionalIdentifierKeyEnum;
@@ -77,7 +78,7 @@ public abstract class AspectMapper {
 			return null;
 		}
 
-		ArrayList<LocalIdentifier> localIdentifiers = new ArrayList<>();
+		Set<LocalIdentifier> localIdentifiers = new HashSet<>();
 		localIdentifiers.add(new LocalIdentifier("PartInstanceID", entity.getPartInstanceId()));
 		localIdentifiers.add(new LocalIdentifier("ManufacturerPartID", entity.getManufacturerPartId()));
 		localIdentifiers.add(new LocalIdentifier("ManufacturerID", manufacturerId));
@@ -90,9 +91,12 @@ public abstract class AspectMapper {
 				.country(entity.getManufacturingCountry()).date(entity.getManufacturingDate()).build();
 
 		PartTypeInformation partTypeInformation = PartTypeInformation.builder()
-				.manufacturerPartID(entity.getManufacturerPartId()).customerPartId(entity.getCustomerPartId())
-				.classification(entity.getClassification()).nameAtManufacturer(entity.getNameAtManufacturer())
-				.nameAtCustomer(entity.getNameAtCustomer()).build();
+				.manufacturerPartId(entity.getManufacturerPartId())
+				.customerPartId(entity.getCustomerPartId())
+				.classification(entity.getClassification())
+				.nameAtManufacturer(entity.getNameAtManufacturer())
+				.nameAtCustomer(entity.getNameAtCustomer())
+				.build();
 
 		return new Gson().toJsonTree(SubmodelResultResponse.builder().localIdentifiers(localIdentifiers)
 				.manufacturingInformation(manufacturingInformation).partTypeInformation(partTypeInformation)

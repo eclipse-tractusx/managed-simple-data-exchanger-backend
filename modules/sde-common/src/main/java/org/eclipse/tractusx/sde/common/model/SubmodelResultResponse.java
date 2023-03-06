@@ -21,7 +21,7 @@
 
 package org.eclipse.tractusx.sde.common.model;
 
-import java.util.List;
+import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,7 +32,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class SubmodelResultResponse {
 
-	private List<LocalIdentifier> localIdentifiers;
+	private Set<LocalIdentifier> localIdentifiers;
 	private ManufacturingInformation manufacturingInformation;
 	private String catenaXId;
 	private PartTypeInformation partTypeInformation;

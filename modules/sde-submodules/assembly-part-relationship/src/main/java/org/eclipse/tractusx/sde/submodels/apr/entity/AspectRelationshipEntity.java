@@ -1,8 +1,8 @@
 /********************************************************************************
  * Copyright (c) 2022 Critical TechWorks GmbH
  * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022,2023 T-Systems International GmbH
+ * Copyright (c) 2022,2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,17 +19,15 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-
 package org.eclipse.tractusx.sde.submodels.apr.entity;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.Table;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
+import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
@@ -58,24 +56,26 @@ public class AspectRelationshipEntity implements Serializable {
 	private String childPartInstanceId;
     @Column(name = "manufacturer_part_id")
 	private String childManufacturerPartId;
+    @Column(name = "manufacturer_id")
+	private String childManufacturerId;
     @Column(name = "optional_identifier_key")
 	private String childOptionalIdentifierKey;
     @Column(name = "optional_identifier_value")
 	private String childOptionalIdentifierValue;
     @Column(name = "lifecycle_context")
     private String lifecycleContext;
-    @Column(name = "assembled_on")
-    private String assembledOn;
+    @Column(name = "created_on")
+    private String createdOn;
+    @Column(name = "last_modified_on")
+    private String lastModifiedOn;
     @Column(name = "quantity_number")
     private Double quantityNumber;
-    @Column(name = "measurement_unit_lexical_value")
-    private String measurementUnitLexicalValue;
+    @Column(name = "measurement_unit")
+    private String measurementUnit;
     @Column(name = "shell_id")
     private String shellId;
     @Column(name = "sub_model_id")
     private String subModelId;
-    @Column(name = "datatype_uri")
-    private String dataTypeUri;
     @Column(name = "usage_policy_id")
     private String usagePolicyId;
     @Column(name = "contract_defination_id")
@@ -90,12 +90,3 @@ public class AspectRelationshipEntity implements Serializable {
     private String updated;
 
 }
-
-@Data
-class AspectRelationshipPrimaryKey implements Serializable {
-
-    private String parentCatenaXId;
-    private String childCatenaXId;
-}
-
-

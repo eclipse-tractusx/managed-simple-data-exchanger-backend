@@ -19,20 +19,21 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-
 package org.eclipse.tractusx.sde.submodels.apr.mapper;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.tractusx.sde.submodels.apr.entity.AspectRelationshipEntity;
 import org.eclipse.tractusx.sde.submodels.apr.model.AspectRelationship;
 import org.eclipse.tractusx.sde.submodels.apr.model.AspectRelationshipResponse;
 import org.eclipse.tractusx.sde.submodels.apr.model.ChildPart;
-import org.eclipse.tractusx.sde.submodels.apr.model.MeasurementUnit;
 import org.eclipse.tractusx.sde.submodels.apr.model.Quantity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.Gson;
@@ -41,6 +42,7 @@ import com.google.gson.JsonObject;
 import lombok.SneakyThrows;
 
 @Mapper(componentModel = "spring")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class AspectRelationshipMapper {
 
 	ObjectMapper mapper = new ObjectMapper();
@@ -68,7 +70,7 @@ public abstract class AspectRelationshipMapper {
 			return null;
 		}
 
-		List<ChildPart> childParts = aspectRelationships.stream().map(this::toChildPart).toList();
+		Set<ChildPart> childParts = aspectRelationships.stream().map(this::toChildPart).collect(Collectors.toSet());
 		return new Gson().toJsonTree(
 				AspectRelationshipResponse.builder().catenaXId(parentCatenaXUuid).childParts(childParts).build())
 				.getAsJsonObject();
@@ -81,10 +83,12 @@ public abstract class AspectRelationshipMapper {
 
 	private ChildPart toChildPart(AspectRelationshipEntity entity) {
 		Quantity quantity = Quantity.builder().quantityNumber(entity.getQuantityNumber())
-				.measurementUnit(new MeasurementUnit(entity.getMeasurementUnitLexicalValue(), entity.getDataTypeUri()))
+				.measurementUnit(entity.getMeasurementUnit())
 				.build();
 
-		return ChildPart.builder().lifecycleContext(entity.getLifecycleContext()).assembledOn(entity.getAssembledOn())
+		return ChildPart.builder()
+				.lifecycleContext(entity.getLifecycleContext())
+				.createdOn(entity.getCreatedOn())
 				.childCatenaXId(entity.getChildCatenaXId()).quantity(quantity).build();
 	}
 

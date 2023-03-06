@@ -4,9 +4,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
-- Dynamic generation of CSV (Sample,template) file for implemented submodule. 
-- New api for transaction history download function for each process id.
-- Create api to support dynamic submodule help page.
+- Error handling & input validation Messages for exceptions during upload / creation.
+- Manufacturer country code list.
+- Cancel contract agreement on provider side.
+- BPN validation in SDE.
+
+## [1.9.0] - TBD
+### Added
+- Added new submodel SingleLevelUsageAsBuilt 1.0.1 aspect.
+- Updated Batch submodel to support 1.0.2 version.
+- Updated SerialPartTypization in Version 1.1.0 submodel support.
+- Updated AssemblyPartRelationship in Version 1.1.1 submodel support.
+- Added Look-Up process for AssemblyPartRelationship submodel.
+
+### Fixed
+- Bug fixes.
+
+## [1.8.1] - 2023-01-23
+### Added
+- Added use case selection.
+- Enable filtering displayed submodels by selected use case.
+- Added new API for transaction history download function for each processId.
+- Added new API to Dynamic generation of CSV sample and CSV template per submode.
+- Added new API to support dynamic submodel help page.
+- Added organization profile
+- Added list contract agreements on Provider side
+
+### Fixed
+- Bug fixes.
 
 ## [1.8.0] - 2022-12-12
 ### Added
@@ -16,7 +41,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added new submodel SingleLevelBoMAsPlanned aspect.
 - Added new submodel PartSiteInformationAsPlanned aspect.
 - Added new functionality update and Delete with exists aspect. 
-- Added new api for user role permission access managament.
+- Added new api for user role permission access management.
 - Enabled api level permissions.
 
 ### Fixed
@@ -86,7 +111,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Integration with Digital Twin registry service.
 
 
-[Unreleased]: https://github.com/catenax-ng/tx-dft-backend/compare/dft-backend-1.8.0...main
+[Unreleased]: https://github.com/catenax-ng/tx-dft-backend/compare/dft-backend-1.9.0...main
+[1.9.0]: https://github.com/catenax-ng/tx-dft-backend/compare/dft-backend-1.9.0...dft-backend-1.8.1
+[1.8.1]: https://github.com/catenax-ng/tx-dft-backend/compare/dft-backend-1.8.0...dft-backend-1.8.1
 [1.8.0]: https://github.com/catenax-ng/tx-dft-backend/compare/dft-backend-1.7.0...dft-backend-1.8.0
 [1.7.0]: https://github.com/catenax-ng/product-dft-backend/compare/dft-backend-1.6.0...dft-backend-1.7.0
 [1.6.0]: https://github.com/catenax-ng/product-dft-backend/compare/dft-backend-1.5.0...dft-backend-1.6.0

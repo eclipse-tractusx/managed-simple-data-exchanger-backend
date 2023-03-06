@@ -55,11 +55,11 @@ public class Submodel {
 
 	private JsonObject schema;
 
-	private Map<String, String> properties;
+	private Map<String, Object> properties;
 
 	private SubmodelExecutor executor;
 
-	public void addProperties(String key, String value) {
+	public void addProperties(String key, Object value) {
 		if (properties == null)
 			properties = new LinkedHashMap<>();
 		properties.put(key, value);

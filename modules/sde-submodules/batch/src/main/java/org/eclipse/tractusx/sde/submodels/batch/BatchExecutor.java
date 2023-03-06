@@ -27,6 +27,7 @@ import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseExc
 import org.eclipse.tractusx.sde.common.submodel.executor.SubmodelExecutor;
 import org.eclipse.tractusx.sde.common.submodel.executor.create.steps.impl.CsvParse;
 import org.eclipse.tractusx.sde.common.submodel.executor.create.steps.impl.GenerateUrnUUID;
+import org.eclipse.tractusx.sde.common.submodel.executor.create.steps.impl.JsonRecordFormating;
 import org.eclipse.tractusx.sde.common.submodel.executor.create.steps.impl.JsonRecordValidate;
 import org.eclipse.tractusx.sde.submodels.batch.mapper.BatchMapper;
 import org.eclipse.tractusx.sde.submodels.batch.model.Batch;
@@ -47,6 +48,8 @@ import lombok.SneakyThrows;
 public class BatchExecutor extends SubmodelExecutor {
 
 	private final CsvParse csvParseStep;
+	
+	private final JsonRecordFormating jsonRecordformater;
 
 	private final JsonRecordValidate jsonRecordValidate;
 
@@ -75,6 +78,9 @@ public class BatchExecutor extends SubmodelExecutor {
 	@SneakyThrows
 	public void executeJsonRecord(Integer rowIndex, ObjectNode jsonObject, String processId) {
 
+		jsonRecordformater.init(getSubmodelSchema());
+		jsonRecordformater.run(rowIndex, jsonObject, processId);
+		
 		nextSteps(rowIndex, jsonObject, processId);
 
 	}

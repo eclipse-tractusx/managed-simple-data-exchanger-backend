@@ -49,8 +49,6 @@ import lombok.SneakyThrows;
 @Service
 public class EDCBatchHandlerUseCase extends Step {
 
-	private static final String ASSET_PROP_NAME_BATCH = "Batches - Submodel Batch";
-
 	private final AssetEntryRequestFactory assetFactory;
 	private final EDCGateway edcGateway;
 	private final PolicyRequestFactory policyFactory;
@@ -77,7 +75,7 @@ public class EDCBatchHandlerUseCase extends Step {
 
 		try {
 
-			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel, ASSET_PROP_NAME_BATCH, shellId,
+			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel, getSubmodelShortDescriptionOfModel(), shellId,
 					subModelId, input.getUuid());
 			if (!edcGateway.assetExistsLookup(
 					assetEntryRequest.getAsset().getProperties().get(CommonConstants.ASSET_PROP_ID))) {

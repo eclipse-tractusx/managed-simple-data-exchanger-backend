@@ -22,14 +22,13 @@ package org.eclipse.tractusx.sde.edc.model.request;
 
 import java.util.List;
 
-import javax.validation.constraints.NotEmpty;
-
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.springframework.lang.NonNull;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

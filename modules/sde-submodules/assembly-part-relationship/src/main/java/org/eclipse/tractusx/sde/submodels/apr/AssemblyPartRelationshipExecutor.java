@@ -26,11 +26,11 @@ import org.eclipse.tractusx.sde.common.entities.csv.RowData;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseException;
 import org.eclipse.tractusx.sde.common.submodel.executor.SubmodelExecutor;
 import org.eclipse.tractusx.sde.common.submodel.executor.create.steps.impl.CsvParse;
+import org.eclipse.tractusx.sde.common.submodel.executor.create.steps.impl.JsonRecordFormating;
 import org.eclipse.tractusx.sde.common.submodel.executor.create.steps.impl.JsonRecordValidate;
 import org.eclipse.tractusx.sde.submodels.apr.mapper.AspectRelationshipMapper;
 import org.eclipse.tractusx.sde.submodels.apr.model.AspectRelationship;
 import org.eclipse.tractusx.sde.submodels.apr.service.AspectRelationshipService;
-import org.eclipse.tractusx.sde.submodels.apr.steps.AssemblyPartRelationshipUUIDUrnUUID;
 import org.eclipse.tractusx.sde.submodels.apr.steps.DigitalTwinsAspectRelationShipCsvHandlerUseCase;
 import org.eclipse.tractusx.sde.submodels.apr.steps.EDCAspectRelationshipHandlerUseCase;
 import org.eclipse.tractusx.sde.submodels.apr.steps.StoreAspectRelationshipCsvHandlerUseCase;
@@ -51,8 +51,8 @@ public class AssemblyPartRelationshipExecutor extends SubmodelExecutor {
 	private final CsvParse csvParseStep;
 
 	private final JsonRecordValidate jsonRecordValidate;
-
-	private final AssemblyPartRelationshipUUIDUrnUUID generateUrnUUID;
+	
+	private final JsonRecordFormating jsonRecordformater;
 
 	private final DigitalTwinsAspectRelationShipCsvHandlerUseCase digitalTwinsAspectRelationShipCsvHandlerUseCase;
 
@@ -77,6 +77,9 @@ public class AssemblyPartRelationshipExecutor extends SubmodelExecutor {
 	@SneakyThrows
 	public void executeJsonRecord(Integer rowIndex, ObjectNode jsonObject, String processId) {
 
+		jsonRecordformater.init(getSubmodelSchema());
+		jsonRecordformater.run(rowIndex, jsonObject, processId);
+		
 		nextSteps(rowIndex, jsonObject, processId);
 
 	}
@@ -85,11 +88,6 @@ public class AssemblyPartRelationshipExecutor extends SubmodelExecutor {
 			throws CsvHandlerDigitalTwinUseCaseException {
 
 		AspectRelationship aspectRelationship = aspectRelationshipMapper.mapFrom(jsonObject);
-
-		generateUrnUUID.run(aspectRelationship, processId);
-
-		jsonObject.put("uuid", aspectRelationship.getChildUuid());
-		jsonObject.put("parent_uuid", aspectRelationship.getParentUuid());
 
 		jsonRecordValidate.init(getSubmodelSchema());
 		jsonRecordValidate.run(rowIndex, jsonObject);

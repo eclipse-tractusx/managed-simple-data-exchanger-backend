@@ -1,6 +1,4 @@
 /********************************************************************************
- * Copyright (c) 2022 Critical TechWorks GmbH
- * Copyright (c) 2022 BMW GmbH
  * Copyright (c) 2022 T-Systems International GmbH
  * Copyright (c) 2022 Contributors to the Eclipse Foundation
  *
@@ -19,36 +17,20 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
+package org.eclipse.tractusx.sde.submodels.sluab.model;
 
-package org.eclipse.tractusx.sde.core.controller.failurelog.entity;
+import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import java.io.Serializable;
-import java.time.LocalDateTime;
-
-@Data
-@Entity
 @Builder
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
-@Table(name = "failure_log")
-public class FailureLogEntity implements Serializable {
+public class SingleLevelUsageAsBuiltResponse {
+	
+	  private String catenaXId;
+	    private Set<ParentParts> parentParts;
 
-    @Id
-    @Column(name = "uuid")
-    private String uuid;
-    @Column(name = "process_id")
-    private String processId;
-    @Column(name = "log")
-    private String log;
-    @Column(name = "date_time")
-    private LocalDateTime dateTime;
 }

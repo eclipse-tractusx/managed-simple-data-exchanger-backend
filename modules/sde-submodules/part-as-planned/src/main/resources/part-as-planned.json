@@ -7,7 +7,8 @@
 	"version": "1.0.0",
 	"semantic_id": "urn:bamm:io.catenax.part_as_planned:1.0.0#PartAsPlanned",
 	"title": "Part AsPlanned",
-	"description": "BoM As-Planned - Submodel PartAsPlanned",
+	"shortDescription": "BoM As-Planned - Submodel PartAsPlanned",
+	"description": "A Part AsPlanned represents an item in the Catena-X Bill of Material (BOM) in As-Planned lifecycle status.",
 	"items": {
 		"type": "object",
 		"required": [
@@ -25,6 +26,7 @@
 				],
 				"pattern": "^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
 				"title": "UUID",
+				"description": "The fully anonymous Catena-X ID of the serialized part, valid for the Catena-X dataspace.",
 				"examples": [
 					"urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf34dfa4c2"
 				]
@@ -35,6 +37,7 @@
 				],
 				"minLength": 1,
 				"title": "Manufacturer Part ID",
+				"description": "Part ID as assigned by the manufacturer of the part. The Part ID identifies the part (as designed) in the manufacturer`s dataspace. The Part ID does not reference a specific instance of a part and thus should not be confused with the serial number.",
 				"examples": [
 					"37754B7-76"
 				]
@@ -46,6 +49,7 @@
 				],
 				"format": "date-time",
 				"title": "Valid From",
+				"description": "Start date of validity period",
 				"examples": [
 					"2022-06-14T06:55:29.935Z"
 				]
@@ -57,6 +61,7 @@
 				],
 				"format": "date-time",
 				"title": "Valid To",
+				"description": "End date of validity period",
 				"examples": [
 					"2022-06-14T06:55:29.935Z"
 				]
@@ -67,6 +72,7 @@
 					"null"
 				],
 				"title": "Customer Part Id",
+				"description": "The ID of the type/catalog part (of which the part as planned is an instance of) from the customer.",
 				"examples": [
 					"Currently missing the syntax"
 				]
@@ -84,6 +90,7 @@
 					"component"
 				],
 				"title": "Classification",
+				"description": "The classification of the part type according to STEP standard definition",
 				"examples": [
 					"component"
 				]
@@ -94,6 +101,7 @@
 				],
 				"minLength": 1,
 				"title": "Name At Manufacturer",
+				"description": "Name of the part as assigned by the manufacturer",
 				"examples": [
 					"Sensor"
 				]

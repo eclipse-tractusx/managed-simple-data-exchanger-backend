@@ -4,24 +4,23 @@
 	"type": "array",
 	"id": "aspectrelationship",
 	"idShort": "assemblyPartRelationship",
-	"version": "1.1.0",
-	"semantic_id": "urn:bamm:io.catenax.assembly_part_relationship:1.1.0#AssemblyPartRelationship",
+	"version": "1.1.1",
+	"semantic_id": "urn:bamm:io.catenax.assembly_part_relationship:1.1.1#AssemblyPartRelationship",
 	"title": "Assembly Part Relationship",
-	"description": "Assembly Part Relationship",
+	"shortDescription": "BoM AsBuilt - Submodel AssemblyPartRelationship",
+	"description": "The aspect provides the child parts (one structural level down) which the given object assembles.",
 	"items": {
 		"type": "object",
 		"required": [
-			"parent_uuid",
 			"parent_part_instance_id",
 			"parent_manufacturer_part_id",
-			"uuid",
 			"part_instance_id",
 			"manufacturer_part_id",
+			"manufacturer_id",
 			"lifecycle_context",
 			"quantity_number",
-			"measurement_unit_lexical_value",
-			"datatype_uri",
-			"assembled_on"
+			"measurement_unit",
+			"created_on"
 		],
 		"dependentRequired": {
 			"parent_optional_identifier_key": [
@@ -38,22 +37,12 @@
 			]
 		},
 		"properties": {
-			"parent_uuid": {
-				"type": [
-					"string"
-				],
-				"title": "Parent UUID",
-				"minLength": 1,
-				"pattern": "^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
-				"examples": [
-					"urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2"
-				]
-			},
 			"parent_part_instance_id": {
 				"type": [
 					"string"
 				],
 				"title": "Parent Part Instance ID",
+				"description": "The Parent Part Instance ID of the parent object Part Instance ID, to identify parent object in digital twins.",
 				"minLength": 1,
 				"examples": [
 					"ParentNO-64534234"
@@ -64,6 +53,7 @@
 					"string"
 				],
 				"title": "Parent Manufacturer Part ID",
+				"description": "The Parent Manufacturer Part ID of the parent object Manufacturer Part ID, to identify parent object in digital twins.",
 				"minLength": 1,
 				"examples": [
 					"PART-2345546234"
@@ -80,6 +70,7 @@
 					""
 				],
 				"title": "Parent Optional Identifier Key",
+				"description": "The Parent Optional Identifier Key of the parent object Optional Identifier Key, to identify parent object in digital twins.",
 				"examples": [
 					"VAN"
 				]
@@ -90,19 +81,9 @@
 					"null"
 				],
 				"title": "Parent Optional Identifier Value",
+				"description": "The Parent Optional Identifier Value of the parent object Optional Identifier Value, to identify parent object in digital twins.",
 				"examples": [
 					"Value"
-				]
-			},
-			"uuid": {
-				"type": [
-					"string"
-				],
-				"title": "UUID URN",
-				"minLength": 1,
-				"pattern": "^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
-				"examples": [
-					"urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2"
 				]
 			},
 			"part_instance_id": {
@@ -111,6 +92,7 @@
 				],
 				"minLength": 1,
 				"title": "Part Instance ID",
+				"description": "The serial number of the serialized part from the manufacturer. We assume here that the customer does not have or create its own serial number for a part, but just used the manufacturer's serial number.",
 				"examples": [
 					"NO-234523423"
 				]
@@ -121,8 +103,20 @@
 				],
 				"minLength": 1,
 				"title": "Manufacturer Part ID",
+				"description": "The ID of the type/catalog part (of which the serialized part is an instance of) from the manufacturer.",
 				"examples": [
 					"37754B7-76"
+				]
+			},
+			"manufacturer_id": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"title": "Manufacturer id",
+				"description": "The Business Partner Number (BPNL) of the manufacturer of the serialized part, i.e., the companies main entry.",
+				"examples": [
+					"BPNL00000000001"
 				]
 			},
 			"optional_identifier_key": {
@@ -136,6 +130,7 @@
 					""
 				],
 				"title": "Optional Identifier Key",
+				"description": "The Optional Identifier Key is used for create optional identifier for shell in digital twins. If you ha Identifier Key provided.",
 				"examples": [
 					"VAN"
 				]
@@ -146,6 +141,7 @@
 					"null"
 				],
 				"title": "Optional Identifier Value",
+				"description": "The Optional Identifier Value is used for create optional identifier for shell in digital twins. If you ha Identifier Key provided.",
 				"examples": [
 					"Value"
 				]
@@ -154,8 +150,17 @@
 				"type": [
 					"string"
 				],
+				"enum": [
+					"AsRequired",
+					"AsDesigned",
+					"AsPlanned",
+					"AsBuilt",
+					"AsMaintained",
+					"AsRecycled"
+				],
 				"minLength": 1,
 				"title": "Lifecycle Context",
+				"description": "The lifecycle context in which the child part was assembled into the parent part.",
 				"examples": [
 					"lifecycle"
 				]
@@ -166,61 +171,64 @@
 				],
 				"minLength": 1,
 				"title": "Quantity Number",
+				"description": "The number of objects related to the measurement unit",
 				"multipleOf": 0.01,
 				"examples": [
-					123
+					2.5
 				]
 			},
-			"measurement_unit_lexical_value": {
+			"measurement_unit": {
 				"type": [
 					"string"
 				],
-				"title": "Measurement Unit Lexical Value",
+				"title": "Measurement Unit",
+				"description": "Unit of Measurement for the quantity of serialized objects",
 				"minLength": 1,
 				"examples": [
-					"measurement"
+					"litre"
 				]
 			},
-			"datatype_uri": {
+			"created_on": {
 				"type": [
-					"string",
-					"null"
+					"string"
 				],
-				"title": "Datatype URI",
+				"format": "date-time",
+				"title": "Created On",
+				"description": "Timestamp when the relation between the parent part and the child part was created, e.g. when the serialized child part was assembled into the given part.",
 				"examples": [
-					"http://xyz.com"
+					"2022-02-03T14:48:54.709Z"
 				]
 			},
-			"assembled_on": {
+			"last_modified_on": {
 				"type": [
 					"string",
 					"null"
 				],
 				"format": "date-time",
-				"title": "Assembled On",
+				"title": "last Modified On",
+				"description": "Timestamp when the assembly relationship between parent part and child part was last modified.",
 				"examples": [
-					"2022-02-04T14:48:54"
+					"2022-02-03T14:48:54.709Z"
 				]
 			}
 		}
 	},
 	"examples": [
 		{
-			"parent_uuid": "urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2",
 			"parent_part_instance_id": "NO-159040131155901488695376",
 			"parent_manufacturer_part_id": "MAN-159040131155901488695376",
 			"parent_optional_identifier_key": "VAN",
 			"parent_optional_identifier_value": "Value",
-			"uuid": "urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2",
 			"part_instance_id": "NO-159040131155901488695376",
 			"manufacturer_part_id": "PART-123412416",
+			"manufacturer_id": "BPNL00000000001",
 			"optional_identifier_key": "",
 			"optional_identifier_value": "",
-			"lifecycle_context": "Context",
-			"quantity_number": 123,
-			"measurement_unit_lexical_value": "ASW",
-			"datatype_uri": "http://xyz.com",
-			"assembled_on": "2022-02-04T14:48:54"
+			"lifecycle_context": "AsRequired",
+			"quantity_number": 2.5,
+			"measurement_unit": "litre",
+			"created_on": "2022-02-03T14:48:54.709Z",
+			"last_modified_on": "2022-02-03T14:48:54.709Z"
 		}
 	]
 }

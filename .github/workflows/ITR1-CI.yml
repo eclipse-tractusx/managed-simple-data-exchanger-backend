@@ -25,7 +25,8 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ghcr.io/catenax-ng/tx-dft-backend-qa
+#  IMAGE_NAME: ghcr.io/catenax-ng/tx-dft-backend-qa
+  IMAGE_NAME: ${{ github.repository }}
   
 jobs:
   build-and-push-image:
@@ -62,8 +63,6 @@ jobs:
           images: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=ref,event=branch
-            type=ref,event=pr
             type=semver,pattern={{version}},value=v1.9.0
           flavor: |
               latest=true

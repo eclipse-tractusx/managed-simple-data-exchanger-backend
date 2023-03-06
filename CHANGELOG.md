@@ -27,6 +27,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added new API for transaction history download function for each processId.
 - Added new API to Dynamic generation of CSV sample and CSV template per submode.
 - Added new API to support dynamic submodel help page.
+- Added organization profile
+- Added list contract agreements on Provider side
 
 ### Fixed
 - Bug fixes.
@@ -39,7 +41,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added new submodel SingleLevelBoMAsPlanned aspect.
 - Added new submodel PartSiteInformationAsPlanned aspect.
 - Added new functionality update and Delete with exists aspect. 
-- Added new api for user role permission access managament.
+- Added new api for user role permission access management.
 - Enabled api level permissions.
 
 ### Fixed

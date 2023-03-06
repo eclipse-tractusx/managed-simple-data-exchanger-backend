@@ -9,7 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Cancel contract agreement on provider side.
 - BPN validation in SDE.
 
-## [1.9.0] - 2023-01-23
+## [1.9.0] - TBD
 ### Added
 - Added new submodel SingleLevelUsageAsBuilt 1.0.1 aspect.
 - Updated Batch submodel to support 1.0.2 version.

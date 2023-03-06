@@ -42,11 +42,11 @@ dependencies:
     name: edc-controlplane
     alias: edccontrolplane
     repository: https://catenax-ng.github.io/product-edc
-    version: 0.1.1
+    version: 0.1.6
   - condition: edcdataplane.enabled
     name: edc-dataplane
     alias: edcdataplane
     repository: https://catenax-ng.github.io/product-edc
-    version: 0.1.1
+    version: 0.1.6
   
   

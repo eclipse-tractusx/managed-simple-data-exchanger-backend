@@ -35,7 +35,7 @@ jobs:
       
       - name: Add Helm repos
         run: |
-          cd charts
+          cd charts/
           helm repo add bitnami https://charts.bitnami.com/bitnami
           helm repo add catenax-ng-product-edc https://catenax-ng.github.io/product-edc
           helm dependency update

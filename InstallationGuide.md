@@ -34,6 +34,15 @@ The values are on the [Vault](https://vault.vault.demo.catena-x.net/).
 | dft.apiKey       | DFT_APIKEY                | url authentication code for edc asset payload | someCode      |
 | edc.enabled      | EDC_ENABLED               | enable / disable edc                          | true / false  |
 
+#### Keycloak variables:
+| Property name                     | Environment Variable Name | Description                  | Example Value |
+|-----------------------------------|---------------------------|------------------------------|---------------|
+| connector.discovery.token-url     | KEYCLOCK_HOSTNAME         | keyclock hostnam             | https://      |
+| connector.discovery.clientId      | KEYCLOCK_CLIENTID         | keyclock clientId            | X-Api_Key     |
+| connector.discovery.clientSecret  | KEYCLOCK_CLIENTSECRET     | keyclock clientse            | 123456        |
+| portal.backend.hostname           | PORTAL_HOSTNAME           | portal hostname              | https://      |
+
+
 The values are in the [Vault](https://vault.vault.demo.catena-x.net/).
 *<i><b>Must create a GitHub token to access</b></i> 
 
@@ -43,7 +52,7 @@ Apart from both upload Batch upload is additional feature were added into DFT.
 
 <b>For Serial Part Typization:</b>
 
-1. Maps the content of the line with an Aspect.
+1. Maps the content of the line with an Serial Part Typization Aspect.
 2. Generates the UUID if it does not contain a UUID.
 3. Registers in DigitalTwins.
 4. Create Asset in EDC Connector.
@@ -51,8 +60,16 @@ Apart from both upload Batch upload is additional feature were added into DFT.
 
 <b>For Assembly Part Relationship:</b>
 
-1. Maps the content of the line with an Aspect Relationship.
-2. checks if an Aspect exists so it can be related to that Aspect.
+1. Maps the content of the line with an Assembly Part Relationship Aspect Relationship.
+2. checks if an Serial Part Typization Aspect exists so it can be related to that Aspect.
+3. Registers in DigitalTwins.
+4. Create Asset in EDC Connector.
+5. Stores the line in the database.
+
+<b>For Single Level Usage As Built:</b>
+
+1. Maps the content of the line with an Single Level Usage As Built Aspect Relationship.
+2. checks if an Serial Part Typization Aspect exists so it can be related to that Aspect.
 3. Registers in DigitalTwins.
 4. Create Asset in EDC Connector.
 5. Stores the line in the database.
@@ -76,7 +93,15 @@ Apart from both upload Batch upload is additional feature were added into DFT.
 <b>For SingleLevelBoMAsPlanned Upload:</b>
 
 1. Maps the content of the line with an SingleLevelBoMAsPlanned.
-2. checks if an Aspect exists so it can be related to that Aspect.
+2. checks if an PartAsPlanned Aspect exists so it can be related to that Aspect.
+3. Registers in DigitalTwins.
+4. Create Asset in EDC Connector.
+5. Stores the line in the database.
+
+<b>For PartSiteInformationAsPlanned Upload:</b>
+
+1. Maps the content of the line with an PartSiteInformationAsPlanned.
+2. checks if an PartAsPlanned Aspect exists so it can be related to that Aspect.
 3. Registers in DigitalTwins.
 4. Create Asset in EDC Connector.
 5. Stores the line in the database.

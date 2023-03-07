@@ -3,9 +3,9 @@ entries:
   dftbackend:
   - apiVersion: v2
     appVersion: 1.5.0
-    created: "2023-03-07T15:23:22.258338+05:30"
+    created: "2023-03-07T16:19:46.585628+05:30"
     description: A Helm chart for Kubernetes
-    digest: 9517c24881b160fecd9428aac8f1ab38032247e19ceccc96881a1fac0bef5900
+    digest: b17cbf6b1b07e346b03600606906abc8e67de44a2fefa2ac17e97e849ec4a047
     name: dftbackend
     type: application
     urls:
@@ -13,7 +13,7 @@ entries:
     version: 1.5.0
   - apiVersion: v2
     appVersion: 1.4.8
-    created: "2023-03-07T15:23:22.253761+05:30"
+    created: "2023-03-07T16:19:46.584794+05:30"
     description: A Helm chart for Kubernetes
     digest: e37a527c5b30bbc867e3e96bcd08043e32c8d4781124bcba93bce51a30b6213e
     name: dftbackend
@@ -23,7 +23,7 @@ entries:
     version: 1.4.8
   - apiVersion: v2
     appVersion: 1.4.6
-    created: "2023-03-07T15:23:22.245752+05:30"
+    created: "2023-03-07T16:19:46.58384+05:30"
     description: A Helm chart for Kubernetes
     digest: 9f8c2a7da51223c73e971bbd2ff147971021358908976c7e00ce765a30513cd0
     name: dftbackend
@@ -31,4 +31,4 @@ entries:
     urls:
     - https://catenax-ng.github.io/tx-dft-backend/dftbackend-1.4.6.tgz
     version: 1.4.6
-generated: "2023-03-07T15:23:22.241104+05:30"
+generated: "2023-03-07T16:19:46.582728+05:30"

@@ -43,6 +43,7 @@ You can find the standard credentials as well as further database configurations
     * PartAsPlanned
     * SingleLevelBoMAsPlanned
     * PartSiteInformationAsPlanned
+    * SingleLevelUsageAsBuilt
 2. ***Json Update***
     * SerialTypezation
     * AssemblyRelationship
@@ -50,7 +51,7 @@ You can find the standard credentials as well as further database configurations
     * PartAsPlanned
     * SingleLevelBoMAsPlanned
     * PartSiteInformationAsPlanned
-
+ 	* SingleLevelUsageAsBuilt
 3. ***Application UI***
     * SerialTypezation
     * AssemblyRelationship
@@ -58,6 +59,7 @@ You can find the standard credentials as well as further database configurations
     * PartAsPlanned
     * SingleLevelBoMAsPlanned
     * PartSiteInformationAsPlanned
+    * SingleLevelUsageAsBuilt
 
 
  ---   
@@ -68,6 +70,7 @@ You can find the standard credentials as well as further database configurations
 | API | Description |  Request body | Response body |
 | ------ | ------ | ------ | ------ |
 | **GET:- localhost:8080/api/submodels** |This API is used to get all submodels list which is implemented/supported by SDE | Refer Api Doc | Refer Api Doc |
+| **GET:- localhost:8080/api/submodels/schema-details** |This API is used to get schema details of submodels which is implemented/supported by SDE | Refer Api Doc | Refer Api Doc |
 | **GET:- localhost:8080/api/submodels/{submodelName}** |This API is used to get the schema data of specific model | Refer Api Doc | Refer Api Doc |
 | **POST:- localhost:8080/api/{submodel}/upload** |This API is used to uploading data From CSV file for particular selected submodel | Refer Api Doc |4ca03d5f-9e37-4c12-a8b8-6583b81892c8 |
 | **POST:- localhost:8080/api/{submodel}/manualentry** |This API is used for uploading data From JSon/Tabular form | Refer Api Doc | 4ca03d5f-9e37-4c12-a8b8-6583b81892c8 |
@@ -145,6 +148,7 @@ You can find the standard credentials as well as further database configurations
 | **sde_role** |Table Contains list of roles |  **Primary Key**:sde_role |
 | **sde_permission** |Table Contains list of permissions |  **Primary Key**:sde_permission |
 | **sde_role_permission_mapping** |Table Contains mapping of role with permissions |  **Primary Key**:sde_role, sde_permission |
+| **single_level_usage_as_built** |Data about the relationship of parts to its child-components. | **Primary Key**:parent_catenax_id, child_catenax_id |
 
 ---
 ## flyway

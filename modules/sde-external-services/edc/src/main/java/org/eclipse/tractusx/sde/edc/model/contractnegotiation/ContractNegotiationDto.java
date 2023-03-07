@@ -38,7 +38,7 @@ public class ContractNegotiationDto {
     private String id;
     private String protocol = "ids-multipart";
     private String state;
-    private Type type = Type.CONSUMER;
+    private Type type;
     private long createdAt;
     private long updatedAt;
 

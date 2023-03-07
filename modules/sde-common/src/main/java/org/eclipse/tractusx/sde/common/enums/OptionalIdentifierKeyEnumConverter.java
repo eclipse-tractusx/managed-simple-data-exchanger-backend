@@ -23,9 +23,10 @@
 package org.eclipse.tractusx.sde.common.enums;
 
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
 import java.util.stream.Stream;
+
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 
 @Converter(autoApply = true)
 public class OptionalIdentifierKeyEnumConverter implements AttributeConverter<OptionalIdentifierKeyEnum, String> {

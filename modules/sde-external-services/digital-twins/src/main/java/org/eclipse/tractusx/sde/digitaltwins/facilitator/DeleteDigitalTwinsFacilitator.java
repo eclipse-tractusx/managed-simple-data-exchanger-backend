@@ -76,7 +76,7 @@ public class DeleteDigitalTwinsFacilitator {
 	@SneakyThrows
 	public void deleteDigitalTwinsById(String shellId, String subModelId) {
 		try {
-			digitalTwinsFeignClient.deleteDigitalTwinsById(shellId, subModelId, getHeaders());
+			digitalTwinsFeignClient.deleteSubmodelfromShellById(shellId, subModelId, getHeaders());
 		} catch (Exception e) {
 			parseExceptionMessage(e);
 		}

@@ -69,22 +69,33 @@ public class JsonRecordValidate extends Step {
 		for (String ele : fields) {
 			try {
 				JsonArray jArray = submodelProperties.get(ele).getAsJsonArray();
-				String keyFiledValue = inputJsonObject.get(ele).asText();
+				JsonNode jsonNode = inputJsonObject.get(ele);
+				
+				String keyFiledValue = null;
+				if (!jsonNode.isNull())
+					keyFiledValue = jsonNode.asText();
 
-				if (!StringUtils.isBlank(keyFiledValue) && !keyFiledValue.equals("null")) {
-
-					for (JsonElement dependentField : jArray) {
-						String dependentFiledValue = inputJsonObject.get(dependentField.getAsString()).asText();
-
-						if (StringUtils.isBlank(dependentFiledValue) || dependentFiledValue.equals("null"))
-							throw new ValidationException(ele + " field is dependent on " + dependentField.getAsString()
-									+ ", and dependent field is null or empty");
-					}
+				if (!StringUtils.isBlank(keyFiledValue)) {
+					validateDependentFieldValue(inputJsonObject, ele, jArray);
 				}
 
 			} catch (Exception e) {
 				throw new ValidationException(rowIndex + ", " + e.toString());
 			}
+		}
+	}
+
+	private void validateDependentFieldValue(JsonNode inputJsonObject, String ele, JsonArray jArray) {
+		for (JsonElement dependentField : jArray) {
+			JsonNode jsonNodeField = inputJsonObject.get(dependentField.getAsString());
+			
+			String dependentFiledValue = null;
+			if (!jsonNodeField.isNull())
+				dependentFiledValue = jsonNodeField.asText();
+
+			if (StringUtils.isBlank(dependentFiledValue))
+				throw new ValidationException(ele + " field is dependent on " + dependentField.getAsString()
+						+ ", and dependent field is null or empty");
 		}
 	}
 }

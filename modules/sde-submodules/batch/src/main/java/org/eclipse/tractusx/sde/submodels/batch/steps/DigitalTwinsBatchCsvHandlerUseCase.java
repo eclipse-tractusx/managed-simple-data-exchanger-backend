@@ -41,9 +41,9 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellLookupRespon
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelListResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelResponse;
 import org.eclipse.tractusx.sde.digitaltwins.gateways.external.DigitalTwinGateway;
+import org.eclipse.tractusx.sde.submodels.batch.constants.BatchConstants;
 import org.eclipse.tractusx.sde.submodels.batch.model.Batch;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import lombok.SneakyThrows;
@@ -51,23 +51,12 @@ import lombok.SneakyThrows;
 @Service
 public class DigitalTwinsBatchCsvHandlerUseCase extends Step {
 
-	private static final String BATCH_ID = "BatchID";
-	private static final String MANUFACTURER_PART_ID = "ManufacturerPartID";
-	private static final String MANUFACTURER_ID = "ManufacturerID";
-	private static final String HTTP = "HTTP";
-	private static final String HTTPS = "HTTPS";
-	private static final String SEMANTIC_ID = "urn:bamm:com.catenax.batch:1.0.0#Batch";
-	private static final String ID_SHORT = "Batch";
-	private static final String ENDPOINT_PROTOCOL_VERSION = "1.0";
-	private static final String PREFIX = "urn:uuid:";
+	@Autowired
+	private BatchConstants batchConstants;
 
 	@Autowired
 	private DigitalTwinGateway gateway;
 
-	@Value(value = "${manufacturerId}")
-	private String manufacturerId;
-	@Value(value = "${edc.hostname}")
-	private String edcEndpoint;
 
 	@SneakyThrows
 	public Batch run(Batch batch) throws CsvHandlerDigitalTwinUseCaseException {
@@ -103,7 +92,7 @@ public class DigitalTwinsBatchCsvHandlerUseCase extends Step {
 		SubModelListResponse subModelResponse = gateway.getSubModels(shellId);
 		SubModelResponse foundSubmodel = null;
 		if (subModelResponse != null) {
-			foundSubmodel = subModelResponse.stream().filter(x -> ID_SHORT.equals(x.getIdShort())).findFirst()
+			foundSubmodel = subModelResponse.stream().filter(x -> getIdShortOfModel().equals(x.getIdShort())).findFirst()
 					.orElse(null);
 			if (foundSubmodel != null)
 				batch.setSubModelId(foundSubmodel.getIdentification());
@@ -124,31 +113,29 @@ public class DigitalTwinsBatchCsvHandlerUseCase extends Step {
 
 	private ShellLookupRequest getShellLookupRequest(Batch batch) {
 		ShellLookupRequest shellLookupRequest = new ShellLookupRequest();
-		shellLookupRequest.addLocalIdentifier(BATCH_ID, batch.getBatchId());
-		shellLookupRequest.addLocalIdentifier(MANUFACTURER_PART_ID, batch.getManufacturerPartId());
-		shellLookupRequest.addLocalIdentifier(MANUFACTURER_ID, manufacturerId);
-		if (batch.hasOptionalIdentifier()) {
-			shellLookupRequest.addLocalIdentifier(batch.getOptionalIdentifierKey(), batch.getOptionalIdentifierValue());
-		}
+		shellLookupRequest.addLocalIdentifier(BatchConstants.BATCH_ID, batch.getBatchId());
+		shellLookupRequest.addLocalIdentifier(CommonConstants.MANUFACTURER_PART_ID, batch.getManufacturerPartId());
+		shellLookupRequest.addLocalIdentifier(CommonConstants.MANUFACTURER_ID, batchConstants.getManufacturerId());
+		
 		return shellLookupRequest;
 	}
 
 	private CreateSubModelRequest getCreateSubModelRequest(Batch batch) {
 		ArrayList<String> value = new ArrayList<>();
-		value.add(SEMANTIC_ID);
+		value.add(getsemanticIdOfModel());
 		SemanticId semanticId = new SemanticId(value);
-		String identification = PREFIX + UUID.randomUUID();
+		String identification = CommonConstants.PREFIX + UUID.randomUUID();
 
 		List<Endpoint> endpoints = new ArrayList<>();
-		endpoints.add(Endpoint.builder().endpointInterface(HTTP)
+		endpoints.add(Endpoint.builder().endpointInterface(CommonConstants.HTTP)
 				.protocolInformation(ProtocolInformation.builder()
-						.endpointAddress(String.format(String.format("%s%s/%s-%s%s", edcEndpoint.replace("data", ""),
-								manufacturerId, batch.getShellId(), identification,
+						.endpointAddress(String.format(String.format("%s%s/%s-%s%s", batchConstants.getEdcEndpoint(),
+								batchConstants.getManufacturerId(), batch.getShellId(), identification,
 								"/submodel?content=value&extent=WithBLOBValue")))
-						.endpointProtocol(HTTPS).endpointProtocolVersion(ENDPOINT_PROTOCOL_VERSION).build())
+						.endpointProtocol(CommonConstants.HTTPS).endpointProtocolVersion(CommonConstants.ENDPOINT_PROTOCOL_VERSION).build())
 				.build());
 
-		return CreateSubModelRequest.builder().idShort(ID_SHORT).identification(identification).semanticId(semanticId)
+		return CreateSubModelRequest.builder().idShort(getIdShortOfModel()).identification(identification).semanticId(semanticId)
 				.endpoints(endpoints).build();
 	}
 
@@ -160,19 +147,16 @@ public class DigitalTwinsBatchCsvHandlerUseCase extends Step {
 		GlobalAssetId globalIdentifier = new GlobalAssetId(values);
 
 		return ShellDescriptorRequest.builder()
-				.idShort(String.format("%s_%s_%s", batch.getNameAtManufacturer(), manufacturerId,
+				.idShort(String.format("%s_%s_%s", batch.getNameAtManufacturer(), batchConstants.getManufacturerId(),
 						batch.getManufacturerPartId()))
 				.globalAssetId(globalIdentifier).specificAssetIds(specificIdentifiers)
-				.identification(PREFIX + UUID.randomUUID()).build();
+				.identification(CommonConstants.PREFIX + UUID.randomUUID()).build();
 	}
 
 	private void setSpecifiers(final ArrayList<KeyValuePair> specificIdentifiers, Batch batch) {
-		specificIdentifiers.add(new KeyValuePair(BATCH_ID, batch.getBatchId()));
-		specificIdentifiers.add(new KeyValuePair(MANUFACTURER_PART_ID, batch.getManufacturerPartId()));
-		specificIdentifiers.add(new KeyValuePair(MANUFACTURER_ID, manufacturerId));
-		if (batch.hasOptionalIdentifier()) {
-			specificIdentifiers
-					.add(new KeyValuePair(batch.getOptionalIdentifierKey(), batch.getOptionalIdentifierValue()));
-		}
+		specificIdentifiers.add(new KeyValuePair(BatchConstants.BATCH_ID, batch.getBatchId()));
+		specificIdentifiers.add(new KeyValuePair(CommonConstants.MANUFACTURER_PART_ID, batch.getManufacturerPartId()));
+		specificIdentifiers.add(new KeyValuePair(CommonConstants.MANUFACTURER_ID, batchConstants.getManufacturerId()));
+
 	}
 }

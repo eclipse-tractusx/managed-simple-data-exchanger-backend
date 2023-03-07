@@ -74,7 +74,7 @@ public class EDCPartAsPlannedHandlerStep extends Step {
 		try {
 
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
-					getSubmodelDescriptionOfModel(), shellId, subModelId, input.getUuid());
+					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getUuid());
 			if (!edcGateway.assetExistsLookup(
 					assetEntryRequest.getAsset().getProperties().get(CommonConstants.ASSET_PROP_ID))) {
 				edcProcessingforPartAsPlanned(assetEntryRequest, input);

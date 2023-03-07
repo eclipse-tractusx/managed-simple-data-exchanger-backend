@@ -86,12 +86,6 @@ public class Batch {
 	@JsonProperty(value = "name_at_customer")
 	private String nameAtCustomer;
 
-	@JsonProperty(value = "optional_identifier_key")
-	private String optionalIdentifierKey;
-
-	@JsonProperty(value = "optional_identifier_value")
-	private String optionalIdentifierValue;
-
 	@JsonProperty(value = "asset_id")
 	private String assetId;
 
@@ -110,10 +104,4 @@ public class Batch {
 	@JsonProperty(value = "updated")
 	private String updated;
 
-	public boolean hasOptionalIdentifier() {
-		boolean hasKey = this.getOptionalIdentifierKey() != null && !this.getOptionalIdentifierKey().isBlank();
-		boolean hasValue = this.getOptionalIdentifierValue() != null && !this.getOptionalIdentifierValue().isBlank();
-
-		return hasKey && hasValue;
-	}
 }

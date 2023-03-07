@@ -1,6 +1,4 @@
 /********************************************************************************
- * Copyright (c) 2022 Critical TechWorks GmbH
- * Copyright (c) 2022 BMW GmbH
  * Copyright (c) 2022 T-Systems International GmbH
  * Copyright (c) 2022 Contributors to the Eclipse Foundation
  *
@@ -20,35 +18,30 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.core.controller.failurelog;
+package org.eclipse.tractusx.sde.common.exception;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
+public class JsonRecordHandlerUseCaseException extends Exception {
 
-import org.eclipse.tractusx.sde.core.controller.failurelog.entity.FailureLogEntity;
-import org.eclipse.tractusx.sde.core.controller.failurelog.repository.FailureLogRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+	private static final long serialVersionUID = 1L;
 
-import lombok.extern.slf4j.Slf4j;
+	private final int rowPosition;
 
-@Service
-@Slf4j
-public class FailureLogs {
+	private final int colomn;
 
-	@Autowired
-	private FailureLogRepository repository;
+	public JsonRecordHandlerUseCaseException(int rowPosition, String message) {
+		super(message);
+		this.rowPosition = rowPosition;
+		this.colomn = 0;
+	}
 
-	public void saveLog(String processId, String error) {
+	public JsonRecordHandlerUseCaseException(int rowPosition, int colomn, String message) {
+		super(message);
+		this.rowPosition = rowPosition;
+		this.colomn = colomn;
+	}
 
-		FailureLogEntity entity = FailureLogEntity.builder()
-				.uuid(UUID.randomUUID().toString())
-				.processId(processId)
-				.log(error)
-				.dateTime(LocalDateTime.now())
-				.build();
-
-		log.error("Error in process {}, {}", entity.getProcessId(), entity.getLog());
-		repository.save(entity);
+	@Override
+	public String getMessage() {
+		return String.format("RowPosition: %s | Colomn: %s | Description: %s", rowPosition, colomn, super.getMessage());
 	}
 }

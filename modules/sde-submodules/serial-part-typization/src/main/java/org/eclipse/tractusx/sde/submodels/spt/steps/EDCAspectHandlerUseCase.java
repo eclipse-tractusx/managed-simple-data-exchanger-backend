@@ -51,8 +51,6 @@ import lombok.SneakyThrows;
 @Service
 public class EDCAspectHandlerUseCase extends Step {
 
-	private static final String ASSET_PROP_NAME_ASPECT = "Serialized Part - Submodel SerialPartTypization";
-
 	private final AssetEntryRequestFactory assetFactory;
 	private final EDCGateway edcGateway;
 	private final PolicyRequestFactory policyFactory;
@@ -78,7 +76,7 @@ public class EDCAspectHandlerUseCase extends Step {
 
 		try {
 
-			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel, ASSET_PROP_NAME_ASPECT,
+			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel, getSubmodelShortDescriptionOfModel(),
 					shellId, subModelId, input.getUuid());
 			if (!edcGateway.assetExistsLookup(
 					assetEntryRequest.getAsset().getProperties().get(CommonConstants.ASSET_PROP_ID))) {
@@ -104,7 +102,7 @@ public class EDCAspectHandlerUseCase extends Step {
 			AspectEntity entity = aspectService.readEntity(input.getUuid());
 			aspectService.deleteEDCAsset(entity);
 		} catch (Exception e) {
-			if (!e.getMessage().contains("404 Not Found") && !e.getMessage().contains("No data found")) {
+			if (!e.getMessage().contains("404 Not Found")) {
 				throw new ServiceException("Exception in EDC delete request process:" + e.getMessage());
 			}
 		}

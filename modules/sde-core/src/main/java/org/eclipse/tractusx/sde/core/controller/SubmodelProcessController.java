@@ -23,10 +23,9 @@ package org.eclipse.tractusx.sde.core.controller;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.ResponseEntity.ok;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-
-import javax.validation.Valid;
 
 import org.eclipse.tractusx.sde.common.entities.SubmodelFileRequest;
 import org.eclipse.tractusx.sde.common.entities.SubmodelJsonRequest;
@@ -49,6 +48,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -97,12 +97,13 @@ public class SubmodelProcessController {
 
 	@DeleteMapping(value = "/{submodel}/delete/{processId}", produces = APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasPermission(#submodel,'provider_delete_contract_offer')")
-	public ResponseEntity<String> deleteRecordsWithDigitalTwinAndEDC(@PathVariable("processId") String processId,
-			@PathVariable("submodel") String submodel) {
+	public ResponseEntity<Map<String, String>> deleteRecordsWithDigitalTwinAndEDC(
+			@PathVariable("processId") String processId, @PathVariable("submodel") String submodel) {
 		String delProcessId = UUID.randomUUID().toString();
 
 		submodelOrchestartorService.deleteSubmodelDigitalTwinsAndEDC(processId, delProcessId, submodel);
-
-		return ok().body(delProcessId);
+		Map<String, String> res = new HashMap<>();
+		res.put("processId", delProcessId);
+		return ok().body(res);
 	}
 }

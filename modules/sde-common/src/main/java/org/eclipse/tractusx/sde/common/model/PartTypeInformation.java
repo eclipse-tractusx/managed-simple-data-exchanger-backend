@@ -29,7 +29,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class PartTypeInformation {
 
-    private String manufacturerPartID;
+    private String manufacturerPartId;
     private String customerPartId;
     private String classification;
     private String nameAtManufacturer;

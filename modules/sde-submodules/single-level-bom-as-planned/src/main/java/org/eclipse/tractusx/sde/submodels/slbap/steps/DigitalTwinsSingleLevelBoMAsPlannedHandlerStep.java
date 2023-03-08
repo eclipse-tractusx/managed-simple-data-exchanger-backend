@@ -71,6 +71,7 @@ public class DigitalTwinsSingleLevelBoMAsPlannedHandlerStep extends Step {
 		}
 	}
 
+	@SneakyThrows
 	private SingleLevelBoMAsPlanned doRun(SingleLevelBoMAsPlanned singleLevelBoMAsPlannedAspect)
 			throws CsvHandlerUseCaseException, CsvHandlerDigitalTwinUseCaseException {
 		

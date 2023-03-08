@@ -65,6 +65,7 @@ public class DigitalTwinsPartSiteInformationAsPlannedHandlerStep extends Step {
 		}
 	}
 
+	@SneakyThrows
 	private PartSiteInformationAsPlanned doRun(PartSiteInformationAsPlanned partSiteInformationAsPlannedAspect) throws CsvHandlerDigitalTwinUseCaseException {
 		ShellLookupRequest shellLookupRequest = getShellLookupRequest(partSiteInformationAsPlannedAspect);
 		ShellLookupResponse shellIds = gateway.shellLookup(shellLookupRequest);

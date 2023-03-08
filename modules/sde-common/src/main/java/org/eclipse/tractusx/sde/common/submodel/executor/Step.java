@@ -75,4 +75,8 @@ public abstract class Step {
 	protected void logDebug(String message) {
 		log.debug(String.format("[%s] %s", this.getClass().getSimpleName(), message));
 	}
+	
+	protected void logInfo(String message) {
+		log.info(String.format("[%s] %s", this.getClass().getSimpleName(), message));
+	}
 }

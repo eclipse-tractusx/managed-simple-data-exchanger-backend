@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.CreateSubModelRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellDescriptorRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellLookupRequest;
@@ -81,7 +82,7 @@ public class DigitalTwinGateway {
 	@Value(value = "${digital-twins.authentication.url}")
 	private String tokenUrl;
 
-	public ShellLookupResponse shellLookup(ShellLookupRequest request) {
+	public ShellLookupResponse shellLookup(ShellLookupRequest request) throws ServiceException {
 
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
@@ -94,15 +95,21 @@ public class DigitalTwinGateway {
 		String url = digitalTwinsHost + "/lookup/shells";
 		String urlTemplate = UriComponentsBuilder.fromHttpUrl(url).queryParam(ASSET_IDS_QUERY_PARAMETER, "{assetIds}")
 				.encode().toUriString();
+		ShellLookupResponse responseBody = null;
 
-		ResponseEntity<ShellLookupResponse> response = restTemplate.exchange(urlTemplate, HttpMethod.GET, entity,
-				ShellLookupResponse.class, queryParameters);
+		try {
+			ResponseEntity<ShellLookupResponse> response = restTemplate.exchange(urlTemplate, HttpMethod.GET, entity,
+					ShellLookupResponse.class, queryParameters);
 
-		ShellLookupResponse responseBody;
-		if (response.getStatusCode() != HttpStatus.OK) {
-			responseBody = new ShellLookupResponse();
-		} else {
-			responseBody = response.getBody();
+			if (response.getStatusCode() != HttpStatus.OK) {
+				responseBody = new ShellLookupResponse();
+			} else {
+				responseBody = response.getBody();
+			}
+		} catch (Exception e) {
+			log.error("Request URL and parameter :" + urlTemplate + ", " + queryParameters.toString());
+			log.error("Error in lookup DT lookup:" + e.getMessage());
+			throw new ServiceException(e.getMessage());
 		}
 		return responseBody;
 	}

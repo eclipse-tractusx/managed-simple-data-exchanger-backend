@@ -66,6 +66,7 @@ public class DigitalTwinsBatchCsvHandlerUseCase extends Step {
 		}
 	}
 
+	@SneakyThrows
 	private Batch doRun(Batch batch) throws CsvHandlerDigitalTwinUseCaseException {
 		ShellLookupRequest shellLookupRequest = getShellLookupRequest(batch);
 		ShellLookupResponse shellIds = gateway.shellLookup(shellLookupRequest);

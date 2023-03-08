@@ -78,6 +78,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 		}
 	}
 
+	@SneakyThrows
 	private AspectRelationship doRun(AspectRelationship aspectRelationShip)
 			throws CsvHandlerUseCaseException, CsvHandlerDigitalTwinUseCaseException {
 
@@ -107,8 +108,8 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 			logDebug(String.format("No submodels for '%s'", shellId));
 			createSubModelSteps(aspectRelationShip, shellId, createSubModelRequest);
 		} else {
-			if (!aspectRelationShip.getChildUuid().equals(createSubModelRequest.getIdentification())) {
-				gateway.deleteSubmodelfromShellById(shellId, createSubModelRequest.getIdentification());
+			if (!foundSubmodel.getIdentification().equals(createSubModelRequest.getIdentification())) {
+				gateway.deleteSubmodelfromShellById(shellId, foundSubmodel.getIdentification());
 				createSubModelSteps(aspectRelationShip, shellId, createSubModelRequest);
 			}
 			aspectRelationShip.setUpdated(CommonConstants.UPDATED_Y);
@@ -169,7 +170,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 	private ShellDescriptorResponse createShellDescriptor(AspectRelationship aspectRelationShip,
 			ShellLookupRequest shellLookupRequest) throws CsvHandlerUseCaseException {
 
-		logDebug(String.format("No shell id for '%s'", shellLookupRequest.toJsonString()));
+		logInfo(String.format("No shell id for '%s'", shellLookupRequest.toJsonString()));
 		AspectEntity aspectEntity = null;
 		if (aspectRelationShip.hasOptionalParentIdentifier()) {
 			aspectEntity = aspectRepository.findByIdentifiers(aspectRelationShip.getParentPartInstanceId(),
@@ -182,12 +183,12 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 		}
 
 		if (aspectEntity == null) {
-			throw new CsvHandlerUseCaseException(aspectRelationShip.getRowNumber(), "No parent aspect found");
+			throw new CsvHandlerUseCaseException(aspectRelationShip.getRowNumber(), "No parent aspect found in DT as well as in Local SDE");
 		}
 
 		ShellDescriptorRequest aasDescriptorRequest = getShellDescriptorRequest(aspectMapper.mapFrom(aspectEntity));
 		ShellDescriptorResponse result = gateway.createShellDescriptor(aasDescriptorRequest);
-		logDebug(String.format("Shell created with id '%s'", result.getIdentification()));
+		logInfo(String.format("Shell created with id '%s'", result.getIdentification()));
 
 		return result;
 	}

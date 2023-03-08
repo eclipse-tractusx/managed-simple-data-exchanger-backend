@@ -42,7 +42,7 @@ public interface AspectRepository extends CrudRepository<AspectEntity, String> {
 			String optionalIdentifierKey, String optionalIdentifierValue) {
 		return findByPartInstanceIdAndManufacturerPartIdAndOptionalIdentifierKeyAndOptionalIdentifierValue(
 				partInstanceId, manufacturerPartId,
-				optionalIdentifierKey == null ? null : OptionalIdentifierKeyEnum.valueOf(optionalIdentifierKey),
+				optionalIdentifierKey == null ? null : OptionalIdentifierKeyEnum.valueOf(optionalIdentifierKey.toUpperCase()),
 				optionalIdentifierValue);
 	}
 

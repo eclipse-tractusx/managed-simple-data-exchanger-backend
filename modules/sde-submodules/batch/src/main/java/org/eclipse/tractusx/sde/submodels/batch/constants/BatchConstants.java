@@ -19,7 +19,6 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.submodels.batch.constants;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import lombok.Getter;
@@ -28,13 +27,7 @@ import lombok.Getter;
 @Component
 public class BatchConstants {
 	
-	@Value(value = "${manufacturerId}")
-	public String manufacturerId;
-	
-	@Value(value = "${edc.hostname}")
-	public String edcEndpoint;
-	
-	public static final String AS_PLANNED = "AsBuilt";
-	public static final String BATCH_ID = "BatchID";
+	public static final String AS_BUILT = "AsBuilt";
+	public static final String BATCH_ID = "batchId";
 
 }

@@ -19,7 +19,6 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.submodels.spt.constants;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import lombok.Getter;
@@ -28,12 +27,6 @@ import lombok.Getter;
 @Component
 public class SerialPartTypizationConstants {
 	
-	@Value(value = "${manufacturerId}")
-	public String manufacturerId;
-	
-	@Value(value = "${edc.hostname}")
-	public String edcEndpoint;
-	
-	public static final String AS_PLANNED = "AsBuilt";
+	public static final String AS_BUILT = "AsBuilt";
 
 }

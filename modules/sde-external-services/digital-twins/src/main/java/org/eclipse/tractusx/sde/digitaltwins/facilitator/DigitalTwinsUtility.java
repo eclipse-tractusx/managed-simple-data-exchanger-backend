@@ -44,12 +44,17 @@ public class DigitalTwinsUtility {
 		List<Endpoint> endpoints = new ArrayList<>();
 		endpoints.add(Endpoint.builder().endpointInterface(CommonConstants.INTERFACE_EDC)
 				.protocolInformation(ProtocolInformation.builder()
-						.endpointAddress(String.format(String.format("%s/%s-%s%s", edcEndpoint, shellId,
-								submodelIdentification, CommonConstants.SUBMODEL_CONTEXT_URL)))
+						.endpointAddress(edcEndpoint+"/"+encodedUrl(shellId+"-"+
+								submodelIdentification)+CommonConstants.SUBMODEL_CONTEXT_URL)
 						.endpointProtocol(CommonConstants.ENDPOINT_PROTOCOL)
 						.endpointProtocolVersion(CommonConstants.ENDPOINT_PROTOCOL_VERSION).build())
 				.build());
 		return endpoints;
 	}
+
+	private String encodedUrl(String format) {
+		return format.replaceAll(":", "%3A");
+	}
+	
 
 }

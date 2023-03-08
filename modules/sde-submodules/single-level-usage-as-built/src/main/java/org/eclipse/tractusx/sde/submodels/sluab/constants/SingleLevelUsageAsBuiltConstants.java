@@ -19,7 +19,6 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.submodels.sluab.constants;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import lombok.Getter;
@@ -28,12 +27,6 @@ import lombok.Getter;
 @Component
 public class SingleLevelUsageAsBuiltConstants {
 
-	@Value(value = "${manufacturerId}")
-	public String manufacturerId;
-	
-	@Value(value = "${edc.hostname}")
-	public String edcEndpoint;
-	
 	public static final String MANUFACTURER_PART_ID = "manufacturerPartId";
 	public static final String MANUFACTURER_ID = "manufacturerId";
 	public static final String PART_INSTANCE_ID = "partInstanceId";

@@ -31,7 +31,6 @@ import org.eclipse.tractusx.sde.common.submodel.executor.Step;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.Endpoint;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.GlobalAssetId;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.KeyValuePair;
-import org.eclipse.tractusx.sde.digitaltwins.entities.common.ProtocolInformation;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.SemanticId;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.CreateSubModelRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellDescriptorRequest;
@@ -40,6 +39,7 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorRe
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellLookupResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelListResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelResponse;
+import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsUtility;
 import org.eclipse.tractusx.sde.digitaltwins.gateways.external.DigitalTwinGateway;
 import org.eclipse.tractusx.sde.submodels.batch.constants.BatchConstants;
 import org.eclipse.tractusx.sde.submodels.batch.model.Batch;
@@ -52,11 +52,10 @@ import lombok.SneakyThrows;
 public class DigitalTwinsBatchCsvHandlerUseCase extends Step {
 
 	@Autowired
-	private BatchConstants batchConstants;
-
-	@Autowired
 	private DigitalTwinGateway gateway;
 
+	@Autowired
+	private DigitalTwinsUtility digitalTwinsUtility;
 
 	@SneakyThrows
 	public Batch run(Batch batch) throws CsvHandlerDigitalTwinUseCaseException {
@@ -115,7 +114,7 @@ public class DigitalTwinsBatchCsvHandlerUseCase extends Step {
 		ShellLookupRequest shellLookupRequest = new ShellLookupRequest();
 		shellLookupRequest.addLocalIdentifier(BatchConstants.BATCH_ID, batch.getBatchId());
 		shellLookupRequest.addLocalIdentifier(CommonConstants.MANUFACTURER_PART_ID, batch.getManufacturerPartId());
-		shellLookupRequest.addLocalIdentifier(CommonConstants.MANUFACTURER_ID, batchConstants.getManufacturerId());
+		shellLookupRequest.addLocalIdentifier(CommonConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId());
 		
 		return shellLookupRequest;
 	}
@@ -126,14 +125,7 @@ public class DigitalTwinsBatchCsvHandlerUseCase extends Step {
 		SemanticId semanticId = new SemanticId(value);
 		String identification = CommonConstants.PREFIX + UUID.randomUUID();
 
-		List<Endpoint> endpoints = new ArrayList<>();
-		endpoints.add(Endpoint.builder().endpointInterface(CommonConstants.HTTP)
-				.protocolInformation(ProtocolInformation.builder()
-						.endpointAddress(String.format(String.format("%s%s/%s-%s%s", batchConstants.getEdcEndpoint(),
-								batchConstants.getManufacturerId(), batch.getShellId(), identification,
-								"/submodel?content=value&extent=WithBLOBValue")))
-						.endpointProtocol(CommonConstants.HTTPS).endpointProtocolVersion(CommonConstants.ENDPOINT_PROTOCOL_VERSION).build())
-				.build());
+		List<Endpoint> endpoints = digitalTwinsUtility.prepareDtEndpoint(batch.getShellId(), identification);
 
 		return CreateSubModelRequest.builder().idShort(getIdShortOfModel()).identification(identification).semanticId(semanticId)
 				.endpoints(endpoints).build();
@@ -147,7 +139,7 @@ public class DigitalTwinsBatchCsvHandlerUseCase extends Step {
 		GlobalAssetId globalIdentifier = new GlobalAssetId(values);
 
 		return ShellDescriptorRequest.builder()
-				.idShort(String.format("%s_%s_%s", batch.getNameAtManufacturer(), batchConstants.getManufacturerId(),
+				.idShort(String.format("%s_%s_%s", batch.getNameAtManufacturer(), digitalTwinsUtility.getManufacturerId(),
 						batch.getManufacturerPartId()))
 				.globalAssetId(globalIdentifier).specificAssetIds(specificIdentifiers)
 				.identification(CommonConstants.PREFIX + UUID.randomUUID()).build();
@@ -156,7 +148,7 @@ public class DigitalTwinsBatchCsvHandlerUseCase extends Step {
 	private void setSpecifiers(final ArrayList<KeyValuePair> specificIdentifiers, Batch batch) {
 		specificIdentifiers.add(new KeyValuePair(BatchConstants.BATCH_ID, batch.getBatchId()));
 		specificIdentifiers.add(new KeyValuePair(CommonConstants.MANUFACTURER_PART_ID, batch.getManufacturerPartId()));
-		specificIdentifiers.add(new KeyValuePair(CommonConstants.MANUFACTURER_ID, batchConstants.getManufacturerId()));
+		specificIdentifiers.add(new KeyValuePair(CommonConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId()));
 
 	}
 }

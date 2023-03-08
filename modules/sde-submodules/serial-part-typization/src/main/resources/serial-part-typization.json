@@ -40,7 +40,9 @@
 				]
 			},
 			"part_instance_id": {
-				"type": ["string"],
+				"type": [
+					"string"
+				],
 				"title": "Part Instance ID",
 				"description": "The serial number of the serialized part from the manufacturer. We assume here that the customer does not have or create its own serial number for a part, but just used the manufacturer's serial number.",
 				"minLength": 1,
@@ -49,7 +51,9 @@
 				]
 			},
 			"manufacturing_date": {
-				"type": ["string"],
+				"type": [
+					"string"
+				],
 				"format": "date-time",
 				"title": "Manufacturing Date",
 				"description": "Timestamp of the manufacturing date as the final step in production process (e.g. final quality check, ready-for-shipment event)",
@@ -70,7 +74,9 @@
 				]
 			},
 			"manufacturer_part_id": {
-				"type": ["string"],
+				"type": [
+					"string"
+				],
 				"minLength": 1,
 				"title": "Manufacturer Part ID",
 				"description": "Part ID as assigned by the manufacturer of the part. The Part ID identifies the part (as designed) in the manufacturer`s dataspace. The Part ID does not reference a specific instance of a part and thus should not be confused with the serial number.",
@@ -90,7 +96,9 @@
 				]
 			},
 			"classification": {
-				"type": ["string"],
+				"type": [
+					"string"
+				],
 				"enum": [
 					"product",
 					"raw material",
@@ -106,7 +114,9 @@
 				]
 			},
 			"name_at_manufacturer": {
-				"type": ["string"],
+				"type": [
+					"string"
+				],
 				"minLength": 1,
 				"title": "Name At Manufacturer",
 				"description": "Name of the part as assigned by the manufacturer",
@@ -131,14 +141,14 @@
 					"null"
 				],
 				"enum": [
-					"VAN",
-					"BatchID",
-					""
+					"",
+					"van",
+					"batchId"
 				],
 				"title": "Optional Identifier Key",
 				"description": "The key of a local identifier.",
 				"examples": [
-					"VAN"
+					"van"
 				]
 			},
 			"optional_identifier_value": {
@@ -165,7 +175,7 @@
 			"classification": "component",
 			"name_at_manufacturer": "Sensor",
 			"name_at_customer": "Sensor",
-			"optional_identifier_key": "VAN",
+			"optional_identifier_key": "van",
 			"optional_identifier_value": "Value"
 		}
 	]

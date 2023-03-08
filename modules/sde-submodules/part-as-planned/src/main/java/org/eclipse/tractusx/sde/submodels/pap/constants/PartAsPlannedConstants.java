@@ -19,7 +19,6 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.submodels.pap.constants;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import lombok.Getter;
@@ -27,12 +26,7 @@ import lombok.Getter;
 @Getter
 @Component
 public class PartAsPlannedConstants {
-	
-	@Value(value = "${manufacturerId}")
-	public String manufacturerId;
-	
-	@Value(value = "${edc.hostname}")
-	public String edcEndpoint;
+
 	
 	public static final String MANUFACTURER_PART_ID = "manufacturerPartId";
 	public static final String MANUFACTURER_ID = "manufacturerId";

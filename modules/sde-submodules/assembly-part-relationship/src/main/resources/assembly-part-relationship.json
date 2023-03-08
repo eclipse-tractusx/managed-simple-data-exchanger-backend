@@ -65,14 +65,14 @@
 					"null"
 				],
 				"enum": [
-					"VAN",
-					"BatchID",
-					""
+					"",
+					"van",
+					"batchId"
 				],
 				"title": "Parent Optional Identifier Key",
 				"description": "The Parent Optional Identifier Key of the parent object Optional Identifier Key, to identify parent object in digital twins.",
 				"examples": [
-					"VAN"
+					"van"
 				]
 			},
 			"parent_optional_identifier_value": {
@@ -125,14 +125,14 @@
 					"null"
 				],
 				"enum": [
-					"VAN",
-					"BatchID",
-					""
+					"",
+					"van",
+					"batchId"
 				],
 				"title": "Optional Identifier Key",
 				"description": "The Optional Identifier Key is used for create optional identifier for shell in digital twins. If you ha Identifier Key provided.",
 				"examples": [
-					"VAN"
+					"van"
 				]
 			},
 			"optional_identifier_value": {
@@ -217,7 +217,7 @@
 		{
 			"parent_part_instance_id": "NO-159040131155901488695376",
 			"parent_manufacturer_part_id": "MAN-159040131155901488695376",
-			"parent_optional_identifier_key": "VAN",
+			"parent_optional_identifier_key": "van",
 			"parent_optional_identifier_value": "Value",
 			"part_instance_id": "NO-159040131155901488695376",
 			"manufacturer_part_id": "PART-123412416",

@@ -23,8 +23,8 @@
 package org.eclipse.tractusx.sde.common.enums;
 
 public enum OptionalIdentifierKeyEnum {
-    VAN("VAN"),
-    BATCH_ID("BatchID");
+    VAN("van"),
+    BATCH_ID("batchId");
 
     private String prettyName;
 

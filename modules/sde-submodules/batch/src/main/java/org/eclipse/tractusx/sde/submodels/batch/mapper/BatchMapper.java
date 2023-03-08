@@ -27,6 +27,7 @@ import org.eclipse.tractusx.sde.common.model.LocalIdentifier;
 import org.eclipse.tractusx.sde.common.model.ManufacturingInformation;
 import org.eclipse.tractusx.sde.common.model.PartTypeInformation;
 import org.eclipse.tractusx.sde.common.model.SubmodelResultResponse;
+import org.eclipse.tractusx.sde.submodels.batch.constants.BatchConstants;
 import org.eclipse.tractusx.sde.submodels.batch.entity.BatchEntity;
 import org.eclipse.tractusx.sde.submodels.batch.model.Batch;
 import org.mapstruct.Mapper;
@@ -71,7 +72,7 @@ public abstract class BatchMapper {
 		}
 
 		Set<LocalIdentifier> localIdentifiers = new HashSet<>();
-		localIdentifiers.add(new LocalIdentifier("BatchID", entity.getBatchId()));
+		localIdentifiers.add(new LocalIdentifier(BatchConstants.BATCH_ID, entity.getBatchId()));
 
 		ManufacturingInformation manufacturingInformation = ManufacturingInformation.builder()
 				.date(entity.getManufacturingDate())

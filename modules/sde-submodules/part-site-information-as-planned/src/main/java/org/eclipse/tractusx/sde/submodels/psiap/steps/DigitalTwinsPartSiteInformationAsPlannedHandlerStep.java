@@ -30,7 +30,6 @@ import org.eclipse.tractusx.sde.common.submodel.executor.Step;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.Endpoint;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.GlobalAssetId;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.KeyValuePair;
-import org.eclipse.tractusx.sde.digitaltwins.entities.common.ProtocolInformation;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.SemanticId;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.CreateSubModelRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellDescriptorRequest;
@@ -39,6 +38,7 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorRe
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellLookupResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelListResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelResponse;
+import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsUtility;
 import org.eclipse.tractusx.sde.digitaltwins.gateways.external.DigitalTwinGateway;
 import org.eclipse.tractusx.sde.submodels.psiap.constants.PartSiteInformationAsPlannedConstants;
 import org.eclipse.tractusx.sde.submodels.psiap.model.PartSiteInformationAsPlanned;
@@ -51,10 +51,10 @@ import lombok.SneakyThrows;
 public class DigitalTwinsPartSiteInformationAsPlannedHandlerStep extends Step {
 
 	@Autowired
-	private PartSiteInformationAsPlannedConstants partAsPlannedConstants;
-
-	@Autowired
 	private DigitalTwinGateway gateway;
+	
+	@Autowired
+	private DigitalTwinsUtility digitalTwinsUtility;
 
 	@SneakyThrows
 	public PartSiteInformationAsPlanned run(PartSiteInformationAsPlanned partSiteInformationAsPlannedAspect) throws CsvHandlerDigitalTwinUseCaseException {
@@ -65,15 +65,15 @@ public class DigitalTwinsPartSiteInformationAsPlannedHandlerStep extends Step {
 		}
 	}
 
-	private PartSiteInformationAsPlanned doRun(PartSiteInformationAsPlanned PartSiteInformationAsPlannedAspect) throws CsvHandlerDigitalTwinUseCaseException {
-		ShellLookupRequest shellLookupRequest = getShellLookupRequest(PartSiteInformationAsPlannedAspect);
+	private PartSiteInformationAsPlanned doRun(PartSiteInformationAsPlanned partSiteInformationAsPlannedAspect) throws CsvHandlerDigitalTwinUseCaseException {
+		ShellLookupRequest shellLookupRequest = getShellLookupRequest(partSiteInformationAsPlannedAspect);
 		ShellLookupResponse shellIds = gateway.shellLookup(shellLookupRequest);
 
 		String shellId;
 
 		if (shellIds.isEmpty()) {
 			logDebug(String.format("No shell id for '%s'", shellLookupRequest.toJsonString()));
-			ShellDescriptorRequest aasDescriptorRequest = getShellDescriptorRequest(PartSiteInformationAsPlannedAspect);
+			ShellDescriptorRequest aasDescriptorRequest = getShellDescriptorRequest(partSiteInformationAsPlannedAspect);
 			ShellDescriptorResponse result = gateway.createShellDescriptor(aasDescriptorRequest);
 			shellId = result.getIdentification();
 			logDebug(String.format("Shell created with id '%s'", shellId));
@@ -86,27 +86,27 @@ public class DigitalTwinsPartSiteInformationAsPlannedHandlerStep extends Step {
 					String.format("Multiple ids found on aspect %s", shellLookupRequest.toJsonString()));
 		}
 
-		PartSiteInformationAsPlannedAspect.setShellId(shellId);
+		partSiteInformationAsPlannedAspect.setShellId(shellId);
 		SubModelListResponse subModelResponse = gateway.getSubModels(shellId);
 		SubModelResponse foundSubmodel = null;
 		if (subModelResponse != null) {
 			foundSubmodel = subModelResponse.stream().filter(x -> getIdShortOfModel().equals(x.getIdShort()))
 					.findFirst().orElse(null);
 			if (foundSubmodel != null)
-				PartSiteInformationAsPlannedAspect.setSubModelId(foundSubmodel.getIdentification());
+				partSiteInformationAsPlannedAspect.setSubModelId(foundSubmodel.getIdentification());
 		}
 
 		if (subModelResponse == null || foundSubmodel == null) {
 			logDebug(String.format("No submodels for '%s'", shellId));
-			CreateSubModelRequest createSubModelRequest = getCreateSubModelRequest(PartSiteInformationAsPlannedAspect);
+			CreateSubModelRequest createSubModelRequest = getCreateSubModelRequest(partSiteInformationAsPlannedAspect);
 			gateway.createSubModel(shellId, createSubModelRequest);
-			PartSiteInformationAsPlannedAspect.setSubModelId(createSubModelRequest.getIdentification());
+			partSiteInformationAsPlannedAspect.setSubModelId(createSubModelRequest.getIdentification());
 		} else {
-			PartSiteInformationAsPlannedAspect.setUpdated(CommonConstants.UPDATED_Y);
+			partSiteInformationAsPlannedAspect.setUpdated(CommonConstants.UPDATED_Y);
 			logDebug("Complete Digital Twins Update Update Digital Twins");
 		}
 
-		return PartSiteInformationAsPlannedAspect;
+		return partSiteInformationAsPlannedAspect;
 	}
 
 	private ShellLookupRequest getShellLookupRequest(PartSiteInformationAsPlanned partSiteInformationAsPlannedAspect) {
@@ -115,7 +115,7 @@ public class DigitalTwinsPartSiteInformationAsPlannedHandlerStep extends Step {
 		shellLookupRequest.addLocalIdentifier(PartSiteInformationAsPlannedConstants.MANUFACTURER_PART_ID,
 				partSiteInformationAsPlannedAspect.getManufacturerPartId());
 		shellLookupRequest.addLocalIdentifier(PartSiteInformationAsPlannedConstants.MANUFACTURER_ID,
-				partAsPlannedConstants.getManufacturerId());
+				digitalTwinsUtility.getManufacturerId());
 		shellLookupRequest.addLocalIdentifier(PartSiteInformationAsPlannedConstants.ASSET_LIFECYCLE_PHASE,
 				PartSiteInformationAsPlannedConstants.AS_PLANNED);
 
@@ -129,16 +129,7 @@ public class DigitalTwinsPartSiteInformationAsPlannedHandlerStep extends Step {
 		SemanticId semanticId = new SemanticId(value);
 		String identification = PartSiteInformationAsPlannedConstants.PREFIX + UUID.randomUUID();
 
-		List<Endpoint> endpoints = new ArrayList<>();
-		endpoints.add(Endpoint.builder().endpointInterface(PartSiteInformationAsPlannedConstants.HTTP)
-				.protocolInformation(ProtocolInformation.builder()
-						.endpointAddress(String.format(String.format("%s%s/%s-%s%s",
-								partAsPlannedConstants.getEdcEndpoint().replace("data", ""),
-								partAsPlannedConstants.getManufacturerId(), partSiteInformationAsPlannedAspect.getShellId(),
-								identification, "/submodel?content=value&extent=WithBLOBValue")))
-						.endpointProtocol(PartSiteInformationAsPlannedConstants.HTTPS)
-						.endpointProtocolVersion(PartSiteInformationAsPlannedConstants.ENDPOINT_PROTOCOL_VERSION).build())
-				.build());
+		List<Endpoint> endpoints = digitalTwinsUtility.prepareDtEndpoint(partSiteInformationAsPlannedAspect.getShellId(), identification);
 
 		return CreateSubModelRequest.builder().idShort(getIdShortOfModel()).identification(identification)
 				.semanticId(semanticId).endpoints(endpoints).build();
@@ -150,7 +141,7 @@ public class DigitalTwinsPartSiteInformationAsPlannedHandlerStep extends Step {
 		specificIdentifiers.add(new KeyValuePair(PartSiteInformationAsPlannedConstants.MANUFACTURER_PART_ID,
 				partSiteInformationAsPlannedAspect.getManufacturerPartId()));
 		specificIdentifiers.add(
-				new KeyValuePair(PartSiteInformationAsPlannedConstants.MANUFACTURER_ID, partAsPlannedConstants.getManufacturerId()));
+				new KeyValuePair(PartSiteInformationAsPlannedConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId()));
 		specificIdentifiers
 				.add(new KeyValuePair(PartSiteInformationAsPlannedConstants.ASSET_LIFECYCLE_PHASE, PartSiteInformationAsPlannedConstants.AS_PLANNED));
 
@@ -160,7 +151,7 @@ public class DigitalTwinsPartSiteInformationAsPlannedHandlerStep extends Step {
 
 		return ShellDescriptorRequest.builder()
 				.idShort(String.format("%s_%s_%s", partSiteInformationAsPlannedAspect.getNameAtManufacturer(),
-						partAsPlannedConstants.getManufacturerId(), partSiteInformationAsPlannedAspect.getManufacturerPartId()))
+						digitalTwinsUtility.getManufacturerId(), partSiteInformationAsPlannedAspect.getManufacturerPartId()))
 				.globalAssetId(globalIdentifier).specificAssetIds(specificIdentifiers)
 				.identification(PartSiteInformationAsPlannedConstants.PREFIX + UUID.randomUUID()).build();
 	}

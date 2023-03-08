@@ -9,7 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Cancel contract agreement on provider side.
 - BPN validation in SDE.
 
-## [1.9.0] - 2023-02-28
+## [1.9.0] - 2023-03-06
 ### Added
 - Added new submodel SingleLevelUsageAsBuilt 1.0.1 aspect.
 - Updated Batch submodel to support 1.0.2 version.
@@ -27,7 +27,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added new API for transaction history download function for each processId.
 - Added new API to Dynamic generation of CSV sample and CSV template per submode.
 - Added new API to support dynamic submodel help page.
-- Added organization profile
 - Added list contract agreements on Provider side
 
 ### Fixed
@@ -112,7 +111,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 
 [Unreleased]: https://github.com/catenax-ng/tx-dft-backend/compare/dft-backend-1.9.0...main
-[1.9.0]: https://github.com/catenax-ng/tx-dft-backend/compare/dft-backend-1.9.0...dft-backend-1.8.1
+[1.9.0]: https://github.com/catenax-ng/tx-dft-backend/compare/dft-backend-1.8.1...dft-backend-1.9.0
 [1.8.1]: https://github.com/catenax-ng/tx-dft-backend/compare/dft-backend-1.8.0...dft-backend-1.8.1
 [1.8.0]: https://github.com/catenax-ng/tx-dft-backend/compare/dft-backend-1.7.0...dft-backend-1.8.0
 [1.7.0]: https://github.com/catenax-ng/product-dft-backend/compare/dft-backend-1.6.0...dft-backend-1.7.0

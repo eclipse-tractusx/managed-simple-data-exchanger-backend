@@ -77,14 +77,14 @@
 					"null"
 				],
 				"enum": [
-					"VAN",
-					"BatchID",
-					""
+					"",
+					"van",
+					"batchId"
 				],
 				"title": "Parent Optional Identifier Key",
 				"description": "The Parent Optional Identifier Key of the parent object Optional Identifier Key, to identify parent object in digital twins.",
 				"examples": [
-					"VAN"
+					"van"
 				]
 			},
 			"parent_optional_identifier_value": {
@@ -138,14 +138,14 @@
 					"null"
 				],
 				"enum": [
-					"VAN",
-					"BatchID",
-					""
+					"",
+					"van",
+					"batchId"
 				],
 				"title": "Optional Identifier Key",
 				"description": "The Optional Identifier Key is used for create shell in digital twins. If you ha Identifier Key provided.",
 				"examples": [
-					"VAN"
+					"van"
 				]
 			},
 			"optional_identifier_value": {
@@ -214,12 +214,12 @@
 			"parent_uuid": "urn:uuid:bC7ADFb4-596a-Fe7F-6F28-a5EB7738D2Ca",
 			"parent_part_instance_id": "NO-159040131155901488695376",
 			"parent_manufacturer_part_id": "MAN-159040131155901488695376",
-			"parent_optional_identifier_key": "VAN",
+			"parent_optional_identifier_key": "van",
 			"parent_optional_identifier_value": "Value",
 			"uuid": "urn:uuid:055c1128-0375-47c8-98de-7cf802c3241d",
 			"part_instance_id": "NO-159040131155901488",
 			"manufacturer_part_id": "37754B7-76",
-			"optional_identifier_key": "VAN",
+			"optional_identifier_key": "van",
 			"optional_identifier_value": "Value",
 			"quantity_number": 2.5,
 			"measurement_unit": "litre",

@@ -31,7 +31,6 @@ import org.eclipse.tractusx.sde.common.utils.UUIdGenerator;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.Endpoint;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.GlobalAssetId;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.KeyValuePair;
-import org.eclipse.tractusx.sde.digitaltwins.entities.common.ProtocolInformation;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.SemanticId;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.CreateSubModelRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellDescriptorRequest;
@@ -40,6 +39,7 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorRe
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellLookupResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelListResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelResponse;
+import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsUtility;
 import org.eclipse.tractusx.sde.digitaltwins.gateways.external.DigitalTwinGateway;
 import org.eclipse.tractusx.sde.submodels.sluab.constants.SingleLevelUsageAsBuiltConstants;
 import org.eclipse.tractusx.sde.submodels.sluab.model.SingleLevelUsageAsBuilt;
@@ -47,28 +47,19 @@ import org.eclipse.tractusx.sde.submodels.spt.entity.AspectEntity;
 import org.eclipse.tractusx.sde.submodels.spt.mapper.AspectMapper;
 import org.eclipse.tractusx.sde.submodels.spt.model.Aspect;
 import org.eclipse.tractusx.sde.submodels.spt.repository.AspectRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 @Service
+@RequiredArgsConstructor
 public class DigitalTwinsSingleLevelUsageAsBuiltCsvHandlerUseCase extends Step {
-
-	@Autowired
-	private SingleLevelUsageAsBuiltConstants singleLevelUsageAsBuiltConstants;
 
 	private final DigitalTwinGateway gateway;
 	private final AspectRepository aspectRepository;
 	private final AspectMapper aspectMapper;
-
-
-	public DigitalTwinsSingleLevelUsageAsBuiltCsvHandlerUseCase(DigitalTwinGateway gateway,
-			AspectRepository aspectRepository, AspectMapper aspectMapper) {
-		this.gateway = gateway;
-		this.aspectRepository = aspectRepository;
-		this.aspectMapper = aspectMapper;
-	}
+	private final DigitalTwinsUtility digitalTwinsUtility;
 
 	@SneakyThrows
 	public SingleLevelUsageAsBuilt run(SingleLevelUsageAsBuilt aspectSingleLevelUsageAsBuilt) throws CsvHandlerDigitalTwinUseCaseException {
@@ -151,7 +142,7 @@ public class DigitalTwinsSingleLevelUsageAsBuiltCsvHandlerUseCase extends Step {
 		ShellLookupRequest shellLookupRequest = new ShellLookupRequest();
 		shellLookupRequest.addLocalIdentifier(SingleLevelUsageAsBuiltConstants.PART_INSTANCE_ID, aspectSingleLevelUsageAsBuilt.getParentPartInstanceId());
 		shellLookupRequest.addLocalIdentifier(SingleLevelUsageAsBuiltConstants.MANUFACTURER_PART_ID, aspectSingleLevelUsageAsBuilt.getParentManufacturerPartId());
-		shellLookupRequest.addLocalIdentifier(SingleLevelUsageAsBuiltConstants.MANUFACTURER_ID, singleLevelUsageAsBuiltConstants.getManufacturerId());
+		shellLookupRequest.addLocalIdentifier(SingleLevelUsageAsBuiltConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId());
 
 		if (aspectSingleLevelUsageAsBuilt.hasOptionalParentIdentifier()) {
 			shellLookupRequest.addLocalIdentifier(aspectSingleLevelUsageAsBuilt.getParentOptionalIdentifierKey(),
@@ -168,16 +159,7 @@ public class DigitalTwinsSingleLevelUsageAsBuiltCsvHandlerUseCase extends Step {
 		String identification = UUIdGenerator.getUrnUuid();
 		SemanticId semanticId = new SemanticId(value);
 
-		List<Endpoint> endpoints = new ArrayList<>();
-		endpoints.add(Endpoint.builder().endpointInterface(SingleLevelUsageAsBuiltConstants.HTTP)
-				.protocolInformation(ProtocolInformation.builder()
-						.endpointAddress(String.format(String.format("%s%s/%s-%s%s", singleLevelUsageAsBuiltConstants.getEdcEndpoint().replace("data", ""),
-								singleLevelUsageAsBuiltConstants.getManufacturerId(), aspectSingleLevelUsageAsBuilt.getShellId(), identification,
-								"/submodel?content=value&extent=WithBLOBValue")))
-						.endpointProtocol(SingleLevelUsageAsBuiltConstants.HTTPS)
-						.endpointProtocolVersion(SingleLevelUsageAsBuiltConstants.ENDPOINT_PROTOCOL_VERSION)
-						.build())
-				.build());
+		List<Endpoint> endpoints = digitalTwinsUtility.prepareDtEndpoint(aspectSingleLevelUsageAsBuilt.getShellId(), identification);
 
 		return CreateSubModelRequest.builder()
 				.idShort(getIdShortOfModel())
@@ -195,7 +177,7 @@ public class DigitalTwinsSingleLevelUsageAsBuiltCsvHandlerUseCase extends Step {
 		GlobalAssetId globalIdentifier = new GlobalAssetId(values);
 
 		return ShellDescriptorRequest.builder()
-				.idShort(String.format("%s_%s_%s", aspect.getNameAtManufacturer(), singleLevelUsageAsBuiltConstants.getManufacturerId(),
+				.idShort(String.format("%s_%s_%s", aspect.getNameAtManufacturer(), digitalTwinsUtility.getManufacturerId(),
 						aspect.getManufacturerPartId()))
 				.globalAssetId(globalIdentifier).specificAssetIds(specificIdentifiers)
 				.identification(UUIdGenerator.getUrnUuid()).build();
@@ -204,7 +186,7 @@ public class DigitalTwinsSingleLevelUsageAsBuiltCsvHandlerUseCase extends Step {
 	private void setSpecifiers(final ArrayList<KeyValuePair> specificIdentifiers, Aspect aspect) {
 		specificIdentifiers.add(new KeyValuePair(SingleLevelUsageAsBuiltConstants.PART_INSTANCE_ID, aspect.getPartInstanceId()));
 		specificIdentifiers.add(new KeyValuePair(SingleLevelUsageAsBuiltConstants.MANUFACTURER_PART_ID, aspect.getManufacturerPartId()));
-		specificIdentifiers.add(new KeyValuePair(SingleLevelUsageAsBuiltConstants.MANUFACTURER_ID, singleLevelUsageAsBuiltConstants.getManufacturerId()));
+		specificIdentifiers.add(new KeyValuePair(SingleLevelUsageAsBuiltConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId()));
 		if (aspect.hasOptionalIdentifier()) {
 			specificIdentifiers
 					.add(new KeyValuePair(aspect.getOptionalIdentifierKey(), aspect.getOptionalIdentifierValue()));

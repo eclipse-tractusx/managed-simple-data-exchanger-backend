@@ -42,8 +42,8 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorRe
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellLookupResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelListResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelResponse;
+import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsUtility;
 import org.eclipse.tractusx.sde.digitaltwins.gateways.external.DigitalTwinGateway;
-import org.eclipse.tractusx.sde.submodels.spt.constants.SerialPartTypizationConstants;
 import org.eclipse.tractusx.sde.submodels.spt.model.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -53,12 +53,12 @@ import lombok.SneakyThrows;
 @Service
 public class DigitalTwinsAspectCsvHandlerUseCase extends Step {
 
-
-	@Autowired
-	private SerialPartTypizationConstants serialPartTypizationConstants;
 	
 	@Autowired
 	private DigitalTwinGateway gateway;
+	
+	@Autowired
+	private DigitalTwinsUtility digitalTwinsUtility;
 
 	@SneakyThrows
 	public Aspect run(Aspect aspect) throws CsvHandlerDigitalTwinUseCaseException {
@@ -117,7 +117,7 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends Step {
 		ShellLookupRequest shellLookupRequest = new ShellLookupRequest();
 		shellLookupRequest.addLocalIdentifier(CommonConstants.PART_INSTANCE_ID, aspect.getPartInstanceId());
 		shellLookupRequest.addLocalIdentifier(CommonConstants.MANUFACTURER_PART_ID, aspect.getManufacturerPartId());
-		shellLookupRequest.addLocalIdentifier(CommonConstants.MANUFACTURER_ID, serialPartTypizationConstants.getManufacturerId());
+		shellLookupRequest.addLocalIdentifier(CommonConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId());
 		if (aspect.hasOptionalIdentifier()) {
 			shellLookupRequest.addLocalIdentifier(aspect.getOptionalIdentifierKey(),
 					aspect.getOptionalIdentifierValue());
@@ -131,14 +131,7 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends Step {
 		SemanticId semanticId = new SemanticId(value);
 		String identification = CommonConstants.PREFIX + UUID.randomUUID();
 
-		List<Endpoint> endpoints = new ArrayList<>();
-		endpoints.add(Endpoint.builder().endpointInterface(CommonConstants.HTTP)
-				.protocolInformation(ProtocolInformation.builder()
-						.endpointAddress(String.format(String.format("%s%s/%s-%s%s", serialPartTypizationConstants.getEdcEndpoint(),
-								serialPartTypizationConstants.getManufacturerId(), aspect.getShellId(), identification,
-								"/submodel?content=value&extent=WithBLOBValue")))
-						.endpointProtocol(CommonConstants.HTTPS).endpointProtocolVersion(CommonConstants.ENDPOINT_PROTOCOL_VERSION).build())
-				.build());
+		List<Endpoint> endpoints = digitalTwinsUtility.prepareDtEndpoint(aspect.getShellId(), identification);
 
 		return CreateSubModelRequest.builder().idShort(getIdShortOfModel()).identification(identification).semanticId(semanticId)
 				.endpoints(endpoints).build();
@@ -153,7 +146,7 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends Step {
 		GlobalAssetId globalIdentifier = new GlobalAssetId(values);
 
 		return ShellDescriptorRequest.builder()
-				.idShort(String.format("%s_%s_%s", aspect.getNameAtManufacturer(), serialPartTypizationConstants.getManufacturerId(),
+				.idShort(String.format("%s_%s_%s", aspect.getNameAtManufacturer(), digitalTwinsUtility.getManufacturerId(),
 						aspect.getManufacturerPartId()))
 				.globalAssetId(globalIdentifier).specificAssetIds(specificIdentifiers)
 				.identification(CommonConstants.PREFIX + UUID.randomUUID()).build();
@@ -162,7 +155,7 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends Step {
 	private void setSpecifiers(final ArrayList<KeyValuePair> specificIdentifiers, Aspect aspect) {
 		specificIdentifiers.add(new KeyValuePair(CommonConstants.PART_INSTANCE_ID, aspect.getPartInstanceId()));
 		specificIdentifiers.add(new KeyValuePair(CommonConstants.MANUFACTURER_PART_ID, aspect.getManufacturerPartId()));
-		specificIdentifiers.add(new KeyValuePair(CommonConstants.MANUFACTURER_ID, serialPartTypizationConstants.getManufacturerId()));
+		specificIdentifiers.add(new KeyValuePair(CommonConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId()));
 		if (aspect.hasOptionalIdentifier()) {
 			specificIdentifiers
 					.add(new KeyValuePair(aspect.getOptionalIdentifierKey(), aspect.getOptionalIdentifierValue()));

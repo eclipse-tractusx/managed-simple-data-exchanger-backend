@@ -38,5 +38,9 @@ public class CommonConstants {
 	public static final String HTTPS = "HTTPS";
 	public static final String ENDPOINT_PROTOCOL_VERSION = "0.0.1-SNAPSHOT";
 	public static final String PREFIX = "urn:uuid:";
+	
+	public static final String INTERFACE_EDC = "EDC";
+	public static final String ENDPOINT_PROTOCOL = "IDS/ECLIPSE DATASPACE CONNECTOR";
+	public static final String SUBMODEL_CONTEXT_URL = "/submodel?content=value&extent=WithBLOBValue";
 
 }

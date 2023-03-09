@@ -1,6 +1,6 @@
 apiVersion: v2
-name: dft-backend
-description: A Helm chart for DFT application
+name: dftbackend
+description: A Helm chart for Kubernetes
 
 # A chart can be either an 'application' or a 'library' chart.
 #
@@ -12,41 +12,13 @@ description: A Helm chart for DFT application
 # pipeline. Library charts do not define any templates and therefore cannot be deployed.
 type: application
 
-sources:
-  - https://github.com/eclipse-tractusx/dft-backend
-  
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 1.9.0
+version: 1.5.0
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
-appVersion: "1.9.0"
-
-
-dependencies:
-  - condition: dftpostgresql.enabled
-    name: postgresql
-    alias: dftpostgresql
-    repository: https://charts.bitnami.com/bitnami
-    version: 11.x.x
-  - condition: edcpostgresql.enabled
-    name: postgresql
-    alias: edcpostgres
-    repository: https://charts.bitnami.com/bitnami
-    version: 11.x.x
-  - condition: edccontrolplane.enabled
-    name: edc-controlplane
-    alias: edccontrolplane
-    repository: https://catenax-ng.github.io/product-edc
-    version: 0.1.6
-  - condition: edcdataplane.enabled
-    name: edc-dataplane
-    alias: edcdataplane
-    repository: https://catenax-ng.github.io/product-edc
-    version: 0.1.6
-  
-  
+appVersion: "1.5.0"

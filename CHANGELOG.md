@@ -23,6 +23,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - ENUM fix after changing variable of DT.
 - Exception log for look up failure request.
 
+### Changed
+- Added/Updated Header copyrights for 2023.
+
 ## [1.8.1] - 2023-01-23
 ### Added
 - Added use case selection.

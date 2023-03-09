@@ -18,7 +18,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added Look-Up process for AssemblyPartRelationship submodel.
 
 ### Fixed
-- Bug fixes.
+- Removed manufatureId (BPN) from DT EDC URL creation.
+- Correct submodel id for delete while assembly update.
+- ENUM fix after changing variable of DT.
+- Exception log for look up failure request.
 
 ## [1.8.1] - 2023-01-23
 ### Added

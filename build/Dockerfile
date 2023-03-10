@@ -1,5 +1,6 @@
 # our base build image
-FROM maven:3.8.5-openjdk-18-slim as build
+#FROM maven:3.8.5-openjdk-18-slim as build
+FROM maven:3.9.0-eclipse-temurin-19 as build
 
 # copy the project files
 COPY ../pom.xml ./pom.xml
@@ -15,7 +16,9 @@ RUN mvn clean install
 
 # our final base image
 #FROM eclipse-temurin:18.0.1_10-jre
-FROM eclipse-temurin:19.0.1_10-jre
+#FROM eclipse-temurin:19.0.1_10-jre
+
+FROM eclipse-temurin:latest
 
 ARG USERNAME=dftuser
 ARG USER_UID=1000

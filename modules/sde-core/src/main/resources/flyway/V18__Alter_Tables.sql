@@ -18,8 +18,8 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-ALTER TABLE IF EXISTS aspect_relationship
-ADD COLUMN IF NOT EXISTS manufacturer_id  			TEXT NULL;
+ALTER TABLE IF EXISTS batch
+ADD COLUMN IF NOT EXISTS part_instance_id  			TEXT NULL;
 
 
 

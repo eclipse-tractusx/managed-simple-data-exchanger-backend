@@ -36,17 +36,22 @@
 	<description>assembly-part-relationship</description>
 
 	<dependencies>
-		<dependency>
-			<groupId>org.eclipse.tractusx</groupId>
-			<artifactId>sde-common</artifactId>
-			<version>0.0.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.tractusx</groupId>
-			<artifactId>serial-part-typization</artifactId>
-			<version>0.0.1</version>
-		</dependency>
-	</dependencies>
+	<dependency>
+		<groupId>org.eclipse.tractusx</groupId>
+		<artifactId>sde-common</artifactId>
+		<version>0.0.1</version>
+	</dependency>
+	<dependency>
+		<groupId>org.eclipse.tractusx</groupId>
+		<artifactId>edc</artifactId>
+		<version>0.0.1</version>
+	</dependency>
+	<dependency>
+		<groupId>org.eclipse.tractusx</groupId>
+		<artifactId>digital-twins</artifactId>
+		<version>0.0.1</version>
+	</dependency>
+</dependencies>
 	<build>
 		<plugins>
 			<plugin>

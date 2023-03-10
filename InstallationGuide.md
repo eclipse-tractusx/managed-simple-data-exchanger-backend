@@ -2,7 +2,7 @@
 ## Product DFT
 Install from the command line:
 
-`docker pull ghcr.io/catenax-ng/product-dft-backend:main`
+docker container run -d --name [conatainer_name] ghcr.io/catenax-ng/tx-dft-backend:[tag]
 
 
 It is necessary to inject the environment variables, credentials and URLs that can be found on application.properties file.
@@ -20,7 +20,7 @@ It is necessary to inject the environment variables, credentials and URLs that c
 | digital-twins.authentication.clientId     | DIGITAL-TWINS_AUTHENTICATION_CLIENTID     | client ID authentication for Digital Twins     | sa-cl6-cx-4                      |
 | digital-twins.authentication.clientSecret | DIGITAL-TWINS_AUTHENTICATION_CLIENTSECRET | client secret authentication for Digital Twins | VrL8uSG5Tn3NrFiY39vs0klTmlvsRRmo |
 
-The values are on the [Vault](https://vault.vault.demo.catena-x.net/).
+The values are on the [Vault].
 *<i><b>Must create a GitHub token to access</b></i>
 
 #### EDC variables:
@@ -43,7 +43,7 @@ The values are on the [Vault](https://vault.vault.demo.catena-x.net/).
 | portal.backend.hostname           | PORTAL_HOSTNAME           | portal hostname              | https://      |
 
 
-The values are in the [Vault](https://vault.vault.demo.catena-x.net/).
+The values are in the [Vault].
 *<i><b>Must create a GitHub token to access</b></i> 
 
 ## Upload a file:

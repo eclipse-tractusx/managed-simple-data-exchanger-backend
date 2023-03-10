@@ -116,7 +116,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Integration with Digital Twin registry service.
 
 
-[Unreleased]: https://github.com/catenax-ng/tx-dft-backend/compare/dft-backend-1.9.0...main
+[Unreleased]: https://github.com/catenax-ng/tx-dft-backend/compare/dft-backend-1.9.0... main
 [1.9.0]: https://github.com/catenax-ng/tx-dft-backend/compare/dft-backend-1.8.1...dft-backend-1.9.0
 [1.8.1]: https://github.com/catenax-ng/tx-dft-backend/compare/dft-backend-1.8.0...dft-backend-1.8.1
 [1.8.0]: https://github.com/catenax-ng/tx-dft-backend/compare/dft-backend-1.7.0...dft-backend-1.8.0

@@ -23,14 +23,11 @@ package org.eclipse.tractusx.sde.core.controller;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.ResponseEntity.ok;
 
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
 import org.eclipse.tractusx.sde.edc.services.ConsumerControlPanelService;
-import org.eclipse.tractusx.sde.portal.model.ConnectorInfo;
-import org.eclipse.tractusx.sde.portal.model.response.LegalEntityResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -85,23 +82,5 @@ public class ConsumerController {
 		Map<String,Object> res = consumerControlPanelService.getAllContractOffers(type, limit,
 				offset);
 		return ok().body(res);
-	}
-
-	@GetMapping(value = "/legal-entities")
-	@PreAuthorize("hasPermission('','consumer_search_connectors')")
-	public ResponseEntity<List<LegalEntityResponse>> fetchLegalEntitiesData(@RequestParam String searchText,
-			@RequestParam Integer page, @RequestParam Integer size) throws Exception {
-		log.info("Request received : /api/legal-entities");
-		List<LegalEntityResponse> legalEntitiesResponse = consumerControlPanelService.fetchLegalEntitiesData(searchText,
-				page, size);
-		return ok().body(legalEntitiesResponse);
-	}
-
-	@PostMapping(value = "/connectors-discovery")
-	@PreAuthorize("hasPermission('','consumer_search_connectors')")
-	public ResponseEntity<List<ConnectorInfo>> fetchConnectorInfo(@RequestBody List<String> bpns) throws Exception {
-		log.info("Request received : /api/connectors-discovery");
-		List<ConnectorInfo> fetchConnectorInfoResponse = consumerControlPanelService.fetchConnectorInfo(bpns);
-		return ok().body(fetchConnectorInfoResponse);
 	}
 }

@@ -52,18 +52,11 @@ import org.eclipse.tractusx.sde.edc.model.policies.PolicyDefinition;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.eclipse.tractusx.sde.edc.util.UtilityFunctions;
-import org.eclipse.tractusx.sde.portal.api.ConnectorDiscoveryApi;
-import org.eclipse.tractusx.sde.portal.api.LegalEntityDataApi;
-import org.eclipse.tractusx.sde.portal.model.ConnectorInfo;
-import org.eclipse.tractusx.sde.portal.model.LegalEntityData;
-import org.eclipse.tractusx.sde.portal.model.response.LegalEntityResponse;
-import org.eclipse.tractusx.sde.portal.utils.KeycloakUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -78,26 +71,18 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 	private ContractNegotiationInfoRepository contractNegotiationInfoRepository;
 	private PolicyConstraintBuilderService policyConstraintBuilderService;
 
-	private LegalEntityDataApi legalEntityDataApi;
-	private ConnectorDiscoveryApi connectorDiscoveryApi;
-
-	private KeycloakUtil keycloakUtil;
-
 	@Autowired
 	public ConsumerControlPanelService(@Value("${edc.consumer.datauri}") String edcDataUri,
 			ContractOfferCatalogApi contractOfferCatalogApiProxy,
 			ContractNegotiateManagement contractNegotiateManagement,
 			ContractNegotiationInfoRepository contractNegotiationInfoRepository,
-			PolicyConstraintBuilderService policyConstraintBuilderService, LegalEntityDataApi legalEntityDataApi,
-			ConnectorDiscoveryApi connectorDiscoveryApi, KeycloakUtil keycloakUtil) {
+			PolicyConstraintBuilderService policyConstraintBuilderService) {
 		this.edcDataUri = edcDataUri;
 		this.contractOfferCatalogApiProxy = contractOfferCatalogApiProxy;
 		this.contractNegotiateManagement = contractNegotiateManagement;
 		this.contractNegotiationInfoRepository = contractNegotiationInfoRepository;
 		this.policyConstraintBuilderService = policyConstraintBuilderService;
-		this.legalEntityDataApi = legalEntityDataApi;
-		this.connectorDiscoveryApi = connectorDiscoveryApi;
-		this.keycloakUtil = keycloakUtil;
+
 
 	}
 
@@ -243,27 +228,5 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
 		res.put("contracts", contractAgreementResponses);
 		return res;
-	}
-
-	public List<LegalEntityResponse> fetchLegalEntitiesData(String searchText, Integer page, Integer size) {
-		List<LegalEntityResponse> result = new ArrayList<>();
-		LegalEntityData legalEntity = legalEntityDataApi.fetchLegalEntityData(searchText, page, size,
-				UtilityFunctions.getAuthToken());
-		if (null != legalEntity) {
-			legalEntity.getContent().stream().forEach(companyData -> {
-				companyData.getLegalEntity().getNames().stream().forEach(name -> {
-					LegalEntityResponse legalEntityResponse = LegalEntityResponse.builder()
-							.bpn(companyData.getLegalEntity().getBpn()).name(name.getValue()).build();
-					result.add(legalEntityResponse);
-				});
-			});
-		}
-		return result;
-	}
-
-	@SneakyThrows
-	public List<ConnectorInfo> fetchConnectorInfo(List<String> bpns) {
-		String token = keycloakUtil.getKeycloakToken();
-		return connectorDiscoveryApi.fetchConnectorInfo(bpns, "Bearer " + token);
 	}
 }

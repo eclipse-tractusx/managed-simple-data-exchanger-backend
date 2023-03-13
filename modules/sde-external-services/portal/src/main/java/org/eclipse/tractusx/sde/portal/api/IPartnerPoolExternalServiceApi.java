@@ -17,7 +17,6 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-
 package org.eclipse.tractusx.sde.portal.api;
 
 import org.eclipse.tractusx.sde.portal.model.LegalEntityData;
@@ -27,9 +26,10 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
-@FeignClient(value = "LegalEntityDataApi", url = "${partner.pool.hostname}")
-public interface LegalEntityDataApi {
-    @GetMapping(path = "/api/catena/legal-entities")
+@FeignClient(value = "IPartnerPoolExternalServiceApi", url = "${partner.pool.hostname}")
+public interface IPartnerPoolExternalServiceApi {
+    
+	@GetMapping(path = "/api/catena/legal-entities")
     LegalEntityData fetchLegalEntityData(@RequestParam String name, @RequestParam Integer page, @RequestParam Integer size, @RequestHeader("Authorization") String bearerToken);
 
 }

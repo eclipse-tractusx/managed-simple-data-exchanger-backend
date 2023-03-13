@@ -27,18 +27,20 @@ import org.eclipse.tractusx.sde.portal.model.ConnectorInfo;
 import org.eclipse.tractusx.sde.portal.model.response.KeycloakTokenResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-@FeignClient(value = "ConnectorDiscoveryApi", url = "${portal.backend.hostname}")
-public interface ConnectorDiscoveryApi {
+@FeignClient(value = "IPortalExternalServiceApi", url = "${portal.backend.hostname}")
+public interface IPortalExternalServiceApi {
 
 	@PostMapping
 	KeycloakTokenResponse readAuthToken(URI url, @RequestBody MultiValueMap<String, Object> body);
 
 	@PostMapping(path = "/api/administration/Connectors/discovery")
-	List<ConnectorInfo> fetchConnectorInfo(@RequestBody List<String> bpns,
-			@RequestHeader("Authorization") String bearerToken);
+	List<ConnectorInfo> fetchConnectorInfo(@RequestBody List<String> bpns, @RequestHeader("Authorization") String bearerToken);
 
+	@GetMapping(path = "/api/administration/partnernetwork/memberCompanies")
+    List<String> fetchMemberCompaniesData( @RequestHeader("Authorization") String bearerToken);
 }

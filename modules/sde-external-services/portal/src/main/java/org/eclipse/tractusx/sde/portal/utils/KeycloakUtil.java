@@ -22,7 +22,7 @@ package org.eclipse.tractusx.sde.portal.utils;
 
 import java.net.URI;
 
-import org.eclipse.tractusx.sde.portal.api.ConnectorDiscoveryApi;
+import org.eclipse.tractusx.sde.portal.api.IPortalExternalServiceApi;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -44,7 +44,7 @@ public class KeycloakUtil {
 	@Value("${connector.discovery.clientId}")
 	private String clientId;
 
-	private final ConnectorDiscoveryApi connectorDiscoveryApi;
+	private final IPortalExternalServiceApi connectorDiscoveryApi;
 
 	@SneakyThrows
 	public String getKeycloakToken() {

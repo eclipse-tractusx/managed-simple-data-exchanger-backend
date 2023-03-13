@@ -48,10 +48,8 @@ import org.eclipse.tractusx.sde.edc.model.contractoffers.ContractOffersCatalogRe
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
 import org.eclipse.tractusx.sde.edc.model.request.OfferRequest;
 import org.eclipse.tractusx.sde.edc.services.ConsumerControlPanelService;
-import org.eclipse.tractusx.sde.portal.api.ConnectorDiscoveryApi;
-import org.eclipse.tractusx.sde.portal.api.LegalEntityDataApi;
-import org.eclipse.tractusx.sde.portal.model.ConnectorInfo;
-import org.eclipse.tractusx.sde.portal.model.LegalEntityData;
+import org.eclipse.tractusx.sde.portal.api.IPartnerPoolExternalServiceApi;
+import org.eclipse.tractusx.sde.portal.api.IPortalExternalServiceApi;
 import org.eclipse.tractusx.sde.portal.utils.KeycloakUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -62,19 +60,17 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import lombok.SneakyThrows;
-
 @ContextConfiguration(classes = { ConsumerControlPanelService.class, String.class })
 @ExtendWith(SpringExtension.class)
 class ConsumerControlPanelServiceTest {
 	@MockBean
-	private ConnectorDiscoveryApi connectorDiscoveryApi;
+	private IPortalExternalServiceApi connectorDiscoveryApi;
 
 	@MockBean
 	private KeycloakUtil keycloakUtil;
 
 	@MockBean
-	private LegalEntityDataApi legalEntityDataApi;
+	private IPartnerPoolExternalServiceApi legalEntityDataApi;
 
 	@MockBean
 	private ContractNegotiateManagement contractNegotiateManagement;
@@ -179,16 +175,6 @@ class ConsumerControlPanelServiceTest {
 //        assertEquals(consumerControlPanelService.fetchLegalEntitiesData("Search Text", 0, 10).getStatusCodeValue(), 200);
 //    }
 
-	@Test
-	@SneakyThrows
-	void testFetchConnectorInfo() {
-		List<ConnectorInfo> connectorInfo = List
-				.of(ConnectorInfo.builder().bpn("Bpns").connectorEndpoint(List.of("http://localhost:8080")).build());
-		when(connectorDiscoveryApi.fetchConnectorInfo( List.of("Bpns"), "Bearer ABC123")).thenReturn(connectorInfo);
-		when(keycloakUtil.getKeycloakToken()).thenReturn("ABC123");
-		assertEquals(connectorInfo, consumerControlPanelService.fetchConnectorInfo(List.of("Bpns")));
-		verify(keycloakUtil).getKeycloakToken();
-	}
 
 	private ContractOffersCatalogResponse getContractOffersCatalogWithConstraints() throws Exception {
 		String contactOfferCatalogResponse = "{\n" + "    \"id\": \"default\",\n" + "    \"contractOffers\": [ "
@@ -295,27 +281,4 @@ class ConsumerControlPanelServiceTest {
 		return mockResponse;
 	}
 
-	private ConsumerRequest getConsumerRequest() throws Exception {
-		String consumerRequest = "{\n" + "\t\"connectorId\": \"343cdfdfd\",\n"
-				+ "\t\"providerUrl\": \"http: //20.218.254.172:7171/\",\n" + "\t\"offers\": [{\n"
-				+ "\t\t\t\"offerId\": \"1\",\n" + "\t\t\t\"assetId\": \"12345\",\n"
-				+ "\t\t\t\"policyId\": \"343 fdfd\"\n" + "\t\t}\n" + "\t],\n" + "\t\"policies\": [\n" + "\t\t{\n"
-				+ "\t\t\t\"type\": \"ROLE\",\n" + "\t\t\t\"value\": \"ADMIN\"\n" + "\t\t},\n" + "        {\n"
-				+ "\t\t\t\"type\": \"DURATION\",\n" + "\t\t\t\"value\": \"3 Day(s)\"\n" + "\t\t}\n" + "\t]\n" + "}";
-		ObjectMapper mapper = new ObjectMapper();
-		ConsumerRequest mockRequest = mapper.readValue(consumerRequest, ConsumerRequest.class);
-		return mockRequest;
-	}
-
-	private LegalEntityData getLegalEntityData() throws Exception {
-		String mockResponse = "{\n" + "  \"totalElements\": 7388,\n" + "  \"totalPages\": 739,\n" + "  \"page\": 0,\n"
-				+ "  \"content\": [\n" + "    {\n" + "      \"score\": 98.114334,\n" + "      \"legalEntity\": {\n"
-				+ "        \"bpn\": \"BPNL00000003B9JR\",\n" + "        \"names\": [\n" + "          {\n"
-				+ "            \"value\": \"BMW M GmbH\",\n" + "            \"shortName\": null\n" + "          }\n"
-				+ "        ]\n" + "      }\n" + "    }\n" + "  ]\n" + "}";
-		ObjectMapper mapper = new ObjectMapper();
-		LegalEntityData mockData = mapper.readValue(mockResponse, LegalEntityData.class);
-		return mockData;
-
-	}
 }

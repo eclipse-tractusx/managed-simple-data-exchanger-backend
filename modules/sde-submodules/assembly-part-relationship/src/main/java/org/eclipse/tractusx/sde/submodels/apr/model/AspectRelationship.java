@@ -121,4 +121,13 @@ public class AspectRelationship {
 
 		return hasKey && hasValue;
 	}
+	
+	public boolean hasOptionalChildIdentifier() {
+		boolean hasKey = this.getChildOptionalIdentifierKey() != null
+				&& !this.getChildOptionalIdentifierKey().isBlank();
+		boolean hasValue = this.getChildOptionalIdentifierValue() != null
+				&& !this.getChildOptionalIdentifierValue().isBlank();
+
+		return hasKey && hasValue;
+	}
 }

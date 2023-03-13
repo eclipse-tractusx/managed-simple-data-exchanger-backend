@@ -24,14 +24,15 @@ Please find below links for schema details:
 | Headers Name       	       		| Mandatory                     	| Position 	|
 |-------------------------------		|-----------------------------	|--------	|
 | uuid		                   		| No		             		    |    1     	|
-| batch_id					   		| Yes					      	|    2    	|
-| manufacturing_date    				| Yes 							| 	 3	   	|
-| manufacturing_country  	    		| No                           	| 	 4	  	|
-| manufacturer_part_id 		      	| Yes                           	| 	 5	  	|
-| customer_part_id		    		 	| No                     		| 	 6	 	|
-| classification		 				| Yes                           	|    7 	 	|
-| name_at_manufacturer	 			| Yes                           	|    8 	 	|
-| name_at_customer	 				| No                           	|    9 	 	|
+| batch_id					   		| No						      	|    2    	|
+| part_instance_id					| Yes							|	 3		|
+| manufacturing_date    				| Yes 							| 	 4	   	|
+| manufacturing_country  	    		| No                           	| 	 5	  	|
+| manufacturer_part_id 		      	| Yes                           	| 	 6	  	|
+| customer_part_id		    		 	| No                     		| 	 7	 	|
+| classification		 				| Yes                           	|    8 	 	|
+| name_at_manufacturer	 			| Yes                           	|    9 	 	|
+| name_at_customer	 				| No                           	|    10 	 	|
 
 
 #### [CSV Sample File Link]

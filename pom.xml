@@ -45,6 +45,7 @@
 		<spring-cloud.version>2022.0.0-RC3</spring-cloud.version>
 		<org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
 		<org.mapstruct.processor.version>1.3.1.Final</org.mapstruct.processor.version>
+		<snakey-version>2.0</snakey-version>
 	</properties>
 
 	<modules>
@@ -89,6 +90,10 @@
 					<groupId>logback-classic</groupId>
 					<artifactId>slf4j-log4j12</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>org.yaml</groupId>
+					<artifactId>snakeyaml</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		
@@ -105,6 +110,11 @@
 					<artifactId>commons-fileupload</artifactId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.yaml</groupId>
+			<artifactId>snakeyaml</artifactId>
+			<version>${snakey-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

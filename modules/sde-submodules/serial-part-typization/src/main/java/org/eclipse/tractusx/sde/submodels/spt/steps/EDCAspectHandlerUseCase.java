@@ -76,8 +76,8 @@ public class EDCAspectHandlerUseCase extends Step {
 
 		try {
 
-			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel, getSubmodelShortDescriptionOfModel(),
-					shellId, subModelId, input.getUuid());
+			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
+					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getUuid());
 			if (!edcGateway.assetExistsLookup(
 					assetEntryRequest.getAsset().getProperties().get(CommonConstants.ASSET_PROP_ID))) {
 
@@ -103,7 +103,7 @@ public class EDCAspectHandlerUseCase extends Step {
 			aspectService.deleteEDCAsset(entity);
 		} catch (Exception e) {
 			if (!e.getMessage().contains("404 Not Found")) {
-				throw new ServiceException("Exception in EDC delete request process:" + e.getMessage());
+				throw new ServiceException("Exception in EDC delete request process  for Update:" + e.getMessage());
 			}
 		}
 	}

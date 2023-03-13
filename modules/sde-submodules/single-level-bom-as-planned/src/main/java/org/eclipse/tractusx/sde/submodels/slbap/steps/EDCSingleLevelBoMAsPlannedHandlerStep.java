@@ -100,8 +100,8 @@ public class EDCSingleLevelBoMAsPlannedHandlerStep extends Step {
 			singleLevelBoMAsPlannedService.deleteEDCAsset(singleLevelBoMAsPlannedEntity);
 
 		} catch (Exception e) {
-			if (!e.getMessage().contains("404 Not Found") && !e.getMessage().contains("No data found")) {
-				throw new ServiceException("Exception in EDC delete request process:"+e.getMessage());
+			if (!e.getMessage().contains("404 Not Found")) {
+				throw new ServiceException("Unable to delete EDC offer for update: "+e.getMessage());
 			}
 		}
 	}

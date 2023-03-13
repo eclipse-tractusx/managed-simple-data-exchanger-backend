@@ -28,8 +28,11 @@ import java.util.Optional;
 
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.ProgressStatusEnum;
+import org.eclipse.tractusx.sde.core.failurelog.mapper.FailureLogMapper;
+import org.eclipse.tractusx.sde.core.failurelog.repository.FailureLogRepository;
 import org.eclipse.tractusx.sde.core.processreport.entity.ProcessReportEntity;
 import org.eclipse.tractusx.sde.core.processreport.mapper.ProcessReportMapper;
+import org.eclipse.tractusx.sde.core.processreport.model.ProcessFailureDetails;
 import org.eclipse.tractusx.sde.core.processreport.model.ProcessReport;
 import org.eclipse.tractusx.sde.core.processreport.model.ProcessReportPageResponse;
 import org.eclipse.tractusx.sde.core.processreport.repository.ProcessReportRepository;
@@ -41,19 +44,19 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 @Component
+@RequiredArgsConstructor
 public class ProcessReportUseCase {
 
 	private static final String UNKNOWN = "UNKNOWN";
 	private final ProcessReportRepository repository;
+	private final FailureLogRepository failureRepository;
 	private final ProcessReportMapper mapper;
+	private final FailureLogMapper logMapper;
 
-	public ProcessReportUseCase(ProcessReportRepository repository, ProcessReportMapper mapper) {
-		this.repository = repository;
-		this.mapper = mapper;
-	}
 
 	@SneakyThrows
 	public void startBuildProcessReport(String processId, String type, int size, List<String> bpnNumbers,
@@ -118,5 +121,9 @@ public class ProcessReportUseCase {
 		repository.finalizeProgressDeleteReport(processId, LocalDateTime.now(), ProgressStatusEnum.COMPLETED.toString(),
 				deletedCount, failedCount);
 
+	}
+
+	public List<ProcessFailureDetails> getProcessFailureDetailsReportById(String id) {
+		return failureRepository.findByProcessId(id).stream().map(logMapper::mapFrom).toList();
 	}
 }

@@ -25,7 +25,6 @@ import java.util.Set;
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.entities.csv.RowData;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
-import org.eclipse.tractusx.sde.common.exception.ValidationException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
 import org.springframework.stereotype.Component;
 
@@ -50,23 +49,25 @@ public class CsvParse extends Step {
 
 		String[] rowDataFields = rowData.content().split(CommonConstants.SEPARATOR, -1);
 		if (rowDataFields.length != fields.size()) {
-			throw new CsvHandlerUseCaseException(rowData.position(), "This row has the wrong amount of fields");
+			throw new CsvHandlerUseCaseException(rowData.position(),
+					"This row has the wrong amount of fields " + rowDataFields);
 		}
 
 		int colomnIndex = 0;
 		for (String ele : fields) {
+			String fieldValue = null;
 			try {
 				JsonObject jObject = submodelProperties.get(ele).getAsJsonObject();
 
-				String fieldValue = rowDataFields[colomnIndex];
+				fieldValue = rowDataFields[colomnIndex];
 
 				recordProcessUtils.setFieldValue(rowjObject, ele, jObject, fieldValue);
 
 				colomnIndex++;
 
-			} catch (ValidationException errorMessages) {
+			} catch (Exception errorMessages) {
 				throw new CsvHandlerUseCaseException(rowData.position(), colomnIndex,
-						ele + ":" + errorMessages.toString());
+						ele + ": " + fieldValue + ": " + errorMessages.toString());
 			}
 		}
 

@@ -44,7 +44,7 @@ public class KeycloakUtil {
 	@Value("${connector.discovery.clientId}")
 	private String clientId;
 
-	private final IPortalExternalServiceApi connectorDiscoveryApi;
+	private final IPortalExternalServiceApi portalExternalServiceApi;
 
 	@SneakyThrows
 	public String getKeycloakToken() {
@@ -53,7 +53,7 @@ public class KeycloakUtil {
 		body.add("grant_type", "client_credentials");
 		body.add("client_id", clientId);
 		body.add("client_secret", clientSecret);
-		var resultBody = connectorDiscoveryApi.readAuthToken(tokenURI, body);
+		var resultBody = portalExternalServiceApi.readAuthToken(tokenURI, body);
 
 		if (resultBody != null) {
 			return resultBody.getAccessToken();

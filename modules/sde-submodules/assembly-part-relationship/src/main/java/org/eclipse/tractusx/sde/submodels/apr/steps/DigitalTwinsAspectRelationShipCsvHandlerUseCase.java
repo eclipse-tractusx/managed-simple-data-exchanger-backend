@@ -30,13 +30,9 @@ import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseExc
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
-import org.eclipse.tractusx.sde.common.utils.UUIdGenerator;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.Endpoint;
-import org.eclipse.tractusx.sde.digitaltwins.entities.common.GlobalAssetId;
-import org.eclipse.tractusx.sde.digitaltwins.entities.common.KeyValuePair;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.SemanticId;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.CreateSubModelRequest;
-import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellDescriptorRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellLookupRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellLookupResponse;
@@ -45,29 +41,17 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubmodelDescripti
 import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsUtility;
 import org.eclipse.tractusx.sde.digitaltwins.gateways.external.DigitalTwinGateway;
 import org.eclipse.tractusx.sde.submodels.apr.model.AspectRelationship;
-import org.eclipse.tractusx.sde.submodels.spt.entity.AspectEntity;
-import org.eclipse.tractusx.sde.submodels.spt.mapper.AspectMapper;
-import org.eclipse.tractusx.sde.submodels.spt.model.Aspect;
-import org.eclipse.tractusx.sde.submodels.spt.repository.AspectRepository;
 import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 @Service
+@RequiredArgsConstructor
 public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 
 	private final DigitalTwinGateway gateway;
-	private final AspectRepository aspectRepository;
-	private final AspectMapper aspectMapper;
 	private final DigitalTwinsUtility digitalTwinsUtility;
-
-	public DigitalTwinsAspectRelationShipCsvHandlerUseCase(DigitalTwinGateway gateway,
-			AspectRepository aspectRepository, AspectMapper aspectMapper,DigitalTwinsUtility digitalTwinsUtility) {
-		this.gateway = gateway;
-		this.aspectRepository = aspectRepository;
-		this.aspectMapper = aspectMapper;
-		this.digitalTwinsUtility = digitalTwinsUtility; 
-	}
 
 	@SneakyThrows
 	public AspectRelationship run(AspectRelationship aspectRelationShip) throws CsvHandlerDigitalTwinUseCaseException {
@@ -89,16 +73,11 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 		SubModelResponse foundSubmodel = null;
 
 		if (shellIds.isEmpty()) {
-			ShellDescriptorResponse shellDescriptorResponse = createShellDescriptor(aspectRelationShip,
-					shellLookupRequest);
-			aspectRelationShip.setParentUuid(shellDescriptorResponse.getGlobalAssetId().getValue().get(0));
-			aspectRelationShip.setShellId(shellDescriptorResponse.getIdentification());
-
+			// We don't need to create parent shell from aspect relationship
+			throw new CsvHandlerUseCaseException(aspectRelationShip.getRowNumber(), "No parent aspect found in DT");
 		} else {
-
 			foundSubmodel = checkShellforSubmodelExistorNot(aspectRelationShip, shellLookupRequest, shellIds,
 					foundSubmodel);
-
 		}
 
 		shellId = aspectRelationShip.getShellId();
@@ -134,8 +113,8 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 		}
 
 		if (foundSubmodel == null && shellIds.size() > 1)
-			throw new CsvHandlerDigitalTwinUseCaseException(String
-					.format("Multiple shell id's found on childAspect %s", shellLookupRequest.toJsonString()));
+			throw new CsvHandlerDigitalTwinUseCaseException(
+					String.format("Multiple shell id's found for parent in DT %s", shellLookupRequest.toJsonString()));
 
 		if (submodelExistinceCount.size() > 1)
 			throw new CsvHandlerDigitalTwinUseCaseException(String.format(
@@ -167,40 +146,13 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 		aspectRelationShip.setChildUuid(createSubModelRequest.getIdentification());
 	}
 
-	private ShellDescriptorResponse createShellDescriptor(AspectRelationship aspectRelationShip,
-			ShellLookupRequest shellLookupRequest) throws CsvHandlerUseCaseException {
-
-		logInfo(String.format("No shell id for '%s'", shellLookupRequest.toJsonString()));
-		AspectEntity aspectEntity = null;
-		if (aspectRelationShip.hasOptionalParentIdentifier()) {
-			aspectEntity = aspectRepository.findByIdentifiers(aspectRelationShip.getParentPartInstanceId(),
-					aspectRelationShip.getParentManufacturerPartId(),
-					aspectRelationShip.getParentOptionalIdentifierKey(),
-					aspectRelationShip.getParentOptionalIdentifierValue());
-		} else {
-			aspectEntity = aspectRepository.findByIdentifiers(aspectRelationShip.getParentPartInstanceId(),
-					aspectRelationShip.getParentManufacturerPartId());
-		}
-
-		if (aspectEntity == null) {
-			throw new CsvHandlerUseCaseException(aspectRelationShip.getRowNumber(), "No parent aspect found in DT as well as in Local SDE");
-		}
-
-		ShellDescriptorRequest aasDescriptorRequest = getShellDescriptorRequest(aspectMapper.mapFrom(aspectEntity));
-		ShellDescriptorResponse result = gateway.createShellDescriptor(aasDescriptorRequest);
-		logInfo(String.format("Shell created with id '%s'", result.getIdentification()));
-
-		return result;
-	}
-
 	private ShellLookupRequest getShellLookupRequest(AspectRelationship aspectRelationShip) {
 		ShellLookupRequest shellLookupRequest = new ShellLookupRequest();
 		shellLookupRequest.addLocalIdentifier(CommonConstants.PART_INSTANCE_ID,
 				aspectRelationShip.getParentPartInstanceId());
 		shellLookupRequest.addLocalIdentifier(CommonConstants.MANUFACTURER_PART_ID,
 				aspectRelationShip.getParentManufacturerPartId());
-		shellLookupRequest.addLocalIdentifier(CommonConstants.MANUFACTURER_ID,
-				digitalTwinsUtility.getManufacturerId());
+		shellLookupRequest.addLocalIdentifier(CommonConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId());
 
 		if (aspectRelationShip.hasOptionalParentIdentifier()) {
 			shellLookupRequest.addLocalIdentifier(aspectRelationShip.getParentOptionalIdentifierKey(),
@@ -219,7 +171,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 		shellLookupRequest.addLocalIdentifier(CommonConstants.MANUFACTURER_ID,
 				aspectRelationShip.getChildManufacturerId());
 
-		if (aspectRelationShip.hasOptionalParentIdentifier()) {
+		if (aspectRelationShip.hasOptionalChildIdentifier()) {
 			shellLookupRequest.addLocalIdentifier(aspectRelationShip.getChildOptionalIdentifierKey(),
 					aspectRelationShip.getChildOptionalIdentifierValue());
 		}
@@ -244,7 +196,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 
 		if (childshellIds.size() > 1) {
 			throw new CsvHandlerDigitalTwinUseCaseException(
-					String.format("Multiple shell id's found on childAspect %s", shellLookupRequest.toJsonString()));
+					String.format("Multiple shell id's found for childAspect %s", shellLookupRequest.toJsonString()));
 		}
 
 		SubmodelDescriptionListResponse shellDescriptorWithsubmodelDetails = gateway
@@ -257,35 +209,11 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 		String identification = childUUID;
 		SemanticId semanticId = new SemanticId(value);
 
-		List<Endpoint> endpoints = digitalTwinsUtility.prepareDtEndpoint(aspectRelationShip.getShellId(), identification);
+		List<Endpoint> endpoints = digitalTwinsUtility.prepareDtEndpoint(aspectRelationShip.getShellId(),
+				identification);
 
 		return CreateSubModelRequest.builder().idShort(getIdShortOfModel()).identification(identification)
 				.semanticId(semanticId).endpoints(endpoints).build();
-	}
-
-	private ShellDescriptorRequest getShellDescriptorRequest(Aspect aspect) {
-		ArrayList<KeyValuePair> specificIdentifiers = new ArrayList<>();
-		setSpecifiers(specificIdentifiers, aspect);
-		List<String> values = new ArrayList<>();
-		values.add(aspect.getUuid());
-		GlobalAssetId globalIdentifier = new GlobalAssetId(values);
-
-		return ShellDescriptorRequest.builder()
-				.idShort(String.format("%s_%s_%s", aspect.getNameAtManufacturer(),
-						digitalTwinsUtility.getManufacturerId(), aspect.getManufacturerPartId()))
-				.globalAssetId(globalIdentifier).specificAssetIds(specificIdentifiers)
-				.identification(UUIdGenerator.getUrnUuid()).build();
-	}
-
-	private void setSpecifiers(final ArrayList<KeyValuePair> specificIdentifiers, Aspect aspect) {
-		specificIdentifiers.add(new KeyValuePair(CommonConstants.PART_INSTANCE_ID, aspect.getPartInstanceId()));
-		specificIdentifiers.add(new KeyValuePair(CommonConstants.MANUFACTURER_PART_ID, aspect.getManufacturerPartId()));
-		specificIdentifiers.add(
-				new KeyValuePair(CommonConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId()));
-		if (aspect.hasOptionalIdentifier()) {
-			specificIdentifiers
-					.add(new KeyValuePair(aspect.getOptionalIdentifierKey(), aspect.getOptionalIdentifierValue()));
-		}
 	}
 
 }

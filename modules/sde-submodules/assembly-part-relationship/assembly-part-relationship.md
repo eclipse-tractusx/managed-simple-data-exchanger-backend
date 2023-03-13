@@ -51,7 +51,7 @@ Please find below links for schema details:
  - CSV to POJO
  - CSV column validation and mandatory field validation
  - POJO TO DTO
- - UUID generate v4
+ - UUID Lookup call for already generate v4
  - DigitalTwins API's calls 
  - EDC API's calls
  - DB Store

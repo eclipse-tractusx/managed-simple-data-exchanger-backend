@@ -12,7 +12,7 @@
 	"items": {
 		"type": "object",
 		"required": [
-			"batch_id",
+			"part_instance_id",
 			"manufacturing_date",
 			"manufacturer_part_id",
 			"classification",
@@ -38,9 +38,19 @@
 				],
 				"title": "Batch ID",
 				"description": "The batch number of the batch from the manufacturer. We assume here that the customer does not have or create its own batch number for a batch, but just used the manufacturer's batch number.",
-				"minLength": 1,
 				"examples": [
 					"NO-159040131155901488695376"
+				]
+			},
+			"part_instance_id": {
+				"type": [
+					"string"
+				],
+				"title": "Part Instance ID",
+				"description": "The serial number of the serialized part from the manufacturer. We assume here that the customer does not have or create its own serial number for a part, but just used the manufacturer's serial number.",
+				"minLength": 1,
+				"examples": [
+					"PINO04013115590"
 				]
 			},
 			"manufacturing_date": {
@@ -134,6 +144,7 @@
 		{
 			"uuid": "urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2",
 			"batch_id": "NO-159040131155901488695376",
+			"part_instance_id":"PINO-34634534535",
 			"manufacturing_date": "2022-02-04T14:48:54.709Z",
 			"manufacturing_country": "DEU",
 			"manufacturer_part_id": "37754B7-76",

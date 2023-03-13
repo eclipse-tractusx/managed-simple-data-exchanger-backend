@@ -40,6 +40,8 @@ public class BatchEntity implements Serializable {
     private String processId;
     @Column(name = "batch_id")
     private String batchId;
+    @Column(name = "part_instance_id")
+    private String partInstanceId;
     @Column(name = "manufacturing_date")
     private String manufacturingDate;
     @Column(name = "manufacturing_country")

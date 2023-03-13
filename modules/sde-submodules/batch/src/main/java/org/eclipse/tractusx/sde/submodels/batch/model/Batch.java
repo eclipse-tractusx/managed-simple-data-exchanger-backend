@@ -64,6 +64,9 @@ public class Batch {
 
 	@JsonProperty(value = "batch_id")
 	private String batchId;
+	
+	@JsonProperty(value = "part_instance_id")
+	private String partInstanceId;
 
 	@JsonProperty(value = "manufacturing_date")
 	private String manufacturingDate;

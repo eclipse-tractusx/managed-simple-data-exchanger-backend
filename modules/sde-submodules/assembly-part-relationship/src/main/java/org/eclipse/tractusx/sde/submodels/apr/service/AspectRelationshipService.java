@@ -110,4 +110,9 @@ public class AspectRelationshipService {
 		return (int) aspectRelationshipRepository.countByUpdatedAndProcessId(CommonConstants.UPDATED_Y, refProcessId);
 	}
 
+	public AspectRelationshipEntity readEntityByShellId(String shellId) {
+		return Optional.ofNullable(aspectRelationshipRepository.findByShellId(shellId))
+				.orElseThrow(() -> new NoDataFoundException("No data found shellId in SDE for reference detele in update case:" + shellId));
+	}
+
 }

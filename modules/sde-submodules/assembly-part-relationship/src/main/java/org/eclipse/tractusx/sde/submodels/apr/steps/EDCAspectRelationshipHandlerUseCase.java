@@ -49,7 +49,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 public class EDCAspectRelationshipHandlerUseCase extends Step {
 
@@ -83,6 +85,10 @@ public class EDCAspectRelationshipHandlerUseCase extends Step {
 					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getParentUuid());
 			if (!edcGateway.assetExistsLookup(assetEntryRequest.getAsset().getProperties().get(ASSET_PROP_ID))) {
 
+				if (CommonConstants.UPDATED_Y.equals(input.getUpdated())) {
+					deleteIfAnyReferenceExist(shellId);
+				}
+
 				edcProcessingforAspectRelationship(assetEntryRequest, input);
 
 			} else {
@@ -98,6 +104,16 @@ public class EDCAspectRelationshipHandlerUseCase extends Step {
 		}
 	}
 
+	private void deleteIfAnyReferenceExist(String shellId) {
+		try {
+			AspectRelationshipEntity aspectRelationshipEntity = aspectRelationshipService.readEntityByShellId(shellId);
+			aspectRelationshipService.deleteEDCAsset(aspectRelationshipEntity);
+		} catch (Exception e) {
+			log.warn("Trying to delete existing EDC asset in update case reference,so EDC end will be single asset for each submodel: " + e.getMessage());
+		}
+
+	}
+
 	@SneakyThrows
 	private void deleteEDCFirstForUpdate(String submodel, AspectRelationship input, String processId) {
 		try {
@@ -106,7 +122,7 @@ public class EDCAspectRelationshipHandlerUseCase extends Step {
 			aspectRelationshipService.deleteEDCAsset(aspectRelationshipEntity);
 		} catch (Exception e) {
 			if (!e.getMessage().contains("404 Not Found")) {
-				throw new ServiceException("Exception in EDC delete request process: "+e.getMessage());
+				throw new ServiceException("Exception in EDC delete request process: " + e.getMessage());
 			}
 		}
 	}

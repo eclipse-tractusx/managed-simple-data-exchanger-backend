@@ -20,7 +20,7 @@ Please find below links for schema details:
 ### CSV file headers
 
 | Headers Name       	       		| Mandatory                     	| Position 	|
-|-------------------------------		|-----------------------------	|--------	|
+|-------------------------------	|-----------------------------	    |--------	|
 | uuid		                   		| No		             		    |    1     	|
 | batch_id					   		| No						      	|    2    	|
 | part_instance_id					| Yes							    |	 3		|

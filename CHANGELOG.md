@@ -26,8 +26,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Correct submodel id for delete while assembly update.
 - ENUM fix after changing variable of DT.
 - Exception log for look up failure request.
-- Look up feature for Assebmly: The Batch, we connected a Batch item with a Serial Part Typization Item
-- Look up feature for Assebmly: The items (Serial Part Typization) had the fields VAN and Value filled was not work
+- Look up feature for AssemblyPartRelationship: The Batch, we connected a Batch item with a Serial Part Typization Item
+- Look up feature for AssemblyPartRelationship: The items (Serial Part Typization) had the fields VAN and Value filled was not work
 
 ### Changed
 - Added/Updated Header copyrights for 2023.

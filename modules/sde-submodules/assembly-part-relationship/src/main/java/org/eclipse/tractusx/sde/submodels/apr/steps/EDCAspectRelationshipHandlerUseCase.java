@@ -85,8 +85,9 @@ public class EDCAspectRelationshipHandlerUseCase extends Step {
 					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getParentUuid());
 			if (!edcGateway.assetExistsLookup(assetEntryRequest.getAsset().getProperties().get(ASSET_PROP_ID))) {
 
-				if (CommonConstants.UPDATED_Y.equals(input.getUpdated())) {
-					deleteIfAnyReferenceExist(shellId);
+				if (CommonConstants.UPDATED_Y.equals(input.getUpdated())
+						&& input.getOldSubmodelIdforUpdateCase() != null) {
+					deleteIfAnyReferenceExist(input.getOldSubmodelIdforUpdateCase());
 				}
 
 				edcProcessingforAspectRelationship(assetEntryRequest, input);
@@ -104,12 +105,18 @@ public class EDCAspectRelationshipHandlerUseCase extends Step {
 		}
 	}
 
-	private void deleteIfAnyReferenceExist(String shellId) {
+	private void deleteIfAnyReferenceExist(String oldSubModelId) {
 		try {
-			AspectRelationshipEntity aspectRelationshipEntity = aspectRelationshipService.readEntityByShellId(shellId);
+			AspectRelationshipEntity aspectRelationshipEntity = aspectRelationshipService
+					.readEntityBySubModelId(oldSubModelId);
 			aspectRelationshipService.deleteEDCAsset(aspectRelationshipEntity);
+			log.info(
+					"Deleted existing EDC asset in update case reference,so EDC end will be single asset for each submodel: "
+							+ oldSubModelId);
 		} catch (Exception e) {
-			log.warn("Trying to delete existing EDC asset in update case reference,so EDC end will be single asset for each submodel: " + e.getMessage());
+			log.warn(
+					"Trying to delete existing EDC asset in update case reference,so EDC end will be single asset for each submodel: "
+							+ e.getMessage());
 		}
 
 	}

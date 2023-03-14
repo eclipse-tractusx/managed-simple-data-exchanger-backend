@@ -90,6 +90,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 			if (!foundSubmodel.getIdentification().equals(createSubModelRequest.getIdentification())) {
 				gateway.deleteSubmodelfromShellById(shellId, foundSubmodel.getIdentification());
 				createSubModelSteps(aspectRelationShip, shellId, createSubModelRequest);
+				aspectRelationShip.setOldSubmodelIdforUpdateCase(foundSubmodel.getIdentification());
 			}
 			aspectRelationShip.setUpdated(CommonConstants.UPDATED_Y);
 			logDebug("Complete Digital Twins Update Update Digital Twins");

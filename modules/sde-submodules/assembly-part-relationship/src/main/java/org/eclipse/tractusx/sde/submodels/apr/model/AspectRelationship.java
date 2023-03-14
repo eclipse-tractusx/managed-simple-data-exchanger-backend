@@ -49,6 +49,7 @@ public class AspectRelationship {
 	private String contractDefinationId;
 	private String deleted;
 	private String updated;
+	private String oldSubmodelIdforUpdateCase;
 
 	@JsonProperty(value = "row_number")
 	private int rowNumber;

@@ -28,9 +28,9 @@ import org.eclipse.tractusx.sde.edc.model.contractnegotiation.AcknowledgementId;
 import org.eclipse.tractusx.sde.edc.model.contractnegotiation.ContractAgreementDto;
 import org.eclipse.tractusx.sde.edc.model.contractnegotiation.ContractNegotiationDto;
 import org.eclipse.tractusx.sde.edc.model.contractnegotiation.ContractNegotiations;
-import org.eclipse.tractusx.sde.edc.model.contractnegotiation.ContractNegotiationsResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,7 +46,7 @@ public interface ContractApi {
 			@RequestHeader Map<String, String> requestHeader);
 
 	@GetMapping(path = "/data/contractnegotiations/{contractnegotiationsId}")
-	ContractNegotiationsResponse checkContractNegotiationsStatus(URI url,
+	ContractNegotiationDto getContractDetails(URI url,
 			@PathVariable("contractnegotiationsId") String contractnegotiationsId,
 			@RequestHeader Map<String, String> requestHeader);
 
@@ -56,6 +56,16 @@ public interface ContractApi {
 
 	@GetMapping(path = "/data/contractnegotiations/{contractnegotiationsId}/agreement")
 	ContractAgreementDto getAgreementBasedOnNegotiationId(URI url,
+			@PathVariable("contractnegotiationsId") String contractnegotiationsId,
+			@RequestHeader Map<String, String> requestHeader);
+	
+	@PostMapping(path = "/data/contractnegotiations/{contractnegotiationsId}/decline", consumes = MediaType.APPLICATION_JSON_VALUE)
+	ResponseEntity<Object> declineContract(URI url,
+			@PathVariable("contractnegotiationsId") String contractnegotiationsId,
+			@RequestHeader Map<String, String> requestHeader);
+	
+	@PostMapping(path = "/data/contractnegotiations/{contractnegotiationsId}/cancel", consumes = MediaType.APPLICATION_JSON_VALUE)
+	ResponseEntity<Object> cancelContract(URI url,
 			@PathVariable("contractnegotiationsId") String contractnegotiationsId,
 			@RequestHeader Map<String, String> requestHeader);
 

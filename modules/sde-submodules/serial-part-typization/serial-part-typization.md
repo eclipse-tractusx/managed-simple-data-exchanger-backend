@@ -12,6 +12,10 @@ This module use for SerialPartTypization submodel specification and descriptors.
 
 ### Schema
 
+Please find below links for schema details:
+
+- [schema](src/main/resources/serial-part-typization.json)
+
 
 ### SerialPartTypization CSV file headers
 

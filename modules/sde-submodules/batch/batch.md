@@ -14,7 +14,7 @@ This module use for Batch submodel specification and descriptors. It's contain t
 
 Please find below links for schema details:
 
-- https://github.com/eclipse-tractusx/dft-backend/blob/main/modules/sde-submodules/batch/src/main/resources/batch.json
+- [schema](src/main/resources/batch.json)
 
 
 ### CSV file headers

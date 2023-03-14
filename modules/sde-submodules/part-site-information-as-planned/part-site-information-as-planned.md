@@ -12,6 +12,11 @@ This module use for PartSiteInformationAsPlanned submodel specification and desc
 
 ### Schema
 
+Please find below links for schema details:
+
+- [schema](src/main/resources/part-site-information-as-planned.json)
+
+
 ### CSV file headers
 
 | Headers Name       	       		| Mandatory                     | Position 	|

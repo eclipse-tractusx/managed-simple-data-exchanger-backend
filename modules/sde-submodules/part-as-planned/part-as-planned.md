@@ -12,6 +12,9 @@ This module use for PartAsPlanned submodel specification and descriptors. It's c
 
 ### Schema
 
+Please find below links for schema details:
+
+- [schema](src/main/resources/part-as-planned.json)
 
 ### CSV file headers
 

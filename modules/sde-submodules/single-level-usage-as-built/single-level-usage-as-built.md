@@ -12,6 +12,10 @@ This module use for SingleLevelUsageAsBuilt submodel specification and descripto
 
 ### Schema
 
+Please find below links for schema details:
+
+- [schema](src/main/resources/single-level-usage-as-built.json)
+
 
 ### SingleLevelUsageAsBuilt CSV file headers
 

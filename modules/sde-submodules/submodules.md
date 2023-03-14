@@ -8,7 +8,7 @@ Currently SDE supports below submodels.
  
 ### Supported Models
 
-#### [serial-part-typization in Version 1.1.0]
+#### [serial-part-typization in Version 1.1.1]
 #### [batch in Version 1.0.2]
 #### [assembly-part-relationship in Version 1.1.1]
 #### [partAsPlanned in Version 1.0.0]
@@ -35,7 +35,7 @@ Once your maven module ready just do the clean build and install so submodel wil
 
 
 
-[serial-part-typization in Version 1.1.0]: serial-part-typization/serial-part-typization.md
+[serial-part-typization in Version 1.1.1]: serial-part-typization/serial-part-typization.md
 [batch in Version 1.0.2]: batch/batch.md
 [assembly-part-relationship in Version 1.1.1]: assembly-part-relationship/assembly-part-relationship.md
 [partAsPlanned in Version 1.0.0]: part-as-planned/part-as-planned.md

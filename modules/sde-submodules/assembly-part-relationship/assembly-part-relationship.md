@@ -12,9 +12,14 @@ This module use for AssemblyPartRelationship submodel specification and descript
 
 ### Schema
 
+Please find below links for schema details:
+
+- [schema](src/main/resources/assembly-part-relationship.json)
+
+
 ### AssemblyPartRelationship CSV file headers
 
-| Headers Name       	       		| Mandatory                     	| Position 	|
+| Headers Name       	       		| Mandatory                     | Position 	|
 |-------------------------------	|-----------------------------	|--------	|
 | parent_uuid		                | Yes		             	    |    1     	|
 | parent_part_instance_id	     	| Yes		             	    |    2    	|

@@ -20,13 +20,3 @@
 
 ALTER TABLE IF EXISTS aspect_relationship
 ADD COLUMN IF NOT EXISTS manufacturer_id  			TEXT NULL;
-
-
-
-
-
-
-
-
-
-

@@ -14,9 +14,7 @@ This module use for SingleLevelUsageAsBuilt submodel specification and descripto
 
 Please find below links for schema details:
 
-- https://portal.int.demo.catena-x.net/semantichub/urn%3Abamm%3Aio.catenax.single_level_usage_as_built%3A1.0.1%23SingleLevelUsageAsBuilt
-- blob:https://portal.int.demo.catena-x.net/353a115a-3150-4cbf-b7c7-2dd88e90a527
-- https://github.com/catenax-ng/product-dft-backend/blob/modules-branch/modules/sde-submodules/single-level-usage-as-built/src/main/resources/single-level-usage-as-built.json
+- [schema](src/main/resources/single-level-usage-as-built.json)
 
 
 ### SingleLevelUsageAsBuilt CSV file headers

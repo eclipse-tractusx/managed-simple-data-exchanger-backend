@@ -14,30 +14,28 @@ This module use for AssemblyPartRelationship submodel specification and descript
 
 Please find below links for schema details:
 
-- https://portal.int.demo.catena-x.net/semantichub/urn%3Abamm%3Aio.catenax.assembly_part_relationship%3A1.1.1%23AssemblyPartRelationship
-- blob:https://portal.int.demo.catena-x.net/83e06ce8-21f8-4e31-9349-7a6c2e38a641
-- https://github.com/catenax-ng/product-dft-backend/blob/modules-branch/modules/sde-submodules/serial-part-typization/src/main/resources/serial-part-typization.json
+- [schema](src/main/resources/assembly-part-relationship.json)
 
 
 ### AssemblyPartRelationship CSV file headers
 
-| Headers Name       	       		| Mandatory                     	| Position 	|
-|-------------------------------		|-----------------------------	|--------	|
-| parent_uuid		                	| Yes		             	    |    1     	|
+| Headers Name       	       		| Mandatory                     | Position 	|
+|-------------------------------	|-----------------------------	|--------	|
+| parent_uuid		                | Yes		             	    |    1     	|
 | parent_part_instance_id	     	| Yes		             	    |    2    	|
-| parent_manufacturer_part_id	    	| Yes		             	    |    3    	|
-| parent_optional_identifier_key	    	| No			             	    |    4    	|
-| parent_optional_identifier_value 	| No			             	    |    5    	|
+| parent_manufacturer_part_id	    | Yes		             	    |    3    	|
+| parent_optional_identifier_key	| No			             	|    4    	|
+| parent_optional_identifier_value 	| No			             	|    5    	|
 | uuid		                   		| Yes		             	    |    6     	|
 | part_instance_id			   		| Yes					      	|    7    	|
-| manufacturer_part_id 		      	| Yes                           	| 	 8	  	|
+| manufacturer_part_id 		      	| Yes                           | 	 8	  	|
 | optional_identifier_key	 		| No                           	|    9 	 	|
-| optional_identifier_value			| No                           	|    10 	 	|
-| lifecycle_context		    		 	| Yes                     		| 	 11	 	|
-| quantity_number		 			| Yes                           	|    12	 	|
-| measurement_unit				 	| Yes                           	|    13	 	|
-| created_on	 						| Yes                          	|    14	 	|
-| last_modified_on	 				| Yes                           	|    15	 	|
+| optional_identifier_value			| No                           	|    10 	|
+| lifecycle_context		    		| Yes                        	| 	 11	 	|
+| quantity_number		 			| Yes                           |    12	 	|
+| measurement_unit				 	| Yes                           |    13	 	|
+| created_on	 					| Yes                           |    14	 	|
+| last_modified_on	 				| Yes                           |    15	 	|
 
 
 #### [CSV Sample File Link]

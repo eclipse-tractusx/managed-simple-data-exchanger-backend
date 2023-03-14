@@ -35,13 +35,3 @@ DROP COLUMN datatype_uri;
 
 ALTER TABLE IF EXISTS aspect_relationship
 ADD COLUMN last_modified_on  			TEXT NULL;
-
-
-
-
-
-
-
-
-
-

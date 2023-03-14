@@ -14,25 +14,23 @@ This module use for Batch submodel specification and descriptors. It's contain t
 
 Please find below links for schema details:
 
-- https://portal.int.demo.catena-x.net/semantichub/urn%3Abamm%3Aio.catenax.batch%3A1.0.2%23Batch
-- blob:https://portal.int.demo.catena-x.net/07fc4b99-452f-4afd-bd41-fdf4c1d96318
-- https://github.com/catenax-ng/product-dft-backend/blob/modules-branch/modules/sde-submodules/batch/src/main/resources/batch.json
+- [schema](src/main/resources/batch.json)
 
 
 ### CSV file headers
 
 | Headers Name       	       		| Mandatory                     	| Position 	|
-|-------------------------------		|-----------------------------	|--------	|
+|-------------------------------	|-----------------------------	    |--------	|
 | uuid		                   		| No		             		    |    1     	|
 | batch_id					   		| No						      	|    2    	|
-| part_instance_id					| Yes							|	 3		|
-| manufacturing_date    				| Yes 							| 	 4	   	|
-| manufacturing_country  	    		| No                           	| 	 5	  	|
+| part_instance_id					| Yes							    |	 3		|
+| manufacturing_date    			| Yes 							    | 	 4	   	|
+| manufacturing_country  	    	| No                            	| 	 5	  	|
 | manufacturer_part_id 		      	| Yes                           	| 	 6	  	|
-| customer_part_id		    		 	| No                     		| 	 7	 	|
-| classification		 				| Yes                           	|    8 	 	|
+| customer_part_id		    		| No                     		    | 	 7	 	|
+| classification		 			| Yes                               |    8 	 	|
 | name_at_manufacturer	 			| Yes                           	|    9 	 	|
-| name_at_customer	 				| No                           	|    10 	 	|
+| name_at_customer	 				| No                           	    |    10 	|
 
 
 #### [CSV Sample File Link]

@@ -20,13 +20,3 @@
 
 ALTER TABLE IF EXISTS batch
 ADD COLUMN IF NOT EXISTS part_instance_id  			TEXT NULL;
-
-
-
-
-
-
-
-
-
-

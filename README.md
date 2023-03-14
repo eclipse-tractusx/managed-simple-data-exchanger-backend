@@ -32,9 +32,12 @@ You can find the standard credentials as well as further database configurations
 3. Setup your project environment to JDK 18
 4. Start the application from your IDE.
 
-
- ---   
-
+---
+### Supported submodules
+To find information about supported submodels and there version in SDE please visit below
+#### [submodelinfo]
+[submodelinfo]: sde-submodels/submodeles.md
+---
 ## DFT(Simple Data Exchanger) Compatible with :=
 1. ***File Uploads***
     * SerialPartTypization

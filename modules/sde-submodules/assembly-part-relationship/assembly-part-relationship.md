@@ -14,9 +14,7 @@ This module use for AssemblyPartRelationship submodel specification and descript
 
 Please find below links for schema details:
 
-- https://portal.int.demo.catena-x.net/semantichub/urn%3Abamm%3Aio.catenax.assembly_part_relationship%3A1.1.1%23AssemblyPartRelationship
-- blob:https://portal.int.demo.catena-x.net/83e06ce8-21f8-4e31-9349-7a6c2e38a641
-- https://github.com/catenax-ng/product-dft-backend/blob/modules-branch/modules/sde-submodules/serial-part-typization/src/main/resources/serial-part-typization.json
+- [schema](src/main/resources/assembly-part-relationship.json)
 
 
 ### AssemblyPartRelationship CSV file headers

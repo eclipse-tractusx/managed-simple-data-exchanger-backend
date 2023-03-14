@@ -14,9 +14,7 @@ This module use for PartAsPlanned submodel specification and descriptors. It's c
 
 Please find below links for schema details:
 
-- https://portal.int.demo.catena-x.net/semantichub/urn%3Abamm%3Aio.catenax.part_as_planned%3A1.0.0%23PartAsPlanned
-- blob:https://portal.dev.demo.catena-x.net/48fe44cd-273d-4062-9999-d2c323b2be7f
-- https://github.com/catenax-ng/product-dft-backend/blob/modules-branch/modules/sde-submodules/part-as-planned/src/main/resources/part-as-planned.json
+- [schema](src/main/resources/part-as-planned.json)
 
 ### CSV file headers
 

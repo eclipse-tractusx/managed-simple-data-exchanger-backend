@@ -14,9 +14,7 @@ This module use for SerialPartTypization submodel specification and descriptors.
 
 Please find below links for schema details:
 
-- https://portal.int.demo.catena-x.net/semantichub/urn%3Abamm%3Aio.catenax.serial_part_typization%3A1.1.0%23SerialPartTypization
-- blob:https://portal.int.demo.catena-x.net/421bf0de-72a6-4261-93cb-dcbb16a110a2
-- https://github.com/catenax-ng/product-dft-backend/blob/modules-branch/modules/sde-submodules/serial-part-typization/src/main/resources/serial-part-typization.json
+- [schema](src/main/resources/serial-part-typization.json)
 
 
 ### SerialPartTypization CSV file headers

@@ -14,9 +14,7 @@ This module use for SingleLevelBomAsPlanned submodel specification and descripto
 
 Please find below links for schema details:
 
-- https://portal.int.demo.catena-x.net/semantichub/urn%3Abamm%3Aio.catenax.single_level_bom_as_planned%3A1.0.1%23SingleLevelBomAsPlanned
-- blob:https://portal.int.demo.catena-x.net/e565320b-0153-4554-ba5c-9673962c0097
-- https://github.com/catenax-ng/product-dft-backend/blob/modules-branch/modules/sde-submodules/single-level-bom-as-planned/src/main/resources/single-level-bom-as-planned.json
+- [schema](src/main/resources/single-level-bom-as-planned.json)
 
 
 ### CSV file headers

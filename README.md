@@ -34,10 +34,11 @@ You can find the standard credentials as well as further database configurations
 
 ---
 ### Supported submodules
-To find information about supported submodels and there version in SDE please visit below
-#### [submodelinfo]
-[submodelinfo]: sde-submodels/submodeles.md
+To find information about supported submodels and there version in SDE please visit [here](modules/sde-submodules/submodules.md) 
+
+
 ---
+
 ## DFT(Simple Data Exchanger) Compatible with :=
 1. ***File Uploads***
     * SerialPartTypization

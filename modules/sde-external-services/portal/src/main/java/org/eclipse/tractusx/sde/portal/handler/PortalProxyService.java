@@ -81,18 +81,18 @@ public class PortalProxyService {
 		List<ConnectorInfo> connectorsInfo = fetchConnectorInfo(List.of(bpn));
 
 		UnifiedBpnValidationResponse unifiedBpnValidationResponse = UnifiedBpnValidationResponse.builder()
-				.message(bpn + " BPN number found valid connector's in partner network")
+				.msg(bpn + " BPN number found valid connector's in partner network")
 				.bpnStatus(UnifiedBPNValidationStatusEnum.FULL_PARTNER).build();
 
 		if (connectorsInfo.isEmpty()) {
 
 			List<String> memberBPNDataList = cacheUtilityService.getAllPartners();
 			if (!memberBPNDataList.isEmpty() && memberBPNDataList.contains(bpn)) {
-				unifiedBpnValidationResponse.setMessage(
+				unifiedBpnValidationResponse.setMsg(
 						bpn + " BPN number is part of partner network but there is no valid connector's found");
 				unifiedBpnValidationResponse.setBpnStatus(UnifiedBPNValidationStatusEnum.PARTNER);
 			} else {
-				unifiedBpnValidationResponse.setMessage(bpn + " BPN number is not part of partner network");
+				unifiedBpnValidationResponse.setMsg(bpn + " BPN number is not part of partner network");
 				unifiedBpnValidationResponse.setBpnStatus(UnifiedBPNValidationStatusEnum.NOT_PARTNER);
 			}
 		}

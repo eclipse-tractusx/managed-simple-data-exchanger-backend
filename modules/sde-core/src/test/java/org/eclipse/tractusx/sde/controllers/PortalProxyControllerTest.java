@@ -88,7 +88,7 @@ class PortalProxyControllerTest {
     void testGetUnifiedBPNValidateSuccess() throws Exception {
     	ObjectMapper mapper = new ObjectMapper();
     	UnifiedBpnValidationResponse response = UnifiedBpnValidationResponse.builder()
-				.message("BPNL001000TS0100 for BPN number found valid Connector in partner network")
+				.msg("BPNL001000TS0100 for BPN number found valid Connector in partner network")
 				.bpnStatus(UnifiedBPNValidationStatusEnum.FULL_PARTNER).build();
         when(portalProxyService.unifiedBpnValidation((String) any()))
                 .thenReturn(response);

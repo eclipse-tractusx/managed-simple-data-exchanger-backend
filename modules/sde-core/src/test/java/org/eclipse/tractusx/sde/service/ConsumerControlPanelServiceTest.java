@@ -48,7 +48,7 @@ import org.eclipse.tractusx.sde.edc.model.request.OfferRequest;
 import org.eclipse.tractusx.sde.edc.services.ConsumerControlPanelService;
 import org.eclipse.tractusx.sde.portal.api.IPartnerPoolExternalServiceApi;
 import org.eclipse.tractusx.sde.portal.api.IPortalExternalServiceApi;
-import org.eclipse.tractusx.sde.portal.utils.KeycloakUtil;
+import org.eclipse.tractusx.sde.portal.utils.TokenUtility;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +65,7 @@ class ConsumerControlPanelServiceTest {
 	private IPortalExternalServiceApi connectorDiscoveryApi;
 
 	@MockBean
-	private KeycloakUtil keycloakUtil;
+	private TokenUtility keycloakUtil;
 
 	@MockBean
 	private IPartnerPoolExternalServiceApi legalEntityDataApi;

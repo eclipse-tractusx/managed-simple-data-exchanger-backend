@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023 T-Systems International GmbH
+ * Copyright (c) 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -23,7 +23,7 @@ import static org.springframework.http.ResponseEntity.ok;
 
 import java.util.List;
 
-import org.eclipse.tractusx.sde.core.service.PortalProxyService;
+import org.eclipse.tractusx.sde.portal.handler.PortalProxyService;
 import org.eclipse.tractusx.sde.portal.model.ConnectorInfo;
 import org.eclipse.tractusx.sde.portal.model.response.LegalEntityResponse;
 import org.eclipse.tractusx.sde.portal.model.response.UnifiedBpnValidationResponse;

@@ -34,8 +34,6 @@ import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
 import org.eclipse.tractusx.sde.edc.enums.Type;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 
 public class UtilityFunctions {
@@ -163,10 +161,6 @@ public class UtilityFunctions {
         );
     }
 
-    public static String getAuthToken() {
-        return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
-    }
-    
     public static boolean checkTypeOfConnector(String type) {
 		return StringUtils.isBlank(type) || Type.PROVIDER.name().equals(type);
 	}

@@ -22,12 +22,10 @@ package org.eclipse.tractusx.sde.core.controller;
 
 import static org.springframework.http.ResponseEntity.ok;
 
-import java.util.Map;
 import java.util.UUID;
 
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
 import org.eclipse.tractusx.sde.edc.services.ConsumerControlPanelService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,18 +35,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 public class ConsumerController {
 
-	@Autowired
 	private final ConsumerControlPanelService consumerControlPanelService;
-
-	public ConsumerController(ConsumerControlPanelService consumerControlPanelService) {
-		this.consumerControlPanelService = consumerControlPanelService;
-	}
 
 	@GetMapping(value = "/query-data-offers")
 	@PreAuthorize("hasPermission('','consumer_view_contract_offers')")

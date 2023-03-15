@@ -25,12 +25,3 @@ INSERT INTO sde_permission (sde_permission,description)
 /** Insert role and permission mapping ******/
 INSERT INTO sde_role_permission_mapping (sde_permission,sde_role)
 	VALUES ('unified_bpn_validation','Creator');
-
-
-
-
-
-
-
-
-

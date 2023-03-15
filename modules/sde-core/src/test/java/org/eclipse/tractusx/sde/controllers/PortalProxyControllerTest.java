@@ -25,7 +25,7 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 
 import org.eclipse.tractusx.sde.core.controller.PortalProxyController;
-import org.eclipse.tractusx.sde.core.service.PortalProxyService;
+import org.eclipse.tractusx.sde.portal.handler.PortalProxyService;
 import org.eclipse.tractusx.sde.portal.model.ConnectorInfo;
 import org.eclipse.tractusx.sde.portal.model.response.UnifiedBPNValidationStatusEnum;
 import org.eclipse.tractusx.sde.portal.model.response.UnifiedBpnValidationResponse;
@@ -89,7 +89,7 @@ class PortalProxyControllerTest {
     	ObjectMapper mapper = new ObjectMapper();
     	UnifiedBpnValidationResponse response = UnifiedBpnValidationResponse.builder()
 				.message("BPNL001000TS0100 for BPN number found valid Connector in partner network")
-				.status(UnifiedBPNValidationStatusEnum.FULL_PARTNER).build();
+				.bpnStatus(UnifiedBPNValidationStatusEnum.FULL_PARTNER).build();
         when(portalProxyService.unifiedBpnValidation((String) any()))
                 .thenReturn(response);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/unified-bpn-validation/BPNL001000TS0100");

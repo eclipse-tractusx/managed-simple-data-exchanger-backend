@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023 T-Systems International GmbH
+ * Copyright (c) 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -76,28 +76,28 @@ public class ContractManagementController {
 		return ok().body(res);
 	}
 
-	@PostMapping(value = "/{negotiationId}/decline/provider", produces = APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/{negotiationId}/provider/decline", produces = APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasPermission('','provider_delete_contract_agreement')")
 	public ResponseEntity<Object> declineContractProvider(@PathVariable("negotiationId") String negotiationId) {
 		contractNegotiateManagement.declineContract(Type.PROVIDER.name(), negotiationId);
 		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
 
-	@GetMapping(value = "/{negotiationId}/decline/consumer", produces = APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/{negotiationId}/consumer/decline", produces = APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasPermission('','consumer_delete_contract_agreement')")
 	public ResponseEntity<Object> declineContractConsumer(@PathVariable("negotiationId") String negotiationId) {
 		contractNegotiateManagement.declineContract(Type.CONSUMER.name(), negotiationId);
 		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
 
-	@PostMapping(value = "/{negotiationId}/cancel/provider", produces = APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/{negotiationId}/provider/cancel", produces = APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasPermission('','provider_delete_contract_agreement')")
 	public ResponseEntity<Object> cancelContractProvider(@PathVariable("negotiationId") String negotiationId) {
 		contractNegotiateManagement.cancelContract(Type.PROVIDER.name(), negotiationId);
 		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
 
-	@PostMapping(value = "/{negotiationId}/cancel/consumer", produces = APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/{negotiationId}/consumer/cancel", produces = APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasPermission('','consumer_delete_contract_agreement')")
 	public ResponseEntity<Object> cancelContractConsumer(@PathVariable("negotiationId") String negotiationId) {
 		contractNegotiateManagement.cancelContract(Type.CONSUMER.name(), negotiationId);

@@ -27,13 +27,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 @Component
 @RequiredArgsConstructor
-public class KeycloakUtil {
+public class TokenUtility {
 
 	@Value("${connector.discovery.token-url}")
 	private URI tokenURI;
@@ -47,7 +49,7 @@ public class KeycloakUtil {
 	private final IPortalExternalServiceApi portalExternalServiceApi;
 
 	@SneakyThrows
-	public String getKeycloakToken() {
+	public String getValidKeycloakToken() {
 
 		MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
 		body.add("grant_type", "client_credentials");
@@ -59,6 +61,11 @@ public class KeycloakUtil {
 			return resultBody.getAccessToken();
 		}
 		return null;
+	}
+
+	public static String getOriginalRequestAuthToken() {
+		return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest()
+				.getHeader("Authorization");
 	}
 
 }

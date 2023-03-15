@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023 T-Systems International GmbH
+ * Copyright (c) 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,12 +17,11 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-package org.eclipse.tractusx.sde.core.service;
+package org.eclipse.tractusx.sde.portal.handler;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.tractusx.sde.edc.util.UtilityFunctions;
 import org.eclipse.tractusx.sde.portal.api.IPartnerPoolExternalServiceApi;
 import org.eclipse.tractusx.sde.portal.api.IPortalExternalServiceApi;
 import org.eclipse.tractusx.sde.portal.model.ConnectorInfo;
@@ -30,7 +29,8 @@ import org.eclipse.tractusx.sde.portal.model.LegalEntityData;
 import org.eclipse.tractusx.sde.portal.model.response.LegalEntityResponse;
 import org.eclipse.tractusx.sde.portal.model.response.UnifiedBPNValidationStatusEnum;
 import org.eclipse.tractusx.sde.portal.model.response.UnifiedBpnValidationResponse;
-import org.eclipse.tractusx.sde.portal.utils.KeycloakUtil;
+import org.eclipse.tractusx.sde.portal.utils.MemberCompanyBPNCacheUtilityService;
+import org.eclipse.tractusx.sde.portal.utils.TokenUtility;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -43,20 +43,20 @@ public class PortalProxyService {
 
 	@Value("${portal.backend.hostname}")
 	private String portalBackendHostname;
-	
-	private final CacheUtilityService cacheUtilityService;
+
+	private final MemberCompanyBPNCacheUtilityService cacheUtilityService;
 
 	private final IPortalExternalServiceApi portalExternalServiceApi;
- 
+
 	private final IPartnerPoolExternalServiceApi partnerPoolExternalServiceApi;
 
-	private final KeycloakUtil keycloakUtil;
+	private final TokenUtility keycloakUtil;
 
 	@SneakyThrows
 	public List<LegalEntityResponse> fetchLegalEntitiesData(String searchText, Integer page, Integer size) {
 		List<LegalEntityResponse> result = new ArrayList<>();
 		LegalEntityData legalEntity = partnerPoolExternalServiceApi.fetchLegalEntityData(searchText, page, size,
-				UtilityFunctions.getAuthToken());
+				TokenUtility.getOriginalRequestAuthToken());
 		if (null != legalEntity) {
 			legalEntity.getContent().stream().forEach(companyData -> {
 				companyData.getLegalEntity().getNames().stream().forEach(name -> {
@@ -71,7 +71,7 @@ public class PortalProxyService {
 
 	@SneakyThrows
 	public List<ConnectorInfo> fetchConnectorInfo(List<String> bpns) {
-		String token = keycloakUtil.getKeycloakToken();
+		String token = keycloakUtil.getValidKeycloakToken();
 		return portalExternalServiceApi.fetchConnectorInfo(bpns, "Bearer " + token);
 	}
 
@@ -81,19 +81,19 @@ public class PortalProxyService {
 		List<ConnectorInfo> connectorsInfo = fetchConnectorInfo(List.of(bpn));
 
 		UnifiedBpnValidationResponse unifiedBpnValidationResponse = UnifiedBpnValidationResponse.builder()
-				.message(bpn + " for BPN number found valid Connector in partner network")
-				.status(UnifiedBPNValidationStatusEnum.FULL_PARTNER).build();
+				.message(bpn + " BPN number found valid connector's in partner network")
+				.bpnStatus(UnifiedBPNValidationStatusEnum.FULL_PARTNER).build();
 
 		if (connectorsInfo.isEmpty()) {
-			
-			List<String> memberBPNDataList = cacheUtilityService.getPartner() ;
+
+			List<String> memberBPNDataList = cacheUtilityService.getAllPartners();
 			if (!memberBPNDataList.isEmpty() && memberBPNDataList.contains(bpn)) {
 				unifiedBpnValidationResponse.setMessage(
-						bpn + " BPN number is part of partner network but there is no valid Connector found");
-				unifiedBpnValidationResponse.setStatus(UnifiedBPNValidationStatusEnum.PARTNER);
+						bpn + " BPN number is part of partner network but there is no valid connector's found");
+				unifiedBpnValidationResponse.setBpnStatus(UnifiedBPNValidationStatusEnum.PARTNER);
 			} else {
 				unifiedBpnValidationResponse.setMessage(bpn + " BPN number is not part of partner network");
-				unifiedBpnValidationResponse.setStatus(UnifiedBPNValidationStatusEnum.NOT_PARTNER);
+				unifiedBpnValidationResponse.setBpnStatus(UnifiedBPNValidationStatusEnum.NOT_PARTNER);
 			}
 		}
 		return unifiedBpnValidationResponse;

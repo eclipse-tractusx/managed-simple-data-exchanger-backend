@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023 T-Systems International GmbH
+ * Copyright (c) 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,11 +17,10 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-package org.eclipse.tractusx.sde.core.service;
+package org.eclipse.tractusx.sde.portal.utils;
 
 import java.util.List;
 
-import org.eclipse.tractusx.sde.edc.util.UtilityFunctions;
 import org.eclipse.tractusx.sde.portal.api.IPortalExternalServiceApi;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -34,20 +33,19 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CacheUtilityService {
-	
-	
+public class MemberCompanyBPNCacheUtilityService {
+
 	private final IPortalExternalServiceApi portalExternalServiceApi;
-	
-	@Cacheable("memberCompaniesList") 
-	public List<String> getPartner() {
-		String token = UtilityFunctions.getAuthToken();
+
+	@Cacheable("memberCompaniesList")
+	public List<String> getAllPartners() {
+		String token = TokenUtility.getOriginalRequestAuthToken();
 		log.info("Refreshed bpn fetch member companies data list");
 		return portalExternalServiceApi.fetchMemberCompaniesData(token);
 	}
 
 	@CacheEvict(value = "memberCompaniesList", allEntries = true)
-	@Scheduled(fixedRateString = "1000")
+	@Scheduled(fixedRateString = "3600000")
 	public void removeAllBPNNumberCache() {
 		log.info("All member companies BPN cache removed from cache");
 	}

@@ -30,6 +30,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UnifiedBpnValidationResponse {
 	
-	private String message;
+	private String msg;
 	private UnifiedBPNValidationStatusEnum bpnStatus;
 }

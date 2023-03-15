@@ -17,48 +17,39 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
+package org.eclipse.tractusx.sde.core.service;
 
-package org.eclipse.tractusx.sde.portal.utils;
+import java.util.List;
 
-import java.net.URI;
-
+import org.eclipse.tractusx.sde.edc.util.UtilityFunctions;
 import org.eclipse.tractusx.sde.portal.api.IPortalExternalServiceApi;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
-@Component
+@Slf4j
+@Service
 @RequiredArgsConstructor
-public class KeycloakUtil {
-
-	@Value("${connector.discovery.token-url}")
-	private URI tokenURI;
-
-	@Value("${connector.discovery.clientSecret}")
-	private String clientSecret;
-
-	@Value("${connector.discovery.clientId}")
-	private String clientId;
-
+public class CacheUtilityService {
+	
+	
 	private final IPortalExternalServiceApi portalExternalServiceApi;
+	
+	@Cacheable("memberCompaniesList") 
+	public List<String> getPartner() {
+		String token = UtilityFunctions.getAuthToken();
+		log.info("Refreshed bpn fetch member companies data list");
+		return portalExternalServiceApi.fetchMemberCompaniesData(token);
+	}
 
-	@SneakyThrows
-	public String getKeycloakToken() {
-
-		MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-		body.add("grant_type", "client_credentials");
-		body.add("client_id", clientId);
-		body.add("client_secret", clientSecret);
-		var resultBody = portalExternalServiceApi.readAuthToken(tokenURI, body);
-
-		if (resultBody != null) {
-			return resultBody.getAccessToken();
-		}
-		return null;
+	@CacheEvict(value = "memberCompaniesList", allEntries = true)
+	@Scheduled(fixedRateString = "1000")
+	public void removeAllBPNNumberCache() {
+		log.info("All member companies BPN cache removed from cache");
 	}
 
 }

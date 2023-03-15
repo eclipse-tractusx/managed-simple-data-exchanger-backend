@@ -35,7 +35,8 @@
 			},
 			"batch_id": {
 				"type": [
-					"string"
+					"string",
+					"null"
 				],
 				"title": "Batch ID",
 				"description": "The batch number of the batch from the manufacturer. We assume here that the customer does not have or create its own batch number for a batch, but just used the manufacturer's batch number.",

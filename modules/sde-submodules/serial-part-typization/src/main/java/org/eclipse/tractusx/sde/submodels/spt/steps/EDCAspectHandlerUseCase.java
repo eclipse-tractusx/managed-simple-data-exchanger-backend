@@ -76,8 +76,8 @@ public class EDCAspectHandlerUseCase extends Step {
 
 		try {
 
-			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel, getSubmodelShortDescriptionOfModel(),
-					shellId, subModelId, input.getUuid());
+			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
+					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getUuid());
 			if (!edcGateway.assetExistsLookup(
 					assetEntryRequest.getAsset().getProperties().get(CommonConstants.ASSET_PROP_ID))) {
 

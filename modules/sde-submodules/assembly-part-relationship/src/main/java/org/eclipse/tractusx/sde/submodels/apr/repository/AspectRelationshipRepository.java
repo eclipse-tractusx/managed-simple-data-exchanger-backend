@@ -38,4 +38,6 @@ public interface AspectRelationshipRepository extends JpaRepository<AspectRelati
 
 	@Query("select count(ar) from AspectRelationshipEntity ar where ar.updated = ?1 and ar.processId = ?2")
 	long countByUpdatedAndProcessId(String updated, String processId);
+
+	AspectRelationshipEntity findTop1BySubModelId(String subModelId);
 }

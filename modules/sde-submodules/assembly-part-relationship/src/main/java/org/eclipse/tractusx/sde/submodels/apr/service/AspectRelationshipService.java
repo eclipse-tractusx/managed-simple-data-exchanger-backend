@@ -110,4 +110,9 @@ public class AspectRelationshipService {
 		return (int) aspectRelationshipRepository.countByUpdatedAndProcessId(CommonConstants.UPDATED_Y, refProcessId);
 	}
 
+	public AspectRelationshipEntity readEntityBySubModelId(String subModelId) {
+		return Optional.ofNullable(aspectRelationshipRepository.findTop1BySubModelId(subModelId))
+				.orElseThrow(() -> new NoDataFoundException("No data found for subModelId in SDE for reference detele in update case:" + subModelId));
+	}
+
 }

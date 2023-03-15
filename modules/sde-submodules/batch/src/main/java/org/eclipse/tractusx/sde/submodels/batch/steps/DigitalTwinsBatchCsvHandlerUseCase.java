@@ -115,7 +115,6 @@ public class DigitalTwinsBatchCsvHandlerUseCase extends Step {
 
 	private ShellLookupRequest getShellLookupRequest(Batch batch) {
 		ShellLookupRequest shellLookupRequest = new ShellLookupRequest();
-		shellLookupRequest.addLocalIdentifier(BatchConstants.BATCH_ID, batch.getBatchId());
 		shellLookupRequest.addLocalIdentifier(CommonConstants.PART_INSTANCE_ID, batch.getPartInstanceId());
 		shellLookupRequest.addLocalIdentifier(CommonConstants.MANUFACTURER_PART_ID, batch.getManufacturerPartId());
 		shellLookupRequest.addLocalIdentifier(CommonConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId());

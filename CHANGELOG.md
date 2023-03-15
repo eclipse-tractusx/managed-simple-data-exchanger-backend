@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Manufacturer country code list.
 - Cancel contract agreement on provider side.
 - BPN validation in SDE.
+- The field "VAN" is still case sensitive, there is no need and it causes errors if you do not know it
+- Mix of CSV-formats: When you export the data from the contract panel you get a "comma"-separated file, when you download it from history it is separated by "semicolon". Files with "comma" are shown incorrect at least on German systems.
+- User not able to copy values from the contract panel as the keys are longer as the displayed field
+- To find out which contract belongs to which dataset User have to download the history file
 
 ## [1.9.0] - 2023-03-06
 ### Added
@@ -22,6 +26,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Correct submodel id for delete while assembly update.
 - ENUM fix after changing variable of DT.
 - Exception log for look up failure request.
+- Look up feature for AssemblyPartRelationship: The Batch, we connected a Batch item with a Serial Part Typization Item
+- Look up feature for AssemblyPartRelationship: The items (Serial Part Typization) had the fields VAN and Value filled was not work
 
 ### Changed
 - Added/Updated Header copyrights for 2023.
@@ -116,12 +122,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Integration with Digital Twin registry service.
 
 
-[Unreleased]: https://github.com/catenax-ng/tx-dft-backend/compare/dft-backend-1.9.0... main
-[1.9.0]: https://github.com/catenax-ng/tx-dft-backend/compare/dft-backend-1.8.1...dft-backend-1.9.0
-[1.8.1]: https://github.com/catenax-ng/tx-dft-backend/compare/dft-backend-1.8.0...dft-backend-1.8.1
-[1.8.0]: https://github.com/catenax-ng/tx-dft-backend/compare/dft-backend-1.7.0...dft-backend-1.8.0
-[1.7.0]: https://github.com/catenax-ng/product-dft-backend/compare/dft-backend-1.6.0...dft-backend-1.7.0
-[1.6.0]: https://github.com/catenax-ng/product-dft-backend/compare/dft-backend-1.5.0...dft-backend-1.6.0
-[1.5.0]: https://github.com/catenax-ng/product-dft-backend/compare/dftbackend-1.3.0...dft-backend-1.5.0
-[1.3.0]: https://github.com/catenax-ng/product-dft-backend/compare/dftbackend-1.2.0...dftbackend-1.3.0
-[1.2.0]: https://github.com/catenax-ng/product-dft-backend/compare/dftbackend-1.1.0...dftbackend-1.2.0
+[Unreleased]:https://github.com/eclipse-tractusx/dft-backend/compare/dft-backend-1.9.0...main
+[1.8.1]: https://github.com/eclipse-tractusx/dft-backend/compare/dft-backend-1.8.0...dft-backend-1.8.1
+[1.8.0]: https://github.com/eclipse-tractusx/dft-backend/compare/dft-backend-1.7.0...dft-backend-1.8.0
+[1.7.0]: https://github.com/eclipse-tractusx/dft-backend/releases/tag/dft-backend-1.7.0
+

@@ -21,14 +21,14 @@
 package org.eclipse.tractusx.sde.common.constants;
 
 public class CommonConstants {
-	
-    public static final String CSV_FILE_EXTENSION = ".csv";
-    public static final String SEPARATOR = ";";
-  
-    public static final String ASSET_PROP_ID = "asset:prop:id";
-    public static final String UPDATED_Y = "Y";
-    public static final String DELETED_Y = "Y";
-     
+
+	public static final String CSV_FILE_EXTENSION = ".csv";
+	public static final String SEPARATOR = ";";
+
+	public static final String ASSET_PROP_ID = "asset:prop:id";
+	public static final String UPDATED_Y = "Y";
+	public static final String DELETED_Y = "Y";
+
 	public static final String PART_INSTANCE_ID = "partInstanceId";
 	public static final String MANUFACTURER_PART_ID = "manufacturerPartId";
 	public static final String MANUFACTURER_ID = "manufacturerId";
@@ -38,7 +38,7 @@ public class CommonConstants {
 	public static final String HTTPS = "HTTPS";
 	public static final String ENDPOINT_PROTOCOL_VERSION = "0.0.1-SNAPSHOT";
 	public static final String PREFIX = "urn:uuid:";
-	
+
 	public static final String INTERFACE_EDC = "EDC";
 	public static final String ENDPOINT_PROTOCOL = "IDS/ECLIPSE DATASPACE CONNECTOR";
 	public static final String SUBMODEL_CONTEXT_URL = "/submodel?content=value&extent=WithBLOBValue";

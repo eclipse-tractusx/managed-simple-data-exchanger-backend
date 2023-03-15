@@ -101,7 +101,7 @@ public class EDCSingleLevelBoMAsPlannedHandlerStep extends Step {
 
 		} catch (Exception e) {
 			if (!e.getMessage().contains("404 Not Found")) {
-				throw new ServiceException("Exception in EDC delete request process for update:"+e.getMessage());
+				throw new ServiceException("Unable to delete EDC offer for update: "+e.getMessage());
 			}
 		}
 	}

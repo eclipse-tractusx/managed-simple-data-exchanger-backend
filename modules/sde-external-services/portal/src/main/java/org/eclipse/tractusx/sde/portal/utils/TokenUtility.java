@@ -22,18 +22,20 @@ package org.eclipse.tractusx.sde.portal.utils;
 
 import java.net.URI;
 
-import org.eclipse.tractusx.sde.portal.api.ConnectorDiscoveryApi;
+import org.eclipse.tractusx.sde.portal.api.IPortalExternalServiceApi;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 @Component
 @RequiredArgsConstructor
-public class KeycloakUtil {
+public class TokenUtility {
 
 	@Value("${connector.discovery.token-url}")
 	private URI tokenURI;
@@ -44,21 +46,26 @@ public class KeycloakUtil {
 	@Value("${connector.discovery.clientId}")
 	private String clientId;
 
-	private final ConnectorDiscoveryApi connectorDiscoveryApi;
+	private final IPortalExternalServiceApi portalExternalServiceApi;
 
 	@SneakyThrows
-	public String getKeycloakToken() {
+	public String getValidKeycloakToken() {
 
 		MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
 		body.add("grant_type", "client_credentials");
 		body.add("client_id", clientId);
 		body.add("client_secret", clientSecret);
-		var resultBody = connectorDiscoveryApi.readAuthToken(tokenURI, body);
+		var resultBody = portalExternalServiceApi.readAuthToken(tokenURI, body);
 
 		if (resultBody != null) {
 			return resultBody.getAccessToken();
 		}
 		return null;
+	}
+
+	public static String getOriginalRequestAuthToken() {
+		return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest()
+				.getHeader("Authorization");
 	}
 
 }

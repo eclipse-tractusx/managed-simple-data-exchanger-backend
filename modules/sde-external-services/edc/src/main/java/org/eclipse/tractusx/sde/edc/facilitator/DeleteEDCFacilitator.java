@@ -70,7 +70,7 @@ public class DeleteEDCFacilitator extends AbstractEDCStepsHelper {
 		try {
 			eDCFeignClientApi.deleteAssets(assetId, getProviderAuthHeader());
 		} catch (Exception e) {
-			throw new ServiceException("Exception in EDC delete request process:" + e.getMessage());
+			throw new ServiceException("Unable to delete EDC asset: " + e.getMessage());
 		}
 
 	}

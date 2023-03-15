@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023 T-Systems International GmbH
+ * Copyright (c) 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,19 +17,19 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
+package org.eclipse.tractusx.sde.portal.model.response;
 
-package org.eclipse.tractusx.sde.portal.api;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import org.eclipse.tractusx.sde.portal.model.LegalEntityData;
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
-
-
-@FeignClient(value = "LegalEntityDataApi", url = "${partner.pool.hostname}")
-public interface LegalEntityDataApi {
-    @GetMapping(path = "/api/catena/legal-entities")
-    LegalEntityData fetchLegalEntityData(@RequestParam String name, @RequestParam Integer page, @RequestParam Integer size, @RequestHeader("Authorization") String bearerToken);
-
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class UnifiedBpnValidationResponse {
+	
+	private String msg;
+	private UnifiedBPNValidationStatusEnum bpnStatus;
 }

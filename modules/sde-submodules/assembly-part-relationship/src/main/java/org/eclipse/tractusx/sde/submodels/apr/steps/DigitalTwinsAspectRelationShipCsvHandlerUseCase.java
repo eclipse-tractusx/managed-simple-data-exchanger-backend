@@ -28,7 +28,6 @@ import java.util.List;
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseException;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
-import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.Endpoint;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.SemanticId;
@@ -58,7 +57,8 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 		try {
 			return doRun(aspectRelationShip);
 		} catch (Exception e) {
-			throw new ServiceException(aspectRelationShip.getRowNumber() + ": DigitalTwins: " + e.getMessage());
+			throw new CsvHandlerUseCaseException(aspectRelationShip.getRowNumber(),
+					": DigitalTwins: " + e.getMessage());
 		}
 	}
 

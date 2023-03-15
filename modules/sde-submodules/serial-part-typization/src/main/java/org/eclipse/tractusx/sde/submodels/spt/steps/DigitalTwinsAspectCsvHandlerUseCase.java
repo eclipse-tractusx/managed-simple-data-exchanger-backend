@@ -28,7 +28,7 @@ import java.util.UUID;
 
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseException;
-import org.eclipse.tractusx.sde.common.exception.ServiceException;
+import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.Endpoint;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.GlobalAssetId;
@@ -52,10 +52,9 @@ import lombok.SneakyThrows;
 @Service
 public class DigitalTwinsAspectCsvHandlerUseCase extends Step {
 
-	
 	@Autowired
 	private DigitalTwinGateway gateway;
-	
+
 	@Autowired
 	private DigitalTwinsUtility digitalTwinsUtility;
 
@@ -64,7 +63,7 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends Step {
 		try {
 			return doRun(aspect);
 		} catch (Exception e) {
-			throw new ServiceException(aspect.getRowNumber() + ": DigitalTwins: " + e.getMessage());
+			throw new CsvHandlerUseCaseException(aspect.getRowNumber(), ": DigitalTwins: " + e.getMessage());
 		}
 	}
 
@@ -133,8 +132,8 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends Step {
 
 		List<Endpoint> endpoints = digitalTwinsUtility.prepareDtEndpoint(aspect.getShellId(), identification);
 
-		return CreateSubModelRequest.builder().idShort(getIdShortOfModel()).identification(identification).semanticId(semanticId)
-				.endpoints(endpoints).build();
+		return CreateSubModelRequest.builder().idShort(getIdShortOfModel()).identification(identification)
+				.semanticId(semanticId).endpoints(endpoints).build();
 	}
 
 	private ShellDescriptorRequest getShellDescriptorRequest(Aspect aspect) {
@@ -146,8 +145,8 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends Step {
 		GlobalAssetId globalIdentifier = new GlobalAssetId(values);
 
 		return ShellDescriptorRequest.builder()
-				.idShort(String.format("%s_%s_%s", aspect.getNameAtManufacturer(), digitalTwinsUtility.getManufacturerId(),
-						aspect.getManufacturerPartId()))
+				.idShort(String.format("%s_%s_%s", aspect.getNameAtManufacturer(),
+						digitalTwinsUtility.getManufacturerId(), aspect.getManufacturerPartId()))
 				.globalAssetId(globalIdentifier).specificAssetIds(specificIdentifiers)
 				.identification(CommonConstants.PREFIX + UUID.randomUUID()).build();
 	}
@@ -155,7 +154,8 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends Step {
 	private void setSpecifiers(final ArrayList<KeyValuePair> specificIdentifiers, Aspect aspect) {
 		specificIdentifiers.add(new KeyValuePair(CommonConstants.PART_INSTANCE_ID, aspect.getPartInstanceId()));
 		specificIdentifiers.add(new KeyValuePair(CommonConstants.MANUFACTURER_PART_ID, aspect.getManufacturerPartId()));
-		specificIdentifiers.add(new KeyValuePair(CommonConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId()));
+		specificIdentifiers
+				.add(new KeyValuePair(CommonConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId()));
 		if (aspect.hasOptionalIdentifier()) {
 			specificIdentifiers
 					.add(new KeyValuePair(aspect.getOptionalIdentifierKey(), aspect.getOptionalIdentifierValue()));

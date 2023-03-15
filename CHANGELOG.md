@@ -13,7 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - User not able to copy values from the contract panel as the keys are longer as the displayed field
 - To find out which contract belongs to which dataset User have to download the history file
 
-## [1.9.0] - 2023-03-06
+## [1.9.0] - 2023-03-15
 ### Added
 - Added new submodel SingleLevelUsageAsBuilt 1.0.1 aspect.
 - Updated Batch submodel to support 1.0.2 version.

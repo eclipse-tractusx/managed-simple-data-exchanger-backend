@@ -27,6 +27,8 @@ import java.util.List;
 import org.eclipse.tractusx.sde.core.controller.PortalProxyController;
 import org.eclipse.tractusx.sde.core.service.PortalProxyService;
 import org.eclipse.tractusx.sde.portal.model.ConnectorInfo;
+import org.eclipse.tractusx.sde.portal.model.response.UnifiedBPNValidationStatusEnum;
+import org.eclipse.tractusx.sde.portal.model.response.UnifiedBpnValidationResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,14 +86,17 @@ class PortalProxyControllerTest {
    
     @Test
     void testGetUnifiedBPNValidateSuccess() throws Exception {
-    	String response = "BPNL001000TS0100 for BPN number found valid connctor in partner network";
-        when(portalProxyService.cxNetworkBpnValidate((String) any()))
+    	ObjectMapper mapper = new ObjectMapper();
+    	UnifiedBpnValidationResponse response = UnifiedBpnValidationResponse.builder()
+				.message("BPNL001000TS0100 for BPN number found valid Connector in partner network")
+				.status(UnifiedBPNValidationStatusEnum.FULL_PARTNER).build();
+        when(portalProxyService.unifiedBpnValidation((String) any()))
                 .thenReturn(response);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/unified-bpn-validation/BPNL001000TS0100");
         MockMvcBuilders.standaloneSetup(consumerController)
                 .build()
                 .perform(requestBuilder)
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().string(response));
+                .andExpect(MockMvcResultMatchers.content().json(mapper.writeValueAsString(response)));
     }
 }

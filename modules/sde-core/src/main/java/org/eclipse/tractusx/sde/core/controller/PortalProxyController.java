@@ -26,6 +26,7 @@ import java.util.List;
 import org.eclipse.tractusx.sde.core.service.PortalProxyService;
 import org.eclipse.tractusx.sde.portal.model.ConnectorInfo;
 import org.eclipse.tractusx.sde.portal.model.response.LegalEntityResponse;
+import org.eclipse.tractusx.sde.portal.model.response.UnifiedBpnValidationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -65,11 +66,10 @@ public class PortalProxyController {
 	}
 	
 	@GetMapping(value = "/unified-bpn-validation/{bpn}")
-	@PreAuthorize("hasPermission('','consumer_search_connectors')")
-	public ResponseEntity<String> getUnifiedBPNValidate(@PathVariable String bpn) throws Exception {
+	@PreAuthorize("hasPermission('','unified_bpn_validation')")
+	public ResponseEntity<UnifiedBpnValidationResponse> unifiedBpnValidation(@PathVariable("bpn") String bpn) throws Exception {
 		log.info("Request received : /api/unified-bpn-validation");
-		String bpnValidationResponse = portalProxyService.cxNetworkBpnValidate(bpn);
-		return ok().body(bpnValidationResponse);
+		return ok().body(portalProxyService.unifiedBpnValidation(bpn));
 	}
 
 }

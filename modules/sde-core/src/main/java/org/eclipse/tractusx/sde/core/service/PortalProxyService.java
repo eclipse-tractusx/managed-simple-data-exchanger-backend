@@ -28,8 +28,9 @@ import org.eclipse.tractusx.sde.portal.api.IPortalExternalServiceApi;
 import org.eclipse.tractusx.sde.portal.model.ConnectorInfo;
 import org.eclipse.tractusx.sde.portal.model.LegalEntityData;
 import org.eclipse.tractusx.sde.portal.model.response.LegalEntityResponse;
+import org.eclipse.tractusx.sde.portal.model.response.UnifiedBPNValidationStatusEnum;
+import org.eclipse.tractusx.sde.portal.model.response.UnifiedBpnValidationResponse;
 import org.eclipse.tractusx.sde.portal.utils.KeycloakUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -39,20 +40,18 @@ import lombok.SneakyThrows;
 @Service
 @RequiredArgsConstructor
 public class PortalProxyService {
-	
-	
+
 	@Value("${portal.backend.hostname}")
 	private String portalBackendHostname;
+	
+	private final CacheUtilityService cacheUtilityService;
 
-	@Autowired
-	private IPortalExternalServiceApi portalExternalServiceApi; 
-	
-	@Autowired
-	private IPartnerPoolExternalServiceApi partnerPoolExternalServiceApi;
-	
-	@Autowired
-	private KeycloakUtil keycloakUtil;
-	
+	private final IPortalExternalServiceApi portalExternalServiceApi;
+ 
+	private final IPartnerPoolExternalServiceApi partnerPoolExternalServiceApi;
+
+	private final KeycloakUtil keycloakUtil;
+
 	@SneakyThrows
 	public List<LegalEntityResponse> fetchLegalEntitiesData(String searchText, Integer page, Integer size) {
 		List<LegalEntityResponse> result = new ArrayList<>();
@@ -77,22 +76,26 @@ public class PortalProxyService {
 	}
 
 	@SneakyThrows
-	public String cxNetworkBpnValidate(String bpn) {
-		
+	public UnifiedBpnValidationResponse unifiedBpnValidation(String bpn) {
+
 		List<ConnectorInfo> connectorsInfo = fetchConnectorInfo(List.of(bpn));
-		
-		if (connectorsInfo == null || connectorsInfo.isEmpty()) {
+
+		UnifiedBpnValidationResponse unifiedBpnValidationResponse = UnifiedBpnValidationResponse.builder()
+				.message(bpn + " for BPN number found valid Connector in partner network")
+				.status(UnifiedBPNValidationStatusEnum.FULL_PARTNER).build();
+
+		if (connectorsInfo.isEmpty()) {
 			
-			String token = keycloakUtil.getKeycloakToken();
-			List<String> memberBPNDataList =  portalExternalServiceApi.fetchMemberCompaniesData( "Bearer " + token);
-			
-			if (! memberBPNDataList.isEmpty() && memberBPNDataList.contains(bpn)) {
-				return bpn + " BPN number is part of partner network but there is no valid connctor found";	
-			}else {
-				return bpn + " BPN number is not part of partner network";
+			List<String> memberBPNDataList = cacheUtilityService.getPartner() ;
+			if (!memberBPNDataList.isEmpty() && memberBPNDataList.contains(bpn)) {
+				unifiedBpnValidationResponse.setMessage(
+						bpn + " BPN number is part of partner network but there is no valid Connector found");
+				unifiedBpnValidationResponse.setStatus(UnifiedBPNValidationStatusEnum.PARTNER);
+			} else {
+				unifiedBpnValidationResponse.setMessage(bpn + " BPN number is not part of partner network");
+				unifiedBpnValidationResponse.setStatus(UnifiedBPNValidationStatusEnum.NOT_PARTNER);
 			}
 		}
-		return bpn +" for BPN number found valid connctor in partner network";
+		return unifiedBpnValidationResponse;
 	}
-
 }

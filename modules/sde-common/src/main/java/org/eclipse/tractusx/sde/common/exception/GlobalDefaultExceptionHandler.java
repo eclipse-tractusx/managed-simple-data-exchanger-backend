@@ -89,7 +89,7 @@ public class GlobalDefaultExceptionHandler extends ResponseEntityExceptionHandle
 	@ExceptionHandler(AccessDeniedException.class)
 	public final ResponseEntity<Map<String, String>> handleAccessDeniedException(AccessDeniedException ex,
 			WebRequest request) {
-		String error = "MethodArgumentNotValidException- You don't have access to this page or the page doesn't exist. Please contact your admin";
+		String error = "You don't have access to this page or the page doesn't exist. Please contact your admin";
 		log.error(error);
 		Map<String, String> errorResponse = prepareErrorResponse(error);
 		return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);

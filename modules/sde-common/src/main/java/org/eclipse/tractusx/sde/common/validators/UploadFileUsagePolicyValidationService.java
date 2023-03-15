@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,13 +20,12 @@
 
 package org.eclipse.tractusx.sde.common.validators;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
-
 import org.eclipse.tractusx.sde.common.entities.SubmodelFileRequest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import lombok.SneakyThrows;
 
 public class UploadFileUsagePolicyValidationService implements ConstraintValidator<UsagePolicyValidation, String> {

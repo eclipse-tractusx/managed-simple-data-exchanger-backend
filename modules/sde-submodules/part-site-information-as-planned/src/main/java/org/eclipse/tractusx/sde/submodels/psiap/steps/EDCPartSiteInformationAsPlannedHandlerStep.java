@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -74,7 +74,7 @@ public class EDCPartSiteInformationAsPlannedHandlerStep extends Step {
 		try {
 
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
-					getSubmodelDescriptionOfModel(), shellId, subModelId, input.getUuid());
+					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getUuid());
 			if (!edcGateway.assetExistsLookup(
 					assetEntryRequest.getAsset().getProperties().get(CommonConstants.ASSET_PROP_ID))) {
 				edcProcessingforPartAsPlanned(assetEntryRequest, input);
@@ -98,7 +98,7 @@ public class EDCPartSiteInformationAsPlannedHandlerStep extends Step {
 			partSiteInformationAsPlannedService.deleteEDCAsset(partSiteInformationAsPlannedEntity);
 
 		} catch (Exception e) {
-			if (!e.getMessage().contains("404 Not Found") && !e.getMessage().contains("No data found")) {
+			if (!e.getMessage().contains("404 Not Found")) {
 				throw new ServiceException("Exception in EDC delete request process:" + e.getMessage());
 			}
 		}

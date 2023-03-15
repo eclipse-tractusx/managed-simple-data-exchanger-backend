@@ -1,8 +1,8 @@
 /********************************************************************************
  * Copyright (c) 2022 Critical TechWorks GmbH
  * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -51,8 +51,6 @@ import lombok.SneakyThrows;
 @Service
 public class EDCAspectHandlerUseCase extends Step {
 
-	private static final String ASSET_PROP_NAME_ASPECT = "Serialized Part - Submodel SerialPartTypization";
-
 	private final AssetEntryRequestFactory assetFactory;
 	private final EDCGateway edcGateway;
 	private final PolicyRequestFactory policyFactory;
@@ -78,8 +76,8 @@ public class EDCAspectHandlerUseCase extends Step {
 
 		try {
 
-			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel, ASSET_PROP_NAME_ASPECT,
-					shellId, subModelId, input.getUuid());
+			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
+					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getUuid());
 			if (!edcGateway.assetExistsLookup(
 					assetEntryRequest.getAsset().getProperties().get(CommonConstants.ASSET_PROP_ID))) {
 
@@ -104,8 +102,8 @@ public class EDCAspectHandlerUseCase extends Step {
 			AspectEntity entity = aspectService.readEntity(input.getUuid());
 			aspectService.deleteEDCAsset(entity);
 		} catch (Exception e) {
-			if (!e.getMessage().contains("404 Not Found") && !e.getMessage().contains("No data found")) {
-				throw new ServiceException("Exception in EDC delete request process:" + e.getMessage());
+			if (!e.getMessage().contains("404 Not Found")) {
+				throw new ServiceException("Exception in EDC delete request process  for Update:" + e.getMessage());
 			}
 		}
 	}

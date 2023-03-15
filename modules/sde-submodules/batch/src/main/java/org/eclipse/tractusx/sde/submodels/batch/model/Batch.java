@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -64,6 +64,9 @@ public class Batch {
 
 	@JsonProperty(value = "batch_id")
 	private String batchId;
+	
+	@JsonProperty(value = "part_instance_id")
+	private String partInstanceId;
 
 	@JsonProperty(value = "manufacturing_date")
 	private String manufacturingDate;
@@ -86,12 +89,6 @@ public class Batch {
 	@JsonProperty(value = "name_at_customer")
 	private String nameAtCustomer;
 
-	@JsonProperty(value = "optional_identifier_key")
-	private String optionalIdentifierKey;
-
-	@JsonProperty(value = "optional_identifier_value")
-	private String optionalIdentifierValue;
-
 	@JsonProperty(value = "asset_id")
 	private String assetId;
 
@@ -110,10 +107,4 @@ public class Batch {
 	@JsonProperty(value = "updated")
 	private String updated;
 
-	public boolean hasOptionalIdentifier() {
-		boolean hasKey = this.getOptionalIdentifierKey() != null && !this.getOptionalIdentifierKey().isBlank();
-		boolean hasValue = this.getOptionalIdentifierValue() != null && !this.getOptionalIdentifierValue().isBlank();
-
-		return hasKey && hasValue;
-	}
 }

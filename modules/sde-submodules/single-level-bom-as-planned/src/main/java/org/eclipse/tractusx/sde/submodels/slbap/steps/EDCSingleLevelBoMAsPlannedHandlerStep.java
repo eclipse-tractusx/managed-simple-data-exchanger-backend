@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -77,7 +77,7 @@ public class EDCSingleLevelBoMAsPlannedHandlerStep extends Step {
 
 		try {
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
-					getSubmodelDescriptionOfModel(), shellId, subModelId, input.getParentUuid());
+					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getParentUuid());
 			if (!edcGateway.assetExistsLookup(assetEntryRequest.getAsset().getProperties().get(ASSET_PROP_ID))) {
 				edcProcessingforSingleLevelBoMAsPlanned(assetEntryRequest, input);
 			} else {
@@ -100,8 +100,8 @@ public class EDCSingleLevelBoMAsPlannedHandlerStep extends Step {
 			singleLevelBoMAsPlannedService.deleteEDCAsset(singleLevelBoMAsPlannedEntity);
 
 		} catch (Exception e) {
-			if (!e.getMessage().contains("404 Not Found") && !e.getMessage().contains("No data found")) {
-				throw new ServiceException("Exception in EDC delete request process:"+e.getMessage());
+			if (!e.getMessage().contains("404 Not Found")) {
+				throw new ServiceException("Exception in EDC delete request process for update:"+e.getMessage());
 			}
 		}
 	}

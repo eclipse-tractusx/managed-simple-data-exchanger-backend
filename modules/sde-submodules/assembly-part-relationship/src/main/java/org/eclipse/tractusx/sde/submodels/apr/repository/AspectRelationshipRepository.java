@@ -1,8 +1,8 @@
 /********************************************************************************
  * Copyright (c) 2022 Critical TechWorks GmbH
  * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -39,6 +39,5 @@ public interface AspectRelationshipRepository extends JpaRepository<AspectRelati
 	@Query("select count(ar) from AspectRelationshipEntity ar where ar.updated = ?1 and ar.processId = ?2")
 	long countByUpdatedAndProcessId(String updated, String processId);
 
-	
-	
+	AspectRelationshipEntity findTop1BySubModelId(String subModelId);
 }

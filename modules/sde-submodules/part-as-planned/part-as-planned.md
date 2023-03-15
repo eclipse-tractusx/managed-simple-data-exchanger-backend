@@ -14,21 +14,19 @@ This module use for PartAsPlanned submodel specification and descriptors. It's c
 
 Please find below links for schema details:
 
-- https://portal.int.demo.catena-x.net/semantichub/urn%3Abamm%3Aio.catenax.part_as_planned%3A1.0.0%23PartAsPlanned
-- blob:https://portal.dev.demo.catena-x.net/48fe44cd-273d-4062-9999-d2c323b2be7f
-- https://github.com/catenax-ng/product-dft-backend/blob/modules-branch/modules/sde-submodules/part-as-planned/src/main/resources/part-as-planned.json
+- [schema](src/main/resources/part-as-planned.json)
 
 ### CSV file headers
 
-| Headers Name              	| Mandatory                     	| Position 	|
-|------------------------	|-----------------------------	|--------	|
-| uuid                      	| Yes			            	    |    1     	|
-| manufacturer_part_id      	| Yes					      	|    2    	|
-| valid_from      			| No 							| 	 3	   	|
-| valid_to   		       	| No                            	| 	 4	  	|
-| customer_part_id       	| No                           	| 	 5	  	|
-| classification    		 	| Yes                     		| 	 6	 	|
-| name_at_manufacturer	 	| Yes                           	|    7 	 	|
+| Headers Name              	| Mandatory                 | Position 	|
+|------------------------	    |---------------------------|--------	|
+| uuid                      	| Yes			            |    1     	|
+| manufacturer_part_id      	| Yes					    |    2    	|
+| valid_from      			    | No 						| 	 3	   	|
+| valid_to   		         	| No                        | 	 4	  	|
+| customer_part_id       	    | No                        | 	 5	  	|
+| classification    		 	| Yes                     	| 	 6	 	|
+| name_at_manufacturer	 	    | Yes                       |    7 	 	|
 
 #### [CSV Sample File Link]
 

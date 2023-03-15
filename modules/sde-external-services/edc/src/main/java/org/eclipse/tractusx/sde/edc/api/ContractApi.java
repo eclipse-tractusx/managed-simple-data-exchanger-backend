@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,6 +20,10 @@
 
 package org.eclipse.tractusx.sde.edc.api;
 
+import java.net.URI;
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.tractusx.sde.edc.model.contractnegotiation.AcknowledgementId;
 import org.eclipse.tractusx.sde.edc.model.contractnegotiation.ContractAgreementDto;
 import org.eclipse.tractusx.sde.edc.model.contractnegotiation.ContractNegotiationDto;
@@ -27,28 +31,32 @@ import org.eclipse.tractusx.sde.edc.model.contractnegotiation.ContractNegotiatio
 import org.eclipse.tractusx.sde.edc.model.contractnegotiation.ContractNegotiationsResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
-import java.util.Map;
-
-@FeignClient(name = "ContractApi", url = "${edc.consumer.hostname}")
+@FeignClient(name = "ContractApi", url = "placeholder")
 public interface ContractApi {
 
-    @PostMapping(path = "/data/contractnegotiations", consumes = MediaType.APPLICATION_JSON_VALUE)
-    AcknowledgementId contractnegotiations(@RequestBody ContractNegotiations requestBody,
-                                           @RequestHeader Map<String, String> requestHeader);
+	@PostMapping(path = "/data/contractnegotiations", consumes = MediaType.APPLICATION_JSON_VALUE)
+	AcknowledgementId contractnegotiations(URI url, @RequestBody ContractNegotiations requestBody,
+			@RequestHeader Map<String, String> requestHeader);
 
-    @GetMapping(path = "/data/contractnegotiations/{contractnegotiationsId}")
-    ContractNegotiationsResponse checkContractNegotiationsStatus(@PathVariable("contractnegotiationsId") String contractnegotiationsId,
-                                                                 @RequestHeader Map<String, String> requestHeader);
+	@GetMapping(path = "/data/contractnegotiations/{contractnegotiationsId}")
+	ContractNegotiationsResponse checkContractNegotiationsStatus(URI url,
+			@PathVariable("contractnegotiationsId") String contractnegotiationsId,
+			@RequestHeader Map<String, String> requestHeader);
 
-    @GetMapping(path = "/data/contractnegotiations")
-    List<ContractNegotiationDto> getAllContractNegotiations(@RequestParam("limit") Integer limit, @RequestParam("offset") Integer offset,
-                                                                  @RequestHeader Map<String, String> requestHeader);
+	@GetMapping(path = "/data/contractnegotiations")
+	List<ContractNegotiationDto> getAllContractNegotiations(URI url, @RequestParam("limit") Integer limit,
+			@RequestParam("offset") Integer offset, @RequestHeader Map<String, String> requestHeader);
 
-    @GetMapping(path = "/data/contractnegotiations/{contractnegotiationsId}/agreement")
-    ContractAgreementDto getAgreementBasedOnNegotiationId(@PathVariable("contractnegotiationsId") String contractnegotiationsId,
-                                      @RequestHeader Map<String, String> requestHeader);
+	@GetMapping(path = "/data/contractnegotiations/{contractnegotiationsId}/agreement")
+	ContractAgreementDto getAgreementBasedOnNegotiationId(URI url,
+			@PathVariable("contractnegotiationsId") String contractnegotiationsId,
+			@RequestHeader Map<String, String> requestHeader);
 
 }

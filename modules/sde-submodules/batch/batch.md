@@ -5,35 +5,32 @@
 This module use for Batch submodel specification and descriptors. It's contain the codes related to Batch to validate, parse and transfer data for DigitalTwins and EDC to create aspect twins and data offer.
 
 ---
-#### Version: 1.0.0
-#### Batch Aspect Model URN: urn:bamm:com.catenax.batch:1.0.0#Batch
-#### Semantic Id: urn:bamm:com.catenax.batch:1.0.0
+#### Version: 1.0.2
+#### Batch Aspect Model URN: urn:bamm:io.catenax.batch:1.0.2#Batch
+#### Semantic Id: urn:bamm:io.catenax.batch:1.0.2
 ---
 
 ### Schema
 
 Please find below links for schema details:
 
-- https://portal.int.demo.catena-x.net/semantichub/urn%3Abamm%3Aio.catenax.batch%3A1.0.0%23Batch
-- blob:https://portal.int.demo.catena-x.net/10dadf03-8062-4369-87c8-6f8f570df2c4
-- https://github.com/catenax-ng/product-dft-backend/blob/modules-branch/modules/sde-submodules/batch/src/main/resources/batch.json
+- [schema](src/main/resources/batch.json)
 
 
 ### CSV file headers
 
 | Headers Name       	       		| Mandatory                     	| Position 	|
-|-------------------------------		|-----------------------------	|--------	|
+|-------------------------------	|-----------------------------	    |--------	|
 | uuid		                   		| No		             		    |    1     	|
-| batch_id					   		| Yes					      	|    2    	|
-| manufacturing_date    				| Yes 							| 	 3	   	|
-| manufacturing_country  	    		| No                           	| 	 4	  	|
-| manufacturer_part_id 		      	| Yes                           	| 	 5	  	|
-| customer_part_id		    		 	| No                     		| 	 6	 	|
-| classification		 				| Yes                           	|    7 	 	|
-| name_at_manufacturer	 			| Yes                           	|    8 	 	|
-| name_at_customer	 				| No                           	|    9 	 	|
-| optional_identifier_key	 		| No                           	|    10 	 	|
-| optional_identifier_value			| No                           	|    11 	 	|
+| batch_id					   		| No						      	|    2    	|
+| part_instance_id					| Yes							    |	 3		|
+| manufacturing_date    			| Yes 							    | 	 4	   	|
+| manufacturing_country  	    	| No                            	| 	 5	  	|
+| manufacturer_part_id 		      	| Yes                           	| 	 6	  	|
+| customer_part_id		    		| No                     		    | 	 7	 	|
+| classification		 			| Yes                               |    8 	 	|
+| name_at_manufacturer	 			| Yes                           	|    9 	 	|
+| name_at_customer	 				| No                           	    |    10 	|
 
 
 #### [CSV Sample File Link]

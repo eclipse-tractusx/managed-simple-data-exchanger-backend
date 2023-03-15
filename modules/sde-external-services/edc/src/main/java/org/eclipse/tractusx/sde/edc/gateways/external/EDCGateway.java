@@ -1,7 +1,7 @@
 /********************************************************************************
    * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -54,7 +54,7 @@ public class EDCGateway {
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(headers);
 
         try {
-            String url = edcHostname + "/assets/"+ id;
+            String url = edcHostname + "/data/assets/"+ id;
             restTemplate.exchange(
                     url,
                     HttpMethod.GET,
@@ -77,7 +77,7 @@ public class EDCGateway {
 
         HttpEntity<AssetEntryRequest> entity = new HttpEntity<>(request, headers);
         try {
-            restTemplate.postForEntity(edcHostname + "/assets", entity, String.class);
+            restTemplate.postForEntity(edcHostname + "/data/assets", entity, String.class);
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.CONFLICT) {
                 throw new EDCGatewayException("Asset already exists");
@@ -87,7 +87,7 @@ public class EDCGateway {
     }
 
     public void createPolicyDefinition(PolicyDefinitionRequest request) {
-        final String policyResource = "/policydefinitions";
+        final String policyResource = "/data/policydefinitions";
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.add(apiKeyHeader, apiKey);
@@ -101,7 +101,7 @@ public class EDCGateway {
     }
 
     public void createContractDefinition(ContractDefinitionRequest request) {
-        final String contractDefinitionResource = "/contractdefinitions";
+        final String contractDefinitionResource = "/data/contractdefinitions";
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.add(apiKeyHeader, apiKey);

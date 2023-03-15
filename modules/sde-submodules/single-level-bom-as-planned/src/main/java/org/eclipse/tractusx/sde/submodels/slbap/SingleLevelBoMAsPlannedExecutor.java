@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -25,6 +25,7 @@ import org.eclipse.tractusx.sde.common.entities.csv.RowData;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseException;
 import org.eclipse.tractusx.sde.common.submodel.executor.SubmodelExecutor;
 import org.eclipse.tractusx.sde.common.submodel.executor.create.steps.impl.CsvParse;
+import org.eclipse.tractusx.sde.common.submodel.executor.create.steps.impl.JsonRecordFormating;
 import org.eclipse.tractusx.sde.common.submodel.executor.create.steps.impl.JsonRecordValidate;
 import org.eclipse.tractusx.sde.submodels.slbap.mapper.SingleLevelBoMAsPlannedMapper;
 import org.eclipse.tractusx.sde.submodels.slbap.model.SingleLevelBoMAsPlanned;
@@ -50,6 +51,8 @@ public class SingleLevelBoMAsPlannedExecutor extends SubmodelExecutor {
 	private final CsvParse csvParseStep;
 	
 	private final JsonRecordValidate jsonRecordValidate;
+	
+	private final JsonRecordFormating jsonRecordformater;
 
 	private final SingleLevelBoMASPlannedUUIDUrnUUID generateUrnUUID;
 	
@@ -76,6 +79,9 @@ public class SingleLevelBoMAsPlannedExecutor extends SubmodelExecutor {
 	@SneakyThrows
 	public void executeJsonRecord(Integer rowIndex, ObjectNode jsonObject, String processId) {
 
+		jsonRecordformater.init(getSubmodelSchema());
+		jsonRecordformater.run(rowIndex, jsonObject, processId);
+		
 		nextSteps(rowIndex, jsonObject, processId);
 
 	}

@@ -4,9 +4,45 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
-- Dynamic generation of CSV (Sample,template) file for implemented submodule. 
-- New api for transaction history download function for each process id.
-- Create api to support dynamic submodule help page.
+- Error handling & input validation Messages for exceptions during upload / creation.
+- Manufacturer country code list.
+- Cancel contract agreement on provider side.
+- BPN validation in SDE.
+- The field "VAN" is still case sensitive, there is no need and it causes errors if you do not know it
+- Mix of CSV-formats: When you export the data from the contract panel you get a "comma"-separated file, when you download it from history it is separated by "semicolon". Files with "comma" are shown incorrect at least on German systems.
+- User not able to copy values from the contract panel as the keys are longer as the displayed field
+- To find out which contract belongs to which dataset User have to download the history file
+
+## [1.9.0] - 2023-03-15
+### Added
+- Added new submodel SingleLevelUsageAsBuilt 1.0.1 aspect.
+- Updated Batch submodel to support 1.0.2 version.
+- Updated SerialPartTypization in Version 1.1.0 submodel support.
+- Updated AssemblyPartRelationship in Version 1.1.1 submodel support.
+- Added Look-Up process for AssemblyPartRelationship submodel.
+
+### Fixed
+- Removed manufatureId (BPN) from DT EDC URL creation.
+- Correct submodel id for delete while assembly update.
+- ENUM fix after changing variable of DT.
+- Exception log for look up failure request.
+- Look up feature for AssemblyPartRelationship: The Batch, we connected a Batch item with a Serial Part Typization Item
+- Look up feature for AssemblyPartRelationship: The items (Serial Part Typization) had the fields VAN and Value filled was not work
+
+### Changed
+- Added/Updated Header copyrights for 2023.
+
+## [1.8.1] - 2023-01-23
+### Added
+- Added use case selection.
+- Enable filtering displayed submodels by selected use case.
+- Added new API for transaction history download function for each processId.
+- Added new API to Dynamic generation of CSV sample and CSV template per submode.
+- Added new API to support dynamic submodel help page.
+- Added list contract agreements on Provider side
+
+### Fixed
+- Bug fixes.
 
 ## [1.8.0] - 2022-12-12
 ### Added
@@ -16,7 +52,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added new submodel SingleLevelBoMAsPlanned aspect.
 - Added new submodel PartSiteInformationAsPlanned aspect.
 - Added new functionality update and Delete with exists aspect. 
-- Added new api for user role permission access managament.
+- Added new api for user role permission access management.
 - Enabled api level permissions.
 
 ### Fixed
@@ -86,10 +122,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Integration with Digital Twin registry service.
 
 
-[Unreleased]: https://github.com/catenax-ng/tx-dft-backend/compare/dft-backend-1.8.0...main
-[1.8.0]: https://github.com/catenax-ng/tx-dft-backend/compare/dft-backend-1.7.0...dft-backend-1.8.0
-[1.7.0]: https://github.com/catenax-ng/product-dft-backend/compare/dft-backend-1.6.0...dft-backend-1.7.0
-[1.6.0]: https://github.com/catenax-ng/product-dft-backend/compare/dft-backend-1.5.0...dft-backend-1.6.0
-[1.5.0]: https://github.com/catenax-ng/product-dft-backend/compare/dftbackend-1.3.0...dft-backend-1.5.0
-[1.3.0]: https://github.com/catenax-ng/product-dft-backend/compare/dftbackend-1.2.0...dftbackend-1.3.0
-[1.2.0]: https://github.com/catenax-ng/product-dft-backend/compare/dftbackend-1.1.0...dftbackend-1.2.0
+[Unreleased]:https://github.com/eclipse-tractusx/dft-backend/compare/dft-backend-1.9.0...main
+[1.8.1]: https://github.com/eclipse-tractusx/dft-backend/compare/dft-backend-1.8.0...dft-backend-1.8.1
+[1.8.0]: https://github.com/eclipse-tractusx/dft-backend/compare/dft-backend-1.7.0...dft-backend-1.8.0
+[1.7.0]: https://github.com/eclipse-tractusx/dft-backend/releases/tag/dft-backend-1.7.0
+

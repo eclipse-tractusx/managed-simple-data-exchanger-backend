@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -22,29 +22,12 @@ package org.eclipse.tractusx.sde.submodels.batch.repository;
 
 import java.util.List;
 
-import org.eclipse.tractusx.sde.common.enums.OptionalIdentifierKeyEnum;
 import org.eclipse.tractusx.sde.submodels.batch.entity.BatchEntity;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 public interface BatchRepository extends CrudRepository<BatchEntity, String> {
 
-	BatchEntity findByBatchIdAndManufacturerPartIdAndOptionalIdentifierKeyAndOptionalIdentifierValue(String batchId,
-			String manufacturerPartId, OptionalIdentifierKeyEnum optionalIdentifierKey, String optionalIdentifierValue);
-
-	BatchEntity findByBatchIdAndManufacturerPartIdAndOptionalIdentifierKeyIsNullAndOptionalIdentifierValueIsNull(
-			String batchId, String manufacturerId);
-
-	default BatchEntity findByIdentifiers(String batchId, String manufacturerPartId, String optionalIdentifierKey,
-			String optionalIdentifierValue) {
-		return findByBatchIdAndManufacturerPartIdAndOptionalIdentifierKeyAndOptionalIdentifierValue(batchId,
-				manufacturerPartId, OptionalIdentifierKeyEnum.valueOf(optionalIdentifierKey), optionalIdentifierValue);
-	}
-
-	default BatchEntity findByIdentifiers(String batchId, String manufacturerId) {
-		return findByBatchIdAndManufacturerPartIdAndOptionalIdentifierKeyIsNullAndOptionalIdentifierValueIsNull(batchId,
-				manufacturerId);
-	}
 
 	BatchEntity findByUuid(String uuid);
 

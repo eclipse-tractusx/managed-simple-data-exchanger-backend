@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -26,6 +26,7 @@ import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseExc
 import org.eclipse.tractusx.sde.common.submodel.executor.SubmodelExecutor;
 import org.eclipse.tractusx.sde.common.submodel.executor.create.steps.impl.CsvParse;
 import org.eclipse.tractusx.sde.common.submodel.executor.create.steps.impl.GenerateUrnUUID;
+import org.eclipse.tractusx.sde.common.submodel.executor.create.steps.impl.JsonRecordFormating;
 import org.eclipse.tractusx.sde.common.submodel.executor.create.steps.impl.JsonRecordValidate;
 import org.eclipse.tractusx.sde.submodels.pap.mapper.PartAsPlannedMapper;
 import org.eclipse.tractusx.sde.submodels.pap.model.PartAsPlanned;
@@ -48,6 +49,8 @@ public class PartAsPlannedExecutor extends SubmodelExecutor {
 	private final PartAsPlannedMapper partAsPlannedMapper;
 
 	private final CsvParse csvParseStep;
+	
+	private final JsonRecordFormating jsonRecordformater;
 
 	private final GenerateUrnUUID generateUrnUUID;
 
@@ -74,6 +77,9 @@ public class PartAsPlannedExecutor extends SubmodelExecutor {
 	@SneakyThrows
 	public void executeJsonRecord(Integer rowIndex, ObjectNode jsonObject, String processId) {
 
+		jsonRecordformater.init(getSubmodelSchema());
+		jsonRecordformater.run(rowIndex, jsonObject, processId);
+		
 		nextSteps(rowIndex, jsonObject, processId);
 
 	}

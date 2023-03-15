@@ -1,5 +1,6 @@
 # our base build image
-FROM maven:3.8.5-openjdk-18-slim as build
+#FROM maven:3.8.5-openjdk-18-slim as build
+FROM maven:3.9.0-eclipse-temurin-19 as build
 
 # copy the project files
 COPY ../pom.xml ./pom.xml
@@ -14,8 +15,9 @@ COPY ../modules ./modules
 RUN mvn clean install 
 
 # our final base image
-#FROM eclipse-temurin:18.0.1_10-jre
-FROM eclipse-temurin:19.0.1_10-jre
+#FROM eclipse-temurin:19.0.1_10-jre
+
+FROM eclipse-temurin:19-jdk-jammy
 
 ARG USERNAME=dftuser
 ARG USER_UID=1000
@@ -44,7 +46,7 @@ COPY --from=build modules/sde-core/target/*.jar ./app.jar
 
 EXPOSE 8080
 # set the startup command to run your binary
-CMD ["java", "-jar", "./app.jar"]
+#CMD ["java", "-jar", "./app.jar"]
 
-#CMD ["java", "-jar", "./app.jar","--spring.config.location=file:/app/configuration.properties"]
+CMD ["java", "-jar", "./app.jar","--spring.config.location=file:/app/configuration.properties"]
 

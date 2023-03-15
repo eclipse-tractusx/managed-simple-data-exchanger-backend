@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -21,22 +21,16 @@
 package org.eclipse.tractusx.sde.configuration.role;
 
 import org.eclipse.tractusx.sde.core.service.RoleManagementService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration;
 
 @Configuration
-@EnableGlobalMethodSecurity(prePostEnabled = true)
-public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
+public class MethodSecurityConfig  {
 
-	@Autowired
-	private RoleManagementService roleManagementService;
-
-	@Override
-	protected MethodSecurityExpressionHandler createExpressionHandler() {
+	@Bean
+	public MethodSecurityExpressionHandler createExpressionHandler(RoleManagementService roleManagementService) {
 		DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
 		expressionHandler.setPermissionEvaluator(new CustomPermissionEvaluator(roleManagementService));
 		return expressionHandler;

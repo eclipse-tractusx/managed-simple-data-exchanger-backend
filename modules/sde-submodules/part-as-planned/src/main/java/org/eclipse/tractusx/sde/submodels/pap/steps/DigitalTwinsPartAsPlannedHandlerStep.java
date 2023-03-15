@@ -1,6 +1,7 @@
 /********************************************************************************
- * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -30,7 +31,6 @@ import org.eclipse.tractusx.sde.common.submodel.executor.Step;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.Endpoint;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.GlobalAssetId;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.KeyValuePair;
-import org.eclipse.tractusx.sde.digitaltwins.entities.common.ProtocolInformation;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.SemanticId;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.CreateSubModelRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellDescriptorRequest;
@@ -39,6 +39,7 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorRe
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellLookupResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelListResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelResponse;
+import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsUtility;
 import org.eclipse.tractusx.sde.digitaltwins.gateways.external.DigitalTwinGateway;
 import org.eclipse.tractusx.sde.submodels.pap.constants.PartAsPlannedConstants;
 import org.eclipse.tractusx.sde.submodels.pap.model.PartAsPlanned;
@@ -50,11 +51,12 @@ import lombok.SneakyThrows;
 @Service
 public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 
-	@Autowired
-	private PartAsPlannedConstants partAsPlannedConstants;
 
 	@Autowired
 	private DigitalTwinGateway gateway;
+	
+	@Autowired
+	private DigitalTwinsUtility digitalTwinsUtility;
 
 	@SneakyThrows
 	public PartAsPlanned run(PartAsPlanned partAsPlannedAspect) throws CsvHandlerDigitalTwinUseCaseException {
@@ -65,6 +67,7 @@ public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 		}
 	}
 
+	@SneakyThrows
 	private PartAsPlanned doRun(PartAsPlanned partAsPlannedAspect) throws CsvHandlerDigitalTwinUseCaseException {
 		ShellLookupRequest shellLookupRequest = getShellLookupRequest(partAsPlannedAspect);
 		ShellLookupResponse shellIds = gateway.shellLookup(shellLookupRequest);
@@ -115,7 +118,7 @@ public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 		shellLookupRequest.addLocalIdentifier(PartAsPlannedConstants.MANUFACTURER_PART_ID,
 				partAsPlannedAspect.getManufacturerPartId());
 		shellLookupRequest.addLocalIdentifier(PartAsPlannedConstants.MANUFACTURER_ID,
-				partAsPlannedConstants.getManufacturerId());
+				digitalTwinsUtility.getManufacturerId());
 		shellLookupRequest.addLocalIdentifier(PartAsPlannedConstants.ASSET_LIFECYCLE_PHASE,
 				PartAsPlannedConstants.AS_PLANNED);
 
@@ -129,17 +132,8 @@ public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 		SemanticId semanticId = new SemanticId(value);
 		String identification = PartAsPlannedConstants.PREFIX + UUID.randomUUID();
 
-		List<Endpoint> endpoints = new ArrayList<>();
-		endpoints.add(Endpoint.builder().endpointInterface(PartAsPlannedConstants.HTTP)
-				.protocolInformation(ProtocolInformation.builder()
-						.endpointAddress(String.format(String.format("%s%s/%s-%s%s",
-								partAsPlannedConstants.getEdcEndpoint().replace("data", ""),
-								partAsPlannedConstants.getManufacturerId(), partAsPlannedAspect.getShellId(),
-								identification, "/submodel?content=value&extent=WithBLOBValue")))
-						.endpointProtocol(PartAsPlannedConstants.HTTPS)
-						.endpointProtocolVersion(PartAsPlannedConstants.ENDPOINT_PROTOCOL_VERSION).build())
-				.build());
-
+		List<Endpoint> endpoints = digitalTwinsUtility.prepareDtEndpoint(partAsPlannedAspect.getShellId(), identification);
+		
 		return CreateSubModelRequest.builder().idShort(getIdShortOfModel()).identification(identification)
 				.semanticId(semanticId).endpoints(endpoints).build();
 	}
@@ -147,12 +141,9 @@ public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 	private ShellDescriptorRequest getShellDescriptorRequest(PartAsPlanned partAsPlannedAspect) {
 
 		ArrayList<KeyValuePair> specificIdentifiers = new ArrayList<>();
-		specificIdentifiers.add(new KeyValuePair(PartAsPlannedConstants.MANUFACTURER_PART_ID,
-				partAsPlannedAspect.getManufacturerPartId()));
-		specificIdentifiers.add(
-				new KeyValuePair(PartAsPlannedConstants.MANUFACTURER_ID, partAsPlannedConstants.getManufacturerId()));
-		specificIdentifiers
-				.add(new KeyValuePair(PartAsPlannedConstants.ASSET_LIFECYCLE_PHASE, PartAsPlannedConstants.AS_PLANNED));
+		specificIdentifiers.add(new KeyValuePair(PartAsPlannedConstants.MANUFACTURER_PART_ID,partAsPlannedAspect.getManufacturerPartId()));
+		specificIdentifiers.add(new KeyValuePair(PartAsPlannedConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId()));
+		specificIdentifiers.add(new KeyValuePair(PartAsPlannedConstants.ASSET_LIFECYCLE_PHASE, PartAsPlannedConstants.AS_PLANNED));
 
 		List<String> values = new ArrayList<>();
 		values.add(partAsPlannedAspect.getUuid());
@@ -160,7 +151,7 @@ public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 
 		return ShellDescriptorRequest.builder()
 				.idShort(String.format("%s_%s_%s", partAsPlannedAspect.getNameAtManufacturer(),
-						partAsPlannedConstants.getManufacturerId(), partAsPlannedAspect.getManufacturerPartId()))
+						digitalTwinsUtility.getManufacturerId(), partAsPlannedAspect.getManufacturerPartId()))
 				.globalAssetId(globalIdentifier).specificAssetIds(specificIdentifiers)
 				.identification(PartAsPlannedConstants.PREFIX + UUID.randomUUID()).build();
 	}

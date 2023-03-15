@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -74,11 +74,15 @@ public class SubmodelCsvService {
 		Submodel schemaObj = submodelService.findSubmodelByNameAsSubmdelObject(submodel);
 		JsonObject schemaObject = schemaObj.getSchema();
 
-		List<String> headerName = createCSVColumnHeader(schemaObject);
+		Object autoPopulatefieldObj=  schemaObj.getProperties().get("autoPopulatedfields");
+		
+		List<String> headerName = createCSVColumnHeader(schemaObject, autoPopulatefieldObj);
+
 		records.add(headerName);
+
 		String coloumns = String.join(",", headerName);
 
-		String tableName = schemaObj.getProperties().get("tableName");
+		String tableName = schemaObj.getProperties().get("tableName").toString();
 		if (tableName == null)
 			throw new ServiceException("The submodel table name not found for processing");
 
@@ -87,13 +91,20 @@ public class SubmodelCsvService {
 		return records;
 	}
 
-	private List<String> createCSVColumnHeader(JsonObject schemaObject) {
+	private List<String> createCSVColumnHeader(JsonObject schemaObject, Object autoPopulatefieldObj) {
 
 		JsonObject asJsonObject = schemaObject.get("items").getAsJsonObject().get("properties").getAsJsonObject();
 		List<String> headerList = asJsonObject.keySet().stream().toList();
 
 		List<String> headerName = new LinkedList<>();
 		headerName.addAll(headerList);
+
+		if (autoPopulatefieldObj != null) {
+			@SuppressWarnings("unchecked")
+			List<String> autoPopulatefield = (List<String>) autoPopulatefieldObj;
+			headerName.addAll(autoPopulatefield);
+		}
+
 		headerName.add("shell_id");
 		headerName.add("sub_model_id");
 		headerName.add("asset_id");

@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -21,13 +21,14 @@
 package org.eclipse.tractusx.sde.submodels.apr;
 
 import java.io.InputStream;
-
-import javax.annotation.PostConstruct;
+import java.util.List;
 
 import org.eclipse.tractusx.sde.common.extensions.SubmodelExtension;
 import org.eclipse.tractusx.sde.common.model.Submodel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import jakarta.annotation.PostConstruct;
 
 @Component
 public class AssemblyPartRelationship extends SubmodelExtension {
@@ -50,8 +51,9 @@ public class AssemblyPartRelationship extends SubmodelExtension {
 
 		submodel = loadSubmodel(input);
 		submodel.setExecutor(assemblyPartRelationshipWorkflow);
-		
+
 		submodel.addProperties("tableName", "aspect_relationship");
+		submodel.addProperties("autoPopulatedfields", List.of("parent_uuid", "uuid"));
 	}
 
 	@Override

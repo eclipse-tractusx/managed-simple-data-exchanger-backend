@@ -1,6 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -29,5 +29,5 @@ import lombok.Data;
 @AllArgsConstructor
 public class Quantity {
     private double quantityNumber;
-    private MeasurementUnit measurementUnit;
+    private String measurementUnit;
 }

@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,12 +20,15 @@
 
 package org.eclipse.tractusx.sde.edc.facilitator;
 
-import org.springframework.beans.factory.annotation.Value;
-
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
+
 public class AbstractEDCStepsHelper {
+
+	@Value("${edc.consumer.hostname}")
+	protected String consumerHost;
 
 	@Value("${edc.consumer.apikeyheader}")
 	private String edcApiKeyHeader;
@@ -33,9 +36,24 @@ public class AbstractEDCStepsHelper {
 	@Value("${edc.consumer.apikey}")
 	private String edcApiKeyValue;
 
-	public Map<String,String>  getAuthHeader() {
-		 Map<String,String> requestHeader =new HashMap<>();
-		 requestHeader.put(edcApiKeyHeader, edcApiKeyValue);
+	@Value("${edc.hostname}")
+	protected String providerHost;
+
+	@Value("${edc.apiKeyHeader}")
+	private String edcProviderApiKeyHeader;
+
+	@Value("${edc.apiKey}")
+	private String edcProviderApiKeyValue;
+
+	public Map<String, String> getAuthHeader() {
+		Map<String, String> requestHeader = new HashMap<>();
+		requestHeader.put(edcApiKeyHeader, edcApiKeyValue);
+		return requestHeader;
+	}
+
+	public Map<String, String> getProviderAuthHeader() {
+		Map<String, String> requestHeader = new HashMap<>();
+		requestHeader.put(edcProviderApiKeyHeader, edcProviderApiKeyValue);
 		return requestHeader;
 	}
 

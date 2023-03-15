@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -27,6 +27,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
@@ -76,14 +77,14 @@ class ConsumerControllerTest {
 
     @Test
     void testQueryOnDataOffersStatus() throws Exception {
-        when(consumerControlPanelService.getAllContractOffers(anyInt(), anyInt())).thenReturn(new ArrayList<>());
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/contract-offers");
+        when(consumerControlPanelService.getAllContractOffers(any(), anyInt(), anyInt())).thenReturn(new HashMap<>());
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/contract-agreements");
         MockMvcBuilders.standaloneSetup(consumerController)
                 .build()
                 .perform(requestBuilder)
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.content().string("[]"));
+                .andExpect(MockMvcResultMatchers.content().string("{}"));
     }
 
 

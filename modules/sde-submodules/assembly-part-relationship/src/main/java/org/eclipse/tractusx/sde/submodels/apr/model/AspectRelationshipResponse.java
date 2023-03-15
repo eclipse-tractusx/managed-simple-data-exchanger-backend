@@ -1,6 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022,2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,16 +21,16 @@
 
 package org.eclipse.tractusx.sde.submodels.apr.model;
 
+import java.util.Set;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-
-import java.util.List;
 
 @Data
 @Builder
 @AllArgsConstructor
 public class AspectRelationshipResponse {
     private String catenaXId;
-    private List<ChildPart> childParts;
+    private Set<ChildPart> childParts;
 }

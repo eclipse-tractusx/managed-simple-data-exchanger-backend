@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -33,8 +33,8 @@ import org.eclipse.tractusx.sde.common.mapper.SubmodelMapper;
 import org.eclipse.tractusx.sde.common.model.Submodel;
 import org.eclipse.tractusx.sde.common.submodel.executor.SubmodelExecutor;
 import org.eclipse.tractusx.sde.common.validators.SubmodelCSVValidator;
-import org.eclipse.tractusx.sde.core.controller.failurelog.FailureLogs;
 import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
+import org.eclipse.tractusx.sde.core.failurelog.FailureLogs;
 import org.eclipse.tractusx.sde.core.processreport.ProcessReportUseCase;
 import org.eclipse.tractusx.sde.core.processreport.model.ProcessReport;
 import org.springframework.stereotype.Service;

@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -21,7 +21,7 @@
 
 package org.eclipse.tractusx.sde.common.model;
 
-import java.util.List;
+import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,7 +32,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class SubmodelResultResponse {
 
-	private List<LocalIdentifier> localIdentifiers;
+	private Set<LocalIdentifier> localIdentifiers;
 	private ManufacturingInformation manufacturingInformation;
 	private String catenaXId;
 	private PartTypeInformation partTypeInformation;

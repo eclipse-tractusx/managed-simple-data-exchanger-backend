@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -22,19 +22,12 @@ package org.eclipse.tractusx.sde.edc.facilitator;
 
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.edc.api.EDCFeignClientApi;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
 import lombok.SneakyThrows;
 
 @Service
-public class DeleteEDCFacilitator {
-
-	@Value(value = "${edc.apiKeyHeader}")
-	private String apiKeyHeader;
-	@Value(value = "${edc.apiKey}")
-	private String apiKey;
+public class DeleteEDCFacilitator extends AbstractEDCStepsHelper {
 
 	private final EDCFeignClientApi eDCFeignClientApi;
 
@@ -42,16 +35,10 @@ public class DeleteEDCFacilitator {
 		this.eDCFeignClientApi = eDCFeignClientApi;
 	}
 
-	public HttpHeaders getEDCHeaders() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.add(apiKeyHeader, apiKey);
-		return headers;
-	}
-
 	@SneakyThrows
 	public void deleteContractDefination(String contractDefinationId) {
 		try {
-			eDCFeignClientApi.deleteContractDefinition(contractDefinationId, getEDCHeaders());
+			eDCFeignClientApi.deleteContractDefinition(contractDefinationId, getProviderAuthHeader());
 		} catch (Exception e) {
 			parseExceptionMessage(e);
 		}
@@ -61,7 +48,7 @@ public class DeleteEDCFacilitator {
 	@SneakyThrows
 	public void deleteAccessPolicy(String accessPolicyId) {
 		try {
-			eDCFeignClientApi.deletePolicyDefinitions(accessPolicyId, getEDCHeaders());
+			eDCFeignClientApi.deletePolicyDefinitions(accessPolicyId, getProviderAuthHeader());
 		} catch (Exception e) {
 			parseExceptionMessage(e);
 		}
@@ -71,7 +58,7 @@ public class DeleteEDCFacilitator {
 	@SneakyThrows
 	public void deleteUsagePolicy(String usagePolicyId) {
 		try {
-			eDCFeignClientApi.deletePolicyDefinitions(usagePolicyId, getEDCHeaders());
+			eDCFeignClientApi.deletePolicyDefinitions(usagePolicyId, getProviderAuthHeader());
 		} catch (Exception e) {
 			parseExceptionMessage(e);
 		}
@@ -81,7 +68,7 @@ public class DeleteEDCFacilitator {
 	@SneakyThrows
 	public void deleteAssets(String assetId) {
 		try {
-			eDCFeignClientApi.deleteAssets(assetId, getEDCHeaders());
+			eDCFeignClientApi.deleteAssets(assetId, getProviderAuthHeader());
 		} catch (Exception e) {
 			throw new ServiceException("Exception in EDC delete request process:" + e.getMessage());
 		}

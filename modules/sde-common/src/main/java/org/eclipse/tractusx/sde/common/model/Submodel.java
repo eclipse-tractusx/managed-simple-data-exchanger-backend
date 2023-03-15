@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -55,11 +55,11 @@ public class Submodel {
 
 	private JsonObject schema;
 
-	private Map<String, String> properties;
+	private Map<String, Object> properties;
 
 	private SubmodelExecutor executor;
 
-	public void addProperties(String key, String value) {
+	public void addProperties(String key, Object value) {
 		if (properties == null)
 			properties = new LinkedHashMap<>();
 		properties.put(key, value);

@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang3.StringUtils;
@@ -59,195 +60,210 @@ import org.eclipse.tractusx.sde.portal.model.response.LegalEntityResponse;
 import org.eclipse.tractusx.sde.portal.utils.KeycloakUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
 public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
-    private static final Integer LIMIT = 10000;
-    private final String edcDataUri;
-    private final ContractOfferCatalogApi contractOfferCatalogApiProxy;
-    private final ContractNegotiateManagement contractNegotiateManagement;
+	private static final Integer LIMIT = 10000;
+	private final String edcDataUri;
+	private final ContractOfferCatalogApi contractOfferCatalogApiProxy;
+	private final ContractNegotiateManagement contractNegotiateManagement;
 
-    private ContractNegotiationInfoRepository contractNegotiationInfoRepository;
-    private PolicyConstraintBuilderService policyConstraintBuilderService;
+	private ContractNegotiationInfoRepository contractNegotiationInfoRepository;
+	private PolicyConstraintBuilderService policyConstraintBuilderService;
 
-    private LegalEntityDataApi legalEntityDataApi;
-    private ConnectorDiscoveryApi connectorDiscoveryApi;
+	private LegalEntityDataApi legalEntityDataApi;
+	private ConnectorDiscoveryApi connectorDiscoveryApi;
 
-    private KeycloakUtil keycloakUtil;
+	private KeycloakUtil keycloakUtil;
 
+	@Autowired
+	public ConsumerControlPanelService(@Value("${edc.consumer.datauri}") String edcDataUri,
+			ContractOfferCatalogApi contractOfferCatalogApiProxy,
+			ContractNegotiateManagement contractNegotiateManagement,
+			ContractNegotiationInfoRepository contractNegotiationInfoRepository,
+			PolicyConstraintBuilderService policyConstraintBuilderService, LegalEntityDataApi legalEntityDataApi,
+			ConnectorDiscoveryApi connectorDiscoveryApi, KeycloakUtil keycloakUtil) {
+		this.edcDataUri = edcDataUri;
+		this.contractOfferCatalogApiProxy = contractOfferCatalogApiProxy;
+		this.contractNegotiateManagement = contractNegotiateManagement;
+		this.contractNegotiationInfoRepository = contractNegotiationInfoRepository;
+		this.policyConstraintBuilderService = policyConstraintBuilderService;
+		this.legalEntityDataApi = legalEntityDataApi;
+		this.connectorDiscoveryApi = connectorDiscoveryApi;
+		this.keycloakUtil = keycloakUtil;
 
-    @Autowired
-    public ConsumerControlPanelService(@Value("${edc.consumer.datauri}") String edcDataUri,
-                                       ContractOfferCatalogApi contractOfferCatalogApiProxy, ContractNegotiateManagement contractNegotiateManagement, ContractNegotiationInfoRepository contractNegotiationInfoRepository, PolicyConstraintBuilderService policyConstraintBuilderService,
-                                       LegalEntityDataApi legalEntityDataApi,
-                                       ConnectorDiscoveryApi connectorDiscoveryApi,
-                                       KeycloakUtil keycloakUtil) {
-        this.edcDataUri = edcDataUri;
-        this.contractOfferCatalogApiProxy = contractOfferCatalogApiProxy;
-        this.contractNegotiateManagement = contractNegotiateManagement;
-        this.contractNegotiationInfoRepository = contractNegotiationInfoRepository;
-        this.policyConstraintBuilderService = policyConstraintBuilderService;
-        this.legalEntityDataApi = legalEntityDataApi;
-        this.connectorDiscoveryApi = connectorDiscoveryApi;
-        this.keycloakUtil = keycloakUtil;
+	}
 
-    }
+	public List<QueryDataOfferModel> queryOnDataOffers(String providerUrl) {
+		providerUrl = UtilityFunctions.removeLastSlashOfUrl(providerUrl);
 
-    public List<QueryDataOfferModel> queryOnDataOffers(String providerUrl) {
-        providerUrl = UtilityFunctions.removeLastSlashOfUrl(providerUrl);
+		providerUrl += edcDataUri;
 
-        providerUrl += edcDataUri;
+		List<QueryDataOfferModel> queryOfferResponse = new ArrayList<>();
 
-        List<QueryDataOfferModel> queryOfferResponse = new ArrayList<>();
+		ContractOffersCatalogResponse contractOfferCatalog = contractOfferCatalogApiProxy
+				.getContractOffersCatalog(getAuthHeader(), providerUrl, LIMIT);
 
-        ContractOffersCatalogResponse contractOfferCatalog = contractOfferCatalogApiProxy.getContractOffersCatalog(
-                getAuthHeader(),
-                providerUrl, LIMIT);
+		for (ContractOffer contractOffer : contractOfferCatalog.getContractOffers()) {
+			Asset asset = contractOffer.getAsset();
+			PolicyDefinition policy = contractOffer.getPolicy();
 
-        for (ContractOffer contractOffer : contractOfferCatalog.getContractOffers()) {
-            Asset asset = contractOffer.getAsset();
-            PolicyDefinition policy = contractOffer.getPolicy();
+			// Populating usage policies response based on usage policy constraints
+			List<UsagePolicies> usagePolicies = new ArrayList<>();
+			policy.getPermissions().stream().forEach(permission -> {
+				usagePolicies.addAll(UtilityFunctions.getUsagePolicies(permission.getConstraints().stream()));
+			});
 
-            //Populating usage policies response based on usage policy constraints
-            List<UsagePolicies> usagePolicies = new ArrayList<>();
-            policy.getPermissions().stream().forEach(permission -> {
-                usagePolicies.addAll(UtilityFunctions.getUsagePolicies(permission.getConstraints().stream()));
-            });
+			UtilityFunctions.addCustomUsagePolicy(policy.getExtensibleProperties(), usagePolicies);
+			// Later to be part of access policy
+			List<String> bpnNumbers = new ArrayList<>();
+			policy.getPermissions().stream().forEach(permission -> {
+				permission.getConstraints().stream().forEach(constraint -> {
+					if (constraint.getLeftExpression().getValue().equals("BusinessPartnerNumber")) {
+						String value = constraint.getRightExpression().getValue().toString();
+						bpnNumbers.addAll(Arrays
+								.asList(value.trim().substring(value.indexOf("[") + 1, value.indexOf("]")).split(",")));
+						return;
+					}
+				});
+			});
 
-            UtilityFunctions.addCustomUsagePolicy(policy.getExtensibleProperties(), usagePolicies);
-            //Later to be part of access policy
-            List<String> bpnNumbers = new ArrayList<>();
-            policy.getPermissions().stream().forEach(permission -> {
-                permission.getConstraints().stream().forEach(constraint -> {
-                    if (constraint.getLeftExpression().getValue().equals("BusinessPartnerNumber")) {
-                        String value = constraint.getRightExpression().getValue().toString();
-                        bpnNumbers.addAll(Arrays.asList(value.trim().substring(value.indexOf("[") + 1, value.indexOf("]")).split(",")));
-                        return;
-                    }
-                });
-            });
+			queryOfferResponse.add(QueryDataOfferModel.builder()
+					.assetId(getFieldFromAsset(asset, EDCAssetConstant.ASSET_PROP_ID))
+					.connectorOfferUrl(
+							providerUrl + File.separator + getFieldFromAsset(asset, EDCAssetConstant.ASSET_PROP_ID))
+					.offerId(contractOffer.getId()).title(getFieldFromAsset(asset, EDCAssetConstant.ASSET_PROP_NAME))
+					.description(getFieldFromAsset(asset, EDCAssetConstant.ASSET_PROP_DESCRIPTION))
+					.created(getFieldFromAsset(asset, EDCAssetConstant.ASSET_PROP_CREATED))
+					.modified(getFieldFromAsset(asset, EDCAssetConstant.ASSET_PROP_MODIFIED))
+					.publisher(getFieldFromAsset(asset, EDCAssetConstant.ASSET_PROP_PUBLISHER))
+					.typeOfAccess(!bpnNumbers.isEmpty() ? PolicyAccessEnum.RESTRICTED : PolicyAccessEnum.UNRESTRICTED)
+					.version(getFieldFromAsset(asset, EDCAssetConstant.ASSET_PROP_VERSION)).bpnNumbers(bpnNumbers)
+					.usagePolicies(usagePolicies)
+					.fileName(getFieldFromAsset(asset, EDCAssetConstant.ASSET_PROP_FILENAME))
+					.fileContentType(getFieldFromAsset(asset, EDCAssetConstant.ASSET_PROP_CONTENTTYPE))
+					.connectorId(contractOfferCatalog.getId()).build());
+		}
+		return queryOfferResponse;
+	}
 
-            queryOfferResponse.add(QueryDataOfferModel.builder().assetId(getFieldFromAsset(asset, EDCAssetConstant.ASSET_PROP_ID))
-                    .connectorOfferUrl(providerUrl + File.separator + getFieldFromAsset(asset, EDCAssetConstant.ASSET_PROP_ID))
-                    .offerId(contractOffer.getId())
-                    .title(getFieldFromAsset(asset, EDCAssetConstant.ASSET_PROP_NAME))
-                    .description(getFieldFromAsset(asset, EDCAssetConstant.ASSET_PROP_DESCRIPTION))
-                    .created(getFieldFromAsset(asset, EDCAssetConstant.ASSET_PROP_CREATED))
-                    .modified(getFieldFromAsset(asset, EDCAssetConstant.ASSET_PROP_MODIFIED))
-                    .publisher(getFieldFromAsset(asset, EDCAssetConstant.ASSET_PROP_PUBLISHER))
-                    .typeOfAccess(!bpnNumbers.isEmpty() ? PolicyAccessEnum.RESTRICTED : PolicyAccessEnum.UNRESTRICTED)
-                    .version(getFieldFromAsset(asset, EDCAssetConstant.ASSET_PROP_VERSION))
-                    .bpnNumbers(bpnNumbers)
-                    .usagePolicies(usagePolicies)
-                    .fileName(getFieldFromAsset(asset, EDCAssetConstant.ASSET_PROP_FILENAME))
-                    .fileContentType(getFieldFromAsset(asset, EDCAssetConstant.ASSET_PROP_CONTENTTYPE))
-                    .connectorId(contractOfferCatalog.getId())
-                    .build()
-            );
-        }
-        return queryOfferResponse;
-    }
+	private String getFieldFromAsset(Asset asset, String field) {
+		return asset.getProperties().getOrDefault(field, "");
+	}
 
-    private String getFieldFromAsset(Asset asset, String field) {
-        return asset.getProperties().getOrDefault(field, "");
-    }
+	@Async
+	public void subscribeDataOffers(ConsumerRequest consumerRequest, String processId) {
+		HashMap<String, String> extensibleProperty = new HashMap<>();
+		String recipient = UtilityFunctions.removeLastSlashOfUrl(consumerRequest.getProviderUrl());
+		AtomicReference<String> negotiateContractId = new AtomicReference<>();
+		AtomicReference<ContractNegotiationsResponse> checkContractNegotiationStatus = new AtomicReference<>();
+		var recipientURL = recipient + edcDataUri;
+		List<UsagePolicies> policies = consumerRequest.getPolicies();
+		UsagePolicies customPolicy = policies.stream().filter(type -> type.getType().equals(UsagePolicyEnum.CUSTOM))
+				.findFirst().get();
+		if (StringUtils.isNotBlank(customPolicy.getValue())) {
+			extensibleProperty.put(customPolicy.getType().name(), customPolicy.getValue());
+		}
+		List<ConstraintRequest> constraintRequests = policyConstraintBuilderService.getUsagePolicyConstraints(policies);
+		consumerRequest.getOffers().parallelStream().forEach((offer) -> {
+			try {
 
-    @Async
-    public void subscribeDataOffers(ConsumerRequest consumerRequest, String processId) {
-        HashMap<String, String> extensibleProperty = new HashMap<>();
-        String recipient = UtilityFunctions.removeLastSlashOfUrl(consumerRequest.getProviderUrl());
-        AtomicReference<String> negotiateContractId = new AtomicReference<>();
-        AtomicReference<ContractNegotiationsResponse> checkContractNegotiationStatus = new AtomicReference<>();
-        var recipientURL = recipient + edcDataUri;
-        List<UsagePolicies> policies = consumerRequest.getPolicies();
-        UsagePolicies customPolicy = policies.stream().filter(type -> type.getType().equals(UsagePolicyEnum.CUSTOM)).findFirst().get();
-        if (StringUtils.isNotBlank(customPolicy.getValue())) {
-            extensibleProperty.put(customPolicy.getType().name(), customPolicy.getValue());
-        }
-        List<ConstraintRequest> constraintRequests = policyConstraintBuilderService.getUsagePolicyConstraints(policies);
-        consumerRequest.getOffers().parallelStream().forEach((offer) -> {
-            try {
+				negotiateContractId.set(contractNegotiateManagement.negotiateContract(offer.getOfferId(), recipientURL,
+						offer.getAssetId(), constraintRequests, extensibleProperty));
+				int retry = 3;
+				int counter = 1;
 
-                negotiateContractId.set(contractNegotiateManagement.negotiateContract(offer.getOfferId(),
-                        recipientURL, offer.getAssetId(), constraintRequests, extensibleProperty));
-                int retry = 3;
-                int counter = 1;
+				do {
+					Thread.sleep(3000);
+					checkContractNegotiationStatus
+							.set(contractNegotiateManagement.checkContractNegotiationStatus(negotiateContractId.get()));
+					counter++;
+				} while (checkContractNegotiationStatus.get() != null
+						&& !checkContractNegotiationStatus.get().getState().equals("CONFIRMED")
+						&& !checkContractNegotiationStatus.get().getState().equals("DECLINED") && counter <= retry);
 
-                do {
-                    Thread.sleep(3000);
-                    checkContractNegotiationStatus.set(contractNegotiateManagement
-                            .checkContractNegotiationStatus(negotiateContractId.get()));
-                    counter++;
-                } while (checkContractNegotiationStatus.get() != null && !checkContractNegotiationStatus.get().getState()
-                        .equals("CONFIRMED") && !checkContractNegotiationStatus.get().getState().equals("DECLINED") && counter <= retry);
+			} catch (Exception e) {
+				log.error("Exception in subscribeDataOffers" + e.getMessage());
+			} finally {
+				// Local DB entry
+				ContractNegotiationInfoEntity contractNegotiationInfoEntity = ContractNegotiationInfoEntity.builder()
+						.processId(processId).connectorId(consumerRequest.getConnectorId()).offerId(offer.getOfferId())
+						.contractNegotiationId(negotiateContractId != null ? negotiateContractId.get() : null)
+						.status(checkContractNegotiationStatus.get() != null
+								? checkContractNegotiationStatus.get().getState()
+								: "Failed:Exception")
+						.dateTime(LocalDateTime.now()).build();
+				contractNegotiationInfoRepository.save(contractNegotiationInfoEntity);
+			}
+		});
 
+	}
 
-            } catch (Exception e) {
-                log.error("Exception in subscribeDataOffers" + e.getMessage());
-            } finally {
-                // Local DB entry
-                ContractNegotiationInfoEntity contractNegotiationInfoEntity = ContractNegotiationInfoEntity.builder()
-                        .processId(processId)
-                        .connectorId(consumerRequest.getConnectorId())
-                        .offerId(offer.getOfferId())
-                        .contractNegotiationId(negotiateContractId != null ? negotiateContractId.get() : null)
-                        .status(checkContractNegotiationStatus.get() != null ? checkContractNegotiationStatus.get().getState() : "Failed:Exception")
-                        .dateTime(LocalDateTime.now()).build();
-                contractNegotiationInfoRepository.save(contractNegotiationInfoEntity);
-            }
-        });
+	public Map<String, Object> getAllContractOffers(String type, Integer limit, Integer offset) {
+		List<ContractAgreementResponse> contractAgreementResponses = new ArrayList<>();
+		List<ContractNegotiationDto> contractNegotiationDtoList = contractNegotiateManagement
+				.getAllContractNegotiations(type, limit, offset);
+		contractNegotiationDtoList.stream().forEach((contract) -> {
+			if (StringUtils.isBlank(type) || contract.getType().name().equals(type)) {
+				if (contract.getState().equals(NegotiationState.CONFIRMED.name()) || contract.getState().equals(NegotiationState.DECLINED.name())) {
+					String negotiationId = contract.getId();
+					if (StringUtils.isNotBlank(contract.getContractAgreementId())) {
+						ContractAgreementResponse agreementResponse = contractNegotiateManagement
+								.getAgreementBasedOnNegotiationId(type, negotiationId);
+						agreementResponse.setCounterPartyAddress(contract.getCounterPartyAddress());
+						agreementResponse.setDateCreated(contract.getCreatedAt());
+						agreementResponse.setDateUpdated(contract.getUpdatedAt());
+						agreementResponse.setType(contract.getType());
+						agreementResponse.setState(contract.getState());
+						contractAgreementResponses.add(agreementResponse);
+					}
+				} else {
+					ContractAgreementResponse agreementResponse = ContractAgreementResponse.builder()
+							.contractAgreementId(StringUtils.EMPTY).organizationName(StringUtils.EMPTY)
+							.title(StringUtils.EMPTY).negotiationId(contract.getId()).state(contract.getState())
+							.contractAgreementInfo(null).counterPartyAddress(contract.getCounterPartyAddress())
+							.type(contract.getType()).dateCreated(contract.getCreatedAt())
+							.dateUpdated(contract.getUpdatedAt()).build();
+					contractAgreementResponses.add(agreementResponse);
+				}
+			}
+		});
+		Map<String, Object> res = new HashMap<>();
+		if (UtilityFunctions.checkTypeOfConnector(type))
+			res.put("connector", providerHost);
+		else
+			res.put("connector", consumerHost);
 
-    }
+		res.put("contracts", contractAgreementResponses);
+		return res;
+	}
 
-    public List<ContractAgreementResponse> getAllContractOffers(Integer limit, Integer offset) {
-        List<ContractAgreementResponse> contractAgreementResponses = new ArrayList<>();
-        List<ContractNegotiationDto> contractNegotiationDtoList = contractNegotiateManagement.getAllContractNegotiations(limit, offset);
-        contractNegotiationDtoList.stream().forEach((contract) ->
-                {
-                    if (contract.getState().equals(NegotiationState.CONFIRMED.name())) {
-                        String negotiationId = contract.getId();
-                        if (StringUtils.isNotBlank(contract.getContractAgreementId())) {
-                            ContractAgreementResponse agreementResponse = contractNegotiateManagement.getAgreementBasedOnNegotiationId(negotiationId);
-                            agreementResponse.setCounterPartyAddress(contract.getCounterPartyAddress());
-                            agreementResponse.setDateCreated(contract.getCreatedAt());
-                            agreementResponse.setDateUpdated(contract.getUpdatedAt());
-                            contractAgreementResponses.add(agreementResponse);
-                        }
-                    } else {
-                        ContractAgreementResponse agreementResponse = ContractAgreementResponse.builder().contractAgreementId(StringUtils.EMPTY).organizationName(StringUtils.EMPTY)
-                                .title(StringUtils.EMPTY).negotiationId(contract.getId()).state(contract.getState())
-                                .contractAgreementInfo(null).counterPartyAddress(contract.getCounterPartyAddress())
-                                .dateCreated(contract.getCreatedAt()).dateUpdated(contract.getUpdatedAt()).build();
-                        contractAgreementResponses.add(agreementResponse);
-                    }
-                }
-        );
-        return contractAgreementResponses;
-    }
+	public List<LegalEntityResponse> fetchLegalEntitiesData(String searchText, Integer page, Integer size) {
+		List<LegalEntityResponse> result = new ArrayList<>();
+		LegalEntityData legalEntity = legalEntityDataApi.fetchLegalEntityData(searchText, page, size,
+				UtilityFunctions.getAuthToken());
+		if (null != legalEntity) {
+			legalEntity.getContent().stream().forEach(companyData -> {
+				companyData.getLegalEntity().getNames().stream().forEach(name -> {
+					LegalEntityResponse legalEntityResponse = LegalEntityResponse.builder()
+							.bpn(companyData.getLegalEntity().getBpn()).name(name.getValue()).build();
+					result.add(legalEntityResponse);
+				});
+			});
+		}
+		return result;
+	}
 
-    public List<LegalEntityResponse> fetchLegalEntitiesData(String searchText, Integer page, Integer size) {
-        List<LegalEntityResponse> result= new ArrayList<>();
-      	LegalEntityData legalEntity = legalEntityDataApi.fetchLegalEntityData(searchText, page, size, UtilityFunctions.getAuthToken());
-         if (null != legalEntity) {
-             legalEntity.getContent().stream().forEach(companyData -> {
-                 companyData.getLegalEntity().getNames().stream().forEach(name -> {
-                     LegalEntityResponse legalEntityResponse = LegalEntityResponse.builder().bpn(companyData.getLegalEntity().getBpn()).name(name.getValue()).build();
-                     result.add(legalEntityResponse);
-                 });
-             });
-         }
-         return result;
-     }
-
-    public List<ConnectorInfo> fetchConnectorInfo(List<String> bpns) {
-        String token = keycloakUtil.getKeycloakToken();
-        return connectorDiscoveryApi.fetchConnectorInfo(bpns, "Bearer " + token);
-    }
+	@SneakyThrows
+	public List<ConnectorInfo> fetchConnectorInfo(List<String> bpns) {
+		String token = keycloakUtil.getKeycloakToken();
+		return connectorDiscoveryApi.fetchConnectorInfo(bpns, "Bearer " + token);
+	}
 }

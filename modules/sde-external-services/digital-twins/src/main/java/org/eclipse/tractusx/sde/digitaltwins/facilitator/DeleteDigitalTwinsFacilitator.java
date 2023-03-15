@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -76,7 +76,7 @@ public class DeleteDigitalTwinsFacilitator {
 	@SneakyThrows
 	public void deleteDigitalTwinsById(String shellId, String subModelId) {
 		try {
-			digitalTwinsFeignClient.deleteDigitalTwinsById(shellId, subModelId, getHeaders());
+			digitalTwinsFeignClient.deleteSubmodelfromShellById(shellId, subModelId, getHeaders());
 		} catch (Exception e) {
 			parseExceptionMessage(e);
 		}

@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -49,8 +49,6 @@ import lombok.SneakyThrows;
 @Service
 public class EDCBatchHandlerUseCase extends Step {
 
-	private static final String ASSET_PROP_NAME_BATCH = "Batches - Submodel Batch";
-
 	private final AssetEntryRequestFactory assetFactory;
 	private final EDCGateway edcGateway;
 	private final PolicyRequestFactory policyFactory;
@@ -77,7 +75,7 @@ public class EDCBatchHandlerUseCase extends Step {
 
 		try {
 
-			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel, ASSET_PROP_NAME_BATCH, shellId,
+			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel, getSubmodelShortDescriptionOfModel(), shellId,
 					subModelId, input.getUuid());
 			if (!edcGateway.assetExistsLookup(
 					assetEntryRequest.getAsset().getProperties().get(CommonConstants.ASSET_PROP_ID))) {
@@ -101,8 +99,8 @@ public class EDCBatchHandlerUseCase extends Step {
 			BatchEntity batchEntity = batchDeleteService.readEntity(input.getUuid());
 			batchDeleteService.deleteEDCAsset(batchEntity);
 		} catch (Exception e) {
-			if (!e.getMessage().contains("404 Not Found") && !e.getMessage().contains("No data found")) {
-				throw new ServiceException("Exception in EDC delete request process:"+e.getMessage());
+			if (!e.getMessage().contains("404 Not Found")) {
+				throw new ServiceException("Exception in EDC delete request process for Update:"+e.getMessage());
 			}
 		}
 	}

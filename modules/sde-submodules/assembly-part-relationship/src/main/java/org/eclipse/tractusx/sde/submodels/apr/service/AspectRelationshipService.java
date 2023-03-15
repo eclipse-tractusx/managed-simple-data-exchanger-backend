@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -108,6 +108,11 @@ public class AspectRelationshipService {
 	public int getUpdatedData(String refProcessId) {
 
 		return (int) aspectRelationshipRepository.countByUpdatedAndProcessId(CommonConstants.UPDATED_Y, refProcessId);
+	}
+
+	public AspectRelationshipEntity readEntityBySubModelId(String subModelId) {
+		return Optional.ofNullable(aspectRelationshipRepository.findTop1BySubModelId(subModelId))
+				.orElseThrow(() -> new NoDataFoundException("No data found for subModelId in SDE for reference detele in update case:" + subModelId));
 	}
 
 }

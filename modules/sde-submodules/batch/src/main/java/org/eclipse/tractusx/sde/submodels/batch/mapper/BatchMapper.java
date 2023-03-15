@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,20 +20,18 @@
 
 package org.eclipse.tractusx.sde.submodels.batch.mapper;
 
-import java.util.ArrayList;
-import java.util.stream.Stream;
+import java.util.HashSet;
+import java.util.Set;
 
-import org.eclipse.tractusx.sde.common.enums.OptionalIdentifierKeyEnum;
 import org.eclipse.tractusx.sde.common.model.LocalIdentifier;
 import org.eclipse.tractusx.sde.common.model.ManufacturingInformation;
 import org.eclipse.tractusx.sde.common.model.PartTypeInformation;
 import org.eclipse.tractusx.sde.common.model.SubmodelResultResponse;
+import org.eclipse.tractusx.sde.submodels.batch.constants.BatchConstants;
 import org.eclipse.tractusx.sde.submodels.batch.entity.BatchEntity;
 import org.eclipse.tractusx.sde.submodels.batch.model.Batch;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Named;
-import org.springframework.beans.factory.annotation.Value;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -44,8 +42,7 @@ import lombok.SneakyThrows;
 
 @Mapper(componentModel = "spring")
 public abstract class BatchMapper {
-	@Value(value = "${manufacturerId}")
-	private String manufacturerId;
+	
 	
 	ObjectMapper mapper = new ObjectMapper();
 
@@ -53,7 +50,6 @@ public abstract class BatchMapper {
 	@Mapping(target = "subModelId", ignore = true)
 	public abstract Batch mapFrom(BatchEntity batch);
 
-	@Mapping(source = "optionalIdentifierKey", target = "optionalIdentifierKey", qualifiedByName = "prettyName")
 	public abstract BatchEntity mapFrom(Batch batch);
 
 	@SneakyThrows
@@ -75,34 +71,25 @@ public abstract class BatchMapper {
 			return null;
 		}
 
-		ArrayList<LocalIdentifier> localIdentifiers = new ArrayList<>();
-		localIdentifiers.add(new LocalIdentifier("BatchID", entity.getBatchId()));
-		localIdentifiers.add(new LocalIdentifier("ManufacturerPartID", entity.getManufacturerPartId()));
-		localIdentifiers.add(new LocalIdentifier("ManufacturerID", manufacturerId));
-		if (entity.getOptionalIdentifierKey() != null && entity.getOptionalIdentifierValue() != null) {
-			localIdentifiers
-					.add(new LocalIdentifier(entity.getOptionalIdentifierKey(), entity.getOptionalIdentifierValue()));
-		}
+		Set<LocalIdentifier> localIdentifiers = new HashSet<>();
+		localIdentifiers.add(new LocalIdentifier(BatchConstants.BATCH_ID, entity.getBatchId()));
 
 		ManufacturingInformation manufacturingInformation = ManufacturingInformation.builder()
-				.country(entity.getManufacturingCountry()).date(entity.getManufacturingDate()).build();
+				.date(entity.getManufacturingDate())
+				.country(entity.getManufacturingCountry())
+				.build();
 
 		PartTypeInformation partTypeInformation = PartTypeInformation.builder()
-				.manufacturerPartID(entity.getManufacturerPartId()).customerPartId(entity.getCustomerPartId())
-				.classification(entity.getClassification()).nameAtManufacturer(entity.getNameAtManufacturer())
-				.nameAtCustomer(entity.getNameAtCustomer()).build();
+				.manufacturerPartId(entity.getManufacturerPartId())
+				.customerPartId(entity.getCustomerPartId())
+				.classification(entity.getClassification())
+				.nameAtManufacturer(entity.getNameAtManufacturer())
+				.nameAtCustomer(entity.getNameAtCustomer())
+				.build();
 
 		return new Gson().toJsonTree(SubmodelResultResponse.builder().localIdentifiers(localIdentifiers)
 				.manufacturingInformation(manufacturingInformation).partTypeInformation(partTypeInformation)
 				.catenaXId(entity.getUuid())
 				.build()).getAsJsonObject();
-	}
-
-	@Named("prettyName")
-	String getPrettyName(String optionalIdentifierKey) {
-		return optionalIdentifierKey == null || optionalIdentifierKey.isBlank() ? null
-				: Stream.of(OptionalIdentifierKeyEnum.values())
-						.filter(v -> v.getPrettyName().equalsIgnoreCase(optionalIdentifierKey)).findFirst().get()
-						.getPrettyName();
 	}
 }

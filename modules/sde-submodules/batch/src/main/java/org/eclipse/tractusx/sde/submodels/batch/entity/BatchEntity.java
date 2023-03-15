@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -22,11 +22,10 @@ package org.eclipse.tractusx.sde.submodels.batch.entity;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Data;
 
 @Table(name = "batch")
@@ -41,6 +40,8 @@ public class BatchEntity implements Serializable {
     private String processId;
     @Column(name = "batch_id")
     private String batchId;
+    @Column(name = "part_instance_id")
+    private String partInstanceId;
     @Column(name = "manufacturing_date")
     private String manufacturingDate;
     @Column(name = "manufacturing_country")
@@ -55,10 +56,6 @@ public class BatchEntity implements Serializable {
     private String nameAtManufacturer;
     @Column(name = "name_at_customer")
     private String nameAtCustomer;
-    @Column(name = "optional_identifier_key")
-    private String optionalIdentifierKey;
-    @Column(name = "optional_identifier_value")
-    private String optionalIdentifierValue;
     @Column(name = "shell_id")
     private String shellId;
     @Column(name = "sub_model_id")

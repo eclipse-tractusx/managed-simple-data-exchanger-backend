@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -60,8 +60,8 @@ public abstract class Step {
 		return this.submodelSchema.get("semantic_id").getAsString();
 	}
 	
-	public String getSubmodelDescriptionOfModel() {
-		return this.submodelSchema.get("description").getAsString();
+	public String getSubmodelShortDescriptionOfModel() {
+		return this.submodelSchema.get("shortDescription").getAsString();
 	}
 	
 	public String getSubmodelTitleIdOfModel() {
@@ -74,5 +74,9 @@ public abstract class Step {
 
 	protected void logDebug(String message) {
 		log.debug(String.format("[%s] %s", this.getClass().getSimpleName(), message));
+	}
+	
+	protected void logInfo(String message) {
+		log.info(String.format("[%s] %s", this.getClass().getSimpleName(), message));
 	}
 }

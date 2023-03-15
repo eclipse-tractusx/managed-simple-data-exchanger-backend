@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -32,6 +32,7 @@ import org.eclipse.tractusx.sde.common.enums.DurationEnum;
 import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
 import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
+import org.eclipse.tractusx.sde.edc.enums.Type;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -165,5 +166,9 @@ public class UtilityFunctions {
     public static String getAuthToken() {
         return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
     }
+    
+    public static boolean checkTypeOfConnector(String type) {
+		return StringUtils.isBlank(type) || Type.PROVIDER.name().equals(type);
+	}
 
 }

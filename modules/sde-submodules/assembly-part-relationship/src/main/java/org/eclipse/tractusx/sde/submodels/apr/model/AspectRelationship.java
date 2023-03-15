@@ -1,8 +1,8 @@
 /********************************************************************************
  * Copyright (c) 2022 Critical TechWorks GmbH
  * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022,2023 T-Systems International GmbH
+ * Copyright (c) 2022,2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -49,6 +49,7 @@ public class AspectRelationship {
 	private String contractDefinationId;
 	private String deleted;
 	private String updated;
+	private String oldSubmodelIdforUpdateCase;
 
 	@JsonProperty(value = "row_number")
 	private int rowNumber;
@@ -89,6 +90,9 @@ public class AspectRelationship {
 	@JsonProperty(value = "manufacturer_part_id")
 	private String childManufacturerPartId;
 
+	@JsonProperty(value = "manufacturer_id")
+	private String childManufacturerId;
+	
 	@JsonProperty(value = "optional_identifier_key")
 	private String childOptionalIdentifierKey;
 
@@ -101,20 +105,29 @@ public class AspectRelationship {
 	@JsonProperty(value = "quantity_number")
 	private String quantityNumber;
 
-	@JsonProperty(value = "measurement_unit_lexical_value")
-	private String measurementUnitLexicalValue;
+	@JsonProperty(value = "measurement_unit")
+	private String measurementUnit;
 
-	@JsonProperty(value = "datatype_uri")
-	private String dataTypeUri;
+	@JsonProperty(value = "created_on")
+	private String createdOn;
 
-	@JsonProperty(value = "assembled_on")
-	private String assembledOn;
-
+	@JsonProperty(value = "last_modified_on")
+	private String lastModifiedOn;
+	
 	public boolean hasOptionalParentIdentifier() {
 		boolean hasKey = this.getParentOptionalIdentifierKey() != null
 				&& !this.getParentOptionalIdentifierKey().isBlank();
 		boolean hasValue = this.getParentOptionalIdentifierValue() != null
 				&& !this.getParentOptionalIdentifierValue().isBlank();
+
+		return hasKey && hasValue;
+	}
+	
+	public boolean hasOptionalChildIdentifier() {
+		boolean hasKey = this.getChildOptionalIdentifierKey() != null
+				&& !this.getChildOptionalIdentifierKey().isBlank();
+		boolean hasValue = this.getChildOptionalIdentifierValue() != null
+				&& !this.getChildOptionalIdentifierValue().isBlank();
 
 		return hasKey && hasValue;
 	}

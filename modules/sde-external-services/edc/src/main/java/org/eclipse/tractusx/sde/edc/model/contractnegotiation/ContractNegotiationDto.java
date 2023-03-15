@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -38,7 +38,7 @@ public class ContractNegotiationDto {
     private String id;
     private String protocol = "ids-multipart";
     private String state;
-    private Type type = Type.CONSUMER;
+    private Type type;
     private long createdAt;
     private long updatedAt;
 

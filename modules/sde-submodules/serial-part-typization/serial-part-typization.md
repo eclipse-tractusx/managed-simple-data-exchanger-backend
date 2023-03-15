@@ -14,26 +14,24 @@ This module use for SerialPartTypization submodel specification and descriptors.
 
 Please find below links for schema details:
 
-- https://portal.int.demo.catena-x.net/semantichub/urn%3Abamm%3Aio.catenax.serial_part_typization%3A1.1.0%23SerialPartTypization
-- blob:https://portal.int.demo.catena-x.net/421bf0de-72a6-4261-93cb-dcbb16a110a2
-- https://github.com/catenax-ng/product-dft-backend/blob/modules-branch/modules/sde-submodules/serial-part-typization/src/main/resources/serial-part-typization.json
+- [schema](src/main/resources/serial-part-typization.json)
 
 
 ### SerialPartTypization CSV file headers
 
-| Headers Name       	       		| Mandatory                     	| Position 	|
-|-------------------------------		|-----------------------------	|--------	|
-| uuid		                   		| No		             		    |    1     	|
+| Headers Name       	       		| Mandatory                     | Position 	|
+|-------------------------------	|-----------------------------	|--------	|
+| uuid		                   		| No		             		|    1     	|
 | part_instance_id			   		| Yes					      	|    2    	|
-| manufacturing_date    				| Yes 							| 	 3	   	|
-| manufacturing_country  	    		| No                           	| 	 4	  	|
-| manufacturer_part_id 		      	| Yes                           	| 	 5	  	|
-| customer_part_id		    		 	| No                     		| 	 6	 	|
-| classification		 				| Yes                           	|    7 	 	|
-| name_at_manufacturer	 			| Yes                           	|    8 	 	|
+| manufacturing_date    			| Yes 							| 	 3	   	|
+| manufacturing_country  	    	| No                           	| 	 4	  	|
+| manufacturer_part_id 		      	| Yes                           | 	 5	  	|
+| customer_part_id		    		| No                     		| 	 6	 	|
+| classification		 			| Yes                           |    7 	 	|
+| name_at_manufacturer	 			| Yes                           |    8 	 	|
 | name_at_customer	 				| No                           	|    9 	 	|
-| optional_identifier_key	 		| No                           	|    10 	 	|
-| optional_identifier_value			| No                           	|    11 	 	|
+| optional_identifier_key	 		| No                           	|    10 	|
+| optional_identifier_value			| No                           	|    11 	|
 
 
 #### [CSV Sample File Link]

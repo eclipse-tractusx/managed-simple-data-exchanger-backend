@@ -1,8 +1,8 @@
 /********************************************************************************
  * Copyright (c) 2022 Critical TechWorks GmbH
  * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -23,9 +23,10 @@
 package org.eclipse.tractusx.sde.common.enums;
 
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
 import java.util.stream.Stream;
+
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 
 @Converter(autoApply = true)
 public class OptionalIdentifierKeyEnumConverter implements AttributeConverter<OptionalIdentifierKeyEnum, String> {

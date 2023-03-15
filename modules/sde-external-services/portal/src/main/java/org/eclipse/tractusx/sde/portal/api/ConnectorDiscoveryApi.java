@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,18 +20,25 @@
 
 package org.eclipse.tractusx.sde.portal.api;
 
+import java.net.URI;
 import java.util.List;
 
 import org.eclipse.tractusx.sde.portal.model.ConnectorInfo;
+import org.eclipse.tractusx.sde.portal.model.response.KeycloakTokenResponse;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-
 @FeignClient(value = "ConnectorDiscoveryApi", url = "${portal.backend.hostname}")
 public interface ConnectorDiscoveryApi {
-    @PostMapping(path = "/api/administration/Connectors/discovery")
-    List<ConnectorInfo> fetchConnectorInfo(@RequestBody List<String> bpns, @RequestHeader("Authorization") String bearerToken);
+
+	@PostMapping
+	KeycloakTokenResponse readAuthToken(URI url, @RequestBody MultiValueMap<String, Object> body);
+
+	@PostMapping(path = "/api/administration/Connectors/discovery")
+	List<ConnectorInfo> fetchConnectorInfo(@RequestBody List<String> bpns,
+			@RequestHeader("Authorization") String bearerToken);
 
 }

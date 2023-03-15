@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 T-Systems International GmbH
- * Copyright (c) 2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,7 +19,6 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.submodels.psiap.constants;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import lombok.Getter;
@@ -28,11 +27,6 @@ import lombok.Getter;
 @Component
 public class PartSiteInformationAsPlannedConstants {
 
-	@Value(value = "${manufacturerId}")
-	public String manufacturerId;
-	
-	@Value(value = "${edc.hostname}")
-	public String edcEndpoint;
 	
 	public static final String MANUFACTURER_PART_ID = "manufacturerPartId";
 	public static final String MANUFACTURER_ID = "manufacturerId";

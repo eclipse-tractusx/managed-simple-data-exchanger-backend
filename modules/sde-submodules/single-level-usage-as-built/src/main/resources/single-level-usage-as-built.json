@@ -1,0 +1,230 @@
+{
+	"$schema": "https://json-schema.org/draft/2019-09/schema",
+	"$id": "http://example.com/example.json",
+	"type": "array",
+	"id": "singlelevelusageasbuilt",
+	"idShort": "singleLevelUsageAsBuilt",
+	"version": "1.0.1",
+	"semantic_id": "urn:bamm:io.catenax.single_level_usage_as_built:1.0.1#SingleLevelUsageAsBuilt",
+	"title": "Single Level Usage AsBuilt",
+	"shortDescription": "BoM AsBuilt - Submodel SingleLevelUsageAsBuilt",
+	"description": "The aspect provides the information in which parent part(s)/product(s) the given item is assembled in. Could be a 1:1 relationship in terms of a e.g. a brake component or 1:n for e.g. coatings. The given item as well as the parent item must refer to an object from as-built lifecycle phase, i.e. a batch or a serialized part.",
+	"items": {
+		"type": "object",
+		"required": [
+			"parent_uuid",
+			"parent_part_instance_id",
+			"parent_manufacturer_part_id",
+			"uuid",
+			"part_instance_id",
+			"manufacturer_part_id",
+			"quantity_number",
+			"measurement_unit",
+			"created_on"
+		],
+		"dependentRequired": {
+			"parent_optional_identifier_key": [
+				"parent_optional_identifier_value"
+			],
+			"parent_optional_identifier_value": [
+				"parent_optional_identifier_key"
+			],
+			"optional_identifier_key": [
+				"optional_identifier_value"
+			],
+			"optional_identifier_value": [
+				"optional_identifier_key"
+			]
+		},
+		"properties": {
+			"parent_uuid": {
+				"type": [
+					"string"
+				],
+				"title": "Parent UUID",
+				"minLength": 1,
+				"description": "The Catena-X ID of the parent object, into which the given child object is assembled in.",
+				"pattern": "^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+				"examples": [
+					"urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2"
+				]
+			},
+			"parent_part_instance_id": {
+				"type": [
+					"string"
+				],
+				"title": "Parent Part Instance ID",
+				"description": "The Parent Part Instance ID of the parent object Part Instance ID, to identify parent object in digital twins.",
+				"minLength": 1,
+				"examples": [
+					"ParentNO-64534234"
+				]
+			},
+			"parent_manufacturer_part_id": {
+				"type": [
+					"string"
+				],
+				"title": "Parent Manufacturer Part ID",
+				"description": "The Parent Manufacturer Part ID of the parent object Manufacturer Part ID, to identify parent object in digital twins.",
+				"minLength": 1,
+				"examples": [
+					"PART-2345546234"
+				]
+			},
+			"parent_optional_identifier_key": {
+				"type": [
+					"string",
+					"null"
+				],
+				"enum": [
+					"",
+					"van",
+					"batchId"
+				],
+				"title": "Parent Optional Identifier Key",
+				"description": "The Parent Optional Identifier Key of the parent object Optional Identifier Key, to identify parent object in digital twins.",
+				"examples": [
+					"van"
+				]
+			},
+			"parent_optional_identifier_value": {
+				"type": [
+					"string",
+					"null"
+				],
+				"title": "Parent Optional Identifier Value",
+				"description": "The Parent Optional Identifier Value of the parent object Optional Identifier Value, to identify parent object in digital twins.",
+				"examples": [
+					"Value"
+				]
+			},
+			"uuid": {
+				"type": [
+					"string"
+				],
+				"title": "UUID URN",
+				"description": "The Catena-X ID of the given part (e.g. the assembly), valid for the Catena-X dataspace.",
+				"minLength": 1,
+				"pattern": "^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+				"examples": [
+					"urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2"
+				]
+			},
+			"part_instance_id": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"title": "Part Instance ID",
+				"description": "The serial number of the serialized part from the manufacturer. We assume here that the customer does not have or create its own serial number for a part, but just used the manufacturer's serial number.",
+				"examples": [
+					"NO-234523423"
+				]
+			},
+			"manufacturer_part_id": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"title": "Manufacturer Part ID",
+				"description": "The ID of the type/catalog part (of which the serialized part is an instance of) from the manufacturer.",
+				"examples": [
+					"37754B7-76"
+				]
+			},
+			"optional_identifier_key": {
+				"type": [
+					"string",
+					"null"
+				],
+				"enum": [
+					"",
+					"van",
+					"batchId"
+				],
+				"title": "Optional Identifier Key",
+				"description": "The Optional Identifier Key is used for create shell in digital twins. If you ha Identifier Key provided.",
+				"examples": [
+					"van"
+				]
+			},
+			"optional_identifier_value": {
+				"type": [
+					"string",
+					"null"
+				],
+				"title": "Optional Identifier Value",
+				"description": "The Optional Identifier Value to identify object in digital twins.If Identifier Key provided.",
+				"examples": [
+					"Value"
+				]
+			},
+			"quantity_number": {
+				"type": [
+					"number"
+				],
+				"minLength": 1,
+				"multipleOf": 0.01,
+				"title": "Quantity Number",
+				"description": "Comprises the number of objects and the unit of measurement for the respective child objects",
+				"examples": [
+					2.5
+				]
+			},
+			"measurement_unit": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"title": "Measurement Unit",
+				"description": "Unit of Measurement for the quantity of serialized objects",
+				"examples": [
+					"litre",
+					"unit"
+				]
+			},
+			"created_on": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"format": "date-time",
+				"title": "Created On",
+				"description": "Timestamp when the relation between the parent part and the child part was created, e.g. when the given child part was assembled into the parent part.",
+				"examples": [
+					"2022-02-03T14:48:54.709Z"
+				]
+			},
+			"last_modified_on": {
+				"type": [
+					"string",
+					"null"
+				],
+				"format": "date-time",
+				"title": "Last Modified On",
+				"description": "Timestamp when the assembly relationship between parent part and child part was last modified.",
+				"examples": [
+					"2022-02-03T14:48:54.709Z"
+				]
+			}
+		}
+	},
+	"examples": [
+		{
+			"parent_uuid": "urn:uuid:bC7ADFb4-596a-Fe7F-6F28-a5EB7738D2Ca",
+			"parent_part_instance_id": "NO-159040131155901488695376",
+			"parent_manufacturer_part_id": "MAN-159040131155901488695376",
+			"parent_optional_identifier_key": "van",
+			"parent_optional_identifier_value": "Value",
+			"uuid": "urn:uuid:055c1128-0375-47c8-98de-7cf802c3241d",
+			"part_instance_id": "NO-159040131155901488",
+			"manufacturer_part_id": "37754B7-76",
+			"optional_identifier_key": "van",
+			"optional_identifier_value": "Value",
+			"quantity_number": 2.5,
+			"measurement_unit": "litre",
+			"created_on": "2022-02-03T14:48:54.709Z",
+			"last_modified_on": "2022-02-03T14:48:54.709Z"
+		}
+	]
+}

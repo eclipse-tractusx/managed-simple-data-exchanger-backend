@@ -20,7 +20,6 @@
 
 package org.eclipse.tractusx.sde.core.controller;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.ResponseEntity.ok;
 
 import java.util.Map;
@@ -65,22 +64,5 @@ public class ConsumerController {
 		log.info("Request recevied : /api/subscribe-data-offers");
 		consumerControlPanelService.subscribeDataOffers(consumerRequest, processId);
 		return ResponseEntity.ok().body(processId);
-	}
-
-	@GetMapping(value = "/contract-agreements", produces = APPLICATION_JSON_VALUE)
-	@PreAuthorize("hasPermission('','consumer_view_contract_agreement@provider_view_contract_agreement')")
-	public ResponseEntity<Object> queryOnDataOffersStatus(@RequestParam(value = "type", required = false) String type,
-			@RequestParam(value = "maxLimit", required = false) Integer limit,
-			@RequestParam(value = "offset", required = false) Integer offset) {
-		log.info("Request received : /api/contract-agreements");
-		if (limit == null) {
-			limit = 10;
-		}
-		if (offset == null) {
-			offset = 0;
-		}
-		Map<String,Object> res = consumerControlPanelService.getAllContractOffers(type, limit,
-				offset);
-		return ok().body(res);
 	}
 }

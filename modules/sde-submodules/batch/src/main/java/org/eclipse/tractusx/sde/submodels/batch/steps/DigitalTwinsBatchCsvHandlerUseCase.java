@@ -27,7 +27,7 @@ import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseException;
-import org.eclipse.tractusx.sde.common.exception.ServiceException;
+import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.Endpoint;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.GlobalAssetId;
@@ -63,7 +63,8 @@ public class DigitalTwinsBatchCsvHandlerUseCase extends Step {
 		try {
 			return doRun(batch);
 		} catch (Exception e) {
-			throw new ServiceException(batch.getRowNumber() + ": DigitalTwins: " + e.getMessage());
+			throw new CsvHandlerUseCaseException(batch.getRowNumber(),
+					": DigitalTwins: " + e.getMessage());
 		}
 	}
 

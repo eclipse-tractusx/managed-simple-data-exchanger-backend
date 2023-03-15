@@ -40,10 +40,8 @@ import org.eclipse.tractusx.sde.edc.api.ContractOfferCatalogApi;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.Expression;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyConstraintBuilderService;
-import org.eclipse.tractusx.sde.edc.enums.NegotiationState;
-import org.eclipse.tractusx.sde.edc.facilitator.ContractNegotiateManagement;
+import org.eclipse.tractusx.sde.edc.facilitator.ContractNegotiateManagementHelper;
 import org.eclipse.tractusx.sde.edc.gateways.database.ContractNegotiationInfoRepository;
-import org.eclipse.tractusx.sde.edc.model.contractnegotiation.ContractNegotiationDto;
 import org.eclipse.tractusx.sde.edc.model.contractoffers.ContractOffersCatalogResponse;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
 import org.eclipse.tractusx.sde.edc.model.request.OfferRequest;
@@ -73,7 +71,7 @@ class ConsumerControlPanelServiceTest {
 	private IPartnerPoolExternalServiceApi legalEntityDataApi;
 
 	@MockBean
-	private ContractNegotiateManagement contractNegotiateManagement;
+	private ContractNegotiateManagementHelper contractNegotiateManagement;
 
 	@MockBean
 	private ContractNegotiationInfoRepository contractNegotiationInfoRepository;
@@ -140,17 +138,6 @@ class ConsumerControlPanelServiceTest {
 		assertEquals(1, consumerControlPanelService.getAuthHeader().size());
 	}
 
-	@Test
-	void testContractOffer() {
-		String type = any();
-		List<ContractNegotiationDto> contractNegotiationDtoList = List
-				.of(ContractNegotiationDto.builder().contractAgreementId(null).id("negotiationId")
-						.state(NegotiationState.DECLINED.name()).counterPartyAddress("address").build());
-		when(contractNegotiateManagement.getAllContractNegotiations(type, anyInt(), anyInt()))
-				.thenReturn(contractNegotiationDtoList);
-		Map<String, Object> list = consumerControlPanelService.getAllContractOffers(type, 10, 1);
-		assertEquals(2, list.size());
-	}
 
 	@Test
 	void testSubscribeDataOffers2() {

@@ -117,6 +117,16 @@ tolerations: []
 
 affinity: {}
 
+postgres:
+  enabled: true
+  auth:
+    username: "dftUser"
+    database: "dftdb"
+    existingSecret: dft-postgresql-secrets
+    secretKeys:
+        adminPasswordKey: "postgres-password"
+        userPasswordKey: "password"
+
 configuration:
   properties: |-
     #Oauth 2 configuration with keycloak

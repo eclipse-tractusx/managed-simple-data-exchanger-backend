@@ -27,8 +27,8 @@ version: 1.9.0
 appVersion: "1.9.0"
 
 dependencies:
-  - condition: dftpostgresql.enabled
+  - condition: postgres.enabled
     name: postgresql
-    alias: dftpostgresql
+    alias: postgres
     repository: https://charts.bitnami.com/bitnami
     version: 11.x.x

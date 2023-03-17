@@ -58,10 +58,7 @@ spec:
           - containerPort: {{ .Values.portContainer }}
           env:
             - name: SPRING_DATASOURCE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: dft-postgresql-secrets
-                  key: dbUrl
+              value: "jdbc:postgresql://{{ .Values.dftpostgressql.fullnameOverride }}:{{ .Values.dftpostgresql.auth.port }}/{{ .Values.dftpostgresql.auth.database }}"
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:

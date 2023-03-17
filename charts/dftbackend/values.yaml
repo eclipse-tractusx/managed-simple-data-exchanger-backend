@@ -121,21 +121,16 @@ dftpostgresql:
   # -- PostgreSQL chart configuration
   # Switch to enable or disable the PostgreSQL helm chart
   enabled: true
-  # -- FullnameOverride to 'dft-backend-postgresql'.
-  fullnameOverride: "dft-backend-postgresql"
   auth:
-    username: "dftuser"
-
-    password: ""
-    # -- Database name
-    database: "postgres"
-    # -- Database port number
-    port: 5432
-    # -- Secret containing the passwords for root usernames postgres and non-root usernames repl_user, portal and provisioning.
-    existingSecret: "dft-postgresql-secrets"
-  
-    postgresPassword: ""
-    
+   postgresPassword: ""
+   username: "dftuser"
+   password: ""
+   port: 5432
+   database: ""
+   existingSecret: "dft-postgresql-secrets"
+   secretKeys:
+    adminPasswordKey: "postgresPassword"
+    userPasswordKey: "password"
 
 configuration:
   properties: |-

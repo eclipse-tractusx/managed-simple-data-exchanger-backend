@@ -41,7 +41,6 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelListRespo
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelResponse;
 import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsUtility;
 import org.eclipse.tractusx.sde.digitaltwins.gateways.external.DigitalTwinGateway;
-import org.eclipse.tractusx.sde.submodels.pap.constants.PartAsPlannedConstants;
 import org.eclipse.tractusx.sde.submodels.pap.model.PartAsPlanned;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -115,12 +114,12 @@ public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 	private ShellLookupRequest getShellLookupRequest(PartAsPlanned partAsPlannedAspect) {
 
 		ShellLookupRequest shellLookupRequest = new ShellLookupRequest();
-		shellLookupRequest.addLocalIdentifier(PartAsPlannedConstants.MANUFACTURER_PART_ID,
+		shellLookupRequest.addLocalIdentifier(CommonConstants.MANUFACTURER_PART_ID,
 				partAsPlannedAspect.getManufacturerPartId());
-		shellLookupRequest.addLocalIdentifier(PartAsPlannedConstants.MANUFACTURER_ID,
+		shellLookupRequest.addLocalIdentifier(CommonConstants.MANUFACTURER_ID,
 				digitalTwinsUtility.getManufacturerId());
-		shellLookupRequest.addLocalIdentifier(PartAsPlannedConstants.ASSET_LIFECYCLE_PHASE,
-				PartAsPlannedConstants.AS_PLANNED);
+		shellLookupRequest.addLocalIdentifier(CommonConstants.ASSET_LIFECYCLE_PHASE,
+				CommonConstants.AS_PLANNED);
 
 		return shellLookupRequest;
 	}
@@ -130,7 +129,7 @@ public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 		ArrayList<String> value = new ArrayList<>();
 		value.add(getsemanticIdOfModel());
 		SemanticId semanticId = new SemanticId(value);
-		String identification = PartAsPlannedConstants.PREFIX + UUID.randomUUID();
+		String identification = CommonConstants.PREFIX + UUID.randomUUID();
 
 		List<Endpoint> endpoints = digitalTwinsUtility.prepareDtEndpoint(partAsPlannedAspect.getShellId(), identification);
 		
@@ -141,9 +140,9 @@ public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 	private ShellDescriptorRequest getShellDescriptorRequest(PartAsPlanned partAsPlannedAspect) {
 
 		ArrayList<KeyValuePair> specificIdentifiers = new ArrayList<>();
-		specificIdentifiers.add(new KeyValuePair(PartAsPlannedConstants.MANUFACTURER_PART_ID,partAsPlannedAspect.getManufacturerPartId()));
-		specificIdentifiers.add(new KeyValuePair(PartAsPlannedConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId()));
-		specificIdentifiers.add(new KeyValuePair(PartAsPlannedConstants.ASSET_LIFECYCLE_PHASE, PartAsPlannedConstants.AS_PLANNED));
+		specificIdentifiers.add(new KeyValuePair(CommonConstants.MANUFACTURER_PART_ID,partAsPlannedAspect.getManufacturerPartId()));
+		specificIdentifiers.add(new KeyValuePair(CommonConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId()));
+		specificIdentifiers.add(new KeyValuePair(CommonConstants.ASSET_LIFECYCLE_PHASE, CommonConstants.AS_PLANNED));
 
 		List<String> values = new ArrayList<>();
 		values.add(partAsPlannedAspect.getUuid());
@@ -153,6 +152,6 @@ public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 				.idShort(String.format("%s_%s_%s", partAsPlannedAspect.getNameAtManufacturer(),
 						digitalTwinsUtility.getManufacturerId(), partAsPlannedAspect.getManufacturerPartId()))
 				.globalAssetId(globalIdentifier).specificAssetIds(specificIdentifiers)
-				.identification(PartAsPlannedConstants.PREFIX + UUID.randomUUID()).build();
+				.identification(CommonConstants.PREFIX + UUID.randomUUID()).build();
 	}
 }

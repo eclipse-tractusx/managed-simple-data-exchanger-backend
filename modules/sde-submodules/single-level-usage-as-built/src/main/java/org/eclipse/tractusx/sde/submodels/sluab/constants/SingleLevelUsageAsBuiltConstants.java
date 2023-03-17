@@ -27,6 +27,10 @@ import lombok.Getter;
 @Component
 public class SingleLevelUsageAsBuiltConstants {
 
+	private SingleLevelUsageAsBuiltConstants() {
+		throw new IllegalStateException("Constant class");
+	}
+
 	public static final String MANUFACTURER_PART_ID = "manufacturerPartId";
 	public static final String MANUFACTURER_ID = "manufacturerId";
 	public static final String PART_INSTANCE_ID = "partInstanceId";

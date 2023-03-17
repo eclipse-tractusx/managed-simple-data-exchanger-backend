@@ -22,6 +22,10 @@ package org.eclipse.tractusx.sde.common.constants;
 
 public class CommonConstants {
 
+	private CommonConstants() {
+		throw new IllegalStateException("Constant class");
+	}
+
 	public static final String CSV_FILE_EXTENSION = ".csv";
 	public static final String SEPARATOR = ";";
 

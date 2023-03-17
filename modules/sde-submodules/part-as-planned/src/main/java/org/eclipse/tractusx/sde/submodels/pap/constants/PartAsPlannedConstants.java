@@ -27,7 +27,10 @@ import lombok.Getter;
 @Component
 public class PartAsPlannedConstants {
 
-	
+	private PartAsPlannedConstants() {
+		throw new IllegalStateException("Constant class");
+	}
+
 	public static final String MANUFACTURER_PART_ID = "manufacturerPartId";
 	public static final String MANUFACTURER_ID = "manufacturerId";
 	public static final String CUSTOMER_PART_ID = "customerPartId";

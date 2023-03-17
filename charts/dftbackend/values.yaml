@@ -123,14 +123,12 @@ dftpostgresql:
   enabled: true
   fullnameOverride: "product-dft-backend-postgres"
   auth:
-   postgresPassword: ""
-   username: ""
-   password: ""
+   username: "dftuser"
    port: 5432
    database: "dftdb"
    existingSecret: "dft-postgresql-secrets"
    secretKeys:
-    adminPasswordKey: "postgresPassword"
+    adminPasswordKey: "postgres-password"
     userPasswordKey: "password"
 
 configuration:

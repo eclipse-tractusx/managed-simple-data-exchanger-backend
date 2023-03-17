@@ -60,10 +60,7 @@ spec:
             - name: SPRING_DATASOURCE_URL
               value: "jdbc:postgresql://{{ .Values.dftpostgresql.fullnameOverride }}:{{ .Values.dftpostgresql.auth.port }}/{{ .Values.dftpostgresql.auth.database }}"
             - name: SPRING_DATASOURCE_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: dft-postgresql-secrets
-                  key: username
+              value: {{ .Values.dftpostgresql.auth.username }}
             - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:

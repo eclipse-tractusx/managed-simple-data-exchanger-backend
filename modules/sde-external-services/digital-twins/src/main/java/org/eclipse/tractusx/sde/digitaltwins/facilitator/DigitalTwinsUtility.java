@@ -53,7 +53,7 @@ public class DigitalTwinsUtility {
 	}
 
 	private String encodedUrl(String format) {
-		return format.replaceAll(":", "%3A");
+		return format.replace(":", "%3A");
 	}
 	
 

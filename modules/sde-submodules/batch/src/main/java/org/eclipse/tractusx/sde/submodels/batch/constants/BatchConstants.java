@@ -19,13 +19,14 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.submodels.batch.constants;
 
-import org.springframework.stereotype.Component;
-
 import lombok.Getter;
 
 @Getter
-@Component
 public class BatchConstants {
+	
+	private BatchConstants() {
+		throw new IllegalStateException("Constant class");
+	}
 	
 	public static final String AS_BUILT = "AsBuilt";
 	public static final String BATCH_ID = "batchId";

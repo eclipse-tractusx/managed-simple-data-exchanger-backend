@@ -22,6 +22,10 @@ package org.eclipse.tractusx.sde.common.constants;
 
 public class CommonConstants {
 
+	private CommonConstants() {
+		throw new IllegalStateException("Constant class");
+	}
+
 	public static final String CSV_FILE_EXTENSION = ".csv";
 	public static final String SEPARATOR = ";";
 
@@ -43,4 +47,6 @@ public class CommonConstants {
 	public static final String ENDPOINT_PROTOCOL = "IDS/ECLIPSE DATASPACE CONNECTOR";
 	public static final String SUBMODEL_CONTEXT_URL = "/submodel?content=value&extent=WithBLOBValue";
 
+	public static final String AS_PLANNED = "AsPlanned";
+	
 }

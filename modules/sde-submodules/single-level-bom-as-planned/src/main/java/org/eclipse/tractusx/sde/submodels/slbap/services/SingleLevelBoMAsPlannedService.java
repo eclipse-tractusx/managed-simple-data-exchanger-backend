@@ -26,7 +26,6 @@ import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
 import org.eclipse.tractusx.sde.digitaltwins.facilitator.DeleteDigitalTwinsFacilitator;
 import org.eclipse.tractusx.sde.edc.facilitator.DeleteEDCFacilitator;
-import org.eclipse.tractusx.sde.submodels.pap.constants.PartAsPlannedConstants;
 import org.eclipse.tractusx.sde.submodels.slbap.entity.SingleLevelBoMAsPlannedEntity;
 import org.eclipse.tractusx.sde.submodels.slbap.mapper.SingleLevelBoMAsPlannedMapper;
 import org.eclipse.tractusx.sde.submodels.slbap.repository.SingleLevelBoMAsPlannedRepository;
@@ -55,7 +54,7 @@ public class SingleLevelBoMAsPlannedService {
 						.filter(a -> !a.isEmpty())
 						.orElseThrow(() -> new NoDataFoundException(
 								String.format("No data found for processid %s ", refProcessId)))
-						.stream().filter(e -> !PartAsPlannedConstants.DELETED_Y.equals(e.getDeleted()))
+						.stream().filter(e -> !CommonConstants.DELETED_Y.equals(e.getDeleted()))
 						.map(singleLevelBoMAsPlannedMapper::mapFromEntity).toList())
 				.filter(a -> !a.isEmpty()).orElseThrow(
 						() -> new NoDataFoundException("No data founds for deletion, All records are already deleted"));
@@ -75,7 +74,7 @@ public class SingleLevelBoMAsPlannedService {
 	}
 
 	private void saveSingleLevelBoMAsPlannedWithDeleted(SingleLevelBoMAsPlannedEntity aspectRelationshipEntity) {
-		aspectRelationshipEntity.setDeleted(PartAsPlannedConstants.DELETED_Y);
+		aspectRelationshipEntity.setDeleted(CommonConstants.DELETED_Y);
 		singleLevelBoMAsPlannedRepository.save(aspectRelationshipEntity);
 	}
 

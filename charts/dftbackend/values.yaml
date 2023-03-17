@@ -124,10 +124,10 @@ dftpostgresql:
   fullnameOverride: "product-dft-backend-postgres"
   auth:
    postgresPassword: ""
-   username: ""
+   username: "dftuser"
    password: ""
    port: 5432
-   database: ""
+   database: "dftdb"
    existingSecret: ""
    secretKeys:
     adminPasswordKey: ""

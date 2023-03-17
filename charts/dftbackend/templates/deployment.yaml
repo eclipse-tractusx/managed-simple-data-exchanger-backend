@@ -58,7 +58,7 @@ spec:
           - containerPort: {{ .Values.portContainer }}
           env:
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:postgresql://{{ .Release.Name }}:{{ .Values.dftpostgresql.auth.port }}/{{ .Values.dftpostgresql.auth.database }}"
+              value: "jdbc:postgresql://{{ .Values.dftpostgresql.fullnameOverride }}:{{ .Values.dftpostgresql.auth.port }}/{{ .Values.dftpostgresql.auth.database }}"
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:

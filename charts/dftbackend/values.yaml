@@ -121,6 +121,7 @@ dftpostgresql:
   # -- PostgreSQL chart configuration
   # Switch to enable or disable the PostgreSQL helm chart
   enabled: true
+  fullnameOverride: "product-dft-backend-postgres"
   auth:
    postgresPassword: ""
    username: "dftuser"

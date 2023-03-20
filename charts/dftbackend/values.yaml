@@ -117,15 +117,19 @@ tolerations: []
 
 affinity: {}
 
-dftpostgresql:
+dftpostgresql:  
+  # -- PostgreSQL chart configuration
+  # Switch to enable or disable the PostgreSQL helm chart
   enabled: true
+  fullnameOverride: "product-dft-backend-postgres"
   auth:
-    username: "dftUser"
-    database: "dftdb"
-    existingSecret: dft-postgresql-secrets
-    secretKeys:
-      adminPasswordKey: "postgres-password"
-      userPasswordKey: "password"
+   username: "dftuser"
+   port: 5432
+   database: "dftdb"
+   existingSecret: "dft-postgresql-secrets"
+   secretKeys:
+    adminPasswordKey: "postgres-password"
+    userPasswordKey: "password"
 
 configuration:
   properties: |-

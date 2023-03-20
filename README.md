@@ -104,6 +104,7 @@ You can find the standard credentials as well as further database configurations
 | **GET:- localhost:8080/api/contract-offers** |This API is used to get all contract offers | Refer Api Doc |Refer Api Doc|
 | **GET:- localhost:8080/api/legal-entities** |This API is used to fetch legal entities (list of company's) for Process| Refer Api Doc |Refer Api Doc|
 | **POST:- localhost:8080/api/connectors-discovery** |This API is used to fetch connectors information | Refer Api Doc |Refer Api Doc|
+| **GET:- localhost:8080/api/unified-bpn-validation/{bpn}** |This API is used to Validate BPN No. is it part of CX network  or not| Refer Api Doc |Refer Api Doc|
 
 
 ---

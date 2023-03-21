@@ -61,7 +61,7 @@ Apart from both upload Batch upload is additional feature were added into DFT.
 <b>For Assembly Part Relationship:</b>
 
 1. Maps the content of the line with an Assembly Part Relationship Aspect Relationship.
-2. checks if an Serial Part Typization Aspect exists so it can be related to that Aspect.
+2. checks if an Both parent and child Aspect exists so it can be related to that Aspect.
 3. Registers in DigitalTwins.
 4. Create Asset in EDC Connector.
 5. Stores the line in the database.

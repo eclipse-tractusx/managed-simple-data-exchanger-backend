@@ -1,36 +1,140 @@
-   # Data Format Transformer(Simple Data Exchanger)
+   # Simple Data Exchanger (formaly known Data Format Transformer)
 ---
 ## Description
 
-This repository is part of the overarching Catena-X project. It contains the Backend for the DFT.
-DFT is short for Data Format Transformer.
+This repository is part of the overarching Catena-X project. It contains the Backend for the SDE/DFT.
+SDE Simple data exchanger(formaly known DFT is short for Data Format Transformer)
 
 It is a standalone service which can be self-hosted. 
 It enables companies to provide their data in the Catena-X network via an EDC.
-Data is uploaded via two CSV-files. The DFT registers the data in the Digital Twin Registry and makes it accessible via an EDC.
-The DFT project has two dependencies: Digital Twins and EDC.
 
-##### For installation guide: see [InstallationGuide.md](InstallationGuide.md)
+## Important !!!
+### Deployemnt of DFT backend
+The auto setup is the central service orchestration component. The auto setup can hide all complex configuration stuff for you and get DFT backend service deployed for you as service. The auto setup taking all deployemnt through their specific helm charts controlled. The auto setup knows which prerequisites and which configurations are required for the components and creates them. All dependencies and any error messages are intercepted by Auto-Setup and treated correctly and meaningfully. Therefore, Auto-Setup meets your requirements exactly.
+
+Once SDE deployed, The Data is uploaded via two CSV-files. The SDE registers the data in the Digital Twin Registry and makes it accessible via an EDC.
+The SDE project has three dependencies: Digital Twins, Portal and EDC.
 
 ### How to run
 
-DFT is a SpringBoot Java software project managed by Maven.
+SDE is a SpringBoot Java software project managed by Maven.
 
 When running, the project requires a postgresql database to be available to connect to. Per default configuration the application expects postgres to run on localhost on port 5432.
 
 You can find the standard credentials as well as further database configurations int the application.properties file in the resource folder.
 
+### Configuration
 
-### Prerequisites
+Listed below are configuration keys needed to get the `sde-backend` up and running.
+
+| Key  	                                               | Required  | Example | Description |
+|---	                                                  |---	    |---	  |---          |
+| keycloak.clientid                                     | X         | password | This is keycloak clienId/resource  |
+| spring.security.oauth2.resourceserver.jwt.issuer-uri  | X         | http://ids.issuer.uir    | Url of Keycloak issuer uri|
+| management.endpoint.health.probes.enabled                                 | X         | /api    | |
+
+#### Example Configuration/application.properties
+
+```
+keycloak.clientid=sdeclientId
+spring.security.oauth2.resourceserver.jwt.issuer-uri=https://ids.issuer.com/auth/realms/master
+management.endpoint.health.probes.enabled=true
+management.health.readinessstate.enabled=true
+management.health.livenessstate.enabled=true
+management.endpoints.web.exposure.include=*
+spring.lifecycle.timeout-per-shutdown-phase=30s
+
+#provider your loggin level
+logging.level.org.springframework.security.web.csrf=INFO
+logging.level.org.apache.http=info
+logging.level.root=info
+
+#default spring boot configuration not need to change
+file.upload-dir=./temp/
+spring.servlet.multipart.enabled=true
+spring.main.allow-bean-definition-overriding=true
+spring.servlet.multipart.file-size-threshold=2KB
+spring.servlet.multipart.max-file-size=200MB
+spring.servlet.multipart.max-request-size=215MB
+
+#API context path to access application apis
+server.servlet.context-path=/api
+
+#Database and flyway details, the database will 
+spring.flyway.baseline-on-migrate=true
+spring.flyway.locations=classpath:/flyway
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.datasource.url=jdbc:postgres//dbserver.com:5432/dftdb #your databse server details
+spring.datasource.username=your databse password
+spring.datasource.password=your databse password
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.open-in-view=false
+
+#Provide digital twin regitry details which SDE should use to create twin for your, 
+#The need technical userdetails depend on digital twin security configuration
+digital-twins.hostname=https://example.digitaltwin.com
+digital-twins.authentication.url=http://example.keycloak.com/auth/realms/default
+digital-twins.authentication.clientId=your clientId
+digital-twins.authentication.clientSecret=your secrete
+digital-twins.authentication.grantType=client_credentials
+
+#The EDC connector information which SDE should use As Data provider connector
+edc.hostname=https://example.provider-connector.com
+edc.apiKeyHeader=your connector api key
+edc.apiKey=your connector apikey value 
+
+#The EDC connector information which SDE should use As Data consumer connector
+edc.consumer.hostname=https://example.consumer-connector.com)
+edc.consumer.apikeyheader=your connector api key
+edc.consumer.apikey=your connector apikey value 
+edc.consumer.datauri=/api/v1/ids/data
+
+#Your Own SDE host url which will share with EDC connector as data address proxy
+dft.hostname=https://example.sdehost.com
+dft.apiKeyHeader=your default key
+dft.apiKey=your default key password
+
+#Your company BPN number
+manufacturerId=default
+
+#Portal pool hostname url to use dicover legal comapany information in SDE
+partner.pool.hostname=default
+
+#Portal backend url for get connector list based on BPN number
+connector.discovery.token-url=https://example.portal.backend.com
+connector.discovery.clientId=default
+connector.discovery.clientSecret=default
+portal.backend.hostname=default
+springdoc.api-docs.path=/api-docs
+```
+
+The above configuration we can use as below for different deployment:
+
+### RUN SDE backend in ArgoCD 
+ The latest version on main is automatically picked up by ArgoCD and deployed to the environment using Helm charts.
+   
+ helm repo add catenax-ng-product-dft-backend https://github.com/catenax-ng/product-dft-backend/tree/main/charts
+   
+ helm install release-name catenax-ng/product-dft-backend
+
+ In values.yaml your can `default` as value for all required configuration. you need to change all those values as your need. 
+ for refernce, please refer confguration example section.
+ As part of argo CD deployment through heml chart the postgres database dependecy will get provide automatic but for EDC, DigitalTwin and Portal you need to provide valid details as per configuration requirement other wise SDE service will get started but will not work as expected.
+
+### RUN SDE Backend in k8ts cluster
+#### For installation guide through helm chart: see [InstallationGuide.md](InstallationGuide.md)
+
+### RUN SDE Backend Locally
+#### Prerequisites
 - JDK18
 - Postgres 13.2
-- Docker
 
-### Steps
+#### Steps
 1. Clone the GitHub Repository - https://github.com/eclipse-tractusx/dft-backend
 2. Get your instance of postgres running.(Create **dftdb** new database)
 3. Setup your project environment to JDK 18
-4. Start the application from your IDE
+4. Provide require application configuration in application.properties as specified in step configuration.properties
+5. Start the SDE spring boot application from your IDE using main class or use spring CLI.
 
 ---
 ### Supported submodules
@@ -164,13 +268,6 @@ Link to flyway documentation: [Documentation](https://flywaydb.org/documentation
 
 ## API authentication
 Authentication for the backend is handled via an API Key. This can be set in the configuration file.
-
-## ArgoCD
-The latest version on main is automatically picked up by ArgoCD and deployed to the environment using Helm charts.
-   
- helm repo add catenax-ng-product-dft-backend https://github.com/catenax-ng/product-dft-backend/tree/main/charts
-   
- helm install release-name catenax-ng/product-dft-backend
 
 ### EDC
 GitHub repository with correct version of the Eclipse DataSpace Connector Project: [repository](https://github.com/catenax-ng/product-edc)

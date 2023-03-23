@@ -288,7 +288,7 @@ Link to flyway documentation: [Documentation](https://flywaydb.org/documentation
 Authentication for the backend is handled via an API Key. This can be set in the configuration file.
 
 ### EDC
-GitHub repository with correct version of the Eclipse DataSpace Connector Project: [repository](https://github.com/catenax-ng/product-edc)
+GitHub repository with correct version of the Eclipse DataSpace Connector Project: [repository](https://github.com/eclipse-tractusx/tractusx-edc)
 
 ### Licenses
 Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0)

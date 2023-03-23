@@ -15,6 +15,8 @@ please refer configuration section from here [README.md](README.md)
 - helm
 - Docker
 
+ In values.yaml you can find `default` as value for all required configuration. You need to change all those values as per your need. for refernce, please refer confguration example section.
+
  helm repo add sde-backend https://github.com/eclipse-tractusx/dft-backend/tree/main/charts
    
  helm install release-name eclipse-tractusx/dft-backend

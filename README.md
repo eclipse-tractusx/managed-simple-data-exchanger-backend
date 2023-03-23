@@ -1,36 +1,158 @@
-   # Data Format Transformer(Simple Data Exchanger)
+   # Simple Data Exchanger (formaly known Data Format Transformer)
 ---
 ## Description
 
-This repository is part of the overarching Catena-X project. It contains the Backend for the DFT.
-DFT is short for Data Format Transformer.
+This repository is part of the overarching Catena-X project. It contains the Backend for the SDE/DFT.
+SDE Simple data exchanger(formaly known DFT is short for Data Format Transformer)
 
 It is a standalone service which can be self-hosted. 
 It enables companies to provide their data in the Catena-X network via an EDC.
-Data is uploaded via two CSV-files. The DFT registers the data in the Digital Twin Registry and makes it accessible via an EDC.
-The DFT project has two dependencies: Digital Twins and EDC.
 
-##### For installation guide: see [InstallationGuide.md](InstallationGuide.md)
+## Important !!!
+### Deployemnt of DFT backend
+The auto setup is the central service orchestration component. The auto setup hide all complex configuration stuff for you and get SDE backend as well as Frontend service deployed for you as service. The auto setup taking all deployemnt through their specific helm charts. The auto setup knows which prerequisites and which configurations are required for the components and creates them. All dependencies and any error messages are intercepted by Auto-Setup and treated correctly and meaningfully. Therefore, Auto-Setup meets your requirements exactly.
 
-### How to run
+Once SDE deployed, The data is uploaded via CSV-files or tabular entry. The SDE registers the data in the Digital Twin Registry and makes it accessible via an EDC.
 
-DFT is a SpringBoot Java software project managed by Maven.
+The SDE project has three dependencies: Digital Twins, Portal and EDC.
 
-When running, the project requires a postgresql database to be available to connect to. Per default configuration the application expects postgres to run on localhost on port 5432.
+## How to run
 
-You can find the standard credentials as well as further database configurations int the application.properties file in the resource folder.
+SDE is a SpringBoot Java Maven software project.
 
+When running, the project requires a postgresql database to be available to connect
+You can find the standard require configuration keys as below:
 
-### Prerequisites
-- JDK18
-- Postgres 13.2
-- Docker
+### Configuration
 
-### Steps
-1. Clone the GitHub Repository - https://github.com/eclipse-tractusx/dft-backend
-2. Get your instance of postgres running.(Create **dftdb** new database)
-3. Setup your project environment to JDK 18
-4. Start the application from your IDE
+Listed below are configuration keys needed to get the `sde-backend` up and running.
+
+| Key  	                                               | Required  | Example | Description |
+|---	                                                  |---	    |---	  |---          |
+| keycloak.clientid | X         | sdeclientId | This is keycloak clienId/resource  |
+| spring.security.oauth2.resourceserver.jwt.issuer-uri | X         | https://ids.issuer.com/auth/realms/master | Url of Keycloak issuer uri|
+| management.endpoint.health.probes.enabled | X         | true | Defualt value, no need to change |
+| management.health.readinessstate.enabled |  X        | true | Defualt value, no need to change |
+| management.health.livenessstate.enabled |  X       | true | Defualt value, no need to change |
+| management.endpoints.web.exposure.include |  X        | * | Defualt value, no need to change |
+| spring.lifecycle.timeout-per-shutdown-phase | X         | 30s | Defualt value, no need to change |
+| logging.level.org.springframework.security.web.csrf | X         | INFO | Defualt value, no need to change |
+| logging.level.org.apache.http |  X        | info | Defualt value, no need to change |
+| logging.level.root |  X        | info | Defualt value, no need to change |
+| file.upload-dir | X         | ./temp/ | Defualt value, no need to change |
+| spring.servlet.multipart.enabled | X         | true | Defualt value, no need to change |
+| spring.main.allow-bean-definition-overriding | X        | true | Defualt value, no need to change |
+| spring.servlet.multipart.file-size-threshold | X         | 2KB | Defualt value, no need to change |
+| spring.servlet.multipart.max-file-size |  X        | 200MB | Defualt value, no need to change |
+| spring.servlet.multipart.max-request-size | X         | 215MB | Defualt value, no need to change |
+| server.servlet.context-path |  X        | /api | Defualt value, no need to change|
+| spring.flyway.baseline-on-migrate |  X        | true | Defualt value, no need to change |
+| spring.flyway.locations |   X       | classpath:/flyway | Defualt value, no need to change |
+| spring.datasource.driver-class-name | X         | org.postgresql.Driver | Defualt value, no need to change |
+| spring.datasource.url | X         | jdbc:postgres//dbserver.com:5432/dftdb  | Your databse server details |
+| spring.datasource.username | X         | | your databse password |
+| spring.datasource.password | X         | | your databse password |
+| spring.jpa.hibernate.ddl-auto |          | update | Defualt value, no need to change |
+| spring.jpa.open-in-view |          | false | Defualt value, no need to change |
+| digital-twins.hostname | X         | https://example.digitaltwin.com | Digital twin registry url|
+| digital-twins.authentication.url | X         | http://example.keycloak.com/auth/realms/default | Digital twin registry authentication url|
+| digital-twins.authentication.clientId | X         | your clientId | Digital twin registry clientId|
+| digital-twins.authentication.clientSecret | X         | your secrete | Digital twin registry secrete|
+| digital-twins.authentication.grantType | X         | client_credentials | Defualt value, no need to change |
+| edc.hostname | X         | https://example.provider-connector.com | Your EDC provider connector url |
+| edc.apiKeyHeader | X         | x-api-key |  your connector api key |
+| edc.apiKey | X         | yourpass | your connector apikey value |
+| edc.consumer.hostname | X         | https://example.consumer-connector.com | Your EDc consumer connector |
+| edc.consumer.apikeyheader | X      | x-api-key   | your connector api key |
+| edc.consumer.apikey | X        | yourpass | your connector apikey value |
+| edc.consumer.datauri | X         | /api/v1/ids/data | If your IDS enpoind path change then use same|
+| dft.hostname | X         | https://example.sdehost.com | Your SDE hostname |
+| dft.apiKeyHeader | X       | API_KEY  | your default key |
+| dft.apiKey | X        | yourpass | your default key password |
+| manufacturerId | X         | default| Your CX partner BPN number |
+| partner.pool.hostname | X         | default | Partner pool url for legal entity information  use in SDE|
+| connector.discovery.token-url | X         | https://example.portal.backend.com | Protal backend service Auth URL to get connectors based on BPN | 
+| connector.discovery.clientId | X         | default | client ID for connector discovery |
+| connector.discovery.clientSecret | X         | default | password for connector discovery |
+| portal.backend.hostname | X         | default | Protal backend service URL to get connectors based on BPN |
+| springdoc.api-docs.path | X         | /api-docs | swagger API path |
+
+#### Example Configuration/application.properties
+
+```
+keycloak.clientid=sdeclientId
+spring.security.oauth2.resourceserver.jwt.issuer-uri=https://ids.issuer.com/auth/realms/master
+management.endpoint.health.probes.enabled=true
+management.health.readinessstate.enabled=true
+management.health.livenessstate.enabled=true
+management.endpoints.web.exposure.include=*
+spring.lifecycle.timeout-per-shutdown-phase=30s
+
+#provider your loggin level
+logging.level.org.springframework.security.web.csrf=INFO
+logging.level.org.apache.http=info
+logging.level.root=info
+
+#default spring boot configuration not need to change
+file.upload-dir=./temp/
+spring.servlet.multipart.enabled=true
+spring.main.allow-bean-definition-overriding=true
+spring.servlet.multipart.file-size-threshold=2KB
+spring.servlet.multipart.max-file-size=200MB
+spring.servlet.multipart.max-request-size=215MB
+
+#API context path to access application apis
+server.servlet.context-path=/api
+
+#Database and flyway details, the database will 
+spring.flyway.baseline-on-migrate=true
+spring.flyway.locations=classpath:/flyway
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.datasource.url=jdbc:postgres//dbserver.com:5432/dftdb #your databse server details
+spring.datasource.username=your databse password
+spring.datasource.password=your databse password
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.open-in-view=false
+
+#Provide digital twin regitry details which SDE should use to create twin for your, 
+#The need technical userdetails depend on digital twin security configuration
+digital-twins.hostname=https://example.digitaltwin.com
+digital-twins.authentication.url=http://example.keycloak.com/auth/realms/default
+digital-twins.authentication.clientId=your clientId
+digital-twins.authentication.clientSecret=your secrete
+digital-twins.authentication.grantType=client_credentials
+
+#The EDC connector information which SDE should use As Data provider connector
+edc.hostname=https://example.provider-connector.com
+edc.apiKeyHeader=your connector api key
+edc.apiKey=your connector apikey value 
+
+#The EDC connector information which SDE should use As Data consumer connector
+edc.consumer.hostname=https://example.consumer-connector.com)
+edc.consumer.apikeyheader=your connector api key
+edc.consumer.apikey=your connector apikey value 
+edc.consumer.datauri=/api/v1/ids/data
+
+#Your Own SDE host url which will share with EDC connector as data address proxy
+dft.hostname=https://example.sdehost.com
+dft.apiKeyHeader=your default key
+dft.apiKey=your default key password
+
+#Your company BPN number
+manufacturerId=default
+
+#Portal pool hostname url to use dicover legal comapany information in SDE
+partner.pool.hostname=default
+
+#Portal backend url for get connector list based on BPN number
+connector.discovery.token-url=https://example.portal.backend.com
+connector.discovery.clientId=default
+connector.discovery.clientSecret=default
+portal.backend.hostname=default
+springdoc.api-docs.path=/api-docs
+```
+
+The above configuration we can use as for different deployment as specified here [InstallationGuide.md](InstallationGuide.md)
 
 ---
 ### Supported submodules
@@ -165,15 +287,8 @@ Link to flyway documentation: [Documentation](https://flywaydb.org/documentation
 ## API authentication
 Authentication for the backend is handled via an API Key. This can be set in the configuration file.
 
-## ArgoCD
-The latest version on main is automatically picked up by ArgoCD and deployed to the environment using Helm charts.
-   
- helm repo add catenax-ng-product-dft-backend https://github.com/catenax-ng/product-dft-backend/tree/main/charts
-   
- helm install release-name catenax-ng/product-dft-backend
-
 ### EDC
-GitHub repository with correct version of the Eclipse DataSpace Connector Project: [repository](https://github.com/catenax-ng/product-edc)
+GitHub repository with correct version of the Eclipse DataSpace Connector Project: [repository](https://github.com/eclipse-tractusx/tractusx-edc)
 
 ### Licenses
 Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0)

@@ -1,50 +1,39 @@
 # Installation Guide
-## Product DFT
-Install from the command line:
-
-docker container run -d --name [conatainer_name] ghcr.io/catenax-ng/tx-dft-backend:[tag]
-
 
 It is necessary to inject the environment variables, credentials and URLs that can be found on application.properties file.
-#### CatenaX variables
-| Property       | Value          | Description        | Example |
-|----------------|----------------|--------------------|---------|
-| manufacturerId | MANUFACTURERID | Id of manufacturer | CatenaX |
+please refer configuration section from here [README.md](README.md)
 
+### RUN SDE backend in ArgoCD 
+ We have helm chart available for ArgoCD deployment. In deployment, if don't specified specific version, the latest version on main is automatically picked up by ArgoCD and deployed to the environment using Helm charts.
 
-#### Digital Twins variables:
-| Property name                             | Environment Variable Name                 | Description                                    | Example Value                    |
-|-------------------------------------------|-------------------------------------------|------------------------------------------------|----------------------------------|
-| digital-twins.hostname                    | DIGITAL-TWINS_HOSTNAME                    | hostname for Digital Twins                     | https://                         |
-| digital-twins.authentication.url          | DIGITAL-TWINS_AUTHENTICATION_URL          | authentication url for Digital Twins           | https://                         |
-| digital-twins.authentication.clientId     | DIGITAL-TWINS_AUTHENTICATION_CLIENTID     | client ID authentication for Digital Twins     | sa-cl6-cx-4                      |
-| digital-twins.authentication.clientSecret | DIGITAL-TWINS_AUTHENTICATION_CLIENTSECRET | client secret authentication for Digital Twins | VrL8uSG5Tn3NrFiY39vs0klTmlvsRRmo |
+ In values.yaml you can find `default` as value for all required configuration. You need to change all those values as per your need. for refernce, please refer confguration example section.
+ 
+ As part of argo CD deployment using heml chart the postgres database dependecy will get provide automatic but for EDC, DigitalTwin and Portal you need to provide valid details as per configuration requirement other wise SDE service will get started with defualt configuration but will not work as expected.
 
-The values are on the [Vault].
-*<i><b>Must create a GitHub token to access</b></i>
+### RUN SDE Backend in k8ts cluster
+#### Prerequisites
+- k8ts cluster/ minikube
+- helm
+- Docker
 
-#### EDC variables:
-| Property name    | Environment Variable Name | Description                                   | Example Value |
-|------------------|---------------------------|-----------------------------------------------|---------------|
-| edc.hostname     | EDC_HOSTNAME              | edc hostname                                  | https://      |
-| edc.apiKeyHeader | EDC_APIKEYHEADER          | API KEY header for edc                        | X-Api_Key     |
-| edc.apiKey       | EDC_APIKEY                | API KEY for edc                               | 123456        |
-| dft.hostname     | DFT_HOSTNAME              | hostname for DFT                              | https://      |
-| dft.apiKeyHeader | DFT_APIKEYHEADER          | url authentication key for edc asset payload  | Api-Key       |
-| dft.apiKey       | DFT_APIKEY                | url authentication code for edc asset payload | someCode      |
-| edc.enabled      | EDC_ENABLED               | enable / disable edc                          | true / false  |
+ In values.yaml you can find `default` as value for all required configuration. You need to change all those values as per your need. for refernce, please refer confguration example section.
 
-#### Keycloak variables:
-| Property name                     | Environment Variable Name | Description                  | Example Value |
-|-----------------------------------|---------------------------|------------------------------|---------------|
-| connector.discovery.token-url     | KEYCLOCK_HOSTNAME         | keyclock hostnam             | https://      |
-| connector.discovery.clientId      | KEYCLOCK_CLIENTID         | keyclock clientId            | X-Api_Key     |
-| connector.discovery.clientSecret  | KEYCLOCK_CLIENTSECRET     | keyclock clientse            | 123456        |
-| portal.backend.hostname           | PORTAL_HOSTNAME           | portal hostname              | https://      |
+ helm repo add sde-backend https://github.com/eclipse-tractusx/dft-backend/tree/main/charts
+   
+ helm install release-name eclipse-tractusx/dft-backend
 
+### RUN SDE Backend Locally
+#### Prerequisites
+- JDK18
+- Postgres 13.2
 
-The values are in the [Vault].
-*<i><b>Must create a GitHub token to access</b></i> 
+#### Steps
+1. Clone the GitHub Repository - https://github.com/eclipse-tractusx/dft-backend
+2. Get your instance of postgres running.(Create **dftdb** new database)
+3. Setup your project environment to JDK 18
+4. Provide require application configuration in application.properties as specified in step configuration.properties
+5. Start the SDE spring boot application from your IDE using main class or use spring CLI.
+
 
 ## Upload a file:
 When a file .csv is uploaded, the program checks whether the file is a SerialPartTypization or an AssemblyPartRelationship and there is a pipeline for each one.

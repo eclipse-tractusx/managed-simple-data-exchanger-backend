@@ -1,41 +1,7 @@
 # Installation Guide
 
 It is necessary to inject the environment variables, credentials and URLs that can be found on application.properties file.
-
-#### CatenaX variables
-| Property       | Value          | Description        | Example |
-|----------------|----------------|--------------------|---------|
-| manufacturerId | MANUFACTURERID | Id of manufacturer | CatenaX |
-
-
-#### Digital Twins variables:
-| Property name                             | Environment Variable Name                 | Description                                    | Example Value                    |
-|-------------------------------------------|-------------------------------------------|------------------------------------------------|----------------------------------|
-| digital-twins.hostname                    | DIGITAL-TWINS_HOSTNAME                    | hostname for Digital Twins                     | https://                         |
-| digital-twins.authentication.url          | DIGITAL-TWINS_AUTHENTICATION_URL          | authentication url for Digital Twins           | https://                         |
-| digital-twins.authentication.clientId     | DIGITAL-TWINS_AUTHENTICATION_CLIENTID     | client ID authentication for Digital Twins     | clientId                      |
-| digital-twins.authentication.clientSecret | DIGITAL-TWINS_AUTHENTICATION_CLIENTSECRET | client secret authentication for Digital Twins | secrete     |
-
-
-#### EDC variables:
-| Property name    | Environment Variable Name | Description                                   | Example Value |
-|------------------|---------------------------|-----------------------------------------------|---------------|
-| edc.hostname     | EDC_HOSTNAME              | edc hostname                                  | https://      |
-| edc.apiKeyHeader | EDC_APIKEYHEADER          | API KEY header for edc                        | X-Api_Key     |
-| edc.apiKey       | EDC_APIKEY                | API KEY for edc                               | 123456        |
-| dft.hostname     | DFT_HOSTNAME              | hostname for DFT                              | https://      |
-| dft.apiKeyHeader | DFT_APIKEYHEADER          | url authentication key for edc asset payload  | Api-Key       |
-| dft.apiKey       | DFT_APIKEY                | url authentication code for edc asset payload | someCode      |
-| edc.enabled      | EDC_ENABLED               | enable / disable edc                          | true / false  |
-
-#### Portal Backen variables for connector discovery:
-| Property name                     | Environment Variable Name | Description                  | Example Value |
-|-----------------------------------|---------------------------|------------------------------|---------------|
-| connector.discovery.token-url     | KEYCLOCK_HOSTNAME         | keyclock hostnam             | https://      |
-| connector.discovery.clientId      | KEYCLOCK_CLIENTID         | keyclock clientId            | X-Api_Key     |
-| connector.discovery.clientSecret  | KEYCLOCK_CLIENTSECRET     | keyclock clientse            | 123456        |
-| portal.backend.hostname           | PORTAL_HOSTNAME           | portal hostname              | https://      |
-
+please refer configuration section from here [README.md](README.md)
 
 ### RUN SDE backend in ArgoCD 
  We have helm chart available for ArgoCD deployment. In deployment, if don't specified specific version, the latest version on main is automatically picked up by ArgoCD and deployed to the environment using Helm charts.

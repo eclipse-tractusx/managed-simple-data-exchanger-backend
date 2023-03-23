@@ -10,18 +10,18 @@ It enables companies to provide their data in the Catena-X network via an EDC.
 
 ## Important !!!
 ### Deployemnt of DFT backend
-The auto setup is the central service orchestration component. The auto setup can hide all complex configuration stuff for you and get DFT backend service deployed for you as service. The auto setup taking all deployemnt through their specific helm charts controlled. The auto setup knows which prerequisites and which configurations are required for the components and creates them. All dependencies and any error messages are intercepted by Auto-Setup and treated correctly and meaningfully. Therefore, Auto-Setup meets your requirements exactly.
+The auto setup is the central service orchestration component. The auto setup hide all complex configuration stuff for you and get SDE backend as well as Frontend service deployed for you as service. The auto setup taking all deployemnt through their specific helm charts. The auto setup knows which prerequisites and which configurations are required for the components and creates them. All dependencies and any error messages are intercepted by Auto-Setup and treated correctly and meaningfully. Therefore, Auto-Setup meets your requirements exactly.
 
-Once SDE deployed, The Data is uploaded via two CSV-files. The SDE registers the data in the Digital Twin Registry and makes it accessible via an EDC.
+Once SDE deployed, The data is uploaded via CSV-files or tabular entry. The SDE registers the data in the Digital Twin Registry and makes it accessible via an EDC.
+
 The SDE project has three dependencies: Digital Twins, Portal and EDC.
 
-### How to run
+## How to run
 
-SDE is a SpringBoot Java software project managed by Maven.
+SDE is a SpringBoot Java Maven software project.
 
-When running, the project requires a postgresql database to be available to connect to. Per default configuration the application expects postgres to run on localhost on port 5432.
-
-You can find the standard credentials as well as further database configurations int the application.properties file in the resource folder.
+When running, the project requires a postgresql database to be available to connect
+You can find the standard require configuration keys as below:
 
 ### Configuration
 
@@ -29,9 +29,53 @@ Listed below are configuration keys needed to get the `sde-backend` up and runni
 
 | Key  	                                               | Required  | Example | Description |
 |---	                                                  |---	    |---	  |---          |
-| keycloak.clientid                                     | X         | password | This is keycloak clienId/resource  |
-| spring.security.oauth2.resourceserver.jwt.issuer-uri  | X         | http://ids.issuer.uir    | Url of Keycloak issuer uri|
-| management.endpoint.health.probes.enabled                                 | X         | /api    | |
+| keycloak.clientid | X         | sdeclientId | This is keycloak clienId/resource  |
+| spring.security.oauth2.resourceserver.jwt.issuer-uri | X         | https://ids.issuer.com/auth/realms/master | Url of Keycloak issuer uri|
+| management.endpoint.health.probes.enabled | X         | true | Defualt value, no need to change |
+| management.health.readinessstate.enabled |  X        | true | Defualt value, no need to change |
+| management.health.livenessstate.enabled |  X       | true | Defualt value, no need to change |
+| management.endpoints.web.exposure.include |  X        | * | Defualt value, no need to change |
+| spring.lifecycle.timeout-per-shutdown-phase | X         | 30s | Defualt value, no need to change |
+| logging.level.org.springframework.security.web.csrf | X         | INFO | Defualt value, no need to change |
+| logging.level.org.apache.http |  X        | info | Defualt value, no need to change |
+| logging.level.root |  X        | info | Defualt value, no need to change |
+| file.upload-dir | X         | ./temp/ | Defualt value, no need to change |
+| spring.servlet.multipart.enabled | X         | true | Defualt value, no need to change |
+| spring.main.allow-bean-definition-overriding | X        | true | Defualt value, no need to change |
+| spring.servlet.multipart.file-size-threshold | X         | 2KB | Defualt value, no need to change |
+| spring.servlet.multipart.max-file-size |  X        | 200MB | Defualt value, no need to change |
+| spring.servlet.multipart.max-request-size | X         | 215MB | Defualt value, no need to change |
+| server.servlet.context-path |  X        | /api | Defualt value, no need to change|
+| spring.flyway.baseline-on-migrate |  X        | true | Defualt value, no need to change |
+| spring.flyway.locations |   X       | classpath:/flyway | Defualt value, no need to change |
+| spring.datasource.driver-class-name | X         | org.postgresql.Driver | Defualt value, no need to change |
+| spring.datasource.url | X         | jdbc:postgres//dbserver.com:5432/dftdb  | Your databse server details |
+| spring.datasource.username | X         | | your databse password |
+| spring.datasource.password | X         | | your databse password |
+| spring.jpa.hibernate.ddl-auto |          | update | Defualt value, no need to change |
+| spring.jpa.open-in-view |          | false | Defualt value, no need to change |
+| digital-twins.hostname | X         | https://example.digitaltwin.com | Digital twin registry url|
+| digital-twins.authentication.url | X         | http://example.keycloak.com/auth/realms/default | Digital twin registry authentication url|
+| digital-twins.authentication.clientId | X         | your clientId | Digital twin registry clientId|
+| digital-twins.authentication.clientSecret | X         | your secrete | Digital twin registry secrete|
+| digital-twins.authentication.grantType | X         | client_credentials | Defualt value, no need to change |
+| edc.hostname | X         | https://example.provider-connector.com | Your EDC provider connector url |
+| edc.apiKeyHeader | X         | x-api-key |  your connector api key |
+| edc.apiKey | X         | yourpass | your connector apikey value |
+| edc.consumer.hostname | X         | https://example.consumer-connector.com | Your EDc consumer connector |
+| edc.consumer.apikeyheader | X      | x-api-key   | your connector api key |
+| edc.consumer.apikey | X        | yourpass | your connector apikey value |
+| edc.consumer.datauri | X         | /api/v1/ids/data | If your IDS enpoind path change then use same|
+| dft.hostname | X         | https://example.sdehost.com | Your SDE hostname |
+| dft.apiKeyHeader | X       | API_KEY  | your default key |
+| dft.apiKey | X        | yourpass | your default key password |
+| manufacturerId | X         | default| Your CX partner BPN number |
+| partner.pool.hostname | X         | default | Partner pool url for legal entity information  use in SDE|
+| connector.discovery.token-url | X         | https://example.portal.backend.com | Protal backend service Auth URL to get connectors based on BPN | 
+| connector.discovery.clientId | X         | default | client ID for connector discovery |
+| connector.discovery.clientSecret | X         | default | password for connector discovery |
+| portal.backend.hostname | X         | default | Protal backend service URL to get connectors based on BPN |
+| springdoc.api-docs.path | X         | /api-docs | swagger API path |
 
 #### Example Configuration/application.properties
 
@@ -111,18 +155,20 @@ springdoc.api-docs.path=/api-docs
 The above configuration we can use as below for different deployment:
 
 ### RUN SDE backend in ArgoCD 
- The latest version on main is automatically picked up by ArgoCD and deployed to the environment using Helm charts.
+ We have helm chart available for ArgoCD deployment. In deployment, if don't specified specific version, the latest version on main is automatically picked up by ArgoCD and deployed to the environment using Helm charts.
    
- helm repo add catenax-ng-product-dft-backend https://github.com/catenax-ng/product-dft-backend/tree/main/charts
+ helm repo add sde-backend https://github.com/eclipse-tractusx/dft-backend/tree/main/charts
    
- helm install release-name catenax-ng/product-dft-backend
+ helm install release-name eclipse-tractusx/dft-backend
 
- In values.yaml your can `default` as value for all required configuration. you need to change all those values as your need. 
- for refernce, please refer confguration example section.
- As part of argo CD deployment through heml chart the postgres database dependecy will get provide automatic but for EDC, DigitalTwin and Portal you need to provide valid details as per configuration requirement other wise SDE service will get started but will not work as expected.
+ In values.yaml you can find `default` as value for all required configuration. You need to change all those values as per your need. for refernce, please refer confguration example section.
+ As part of argo CD deployment using heml chart the postgres database dependecy will get provide automatic but for EDC, DigitalTwin and Portal you need to provide valid details as per configuration requirement other wise SDE service will get started with defualt configuration but will not work as expected.
 
 ### RUN SDE Backend in k8ts cluster
 #### For installation guide through helm chart: see [InstallationGuide.md](InstallationGuide.md)
+ helm repo add sde-backend https://github.com/eclipse-tractusx/dft-backend/tree/main/charts
+   
+ helm install release-name eclipse-tractusx/dft-backend
 
 ### RUN SDE Backend Locally
 #### Prerequisites

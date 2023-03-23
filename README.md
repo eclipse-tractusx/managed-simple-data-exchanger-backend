@@ -27,55 +27,55 @@ You can find the standard require configuration keys as below:
 
 Listed below are configuration keys needed to get the `sde-backend` up and running.
 
-| Key  	                                               | Required  | Example | Description |
-|---	                                                  |---	    |---	  |---          |
-| keycloak.clientid | X         | sdeclientId | This is keycloak clienId/resource  |
-| spring.security.oauth2.resourceserver.jwt.issuer-uri | X         | https://ids.issuer.com/auth/realms/master | Url of Keycloak issuer uri|
-| management.endpoint.health.probes.enabled | X         | true | Defualt value, no need to change |
-| management.health.readinessstate.enabled |  X        | true | Defualt value, no need to change |
-| management.health.livenessstate.enabled |  X       | true | Defualt value, no need to change |
-| management.endpoints.web.exposure.include |  X        | * | Defualt value, no need to change |
-| spring.lifecycle.timeout-per-shutdown-phase | X         | 30s | Defualt value, no need to change |
-| logging.level.org.springframework.security.web.csrf | X         | INFO | Defualt value, no need to change |
-| logging.level.org.apache.http |  X        | info | Defualt value, no need to change |
-| logging.level.root |  X        | info | Defualt value, no need to change |
-| file.upload-dir | X         | ./temp/ | Defualt value, no need to change |
-| spring.servlet.multipart.enabled | X         | true | Defualt value, no need to change |
-| spring.main.allow-bean-definition-overriding | X        | true | Defualt value, no need to change |
-| spring.servlet.multipart.file-size-threshold | X         | 2KB | Defualt value, no need to change |
-| spring.servlet.multipart.max-file-size |  X        | 200MB | Defualt value, no need to change |
-| spring.servlet.multipart.max-request-size | X         | 215MB | Defualt value, no need to change |
-| server.servlet.context-path |  X        | /api | Defualt value, no need to change|
-| spring.flyway.baseline-on-migrate |  X        | true | Defualt value, no need to change |
-| spring.flyway.locations |   X       | classpath:/flyway | Defualt value, no need to change |
-| spring.datasource.driver-class-name | X         | org.postgresql.Driver | Defualt value, no need to change |
-| spring.datasource.url | X         | jdbc:postgres//dbserver.com:5432/dftdb  | Your databse server details |
-| spring.datasource.username | X         | | your databse password |
-| spring.datasource.password | X         | | your databse password |
-| spring.jpa.hibernate.ddl-auto |          | update | Defualt value, no need to change |
-| spring.jpa.open-in-view |          | false | Defualt value, no need to change |
-| digital-twins.hostname | X         | https://example.digitaltwin.com | Digital twin registry url|
-| digital-twins.authentication.url | X         | http://example.keycloak.com/auth/realms/default | Digital twin registry authentication url|
-| digital-twins.authentication.clientId | X         | your clientId | Digital twin registry clientId|
-| digital-twins.authentication.clientSecret | X         | your secrete | Digital twin registry secrete|
-| digital-twins.authentication.grantType | X         | client_credentials | Defualt value, no need to change |
-| edc.hostname | X         | https://example.provider-connector.com | Your EDC provider connector url |
-| edc.apiKeyHeader | X         | x-api-key |  your connector api key |
-| edc.apiKey | X         | yourpass | your connector apikey value |
-| edc.consumer.hostname | X         | https://example.consumer-connector.com | Your EDc consumer connector |
-| edc.consumer.apikeyheader | X      | x-api-key   | your connector api key |
-| edc.consumer.apikey | X        | yourpass | your connector apikey value |
-| edc.consumer.datauri | X         | /api/v1/ids/data | If your IDS enpoind path change then use same|
-| dft.hostname | X         | https://example.sdehost.com | Your SDE hostname |
-| dft.apiKeyHeader | X       | API_KEY  | your default key |
-| dft.apiKey | X        | yourpass | your default key password |
-| manufacturerId | X         | default| Your CX partner BPN number |
-| partner.pool.hostname | X         | default | Partner pool url for legal entity information  use in SDE|
-| connector.discovery.token-url | X         | https://example.portal.backend.com | Protal backend service Auth URL to get connectors based on BPN | 
-| connector.discovery.clientId | X         | default | client ID for connector discovery |
-| connector.discovery.clientSecret | X         | default | password for connector discovery |
-| portal.backend.hostname | X         | default | Protal backend service URL to get connectors based on BPN |
-| springdoc.api-docs.path | X         | /api-docs | swagger API path |
+| Key  	                                               | Required  | Example                                     | Description                        |
+|---	                                               |---	       |---	                                         |---                                 |
+| keycloak.clientid                                    | X         | sdeclientId                                 | This is keycloak clienId/resource  |
+| spring.security.oauth2.resourceserver.jwt.issuer-uri | X         | https://ids.issuer.com/auth/realms/master   | Url of Keycloak issuer uri         |
+| management.endpoint.health.probes.enabled            | X         | true                                        | Defualt value, no need to change   |
+| management.health.readinessstate.enabled             | X         | true                                        | Defualt value, no need to change   |
+| management.health.livenessstate.enabled              | X         | true                                        | Defualt value, no need to change   |
+| management.endpoints.web.exposure.include            | X         | *                                           | Defualt value, no need to change   |
+| spring.lifecycle.timeout-per-shutdown-phase          | X         | 30s                                         | Defualt value, no need to change   | 
+| logging.level.org.springframework.security.web.csrf  | X         | INFO                                        | Defualt value, no need to change   |
+| logging.level.org.apache.http                        | X         | info                                        | Defualt value, no need to change   |
+| logging.level.root                                   | X         | info                                        | Defualt value, no need to change   |
+| file.upload-dir                                      | X         | ./temp/                                     | Defualt value, no need to change   |
+| spring.servlet.multipart.enabled                     | X         | true                                        | Defualt value, no need to change   |
+| spring.main.allow-bean-definition-overriding         | X         | true                                        | Defualt value, no need to change   |
+| spring.servlet.multipart.file-size-threshold         | X         | 2KB                                         | Defualt value, no need to change   |
+| spring.servlet.multipart.max-file-size               | X         | 200MB                                       | Defualt value, no need to change   |
+| spring.servlet.multipart.max-request-size            | X         | 215MB                                       | Defualt value, no need to change   |
+| server.servlet.context-path                          | X         | /api                                        | Defualt value, no need to change   |
+| spring.flyway.baseline-on-migrate                    | X         | true                                        | Defualt value, no need to change   |
+| spring.flyway.locations                              | X         | classpath:/flyway                           | Defualt value, no need to change   |
+| spring.datasource.driver-class-name                  | X         | org.postgresql.Driver                       | Defualt value, no need to change   |
+| spring.datasource.url                                | X         | jdbc:postgres//dbserver.com:5432/db         | Your databse server details        |
+| spring.datasource.username                           | X         |                                             | your databse password              |
+| spring.datasource.password                           | X         |                                             | your databse password              |
+| spring.jpa.hibernate.ddl-auto                        |           | update                                      | Defualt value, no need to change   |
+| spring.jpa.open-in-view                              |           | false                                       | Defualt value, no need to change   |
+| digital-twins.hostname                               | X         | https://example.digitaltwin.com             | Digital twin registry url          |
+| digital-twins.authentication.url                     | X         | http://ex*.keycloak.com/auth/realms/default | Digital twin registry auth url     |
+| digital-twins.authentication.clientId                | X         | your clientId                               | Digital twin registry clientId     |
+| digital-twins.authentication.clientSecret            | X         | your secrete                                | Digital twin registry secrete      |
+| digital-twins.authentication.grantType               | X         | client_credentials                          | Defualt value, no need to change   |
+| edc.hostname                                         | X         | https://example.provider-connector.com      | Your EDC provider connector url    |
+| edc.apiKeyHeader                                     | X         | x-api-key                                   | your connector api key             |
+| edc.apiKey                                           | X         | yourpass                                    | your connector apikey value        |
+| edc.consumer.hostname                                | X         | https://example.consumer-connector.com      | Your EDc consumer connector        |
+| edc.consumer.apikeyheader                            | X         | x-api-key                                   | your connector api key             |
+| edc.consumer.apikey                                  | X         | yourpass                                    | your connector apikey value        |
+| edc.consumer.datauri                                 | X         | /api/v1/ids/data                            | IDS enpoint path                   |
+| dft.hostname                                         | X         | https://example.sdehost.com                 | Your SDE hostname                  |
+| dft.apiKeyHeader                                     | X         | API_KEY                                     | your default key                   |
+| dft.apiKey                                           | X         | yourpass                                    | your default key password          |
+| manufacturerId                                       | X         | default                                     | Your CX partner BPN number         |
+| partner.pool.hostname                                | X         | default                                     | url for legal-entity info usein SDE|
+| connector.discovery.token-url                        | X         | https://example.portal.backend.com          | Protalbackend Auth URL based on BPN| 
+| connector.discovery.clientId                         | X         | default                                     | client ID for connector discovery  |
+| connector.discovery.clientSecret                     | X         | default                                     | password for connector discovery   |
+| portal.backend.hostname                              | X         | default                                     | Protal backend svc URL based on BPN|
+| springdoc.api-docs.path                              | X         | /api-docs                                   | swagger API path                   |
 
 #### Example Configuration/application.properties
 

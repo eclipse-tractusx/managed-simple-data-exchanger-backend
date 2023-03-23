@@ -5,15 +5,15 @@ please refer configuration section from here [README.md](README.md)
 
 ### RUN SDE backend in ArgoCD 
  We have helm chart available for ArgoCD deployment. In deployment, if don't specified specific version, the latest version on main is automatically picked up by ArgoCD and deployed to the environment using Helm charts.
-   
- helm repo add sde-backend https://github.com/eclipse-tractusx/dft-backend/tree/main/charts
-   
- helm install release-name eclipse-tractusx/dft-backend
 
  In values.yaml you can find `default` as value for all required configuration. You need to change all those values as per your need. for refernce, please refer confguration example section.
  As part of argo CD deployment using heml chart the postgres database dependecy will get provide automatic but for EDC, DigitalTwin and Portal you need to provide valid details as per configuration requirement other wise SDE service will get started with defualt configuration but will not work as expected.
 
 ### RUN SDE Backend in k8ts cluster
+#### Prerequisites
+- k8ts cluster/ minikube
+- helm
+- Docker
 
  helm repo add sde-backend https://github.com/eclipse-tractusx/dft-backend/tree/main/charts
    

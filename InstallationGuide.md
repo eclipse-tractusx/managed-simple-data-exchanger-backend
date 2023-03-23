@@ -14,7 +14,7 @@ please refer configuration section from here [README.md](README.md)
  As part of argo CD deployment using heml chart the postgres database dependecy will get provide automatic but for EDC, DigitalTwin and Portal you need to provide valid details as per configuration requirement other wise SDE service will get started with defualt configuration but will not work as expected.
 
 ### RUN SDE Backend in k8ts cluster
-#### For installation guide through helm chart: see [InstallationGuide.md](InstallationGuide.md)
+
  helm repo add sde-backend https://github.com/eclipse-tractusx/dft-backend/tree/main/charts
    
  helm install release-name eclipse-tractusx/dft-backend

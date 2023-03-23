@@ -1,12 +1,12 @@
 # Installation Guide
 
 It is necessary to inject the environment variables, credentials and URLs that can be found on application.properties file.
-please refer configuration section from here [README.md](README.md)
+For more details, please refer configuration section from [README.md](README.md)
 
 ### RUN SDE backend in ArgoCD 
- We have helm chart available for ArgoCD deployment. In deployment, if don't specified specific version, the latest version on main is automatically picked up by ArgoCD and deployed to the environment using Helm charts.
+ We have helm chart available for ArgoCD deployment. In deployment, if don't specified specific version, the app version/chart version is automatically picked up by ArgoCD and deployed to the environment using Helm charts.
 
- In values.yaml you can find `default` as value for all required configuration. You need to change all those values as per your need. for reference, please refer configuration example section.
+ In values.yaml you can find `default` as value for all required configuration. You need to change all those values as per your need. For reference, please refer configuration example section.
  
  As part of argo CD deployment using helm chart the postgres database dependency will get provide automatic but for EDC, DigitalTwin and Portal you need to provide valid details as per configuration requirement other wise SDE service will get started with default configuration but will not work as expected.
 
@@ -16,7 +16,7 @@ please refer configuration section from here [README.md](README.md)
 - helm
 - Docker
 
- In values.yaml you can find `default` as value for all required configuration. You need to change all those values as per your need. for reference, please refer configuration example section.
+ In values.yaml you can find `default` as value for all required configuration. You need to change all those values as per your need. For reference, please refer configuration example section.
 
  helm repo add sde-backend https://github.com/eclipse-tractusx/dft-backend/tree/main/charts
    

@@ -70,7 +70,7 @@ Listed below are configuration keys needed to get the `sde-backend` up and runni
 | dft.apiKeyHeader                                     | X         | API_KEY                                     | Your default key                   |
 | dft.apiKey                                           | X         | yourpass                                    | Your default key password          |
 | manufacturerId                                       | X         | default                                     | Your CX partner BPN number         |
-| partner.pool.hostname                                | X         | default                                     | url for legal-entity inf use in SDE|
+| partner.pool.hostname                                | X         | default                                     | url to get legal-entity information|
 | connector.discovery.token-url                        | X         | https://example.portal.backend.com          | Portal backend AuthURL             | 
 | connector.discovery.clientId                         | X         | default                                     | client ID for connector discovery  |
 | connector.discovery.clientSecret                     | X         | default                                     | password for connector discovery   |

@@ -1,14 +1,14 @@
 # Installation Guide
 
 It is necessary to inject the environment variables, credentials and URLs that can be found on application.properties file.
-please refer configuration section from here [README.md](README.md)
+For more details, please refer configuration section from [README.md](README.md)
 
 ### RUN SDE backend in ArgoCD 
- We have helm chart available for ArgoCD deployment. In deployment, if don't specified specific version, the latest version on main is automatically picked up by ArgoCD and deployed to the environment using Helm charts.
+ We have helm chart available for ArgoCD deployment. In deployment, if don't specified specific version, the app version/chart version is automatically picked up by ArgoCD and deployed to the environment using Helm charts.
 
- In values.yaml you can find `default` as value for all required configuration. You need to change all those values as per your need. for refernce, please refer confguration example section.
+ In values.yaml you can find `default` as value for all required configuration. You need to change all those values as per your need. For reference, please refer configuration example section.
  
- As part of argo CD deployment using heml chart the postgres database dependecy will get provide automatic but for EDC, DigitalTwin and Portal you need to provide valid details as per configuration requirement other wise SDE service will get started with defualt configuration but will not work as expected.
+ As part of argo CD deployment using helm chart the postgres database dependency will get provide automatic but for EDC, DigitalTwin and Portal you need to provide valid details as per configuration requirement other wise SDE service will get started with default configuration but will not work as expected.
 
 ### RUN SDE Backend in k8ts cluster
 #### Prerequisites
@@ -16,7 +16,7 @@ please refer configuration section from here [README.md](README.md)
 - helm
 - Docker
 
- In values.yaml you can find `default` as value for all required configuration. You need to change all those values as per your need. for refernce, please refer confguration example section.
+ In values.yaml you can find `default` as value for all required configuration. You need to change all those values as per your need. For reference, please refer configuration example section.
 
  helm repo add sde-backend https://github.com/eclipse-tractusx/dft-backend/tree/main/charts
    
@@ -28,10 +28,10 @@ please refer configuration section from here [README.md](README.md)
 - Postgres 13.2
 
 #### Steps
-1. Clone the GitHub Repository - https://github.com/eclipse-tractusx/dft-backend
-2. Get your instance of postgres running.(Create **dftdb** new database)
-3. Setup your project environment to JDK 18
-4. Provide require application configuration in application.properties as specified in step configuration.properties
+1. Clone the GitHub Repository - https://github.com/eclipse-tractusx/dft-backend.
+2. Get your instance of postgres running (Create **dftdb** new database).
+3. Setup your project environment to JDK 18.
+4. Provide require application configuration in application.properties as specified in step configuration.properties.
 5. Start the SDE spring boot application from your IDE using main class or use spring CLI.
 
 
@@ -98,7 +98,7 @@ Apart from both upload Batch upload is additional feature were added into DFT.
 The file .csv is loaded in memory, the content is saved and then, the file is removed from memory.
 
 
-If the file is not .csv, it is read, processed and is considered as FAILED
+If the file is not .csv, it is read, processed and is considered as FAILED.
 
 
 

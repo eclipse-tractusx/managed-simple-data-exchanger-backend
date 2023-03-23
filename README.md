@@ -1,16 +1,16 @@
-   # Simple Data Exchanger (formaly known Data Format Transformer)
+   # Simple Data Exchanger (formally known Data Format Transformer)
 ---
 ## Description
 
 This repository is part of the overarching Catena-X project. It contains the Backend for the SDE/DFT.
-SDE Simple data exchanger(formaly known DFT is short for Data Format Transformer)
+SDE Simple data exchanger(formally known DFT is short for Data Format Transformer)
 
 It is a standalone service which can be self-hosted. 
 It enables companies to provide their data in the Catena-X network via an EDC.
 
 ## Important !!!
-### Deployemnt of DFT backend
-The auto setup is the central service orchestration component. The auto setup hide all complex configuration stuff for you and get SDE backend as well as Frontend service deployed for you as service. The auto setup taking all deployemnt through their specific helm charts. The auto setup knows which prerequisites and which configurations are required for the components and creates them. All dependencies and any error messages are intercepted by Auto-Setup and treated correctly and meaningfully. Therefore, Auto-Setup meets your requirements exactly.
+### Deployment of SDE backend
+The Auto-Setup is the central service orchestration component. The Auto-Setup hide all complex configuration properties for you and get SDE Backend as well as Frontend service deployed for you as service. The Auto-Setup taking all deployment through their specific helm charts. The Auto-Setup knows which prerequisites and which configurations are required for the components and creates them. All dependencies and any error messages are intercepted by Auto-Setup and treated correctly and meaningfully. Therefore, Auto-Setup meets your requirements exactly.
 
 Once SDE deployed, The data is uploaded via CSV-files or tabular entry. The SDE registers the data in the Digital Twin Registry and makes it accessible via an EDC.
 
@@ -20,7 +20,7 @@ The SDE project has three dependencies: Digital Twins, Portal and EDC.
 
 SDE is a SpringBoot Java Maven software project.
 
-When running, the project requires a postgresql database to be available to connect
+When running, the project requires a postgresql database to be available to connect.
 You can find the standard require configuration keys as below:
 
 ### Configuration
@@ -31,50 +31,50 @@ Listed below are configuration keys needed to get the `sde-backend` up and runni
 |---	                                               |---	       |---	                                         |---                                 |
 | keycloak.clientid                                    | X         | sdeclientId                                 | This is keycloak clienId/resource  |
 | spring.security.oauth2.resourceserver.jwt.issuer-uri | X         | https://ids.issuer.com/auth/realms/master   | Url of Keycloak issuer uri         |
-| management.endpoint.health.probes.enabled            | X         | true                                        | Defualt value, no need to change   |
-| management.health.readinessstate.enabled             | X         | true                                        | Defualt value, no need to change   |
-| management.health.livenessstate.enabled              | X         | true                                        | Defualt value, no need to change   |
-| management.endpoints.web.exposure.include            | X         | *                                           | Defualt value, no need to change   |
-| spring.lifecycle.timeout-per-shutdown-phase          | X         | 30s                                         | Defualt value, no need to change   | 
-| logging.level.org.springframework.security.web.csrf  | X         | INFO                                        | Defualt value, no need to change   |
-| logging.level.org.apache.http                        | X         | info                                        | Defualt value, no need to change   |
-| logging.level.root                                   | X         | info                                        | Defualt value, no need to change   |
-| file.upload-dir                                      | X         | ./temp/                                     | Defualt value, no need to change   |
-| spring.servlet.multipart.enabled                     | X         | true                                        | Defualt value, no need to change   |
-| spring.main.allow-bean-definition-overriding         | X         | true                                        | Defualt value, no need to change   |
-| spring.servlet.multipart.file-size-threshold         | X         | 2KB                                         | Defualt value, no need to change   |
-| spring.servlet.multipart.max-file-size               | X         | 200MB                                       | Defualt value, no need to change   |
-| spring.servlet.multipart.max-request-size            | X         | 215MB                                       | Defualt value, no need to change   |
-| server.servlet.context-path                          | X         | /api                                        | Defualt value, no need to change   |
-| spring.flyway.baseline-on-migrate                    | X         | true                                        | Defualt value, no need to change   |
-| spring.flyway.locations                              | X         | classpath:/flyway                           | Defualt value, no need to change   |
-| spring.datasource.driver-class-name                  | X         | org.postgresql.Driver                       | Defualt value, no need to change   |
-| spring.datasource.url                                | X         | jdbc:postgres//dbserver.com:5432/db         | Your databse server details        |
-| spring.datasource.username                           | X         |                                             | your databse password              |
-| spring.datasource.password                           | X         |                                             | your databse password              |
-| spring.jpa.hibernate.ddl-auto                        |           | update                                      | Defualt value, no need to change   |
-| spring.jpa.open-in-view                              |           | false                                       | Defualt value, no need to change   |
+| management.endpoint.health.probes.enabled            | X         | true                                        | Default value, no need to change   |
+| management.health.readinessstate.enabled             | X         | true                                        | Default value, no need to change   |
+| management.health.livenessstate.enabled              | X         | true                                        | Default value, no need to change   |
+| management.endpoints.web.exposure.include            | X         | *                                           | Default value, no need to change   |
+| spring.lifecycle.timeout-per-shutdown-phase          | X         | 30s                                         | Default value, no need to change   | 
+| logging.level.org.springframework.security.web.csrf  | X         | INFO                                        | Default value, no need to change   |
+| logging.level.org.apache.http                        | X         | info                                        | Default value, no need to change   |
+| logging.level.root                                   | X         | info                                        | Default value, no need to change   |
+| file.upload-dir                                      | X         | ./temp/                                     | Default value, no need to change   |
+| spring.servlet.multipart.enabled                     | X         | true                                        | Default value, no need to change   |
+| spring.main.allow-bean-definition-overriding         | X         | true                                        | Default value, no need to change   |
+| spring.servlet.multipart.file-size-threshold         | X         | 2KB                                         | Default value, no need to change   |
+| spring.servlet.multipart.max-file-size               | X         | 200MB                                       | Default value, no need to change   |
+| spring.servlet.multipart.max-request-size            | X         | 215MB                                       | Default value, no need to change   |
+| server.servlet.context-path                          | X         | /api                                        | Default value, no need to change   |
+| spring.flyway.baseline-on-migrate                    | X         | true                                        | Default value, no need to change   |
+| spring.flyway.locations                              | X         | classpath:/flyway                           | Default value, no need to change   |
+| spring.datasource.driver-class-name                  | X         | org.postgresql.Driver                       | Default value, no need to change   |
+| spring.datasource.url                                | X         | jdbc:postgres//dbserver.com:5432/db         | Your database server details       |
+| spring.datasource.username                           | X         |                                             | Your database password             |
+| spring.datasource.password                           | X         |                                             | Your database password             |
+| spring.jpa.hibernate.ddl-auto                        |           | update                                      | Default value, no need to change   |
+| spring.jpa.open-in-view                              |           | false                                       | Default value, no need to change   |
 | digital-twins.hostname                               | X         | https://example.digitaltwin.com             | Digital twin registry url          |
 | digital-twins.authentication.url                     | X         | http://ex*.keycloak.com/auth/realms/default | Digital twin registry auth url     |
 | digital-twins.authentication.clientId                | X         | your clientId                               | Digital twin registry clientId     |
 | digital-twins.authentication.clientSecret            | X         | your secrete                                | Digital twin registry secrete      |
-| digital-twins.authentication.grantType               | X         | client_credentials                          | Defualt value, no need to change   |
+| digital-twins.authentication.grantType               | X         | client_credentials                          | Default value, no need to change   |
 | edc.hostname                                         | X         | https://example.provider-connector.com      | Your EDC provider connector url    |
-| edc.apiKeyHeader                                     | X         | x-api-key                                   | your connector api key             |
-| edc.apiKey                                           | X         | yourpass                                    | your connector apikey value        |
-| edc.consumer.hostname                                | X         | https://example.consumer-connector.com      | Your EDc consumer connector        |
-| edc.consumer.apikeyheader                            | X         | x-api-key                                   | your connector api key             |
-| edc.consumer.apikey                                  | X         | yourpass                                    | your connector apikey value        |
-| edc.consumer.datauri                                 | X         | /api/v1/ids/data                            | IDS enpoint path                   |
+| edc.apiKeyHeader                                     | X         | x-api-key                                   | Your connector api key             |
+| edc.apiKey                                           | X         | yourpass                                    | Your connector apikey value        |
+| edc.consumer.hostname                                | X         | https://example.consumer-connector.com      | Your EDC consumer connector        |
+| edc.consumer.apikeyheader                            | X         | x-api-key                                   | Your connector api key             |
+| edc.consumer.apikey                                  | X         | yourpass                                    | Your connector apikey value        |
+| edc.consumer.datauri                                 | X         | /api/v1/ids/data                            | IDS endpoint path                  |
 | dft.hostname                                         | X         | https://example.sdehost.com                 | Your SDE hostname                  |
-| dft.apiKeyHeader                                     | X         | API_KEY                                     | your default key                   |
-| dft.apiKey                                           | X         | yourpass                                    | your default key password          |
+| dft.apiKeyHeader                                     | X         | API_KEY                                     | Your default key                   |
+| dft.apiKey                                           | X         | yourpass                                    | Your default key password          |
 | manufacturerId                                       | X         | default                                     | Your CX partner BPN number         |
-| partner.pool.hostname                                | X         | default                                     | url for legal-entity info usein SDE|
-| connector.discovery.token-url                        | X         | https://example.portal.backend.com          | Protalbackend Auth URL based on BPN| 
+| partner.pool.hostname                                | X         | default                                     | url to get legal-entity information|
+| connector.discovery.token-url                        | X         | https://example.portal.backend.com          | Portal backend AuthURL             | 
 | connector.discovery.clientId                         | X         | default                                     | client ID for connector discovery  |
 | connector.discovery.clientSecret                     | X         | default                                     | password for connector discovery   |
-| portal.backend.hostname                              | X         | default                                     | Protal backend svc URL based on BPN|
+| portal.backend.hostname                              | X         | default                                     | Portal backend svc URL based on BPN|
 | springdoc.api-docs.path                              | X         | /api-docs                                   | swagger API path                   |
 
 #### Example Configuration/application.properties
@@ -88,7 +88,7 @@ management.health.livenessstate.enabled=true
 management.endpoints.web.exposure.include=*
 spring.lifecycle.timeout-per-shutdown-phase=30s
 
-#provider your loggin level
+#provider your logging level
 logging.level.org.springframework.security.web.csrf=INFO
 logging.level.org.apache.http=info
 logging.level.root=info
@@ -108,14 +108,14 @@ server.servlet.context-path=/api
 spring.flyway.baseline-on-migrate=true
 spring.flyway.locations=classpath:/flyway
 spring.datasource.driver-class-name=org.postgresql.Driver
-spring.datasource.url=jdbc:postgres//dbserver.com:5432/dftdb #your databse server details
-spring.datasource.username=your databse password
-spring.datasource.password=your databse password
+spring.datasource.url=jdbc:postgres//dbserver.com:5432/dftdb #your database server details
+spring.datasource.username=your database password
+spring.datasource.password=your database password
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.open-in-view=false
 
-#Provide digital twin regitry details which SDE should use to create twin for your, 
-#The need technical userdetails depend on digital twin security configuration
+#Provide digital twin registry details which SDE should use to create twin for your, 
+#The need technical user details depend on digital twin security configuration
 digital-twins.hostname=https://example.digitaltwin.com
 digital-twins.authentication.url=http://example.keycloak.com/auth/realms/default
 digital-twins.authentication.clientId=your clientId
@@ -128,7 +128,7 @@ edc.apiKeyHeader=your connector api key
 edc.apiKey=your connector apikey value 
 
 #The EDC connector information which SDE should use As Data consumer connector
-edc.consumer.hostname=https://example.consumer-connector.com)
+edc.consumer.hostname=https://example.consumer-connector.com
 edc.consumer.apikeyheader=your connector api key
 edc.consumer.apikey=your connector apikey value 
 edc.consumer.datauri=/api/v1/ids/data
@@ -141,7 +141,7 @@ dft.apiKey=your default key password
 #Your company BPN number
 manufacturerId=default
 
-#Portal pool hostname url to use dicover legal comapany information in SDE
+#Portal pool hostname url to use discover legal company information in SDE
 partner.pool.hostname=default
 
 #Portal backend url for get connector list based on BPN number
@@ -156,7 +156,7 @@ The above configuration we can use as for different deployment as specified here
 
 ---
 ### Supported submodules
-To find information about supported submodels and there version in SDE please visit [here](modules/sde-submodules/submodules.md) 
+To find information about supported submodules and there version in SDE please visit [here](modules/sde-submodules/submodules.md) 
 
 
 ---
@@ -171,7 +171,7 @@ To find information about supported submodels and there version in SDE please vi
     * PartSiteInformationAsPlanned
     * SingleLevelUsageAsBuilt
 2. ***Json Update***
-    * SerialTypezation
+    * SerialPartTypization
     * AssemblyRelationship
     * Batch
     * PartAsPlanned
@@ -179,7 +179,7 @@ To find information about supported submodels and there version in SDE please vi
     * PartSiteInformationAsPlanned
  	* SingleLevelUsageAsBuilt
 3. ***Application UI***
-    * SerialTypezation
+    * SerialPartTypization
     * AssemblyRelationship
     * Batch
     * PartAsPlanned
@@ -191,7 +191,7 @@ To find information about supported submodels and there version in SDE please vi
  ---   
 ##  RESTful APIs OF DFT (Simple Data Exchanger) 
 
-###### ***Note: API_KEY, AUTHORISATION TOKEN Required as Headers***
+###### ***Note: API_KEY, AUTHORIZATION TOKEN Required as Headers***
 ---
 | API | Description |  Request body | Response body |
 | ------ | ------ | ------ | ------ |
@@ -212,7 +212,7 @@ To find information about supported submodels and there version in SDE please vi
 | **POST:- localhost:8080/api/subscribe-data-offers** |This API is used to subscribe data offers | Refer Api Doc |Refer Api Doc|
 | **GET:- localhost:8080/api/contract-offers** |This API is used to get all contract offers | Refer Api Doc |Refer Api Doc|
 | **GET:- localhost:8080/api/legal-entities** |This API is used to fetch legal entities (list of company's) for Process| Refer Api Doc |Refer Api Doc|
-| **POST:- localhost:8080/api/connectors-discovery** |This API is used to fetch  connectores information | Refer Api Doc |Refer Api Doc|
+| **POST:- localhost:8080/api/connectors-discovery** |This API is used to fetch  connector's information | Refer Api Doc |Refer Api Doc|
 | **GET:- localhost:8080/api/submodels** |This API is used to get all submodels list which is implemented/supported by SDE | Refer Api Doc | Refer Api Doc |
 | **GET:- localhost:8080/api/submodels/{submodelName}** |This API is used to get the schema data of specific model | Refer Api Doc | Refer Api Doc |
 | **POST:- localhost:8080/api/{submodel}/upload** |This API is used to uploading data From CSV file for particular selected submodel | Refer Api Doc |4ca03d5f-9e37-4c12-a8b8-6583b81892c8 |
@@ -267,7 +267,7 @@ To find information about supported submodels and there version in SDE please vi
 | **part_as_planned** |Table used to Store Date about Part As Planned. |  **Primary Key**:UUID |
 | **single_level_bom_as_planned** |Data about the relationship of part As Planned to its child-components. | **Primary Key**:parent_catenax_id, child_catenax_id |
 | **part_site_information_as_planned** |Table used to Store Date about Part Site Information As Planned. |  **Primary Key**:UUID |
-| **contract_negotiation_info** |Tables Contains Cntract Negotiotion Info and offerid |  **Primary Key**: connector_id, offer_id |
+| **contract_negotiation_info** |Tables Contains Contract Negotiation Info and offerid |  **Primary Key**: connector_id, offer_id |
 | **failure_log** |Table Contains Data About Failure Entries |  **Primary Key**:UUID |
 | **Flyway_Schema_History** |Table Contains data Migration History |  **Primary Key**:installed_rank |
 | **Process_Report** |Table Contains status of Processing upload |  **Primary Key**:process_id |
@@ -282,13 +282,13 @@ The scripts are in the folder: resources/flyway.<p>
 File naming: <b>Vx__script_name.sql</b>, where x is the version number. <p>
 When there is a need to change the last script, it is necessary to create a new script with the changes.
 
-Link to flyway documentation: [Documentation](https://flywaydb.org/documentation/) 
+Link to flyway documentation: [Documentation](https://flywaydb.org/documentation/).
 
 ## API authentication
 Authentication for the backend is handled via an API Key. This can be set in the configuration file.
 
 ### EDC
-GitHub repository with correct version of the Eclipse DataSpace Connector Project: [repository](https://github.com/eclipse-tractusx/tractusx-edc)
+GitHub repository with correct version of the Eclipse DataSpace Connector Project: [repository](https://github.com/eclipse-tractusx/tractusx-edc).
 
 ### Licenses
-Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0).

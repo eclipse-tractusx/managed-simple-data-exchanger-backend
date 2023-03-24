@@ -56,6 +56,16 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
           - containerPort: {{ .Values.portContainer }}
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://{{ .Values.dftpostgresql.fullnameOverride }}:{{ .Values.dftpostgresql.auth.port }}/{{ .Values.dftpostgresql.auth.database }}"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: {{ .Values.dftpostgresql.auth.username }}
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dft-postgresql-secrets
+                  key: password
           envFrom:
             - configMapRef:
                 name: {{ include "dftbackend.fullname" . }}-configmap

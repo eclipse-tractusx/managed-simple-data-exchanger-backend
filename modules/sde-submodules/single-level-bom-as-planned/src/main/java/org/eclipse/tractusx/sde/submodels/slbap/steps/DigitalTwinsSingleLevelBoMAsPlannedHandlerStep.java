@@ -40,7 +40,6 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelListRespo
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelResponse;
 import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsUtility;
 import org.eclipse.tractusx.sde.digitaltwins.gateways.external.DigitalTwinGateway;
-import org.eclipse.tractusx.sde.submodels.pap.constants.PartAsPlannedConstants;
 import org.eclipse.tractusx.sde.submodels.pap.entity.PartAsPlannedEntity;
 import org.eclipse.tractusx.sde.submodels.pap.mapper.PartAsPlannedMapper;
 import org.eclipse.tractusx.sde.submodels.pap.model.PartAsPlanned;
@@ -66,8 +65,8 @@ public class DigitalTwinsSingleLevelBoMAsPlannedHandlerStep extends Step {
 		try {
 			return doRun(singleLevelBoMAsPlannedAspect);
 		} catch (Exception e) {
-			throw new CsvHandlerUseCaseException(singleLevelBoMAsPlannedAspect.getRowNumber(),
-					": DigitalTwins: " + e.getMessage());
+			throw new ServiceException(
+					singleLevelBoMAsPlannedAspect.getRowNumber() + ": DigitalTwins: " + e.getMessage());
 		}
 	}
 
@@ -139,12 +138,10 @@ public class DigitalTwinsSingleLevelBoMAsPlannedHandlerStep extends Step {
 
 	private ShellLookupRequest getShellLookupRequest(SingleLevelBoMAsPlanned singleLevelBoMAsPlannedAspect) {
 		ShellLookupRequest shellLookupRequest = new ShellLookupRequest();
-		shellLookupRequest.addLocalIdentifier(PartAsPlannedConstants.ASSET_LIFECYCLE_PHASE,
-				PartAsPlannedConstants.AS_PLANNED);
-		shellLookupRequest.addLocalIdentifier(PartAsPlannedConstants.MANUFACTURER_PART_ID,
+		shellLookupRequest.addLocalIdentifier(CommonConstants.ASSET_LIFECYCLE_PHASE, CommonConstants.AS_PLANNED);
+		shellLookupRequest.addLocalIdentifier(CommonConstants.MANUFACTURER_PART_ID,
 				singleLevelBoMAsPlannedAspect.getParentManufacturerPartId());
-		shellLookupRequest.addLocalIdentifier(PartAsPlannedConstants.MANUFACTURER_ID,
-				digitalTwinsUtility.getManufacturerId());
+		shellLookupRequest.addLocalIdentifier(CommonConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId());
 
 		return shellLookupRequest;
 	}
@@ -165,12 +162,12 @@ public class DigitalTwinsSingleLevelBoMAsPlannedHandlerStep extends Step {
 
 	private ShellDescriptorRequest getShellDescriptorRequest(PartAsPlanned partAsPlannedAspect) {
 		ArrayList<KeyValuePair> specificIdentifiers = new ArrayList<>();
+    
+		specificIdentifiers.add(new KeyValuePair(CommonConstants.ASSET_LIFECYCLE_PHASE, CommonConstants.AS_PLANNED));
+		specificIdentifiers.add(
+				new KeyValuePair(CommonConstants.MANUFACTURER_PART_ID, partAsPlannedAspect.getManufacturerPartId()));
 		specificIdentifiers
-				.add(new KeyValuePair(PartAsPlannedConstants.ASSET_LIFECYCLE_PHASE, PartAsPlannedConstants.AS_PLANNED));
-		specificIdentifiers.add(new KeyValuePair(PartAsPlannedConstants.MANUFACTURER_PART_ID,
-				partAsPlannedAspect.getManufacturerPartId()));
-		specificIdentifiers
-				.add(new KeyValuePair(PartAsPlannedConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId()));
+				.add(new KeyValuePair(CommonConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId()));
 
 		List<String> values = new ArrayList<>();
 		values.add(partAsPlannedAspect.getUuid());

@@ -15,10 +15,9 @@ COPY ../modules ./modules
 RUN mvn clean install 
 
 # our final base image
-#FROM eclipse-temurin:18.0.1_10-jre
 #FROM eclipse-temurin:19.0.1_10-jre
 
-FROM eclipse-temurin:latest
+FROM eclipse-temurin:19-jdk-jammy
 
 ARG USERNAME=dftuser
 ARG USER_UID=1000

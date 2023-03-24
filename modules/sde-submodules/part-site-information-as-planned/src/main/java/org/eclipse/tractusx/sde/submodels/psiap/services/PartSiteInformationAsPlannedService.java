@@ -26,7 +26,6 @@ import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
 import org.eclipse.tractusx.sde.digitaltwins.facilitator.DeleteDigitalTwinsFacilitator;
 import org.eclipse.tractusx.sde.edc.facilitator.DeleteEDCFacilitator;
-import org.eclipse.tractusx.sde.submodels.psiap.constants.PartSiteInformationAsPlannedConstants;
 import org.eclipse.tractusx.sde.submodels.psiap.entity.PartSiteInformationAsPlannedEntity;
 import org.eclipse.tractusx.sde.submodels.psiap.mapper.PartSiteInformationAsPlannedMapper;
 import org.eclipse.tractusx.sde.submodels.psiap.repository.PartSiteInformationAsPlannedRepository;
@@ -54,7 +53,7 @@ public class PartSiteInformationAsPlannedService {
 						.filter(a -> !a.isEmpty())
 						.orElseThrow(() -> new NoDataFoundException(
 								String.format("No data found for processid %s ", refProcessId)))
-						.stream().filter(e -> !PartSiteInformationAsPlannedConstants.DELETED_Y.equals(e.getDeleted()))
+						.stream().filter(e -> !CommonConstants.DELETED_Y.equals(e.getDeleted()))
 						.map(partSiteInformationAsPlannedMapper::mapFromEntity).toList())
 				.filter(a -> !a.isEmpty()).orElseThrow(
 						() -> new NoDataFoundException("No data founds for deletion, All records are already deleted"));
@@ -87,7 +86,7 @@ public class PartSiteInformationAsPlannedService {
 
 	private void saveAspectWithDeleted(PartSiteInformationAsPlannedEntity aspectEntity) {
 
-		aspectEntity.setDeleted(PartSiteInformationAsPlannedConstants.DELETED_Y);
+		aspectEntity.setDeleted(CommonConstants.DELETED_Y);
 		partSiteInformationAsPlannedRepository.save(aspectEntity);
 	}
 

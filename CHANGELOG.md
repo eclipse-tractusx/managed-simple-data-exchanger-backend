@@ -13,7 +13,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - User not able to copy values from the contract panel as the keys are longer as the displayed field
 - To find out which contract belongs to which dataset User have to download the history file
 
-## [1.9.0] - 2023-03-06
+## [1.9.1] - 2023-03-24
+### Fixed
+- Helm charts fixed with default values.
+- Database dependency updated in charts.
+
+## [1.9.0] - 2023-03-15
 ### Added
 - Added new submodel SingleLevelUsageAsBuilt 1.0.1 aspect.
 - Updated Batch submodel to support 1.0.2 version.
@@ -121,8 +126,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Compliance with Catena-X Guidelines
 - Integration with Digital Twin registry service.
 
-
-[Unreleased]:https://github.com/eclipse-tractusx/dft-backend/compare/dft-backend-1.9.0...main
+[unreleased]: https://github.com/eclipse-tractusx/dft-backend/compare/dftbackend-1.9.1...main
+[1.9.1]: https://github.com/eclipse-tractusx/dft-backend/compare/1.9.0...dftbackend-1.9.1
+[1.9.0]: https://github.com/eclipse-tractusx/dft-backend/compare/dft-backend-1.8.1...1.9.0
 [1.8.1]: https://github.com/eclipse-tractusx/dft-backend/compare/dft-backend-1.8.0...dft-backend-1.8.1
 [1.8.0]: https://github.com/eclipse-tractusx/dft-backend/compare/dft-backend-1.7.0...dft-backend-1.8.0
 [1.7.0]: https://github.com/eclipse-tractusx/dft-backend/releases/tag/dft-backend-1.7.0

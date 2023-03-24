@@ -19,14 +19,15 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.submodels.spt.constants;
 
-import org.springframework.stereotype.Component;
-
 import lombok.Getter;
 
 @Getter
-@Component
 public class SerialPartTypizationConstants {
-	
+
+	private SerialPartTypizationConstants() {
+		throw new IllegalStateException("Constant class");
+	}
+
 	public static final String AS_BUILT = "AsBuilt";
 
 }

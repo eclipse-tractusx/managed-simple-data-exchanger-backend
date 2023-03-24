@@ -40,7 +40,6 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelListRespo
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelResponse;
 import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsUtility;
 import org.eclipse.tractusx.sde.digitaltwins.gateways.external.DigitalTwinGateway;
-import org.eclipse.tractusx.sde.submodels.sluab.constants.SingleLevelUsageAsBuiltConstants;
 import org.eclipse.tractusx.sde.submodels.sluab.model.SingleLevelUsageAsBuilt;
 import org.eclipse.tractusx.sde.submodels.spt.entity.AspectEntity;
 import org.eclipse.tractusx.sde.submodels.spt.mapper.AspectMapper;
@@ -66,8 +65,9 @@ public class DigitalTwinsSingleLevelUsageAsBuiltCsvHandlerUseCase extends Step {
 		try {
 			return doRun(aspectSingleLevelUsageAsBuilt);
 		} catch (Exception e) {
-			throw new CsvHandlerUseCaseException(aspectSingleLevelUsageAsBuilt.getRowNumber(),
-					": DigitalTwins: " + e.getMessage());
+    
+			throw new ServiceException(
+					aspectSingleLevelUsageAsBuilt.getRowNumber() + ": DigitalTwins: " + e.getMessage());
 		}
 	}
 
@@ -143,12 +143,11 @@ public class DigitalTwinsSingleLevelUsageAsBuiltCsvHandlerUseCase extends Step {
 
 	private ShellLookupRequest getShellLookupRequest(SingleLevelUsageAsBuilt aspectSingleLevelUsageAsBuilt) {
 		ShellLookupRequest shellLookupRequest = new ShellLookupRequest();
-		shellLookupRequest.addLocalIdentifier(SingleLevelUsageAsBuiltConstants.PART_INSTANCE_ID,
+		shellLookupRequest.addLocalIdentifier(CommonConstants.PART_INSTANCE_ID,
 				aspectSingleLevelUsageAsBuilt.getParentPartInstanceId());
-		shellLookupRequest.addLocalIdentifier(SingleLevelUsageAsBuiltConstants.MANUFACTURER_PART_ID,
+		shellLookupRequest.addLocalIdentifier(CommonConstants.MANUFACTURER_PART_ID,
 				aspectSingleLevelUsageAsBuilt.getParentManufacturerPartId());
-		shellLookupRequest.addLocalIdentifier(SingleLevelUsageAsBuiltConstants.MANUFACTURER_ID,
-				digitalTwinsUtility.getManufacturerId());
+		shellLookupRequest.addLocalIdentifier(CommonConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId());
 
 		if (aspectSingleLevelUsageAsBuilt.hasOptionalParentIdentifier()) {
 			shellLookupRequest.addLocalIdentifier(aspectSingleLevelUsageAsBuilt.getParentOptionalIdentifierKey(),
@@ -187,12 +186,11 @@ public class DigitalTwinsSingleLevelUsageAsBuiltCsvHandlerUseCase extends Step {
 	}
 
 	private void setSpecifiers(final ArrayList<KeyValuePair> specificIdentifiers, Aspect aspect) {
+		specificIdentifiers.add(new KeyValuePair(CommonConstants.PART_INSTANCE_ID, aspect.getPartInstanceId()));
+		specificIdentifiers.add(new KeyValuePair(CommonConstants.MANUFACTURER_PART_ID, aspect.getManufacturerPartId()));
 		specificIdentifiers
-				.add(new KeyValuePair(SingleLevelUsageAsBuiltConstants.PART_INSTANCE_ID, aspect.getPartInstanceId()));
-		specificIdentifiers.add(new KeyValuePair(SingleLevelUsageAsBuiltConstants.MANUFACTURER_PART_ID,
-				aspect.getManufacturerPartId()));
-		specificIdentifiers.add(new KeyValuePair(SingleLevelUsageAsBuiltConstants.MANUFACTURER_ID,
-				digitalTwinsUtility.getManufacturerId()));
+				.add(new KeyValuePair(CommonConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId()));
+
 		if (aspect.hasOptionalIdentifier()) {
 			specificIdentifiers
 					.add(new KeyValuePair(aspect.getOptionalIdentifierKey(), aspect.getOptionalIdentifierValue()));

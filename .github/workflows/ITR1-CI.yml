@@ -13,20 +13,20 @@
 # limitations under the License.
 
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
-name: build
+name: ITR1-CI
 
 on:
   push:
     branches:
-      - 'DST_PIP8_ITR2'
+      - 'DST_PIP8_ITR1'
     tags:
       - 'v*.*.*'
       - 'v*.*.*-*'
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
-
+  IMAGE_NAME: ghcr.io/catenax-ng/tx-dft-backend-qa
+  
 jobs:
   build-and-push-image:
     runs-on: ubuntu-latest

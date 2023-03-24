@@ -103,7 +103,7 @@ public class EDCAspectHandlerUseCase extends Step {
 			aspectService.deleteEDCAsset(entity);
 		} catch (Exception e) {
 			if (!e.getMessage().contains("404 Not Found")) {
-				throw new ServiceException("Exception in EDC delete request process  for Update:" + e.getMessage());
+				throw new ServiceException("Unable to delete EDC offer for update: " + e.getMessage());
 			}
 		}
 	}

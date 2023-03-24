@@ -55,7 +55,6 @@ public class RoleManagementController {
 	}
 
 	@GetMapping(value = "/user/role/permissions")
-	@PreAuthorize("hasPermission('','read_role_permission')")
 	public List<String> getAllRolePermissions() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		List<String> list = auth.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();

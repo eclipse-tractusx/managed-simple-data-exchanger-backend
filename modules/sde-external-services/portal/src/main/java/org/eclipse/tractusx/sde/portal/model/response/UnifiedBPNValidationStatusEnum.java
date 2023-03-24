@@ -1,8 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 Critical TechWorks GmbH
- * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023 T-Systems International GmbH
+ * Copyright (c) 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,16 +18,9 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.core.failurelog.repository;
+package org.eclipse.tractusx.sde.portal.model.response;
 
+public enum UnifiedBPNValidationStatusEnum {
 
-import java.util.List;
-
-import org.eclipse.tractusx.sde.core.failurelog.entity.FailureLogEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
-
-public interface FailureLogRepository extends JpaRepository<FailureLogEntity, String> {
-
-	List<FailureLogEntity> findByProcessId(String id);
-
+	FULL_PARTNER, NOT_PARTNER, PARTNER;
 }

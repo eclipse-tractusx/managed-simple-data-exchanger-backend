@@ -54,7 +54,7 @@ public class JsonRecordValidate extends Step {
 			sb.append(string + "\n");
 		}
 		if (!sb.isEmpty())
-			throw new ValidationException(rowIndex + ", " + sb.toString());
+			throw new ValidationException(String.format("RowPosition: %s | Description: %s", rowIndex, sb.toString()));
 
 		dependentFieldValidation(rowIndex, inputJsonObject);
 
@@ -70,7 +70,7 @@ public class JsonRecordValidate extends Step {
 			try {
 				JsonArray jArray = submodelProperties.get(ele).getAsJsonArray();
 				JsonNode jsonNode = inputJsonObject.get(ele);
-				
+
 				String keyFiledValue = null;
 				if (!jsonNode.isNull())
 					keyFiledValue = jsonNode.asText();
@@ -80,7 +80,8 @@ public class JsonRecordValidate extends Step {
 				}
 
 			} catch (Exception e) {
-				throw new ValidationException(rowIndex + ", " + e.toString());
+				throw new ValidationException(
+						String.format("RowPosition: %s | Description: %s", rowIndex, e.toString()));
 			}
 		}
 	}
@@ -88,7 +89,7 @@ public class JsonRecordValidate extends Step {
 	private void validateDependentFieldValue(JsonNode inputJsonObject, String ele, JsonArray jArray) {
 		for (JsonElement dependentField : jArray) {
 			JsonNode jsonNodeField = inputJsonObject.get(dependentField.getAsString());
-			
+
 			String dependentFiledValue = null;
 			if (!jsonNodeField.isNull())
 				dependentFiledValue = jsonNodeField.asText();

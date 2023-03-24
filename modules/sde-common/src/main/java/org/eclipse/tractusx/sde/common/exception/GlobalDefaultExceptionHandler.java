@@ -45,28 +45,32 @@ public class GlobalDefaultExceptionHandler extends ResponseEntityExceptionHandle
 	public static final String DEFAULT_ERROR_VIEW = "error";
 
 	@ExceptionHandler(NoDataFoundException.class)
-	public ResponseEntity<String> handleNodataFoundException(NoDataFoundException ex, WebRequest request) {
-		log.error("NoDataFoundException "+ex.getMessage());
-		return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+	public ResponseEntity<Map<String, String>> handleNodataFoundException(NoDataFoundException ex, WebRequest request) {
+		log.error("NoDataFoundException " + ex.getMessage());
+		Map<String, String> errorResponse = prepareErrorResponse(ex.getMessage());
+		return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
 	}
 
 	@ExceptionHandler(Exception.class)
-	public ResponseEntity<String> handlePSQLException(Exception ex, WebRequest request) {
-		log.error("Internal server error "+ex.getMessage());
-		return new ResponseEntity<>("Internal Server error", HttpStatus.INTERNAL_SERVER_ERROR);
+	public ResponseEntity<Map<String, String>> handlePSQLException(Exception ex, WebRequest request) {
+		log.error("Internal server error " + ex.getMessage());
+		Map<String, String> errorResponse = prepareErrorResponse("Internal Server error");
+		return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@ExceptionHandler(ValidationException.class)
-	public ResponseEntity<String> handleValidationException(ValidationException ex, WebRequest request) {
-		log.error("ValidationException "+ex.getMessage());
-		return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+	public ResponseEntity<Map<String, String>> handleValidationException(ValidationException ex, WebRequest request) {
+		log.error("ValidationException " + ex.getMessage());
+		Map<String, String> errorResponse = prepareErrorResponse(ex.getMessage());
+		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(ConstraintViolationException.class)
-	public ResponseEntity<String> handleConstraintValidationException(ConstraintViolationException ex,
+	public ResponseEntity<Map<String, String>> handleConstraintValidationException(ConstraintViolationException ex,
 			WebRequest request) {
-		log.error("ConstraintViolationException "+ex.getMessage());
-		return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+		log.error("ConstraintViolationException " + ex.getMessage());
+		Map<String, String> errorResponse = prepareErrorResponse(ex.getMessage());
+		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
 	}
 
 	@Override
@@ -78,16 +82,22 @@ public class GlobalDefaultExceptionHandler extends ResponseEntityExceptionHandle
 			String errorMessage = error.getDefaultMessage();
 			errors.put(fieldName, errorMessage);
 		});
-		log.error("MethodArgumentNotValidException "+errors);
+		log.error("MethodArgumentNotValidException " + errors);
 		return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(AccessDeniedException.class)
-	public final ResponseEntity<String> handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {
-		log.error("MethodArgumentNotValidException- You don't have access to this page or the page doesn't exist. Please contact your admin");
-		return new ResponseEntity<>(
-				"You don't have access to this page or the page doesn't exist. Please contact your admin",
-				HttpStatus.FORBIDDEN);
+	public final ResponseEntity<Map<String, String>> handleAccessDeniedException(AccessDeniedException ex,
+			WebRequest request) {
+		String error = "You don't have access to this page or the page doesn't exist. Please contact your admin";
+		log.error(error);
+		Map<String, String> errorResponse = prepareErrorResponse(error);
+		return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
 	}
 
+	private Map<String, String> prepareErrorResponse(String errormsg) {
+		Map<String, String> errorResponse = new HashMap<>();
+		errorResponse.put("msg", errormsg);
+		return errorResponse;
+	}
 }

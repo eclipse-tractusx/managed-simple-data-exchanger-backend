@@ -1,6 +1,4 @@
 /********************************************************************************
- * Copyright (c) 2022 Critical TechWorks GmbH
- * Copyright (c) 2022 BMW GmbH
  * Copyright (c) 2022, 2023 T-Systems International GmbH
  * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
@@ -20,16 +18,10 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.core.failurelog.repository;
-
-
-import java.util.List;
-
-import org.eclipse.tractusx.sde.core.failurelog.entity.FailureLogEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
-
-public interface FailureLogRepository extends JpaRepository<FailureLogEntity, String> {
-
-	List<FailureLogEntity> findByProcessId(String id);
-
-}
+/** Insert permission ******/
+INSERT INTO sde_permission (sde_permission,description)
+	VALUES ('unified_bpn_validation','Allows user to validate BPN from CX network is it have valid partner network member');
+	
+/** Insert role and permission mapping ******/
+INSERT INTO sde_role_permission_mapping (sde_permission,sde_role)
+	VALUES ('unified_bpn_validation','Creator');

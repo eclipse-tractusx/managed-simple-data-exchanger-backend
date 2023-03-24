@@ -26,7 +26,7 @@ import java.util.UUID;
 
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseException;
-import org.eclipse.tractusx.sde.common.exception.ServiceException;
+import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.Endpoint;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.GlobalAssetId;
@@ -50,10 +50,9 @@ import lombok.SneakyThrows;
 @Service
 public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 
-
 	@Autowired
 	private DigitalTwinGateway gateway;
-	
+
 	@Autowired
 	private DigitalTwinsUtility digitalTwinsUtility;
 
@@ -62,7 +61,8 @@ public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 		try {
 			return doRun(partAsPlannedAspect);
 		} catch (Exception e) {
-			throw new ServiceException(partAsPlannedAspect.getRowNumber() + ": DigitalTwins: " + e.getMessage());
+			throw new CsvHandlerUseCaseException(partAsPlannedAspect.getRowNumber(),
+					": DigitalTwins: " + e.getMessage());
 		}
 	}
 
@@ -131,8 +131,9 @@ public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 		SemanticId semanticId = new SemanticId(value);
 		String identification = CommonConstants.PREFIX + UUID.randomUUID();
 
-		List<Endpoint> endpoints = digitalTwinsUtility.prepareDtEndpoint(partAsPlannedAspect.getShellId(), identification);
-		
+		List<Endpoint> endpoints = digitalTwinsUtility.prepareDtEndpoint(partAsPlannedAspect.getShellId(),
+				identification);
+
 		return CreateSubModelRequest.builder().idShort(getIdShortOfModel()).identification(identification)
 				.semanticId(semanticId).endpoints(endpoints).build();
 	}
@@ -143,7 +144,6 @@ public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 		specificIdentifiers.add(new KeyValuePair(CommonConstants.MANUFACTURER_PART_ID,partAsPlannedAspect.getManufacturerPartId()));
 		specificIdentifiers.add(new KeyValuePair(CommonConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId()));
 		specificIdentifiers.add(new KeyValuePair(CommonConstants.ASSET_LIFECYCLE_PHASE, CommonConstants.AS_PLANNED));
-
 		List<String> values = new ArrayList<>();
 		values.add(partAsPlannedAspect.getUuid());
 		GlobalAssetId globalIdentifier = new GlobalAssetId(values);

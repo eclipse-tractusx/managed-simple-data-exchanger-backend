@@ -59,7 +59,6 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
-	private static final Integer LIMIT = 10000;
 	private final String edcDataUri;
 	private final ContractOfferCatalogApi contractOfferCatalogApiProxy;
 	private final ContractNegotiateManagementHelper contractNegotiateManagement;
@@ -82,7 +81,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
 	}
 
-	public List<QueryDataOfferModel> queryOnDataOffers(String providerUrl) {
+	public List<QueryDataOfferModel> queryOnDataOffers(String providerUrl, Integer limit, Integer offset) {
 		providerUrl = UtilityFunctions.removeLastSlashOfUrl(providerUrl);
 
 		providerUrl += edcDataUri;
@@ -90,7 +89,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 		List<QueryDataOfferModel> queryOfferResponse = new ArrayList<>();
 
 		ContractOffersCatalogResponse contractOfferCatalog = contractOfferCatalogApiProxy
-				.getContractOffersCatalog(getAuthHeader(), providerUrl, LIMIT);
+				.getContractOffersCatalog(getAuthHeader(), providerUrl, limit, offset );
 
 		for (ContractOffer contractOffer : contractOfferCatalog.getContractOffers()) {
 			Asset asset = contractOffer.getAsset();

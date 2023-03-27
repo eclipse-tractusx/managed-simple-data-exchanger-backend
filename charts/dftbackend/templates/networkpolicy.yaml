@@ -1,0 +1,15 @@
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "dftbackend.fullname" . }}
+  namespace: {{ .Release.Namespace  }}
+spec:
+  egress:
+    - {}
+  ingress:
+    - {}
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress

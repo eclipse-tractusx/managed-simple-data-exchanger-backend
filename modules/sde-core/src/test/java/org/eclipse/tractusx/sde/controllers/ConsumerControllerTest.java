@@ -21,6 +21,7 @@
 package org.eclipse.tractusx.sde.controllers;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -60,7 +61,7 @@ class ConsumerControllerTest {
 
     @Test
     void testQueryOnDataOfferWithoutOfferModel() throws Exception {
-        when(consumerControlPanelService.queryOnDataOffers((String) any())).thenReturn(new ArrayList<>());
+        when(consumerControlPanelService.queryOnDataOffers((String) any(), anyInt(), anyInt())).thenReturn(new ArrayList<>());
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/query-data-offers")
                 .param("providerUrl", "foo");
         MockMvcBuilders.standaloneSetup(consumerController)
@@ -77,7 +78,7 @@ class ConsumerControllerTest {
     void testQueryOnDataOffersWithOfferModel() throws Exception {
         ArrayList<QueryDataOfferModel> queryDataOfferModelList = new ArrayList<>();
         queryDataOfferModelList.add(new QueryDataOfferModel());
-        when(consumerControlPanelService.queryOnDataOffers((String) any())).thenReturn(queryDataOfferModelList);
+        when(consumerControlPanelService.queryOnDataOffers((String) any(), anyInt(), anyInt())).thenReturn(queryDataOfferModelList);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/query-data-offers")
                 .param("providerUrl", "foo");
         MockMvcBuilders.standaloneSetup(consumerController)

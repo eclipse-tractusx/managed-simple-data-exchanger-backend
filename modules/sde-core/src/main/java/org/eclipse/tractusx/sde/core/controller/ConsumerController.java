@@ -47,9 +47,17 @@ public class ConsumerController {
 
 	@GetMapping(value = "/query-data-offers")
 	@PreAuthorize("hasPermission('','consumer_view_contract_offers')")
-	public ResponseEntity<Object> queryOnDataOffers(@RequestParam String providerUrl) throws Exception {
+	public ResponseEntity<Object> queryOnDataOffers(@RequestParam String providerUrl,
+			@RequestParam(value = "maxLimit", required = false) Integer limit,
+			@RequestParam(value = "offset", required = false) Integer offset) throws Exception {
 		log.info("Request received : /api/query-data-Offers");
-		return ok().body(consumerControlPanelService.queryOnDataOffers(providerUrl));
+		if (limit == null) {
+			limit = 10;
+		}
+		if (offset == null) {
+			offset = 0;
+		}
+		return ok().body(consumerControlPanelService.queryOnDataOffers(providerUrl, limit, offset));
 	}
 
 	@PostMapping(value = "/subscribe-data-offers")

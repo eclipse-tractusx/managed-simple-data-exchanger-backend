@@ -67,21 +67,17 @@ dftbackend:
       # -- The path mapping the "default" api is going to be exposed at
       path: /dftbackend 
           
-ingress:
+ingresses:
   - enabled: false
     className: "nginx"
     annotations: {}
 #      kubernetes.io/ingress.class: nginx
 #      kubernetes.io/tls-acme: "true"
-    hostname: ""
-    
+    hostname: ""  
     endpoints:
      - default
-
     tls: 
-
      enabled: true    
-
      secretName: ""
       # -- If present overwrites the default secret name
     certManager:

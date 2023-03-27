@@ -33,6 +33,6 @@ public interface ContractOfferCatalogApi {
     @GetMapping(value = "/data/catalog")
     public ContractOffersCatalogResponse getContractOffersCatalog(
             @RequestHeader Map<String, String> requestHeader,
-            @RequestParam String providerUrl, @RequestParam Integer limit
-            );
+            @RequestParam String providerUrl, @RequestParam("limit") Integer limit,
+			@RequestParam("offset") Integer offset);
 }

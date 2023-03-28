@@ -63,7 +63,7 @@ public class TokenUtility {
 		return null;
 	}
 
-	public static String getOriginalRequestAuthToken() {
+	public String getOriginalRequestAuthToken() {
 		return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest()
 				.getHeader("Authorization");
 	}

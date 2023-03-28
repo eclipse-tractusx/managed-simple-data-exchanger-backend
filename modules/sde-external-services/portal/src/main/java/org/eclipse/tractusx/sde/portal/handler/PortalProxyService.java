@@ -31,7 +31,6 @@ import org.eclipse.tractusx.sde.portal.model.response.UnifiedBPNValidationStatus
 import org.eclipse.tractusx.sde.portal.model.response.UnifiedBpnValidationResponse;
 import org.eclipse.tractusx.sde.portal.utils.MemberCompanyBPNCacheUtilityService;
 import org.eclipse.tractusx.sde.portal.utils.TokenUtility;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -40,9 +39,6 @@ import lombok.SneakyThrows;
 @Service
 @RequiredArgsConstructor
 public class PortalProxyService {
-
-	@Value("${portal.backend.hostname}")
-	private String portalBackendHostname;
 
 	private final MemberCompanyBPNCacheUtilityService cacheUtilityService;
 
@@ -56,7 +52,7 @@ public class PortalProxyService {
 	public List<LegalEntityResponse> fetchLegalEntitiesData(String searchText, Integer page, Integer size) {
 		List<LegalEntityResponse> result = new ArrayList<>();
 		LegalEntityData legalEntity = partnerPoolExternalServiceApi.fetchLegalEntityData(searchText, page, size,
-				TokenUtility.getOriginalRequestAuthToken());
+				keycloakUtil.getOriginalRequestAuthToken());
 		if (null != legalEntity) {
 			legalEntity.getContent().stream().forEach(companyData -> {
 				companyData.getLegalEntity().getNames().stream().forEach(name -> {
@@ -86,10 +82,11 @@ public class PortalProxyService {
 
 		if (connectorsInfo.isEmpty()) {
 
-			List<String> memberBPNDataList = cacheUtilityService.getAllPartners();
+			String token = keycloakUtil.getOriginalRequestAuthToken();
+			List<String> memberBPNDataList = cacheUtilityService.getAllPartners(token);
 			if (!memberBPNDataList.isEmpty() && memberBPNDataList.contains(bpn)) {
-				unifiedBpnValidationResponse.setMsg(
-						bpn + " BPN number is part of partner network but there is no valid connector's found");
+				unifiedBpnValidationResponse
+						.setMsg(bpn + " BPN number is part of partner network but there is no valid connector's found");
 				unifiedBpnValidationResponse.setBpnStatus(UnifiedBPNValidationStatusEnum.PARTNER);
 			} else {
 				unifiedBpnValidationResponse.setMsg(bpn + " BPN number is not part of partner network");

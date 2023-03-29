@@ -37,25 +37,25 @@ import lombok.SneakyThrows;
 @RequiredArgsConstructor
 public class TokenUtility {
 
-	@Value("${connector.discovery.token-url}")
-	private URI tokenURI;
+	@Value(value = "${digital-twins.authentication.url}")
+	private URI appTokenURI;
+	
+	@Value(value = "${digital-twins.authentication.clientSecret}")
+	private String appClientSecret;
 
-	@Value("${connector.discovery.clientSecret}")
-	private String clientSecret;
+	@Value(value = "${digital-twins.authentication.clientId}")
+	private String appClientId;
 
-	@Value("${connector.discovery.clientId}")
-	private String clientId;
 
 	private final IPortalExternalServiceApi portalExternalServiceApi;
 
 	@SneakyThrows
-	public String getValidKeycloakToken() {
-
+	public String getValidJWTTokenforAppTechUser() {
 		MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
 		body.add("grant_type", "client_credentials");
-		body.add("client_id", clientId);
-		body.add("client_secret", clientSecret);
-		var resultBody = portalExternalServiceApi.readAuthToken(tokenURI, body);
+		body.add("client_id", appClientId);
+		body.add("client_secret", appClientSecret);
+		var resultBody = portalExternalServiceApi.readAuthToken(appTokenURI, body);
 
 		if (resultBody != null) {
 			return resultBody.getAccessToken();

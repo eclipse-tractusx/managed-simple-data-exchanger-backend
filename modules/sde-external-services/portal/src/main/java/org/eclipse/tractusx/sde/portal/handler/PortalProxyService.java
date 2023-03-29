@@ -67,7 +67,7 @@ public class PortalProxyService {
 
 	@SneakyThrows
 	public List<ConnectorInfo> fetchConnectorInfo(List<String> bpns) {
-		String token = keycloakUtil.getValidKeycloakToken();
+		String token = keycloakUtil.getValidJWTTokenforAppTechUser();
 		return portalExternalServiceApi.fetchConnectorInfo(bpns, "Bearer " + token);
 	}
 
@@ -82,8 +82,7 @@ public class PortalProxyService {
 
 		if (connectorsInfo.isEmpty()) {
 
-			String token = keycloakUtil.getOriginalRequestAuthToken();
-			List<String> memberBPNDataList = cacheUtilityService.getAllPartners(token);
+			List<String> memberBPNDataList = cacheUtilityService.getAllPartners();
 			if (!memberBPNDataList.isEmpty() && memberBPNDataList.contains(bpn)) {
 				unifiedBpnValidationResponse
 						.setMsg(bpn + " BPN number is part of partner network but there is no valid connector's found");

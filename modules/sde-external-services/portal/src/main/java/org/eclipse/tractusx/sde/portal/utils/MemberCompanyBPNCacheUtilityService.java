@@ -38,14 +38,18 @@ public class MemberCompanyBPNCacheUtilityService {
 
 	private final IPortalExternalServiceApi portalExternalServiceApi;
 
+	private final TokenUtility keycloakUtil;
+
 	@Cacheable("memberCompaniesList")
-	public List<String> getAllPartners(String accessToken) throws ServiceException {
+	public List<String> getAllPartners() throws ServiceException {
 		log.info("Refreshed bpn fetch member companies data list");
+
+		String token = keycloakUtil.getValidJWTTokenforAppTechUser();
 		List<String> fetchMemberCompaniesData = null;
 		try {
-			fetchMemberCompaniesData = portalExternalServiceApi.fetchMemberCompaniesData(accessToken);
+			fetchMemberCompaniesData = portalExternalServiceApi.fetchMemberCompaniesData("Bearer " + token);
 		} catch (Exception e) {
-			log.error(accessToken);
+			log.error(token);
 			log.error(e.getMessage());
 			throw new ServiceException(e.getMessage());
 		}

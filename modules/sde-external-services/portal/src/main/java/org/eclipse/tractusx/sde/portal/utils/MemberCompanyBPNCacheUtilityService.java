@@ -49,7 +49,6 @@ public class MemberCompanyBPNCacheUtilityService {
 		try {
 			fetchMemberCompaniesData = portalExternalServiceApi.fetchMemberCompaniesData("Bearer " + token);
 		} catch (Exception e) {
-			log.error(token);
 			log.error(e.getMessage());
 			throw new ServiceException(e.getMessage());
 		}

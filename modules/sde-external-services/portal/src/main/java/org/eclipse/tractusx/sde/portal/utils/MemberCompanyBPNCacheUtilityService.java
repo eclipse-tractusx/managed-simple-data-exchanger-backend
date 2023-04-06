@@ -22,6 +22,7 @@ package org.eclipse.tractusx.sde.portal.utils;
 import java.util.List;
 
 import org.eclipse.tractusx.sde.portal.api.IPortalExternalServiceApi;
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -37,11 +38,22 @@ public class MemberCompanyBPNCacheUtilityService {
 
 	private final IPortalExternalServiceApi portalExternalServiceApi;
 
+	private final TokenUtility keycloakUtil;
+
 	@Cacheable("memberCompaniesList")
-	public List<String> getAllPartners() {
-		String token = TokenUtility.getOriginalRequestAuthToken();
+	public List<String> getAllPartners() throws ServiceException {
 		log.info("Refreshed bpn fetch member companies data list");
-		return portalExternalServiceApi.fetchMemberCompaniesData(token);
+
+		String token = keycloakUtil.getValidJWTTokenforAppTechUser();
+		List<String> fetchMemberCompaniesData = null;
+		try {
+			fetchMemberCompaniesData = portalExternalServiceApi.fetchMemberCompaniesData("Bearer " + token);
+		} catch (Exception e) {
+			log.error(token);
+			log.error(e.getMessage());
+			throw new ServiceException(e.getMessage());
+		}
+		return fetchMemberCompaniesData;
 	}
 
 	@CacheEvict(value = "memberCompaniesList", allEntries = true)

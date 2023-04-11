@@ -155,13 +155,6 @@ class ConsumerControlPanelServiceTest {
 		verify(consumerRequest).getOffers();
 	}
 
-//    void testFetchLegalEntitiesData() throws Exception {
-//        LegalEntityData legalEntityData = getLegalEntityData();
-//        when(UtilityFunctions.getAuthToken()).thenReturn("bearer dummytoken1234");
-//        when(legalEntityDataApi.fetchLegalEntityData("searchText", 0, 10, UtilityFunctions.getAuthToken())).thenReturn(new ResponseEntity<>(legalEntityData, HttpStatus.OK));
-//        assertEquals(consumerControlPanelService.fetchLegalEntitiesData("Search Text", 0, 10).getStatusCodeValue(), 200);
-//    }
-
 
 	private ContractOffersCatalogResponse getContractOffersCatalogWithConstraints() throws Exception {
 		String contactOfferCatalogResponse = "{\n" + "    \"id\": \"default\",\n" + "    \"contractOffers\": [ "

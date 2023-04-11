@@ -18,7 +18,7 @@ name: build
 on:
   push:
     branches:
-      - 'main'
+      - 'DST_PIP8_ITR4'
     tags:
       - 'v*.*.*'
       - 'v*.*.*-*'

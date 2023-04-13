@@ -30,6 +30,7 @@ This project provides the following files:
 | `/charts/dftbackend/values.yaml`                   | Configurable values that are inserted into the following template files |   
 | `/charts/dftbackend/templates/configmap.yaml`      | Configurable values for int env                                         | 
 | `/charts/dftbackend/templates/deployment.yaml`     | Template to configure your application deployment.                      |
+| `/charts/dft-backend/templates/networkpolicy.yaml` | Template to configure your application deployment.                      |
 | `/charts/dftbackend/templates/ingress.yaml`        | Template to configure your application deployment.                      | 
 | `/charts/dftbackend/templates/service.yaml`        | Template to configure your application deployment.                      | 
 | `/charts/dftbackend/templates/hpa.yaml`            | Template to configure your application deployment.                      | 
@@ -38,4 +39,4 @@ This project provides the following files:
 ## Helm Commands
 $ helm repo add eclipse-tractusx-dft-backend https://github.com/eclipse-tractusx/dft-backend/tree/main/charts
 
-$ helm install my-release eclipse-tractusx/dftbackend --version 1.9.0
+$ helm install my-release eclipse-tractusx/dftbackend --version 2.0.1

@@ -26,18 +26,20 @@ The templates require your application to built into a Docker image. The Docker 
 
 This project provides the following files:
 
-| File                                              | Description                                                           |
-|---------------------------------------------------|-----------------------------------------------------------------------|  
-| `/charts/dft-backend/Chart.yaml`                    | The definition file for your application                           | 
-| `/charts/dft-backend/values.yaml`                   | Configurable values that are inserted into the following template files    
-| `/charts/dft-backend/values-int.yaml`                  | Configurable values for int env     | 
-| `/charts/dft-backend/templates/deployment.yaml` | Template to configure your application deployment.                 |
-| `/charts/dft-backend/templates/ingress.yaml`     | Template to configure your application deployment.                 | 
-| `/charts/dft-backend/templates/service.yaml`        | Template to configure your application deployment.                 | 
-| `/charts/dft-backend/templates/hpa.yaml`            | Template to configure your application deployment.                 | 
-| `/charts/dft-backend/templates/NOTES.txt`           | Helper to enable locating your application IP and PORT        | 
+| File                                               | Description                                                             |
+|--------------------------------------------------- |-----------------------------------------------------------------------  |  
+| `/charts/dftbackend/Chart.yaml`                    | The definition file for your application                                | 
+| `/charts/dftbackend/values.yaml`                   | Configurable values that are inserted into the following template files |   
+| `/charts/dftbackend/values-int.yaml`               | Configurable values for int env                                         | 
+| `/charts/dftbackend/templates/deployment.yaml`     | Template to configure your application deployment.                      |
+| `/charts/dftbackend/templates/networkpolicy.yaml`  | Template to configure your application deployment.                      |
+| `/charts/dftbackend/templates/ingress.yaml`        | Template to configure your application deployment.                      | 
+| `/charts/dftbackend/templates/service.yaml`        | Template to configure your application deployment.                      | 
+| `/charts/dftbackend/templates/hpa.yaml`            | Template to configure your application deployment.                      | 
+| `/charts/dftbackend/templates/NOTES.txt`           | Helper to enable locating your application IP and PORT                  | 
 
 ## Helm Commands
-$ helm repo add catenax-ng-product-dft-backend https://github.com/catenax-ng/product-dft-backend/tree/main/charts
+$ helm repo add eclipse-tractusx-dft-backend https://github.com/eclipse-tractusx/dft-backend/tree/main/charts
 
-$ helm install my-release catenax-ng/product-dft-backend --version 1.5.0
+$ helm install my-release eclipse-tractusx/dftbackend --version 2.0.1
+

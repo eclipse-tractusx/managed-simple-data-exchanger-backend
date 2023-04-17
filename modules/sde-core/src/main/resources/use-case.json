@@ -4,8 +4,8 @@
 		"title": "Traceability",
 		"description": "Traceability",
 		"submodules": [
-			"aspect",
-			"aspectrelationship",
+			"serialparttypization",
+			"assemblypartrelationship",
 			"batch",
 			"partasplanned",
 			"singlelevelbomasplanned",
@@ -18,8 +18,8 @@
 		"title": "Circular Economy",
 		"description": "Circular Economy",
 		"submodules": [
-			"aspect",
-			"aspectrelationship",
+			"serialparttypization",
+			"assemblypartrelationship",
 			"batch"
 		]
 	},
@@ -28,8 +28,8 @@
 		"title": "Quality",
 		"description": "Quality",
 		"submodules": [
-			"aspect",
-			"aspectrelationship",
+			"serialparttypization",
+			"assemblypartrelationship",
 			"batch",
 			"singlelevelusageasbuilt"
 		]

@@ -31,14 +31,14 @@
 		<version>3.0.2</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	
+
 	<groupId>org.eclipse.tractusx</groupId>
 	<artifactId>sde</artifactId>
 	<version>0.0.1</version>
 	<packaging>pom</packaging>
 	<name>sde</name>
 	<description>SDE for CatenaX</description>
-	
+
 	<properties>
 		<java.version>18</java.version>
 		<log4j2.version>2.17.1</log4j2.version>
@@ -52,11 +52,11 @@
 		<module>modules/sde-external-services/edc</module>
 		<module>modules/sde-external-services/digital-twins</module>
 		<module>modules/sde-external-services/portal</module>
-		
+
 		<module>modules/sde-common</module>
 		<module>modules/sde-core</module>
 		<module>modules/sde-usecases/traceability</module>
-		
+
 		<module>modules/sde-submodules/serial-part-typization</module>
 		<module>modules/sde-submodules/batch</module>
 		<module>modules/sde-submodules/assembly-part-relationship</module>
@@ -67,7 +67,7 @@
 	</modules>
 
 	<dependencies>
-	 <dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 			<exclusions>
@@ -79,10 +79,14 @@
 					<groupId>org.hibernate</groupId>
 					<artifactId>hibernate-core</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-expression</artifactId>
+				</exclusion>
 			</exclusions>
-	 </dependency>
-		
-	 <dependency>
+		</dependency>
+
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 			<exclusions>
@@ -94,9 +98,13 @@
 					<groupId>org.yaml</groupId>
 					<artifactId>snakeyaml</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-expression</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-openfeign</artifactId>
@@ -119,6 +127,12 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-expression</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<!-- Update snakeyaml manually to avoid vulnerability CVE-2022-25857; can 
 			be removed after Spring updates their dependency -->
@@ -143,15 +157,21 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-	
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
 		<dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-expression -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-expression</artifactId>
+			<version>6.0.7</version>
+		</dependency>
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>
@@ -164,7 +184,7 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-	
+
 	<build>
 		<pluginManagement>
 			<plugins>

@@ -33,49 +33,50 @@ import org.springframework.stereotype.Service;
 @Service
 public class PolicyConstraintBuilderService {
 
-    public List<ConstraintRequest> getAccessConstraints(List<String> bpnNumbers) {
-        List<ConstraintRequest> constraints = new ArrayList<>();
+	public List<ConstraintRequest> getAccessConstraints(List<String> bpnNumbers) {
+		List<ConstraintRequest> constraints = new ArrayList<>();
 
-        if (bpnNumbers != null && !bpnNumbers.isEmpty()) {
-            AccessPolicyDTO accessPolicy = AccessPolicyDTO.builder().bpnNumbers(bpnNumbers).build();
-            constraints.add(accessPolicy.toConstraint());
-        }
-        return constraints;
-    }
+		if (bpnNumbers != null && !bpnNumbers.isEmpty()) {
+			bpnNumbers.stream().forEach(bpnNumber -> {
+				AccessPolicyDTO accessPolicy = AccessPolicyDTO.builder().bpnNumber(bpnNumber).build();
+				constraints.add(accessPolicy.toConstraint());
+			});
+		}
+		return constraints;
+	}
 
-    public List<ConstraintRequest> getUsagePolicyConstraints(List<UsagePolicies> usagePolicies) {
-        List<ConstraintRequest> usageConstraintList = new ArrayList<>();
-        if (usagePolicies != null && !usagePolicies.isEmpty()) {
-            usagePolicies.stream().forEach(policy ->
-            {
-                usagePolicy(usageConstraintList, policy);
-            });
-        }
-        return usageConstraintList;
-    }
+	public List<ConstraintRequest> getUsagePolicyConstraints(List<UsagePolicies> usagePolicies) {
+		List<ConstraintRequest> usageConstraintList = new ArrayList<>();
+		if (usagePolicies != null && !usagePolicies.isEmpty()) {
+			usagePolicies.stream().forEach(policy -> {
+				usagePolicy(usageConstraintList, policy);
+			});
+		}
+		return usageConstraintList;
+	}
 
-    private void usagePolicy(List<ConstraintRequest> usageConstraintList, UsagePolicies policy) {
-        switch (policy.getType()) {
-            case DURATION:
-                ConstraintRequest request = DurationPolicyDTO.fromUsagePolicy(policy).toConstraint();
-                if (request != null) {
-                    usageConstraintList.add(request);
-                }
-                break;
-            case PURPOSE:
-                ConstraintRequest purposeRequest = PurposePolicyDTO.fromUsagePolicy(policy).toConstraint();
-                if (purposeRequest != null) {
-                    usageConstraintList.add(purposeRequest);
-                }
-                break;
-            case ROLE:
-                ConstraintRequest roleRequest = RolePolicyDTO.fromUsagePolicy(policy).toConstraint();
-                if (roleRequest != null) {
-                    usageConstraintList.add(roleRequest);
-                }
-                break;
-            default:
-                break;
-        }
-    }
+	private void usagePolicy(List<ConstraintRequest> usageConstraintList, UsagePolicies policy) {
+		switch (policy.getType()) {
+		case DURATION:
+			ConstraintRequest request = DurationPolicyDTO.fromUsagePolicy(policy).toConstraint();
+			if (request != null) {
+				usageConstraintList.add(request);
+			}
+			break;
+		case PURPOSE:
+			ConstraintRequest purposeRequest = PurposePolicyDTO.fromUsagePolicy(policy).toConstraint();
+			if (purposeRequest != null) {
+				usageConstraintList.add(purposeRequest);
+			}
+			break;
+		case ROLE:
+			ConstraintRequest roleRequest = RolePolicyDTO.fromUsagePolicy(policy).toConstraint();
+			if (roleRequest != null) {
+				usageConstraintList.add(roleRequest);
+			}
+			break;
+		default:
+			break;
+		}
+	}
 }

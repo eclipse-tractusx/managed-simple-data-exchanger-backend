@@ -132,7 +132,16 @@
 					<groupId>org.springframework</groupId>
 					<artifactId>spring-expression</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>org.springframework.security</groupId>
+					<artifactId>spring-security-web</artifactId>
+				</exclusion>
 			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+			<version>6.0.3</version>
 		</dependency>
 		<!-- Update snakeyaml manually to avoid vulnerability CVE-2022-25857; can 
 			be removed after Spring updates their dependency -->

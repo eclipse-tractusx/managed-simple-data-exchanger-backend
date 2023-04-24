@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-## [2.0.2] - 2023-04-17
+## [2.0.3] - 2023-04-24
 - Removed token log statement from logs.
 - EDC version 0.3.0 changes for multiple BPN.
 - Network policy added into Helm charts.
@@ -10,10 +10,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Manufacturer country code list.
 - Cancel contract agreement on provider side.
 - BPN validation in SDE.
-- The field "VAN" is still case sensitive, there is no need and it causes errors if you do not know it
+- The field "VAN" is still case sensitive, there is no need and it causes errors if you do not know it.
 - Mix of CSV-formats: When you export the data from the contract panel you get a "comma"-separated file, when you download it from history it is separated by "semicolon". Files with "comma" are shown incorrect at least on German systems.
-- User not able to copy values from the contract panel as the keys are longer as the displayed field
-- To find out which contract belongs to which dataset User have to download the history file
+- User not able to copy values from the contract panel as the keys are longer as the displayed field.
+- To find out which contract belongs to which dataset User have to download the history file.
+
+### Fixed
+-  Change in spring boot framework version.
 
 ## [1.9.1] - 2023-03-24
 
@@ -30,7 +33,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added Look-Up process for AssemblyPartRelationship submodel.
 
 ### Fixed
-- Removed manufatureId (BPN) from DT EDC URL creation.
+- Removed manufactureId (BPN) from DT EDC URL creation.
 - Correct submodel id for delete while assembly update.
 - ENUM fix after changing variable of DT.
 - Exception log for look up failure request.
@@ -45,7 +48,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added use case selection.
 - Enable filtering displayed submodels by selected use case.
 - Added new API for transaction history download function for each processId.
-- Added new API to Dynamic generation of CSV sample and CSV template per submode.
+- Added new API to Dynamic generation of CSV sample and CSV template per submodel.
 - Added new API to support dynamic submodel help page.
 - Added list contract agreements on Provider side
 
@@ -69,7 +72,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [1.7.0] - 2022-11-07
 ### Added
 - Enabled XSS protection for all API's.
-- Added changes to Enable sawgger API Documentation.
+- Added changes to Enable swagger API Documentation.
 
 ### Fixed
 - Restrict Log-in for C-X users only to valid SDE instance for the correct organization.
@@ -77,14 +80,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [1.6.0] - 2022-10-31
 ### Added
 - All API's secured with Keycloak token security to access API's.
-- Supported new "Batch" submodel for tracability and create twins into DigitalTwins registry with EDC data offer.
-- User can upload csv/json with usage and access policy restriction with duration, role, purpose and restricted perticuler BPM	while uploading data.
+- Supported new "Batch" submodel for traceability and create twins into DigitalTwins registry with EDC data offer.
+- User can upload csv/json with usage and access policy restriction with duration, role, purpose and restricted particular BPM	while uploading data.
 - Provided new API's to support consumer panel of SDE frontend.
 - Added new api calls to access Portal service API's.
 - Added new properties into application properties files.
 
 ### Changed
-- Moved public api's uder /public uri.
+- Moved public api's under /public uri.
 - Public API's protected with existing security to access.
 - Changes in Date validation for all submodel.
 - Changes for improve the exception handling.
@@ -98,7 +101,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [1.5.0] - 2022-10-11
 ### Added
-- Created user guidliance and installation documentation 
+- Created user guideline and installation documentation 
 - Created umbrella helm charts.
 - Integrated trivy, kicks. 
 
@@ -115,7 +118,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [1.2.0] - 2022-08-29
 ### Added
-- Integrated EDC connector to create assest, policies as a data offer.
+- Integrated EDC connector to create assets, policies as a data offer.
 
 ### Changed 
 - Moved helm charts from helm/ to charts.
@@ -129,8 +132,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Compliance with Catena-X Guidelines
 - Integration with Digital Twin registry service.
 
-[unreleased]: https://github.com/eclipse-tractusx/dft-backend/compare/2.0.2...main
-[2.0.2]: https://github.com/eclipse-tractusx/dft-backend/compare/1.9.1...2.0.2
+[unreleased]: https://github.com/eclipse-tractusx/dft-backend/compare/2.0.3...main
+[2.0.2]: https://github.com/eclipse-tractusx/dft-backend/compare/1.9.1...2.0.3
 [1.9.1]: https://github.com/eclipse-tractusx/dft-backend/compare/1.9.0...1.9.1
 [1.9.0]: https://github.com/eclipse-tractusx/dft-backend/compare/dft-backend-1.8.1...1.9.0
 [1.8.1]: https://github.com/eclipse-tractusx/dft-backend/compare/dft-backend-1.8.0...dft-backend-1.8.1

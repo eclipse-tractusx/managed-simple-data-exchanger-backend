@@ -101,7 +101,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [1.5.0] - 2022-10-11
 ### Added
-- Created user guideline and installation documentation 
+- Created user guideline and installation documentation.
 - Created umbrella helm charts.
 - Integrated trivy, kicks. 
 

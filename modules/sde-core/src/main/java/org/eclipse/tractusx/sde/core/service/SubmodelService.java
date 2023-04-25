@@ -95,5 +95,9 @@ public class SubmodelService {
 		return readValue(submodelName)
 				.orElseThrow(() -> new ValidationException(submodelName + " submodel is not supported"));
 	}
+	
+	public List<Submodel> getAllSubmodels(){
+		return submodelRegistration.getModels();
+	}
 
 }

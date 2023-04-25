@@ -25,9 +25,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.entities.SubmodelFileRequest;
 import org.eclipse.tractusx.sde.common.entities.SubmodelJsonRequest;
 import org.eclipse.tractusx.sde.common.entities.csv.CsvContent;
+import org.eclipse.tractusx.sde.common.exception.ValidationException;
 import org.eclipse.tractusx.sde.common.mapper.JsonObjectMapper;
 import org.eclipse.tractusx.sde.common.mapper.SubmodelMapper;
 import org.eclipse.tractusx.sde.common.model.Submodel;
@@ -72,14 +74,20 @@ public class SubmodelOrchestartorService {
 	public void processSubmodelCsv(SubmodelFileRequest submodelFileRequest, String processId, String submodel) {
 
 		Submodel submodelSchemaObject = submodelService.findSubmodelByNameAsSubmdelObject(submodel);
-		JsonObject submodelSchema = submodelSchemaObject.getSchema();
-		JsonObject items = submodelSchema.get("items").getAsJsonObject();
-		JsonObject asJsonObject = items.get("properties").getAsJsonObject();
 
-		CsvContent csvContent = csvHandlerService.processFile(processId, submodel);
+		CsvContent csvContent = csvHandlerService.processFile(processId);
 		List<String> columns = csvContent.getColumns();
-		sumodelcsvValidator.validate(asJsonObject, columns, submodel);
+		
+		if(!sumodelcsvValidator.validate(submodelSchemaObject, columns)) {
+			throw new ValidationException(String.format("Csv column header is not matching %s submodel", submodel));
+		}
 
+		processCsv(submodelFileRequest, processId, submodelSchemaObject, csvContent);
+
+	}
+
+	private void processCsv(SubmodelFileRequest submodelFileRequest, String processId, Submodel submodelSchemaObject, CsvContent csvContent) {
+		
 		Runnable runnable = () -> {
 			processReportUseCase.startBuildProcessReport(processId, submodelSchemaObject.getId(),
 					csvContent.getRows().size(), submodelFileRequest.getBpnNumbers(),
@@ -89,7 +97,7 @@ public class SubmodelOrchestartorService {
 			AtomicInteger failureCount = new AtomicInteger();
 
 			SubmodelExecutor executor = submodelSchemaObject.getExecutor();
-			executor.init(submodelSchema);
+			executor.init(submodelSchemaObject.getSchema());
 
 			csvContent.getRows().parallelStream().forEach(rowjObj -> {
 				try {
@@ -113,7 +121,6 @@ public class SubmodelOrchestartorService {
 		};
 
 		new Thread(runnable).start();
-
 	}
 
 	public void processSubmodel(SubmodelJsonRequest<ObjectNode> submodelJsonRequest, String processId,
@@ -202,5 +209,29 @@ public class SubmodelOrchestartorService {
 		SubmodelExecutor executor = submodelSchema.getExecutor();
 		return submodelMapper.jsonPojoToMap(executor.readCreatedTwinsDetails(uuid));
 	}
+	
+	//New method of CSV process for Automation
+	public void processSubmodelAutomationCsv(SubmodelFileRequest submodelFileRequest, String processId) {
+		
+		List<Submodel> submodelDetails = submodelService.getAllSubmodels();
+		CsvContent csvContent = csvHandlerService.processFile(processId);
+		List<String> columns = csvContent.getColumns();
+		Submodel foundSubmodelSchemaObject = null;
+		
+		for (Submodel submodel : submodelDetails) {
+			
+			if(sumodelcsvValidator.validate(submodel, columns)){
+				foundSubmodelSchemaObject = submodel;
+				break;
+			}
+		}
 
+		if(foundSubmodelSchemaObject == null) {
+			throw new ValidationException("Csv column header is not matching with any supported submodels");
+		}
+		
+		processCsv(submodelFileRequest, processId, foundSubmodelSchemaObject, csvContent);
+	}
+	
 }
+

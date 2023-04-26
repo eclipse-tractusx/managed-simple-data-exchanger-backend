@@ -132,7 +132,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Integration with Digital Twin registry service.
 
 [unreleased]: https://github.com/eclipse-tractusx/dft-backend/compare/2.0.3...main
-[2.0.2]: https://github.com/eclipse-tractusx/dft-backend/compare/1.9.1...2.0.3
+[2.0.3]: https://github.com/eclipse-tractusx/dft-backend/compare/1.9.1...2.0.3
 [1.9.1]: https://github.com/eclipse-tractusx/dft-backend/compare/1.9.0...1.9.1
 [1.9.0]: https://github.com/eclipse-tractusx/dft-backend/compare/dft-backend-1.8.1...1.9.0
 [1.8.1]: https://github.com/eclipse-tractusx/dft-backend/compare/dft-backend-1.8.0...dft-backend-1.8.1

@@ -5,7 +5,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [2.0.3] - 2023-04-26
 - Removed token log statement from logs.
 - EDC version 0.3.0 changes for multiple BPN.
-- Network policy added into Helm charts.
 - Error handling & input validation Messages for exceptions during upload / creation.
 - Manufacturer country code list.
 - Cancel contract agreement on provider side.

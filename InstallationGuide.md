@@ -10,9 +10,9 @@ For more details, please refer configuration section from [README.md](README.md)
  
  As part of argo CD deployment using helm chart the postgres database dependency will get provide automatic but for EDC, DigitalTwin and Portal you need to provide valid details as per configuration requirement other wise SDE service will get started with default configuration but will not work as expected.
 
-### RUN SDE Backend in k8ts cluster
+### RUN SDE Backend in k8s cluster
 #### Prerequisites
-- k8ts cluster/ minikube
+- k8s cluster/ minikube
 - helm
 - Docker
 
@@ -25,7 +25,7 @@ For more details, please refer configuration section from [README.md](README.md)
 ### RUN SDE Backend Locally
 #### Prerequisites
 - JDK18
-- Postgres 13.2
+- Postgres 11.9.13
 
 #### Steps
 1. Clone the GitHub Repository - https://github.com/eclipse-tractusx/dft-backend.
@@ -99,5 +99,4 @@ The file .csv is loaded in memory, the content is saved and then, the file is re
 
 
 If the file is not .csv, it is read, processed and is considered as FAILED.
-
 

@@ -18,9 +18,9 @@ For more details, please refer configuration section from [README.md](README.md)
 
  In values.yaml you can find `default` as value for all required configuration. You need to change all those values as per your need. For reference, please refer configuration example section.
 
- helm repo add sde-backend https://github.com/eclipse-tractusx/dft-backend/tree/main/charts
+ ```helm repo add eclipse-tractusx-dft-backend https://github.com/eclipse-tractusx/dft-backend/tree/main/charts ```
    
- helm install release-name eclipse-tractusx/dft-backend
+ ```helm install release-name eclipse-tractusx/dft-backend ```
 
 ### RUN SDE Backend Locally
 #### Prerequisites

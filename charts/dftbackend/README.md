@@ -40,5 +40,5 @@ This project provides the following files:
 ## Helm Commands
 $ helm repo add eclipse-tractusx-dft-backend https://github.com/eclipse-tractusx/dft-backend/tree/main/charts
 
-$ helm install my-release eclipse-tractusx/dftbackend --version 2.0.2
+$ helm install my-release eclipse-tractusx/dftbackend --version 2.0.0
 

@@ -2,10 +2,9 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-## [2.0.3] - 2023-04-24
+## [2.0.0] - 2023-05-05
 - Removed token log statement from logs.
 - EDC version 0.3.0 changes for multiple BPN.
-- Network policy added into Helm charts.
 - Error handling & input validation Messages for exceptions during upload / creation.
 - Manufacturer country code list.
 - Cancel contract agreement on provider side.
@@ -132,8 +131,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Compliance with Catena-X Guidelines
 - Integration with Digital Twin registry service.
 
-[unreleased]: https://github.com/eclipse-tractusx/dft-backend/compare/2.0.3...main
-[2.0.2]: https://github.com/eclipse-tractusx/dft-backend/compare/1.9.1...2.0.3
+[unreleased]: https://github.com/eclipse-tractusx/dft-backend/compare/2.0.0...main
+[2.0.0]: https://github.com/eclipse-tractusx/dft-backend/compare/1.9.1...2.0.0
 [1.9.1]: https://github.com/eclipse-tractusx/dft-backend/compare/1.9.0...1.9.1
 [1.9.0]: https://github.com/eclipse-tractusx/dft-backend/compare/dft-backend-1.8.1...1.9.0
 [1.8.1]: https://github.com/eclipse-tractusx/dft-backend/compare/dft-backend-1.8.0...dft-backend-1.8.1

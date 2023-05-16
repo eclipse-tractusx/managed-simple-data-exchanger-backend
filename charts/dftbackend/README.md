@@ -8,6 +8,8 @@ This chart bootstraps a DFT deployment on a Kubernetes cluster using the Helm pa
 This helm chart is an umbrella chart that pulls together engine specific charts. The engine charts are included as dependencies in Chart.yaml.
 We have added PostgresSQL bitnami image as a Dependency.
 
+
+
 ## Repository Structure
 
 This GitHub repository contains the source for the packaged and versioned charts released using GitHub pages (the Chart Repository).
@@ -25,17 +27,18 @@ The templates require your application to built into a Docker image. The Docker 
 This project provides the following files:
 
 | File                                               | Description                                                             |
-|----------------------------------------------------|-------------------------------------------------------------------------|  
+|--------------------------------------------------- |-----------------------------------------------------------------------  |  
 | `/charts/dftbackend/Chart.yaml`                    | The definition file for your application                                | 
 | `/charts/dftbackend/values.yaml`                   | Configurable values that are inserted into the following template files |   
-| `/charts/dftbackend/templates/configmap.yaml`      | Configurable values for int env                                         | 
+| `/charts/dftbackend/values-int.yaml`               | Configurable values for int env                                         | 
 | `/charts/dftbackend/templates/deployment.yaml`     | Template to configure your application deployment.                      |
 | `/charts/dftbackend/templates/ingress.yaml`        | Template to configure your application deployment.                      | 
 | `/charts/dftbackend/templates/service.yaml`        | Template to configure your application deployment.                      | 
 | `/charts/dftbackend/templates/hpa.yaml`            | Template to configure your application deployment.                      | 
-| `/charts/dftbackend/templates/serviceaccount.yaml` | Helper to enable locating your application IP and PORT                  | 
+| `/charts/dftbackend/templates/NOTES.txt`           | Helper to enable locating your application IP and PORT                  | 
 
 ## Helm Commands
 $ helm repo add eclipse-tractusx-dft-backend https://github.com/eclipse-tractusx/dft-backend/tree/main/charts
 
-$ helm install my-release eclipse-tractusx/dftbackend --version 2.0.3
+$ helm install my-release eclipse-tractusx/dftbackend --version 2.0.0
+

@@ -18,21 +18,10 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.edc.api;
-
-import org.eclipse.tractusx.sde.edc.model.contractoffers.ContractOffersCatalogResponse;
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.Map;
-
-@FeignClient(value = "ContractOfferCatalogApi", url = "${edc.consumer.hostname}")
-public interface ContractOfferCatalogApi {
-    @GetMapping(value = "/data/catalog")
-    public ContractOffersCatalogResponse getContractOffersCatalog(
-            @RequestHeader Map<String, String> requestHeader,
-            @RequestParam String providerUrl, @RequestParam("limit") Integer limit,
-			@RequestParam("offset") Integer offset);
-}
+/** Insert permission ******/
+INSERT INTO sde_permission (sde_permission,description)
+	VALUES ('unified_bpn_validation','Allows user to validate BPN from CX network is it have valid partner network member');
+	
+/** Insert role and permission mapping ******/
+INSERT INTO sde_role_permission_mapping (sde_permission,sde_role)
+	VALUES ('unified_bpn_validation','Creator');

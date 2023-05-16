@@ -1,7 +1,6 @@
 #################################################################################
-
-# Copyright (c) 2021,2022 Contributors to the Eclipse Foundation
-# Copyright (c) 2022, 2023 T-Systems International GmbH
+# Copyright (c) 2021, 2022, 2023 T-Systems International GmbH
+# Copyright (c) 2021,2022,2023 Contributors to the Eclipse Foundation
 #
 # See the NOTICE file(s) distributed with this work for additional
 # information regarding copyright ownership.
@@ -68,21 +67,17 @@ dftbackend:
       # -- The path mapping the "default" api is going to be exposed at
       path: /dftbackend 
           
-ingress:
+ingresses:
   - enabled: false
     className: "nginx"
     annotations: {}
 #      kubernetes.io/ingress.class: nginx
 #      kubernetes.io/tls-acme: "true"
-    hostname: ""
-    
+    hostname: ""  
     endpoints:
      - default
-
     tls: 
-
      enabled: true    
-
      secretName: ""
       # -- If present overwrites the default secret name
     certManager:

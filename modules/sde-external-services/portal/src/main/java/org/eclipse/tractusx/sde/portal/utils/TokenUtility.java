@@ -22,43 +22,50 @@ package org.eclipse.tractusx.sde.portal.utils;
 
 import java.net.URI;
 
-import org.eclipse.tractusx.sde.portal.api.ConnectorDiscoveryApi;
+import org.eclipse.tractusx.sde.portal.api.IPortalExternalServiceApi;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 @Component
 @RequiredArgsConstructor
-public class KeycloakUtil {
+public class TokenUtility {
 
-	@Value("${connector.discovery.token-url}")
-	private URI tokenURI;
+	@Value(value = "${digital-twins.authentication.url}")
+	private URI appTokenURI;
+	
+	@Value(value = "${digital-twins.authentication.clientSecret}")
+	private String appClientSecret;
 
-	@Value("${connector.discovery.clientSecret}")
-	private String clientSecret;
+	@Value(value = "${digital-twins.authentication.clientId}")
+	private String appClientId;
 
-	@Value("${connector.discovery.clientId}")
-	private String clientId;
 
-	private final ConnectorDiscoveryApi connectorDiscoveryApi;
+	private final IPortalExternalServiceApi portalExternalServiceApi;
 
 	@SneakyThrows
-	public String getKeycloakToken() {
-
+	public String getValidJWTTokenforAppTechUser() {
 		MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
 		body.add("grant_type", "client_credentials");
-		body.add("client_id", clientId);
-		body.add("client_secret", clientSecret);
-		var resultBody = connectorDiscoveryApi.readAuthToken(tokenURI, body);
+		body.add("client_id", appClientId);
+		body.add("client_secret", appClientSecret);
+		var resultBody = portalExternalServiceApi.readAuthToken(appTokenURI, body);
 
 		if (resultBody != null) {
 			return resultBody.getAccessToken();
 		}
 		return null;
+	}
+
+	public String getOriginalRequestAuthToken() {
+		return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest()
+				.getHeader("Authorization");
 	}
 
 }

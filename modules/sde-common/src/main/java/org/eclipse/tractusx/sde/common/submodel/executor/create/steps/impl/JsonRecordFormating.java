@@ -23,7 +23,6 @@ package org.eclipse.tractusx.sde.common.submodel.executor.create.steps.impl;
 import java.util.Set;
 
 import org.eclipse.tractusx.sde.common.exception.JsonRecordHandlerUseCaseException;
-import org.eclipse.tractusx.sde.common.exception.ValidationException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
 import org.springframework.stereotype.Component;
 
@@ -48,10 +47,10 @@ public class JsonRecordFormating extends Step {
 
 		int colomnIndex = 0;
 		for (String ele : fields) {
+			String fieldValue = null;
 			try {
 				JsonObject jObject = submodelProperties.get(ele).getAsJsonObject();
 
-				String fieldValue = null;
 				JsonNode jsonValuenode = rowjObject.get(ele);
 				if (!jsonValuenode.isNull())
 					fieldValue = jsonValuenode.asText();
@@ -60,9 +59,9 @@ public class JsonRecordFormating extends Step {
 
 				colomnIndex++;
 
-			} catch (ValidationException errorMessages) {
+			} catch (Exception errorMessages) {
 				throw new JsonRecordHandlerUseCaseException(rowIndex, colomnIndex,
-						ele + ":" + errorMessages.toString());
+						ele + ": " + fieldValue + ":" + errorMessages.toString());
 			}
 		}
 

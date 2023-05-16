@@ -66,6 +66,7 @@ public class DigitalTwinsSingleLevelUsageAsBuiltCsvHandlerUseCase extends Step {
 		try {
 			return doRun(aspectSingleLevelUsageAsBuilt);
 		} catch (Exception e) {
+    
 			throw new ServiceException(
 					aspectSingleLevelUsageAsBuilt.getRowNumber() + ": DigitalTwins: " + e.getMessage());
 		}
@@ -190,6 +191,7 @@ public class DigitalTwinsSingleLevelUsageAsBuiltCsvHandlerUseCase extends Step {
 		specificIdentifiers.add(new KeyValuePair(CommonConstants.MANUFACTURER_PART_ID, aspect.getManufacturerPartId()));
 		specificIdentifiers
 				.add(new KeyValuePair(CommonConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId()));
+
 		if (aspect.hasOptionalIdentifier()) {
 			specificIdentifiers
 					.add(new KeyValuePair(aspect.getOptionalIdentifierKey(), aspect.getOptionalIdentifierValue()));

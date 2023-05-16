@@ -17,22 +17,19 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
+package org.eclipse.tractusx.sde.portal.api;
 
-package org.eclipse.tractusx.sde.edc.api;
-
-import org.eclipse.tractusx.sde.edc.model.contractoffers.ContractOffersCatalogResponse;
+import org.eclipse.tractusx.sde.portal.model.LegalEntityData;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.Map;
 
-@FeignClient(value = "ContractOfferCatalogApi", url = "${edc.consumer.hostname}")
-public interface ContractOfferCatalogApi {
-    @GetMapping(value = "/data/catalog")
-    public ContractOffersCatalogResponse getContractOffersCatalog(
-            @RequestHeader Map<String, String> requestHeader,
-            @RequestParam String providerUrl, @RequestParam("limit") Integer limit,
-			@RequestParam("offset") Integer offset);
+@FeignClient(value = "IPartnerPoolExternalServiceApi", url = "${partner.pool.hostname}")
+public interface IPartnerPoolExternalServiceApi {
+    
+	@GetMapping(path = "/api/catena/legal-entities")
+    LegalEntityData fetchLegalEntityData(@RequestParam String name, @RequestParam Integer page, @RequestParam Integer size, @RequestHeader("Authorization") String bearerToken);
+
 }

@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang3.StringUtils;
@@ -38,70 +37,51 @@ import org.eclipse.tractusx.sde.edc.constants.EDCAssetConstant;
 import org.eclipse.tractusx.sde.edc.entities.database.ContractNegotiationInfoEntity;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyConstraintBuilderService;
-import org.eclipse.tractusx.sde.edc.enums.NegotiationState;
 import org.eclipse.tractusx.sde.edc.facilitator.AbstractEDCStepsHelper;
-import org.eclipse.tractusx.sde.edc.facilitator.ContractNegotiateManagement;
+import org.eclipse.tractusx.sde.edc.facilitator.ContractNegotiateManagementHelper;
 import org.eclipse.tractusx.sde.edc.gateways.database.ContractNegotiationInfoRepository;
 import org.eclipse.tractusx.sde.edc.model.asset.Asset;
-import org.eclipse.tractusx.sde.edc.model.contractnegotiation.ContractAgreementResponse;
 import org.eclipse.tractusx.sde.edc.model.contractnegotiation.ContractNegotiationDto;
-import org.eclipse.tractusx.sde.edc.model.contractnegotiation.ContractNegotiationsResponse;
 import org.eclipse.tractusx.sde.edc.model.contractoffers.ContractOffer;
 import org.eclipse.tractusx.sde.edc.model.contractoffers.ContractOffersCatalogResponse;
 import org.eclipse.tractusx.sde.edc.model.policies.PolicyDefinition;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.eclipse.tractusx.sde.edc.util.UtilityFunctions;
-import org.eclipse.tractusx.sde.portal.api.ConnectorDiscoveryApi;
-import org.eclipse.tractusx.sde.portal.api.LegalEntityDataApi;
-import org.eclipse.tractusx.sde.portal.model.ConnectorInfo;
-import org.eclipse.tractusx.sde.portal.model.LegalEntityData;
-import org.eclipse.tractusx.sde.portal.model.response.LegalEntityResponse;
-import org.eclipse.tractusx.sde.portal.utils.KeycloakUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
 public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
-	private static final Integer LIMIT = 10000;
 	private final String edcDataUri;
 	private final ContractOfferCatalogApi contractOfferCatalogApiProxy;
-	private final ContractNegotiateManagement contractNegotiateManagement;
+	private final ContractNegotiateManagementHelper contractNegotiateManagement;
 
 	private ContractNegotiationInfoRepository contractNegotiationInfoRepository;
 	private PolicyConstraintBuilderService policyConstraintBuilderService;
 
-	private LegalEntityDataApi legalEntityDataApi;
-	private ConnectorDiscoveryApi connectorDiscoveryApi;
-
-	private KeycloakUtil keycloakUtil;
-
 	@Autowired
 	public ConsumerControlPanelService(@Value("${edc.consumer.datauri}") String edcDataUri,
 			ContractOfferCatalogApi contractOfferCatalogApiProxy,
-			ContractNegotiateManagement contractNegotiateManagement,
+			ContractNegotiateManagementHelper contractNegotiateManagement,
 			ContractNegotiationInfoRepository contractNegotiationInfoRepository,
-			PolicyConstraintBuilderService policyConstraintBuilderService, LegalEntityDataApi legalEntityDataApi,
-			ConnectorDiscoveryApi connectorDiscoveryApi, KeycloakUtil keycloakUtil) {
+			PolicyConstraintBuilderService policyConstraintBuilderService) {
 		this.edcDataUri = edcDataUri;
 		this.contractOfferCatalogApiProxy = contractOfferCatalogApiProxy;
 		this.contractNegotiateManagement = contractNegotiateManagement;
 		this.contractNegotiationInfoRepository = contractNegotiationInfoRepository;
 		this.policyConstraintBuilderService = policyConstraintBuilderService;
-		this.legalEntityDataApi = legalEntityDataApi;
-		this.connectorDiscoveryApi = connectorDiscoveryApi;
-		this.keycloakUtil = keycloakUtil;
+
 
 	}
 
-	public List<QueryDataOfferModel> queryOnDataOffers(String providerUrl) {
+	public List<QueryDataOfferModel> queryOnDataOffers(String providerUrl, Integer limit, Integer offset) {
 		providerUrl = UtilityFunctions.removeLastSlashOfUrl(providerUrl);
 
 		providerUrl += edcDataUri;
@@ -109,7 +89,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 		List<QueryDataOfferModel> queryOfferResponse = new ArrayList<>();
 
 		ContractOffersCatalogResponse contractOfferCatalog = contractOfferCatalogApiProxy
-				.getContractOffersCatalog(getAuthHeader(), providerUrl, LIMIT);
+				.getContractOffersCatalog(getAuthHeader(), providerUrl, limit, offset );
 
 		for (ContractOffer contractOffer : contractOfferCatalog.getContractOffers()) {
 			Asset asset = contractOffer.getAsset();
@@ -163,7 +143,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 		HashMap<String, String> extensibleProperty = new HashMap<>();
 		String recipient = UtilityFunctions.removeLastSlashOfUrl(consumerRequest.getProviderUrl());
 		AtomicReference<String> negotiateContractId = new AtomicReference<>();
-		AtomicReference<ContractNegotiationsResponse> checkContractNegotiationStatus = new AtomicReference<>();
+		AtomicReference<ContractNegotiationDto> checkContractNegotiationStatus = new AtomicReference<>();
 		var recipientURL = recipient + edcDataUri;
 		List<UsagePolicies> policies = consumerRequest.getPolicies();
 		UsagePolicies customPolicy = policies.stream().filter(type -> type.getType().equals(UsagePolicyEnum.CUSTOM))
@@ -206,64 +186,4 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
 	}
 
-	public Map<String, Object> getAllContractOffers(String type, Integer limit, Integer offset) {
-		List<ContractAgreementResponse> contractAgreementResponses = new ArrayList<>();
-		List<ContractNegotiationDto> contractNegotiationDtoList = contractNegotiateManagement
-				.getAllContractNegotiations(type, limit, offset);
-		contractNegotiationDtoList.stream().forEach((contract) -> {
-			if (StringUtils.isBlank(type) || contract.getType().name().equals(type)) {
-				if (contract.getState().equals(NegotiationState.CONFIRMED.name()) || contract.getState().equals(NegotiationState.DECLINED.name())) {
-					String negotiationId = contract.getId();
-					if (StringUtils.isNotBlank(contract.getContractAgreementId())) {
-						ContractAgreementResponse agreementResponse = contractNegotiateManagement
-								.getAgreementBasedOnNegotiationId(type, negotiationId);
-						agreementResponse.setCounterPartyAddress(contract.getCounterPartyAddress());
-						agreementResponse.setDateCreated(contract.getCreatedAt());
-						agreementResponse.setDateUpdated(contract.getUpdatedAt());
-						agreementResponse.setType(contract.getType());
-						agreementResponse.setState(contract.getState());
-						contractAgreementResponses.add(agreementResponse);
-					}
-				} else {
-					ContractAgreementResponse agreementResponse = ContractAgreementResponse.builder()
-							.contractAgreementId(StringUtils.EMPTY).organizationName(StringUtils.EMPTY)
-							.title(StringUtils.EMPTY).negotiationId(contract.getId()).state(contract.getState())
-							.contractAgreementInfo(null).counterPartyAddress(contract.getCounterPartyAddress())
-							.type(contract.getType()).dateCreated(contract.getCreatedAt())
-							.dateUpdated(contract.getUpdatedAt()).build();
-					contractAgreementResponses.add(agreementResponse);
-				}
-			}
-		});
-		Map<String, Object> res = new HashMap<>();
-		if (UtilityFunctions.checkTypeOfConnector(type))
-			res.put("connector", providerHost);
-		else
-			res.put("connector", consumerHost);
-
-		res.put("contracts", contractAgreementResponses);
-		return res;
-	}
-
-	public List<LegalEntityResponse> fetchLegalEntitiesData(String searchText, Integer page, Integer size) {
-		List<LegalEntityResponse> result = new ArrayList<>();
-		LegalEntityData legalEntity = legalEntityDataApi.fetchLegalEntityData(searchText, page, size,
-				UtilityFunctions.getAuthToken());
-		if (null != legalEntity) {
-			legalEntity.getContent().stream().forEach(companyData -> {
-				companyData.getLegalEntity().getNames().stream().forEach(name -> {
-					LegalEntityResponse legalEntityResponse = LegalEntityResponse.builder()
-							.bpn(companyData.getLegalEntity().getBpn()).name(name.getValue()).build();
-					result.add(legalEntityResponse);
-				});
-			});
-		}
-		return result;
-	}
-
-	@SneakyThrows
-	public List<ConnectorInfo> fetchConnectorInfo(List<String> bpns) {
-		String token = keycloakUtil.getKeycloakToken();
-		return connectorDiscoveryApi.fetchConnectorInfo(bpns, "Bearer " + token);
-	}
 }

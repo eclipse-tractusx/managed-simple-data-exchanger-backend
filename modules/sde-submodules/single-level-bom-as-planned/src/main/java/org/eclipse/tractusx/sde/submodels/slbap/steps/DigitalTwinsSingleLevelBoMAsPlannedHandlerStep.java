@@ -163,6 +163,7 @@ public class DigitalTwinsSingleLevelBoMAsPlannedHandlerStep extends Step {
 
 	private ShellDescriptorRequest getShellDescriptorRequest(PartAsPlanned partAsPlannedAspect) {
 		ArrayList<KeyValuePair> specificIdentifiers = new ArrayList<>();
+    
 		specificIdentifiers.add(new KeyValuePair(CommonConstants.ASSET_LIFECYCLE_PHASE, CommonConstants.AS_PLANNED));
 		specificIdentifiers.add(
 				new KeyValuePair(CommonConstants.MANUFACTURER_PART_ID, partAsPlannedAspect.getManufacturerPartId()));

@@ -25,8 +25,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.Expression;
 
@@ -37,7 +35,7 @@ import org.eclipse.tractusx.sde.edc.entities.request.policies.Expression;
 public class AccessPolicyDTO {
     private static final String DATASPACECONNECTOR_LITERALEXPRESSION = "dataspaceconnector:literalexpression";
 
-    List<String> bpnNumbers;
+    String bpnNumber;
 
     public ConstraintRequest toConstraint() {
         Expression lExpression = Expression.builder()
@@ -45,11 +43,11 @@ public class AccessPolicyDTO {
                 .value("BusinessPartnerNumber")
                 .build();
 
-        String operator = "IN";
+        String operator = "EQ";
         Expression rExpression = null;
         rExpression = Expression.builder()
                     .edcType(DATASPACECONNECTOR_LITERALEXPRESSION)
-                    .value(bpnNumbers)
+                    .value(bpnNumber)
                     .build();
 
         return ConstraintRequest.builder().edcType("AtomicConstraint")

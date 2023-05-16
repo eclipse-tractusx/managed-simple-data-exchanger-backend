@@ -101,7 +101,7 @@ public class EDCSingleLevelUsageAsBuiltHandlerUseCase extends Step {
 			singleLevelUsageAsBuiltService.deleteEDCAsset(aspectRelationshipEntity);
 		} catch (Exception e) {
 			if (!e.getMessage().contains("404 Not Found")) {
-				throw new ServiceException("Exception in EDC delete request process");
+				throw new ServiceException("Unable to delete EDC offer for update: "+ e.getMessage());
 			}
 		}
 	}

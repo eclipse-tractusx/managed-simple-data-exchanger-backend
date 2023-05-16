@@ -22,6 +22,7 @@ package org.eclipse.tractusx.sde.edc.facilitator;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.edc.api.ContractApi;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
+import org.eclipse.tractusx.sde.edc.enums.NegotiationState;
 import org.eclipse.tractusx.sde.edc.mapper.ContractMapper;
 import org.eclipse.tractusx.sde.edc.model.contractnegotiation.AcknowledgementId;
 import org.eclipse.tractusx.sde.edc.model.contractnegotiation.ContractAgreementDto;
@@ -36,7 +38,6 @@ import org.eclipse.tractusx.sde.edc.model.contractnegotiation.ContractAgreementI
 import org.eclipse.tractusx.sde.edc.model.contractnegotiation.ContractAgreementResponse;
 import org.eclipse.tractusx.sde.edc.model.contractnegotiation.ContractNegotiationDto;
 import org.eclipse.tractusx.sde.edc.model.contractnegotiation.ContractNegotiations;
-import org.eclipse.tractusx.sde.edc.model.contractnegotiation.ContractNegotiationsResponse;
 import org.eclipse.tractusx.sde.edc.util.UtilityFunctions;
 import org.springframework.stereotype.Service;
 
@@ -45,7 +46,7 @@ import lombok.SneakyThrows;
 
 @Service
 @RequiredArgsConstructor
-public class ContractNegotiateManagement extends AbstractEDCStepsHelper {
+public class ContractNegotiateManagementHelper extends AbstractEDCStepsHelper {
 
 	private final ContractApi contractApi;
 	private final ContractMapper contractMapper;
@@ -64,9 +65,9 @@ public class ContractNegotiateManagement extends AbstractEDCStepsHelper {
 	}
 
 	@SneakyThrows
-	public ContractNegotiationsResponse checkContractNegotiationStatus(String negotiateContractId) {
+	public ContractNegotiationDto checkContractNegotiationStatus(String negotiateContractId) {
 
-		return contractApi.checkContractNegotiationsStatus(new URI(consumerHost), negotiateContractId, getAuthHeader());
+		return contractApi.getContractDetails(new URI(consumerHost), negotiateContractId, getAuthHeader());
 
 	}
 
@@ -111,4 +112,66 @@ public class ContractNegotiateManagement extends AbstractEDCStepsHelper {
 		}
 		return agreementResponse;
 	}
+
+	public Map<String, Object> getAllContractOffers(String type, Integer limit, Integer offset) {
+		List<ContractAgreementResponse> contractAgreementResponses = new ArrayList<>();
+		List<ContractNegotiationDto> contractNegotiationDtoList = getAllContractNegotiations(type, limit, offset);
+
+		contractNegotiationDtoList.stream().forEach((contract) -> {
+			if (StringUtils.isBlank(type) || contract.getType().name().equals(type)) {
+				if (contract.getState().equals(NegotiationState.CONFIRMED.name())
+						|| contract.getState().equals(NegotiationState.DECLINED.name())) {
+					String negotiationId = contract.getId();
+					if (StringUtils.isNotBlank(contract.getContractAgreementId())) {
+						ContractAgreementResponse agreementResponse = getAgreementBasedOnNegotiationId(type,
+								negotiationId);
+						agreementResponse.setCounterPartyAddress(contract.getCounterPartyAddress());
+						agreementResponse.setDateCreated(contract.getCreatedAt());
+						agreementResponse.setDateUpdated(contract.getUpdatedAt());
+						agreementResponse.setType(contract.getType());
+						agreementResponse.setState(contract.getState());
+						contractAgreementResponses.add(agreementResponse);
+					}
+				} else {
+					ContractAgreementResponse agreementResponse = ContractAgreementResponse.builder()
+							.contractAgreementId(StringUtils.EMPTY).organizationName(StringUtils.EMPTY)
+							.title(StringUtils.EMPTY).negotiationId(contract.getId()).state(contract.getState())
+							.contractAgreementInfo(null).counterPartyAddress(contract.getCounterPartyAddress())
+							.type(contract.getType()).dateCreated(contract.getCreatedAt())
+							.dateUpdated(contract.getUpdatedAt()).build();
+					contractAgreementResponses.add(agreementResponse);
+				}
+			}
+		});
+
+		Map<String, Object> res = new HashMap<>();
+		if (UtilityFunctions.checkTypeOfConnector(type))
+			res.put("connector", providerHost);
+		else
+			res.put("connector", consumerHost);
+
+		res.put("contracts", contractAgreementResponses);
+		return res;
+	}
+
+	@SneakyThrows
+	public void declineContract(String type, String negotiationId) {
+
+		if (UtilityFunctions.checkTypeOfConnector(type)) {
+			contractApi.declineContract(new URI(providerHost), negotiationId, getProviderAuthHeader());
+		} else {
+			contractApi.declineContract(new URI(consumerHost), negotiationId, getAuthHeader());
+		}
+	}
+
+	@SneakyThrows
+	public void cancelContract(String type, String negotiationId) {
+
+		if (UtilityFunctions.checkTypeOfConnector(type)) {
+			contractApi.cancelContract(new URI(providerHost), negotiationId, getProviderAuthHeader());
+		} else {
+			contractApi.cancelContract(new URI(consumerHost), negotiationId, getAuthHeader());
+		}
+	}
+
 }

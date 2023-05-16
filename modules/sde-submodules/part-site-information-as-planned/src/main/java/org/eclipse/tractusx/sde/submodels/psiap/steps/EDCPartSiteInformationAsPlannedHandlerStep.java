@@ -99,7 +99,7 @@ public class EDCPartSiteInformationAsPlannedHandlerStep extends Step {
 
 		} catch (Exception e) {
 			if (!e.getMessage().contains("404 Not Found")) {
-				throw new ServiceException("Exception in EDC delete request process:" + e.getMessage());
+				throw new ServiceException("Unable to delete EDC offer for update: " + e.getMessage());
 			}
 		}
 	}

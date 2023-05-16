@@ -108,6 +108,24 @@ entries:
     version: 1.7.0
   dftbackend:
   - apiVersion: v2
+    appVersion: 2.0.0
+    created: "2023-05-16T13:10:35.441039819Z"
+    dependencies:
+    - alias: dftpostgresql
+      condition: dftpostgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 11.x.x
+    description: A Helm chart for Kubernetes
+    digest: 1e6b452983a608f92c6fd60afb51eba98fe8df91f5867990d6f979b57f306603
+    name: dftbackend
+    sources:
+    - https://github.com/eclipse-tractusx/dft-backend
+    type: application
+    urls:
+    - https://github.com/eclipse-tractusx/dft-backend/releases/download/dftbackend-2.0.0/dftbackend-2.0.0.tgz
+    version: 2.0.0
+  - apiVersion: v2
     appVersion: 1.9.1
     created: "2023-03-24T09:02:33.989804885Z"
     dependencies:
@@ -137,4 +155,4 @@ entries:
     urls:
     - https://github.com/eclipse-tractusx/dft-backend/releases/download/dftbackend-1.9.0/dftbackend-1.9.0.tgz
     version: 1.9.0
-generated: "2023-03-24T09:02:33.989830184Z"
+generated: "2023-05-16T13:10:35.44106842Z"

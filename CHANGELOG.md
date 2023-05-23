@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [2.0.1] - 2023-05-23
-- support automatic CSV upload in SDE.
+- Add automatic identification of submodel for processing.
 
 ## [2.0.0] - 2023-05-05
 - Removed token log statement from logs.

@@ -158,7 +158,6 @@ The above configuration we can use as for different deployment as specified here
 ### Supported submodules
 To find information about supported submodules and there version in SDE please visit [here](modules/sde-submodules/submodules.md) 
 
-
 ---
 
 ## DFT(Simple Data Exchanger) Compatible with :=

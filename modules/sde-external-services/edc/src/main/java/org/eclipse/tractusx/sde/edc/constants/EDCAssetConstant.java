@@ -31,6 +31,7 @@ public final class EDCAssetConstant {
 	public static final String ASSET_PROP_VERSION = "asset:prop:version";
 	public static final String ASSET_PROP_CONTENTTYPE = "asset:prop:contenttype";
 	public static final String ASSET_PROP_FILENAME = "asset:prop:fileName";
+	public static final String ASSET_PROP_TYPE ="asset:prop:type";
 	
 	
 	private EDCAssetConstant() {}

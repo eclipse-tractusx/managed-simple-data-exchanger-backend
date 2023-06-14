@@ -188,19 +188,21 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 
 	@SneakyThrows
 	private CreateSubModelRequest getCreateSubModelRequest(AspectRelationship aspectRelationShip) {
-		
+
 		ArrayList<String> value = new ArrayList<>();
 		String ddtUrl = "";
 		value.add(getsemanticIdOfModel());
 		ShellLookupRequest shellLookupRequest = getShellLookupRequestforChild(aspectRelationShip);
-		
+
 		List<ConnectorInfo> connectorEndpoints = portalProxyService.fetchConnectorInfo(List.of(aspectRelationShip.getChildManufacturerId()));
 
 		ddtUrl = getDDTRUrl(connectorEndpoints);
-		
-		gateway.init(ddtUrl);
-		ShellLookupResponse childshellIds = gateway.shellLookup(shellLookupRequest);
 
+		if (ddtUrl.isEmpty()) {
+			gateway.init(ddtUrl);
+		}
+		
+		ShellLookupResponse childshellIds = gateway.shellLookup(shellLookupRequest);
 		String childUUID = null;
 
 		if (childshellIds.isEmpty()) {

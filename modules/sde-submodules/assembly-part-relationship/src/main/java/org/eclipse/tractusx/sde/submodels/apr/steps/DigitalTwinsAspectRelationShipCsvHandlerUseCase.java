@@ -198,7 +198,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 
 		ddtUrl = getDDTRUrl(connectorEndpoints);
 
-		if (ddtUrl.isEmpty()) {
+		if (!ddtUrl.isEmpty()) {
 			gateway.init(ddtUrl);
 		}
 		

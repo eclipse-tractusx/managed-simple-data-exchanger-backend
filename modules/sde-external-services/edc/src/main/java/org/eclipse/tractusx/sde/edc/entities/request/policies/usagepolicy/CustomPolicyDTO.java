@@ -25,19 +25,18 @@ import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
 import org.eclipse.tractusx.sde.edc.exceptions.EDCException;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.experimental.SuperBuilder;
 
-@Data
 @AllArgsConstructor
 @SuperBuilder
 public class CustomPolicyDTO extends UsagePolicyDTO{
 	
-    private static final String DATASPACECONNECTOR_LITERALEXPRESSION = "dataspaceconnector:literalexpression";
 
     public static CustomPolicyDTO fromUsagePolicy(UsagePolicies usagePolicy)
     {
-        return CustomPolicyDTO.builder().type(usagePolicy.getType()).typeOfAccess(usagePolicy.getTypeOfAccess())
+        return CustomPolicyDTO.builder()
+        		.type(usagePolicy.getType())
+        		.typeOfAccess(usagePolicy.getTypeOfAccess())
                 .value(usagePolicy.getValue()).build();
 
     }

@@ -22,6 +22,8 @@ package org.eclipse.tractusx.sde.edc.model.contractnegotiation;
 
 import org.eclipse.tractusx.sde.edc.enums.Type;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,6 +33,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ContractAgreementResponse {
     private String negotiationId;
     private String counterPartyAddress;

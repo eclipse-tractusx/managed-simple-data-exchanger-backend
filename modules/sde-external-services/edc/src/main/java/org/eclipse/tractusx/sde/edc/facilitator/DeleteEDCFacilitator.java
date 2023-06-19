@@ -20,6 +20,7 @@
 
 package org.eclipse.tractusx.sde.edc.facilitator;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.edc.api.EDCFeignClientApi;
 import org.springframework.stereotype.Service;
@@ -38,7 +39,7 @@ public class DeleteEDCFacilitator extends AbstractEDCStepsHelper {
 	@SneakyThrows
 	public void deleteContractDefination(String contractDefinationId) {
 		try {
-			eDCFeignClientApi.deleteContractDefinition(contractDefinationId, getProviderAuthHeader());
+			eDCFeignClientApi.deleteContractDefinition(contractDefinationId);
 		} catch (Exception e) {
 			parseExceptionMessage(e);
 		}
@@ -48,7 +49,7 @@ public class DeleteEDCFacilitator extends AbstractEDCStepsHelper {
 	@SneakyThrows
 	public void deleteAccessPolicy(String accessPolicyId) {
 		try {
-			eDCFeignClientApi.deletePolicyDefinitions(accessPolicyId, getProviderAuthHeader());
+			eDCFeignClientApi.deletePolicyDefinitions(accessPolicyId);
 		} catch (Exception e) {
 			parseExceptionMessage(e);
 		}
@@ -58,7 +59,8 @@ public class DeleteEDCFacilitator extends AbstractEDCStepsHelper {
 	@SneakyThrows
 	public void deleteUsagePolicy(String usagePolicyId) {
 		try {
-			eDCFeignClientApi.deletePolicyDefinitions(usagePolicyId, getProviderAuthHeader());
+			if (!StringUtils.isBlank(usagePolicyId))
+				eDCFeignClientApi.deletePolicyDefinitions(usagePolicyId);
 		} catch (Exception e) {
 			parseExceptionMessage(e);
 		}
@@ -68,7 +70,7 @@ public class DeleteEDCFacilitator extends AbstractEDCStepsHelper {
 	@SneakyThrows
 	public void deleteAssets(String assetId) {
 		try {
-			eDCFeignClientApi.deleteAssets(assetId, getProviderAuthHeader());
+			eDCFeignClientApi.deleteAssets(assetId);
 		} catch (Exception e) {
 			throw new ServiceException("Unable to delete EDC asset: " + e.getMessage());
 		}

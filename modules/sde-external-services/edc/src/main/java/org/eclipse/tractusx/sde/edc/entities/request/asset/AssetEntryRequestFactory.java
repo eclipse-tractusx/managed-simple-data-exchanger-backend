@@ -34,10 +34,13 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class AssetEntryRequestFactory {
 
     private static final String ASSET_PROP_CONTENT_TYPE = "application/json";
+    private static final String ASSET_PROP_TYPE = "data.core.digitalTwin.submodel";
     private static final String ASSET_PROP_VERSION = "1.0.0";
     private static final String NAME = "Backend Data Service - AAS Server";
     private static final String TYPE = "HttpData";
     private static final String DATE_FORMATTER = "dd/MM/yyyy HH:mm:ss";
+	private static final String ASSET_PROP_POLICYID = "use-eu";
+	
     @Value(value = "${dft.apiKeyHeader}")
     private String apiKeyHeader;
     @Value(value = "${dft.apiKey}")
@@ -56,9 +59,11 @@ public class AssetEntryRequestFactory {
 
     private AssetEntryRequest buildAsset(String submodel, String shellId, String subModelId, String assetName, String uuid) {
         String assetId = shellId + "-" + subModelId;
-
+        
+        assetId=assetId.replace(":", "_");
+        
         HashMap<String, String> assetProperties = getAssetProperties(assetId, assetName);
-        AssetRequest assetRequest = AssetRequest.builder().properties(assetProperties).build();
+        AssetRequest assetRequest = AssetRequest.builder().id(assetId).properties(assetProperties).build();
 
         String uriString = subModelPayloadUrl(submodel, uuid);
 
@@ -85,6 +90,8 @@ public class AssetEntryRequestFactory {
         String date = d.format(DateTimeFormatter.ofPattern(DATE_FORMATTER));
         assetProperties.put(EDCAssetConstant.ASSET_PROP_ID, assetId);
         assetProperties.put(EDCAssetConstant.ASSET_PROP_NAME, assetName);
+        assetProperties.put(EDCAssetConstant.ASSET_PROP_TYPE, ASSET_PROP_TYPE);
+		assetProperties.put(EDCAssetConstant.ASSET_PROP_POLICYID, ASSET_PROP_POLICYID);
         assetProperties.put(EDCAssetConstant.ASSET_PROP_CONTENTTYPE, ASSET_PROP_CONTENT_TYPE);
         assetProperties.put(EDCAssetConstant.ASSET_PROP_DESCRIPTION, assetName);
         assetProperties.put(EDCAssetConstant.ASSET_PROP_VERSION, ASSET_PROP_VERSION);

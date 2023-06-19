@@ -35,21 +35,22 @@ import lombok.SneakyThrows;
 @Builder
 public class ConstraintRequest {
 
-    @JsonProperty("edctype")
-    private String edcType;
-    
-    @JsonProperty("leftExpression")
-    private Expression leftExpression;
-    
-    @JsonProperty("rightExpression")
-    private Expression rightExpression;
-    
-    @JsonProperty("operator")
-    private String operator;
+	@JsonProperty("@type")
+	@Builder.Default
+	private String type = "Constraint";
 
-    @SneakyThrows
-    public String toJsonString() {
-        final ObjectMapper mapper = new ObjectMapper();
-        return mapper.writeValueAsString(this);
-    }
+	@JsonProperty("odrl:leftOperand")
+	private String leftOperand;
+
+	@JsonProperty("odrl:rightOperand")
+	private String rightOperand;
+
+	@JsonProperty("odrl:operator")
+	private String operator;
+
+	@SneakyThrows
+	public String toJsonString() {
+		final ObjectMapper mapper = new ObjectMapper();
+		return mapper.writeValueAsString(this);
+	}
 }

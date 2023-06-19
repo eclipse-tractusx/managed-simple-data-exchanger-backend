@@ -36,35 +36,33 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(name = "ContractApi", url = "placeholder")
 public interface ContractApi {
 
-	@PostMapping(path = "/data/contractnegotiations", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(path = "/contractnegotiations", consumes = MediaType.APPLICATION_JSON_VALUE)
 	AcknowledgementId contractnegotiations(URI url, @RequestBody ContractNegotiations requestBody,
 			@RequestHeader Map<String, String> requestHeader);
 
-	@GetMapping(path = "/data/contractnegotiations/{contractnegotiationsId}")
+	@GetMapping(path = "/contractnegotiations/{contractnegotiationsId}")
 	ContractNegotiationDto getContractDetails(URI url,
 			@PathVariable("contractnegotiationsId") String contractnegotiationsId,
 			@RequestHeader Map<String, String> requestHeader);
 
-	@GetMapping(path = "/data/contractnegotiations")
-	List<ContractNegotiationDto> getAllContractNegotiations(URI url, @RequestParam("limit") Integer limit,
-			@RequestParam("offset") Integer offset, @RequestHeader Map<String, String> requestHeader);
+	@PostMapping(path = "/contractnegotiations/request", consumes = MediaType.APPLICATION_JSON_VALUE)
+	List<ContractNegotiationDto> getAllContractNegotiations(URI url, @RequestHeader Map<String, String> requestHeader);
 
-	@GetMapping(path = "/data/contractnegotiations/{contractnegotiationsId}/agreement")
+	@GetMapping(path = "/contractnegotiations/{contractnegotiationsId}/agreement", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	ContractAgreementDto getAgreementBasedOnNegotiationId(URI url,
 			@PathVariable("contractnegotiationsId") String contractnegotiationsId,
 			@RequestHeader Map<String, String> requestHeader);
-	
-	@PostMapping(path = "/data/contractnegotiations/{contractnegotiationsId}/decline", consumes = MediaType.APPLICATION_JSON_VALUE)
+
+	@PostMapping(path = "/contractnegotiations/{contractnegotiationsId}/decline", consumes = MediaType.APPLICATION_JSON_VALUE)
 	ResponseEntity<Object> declineContract(URI url,
 			@PathVariable("contractnegotiationsId") String contractnegotiationsId,
 			@RequestHeader Map<String, String> requestHeader);
-	
-	@PostMapping(path = "/data/contractnegotiations/{contractnegotiationsId}/cancel", consumes = MediaType.APPLICATION_JSON_VALUE)
+
+	@PostMapping(path = "/contractnegotiations/{contractnegotiationsId}/cancel", consumes = MediaType.APPLICATION_JSON_VALUE)
 	ResponseEntity<Object> cancelContract(URI url,
 			@PathVariable("contractnegotiationsId") String contractnegotiationsId,
 			@RequestHeader Map<String, String> requestHeader);

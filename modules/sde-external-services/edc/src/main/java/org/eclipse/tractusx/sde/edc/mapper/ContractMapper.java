@@ -20,29 +20,36 @@
 
 package org.eclipse.tractusx.sde.edc.mapper;
 
-import java.util.List;
-
-import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
+import org.eclipse.tractusx.sde.edc.entities.request.policies.ActionRequest;
+import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyRequest;
 import org.eclipse.tractusx.sde.edc.model.contractnegotiation.ContractNegotiations;
 import org.eclipse.tractusx.sde.edc.model.contractnegotiation.Offer;
-import org.eclipse.tractusx.sde.edc.model.policies.PolicyDefinition;
-import org.mapstruct.Mapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 
-@Mapper(componentModel = "spring")
-public abstract class ContractMapper {
+@Component
+@RequiredArgsConstructor
+public class ContractMapper {
 
-    @Autowired
-    private ContractPolicyMapper contractPolicyMapper;
+	private final ContractPolicyMapper contractPolicyMapper;
 
-    public ContractNegotiations prepareContractNegotiations(String offerId,
-                                                            String assetId, String provider, List<ConstraintRequest> constraintRequests) {
+	@SneakyThrows
+	public ContractNegotiations prepareContractNegotiations(String providerProtocolUrl, String offerId, String assetId, String provider,
+			ActionRequest action) {
+		
+		PolicyRequest policy = contractPolicyMapper.preparePolicy(assetId, action);
+		Offer offer = Offer.builder().assetId(assetId).offerId(offerId).policy(policy).build();
+		return ContractNegotiations.builder()
+				.connectorAddress(providerProtocolUrl)
+				.connectorId(provider)
+				.providerId(provider)
+				.protocol("dataspace-protocol-http")
+				.offer(offer)
+				.build();
+		
 
-        PolicyDefinition policy = contractPolicyMapper.preparePolicy(assetId, constraintRequests);
-        Offer offer = Offer.builder().assetId(assetId).offerId(offerId).policy(policy).build();
-        return ContractNegotiations.builder().connectorAddress(provider).connectorId(provider).offer(offer).build();
-
-    }
+	}
 
 }

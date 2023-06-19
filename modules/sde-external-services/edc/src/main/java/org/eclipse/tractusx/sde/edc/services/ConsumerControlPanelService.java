@@ -23,140 +23,175 @@ package org.eclipse.tractusx.sde.edc.services;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
 import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.edc.api.ContractOfferCatalogApi;
 import org.eclipse.tractusx.sde.edc.constants.EDCAssetConstant;
 import org.eclipse.tractusx.sde.edc.entities.database.ContractNegotiationInfoEntity;
-import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
+import org.eclipse.tractusx.sde.edc.entities.request.policies.ActionRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyConstraintBuilderService;
 import org.eclipse.tractusx.sde.edc.facilitator.AbstractEDCStepsHelper;
 import org.eclipse.tractusx.sde.edc.facilitator.ContractNegotiateManagementHelper;
 import org.eclipse.tractusx.sde.edc.gateways.database.ContractNegotiationInfoRepository;
-import org.eclipse.tractusx.sde.edc.model.asset.Asset;
 import org.eclipse.tractusx.sde.edc.model.contractnegotiation.ContractNegotiationDto;
-import org.eclipse.tractusx.sde.edc.model.contractoffers.ContractOffer;
-import org.eclipse.tractusx.sde.edc.model.contractoffers.ContractOffersCatalogResponse;
-import org.eclipse.tractusx.sde.edc.model.policies.PolicyDefinition;
+import org.eclipse.tractusx.sde.edc.model.contractoffers.ContractOfferRequestFactory;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.eclipse.tractusx.sde.edc.util.UtilityFunctions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
-	private final String edcDataUri;
 	private final ContractOfferCatalogApi contractOfferCatalogApiProxy;
 	private final ContractNegotiateManagementHelper contractNegotiateManagement;
 
-	private ContractNegotiationInfoRepository contractNegotiationInfoRepository;
-	private PolicyConstraintBuilderService policyConstraintBuilderService;
+	private final ContractNegotiationInfoRepository contractNegotiationInfoRepository;
+	private final PolicyConstraintBuilderService policyConstraintBuilderService;
 
-	@Autowired
-	public ConsumerControlPanelService(@Value("${edc.consumer.datauri}") String edcDataUri,
-			ContractOfferCatalogApi contractOfferCatalogApiProxy,
-			ContractNegotiateManagementHelper contractNegotiateManagement,
-			ContractNegotiationInfoRepository contractNegotiationInfoRepository,
-			PolicyConstraintBuilderService policyConstraintBuilderService) {
-		this.edcDataUri = edcDataUri;
-		this.contractOfferCatalogApiProxy = contractOfferCatalogApiProxy;
-		this.contractNegotiateManagement = contractNegotiateManagement;
-		this.contractNegotiationInfoRepository = contractNegotiationInfoRepository;
-		this.policyConstraintBuilderService = policyConstraintBuilderService;
-
-
-	}
+	private final ContractOfferRequestFactory contractOfferRequestFactory;
 
 	public List<QueryDataOfferModel> queryOnDataOffers(String providerUrl, Integer limit, Integer offset) {
-		providerUrl = UtilityFunctions.removeLastSlashOfUrl(providerUrl);
 
-		providerUrl += edcDataUri;
+		String sproviderUrl = UtilityFunctions.removeLastSlashOfUrl(providerUrl);
 
 		List<QueryDataOfferModel> queryOfferResponse = new ArrayList<>();
 
-		ContractOffersCatalogResponse contractOfferCatalog = contractOfferCatalogApiProxy
-				.getContractOffersCatalog(getAuthHeader(), providerUrl, limit, offset );
+		JsonNode contractOfferCatalog = contractOfferCatalogApiProxy.getContractOffersCatalog(
+				contractOfferRequestFactory.getContractOfferRequest(providerUrl, limit, offset));
 
-		for (ContractOffer contractOffer : contractOfferCatalog.getContractOffers()) {
-			Asset asset = contractOffer.getAsset();
-			PolicyDefinition policy = contractOffer.getPolicy();
+		JsonNode jOffer = contractOfferCatalog.get("dcat:dataset");
+		if (jOffer.isArray()) {
 
-			// Populating usage policies response based on usage policy constraints
-			List<UsagePolicies> usagePolicies = new ArrayList<>();
-			policy.getPermissions().stream().forEach(permission -> {
-				usagePolicies.addAll(UtilityFunctions.getUsagePolicies(permission.getConstraints().stream()));
-			});
+			jOffer.forEach(
+					offer -> queryOfferResponse.add(buildContractOffer(sproviderUrl, contractOfferCatalog, offer)));
 
-			UtilityFunctions.addCustomUsagePolicy(policy.getExtensibleProperties(), usagePolicies);
-			// Later to be part of access policy
-			List<String> bpnNumbers = new ArrayList<>();
-			policy.getPermissions().stream().forEach(permission -> {
-				permission.getConstraints().stream().forEach(constraint -> {
-					if (constraint.getLeftExpression().getValue().equals("BusinessPartnerNumber")) {
-						String value = constraint.getRightExpression().getValue().toString();
-						bpnNumbers.addAll(Arrays
-								.asList(value.trim().substring(value.indexOf("[") + 1, value.indexOf("]")).split(",")));
-						return;
-					}
-				});
-			});
-
-			queryOfferResponse.add(QueryDataOfferModel.builder()
-					.assetId(getFieldFromAsset(asset, EDCAssetConstant.ASSET_PROP_ID))
-					.connectorOfferUrl(
-							providerUrl + File.separator + getFieldFromAsset(asset, EDCAssetConstant.ASSET_PROP_ID))
-					.offerId(contractOffer.getId()).title(getFieldFromAsset(asset, EDCAssetConstant.ASSET_PROP_NAME))
-					.description(getFieldFromAsset(asset, EDCAssetConstant.ASSET_PROP_DESCRIPTION))
-					.created(getFieldFromAsset(asset, EDCAssetConstant.ASSET_PROP_CREATED))
-					.modified(getFieldFromAsset(asset, EDCAssetConstant.ASSET_PROP_MODIFIED))
-					.publisher(getFieldFromAsset(asset, EDCAssetConstant.ASSET_PROP_PUBLISHER))
-					.typeOfAccess(!bpnNumbers.isEmpty() ? PolicyAccessEnum.RESTRICTED : PolicyAccessEnum.UNRESTRICTED)
-					.version(getFieldFromAsset(asset, EDCAssetConstant.ASSET_PROP_VERSION)).bpnNumbers(bpnNumbers)
-					.usagePolicies(usagePolicies)
-					.fileName(getFieldFromAsset(asset, EDCAssetConstant.ASSET_PROP_FILENAME))
-					.fileContentType(getFieldFromAsset(asset, EDCAssetConstant.ASSET_PROP_CONTENTTYPE))
-					.connectorId(contractOfferCatalog.getId()).build());
+		} else {
+			queryOfferResponse.add(buildContractOffer(sproviderUrl, contractOfferCatalog, jOffer));
 		}
+
 		return queryOfferResponse;
 	}
 
-	private String getFieldFromAsset(Asset asset, String field) {
-		return asset.getProperties().getOrDefault(field, "");
+	private QueryDataOfferModel buildContractOffer(String sproviderUrl, JsonNode contractOfferCatalog, JsonNode offer) {
+
+		JsonNode policy = offer.get("odrl:hasPolicy");
+
+		QueryDataOfferModel build = QueryDataOfferModel.builder()
+				.assetId(getFieldFromJsonNode(offer, EDCAssetConstant.ASSET_PROP_ID))
+				.connectorOfferUrl(sproviderUrl + File.separator + getFieldFromJsonNode(offer, "@id"))
+				.offerId(getFieldFromJsonNode(policy, "@id"))
+				.title(getFieldFromJsonNode(offer, EDCAssetConstant.ASSET_PROP_NAME))
+				.type(getFieldFromJsonNode(offer, EDCAssetConstant.ASSET_PROP_TYPE))
+				.description(getFieldFromJsonNode(offer, EDCAssetConstant.ASSET_PROP_DESCRIPTION))
+				.created(getFieldFromJsonNode(offer, EDCAssetConstant.ASSET_PROP_CREATED))
+				.modified(getFieldFromJsonNode(offer, EDCAssetConstant.ASSET_PROP_MODIFIED))
+				.publisher(getFieldFromJsonNode(offer, EDCAssetConstant.ASSET_PROP_PUBLISHER))
+				.version(getFieldFromJsonNode(offer, EDCAssetConstant.ASSET_PROP_VERSION))
+				.fileName(getFieldFromJsonNode(offer, EDCAssetConstant.ASSET_PROP_FILENAME))
+				.fileContentType(getFieldFromJsonNode(offer, EDCAssetConstant.ASSET_PROP_CONTENTTYPE))
+				.connectorId(getFieldFromJsonNode(contractOfferCatalog, "edc:participantId")).build();
+
+		checkAndSetPolicyPermission(build, policy);
+
+		return build;
+	}
+
+	private void checkAndSetPolicyPermission(QueryDataOfferModel build, JsonNode policy) {
+
+		if (policy != null && policy.isArray()) {
+			policy.forEach(pol -> {
+				JsonNode permission = pol.get("odrl:permission");
+				checkAndSetPolicyPermissionConstraints(build, permission);
+			});
+		} else if (policy != null) {
+			JsonNode permission = policy.get("odrl:permission");
+			checkAndSetPolicyPermissionConstraints(build, permission);
+		}
+	}
+
+	private void checkAndSetPolicyPermissionConstraints(QueryDataOfferModel build, JsonNode permission) {
+
+		JsonNode constraints = permission.get("odrl:constraint");
+
+		List<UsagePolicies> usagePolicies = new ArrayList<>();
+
+		List<String> bpnNumbers = new ArrayList<>();
+
+		if (constraints != null) {
+			JsonNode jsonNode = constraints.get("odrl:and");
+
+			if (jsonNode != null && jsonNode.isArray()) {
+				jsonNode.forEach(constraint -> {
+					setConstraint(usagePolicies, bpnNumbers, constraint);
+				});
+			} else if (jsonNode != null) {
+				setConstraint(usagePolicies, bpnNumbers, jsonNode);
+			}
+		}
+		build.setTypeOfAccess(!bpnNumbers.isEmpty() ? PolicyAccessEnum.RESTRICTED : PolicyAccessEnum.UNRESTRICTED);
+		build.setBpnNumbers(bpnNumbers);
+		build.setUsagePolicies(usagePolicies);
+	}
+
+	private void setConstraint(List<UsagePolicies> usagePolicies, List<String> bpnNumbers, JsonNode jsonNode) {
+
+		String leftOperand = getFieldFromJsonNode(jsonNode, "odrl:leftOperand");
+		String rightOperand = getFieldFromJsonNode(jsonNode, "odrl:rightOperand");
+
+		if (leftOperand.equals("BusinessPartnerNumber")) {
+			bpnNumbers.add(rightOperand);
+		} else {
+			usagePolicies.add(UtilityFunctions.identyAndGetUsagePolicy(leftOperand, rightOperand));
+		}
+	}
+
+	private String getFieldFromJsonNode(JsonNode jnode, String fieldName) {
+		if (jnode.get(fieldName) != null)
+			return jnode.get(fieldName).asText();
+		else
+			return "";
 	}
 
 	@Async
 	public void subscribeDataOffers(ConsumerRequest consumerRequest, String processId) {
+
 		HashMap<String, String> extensibleProperty = new HashMap<>();
-		String recipient = UtilityFunctions.removeLastSlashOfUrl(consumerRequest.getProviderUrl());
 		AtomicReference<String> negotiateContractId = new AtomicReference<>();
 		AtomicReference<ContractNegotiationDto> checkContractNegotiationStatus = new AtomicReference<>();
-		var recipientURL = recipient + edcDataUri;
+
+		var recipientURL = UtilityFunctions.removeLastSlashOfUrl(consumerRequest.getProviderUrl());
+
 		List<UsagePolicies> policies = consumerRequest.getPolicies();
-		UsagePolicies customPolicy = policies.stream().filter(type -> type.getType().equals(UsagePolicyEnum.CUSTOM))
-				.findFirst().get();
-		if (StringUtils.isNotBlank(customPolicy.getValue())) {
-			extensibleProperty.put(customPolicy.getType().name(), customPolicy.getValue());
+
+		Optional<UsagePolicies> findFirst = policies.stream()
+				.filter(type -> type.getType().equals(UsagePolicyEnum.CUSTOM)).findFirst();
+
+		if (findFirst.isPresent()) {
+			extensibleProperty.put(findFirst.get().getType().name(), findFirst.get().getValue());
 		}
-		List<ConstraintRequest> constraintRequests = policyConstraintBuilderService.getUsagePolicyConstraints(policies);
+
+		ActionRequest action = policyConstraintBuilderService.getUsagePolicyConstraints(policies);
 		consumerRequest.getOffers().parallelStream().forEach((offer) -> {
 			try {
 
-				negotiateContractId.set(contractNegotiateManagement.negotiateContract(offer.getOfferId(), recipientURL,
-						offer.getAssetId(), constraintRequests, extensibleProperty));
+				negotiateContractId.set(
+						contractNegotiateManagement.negotiateContract(recipientURL, consumerRequest.getConnectorId(),
+								offer.getOfferId(), offer.getAssetId(), action, extensibleProperty));
 				int retry = 3;
 				int counter = 1;
 
@@ -166,12 +201,13 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 							.set(contractNegotiateManagement.checkContractNegotiationStatus(negotiateContractId.get()));
 					counter++;
 				} while (checkContractNegotiationStatus.get() != null
-						&& !checkContractNegotiationStatus.get().getState().equals("CONFIRMED")
+						&& !checkContractNegotiationStatus.get().getState().equals("FINALIZED")
 						&& !checkContractNegotiationStatus.get().getState().equals("DECLINED") && counter <= retry);
 
 			} catch (Exception e) {
 				log.error("Exception in subscribeDataOffers" + e.getMessage());
 			} finally {
+
 				// Local DB entry
 				ContractNegotiationInfoEntity contractNegotiationInfoEntity = ContractNegotiationInfoEntity.builder()
 						.processId(processId).connectorId(consumerRequest.getConnectorId()).offerId(offer.getOfferId())
@@ -180,6 +216,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 								? checkContractNegotiationStatus.get().getState()
 								: "Failed:Exception")
 						.dateTime(LocalDateTime.now()).build();
+
 				contractNegotiationInfoRepository.save(contractNegotiationInfoEntity);
 			}
 		});

@@ -21,96 +21,76 @@
 
 package org.eclipse.tractusx.sde.edc.gateways.external;
 
+import org.eclipse.tractusx.sde.edc.api.EDCFeignClientApi;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.contractdefinition.ContractDefinitionRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyDefinitionRequest;
 import org.eclipse.tractusx.sde.edc.exceptions.EDCGatewayException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
 
+import feign.FeignException;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class EDCGateway {
 
-    @Value(value = "${edc.hostname}")
-    private String edcHostname;
-    @Value(value = "${edc.apiKeyHeader}")
-    private String apiKeyHeader;
-    @Value(value = "${edc.apiKey}")
-    private String apiKey;
+	@Value(value = "${edc.hostname}")
+	private String edcHostname;
 
-    public boolean assetExistsLookup(String id) {
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(apiKeyHeader, apiKey);
-        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(headers);
+	@Value(value = "${edc.managementpath:/data/v2}")
+	private String edcManagementPath;
 
-        try {
-            String url = edcHostname + "/data/assets/"+ id;
-            restTemplate.exchange(
-                    url,
-                    HttpMethod.GET,
-                    entity,
-                    Object.class);
-        } catch (HttpClientErrorException e) {
-            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
-                return false;
-            }
-            throw e;
-        }
-        return true;
-    }
+	@Value(value = "${edc.apiKeyHeader}")
+	private String apiKeyHeader;
 
-    public void createAsset(AssetEntryRequest request) {
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(apiKeyHeader, apiKey);
-        headers.setContentType(MediaType.APPLICATION_JSON);
+	@Value(value = "${edc.apiKey}")
+	private String apiKey;
 
-        HttpEntity<AssetEntryRequest> entity = new HttpEntity<>(request, headers);
-        try {
-            restTemplate.postForEntity(edcHostname + "/data/assets", entity, String.class);
-        } catch (HttpClientErrorException e) {
-            if (e.getStatusCode() == HttpStatus.CONFLICT) {
-                throw new EDCGatewayException("Asset already exists");
-            }
-            throw new EDCGatewayException(e.getStatusCode().toString());
-        }
-    }
+	private final EDCFeignClientApi edcFeignClientApi;
 
-    public void createPolicyDefinition(PolicyDefinitionRequest request) {
-        final String policyResource = "/data/policydefinitions";
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(apiKeyHeader, apiKey);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<PolicyDefinitionRequest> entity = new HttpEntity<>(request, headers);
-        try {
-        	restTemplate.postForEntity(edcHostname + policyResource, entity, String.class);
-        } catch (HttpClientErrorException e) {
-            throw new EDCGatewayException(e.getStatusCode().toString());
-        }
-    }
+	public boolean assetExistsLookup(String id) {
+		try {
+			edcFeignClientApi.getAsset(id);
+		} catch (FeignException e) {
+			if (e.status() == HttpStatus.NOT_FOUND.value()) {
+				return false;
+			}
+			throw e;
+		}
+		return true;
+	}
 
-    public void createContractDefinition(ContractDefinitionRequest request) {
-        final String contractDefinitionResource = "/data/contractdefinitions";
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(apiKeyHeader, apiKey);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<ContractDefinitionRequest> entity = new HttpEntity<>(request, headers);
-        try {
-        	restTemplate.postForEntity(edcHostname + contractDefinitionResource, entity, String.class);
-        } catch (HttpClientErrorException e) {
-            throw new EDCGatewayException(e.getStatusCode().toString());
-        }
-    }
+	public String createAsset(AssetEntryRequest request) {
+		try {
+			return edcFeignClientApi.createAsset(request);
+		} catch (FeignException e) {
+			if (e.status() == HttpStatus.CONFLICT.value()) {
+				throw new EDCGatewayException("Asset already exists");
+			}
+			throw new EDCGatewayException(e.getMessage());
+		}
+	}
+
+	@SneakyThrows
+	public String createPolicyDefinition(PolicyDefinitionRequest request) {
+		try {
+			return edcFeignClientApi.createPolicy(request);
+		} catch (FeignException e) {
+			throw new EDCGatewayException(e.getMessage());
+		}
+	}
+
+	public String createContractDefinition(ContractDefinitionRequest request) {
+		try {
+			return edcFeignClientApi.createContractDefination(request);
+		} catch (FeignException e) {
+			throw new EDCGatewayException(e.getMessage());
+		}
+	}
 }

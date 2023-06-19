@@ -23,6 +23,7 @@ package org.eclipse.tractusx.sde.edc.entities.request.asset;
 
 import java.util.HashMap;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AllArgsConstructor;
@@ -36,7 +37,11 @@ import lombok.SneakyThrows;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DataAddressRequest {
-
+	
+	@JsonProperty("@type")
+	@Builder.Default
+	private String type = "DataAddress";
+	
     private HashMap<String, String> properties;
 
     @SneakyThrows

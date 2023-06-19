@@ -24,31 +24,33 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.tractusx.sde.bpndiscovery.model.request.BpnDiscoveryRequest;
+import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 
 @Service
 @RequiredArgsConstructor
 public class BPNDiscoveryUseCaseHandler extends Step {
-	
-	private final BpnDiscoveryProxyService bpnDiscoveryProxyService;
-	
-	@SneakyThrows
-	public void run(Map<String, String> input) {
-		
-		BpnDiscoveryRequest bpnDiscoveryRequest = new BpnDiscoveryRequest();
-		List<BpnDiscoveryRequest> bpnDiscoveryKeyList = new ArrayList<>();
-		
-		input.entrySet().stream().forEach(e -> {
-			bpnDiscoveryRequest.setType(e.getKey());
-			bpnDiscoveryRequest.setKey(e.getValue());
-			bpnDiscoveryKeyList.add(bpnDiscoveryRequest);
-		});
 
-		bpnDiscoveryProxyService.bpnDiscoveryBatchData(bpnDiscoveryKeyList);
+	private final BpnDiscoveryProxyService bpnDiscoveryProxyService;
+
+	public void run(Map<String, String> input) throws ServiceException {
+		try {
+			BpnDiscoveryRequest bpnDiscoveryRequest = new BpnDiscoveryRequest();
+			List<BpnDiscoveryRequest> bpnDiscoveryKeyList = new ArrayList<>();
+
+			input.entrySet().stream().forEach(e -> {
+				bpnDiscoveryRequest.setType(e.getKey());
+				bpnDiscoveryRequest.setKey(e.getValue());
+				bpnDiscoveryKeyList.add(bpnDiscoveryRequest);
+			});
+
+			bpnDiscoveryProxyService.bpnDiscoveryBatchData(bpnDiscoveryKeyList);
+		} catch (Exception e) {
+			throw new ServiceException("Exception in BPN Discovery creation : " + e.getMessage());
+		}
 
 	}
 

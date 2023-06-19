@@ -21,6 +21,8 @@
 
 package org.eclipse.tractusx.sde.edc.entities.request.contractdefinition;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -32,6 +34,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Criterion {
 
+	@JsonProperty("@type")
+	@Builder.Default
+	private String type = "CriterionDto";
+	
     private String operandLeft;
     private String operator;
     private String operandRight;

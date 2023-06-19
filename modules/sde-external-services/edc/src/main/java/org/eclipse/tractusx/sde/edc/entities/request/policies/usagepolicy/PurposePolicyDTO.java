@@ -23,46 +23,30 @@ package org.eclipse.tractusx.sde.edc.entities.request.policies.usagepolicy;
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
-import org.eclipse.tractusx.sde.edc.entities.request.policies.Expression;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.experimental.SuperBuilder;
 
-@Data
 @AllArgsConstructor
 @SuperBuilder
-public class PurposePolicyDTO extends UsagePolicyDTO{
-    private static final String DATASPACECONNECTOR_LITERALEXPRESSION = "dataspaceconnector:literalexpression";
+public class PurposePolicyDTO extends UsagePolicyDTO {
 
-    public static PurposePolicyDTO fromUsagePolicy(UsagePolicies usagePolicy)
-    {
-        return PurposePolicyDTO.builder().type(usagePolicy.getType()).typeOfAccess(usagePolicy.getTypeOfAccess())
-                .value(usagePolicy.getValue()).build();
+	public static PurposePolicyDTO fromUsagePolicy(UsagePolicies usagePolicy) {
+		return PurposePolicyDTO.builder().type(usagePolicy.getType()).typeOfAccess(usagePolicy.getTypeOfAccess())
+				.value(usagePolicy.getValue()).build();
 
-    }
-    @Override
-    public ConstraintRequest toConstraint() {
-        if (getTypeOfAccess().equals(PolicyAccessEnum.RESTRICTED)) {
-            Expression lExpression = Expression.builder()
-                    .edcType(DATASPACECONNECTOR_LITERALEXPRESSION)
-                    .value("idsc:PURPOSE")
-                    .build();
+	}
 
-            String operator = "EQ";
-            Expression rExpression = null;
-            rExpression = Expression.builder()
-                    .edcType(DATASPACECONNECTOR_LITERALEXPRESSION)
-                    .value(getValue())
-                    .build();
+	@Override
+	public ConstraintRequest toConstraint() {
+		if (getTypeOfAccess().equals(PolicyAccessEnum.RESTRICTED)) {
 
-            return ConstraintRequest.builder().edcType("AtomicConstraint")
-                    .leftExpression(lExpression)
-                    .rightExpression(rExpression)
-                    .operator(operator)
-                    .build();
+			String operator = "EQ";
 
-        }
-        return null;
-    }
+			return ConstraintRequest.builder().leftOperand("idsc:PURPOSE").operator(operator).rightOperand(getValue())
+					.build();
+
+		}
+		return null;
+	}
 }

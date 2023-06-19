@@ -37,8 +37,8 @@ import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
 import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.edc.api.ContractOfferCatalogApi;
+import org.eclipse.tractusx.sde.edc.entities.request.policies.ActionRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
-import org.eclipse.tractusx.sde.edc.entities.request.policies.Expression;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyConstraintBuilderService;
 import org.eclipse.tractusx.sde.edc.facilitator.ContractNegotiateManagementHelper;
 import org.eclipse.tractusx.sde.edc.gateways.database.ContractNegotiationInfoRepository;
@@ -56,6 +56,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ContextConfiguration(classes = { ConsumerControlPanelService.class, String.class })
@@ -85,34 +86,36 @@ class ConsumerControlPanelServiceTest {
 	@MockBean
 	private PolicyConstraintBuilderService policyConstraintBuilderService;
 
-	//@Test
+	// @Test
 	void testQueryOnDataOfferEmpty() throws Exception {
-		ContractOffersCatalogResponse contractOffersCatalogResponse = new ContractOffersCatalogResponse();
-		contractOffersCatalogResponse.setContractOffers(new ArrayList<>());
-		when(contractOfferCatalogApi.getContractOffersCatalog((Map<String, String>) any(), (String) any(), anyInt(), anyInt()))
+		JsonNode contractOffersCatalogResponse = null;
+		when(contractOfferCatalogApi.getContractOffersCatalog((JsonNode) any()))
 				.thenReturn(contractOffersCatalogResponse);
-		assertTrue(consumerControlPanelService.queryOnDataOffers("https://example.org/example",anyInt(),anyInt()).isEmpty());
-		verify(contractOfferCatalogApi).getContractOffersCatalog((Map<String, String>) any(), (String) any(), anyInt(), anyInt());
+		assertTrue(consumerControlPanelService.queryOnDataOffers("https://example.org/example", anyInt(), anyInt())
+				.isEmpty());
+		verify(contractOfferCatalogApi).getContractOffersCatalog((JsonNode) any());
 	}
 
-	//@Test
+	// @Test
 	void testQueryOnDataOffersWithUsagePolicies() throws Exception {
 
-		ContractOffersCatalogResponse contractOffersCatalogResponse = getContractOffersCatalogWithConstraints();
-		when(contractOfferCatalogApi.getContractOffersCatalog((Map<String, String>) any(), (String) any(), anyInt(), anyInt()))
+		JsonNode contractOffersCatalogResponse = null;
+		when(contractOfferCatalogApi.getContractOffersCatalog((JsonNode) any()))
 				.thenReturn(contractOffersCatalogResponse);
-		assertEquals(1, consumerControlPanelService.queryOnDataOffers("https://example.org/example",anyInt(), anyInt()).size());
-		verify(contractOfferCatalogApi).getContractOffersCatalog((Map<String, String>) any(), (String) any(), anyInt(), anyInt());
+		assertEquals(1, consumerControlPanelService.queryOnDataOffers("https://example.org/example", anyInt(), anyInt())
+				.size());
+		verify(contractOfferCatalogApi).getContractOffersCatalog((JsonNode) any());
 	}
 
-	//@Test
+	// @Test
 	void testQueryOnDataOffersWithMissingUsagePolicies() throws Exception {
 
-		ContractOffersCatalogResponse contractOffersCatalogResponse = getCatalogObjectWithMissingConstraints();
-		when(contractOfferCatalogApi.getContractOffersCatalog((Map<String, String>) any(), (String) any(), anyInt(), anyInt()))
+		JsonNode contractOffersCatalogResponse = null;
+		when(contractOfferCatalogApi.getContractOffersCatalog((JsonNode) any()))
 				.thenReturn(contractOffersCatalogResponse);
-		assertEquals(1, consumerControlPanelService.queryOnDataOffers("https://example.org/example", anyInt(), anyInt()).size());
-		verify(contractOfferCatalogApi).getContractOffersCatalog((Map<String, String>) any(), (String) any(), anyInt(), anyInt());
+		assertEquals(1, consumerControlPanelService.queryOnDataOffers("https://example.org/example", anyInt(), anyInt())
+				.size());
+		verify(contractOfferCatalogApi).getContractOffersCatalog((JsonNode) any());
 	}
 
 	@Test
@@ -129,15 +132,14 @@ class ConsumerControlPanelServiceTest {
 		assertEquals("42", consumerRequest.getConnectorId());
 		assertEquals("https://example.org/example", consumerRequest.getProviderUrl());
 		List<UsagePolicies> policies = consumerRequest.getPolicies();
-		List<ConstraintRequest> list = new ArrayList<>();
-		ConstraintRequest constraintRequest = ConstraintRequest.builder().edcType("type")
-				.leftExpression(new Expression()).rightExpression(new Expression()).operator("EQ").build();
-		list.add(constraintRequest);
+		ActionRequest list = ActionRequest.builder().build();
+		ConstraintRequest constraintRequest = ConstraintRequest.builder().leftOperand(any()).rightOperand(any())
+				.operator("EQ").build();
+		list.addProperty("odrl:and", constraintRequest);
 		when(policyConstraintBuilderService.getUsagePolicyConstraints(any())).thenReturn(list);
 		assertEquals(usagePolicies, policies);
 		assertEquals(1, consumerControlPanelService.getAuthHeader().size());
 	}
-
 
 	@Test
 	void testSubscribeDataOffers2() {
@@ -154,7 +156,6 @@ class ConsumerControlPanelServiceTest {
 		verify(consumerRequest).getProviderUrl();
 		verify(consumerRequest).getOffers();
 	}
-
 
 	private ContractOffersCatalogResponse getContractOffersCatalogWithConstraints() throws Exception {
 		String contactOfferCatalogResponse = "{\n" + "    \"id\": \"default\",\n" + "    \"contractOffers\": [ "

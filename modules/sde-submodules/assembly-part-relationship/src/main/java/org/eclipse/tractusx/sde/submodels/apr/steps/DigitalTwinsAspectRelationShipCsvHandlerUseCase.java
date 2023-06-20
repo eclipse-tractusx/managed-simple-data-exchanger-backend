@@ -218,11 +218,13 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 						shellLookupRequest.toJsonString()));
 			}
 
-			SubmodelDescriptionListResponse shellDescriptorWithsubmodelDetails = gateway
-					.getShellDescriptorsWithSubmodelDetails(childshellIds);
+			if (childshellIds.size() == 1) {
+				SubmodelDescriptionListResponse shellDescriptorWithsubmodelDetails = gateway
+						.getShellDescriptorsWithSubmodelDetails(childshellIds);
 
-			for (ShellDescriptorResponse shellDescriptorResponse : shellDescriptorWithsubmodelDetails.getItems()) {
-				childUUID = shellDescriptorResponse.getGlobalAssetId().getValue().get(0);
+				for (ShellDescriptorResponse shellDescriptorResponse : shellDescriptorWithsubmodelDetails.getItems()) {
+					childUUID = shellDescriptorResponse.getGlobalAssetId().getValue().get(0);
+				}
 			}
 
 		}

@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+- Support EDC version 4.1.
+- BPN Discovery service integration for DDTR.
+- Renamed SerialPartTypization aspect submodel to SerialPart.
+- Renamed AssemblyPartRelationship aspect submodel to SingleLevelBoMAsBuilt.
+
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [2.0.1] - 2023-05-23
 - Add automatic identification of submodel for processing.

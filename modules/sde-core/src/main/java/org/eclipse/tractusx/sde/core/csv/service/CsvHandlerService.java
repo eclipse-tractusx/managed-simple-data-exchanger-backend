@@ -99,7 +99,7 @@ public class CsvHandlerService {
     }
 
     @SneakyThrows
-    public CsvContent processFile(String fileName, String submodel) {
+    public CsvContent processFile(String fileName) {
         log.debug(String.format("Start processing '%s.csv' file", fileName));
         String filePath = getFilePath(fileName);
         File file = new File(filePath);

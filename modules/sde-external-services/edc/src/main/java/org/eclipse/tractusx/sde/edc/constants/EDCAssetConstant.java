@@ -32,6 +32,7 @@ public final class EDCAssetConstant {
 	public static final String ASSET_PROP_CONTENTTYPE = "asset:prop:contenttype";
 	public static final String ASSET_PROP_FILENAME = "asset:prop:fileName";
 	public static final String ASSET_PROP_TYPE ="asset:prop:type";
+	public static final String ASSET_PROP_POLICYID ="asset:prop:policy-id";
 	
 	
 	private EDCAssetConstant() {}

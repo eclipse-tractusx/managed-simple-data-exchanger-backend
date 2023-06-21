@@ -22,6 +22,9 @@ package org.eclipse.tractusx.sde.edc.model.contractnegotiation;
 
 import org.eclipse.tractusx.sde.edc.model.policies.PolicyDefinition;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,14 +34,28 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ContractAgreementDto {
-    private String id;
-    private String providerAgentId;
-    private String consumerAgentId;
-    private long contractSigningDate;
-    private long contractStartDate;
-    private long contractEndDate;
-    private String assetId;
-    private PolicyDefinition policy;
+
+	@JsonProperty("@id")
+	private String id;
+
+	@JsonProperty("edc:providerId")
+	private String providerAgentId;
+
+	@JsonProperty("edc:consumerId")
+	private String consumerAgentId;
+
+	@JsonProperty("edc:contractSigningDate")
+	private long contractSigningDate;
+
+	private long contractStartDate;
+	private long contractEndDate;
+
+	@JsonProperty("edc:assetId")
+	private String assetId;
+
+	@JsonProperty("edc:policy")
+	private PolicyDefinition policy;
 
 }

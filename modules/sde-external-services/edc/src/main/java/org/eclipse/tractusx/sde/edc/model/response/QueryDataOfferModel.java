@@ -49,6 +49,8 @@ QueryDataOfferModel {
 	private String connectorOfferUrl;
 	
 	private String title;
+	
+	private String type;
 
 	private String version;
 

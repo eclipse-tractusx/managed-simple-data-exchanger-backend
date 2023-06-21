@@ -22,6 +22,9 @@
 package org.eclipse.tractusx.sde.edc.entities.request.contractdefinition;
 
 import java.util.List;
+import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,8 +37,20 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ContractDefinitionRequest {
 
+	@JsonProperty("@context")
+	@Builder.Default
+	private Map<String, String> context = Map.of("odrl","http://www.w3.org/ns/odrl/2/");
+
+	@JsonProperty("@type")
+	@Builder.Default
+	private String type = "ContractDefinition";
+
+	
     private String accessPolicyId;
     private String contractPolicyId;
-    private List<Criterion> criteria;
+    
+    private List<Criterion> assetsSelector;
+   
+    @JsonProperty("@id")
     private String id;
 }

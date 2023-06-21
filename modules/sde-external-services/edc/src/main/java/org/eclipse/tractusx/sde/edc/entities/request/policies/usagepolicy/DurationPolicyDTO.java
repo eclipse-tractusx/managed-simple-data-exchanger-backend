@@ -24,73 +24,61 @@ import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.DurationEnum;
 import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
-import org.eclipse.tractusx.sde.edc.entities.request.policies.Expression;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-public class DurationPolicyDTO extends UsagePolicyDTO{
-    private static final String DATASPACECONNECTOR_LITERALEXPRESSION = "dataspaceconnector:literalexpression";
-    private DurationEnum durationUnit;
+public class DurationPolicyDTO extends UsagePolicyDTO {
+	private DurationEnum durationUnit;
 
-    public static DurationPolicyDTO fromUsagePolicy(UsagePolicies usagePolicy)
-    {
-        return DurationPolicyDTO.builder().type(usagePolicy.getType()).typeOfAccess(usagePolicy.getTypeOfAccess())
-                .value(usagePolicy.getValue()).durationUnit(usagePolicy.getDurationUnit()).build();
+	public static DurationPolicyDTO fromUsagePolicy(UsagePolicies usagePolicy) {
+		return DurationPolicyDTO.builder()
+				.type(usagePolicy.getType())
+				.typeOfAccess(usagePolicy.getTypeOfAccess())
+				.value(usagePolicy.getValue())
+				.durationUnit(usagePolicy.getDurationUnit())
+				.build();
 
-    }
-    @Override
-    public ConstraintRequest toConstraint() {
-        if (getTypeOfAccess().equals(PolicyAccessEnum.RESTRICTED)) {
-            Expression lExpression = Expression.builder()
-                    .edcType(DATASPACECONNECTOR_LITERALEXPRESSION)
-                    .value("idsc:ELAPSED_TIME")
-                    .build();
+	}
 
-            String operator = "LEQ";
-            Expression rExpression = null;
-            String value = "P";
-            switch (this.durationUnit) {
-                case YEAR:
-                    value = value + getValue()+ "Y0M0DT0H0M0S";
-                    break;
-                case MONTH:
-                    value = value + "0Y" + getValue() + "M0DT0H0M0S";
-                    break;
-                case DAY:
-                    value = value + "0Y0M" + getValue() + "DT0H0M0S";
-                    break;
-                case HOUR:
-                    value = value + "0Y0M0DT" + getValue() + "H0M0S";
-                    break;
-                case MINUTE:
-                    value = value + "0Y0M0DT0H" + getValue() + "M0S";
-                    break;
-                case SECOND:
-                    value = value + "0Y0M0DT0H0M" + getValue() + "S";
-                    break;
-                default:
-                    break;
-            }
-            rExpression = Expression.builder()
-                    .edcType(DATASPACECONNECTOR_LITERALEXPRESSION)
-                    .value(value)
-                    .build();
+	@Override
+	public ConstraintRequest toConstraint() {
+		if (getTypeOfAccess().equals(PolicyAccessEnum.RESTRICTED)) {
 
-            return ConstraintRequest.builder().edcType("AtomicConstraint")
-                    .leftExpression(lExpression)
-                    .rightExpression(rExpression)
-                    .operator(operator)
-                    .build();
+			String operator = "LEQ";
+			String value = "P";
+			switch (this.durationUnit) {
+			case YEAR:
+				value = value + getValue() + "Y0M0DT0H0M0S";
+				break;
+			case MONTH:
+				value = value + "0Y" + getValue() + "M0DT0H0M0S";
+				break;
+			case DAY:
+				value = value + "0Y0M" + getValue() + "DT0H0M0S";
+				break;
+			case HOUR:
+				value = value + "0Y0M0DT" + getValue() + "H0M0S";
+				break;
+			case MINUTE:
+				value = value + "0Y0M0DT0H" + getValue() + "M0S";
+				break;
+			case SECOND:
+				value = value + "0Y0M0DT0H0M" + getValue() + "S";
+				break;
+			default:
+				break;
+			}
 
-        }
+			return ConstraintRequest.builder().leftOperand("idsc:ELAPSED_TIME").operator(operator).rightOperand(value)
+					.build();
 
-        return null;
-    }
+		}
+
+		return null;
+	}
 }

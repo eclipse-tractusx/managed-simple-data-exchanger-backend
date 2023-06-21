@@ -19,8 +19,13 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.submodels.psiap;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+import org.eclipse.tractusx.sde.bpndiscovery.handler.BPNDiscoveryUseCaseHandler;
+import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.entities.csv.RowData;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseException;
 import org.eclipse.tractusx.sde.common.submodel.executor.SubmodelExecutor;
@@ -63,6 +68,8 @@ public class PartSiteInformationAsPlannedExecutor extends SubmodelExecutor {
 	private final StorePartSiteInformationAsPlannedHandlerStep storePartSiteInformationAsPlannedCsvHandlerUseCase;
 
 	private final PartSiteInformationAsPlannedService partSiteInformationAsPlannedService;
+	
+	private final BPNDiscoveryUseCaseHandler bPNDiscoveryUseCaseHandler; 
 
 	@SneakyThrows
 	public void executeCsvRecord(RowData rowData, ObjectNode jsonObject, String processId) {
@@ -99,6 +106,12 @@ public class PartSiteInformationAsPlannedExecutor extends SubmodelExecutor {
 
 		eDCPartSiteInformationAsPlannedHandlerUseCase.init(getSubmodelSchema());
 		eDCPartSiteInformationAsPlannedHandlerUseCase.run(getNameOfModel(), partAsPlannedAspect, processId);
+		
+		if (StringUtils.isBlank(partAsPlannedAspect.getUpdated())) {
+			Map<String, String> bpnKeyMap = new HashMap<>();
+			bpnKeyMap.put(CommonConstants.MANUFACTURER_PART_ID, partAsPlannedAspect.getManufacturerPartId());
+			bPNDiscoveryUseCaseHandler.run(bpnKeyMap);
+		}
 
 		storePartSiteInformationAsPlannedCsvHandlerUseCase.run(partAsPlannedAspect);
 	}

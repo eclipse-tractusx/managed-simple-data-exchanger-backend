@@ -21,8 +21,13 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.submodels.spt;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+import org.eclipse.tractusx.sde.bpndiscovery.handler.BPNDiscoveryUseCaseHandler;
+import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.entities.csv.RowData;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseException;
 import org.eclipse.tractusx.sde.common.submodel.executor.SubmodelExecutor;
@@ -63,6 +68,8 @@ public class SerialPartTypizationExecutor extends SubmodelExecutor {
 	private final EDCAspectHandlerUseCase eDCAspectHandlerUseCase;
 
 	private final StoreAspectCsvHandlerUseCase storeAspectCsvHandlerUseCase;
+	
+	private final BPNDiscoveryUseCaseHandler bPNDiscoveryUseCaseHandler; 
 
 	private final AspectService aspectService;
 
@@ -101,6 +108,12 @@ public class SerialPartTypizationExecutor extends SubmodelExecutor {
 
 		eDCAspectHandlerUseCase.init(getSubmodelSchema());
 		eDCAspectHandlerUseCase.run(getNameOfModel(), aspect, processId);
+		
+		if (StringUtils.isBlank(aspect.getUpdated())) {
+			Map<String, String> bpnKeyMap = new HashMap<>();
+			bpnKeyMap.put(CommonConstants.MANUFACTURER_PART_ID, aspect.getManufacturerPartId());
+			bPNDiscoveryUseCaseHandler.run(bpnKeyMap);
+		}
 
 		storeAspectCsvHandlerUseCase.run(aspect);
 	}

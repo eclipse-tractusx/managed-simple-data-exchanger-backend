@@ -16,6 +16,7 @@
 			"parent_manufacturer_part_id",
 			"part_instance_id",
 			"manufacturer_part_id",
+			"manufacturer_id",
 			"quantity_number",
 			"measurement_unit",
 			"created_on"
@@ -110,6 +111,7 @@
 				"type": [
 					"string"
 				],
+				"minLength": 1,
 				"title": "Manufacturer id",
 				"description": "The Business Partner Number (BPNL) of the manufacturer of the serialized part, i.e., the companies main entry.",
 				"examples": [

@@ -32,5 +32,5 @@ import lombok.Data;
 @AllArgsConstructor
 public class AspectRelationshipResponse {
     private String catenaXId;
-    private Set<ChildPart> childItems;
+    private Set<ChildItems> childItems;
 }

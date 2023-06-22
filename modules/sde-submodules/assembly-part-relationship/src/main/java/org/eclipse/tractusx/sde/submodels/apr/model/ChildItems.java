@@ -28,7 +28,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 @Builder
-public class ChildPart {
+public class ChildItems {
 
     private Quantity quantity;
     private String createdOn;

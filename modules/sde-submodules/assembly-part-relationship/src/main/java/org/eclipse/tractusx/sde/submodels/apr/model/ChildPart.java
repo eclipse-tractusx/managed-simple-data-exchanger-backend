@@ -30,9 +30,9 @@ import lombok.Data;
 @Builder
 public class ChildPart {
 
-    private String lifecycleContext;
     private Quantity quantity;
     private String createdOn;
     private String lastModifiedOn;
-    private String childCatenaXId;
+    private String catenaXId;
+    private String businessPartner;
 }

@@ -72,7 +72,7 @@ public abstract class AspectRelationshipMapper {
 
 		Set<ChildPart> childParts = aspectRelationships.stream().map(this::toChildPart).collect(Collectors.toSet());
 		return new Gson().toJsonTree(
-				AspectRelationshipResponse.builder().catenaXId(parentCatenaXUuid).childParts(childParts).build())
+				AspectRelationshipResponse.builder().catenaXId(parentCatenaXUuid).childItems(childParts).build())
 				.getAsJsonObject();
 
 	}
@@ -87,9 +87,9 @@ public abstract class AspectRelationshipMapper {
 				.build();
 
 		return ChildPart.builder()
-				.lifecycleContext(entity.getLifecycleContext())
 				.createdOn(entity.getCreatedOn())
-				.childCatenaXId(entity.getChildCatenaXId()).quantity(quantity).build();
+				.businessPartner(entity.getChildManufacturerId())
+				.catenaXId(entity.getChildCatenaXId()).quantity(quantity).build();
 	}
 
 }

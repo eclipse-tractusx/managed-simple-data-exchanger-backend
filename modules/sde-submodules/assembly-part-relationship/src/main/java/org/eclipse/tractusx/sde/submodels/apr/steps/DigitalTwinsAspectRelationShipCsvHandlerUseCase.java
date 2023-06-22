@@ -39,6 +39,10 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubmodelDescriptionListResponse;
 import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsUtility;
 import org.eclipse.tractusx.sde.digitaltwins.gateways.external.DigitalTwinGateway;
+import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
+import org.eclipse.tractusx.sde.edc.services.ConsumerControlPanelService;
+import org.eclipse.tractusx.sde.portal.handler.PortalProxyService;
+import org.eclipse.tractusx.sde.portal.model.ConnectorInfo;
 import org.eclipse.tractusx.sde.submodels.apr.model.AspectRelationship;
 import org.springframework.stereotype.Service;
 
@@ -51,6 +55,8 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 
 	private final DigitalTwinGateway gateway;
 	private final DigitalTwinsUtility digitalTwinsUtility;
+	private final PortalProxyService portalProxyService;
+	private final ConsumerControlPanelService consumerControlPanelService;
 
 	@SneakyThrows
 	public AspectRelationship run(AspectRelationship aspectRelationShip) throws CsvHandlerDigitalTwinUseCaseException {
@@ -182,12 +188,21 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 
 	@SneakyThrows
 	private CreateSubModelRequest getCreateSubModelRequest(AspectRelationship aspectRelationShip) {
+
 		ArrayList<String> value = new ArrayList<>();
+		String ddtUrl = "";
 		value.add(getsemanticIdOfModel());
-
 		ShellLookupRequest shellLookupRequest = getShellLookupRequestforChild(aspectRelationShip);
-		ShellLookupResponse childshellIds = gateway.shellLookup(shellLookupRequest);
 
+		List<ConnectorInfo> connectorEndpoints = portalProxyService.fetchConnectorInfo(List.of(aspectRelationShip.getChildManufacturerId()));
+
+		ddtUrl = getDDTRUrl(connectorEndpoints);
+
+		if (!ddtUrl.isEmpty()) {
+			gateway.init(ddtUrl);
+		}
+		
+		ShellLookupResponse childshellIds = gateway.shellLookup(shellLookupRequest);
 		String childUUID = null;
 
 		if (childshellIds.isEmpty()) {
@@ -215,6 +230,17 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 
 		return CreateSubModelRequest.builder().idShort(getIdShortOfModel()).identification(identification)
 				.semanticId(semanticId).endpoints(endpoints).build();
+	}
+	
+	private String getDDTRUrl(List<ConnectorInfo> connectorEndpoints) {
+	
+		connectorEndpoints.stream().forEach(connectorEndpoint -> 
+		connectorEndpoint.getConnectorEndpoint().stream().forEach(conn -> {
+			List<QueryDataOfferModel> queryDataOfferModel = consumerControlPanelService.queryOnDataOffers(conn,
+					null, null);
+		})
+	);
+		return "";
 	}
 
 }

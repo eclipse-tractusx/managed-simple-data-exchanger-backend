@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023 T-Systems International GmbH
+ * Copyright (c) 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,17 +17,15 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
+package org.eclipse.tractusx.sde.edc.model.asset;
 
-package org.eclipse.tractusx.sde.edc.model.contractoffers;
-
-import org.eclipse.tractusx.sde.edc.model.asset.Asset;
-import org.eclipse.tractusx.sde.edc.model.asset.DataAddress;
-import org.eclipse.tractusx.sde.edc.model.policies.PolicyDefinition;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -40,24 +38,14 @@ import lombok.SneakyThrows;
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(Include.NON_NULL)
-public class ContractOffer {
+public class DataAddress {
+	
+private Map<String, String> properties;
+	
+    @SneakyThrows
+    public String toJsonString() {
+        final ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(this);
+    }
 
-	private String id;
-	private Asset asset;
-	private PolicyDefinition policy;
-	private String policyId;
-	private String assetId;
-	private String provider;
-	private String consumer;
-	private String offerStart;
-	private String offerEnd;
-	private String contractStart;
-	private String contractEnd;
-	private DataAddress dataAddress;
-
-	@SneakyThrows
-	public String toJsonString() {
-		final ObjectMapper mapper = new ObjectMapper();
-		return mapper.writeValueAsString(this);
-	}
 }

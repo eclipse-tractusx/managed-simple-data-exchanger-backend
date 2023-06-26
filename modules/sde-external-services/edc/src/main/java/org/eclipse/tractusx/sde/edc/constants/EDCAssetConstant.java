@@ -22,17 +22,17 @@ package org.eclipse.tractusx.sde.edc.constants;
 
 public final class EDCAssetConstant {
 
-	public static final String ASSET_PROP_PUBLISHER = "asset:prop:publisher";
-	public static final String ASSET_PROP_DESCRIPTION = "asset:prop:description";
-	public static final String ASSET_PROP_NAME = "asset:prop:name";
-	public static final String ASSET_PROP_ID = "asset:prop:id";
-	public static final String ASSET_PROP_CREATED = "asset:prop:creationDate";
-	public static final String ASSET_PROP_MODIFIED = "asset:prop:modified";
-	public static final String ASSET_PROP_VERSION = "asset:prop:version";
-	public static final String ASSET_PROP_CONTENTTYPE = "asset:prop:contenttype";
-	public static final String ASSET_PROP_FILENAME = "asset:prop:fileName";
-	public static final String ASSET_PROP_TYPE ="asset:prop:type";
-	public static final String ASSET_PROP_POLICYID ="asset:prop:policy-id";
+	public static final String ASSET_PROP_PUBLISHER = "publisher";
+	public static final String ASSET_PROP_DESCRIPTION = "description";
+	public static final String ASSET_PROP_NAME = "name";
+	public static final String ASSET_PROP_ID = "id";
+	public static final String ASSET_PROP_CREATED = "creationDate";
+	public static final String ASSET_PROP_MODIFIED = "modified";
+	public static final String ASSET_PROP_VERSION = "version";
+	public static final String ASSET_PROP_CONTENTTYPE = "contenttype";
+	public static final String ASSET_PROP_FILENAME = "fileName";
+	public static final String ASSET_PROP_TYPE ="type";
+	public static final String ASSET_PROP_POLICYID ="policy-id";
 	
 	
 	private EDCAssetConstant() {}

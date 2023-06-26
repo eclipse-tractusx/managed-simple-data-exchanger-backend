@@ -50,80 +50,71 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@ContextConfiguration(classes = {ConsumerController.class})
+@ContextConfiguration(classes = { ConsumerController.class })
 @ExtendWith(SpringExtension.class)
 class ConsumerControllerTest {
-    @MockBean
-    private ConsumerControlPanelService consumerControlPanelService;
+	@MockBean
+	private ConsumerControlPanelService consumerControlPanelService;
 
-    @Autowired
-    private ConsumerController consumerController;
+	@Autowired
+	private ConsumerController consumerController;
 
-    @Test
-    void testQueryOnDataOfferWithoutOfferModel() throws Exception {
-        when(consumerControlPanelService.queryOnDataOffers((String) any(), anyInt(), anyInt())).thenReturn(new ArrayList<>());
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/query-data-offers")
-                .param("providerUrl", "foo");
-        MockMvcBuilders.standaloneSetup(consumerController)
-                .build()
-                .perform(requestBuilder)
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.content().string("[]"));
-    }
+	@Test
+	void testQueryOnDataOfferWithoutOfferModel() throws Exception {
+		when(consumerControlPanelService.queryOnDataOffers((String) any(), anyInt(), anyInt(), any()))
+				.thenReturn(new ArrayList<>());
+		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/query-data-offers")
+				.param("providerUrl", "foo");
+		MockMvcBuilders.standaloneSetup(consumerController).build().perform(requestBuilder)
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+				.andExpect(MockMvcResultMatchers.content().string("[]"));
+	}
 
+	@Test
+	void testQueryOnDataOffersWithOfferModel() throws Exception {
+		ArrayList<QueryDataOfferModel> queryDataOfferModelList = new ArrayList<>();
+		queryDataOfferModelList.add(new QueryDataOfferModel());
+		when(consumerControlPanelService.queryOnDataOffers((String) any(), anyInt(), anyInt(), any()))
+				.thenReturn(queryDataOfferModelList);
+		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/query-data-offers")
+				.param("providerUrl", "foo");
+		MockMvcBuilders.standaloneSetup(consumerController).build().perform(requestBuilder)
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+				.andExpect(MockMvcResultMatchers.content().string(
+						"[{\"connectorId\":null,\"assetId\":null,\"offerId\":null,\"connectorOfferUrl\":null,\"title\":null,\"type\":null,\"version\":null,\"description\":null,\"fileName\":null,\"fileContentType\":null,\"created\":null,\"modified\":null,\"publisher\":null,\"typeOfAccess\":null,\"bpnNumbers\":null,\"policyId\":null,\"usagePolicies\":null}]"));
+	}
 
+	@Test
+	void testSubscribeDataOffersBadRequest() throws Exception {
+		doNothing().when(consumerControlPanelService).subscribeDataOffers((ConsumerRequest) any(), anyString());
 
-    @Test
-    void testQueryOnDataOffersWithOfferModel() throws Exception {
-        ArrayList<QueryDataOfferModel> queryDataOfferModelList = new ArrayList<>();
-        queryDataOfferModelList.add(new QueryDataOfferModel());
-        when(consumerControlPanelService.queryOnDataOffers((String) any(), anyInt(), anyInt())).thenReturn(queryDataOfferModelList);
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/query-data-offers")
-                .param("providerUrl", "foo");
-        MockMvcBuilders.standaloneSetup(consumerController)
-                .build()
-                .perform(requestBuilder)
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.content()
-                        .string(
-                                "[{\"connectorId\":null,\"assetId\":null,\"offerId\":null,\"connectorOfferUrl\":null,\"title\":null,\"type\":null,\"version\":null,\"description\":null,\"fileName\":null,\"fileContentType\":null,\"created\":null,\"modified\":null,\"publisher\":null,\"typeOfAccess\":null,\"bpnNumbers\":null,\"policyId\":null,\"usagePolicies\":null}]"));
-    }
+		ConsumerRequest consumerRequest = ConsumerRequest.builder().connectorId("42").offers(new ArrayList<>())
+				.policies(new ArrayList<>()).providerUrl("\"https://example.org/example\"").build();
+		String content = (new ObjectMapper()).writeValueAsString(consumerRequest);
+		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/subscribe-data-offers")
+				.contentType(MediaType.APPLICATION_JSON).content(content);
+		MockMvcBuilders.standaloneSetup(consumerController).build().perform(requestBuilder)
+				.andExpect(MockMvcResultMatchers.status().isBadRequest());
+	}
 
-    @Test
-    void testSubscribeDataOffersBadRequest() throws Exception {
-        doNothing().when(consumerControlPanelService).subscribeDataOffers((ConsumerRequest) any(), anyString());
-
-        ConsumerRequest consumerRequest = ConsumerRequest.builder().connectorId("42").offers(new ArrayList<>()).policies(new ArrayList<>()).providerUrl("\"https://example.org/example\"").build();
-        String content = (new ObjectMapper()).writeValueAsString(consumerRequest);
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/subscribe-data-offers")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(content);
-        MockMvcBuilders.standaloneSetup(consumerController)
-                .build()
-                .perform(requestBuilder)
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
-    }
-
-    //@Test
-    void testSubscribeDataOffers() throws Exception {
-        doNothing().when(consumerControlPanelService).subscribeDataOffers((ConsumerRequest) any(), anyString());
-        List<OfferRequest> offers = new ArrayList<>();
-        List<UsagePolicies> policies = new ArrayList<>();
-        OfferRequest mockOffer = Mockito.mock(OfferRequest.class);
-        offers.add(mockOffer);
-        UsagePolicies mockPolicy = Mockito.mock(UsagePolicies.class);
-        policies.add(mockPolicy);
-        ConsumerRequest consumerRequest = ConsumerRequest.builder().connectorId("42").offers(offers).policies(policies).providerUrl("\"https://example.org/example\"").build();
-        String content = (new ObjectMapper()).writeValueAsString(consumerRequest);
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/subscribe-data-offers")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(content);
-        MockMvcBuilders.standaloneSetup(consumerController)
-                .build()
-                .perform(requestBuilder)
-                .andExpect(MockMvcResultMatchers.status().isOk());
-    }
+	// @Test
+	void testSubscribeDataOffers() throws Exception {
+		doNothing().when(consumerControlPanelService).subscribeDataOffers((ConsumerRequest) any(), anyString());
+		List<OfferRequest> offers = new ArrayList<>();
+		List<UsagePolicies> policies = new ArrayList<>();
+		OfferRequest mockOffer = Mockito.mock(OfferRequest.class);
+		offers.add(mockOffer);
+		UsagePolicies mockPolicy = Mockito.mock(UsagePolicies.class);
+		policies.add(mockPolicy);
+		ConsumerRequest consumerRequest = ConsumerRequest.builder().connectorId("42").offers(offers).policies(policies)
+				.providerUrl("\"https://example.org/example\"").build();
+		String content = (new ObjectMapper()).writeValueAsString(consumerRequest);
+		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/subscribe-data-offers")
+				.contentType(MediaType.APPLICATION_JSON).content(content);
+		MockMvcBuilders.standaloneSetup(consumerController).build().perform(requestBuilder)
+				.andExpect(MockMvcResultMatchers.status().isOk());
+	}
 
 }

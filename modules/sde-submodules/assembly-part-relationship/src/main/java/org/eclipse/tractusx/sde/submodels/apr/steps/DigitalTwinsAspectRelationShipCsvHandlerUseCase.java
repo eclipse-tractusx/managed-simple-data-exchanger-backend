@@ -253,28 +253,34 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 
 		List<String> dtURls = new ArrayList<>();
 
-		connectorInfos.stream().forEach(connectorInfo -> {
-			connectorInfo.getConnectorEndpoint().parallelStream().distinct().forEach(connector -> {
-				try {
-					List<QueryDataOfferModel> queryDataOfferModel = consumerControlPanelService
-							.queryOnDataOffers(connector, 10000, 0);
+		String filterExpression = String.format("""
+				 "filterExpression": [{
+				    "operandLeft": "https://w3id.org/edc/v0.0.1/ns/type",
+				    "operator": "=",
+				    "operandRight": "data.core.digitalTwinRegistry"
+				}]""");
 
-					log.info("For Connector " + connector + ", found asset :" + queryDataOfferModel.size());
+		connectorInfos.stream().forEach(
+				connectorInfo -> connectorInfo.getConnectorEndpoint().parallelStream().distinct().forEach(connector -> {
+					try {
 
-					if (queryDataOfferModel != null && !queryDataOfferModel.isEmpty()) {
+						List<QueryDataOfferModel> queryDataOfferModel = consumerControlPanelService
+								.queryOnDataOffers(connector, 0, 100, filterExpression);
 
-						List<String> list = queryDataOfferModel.stream()
-								.filter(obj -> obj.getType().equals("data.core.digitalTwinRegistry"))
-								.map(QueryDataOfferModel::getPublisher).toList();
+						log.info("For Connector " + connector + ", found asset :" + queryDataOfferModel.size());
 
-						dtURls.addAll(list);
+						if (queryDataOfferModel != null && !queryDataOfferModel.isEmpty()) {
+
+							List<String> list = queryDataOfferModel.stream().map(QueryDataOfferModel::getPublisher)
+									.toList();
+
+							dtURls.addAll(list);
+						}
+					} catch (Exception e) {
+						log.error("Error while looking EDC catalog for digitaltwin registry url, " + connector
+								+ ", Exception :" + e.getMessage());
 					}
-				} catch (Exception e) {
-					log.error("Error while looking EDC catalog for digitaltwin registry url, " + connector
-							+ ", Exception :" + e.getMessage());
-				}
-			});
-		});
+				}));
 
 		return dtURls;
 	}

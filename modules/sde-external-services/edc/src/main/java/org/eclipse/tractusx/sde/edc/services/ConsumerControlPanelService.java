@@ -65,14 +65,15 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
 	private final ContractOfferRequestFactory contractOfferRequestFactory;
 
-	public List<QueryDataOfferModel> queryOnDataOffers(String providerUrl, Integer limit, Integer offset) {
+	public List<QueryDataOfferModel> queryOnDataOffers(String providerUrl, Integer offset, Integer limit,
+			String filterExpression) {
 
 		String sproviderUrl = UtilityFunctions.removeLastSlashOfUrl(providerUrl);
 
 		List<QueryDataOfferModel> queryOfferResponse = new ArrayList<>();
 
 		JsonNode contractOfferCatalog = contractOfferCatalogApiProxy.getContractOffersCatalog(
-				contractOfferRequestFactory.getContractOfferRequest(providerUrl, limit, offset));
+				contractOfferRequestFactory.getContractOfferRequest(providerUrl, limit, offset, filterExpression));
 
 		JsonNode jOffer = contractOfferCatalog.get("dcat:dataset");
 		if (jOffer.isArray()) {
@@ -136,9 +137,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 			JsonNode jsonNode = constraints.get("odrl:and");
 
 			if (jsonNode != null && jsonNode.isArray()) {
-				jsonNode.forEach(constraint -> {
-					setConstraint(usagePolicies, bpnNumbers, constraint);
-				});
+				jsonNode.forEach(constraint -> setConstraint(usagePolicies, bpnNumbers, constraint));
 			} else if (jsonNode != null) {
 				setConstraint(usagePolicies, bpnNumbers, jsonNode);
 			}
@@ -186,7 +185,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 		}
 
 		ActionRequest action = policyConstraintBuilderService.getUsagePolicyConstraints(policies);
-		consumerRequest.getOffers().parallelStream().forEach((offer) -> {
+		consumerRequest.getOffers().parallelStream().forEach(offer -> {
 			try {
 
 				negotiateContractId.set(

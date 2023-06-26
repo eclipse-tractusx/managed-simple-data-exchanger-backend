@@ -23,8 +23,6 @@ package org.eclipse.tractusx.sde.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -42,9 +40,9 @@ import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyConstraintBu
 import org.eclipse.tractusx.sde.edc.facilitator.ContractNegotiateManagementHelper;
 import org.eclipse.tractusx.sde.edc.gateways.database.ContractNegotiationInfoRepository;
 import org.eclipse.tractusx.sde.edc.model.contractoffers.ContractOfferRequestFactory;
-import org.eclipse.tractusx.sde.edc.model.contractoffers.ContractOffersCatalogResponse;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
 import org.eclipse.tractusx.sde.edc.model.request.OfferRequest;
+import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.eclipse.tractusx.sde.edc.services.ConsumerControlPanelService;
 import org.eclipse.tractusx.sde.portal.api.IPartnerPoolExternalServiceApi;
 import org.eclipse.tractusx.sde.portal.api.IPortalExternalServiceApi;
@@ -56,6 +54,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -85,43 +85,45 @@ class ConsumerControlPanelServiceTest {
 
 	@MockBean
 	private PolicyConstraintBuilderService policyConstraintBuilderService;
-	
+
 	@MockBean
 	private ContractOfferRequestFactory contractOfferRequestFactory;
 
-	// @Test
+	@Test
 	void testQueryOnDataOfferEmpty() throws Exception {
-		JsonNode contractOffersCatalogResponse = null;
-		when(contractOfferCatalogApi.getContractOffersCatalog((JsonNode) any()))
-				.thenReturn(contractOffersCatalogResponse);
-		assertTrue(consumerControlPanelService.queryOnDataOffers("https://example.org/example", anyInt(), anyInt())
-				.isEmpty());
+
+		JsonNode json = getCatalogEmptyResponse();
+
+		when(contractOfferCatalogApi.getContractOffersCatalog((JsonNode) any())).thenReturn(json);
+
+		List<QueryDataOfferModel> queryOnDataOffers = consumerControlPanelService
+				.queryOnDataOffers("https://example.org/example", 0, 0, null);
+		assertTrue(queryOnDataOffers.isEmpty());
 		verify(contractOfferCatalogApi).getContractOffersCatalog((JsonNode) any());
 	}
 
-	// @Test
+	
+
+	@Test
 	void testQueryOnDataOffersWithUsagePolicies() throws Exception {
-
-		JsonNode contractOffersCatalogResponse = null;
+		
+		String filterExpression = String.format("""
+				 "filterExpression": [{
+				    "operandLeft": "https://w3id.org/edc/v0.0.1/ns/type",
+				    "operator": "=",
+				    "operandRight": "data.core.digitalTwinRegistry"
+				}]""");
+		
+		JsonNode contractOffersCatalogResponse = getCatalogResponse();
 		when(contractOfferCatalogApi.getContractOffersCatalog((JsonNode) any()))
 				.thenReturn(contractOffersCatalogResponse);
-		assertEquals(1, consumerControlPanelService.queryOnDataOffers("https://example.org/example", anyInt(), anyInt())
-				.size());
+		assertEquals(1, consumerControlPanelService
+				.queryOnDataOffers("https://example.org/example", 0, 1, filterExpression).size());
 		verify(contractOfferCatalogApi).getContractOffersCatalog((JsonNode) any());
 	}
 
-	// @Test
-	void testQueryOnDataOffersWithMissingUsagePolicies() throws Exception {
 
-		JsonNode contractOffersCatalogResponse = null;
-		when(contractOfferCatalogApi.getContractOffersCatalog((JsonNode) any()))
-				.thenReturn(contractOffersCatalogResponse);
-		assertEquals(1, consumerControlPanelService.queryOnDataOffers("https://example.org/example", anyInt(), anyInt())
-				.size());
-		verify(contractOfferCatalogApi).getContractOffersCatalog((JsonNode) any());
-	}
-
-	//@Test
+	@Test
 	void testSubscribeDataOffers1() {
 		ArrayList<OfferRequest> offerRequestList = new ArrayList<>();
 		List<UsagePolicies> usagePolicies = new ArrayList<>();
@@ -136,7 +138,7 @@ class ConsumerControlPanelServiceTest {
 		assertEquals("https://example.org/example", consumerRequest.getProviderUrl());
 		List<UsagePolicies> policies = consumerRequest.getPolicies();
 		ActionRequest list = ActionRequest.builder().build();
-		ConstraintRequest constraintRequest = ConstraintRequest.builder().leftOperand(any()).rightOperand(any())
+		ConstraintRequest constraintRequest = ConstraintRequest.builder().leftOperand("A").rightOperand("A")
 				.operator("EQ").build();
 		list.addProperty("odrl:and", constraintRequest);
 		when(policyConstraintBuilderService.getUsagePolicyConstraints(any())).thenReturn(list);
@@ -144,125 +146,109 @@ class ConsumerControlPanelServiceTest {
 		assertEquals(1, consumerControlPanelService.getAuthHeader().size());
 	}
 
-	//@Test
-	void testSubscribeDataOffers2() {
-		List<UsagePolicies> usagePolicies = new ArrayList<>();
-		UsagePolicies usagePolicy = UsagePolicies.builder().type(UsagePolicyEnum.CUSTOM).value("Sample")
-				.typeOfAccess(PolicyAccessEnum.RESTRICTED).build();
-		usagePolicies.add(usagePolicy);
-		ConsumerRequest consumerRequest = mock(ConsumerRequest.class);
-		when(consumerRequest.getOffers()).thenReturn(new ArrayList<>());
-		when(consumerRequest.getProviderUrl()).thenReturn("https://example.org/example");
-		when(consumerRequest.getPolicies()).thenReturn(usagePolicies);
-		String processId = UUID.randomUUID().toString();
-		consumerControlPanelService.subscribeDataOffers(consumerRequest, processId);
-		verify(consumerRequest).getProviderUrl();
-		verify(consumerRequest).getOffers();
-	}
 
-	private ContractOffersCatalogResponse getContractOffersCatalogWithConstraints() throws Exception {
-		String contactOfferCatalogResponse = "{\n" + "    \"id\": \"default\",\n" + "    \"contractOffers\": [ "
-				+ "       {\n"
-				+ "            \"id\": \"5ff29ec1-90ae-4e75-adf1-afb19ed8c686:cf0fc8c3-c7d6-4b52-baac-764f62312778\",\n"
-				+ "            \"policy\": {\n" + "                \"uid\": \"5dc869fc-9b30-4622-8e25-310033b3b927\",\n"
-				+ "                \"permissions\": [\n" + "                    {\n"
-				+ "                        \"edctype\": \"dataspaceconnector:permission\",\n"
-				+ "                        \"uid\": null,\n"
-				+ "                        \"target\": \"urn:uuid:4cfaf444-ba35-4971-9b02-162a1c8cdfe5-urn:uuid:7b5a2bfc-36ae-49b3-a7a1-c3bb6cfed190\",\n"
-				+ "                        \"action\": {\n" + "                            \"type\": \"USE\",\n"
-				+ "                            \"includedIn\": null,\n"
-				+ "                            \"constraint\": null\n" + "                        },\n"
-				+ "                        \"assignee\": null,\n" + "                        \"assigner\": null,\n"
-				+ "                        \"constraints\": [\n" + "                            {\n"
-				+ "                                \"edctype\": \"AtomicConstraint\",\n"
-				+ "                                \"leftExpression\": {\n"
-				+ "                                    \"edctype\": \"dataspaceconnector:literalexpression\",\n"
-				+ "                                    \"value\": \"BusinessPartnerNumber\"\n"
-				+ "                                },\n" + "                                \"rightExpression\": {\n"
-				+ "                                    \"edctype\": \"dataspaceconnector:literalexpression\",\n"
-				+ "                                    \"value\": \"[BPNL00000005CONS, BPNL00000005PROV]\"\n"
-				+ "                                },\n" + "                                \"operator\": \"IN\"\n"
-				+ "                            },\n" + "                            {\n"
-				+ "                                \"edctype\": \"AtomicConstraint\",\n"
-				+ "                                \"leftExpression\": {\n"
-				+ "                                    \"edctype\": \"dataspaceconnector:literalexpression\",\n"
-				+ "                                    \"value\": \"idsc:ELAPSED_TIME\"\n"
-				+ "                                },\n" + "                                \"rightExpression\": {\n"
-				+ "                                    \"edctype\": \"dataspaceconnector:literalexpression\",\n"
-				+ "                                    \"value\": \"P0Y0M3DT00H00M00S\"\n"
-				+ "                                },\n" + "                                \"operator\": \"LEQ\"\n"
-				+ "                            },\n" + "                            {\n"
-				+ "                                \"edctype\": \"AtomicConstraint\",\n"
-				+ "                                \"leftExpression\": {\n"
-				+ "                                    \"edctype\": \"dataspaceconnector:literalexpression\",\n"
-				+ "                                    \"value\": \"idsc:ROLE\"\n"
-				+ "                                },\n" + "                                \"rightExpression\": {\n"
-				+ "                                    \"edctype\": \"dataspaceconnector:literalexpression\",\n"
-				+ "                                    \"value\": \"ADMIN\"\n" + "                                },\n"
-				+ "                                \"operator\": \"EQ\"\n" + "                            }\n"
-				+ "                        ],\n" + "                        \"duties\": []\n"
-				+ "                    }\n" + "                ],\n" + "                \"prohibitions\": [],\n"
-				+ "                \"obligations\": [],\n" + "                \"extensibleProperties\": {},\n"
-				+ "                \"inheritsFrom\": null,\n" + "                \"assigner\": null,\n"
-				+ "                \"assignee\": null,\n" + "                \"target\": null,\n"
-				+ "                \"@type\": {\n" + "                    \"@policytype\": \"set\"\n"
-				+ "                }\n" + "            },\n" + "            \"asset\": {\n"
-				+ "                \"properties\": {\n"
-				+ "                    \"asset:prop:name\": \"Serialized Part - Submodel SerialPartTypization\",\n"
-				+ "                    \"asset:prop:contenttype\": \"application/json\",\n"
-				+ "                    \"asset:prop:description\": \"Serialized Part - Submodel SerialPartTypization\",\n"
-				+ "                    \"ids:byteSize\": null,\n"
-				+ "                    \"asset:prop:version\": \"1.0.0\",\n"
-				+ "                    \"asset:prop:id\": \"urn:uuid:4cfaf444-ba35-4971-9b02-162a1c8cdfe5-urn:uuid:7b5a2bfc-36ae-49b3-a7a1-c3bb6cfed190\",\n"
-				+ "                    \"ids:fileName\": null\n" + "                }\n" + "            },\n"
-				+ "            \"policyId\": null,\n" + "            \"assetId\": null,\n"
-				+ "            \"provider\": \"urn:connector:provider\",\n"
-				+ "            \"consumer\": \"urn:connector:consumer\",\n" + "            \"offerStart\": null,\n"
-				+ "            \"offerEnd\": null,\n" + "            \"contractStart\": null,\n"
-				+ "            \"contractEnd\": null\n" + "                }\n" + "       ]\n" + "}";
-		ObjectMapper mapper = new ObjectMapper();
-		ContractOffersCatalogResponse mockResponse = mapper.readValue(contactOfferCatalogResponse,
-				ContractOffersCatalogResponse.class);
-		return mockResponse;
+	private JsonNode getCatalogResponse() throws JsonProcessingException, JsonMappingException {
+		String resBody = String
+				.format("""
+							{
+						    "@id": "c6b93e69-4894-4353-85bd-3f4ce097af99",
+						    "@type": "dcat:Catalog",
+						    "dcat:dataset": {
+						        "@id": "c14cbd4d-41b5-43fb-9629-d914e478ba73",
+						        "@type": "dcat:Dataset",
+						        "odrl:hasPolicy": {
+						            "@id": "d694c7b4-17ec-4540-9991-9cc67eeb4c99:urn_uuid_40598c0f-8c53-4aa3-8281-1d82c9299bc3-urn_uuid_df0013c4-8296-41fa-a8b9-f251e5e1f638:29c448d4-a931-42f5-8605-b00608daee7a",
+						            "@type": "odrl:Set",
+						            "odrl:permission": {
+						                "odrl:target": "urn_uuid_40598c0f-8c53-4aa3-8281-1d82c9299bc3-urn_uuid_df0013c4-8296-41fa-a8b9-f251e5e1f638",
+						                "odrl:action": {
+						                    "odrl:type": "USE"
+						                },
+						                "odrl:constraint": {
+						                    "odrl:or": {
+						                        "odrl:leftOperand": "BusinessPartnerNumber",
+						                        "odrl:operator": "EQ",
+						                        "odrl:rightOperand": "BPNL001000TS0100"
+						                    }
+						                }
+						            },
+						            "odrl:prohibition": [],
+						            "odrl:obligation": [],
+						            "odrl:target": "urn_uuid_40598c0f-8c53-4aa3-8281-1d82c9299bc3-urn_uuid_df0013c4-8296-41fa-a8b9-f251e5e1f638"
+						        },
+						        "dcat:distribution": [
+						            {
+						                "@type": "dcat:Distribution",
+						                "dct:format": {
+						                    "@id": "HttpProxy"
+						                },
+						                "dcat:accessService": "db548bb3-3341-4ae3-8d70-6d0cd4482570"
+						            },
+						            {
+						                "@type": "dcat:Distribution",
+						                "dct:format": {
+						                    "@id": "AmazonS3"
+						                },
+						                "dcat:accessService": "db548bb3-3341-4ae3-8d70-6d0cd4482570"
+						            }
+						        ],
+						        "edc:modified": "26/06/2023 16:27:38",
+						        "edc:version": "1.0.0",
+						        "edc:publisher": "BPNL001000TS0100:https://tsyste-f783465e-us.local.cx.dih-cloud.com",
+						        "edc:type": "data.core.digitalTwin.submodel",
+						        "edc:creationDate": "26/06/2023 16:27:38",
+						        "edc:policy-id": "use-eu",
+						        "edc:name": "BoM As-Built - Submodel SerialPartTypization",
+						        "edc:description": "BoM As-Built - Submodel SerialPartTypization",
+						        "edc:id": "urn_uuid_40598c0f-8c53-4aa3-8281-1d82c9299bc3-urn_uuid_df0013c4-8296-41fa-a8b9-f251e5e1f638",
+						        "edc:contenttype": "application/json"
+						    },
+						    "dcat:service": {
+						        "@id": "db548bb3-3341-4ae3-8d70-6d0cd4482570",
+						        "@type": "dcat:DataService",
+						        "dct:terms": "connector",
+						        "dct:endpointUrl": "https://tsyste-f783465e-us.local.cx.dih-cloud.com/api/v1/dsp"
+						    },
+						    "edc:participantId": "BPNL001000TS0100",
+						    "@context": {
+						        "dct": "https://purl.org/dc/terms/",
+						        "tx": "https://w3id.org/tractusx/v0.0.1/ns/",
+						        "edc": "https://w3id.org/edc/v0.0.1/ns/",
+						        "dcat": "https://www.w3.org/ns/dcat/",
+						        "odrl": "http://www.w3.org/ns/odrl/2/",
+						        "dspace": "https://w3id.org/dspace/v0.8/"
+						    }
+						}
+														""");
+		JsonNode json = (JsonNode) new ObjectMapper().readTree(resBody);
+		return json;
 	}
-
-	private ContractOffersCatalogResponse getCatalogObjectWithMissingConstraints() throws Exception {
-		String contactOfferCatalogResponse = "{\n" + "    \"id\": \"default\",\n" + "    \"contractOffers\": [ "
-				+ "       {\n"
-				+ "            \"id\": \"5ff29ec1-90ae-4e75-adf1-afb19ed8c686:cf0fc8c3-c7d6-4b52-baac-764f62312778\",\n"
-				+ "            \"policy\": {\n" + "                \"uid\": \"5dc869fc-9b30-4622-8e25-310033b3b927\",\n"
-				+ "                \"permissions\": [\n" + "                    {\n"
-				+ "                        \"edctype\": \"dataspaceconnector:permission\",\n"
-				+ "                        \"uid\": null,\n"
-				+ "                        \"target\": \"urn:uuid:4cfaf444-ba35-4971-9b02-162a1c8cdfe5-urn:uuid:7b5a2bfc-36ae-49b3-a7a1-c3bb6cfed190\",\n"
-				+ "                        \"action\": {\n" + "                            \"type\": \"USE\",\n"
-				+ "                            \"includedIn\": null,\n"
-				+ "                            \"constraint\": null\n" + "                        },\n"
-				+ "                        \"assignee\": null,\n" + "                        \"assigner\": null,\n"
-				+ "                        \"constraints\": [],\n" + "                        \"duties\": []\n"
-				+ "                    }\n" + "                ],\n" + "                \"prohibitions\": [],\n"
-				+ "                \"obligations\": [],\n" + "                \"extensibleProperties\": {},\n"
-				+ "                \"inheritsFrom\": null,\n" + "                \"assigner\": null,\n"
-				+ "                \"assignee\": null,\n" + "                \"target\": null,\n"
-				+ "                \"@type\": {\n" + "                    \"@policytype\": \"set\"\n"
-				+ "                }\n" + "            },\n" + "            \"asset\": {\n"
-				+ "                \"properties\": {\n"
-				+ "                    \"asset:prop:name\": \"Serialized Part - Submodel SerialPartTypization\",\n"
-				+ "                    \"asset:prop:contenttype\": \"application/json\",\n"
-				+ "                    \"asset:prop:description\": \"Serialized Part - Submodel SerialPartTypization\",\n"
-				+ "                    \"ids:byteSize\": null,\n"
-				+ "                    \"asset:prop:version\": \"1.0.0\",\n"
-				+ "                    \"asset:prop:id\": \"urn:uuid:4cfaf444-ba35-4971-9b02-162a1c8cdfe5-urn:uuid:7b5a2bfc-36ae-49b3-a7a1-c3bb6cfed190\",\n"
-				+ "                    \"ids:fileName\": null\n" + "                }\n" + "            },\n"
-				+ "            \"policyId\": null,\n" + "            \"assetId\": null,\n"
-				+ "            \"provider\": \"urn:connector:provider\",\n"
-				+ "            \"consumer\": \"urn:connector:consumer\",\n" + "            \"offerStart\": null,\n"
-				+ "            \"offerEnd\": null,\n" + "            \"contractStart\": null,\n"
-				+ "            \"contractEnd\": null\n" + "                }\n" + "       ]\n" + "}";
-		ObjectMapper mapper = new ObjectMapper();
-		ContractOffersCatalogResponse mockResponse = mapper.readValue(contactOfferCatalogResponse,
-				ContractOffersCatalogResponse.class);
-		return mockResponse;
+	
+	private JsonNode getCatalogEmptyResponse() throws JsonProcessingException, JsonMappingException {
+		String resBody = String
+				.format("""
+							{
+						    "@id": "c6b93e69-4894-4353-85bd-3f4ce097af99",
+						    "@type": "dcat:Catalog",
+						    "dcat:dataset": [],
+						    "dcat:service": {
+						        "@id": "db548bb3-3341-4ae3-8d70-6d0cd4482570",
+						        "@type": "dcat:DataService",
+						        "dct:terms": "connector",
+						        "dct:endpointUrl": "https://tsyste-f783465e-us.local.cx.dih-cloud.com/api/v1/dsp"
+						    },
+						    "edc:participantId": "BPNL001000TS0100",
+						    "@context": {
+						        "dct": "https://purl.org/dc/terms/",
+						        "tx": "https://w3id.org/tractusx/v0.0.1/ns/",
+						        "edc": "https://w3id.org/edc/v0.0.1/ns/",
+						        "dcat": "https://www.w3.org/ns/dcat/",
+						        "odrl": "http://www.w3.org/ns/odrl/2/",
+						        "dspace": "https://w3id.org/dspace/v0.8/"
+						    }
+						}
+														""");
+		JsonNode json = (JsonNode) new ObjectMapper().readTree(resBody);
+		return json;
 	}
-
 }

@@ -1,5 +1,6 @@
 package org.eclipse.tractusx.sde.edc.model.contractoffers;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +16,13 @@ public class ContractOfferRequestFactory {
 	private String edcProviderProtocolPath;
 
 	@SneakyThrows
-	public ObjectNode getContractOfferRequest(String providerUrl, Integer limit, Integer offset) {
+	public ObjectNode getContractOfferRequest(String providerUrl, Integer limit, Integer offset,
+			String filterExpression) {
+
+		if (!StringUtils.isBlank(filterExpression))
+			filterExpression = String.format(", %s", filterExpression);
+		else
+			filterExpression = "";
 
 		String jsonString = String.format("""
 					      {
@@ -24,12 +31,10 @@ public class ContractOfferRequestFactory {
 				    "providerUrl": "%s",
 				    "querySpec": {
 				        "offset": %s,
-				        "limit": %s,
-				        "filter": "",
-				        "sortField": "",
-				        "criterion": ""
+				        "limit": %s
+				        %s
 				    }
-				}""", providerUrl + edcProviderProtocolPath, offset, limit);
+				}""", providerUrl + edcProviderProtocolPath, offset, limit, filterExpression);
 
 		return (ObjectNode) new ObjectMapper().readTree(jsonString);
 	}

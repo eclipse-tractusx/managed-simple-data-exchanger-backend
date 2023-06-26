@@ -99,7 +99,7 @@ public class DigitalTwinGateway {
 		Map<String, String> queryParameters = new HashMap<>();
 		queryParameters.put(ASSET_IDS_QUERY_PARAMETER, request.toJsonString());
 
-		String dtURL = (this.ddtrUrl == null || this.ddtrUrl.length() < 0) ? digitalTwinsHost : ddtrUrl;
+		String dtURL = (this.ddtrUrl == null || this.ddtrUrl.length() <= 0) ? digitalTwinsHost : ddtrUrl;
 		
 		String url = dtURL + "/lookup/shells";
 		String urlTemplate = UriComponentsBuilder.fromHttpUrl(url).queryParam(ASSET_IDS_QUERY_PARAMETER, "{assetIds}")

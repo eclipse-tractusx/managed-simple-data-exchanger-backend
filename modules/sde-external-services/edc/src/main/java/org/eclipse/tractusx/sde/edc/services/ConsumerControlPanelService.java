@@ -93,19 +93,21 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
 		JsonNode policy = offer.get("odrl:hasPolicy");
 
+		String edcstr = "edc:";
+		
 		QueryDataOfferModel build = QueryDataOfferModel.builder()
-				.assetId(getFieldFromJsonNode(offer, EDCAssetConstant.ASSET_PROP_ID))
+				.assetId(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_ID))
 				.connectorOfferUrl(sproviderUrl + File.separator + getFieldFromJsonNode(offer, "@id"))
 				.offerId(getFieldFromJsonNode(policy, "@id"))
-				.title(getFieldFromJsonNode(offer, EDCAssetConstant.ASSET_PROP_NAME))
-				.type(getFieldFromJsonNode(offer, EDCAssetConstant.ASSET_PROP_TYPE))
-				.description(getFieldFromJsonNode(offer, EDCAssetConstant.ASSET_PROP_DESCRIPTION))
-				.created(getFieldFromJsonNode(offer, EDCAssetConstant.ASSET_PROP_CREATED))
-				.modified(getFieldFromJsonNode(offer, EDCAssetConstant.ASSET_PROP_MODIFIED))
-				.publisher(getFieldFromJsonNode(offer, EDCAssetConstant.ASSET_PROP_PUBLISHER))
-				.version(getFieldFromJsonNode(offer, EDCAssetConstant.ASSET_PROP_VERSION))
-				.fileName(getFieldFromJsonNode(offer, EDCAssetConstant.ASSET_PROP_FILENAME))
-				.fileContentType(getFieldFromJsonNode(offer, EDCAssetConstant.ASSET_PROP_CONTENTTYPE))
+				.title(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_NAME))
+				.type(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_TYPE))
+				.description(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_DESCRIPTION))
+				.created(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_CREATED))
+				.modified(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_MODIFIED))
+				.publisher(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_PUBLISHER))
+				.version(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_VERSION))
+				.fileName(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_FILENAME))
+				.fileContentType(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_CONTENTTYPE))
 				.connectorId(getFieldFromJsonNode(contractOfferCatalog, "edc:participantId")).build();
 
 		checkAndSetPolicyPermission(build, policy);

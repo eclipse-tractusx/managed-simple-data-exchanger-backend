@@ -29,6 +29,9 @@ public class AbstractEDCStepsHelper {
 
 	@Value("${edc.consumer.hostname}${edc.consumer.managementpath:/data/v2}")
 	protected String consumerHost;
+	
+	@Value("${edc.consumer.hostname}")
+	protected String consumerHostWithoutDataPath;
 
 	@Value("${edc.consumer.apikeyheader}")
 	private String edcApiKeyHeader;
@@ -38,6 +41,9 @@ public class AbstractEDCStepsHelper {
 
 	@Value("${edc.hostname}${edc.managementpath:/data/v2}")
 	protected String providerHost;
+	
+	@Value("${edc.hostname}")
+	protected String providerHostWithoutDataPath;
 
 	@Value("${edc.consumer.protocol.path:/api/v1/dsp}")
 	protected String protocolPath;

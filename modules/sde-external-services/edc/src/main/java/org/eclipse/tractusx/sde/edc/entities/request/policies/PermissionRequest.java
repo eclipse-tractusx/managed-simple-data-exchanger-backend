@@ -20,8 +20,10 @@
 
 package org.eclipse.tractusx.sde.edc.entities.request.policies;
 
-import java.util.List;
+import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -35,22 +37,23 @@ import lombok.SneakyThrows;
 @AllArgsConstructor
 @Data
 @Builder
+@JsonInclude(Include.NON_NULL)
 public class PermissionRequest {
 
-    private String uid;
-    private String target;
-    private ActionRequest action;
-    private String assignee;
-    private String assigner;
-    private List<ConstraintRequest> constraints;
-    private List<ObligationRequest> duties;
-    @JsonProperty("edctype")
-    private String edcType;
+	@JsonProperty("odrl:target")
+	private String target;
 
-    @SneakyThrows
-    public String toJsonString() {
-        final ObjectMapper mapper = new ObjectMapper();
-        return mapper.writeValueAsString(this);
-    }
+	@JsonProperty("odrl:action")
+	@Builder.Default
+	private Map<String, String> action = Map.of("odrl:type", "USE");
+
+	@JsonProperty("odrl:constraint")
+	private Map<String, Object> constraint;
+
+	@SneakyThrows
+	public String toJsonString() {
+		final ObjectMapper mapper = new ObjectMapper();
+		return mapper.writeValueAsString(this);
+	}
 
 }

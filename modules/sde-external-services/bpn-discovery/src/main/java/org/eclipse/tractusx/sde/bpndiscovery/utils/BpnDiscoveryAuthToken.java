@@ -23,6 +23,7 @@ import java.net.URI;
 import java.util.Base64;
 
 import org.eclipse.tractusx.sde.bpndiscovery.api.IBpndiscoveryExternalServiceApi;
+import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -37,49 +38,50 @@ import lombok.SneakyThrows;
 @Component
 @RequiredArgsConstructor
 public class BpnDiscoveryAuthToken {
-	
+
 	private final IBpndiscoveryExternalServiceApi bpndiscoveryExternalServiceApi;
-	
+
 	private static final String CLIENT_ID = "client_id";
 	private static final String CLIENT_SECRET = "client_secret";
 	private static final String GRANT_TYPE = "grant_type";
-	
+
 	@Value(value = "${discovery.authentication.url}")
 	private URI authTokenUrl;
-	
+
 	@Value(value = "${discovery.clientId}")
 	private String clientId;
-	
+
 	@Value(value = "${discovery.clientSecret}")
 	private String clientSecret;
-	
+
 	@Value(value = "${discovery.grantType}")
 	private String grantType;
-	
+
 	private String accessToken;
-	
-	
+
 	@SneakyThrows
 	public String getToken() {
-		
-		if (accessToken != null && isTokenValid()) {
-			return "Bearer " + accessToken;
-		}
-		
-		MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-		body.add(GRANT_TYPE, grantType);
-		body.add(CLIENT_ID, clientId);
-		body.add(CLIENT_SECRET, clientSecret);
-		
-		var resultBody = bpndiscoveryExternalServiceApi.getBpnDiscoveryAuthToken(authTokenUrl, body);
+		try {
+			if (accessToken != null && isTokenValid()) {
+				return "Bearer " + accessToken;
+			}
 
-		if (resultBody != null) {
-			accessToken = resultBody.getAccessToken();
-			return "Bearer "+accessToken;
+			MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+			body.add(GRANT_TYPE, grantType);
+			body.add(CLIENT_ID, clientId);
+			body.add(CLIENT_SECRET, clientSecret);
+
+			var resultBody = bpndiscoveryExternalServiceApi.getBpnDiscoveryAuthToken(authTokenUrl, body);
+
+			if (resultBody != null) {
+				accessToken = resultBody.getAccessToken();
+				return "Bearer " + accessToken;
+			}
+		} catch (Exception e) {
+			throw new ServiceException("Unable to process auth request: " + authTokenUrl + ", " + e.getMessage());
 		}
 		return null;
 	}
-
 
 	@SneakyThrows
 	private boolean isTokenValid() {

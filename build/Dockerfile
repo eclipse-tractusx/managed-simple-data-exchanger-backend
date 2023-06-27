@@ -37,3 +37,4 @@ EXPOSE 8080
 
 CMD ["java", "-jar", "./app.jar","--spring.config.location=file:/app/configuration.properties"]
 
+

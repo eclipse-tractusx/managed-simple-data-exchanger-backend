@@ -21,7 +21,9 @@
 
 package org.eclipse.tractusx.sde.edc.entities.request.asset;
 
+import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AllArgsConstructor;
@@ -36,12 +38,16 @@ import lombok.SneakyThrows;
 @Builder
 public class AssetEntryRequest {
 
-    private AssetRequest asset;
-    private DataAddressRequest dataAddress;
+	@JsonProperty("@context")
+	@Builder.Default
+	private Map<String,String> context = Map.of();
 
-    @SneakyThrows
-    public String toJsonString() {
-        final ObjectMapper mapper = new ObjectMapper();
-        return mapper.writeValueAsString(this);
-    }
+	private AssetRequest asset;
+	private DataAddressRequest dataAddress;
+
+	@SneakyThrows
+	public String toJsonString() {
+		final ObjectMapper mapper = new ObjectMapper();
+		return mapper.writeValueAsString(this);
+	}
 }

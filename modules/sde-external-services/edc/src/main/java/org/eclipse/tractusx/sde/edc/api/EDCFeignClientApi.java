@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(value = "EDCFeignClientApi", url = "${edc.hostname}/${edc.managementpath:data/v2}", configuration = EDCDataProviderConfiguration.class)
+@FeignClient(value = "EDCFeignClientApi", url = "${edc.hostname}${edc.managementpath:/data/v2}", configuration = EDCDataProviderConfiguration.class)
 public interface EDCFeignClientApi {
 
 	@GetMapping(path = "/assets/{id}")

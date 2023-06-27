@@ -26,31 +26,16 @@ import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.contractdefinition.ContractDefinitionRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyDefinitionRequest;
 import org.eclipse.tractusx.sde.edc.exceptions.EDCGatewayException;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class EDCGateway {
-
-	@Value(value = "${edc.hostname}")
-	private String edcHostname;
-
-	@Value(value = "${edc.managementpath:/data/v2}")
-	private String edcManagementPath;
-
-	@Value(value = "${edc.apiKeyHeader}")
-	private String apiKeyHeader;
-
-	@Value(value = "${edc.apiKey}")
-	private String apiKey;
 
 	private final EDCFeignClientApi edcFeignClientApi;
 

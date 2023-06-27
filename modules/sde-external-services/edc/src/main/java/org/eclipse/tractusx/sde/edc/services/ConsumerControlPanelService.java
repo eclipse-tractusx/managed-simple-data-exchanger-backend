@@ -72,8 +72,9 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
 		List<QueryDataOfferModel> queryOfferResponse = new ArrayList<>();
 
-		JsonNode contractOfferCatalog = contractOfferCatalogApiProxy.getContractOffersCatalog(
-				contractOfferRequestFactory.getContractOfferRequest(providerUrl, limit, offset, filterExpression));
+		JsonNode contractOfferCatalog = contractOfferCatalogApiProxy
+				.getContractOffersCatalog(contractOfferRequestFactory
+						.getContractOfferRequest(providerUrl + protocolPath, limit, offset, filterExpression));
 
 		JsonNode jOffer = contractOfferCatalog.get("dcat:dataset");
 		if (jOffer.isArray()) {

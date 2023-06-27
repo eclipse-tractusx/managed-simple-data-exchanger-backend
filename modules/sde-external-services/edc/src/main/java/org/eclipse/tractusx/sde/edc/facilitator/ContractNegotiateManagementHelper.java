@@ -166,9 +166,9 @@ public class ContractNegotiateManagementHelper extends AbstractEDCStepsHelper {
 
 		Map<String, Object> res = new HashMap<>();
 		if (UtilityFunctions.checkTypeOfConnector(type))
-			res.put("connector", providerHost);
+			res.put("connector", providerHostWithoutDataPath);
 		else
-			res.put("connector", consumerHost);
+			res.put("connector", consumerHostWithoutDataPath);
 
 		res.put("contracts", contractAgreementResponses);
 		return res;

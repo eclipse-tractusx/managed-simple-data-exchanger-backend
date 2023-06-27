@@ -24,17 +24,20 @@ public class ContractOfferRequestFactory {
 		else
 			filterExpression = "";
 
-		String jsonString = String.format("""
-					      {
-				    "@context": {},
-				    "protocol": "dataspace-protocol-http",
-				    "providerUrl": "%s",
-				    "querySpec": {
-				        "offset": %s,
-				        "limit": %s
-				        %s
-				    }
-				}""", providerUrl + edcProviderProtocolPath, offset, limit, filterExpression);
+		String formatSchema = """
+				{
+				 "@context": {},
+				 "protocol": "dataspace-protocol-http",
+				 "providerUrl": "%s",
+				 "querySpec": {
+				 "offset": %s,
+				 "limit": %s
+				 %s
+				 }
+				}
+				""";
+		String jsonString = String.format(formatSchema, providerUrl + edcProviderProtocolPath, offset, limit,
+				filterExpression);
 
 		return (ObjectNode) new ObjectMapper().readTree(jsonString);
 	}

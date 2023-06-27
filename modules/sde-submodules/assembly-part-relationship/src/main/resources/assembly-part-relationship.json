@@ -2,12 +2,12 @@
 	"$schema": "https://json-schema.org/draft/2019-09/schema",
 	"$id": "http://example.com/example.json",
 	"type": "array",
-	"id": "assemblypartrelationship",
-	"idShort": "assemblyPartRelationship",
-	"version": "1.1.1",
-	"semantic_id": "urn:bamm:io.catenax.assembly_part_relationship:1.1.1#AssemblyPartRelationship",
-	"title": "Assembly Part Relationship",
-	"shortDescription": "BoM AsBuilt - Submodel AssemblyPartRelationship",
+	"id": "singlelevelbomasbuilt",
+	"idShort": "singleLevelBoMAsBuilt",
+	"version": "1.0.0",
+	"semantic_id": "urn:bamm:io.catenax.single_level_bom_as_built:1.0.0#SingleLevelBomAsBuilt",
+	"title": "Single Level BoM as Built",
+	"shortDescription": "BoM AsBuilt - Submodel SingleLevelBoMAsBuilt",
 	"description": "The aspect provides the child parts (one structural level down) which the given object assembles.",
 	"items": {
 		"type": "object",
@@ -17,7 +17,6 @@
 			"part_instance_id",
 			"manufacturer_part_id",
 			"manufacturer_id",
-			"lifecycle_context",
 			"quantity_number",
 			"measurement_unit",
 			"created_on"
@@ -146,25 +145,6 @@
 					"Value"
 				]
 			},
-			"lifecycle_context": {
-				"type": [
-					"string"
-				],
-				"enum": [
-					"AsRequired",
-					"AsDesigned",
-					"AsPlanned",
-					"AsBuilt",
-					"AsMaintained",
-					"AsRecycled"
-				],
-				"minLength": 1,
-				"title": "Lifecycle Context",
-				"description": "The lifecycle context in which the child part was assembled into the parent part.",
-				"examples": [
-					"lifecycle"
-				]
-			},
 			"quantity_number": {
 				"type": [
 					"number"
@@ -224,7 +204,6 @@
 			"manufacturer_id": "BPNL00000000001",
 			"optional_identifier_key": "",
 			"optional_identifier_value": "",
-			"lifecycle_context": "AsRequired",
 			"quantity_number": 2.5,
 			"measurement_unit": "litre",
 			"created_on": "2022-02-03T14:48:54.709Z",

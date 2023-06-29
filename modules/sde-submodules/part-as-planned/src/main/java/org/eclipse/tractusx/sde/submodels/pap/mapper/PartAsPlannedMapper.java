@@ -37,11 +37,11 @@ import lombok.SneakyThrows;
 @Mapper(componentModel = "spring")
 public abstract class PartAsPlannedMapper {
 
-	ObjectMapper mapper=new ObjectMapper();
-	
+	ObjectMapper mapper = new ObjectMapper();
+
 	@Mapping(target = "rowNumber", ignore = true)
 	@Mapping(target = "subModelId", ignore = true)
-	public abstract PartAsPlanned mapFrom( PartAsPlannedEntity partAsPlannedEntity);
+	public abstract PartAsPlanned mapFrom(PartAsPlannedEntity partAsPlannedEntity);
 
 	public abstract PartAsPlannedEntity mapFrom(PartAsPlanned partAsPlanned);
 
@@ -49,7 +49,7 @@ public abstract class PartAsPlannedMapper {
 	public PartAsPlanned mapFrom(ObjectNode partAsPlanned) {
 		return mapper.readValue(partAsPlanned.toString(), PartAsPlanned.class);
 	}
-	
+
 	public PartAsPlannedEntity mapforEntity(JsonObject partAsPlannedAspect) {
 		return new Gson().fromJson(partAsPlannedAspect, PartAsPlannedEntity.class);
 	}
@@ -65,20 +65,13 @@ public abstract class PartAsPlannedMapper {
 		}
 
 		PartTypeInformation partTypeInformation = PartTypeInformation.builder()
-				.manufacturerPartId(entity.getManufacturerPartId())
-				.classification(entity.getClassification())
-				.nameAtManufacturer(entity.getNameAtManufacturer())
-				.build();
-		
-		ValidityPeriod validityPeriod = ValidityPeriod.builder()
-				.validFrom(entity.getValidFrom())
-				.validTo(entity.getValidTo())
-				.build();
+				.manufacturerPartId(entity.getManufacturerPartId()).classification(entity.getClassification())
+				.nameAtManufacturer(entity.getNameAtManufacturer()).build();
 
-		return new Gson().toJsonTree(PartAsPlannedAspectResponse.builder()
-				.partTypeInformation(partTypeInformation)
-				.validityPeriod(validityPeriod)
-				.catenaXId(entity.getUuid())
-				.build()).getAsJsonObject();
+		ValidityPeriod validityPeriod = ValidityPeriod.builder().validFrom(entity.getValidFrom())
+				.validTo(entity.getValidTo()).build();
+
+		return new Gson().toJsonTree(PartAsPlannedAspectResponse.builder().partTypeInformation(partTypeInformation)
+				.validityPeriod(validityPeriod).catenaXId(entity.getUuid()).build()).getAsJsonObject();
 	}
 }

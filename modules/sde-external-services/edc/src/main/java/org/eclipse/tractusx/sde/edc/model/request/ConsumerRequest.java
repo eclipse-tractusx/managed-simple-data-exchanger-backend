@@ -50,7 +50,6 @@ public class ConsumerRequest {
     @NotEmpty
     private List<OfferRequest> offers;
     @NonNull
-    @NotEmpty
     private List<UsagePolicies> policies;
 
 }

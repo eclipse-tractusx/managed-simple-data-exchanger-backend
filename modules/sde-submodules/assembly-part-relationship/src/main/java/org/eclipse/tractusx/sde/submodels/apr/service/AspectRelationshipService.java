@@ -25,7 +25,7 @@ import java.util.Optional;
 
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
-import org.eclipse.tractusx.sde.digitaltwins.facilitator.DeleteDigitalTwinsFacilitator;
+import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsFacilitator;
 import org.eclipse.tractusx.sde.edc.facilitator.DeleteEDCFacilitator;
 import org.eclipse.tractusx.sde.submodels.apr.entity.AspectRelationshipEntity;
 import org.eclipse.tractusx.sde.submodels.apr.mapper.AspectRelationshipMapper;
@@ -49,7 +49,7 @@ public class AspectRelationshipService {
 
 	private final DeleteEDCFacilitator deleteEDCFacilitator;
 
-	private final DeleteDigitalTwinsFacilitator deleteDigitalTwinsFacilitator;
+	private final DigitalTwinsFacilitator deleteDigitalTwinsFacilitator;
 
 	public List<JsonObject> readCreatedTwinsforDelete(String refProcessId) {
 
@@ -70,7 +70,8 @@ public class AspectRelationshipService {
 
 		deleteEDCAsset(aspectRelationshipEntity);
 
-		deleteDigitalTwinsFacilitator.deleteDigitalTwinsById(aspectRelationshipEntity.getShellId(),aspectRelationshipEntity.getSubModelId());
+		deleteDigitalTwinsFacilitator.deleteSubmodelfromShellById(aspectRelationshipEntity.getShellId(),
+				aspectRelationshipEntity.getSubModelId());
 
 		saveAspectRelationshipWithDeleted(aspectRelationshipEntity);
 	}
@@ -112,7 +113,8 @@ public class AspectRelationshipService {
 
 	public AspectRelationshipEntity readEntityBySubModelId(String subModelId) {
 		return Optional.ofNullable(aspectRelationshipRepository.findTop1BySubModelId(subModelId))
-				.orElseThrow(() -> new NoDataFoundException("No data found for subModelId in SDE for reference detele in update case:" + subModelId));
+				.orElseThrow(() -> new NoDataFoundException(
+						"No data found for subModelId in SDE for reference detele in update case:" + subModelId));
 	}
 
 }

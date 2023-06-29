@@ -17,7 +17,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-package org.eclipse.tractusx.sde.bpndiscovery.model.response;
+package org.eclipse.tractusx.sde.common.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

@@ -6,7 +6,7 @@
 	"idShort": "singleLevelBoMAsBuilt",
 	"version": "1.0.0",
 	"semantic_id": "urn:bamm:io.catenax.single_level_bom_as_built:1.0.0#SingleLevelBomAsBuilt",
-	"title": "Single Level BoM as Built",
+	"title": "Single Level Bom AsBuilt",
 	"shortDescription": "BoM AsBuilt - Submodel SingleLevelBoMAsBuilt",
 	"description": "The aspect provides the child parts (one structural level down) which the given object assembles.",
 	"items": {

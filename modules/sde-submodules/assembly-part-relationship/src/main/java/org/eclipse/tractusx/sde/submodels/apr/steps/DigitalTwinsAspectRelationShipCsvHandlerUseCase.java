@@ -94,10 +94,10 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 			logDebug(String.format("No submodels for '%s'", shellId));
 			createSubModelSteps(aspectRelationShip, shellId, createSubModelRequest);
 		} else {
-			if (!foundSubmodel.getIdentification().equals(createSubModelRequest.getIdentification())) {
-				digitalTwinfacilitaor.deleteSubmodelfromShellById(shellId, foundSubmodel.getIdentification());
+			if (!foundSubmodel.getId().equals(createSubModelRequest.getIdentification())) {
+				digitalTwinfacilitaor.deleteSubmodelfromShellById(shellId, foundSubmodel.getId());
 				createSubModelSteps(aspectRelationShip, shellId, createSubModelRequest);
-				aspectRelationShip.setOldSubmodelIdforUpdateCase(foundSubmodel.getIdentification());
+				aspectRelationShip.setOldSubmodelIdforUpdateCase(foundSubmodel.getId());
 			}
 			aspectRelationShip.setUpdated(CommonConstants.UPDATED_Y);
 			logDebug("Complete Digital Twins Update Update Digital Twins");
@@ -133,13 +133,13 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 	private SubModelResponse findMatchingSubmodel(AspectRelationship aspectRelationShip, SubModelResponse foundSubmodel,
 			List<String> submodelExistinceCount, ShellDescriptorResponse shellDescriptorResponse) {
 		aspectRelationShip.setShellId(shellDescriptorResponse.getIdentification());
-		aspectRelationShip.setParentUuid(shellDescriptorResponse.getGlobalAssetId().getValue().get(0));
+		aspectRelationShip.setParentUuid(shellDescriptorResponse.getGlobalAssetId());
 
 		for (SubModelResponse subModelResponse : shellDescriptorResponse.getSubmodelDescriptors()) {
 
 			if (subModelResponse != null && getIdShortOfModel().equals(subModelResponse.getIdShort())) {
-				aspectRelationShip.setSubModelId(subModelResponse.getIdentification());
-				aspectRelationShip.setChildUuid(subModelResponse.getIdentification());
+				aspectRelationShip.setSubModelId(subModelResponse.getId());
+				aspectRelationShip.setChildUuid(subModelResponse.getId());
 				foundSubmodel = subModelResponse;
 				submodelExistinceCount.add(aspectRelationShip.getShellId());
 			}
@@ -215,7 +215,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 						.getShellDescriptorsWithSubmodelDetails(childshellIds);
 
 				for (ShellDescriptorResponse shellDescriptorResponse : shellDescriptorWithsubmodelDetails.getItems()) {
-					childUUID = shellDescriptorResponse.getGlobalAssetId().getValue().get(0);
+					childUUID = shellDescriptorResponse.getGlobalAssetId();
 				}
 			}
 

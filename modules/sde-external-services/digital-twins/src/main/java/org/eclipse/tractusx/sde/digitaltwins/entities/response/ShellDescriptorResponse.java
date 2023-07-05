@@ -23,9 +23,10 @@ package org.eclipse.tractusx.sde.digitaltwins.entities.response;
 
 import java.util.List;
 
-import org.eclipse.tractusx.sde.digitaltwins.entities.common.Description;
-import org.eclipse.tractusx.sde.digitaltwins.entities.common.GlobalAssetId;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.KeyValuePair;
+import org.eclipse.tractusx.sde.digitaltwins.entities.common.MultiLanguage;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -36,10 +37,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ShellDescriptorResponse {
 	private String idShort;
+	@JsonProperty("id")
 	private String identification;
-	private List<Description> description;
-	private GlobalAssetId globalAssetId;
+	private List<MultiLanguage> description;
+	private String globalAssetId;
 	private List<KeyValuePair> specificAssetIds;
-
 	private List<SubModelResponse> submodelDescriptors;
 }

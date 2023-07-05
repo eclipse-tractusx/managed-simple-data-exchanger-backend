@@ -48,26 +48,26 @@ public interface DigitalTwinsFeignClient {
 	@PostMapping
 	KeycloakJWTTokenResponse readAuthToken(URI url, @RequestBody MultiValueMap<String, Object> body);
 
-	@DeleteMapping(path = "/registry/shell-descriptors/{aasIdentifier}/submodel-descriptors/{submodelIdentifier}")
+	@DeleteMapping(path = "/shell-descriptors/{aasIdentifier}/submodel-descriptors/{submodelIdentifier}")
 	ResponseEntity<Object> deleteSubmodelfromShellById(URI url, @PathVariable("aasIdentifier") String shellId,
 			@PathVariable("submodelIdentifier") String submodelIdentifier,
 			@RequestHeader Map<String, String> requestHeader);
 
-	@PostMapping(path = "/registry/shell-descriptors/fetch")
+	@PostMapping(path = "/shell-descriptors/fetch")
 	SubmodelDescriptionListResponse getShellDescriptorsWithSubmodelDetails(URI url,
 			@RequestHeader Map<String, String> requestHeader, @RequestBody List<String> body);
 
-	@PostMapping(path = "/registry/shell-descriptors")
+	@PostMapping(path = "/shell-descriptors")
 	ResponseEntity<ShellDescriptorResponse> createShellDescriptor(URI url,
 			@RequestHeader Map<String, String> requestHeader, @RequestBody ShellDescriptorRequest request);
 
-	@PostMapping(path = "/registry/shell-descriptors/{aasIdentifier}/submodel-descriptors")
+	@PostMapping(path = "/shell-descriptors/{aasIdentifier}/submodel-descriptors")
 	ResponseEntity<String> createSubModel(URI url, @PathVariable("aasIdentifier") String shellId,
 			@RequestHeader Map<String, String> requestHeader, @RequestBody CreateSubModelRequest request);
 
-	@GetMapping(path = "/registry/shell-descriptors/{aasIdentifier}/submodel-descriptors")
+	@GetMapping(path = "/shell-descriptors/{aasIdentifier}/submodel-descriptors")
 	ResponseEntity<SubModelListResponse> getSubModels(URI digitalTwinsHost,
-			@PathVariable("aasIdentifier") String shellId, Map<String, String> headers);
+			@PathVariable("aasIdentifier") String shellId, @RequestHeader Map<String, String> headers);
 
 	@GetMapping(path = "/lookup/shells")
 	ResponseEntity<ShellLookupResponse> shellLookup(URI url, @RequestParam String assetIds,

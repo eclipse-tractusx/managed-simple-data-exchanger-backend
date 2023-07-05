@@ -21,6 +21,11 @@
 
 package org.eclipse.tractusx.sde.digitaltwins.entities.common;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,9 +35,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ProtocolInformation {
 
+	@JsonProperty("href")
     private String endpointAddress;
     private String endpointProtocol;
-    private String endpointProtocolVersion;
+    private List<String> endpointProtocolVersion;
 }

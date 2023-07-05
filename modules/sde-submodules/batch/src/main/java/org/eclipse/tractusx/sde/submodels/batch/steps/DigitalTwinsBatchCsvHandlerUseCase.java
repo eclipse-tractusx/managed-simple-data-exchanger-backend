@@ -20,15 +20,14 @@
 
 package org.eclipse.tractusx.sde.submodels.batch.steps;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseException;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
-import org.eclipse.tractusx.sde.digitaltwins.entities.common.KeyValuePair;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.CreateSubModelRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellDescriptorRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellLookupRequest;
@@ -73,7 +72,7 @@ public class DigitalTwinsBatchCsvHandlerUseCase extends Step {
 
 			logDebug(String.format("No shell id for '%s'", shellLookupRequest.toJsonString()));
 			ShellDescriptorRequest aasDescriptorRequest = digitalTwinsUtility
-					.getShellDescriptorRequest(getSpecificIds(batch), batch);
+					.getShellDescriptorRequest(getSpecificAssetIds(batch), batch);
 
 			ShellDescriptorResponse result = digitalTwinsFacilitator.createShellDescriptor(aasDescriptorRequest);
 			shellId = result.getIdentification();
@@ -91,10 +90,10 @@ public class DigitalTwinsBatchCsvHandlerUseCase extends Step {
 		SubModelListResponse subModelResponse = digitalTwinsFacilitator.getSubModels(shellId);
 		SubModelResponse foundSubmodel = null;
 		if (subModelResponse != null) {
-			foundSubmodel = subModelResponse.stream().filter(x -> getIdShortOfModel().equals(x.getIdShort()))
+			foundSubmodel = subModelResponse.getResult().stream().filter(x -> getIdShortOfModel().equals(x.getIdShort()))
 					.findFirst().orElse(null);
 			if (foundSubmodel != null)
-				batch.setSubModelId(foundSubmodel.getIdentification());
+				batch.setSubModelId(foundSubmodel.getId());
 		}
 
 		if (subModelResponse == null || foundSubmodel == null) {
@@ -112,27 +111,21 @@ public class DigitalTwinsBatchCsvHandlerUseCase extends Step {
 	}
 
 	private ShellLookupRequest getShellLookupRequest(Batch batch) {
-		ShellLookupRequest shellLookupRequest = new ShellLookupRequest();
-		shellLookupRequest.addLocalIdentifier(CommonConstants.PART_INSTANCE_ID, batch.getPartInstanceId());
-		shellLookupRequest.addLocalIdentifier(CommonConstants.MANUFACTURER_PART_ID, batch.getManufacturerPartId());
-		shellLookupRequest.addLocalIdentifier(CommonConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId());
 
-		if (StringUtils.isNotBlank(batch.getBatchId())) {
-			shellLookupRequest.addLocalIdentifier(BatchConstants.BATCH_ID, batch.getBatchId());
-		}
+		ShellLookupRequest shellLookupRequest = new ShellLookupRequest();
+		getSpecificAssetIds(batch).entrySet().stream()
+				.forEach(entry -> shellLookupRequest.addLocalIdentifier(entry.getKey(), entry.getValue()));
 
 		return shellLookupRequest;
 	}
 
-	private List<KeyValuePair> getSpecificIds(Batch batch) {
-		List<KeyValuePair> specificIdentifiers = new ArrayList<>();
-		specificIdentifiers.add(new KeyValuePair(CommonConstants.PART_INSTANCE_ID, batch.getPartInstanceId()));
-		specificIdentifiers.add(new KeyValuePair(CommonConstants.MANUFACTURER_PART_ID, batch.getManufacturerPartId()));
-		specificIdentifiers
-				.add(new KeyValuePair(CommonConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId()));
-
+	private Map<String, String> getSpecificAssetIds(Batch batch) {
+		Map<String, String> specificIdentifiers = new HashMap<>();
+		specificIdentifiers.put(CommonConstants.PART_INSTANCE_ID, batch.getPartInstanceId());
+		specificIdentifiers.put(CommonConstants.MANUFACTURER_PART_ID, batch.getManufacturerPartId());
+		specificIdentifiers.put(CommonConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId());
 		if (StringUtils.isNotBlank(batch.getBatchId())) {
-			specificIdentifiers.add(new KeyValuePair(BatchConstants.BATCH_ID, batch.getBatchId()));
+			specificIdentifiers.put(BatchConstants.BATCH_ID, batch.getBatchId());
 		}
 
 		return specificIdentifiers;

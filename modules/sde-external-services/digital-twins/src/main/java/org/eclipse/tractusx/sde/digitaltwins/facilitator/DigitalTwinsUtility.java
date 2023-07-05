@@ -21,11 +21,11 @@ package org.eclipse.tractusx.sde.digitaltwins.facilitator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.utils.UUIdGenerator;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.Endpoint;
-import org.eclipse.tractusx.sde.digitaltwins.entities.common.GlobalAssetId;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.KeyValuePair;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.ProtocolInformation;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.SemanticId;
@@ -54,29 +54,24 @@ public class DigitalTwinsUtility {
 	ObjectMapper mapper = new ObjectMapper();
 
 	@SneakyThrows
-	public ShellDescriptorRequest getShellDescriptorRequest(List<KeyValuePair> specificIdentifiers, Object object) {
+	public ShellDescriptorRequest getShellDescriptorRequest(Map<String, String> specificIdentifiers, Object object) {
 
 		JsonNode jsonNode = mapper.convertValue(object, ObjectNode.class);
-		
-		List<String> values = new ArrayList<>();
-		values.add(getFieldFromJsonNode(jsonNode, "uuid"));
-		GlobalAssetId globalIdentifier = new GlobalAssetId(values);
 
 		return ShellDescriptorRequest.builder()
 				.idShort(String.format("%s_%s_%s", getFieldFromJsonNode(jsonNode, "name_at_manufacturer"),
 						manufacturerId, getFieldFromJsonNode(jsonNode, "manufacturer_part_id")))
-				.globalAssetId(globalIdentifier)
-				.specificAssetIds(specificIdentifiers)
-				.identification(UUIdGenerator.getUrnUuid())
+				.globalAssetId(getFieldFromJsonNode(jsonNode, "uuid"))
+				.specificAssetIds(getSpecificAssetIds(specificIdentifiers))
+				.description(List.of())
+				.id(UUIdGenerator.getUrnUuid())
 				.build();
 	}
 
 	@SneakyThrows
 	public CreateSubModelRequest getCreateSubModelRequest(String shellId, String sematicId, String idShortofModel) {
-		ArrayList<String> value = new ArrayList<>();
-		value.add(sematicId);
 		String identification = UUIdGenerator.getUrnUuid();
-		SemanticId semanticId = new SemanticId(value);
+		SemanticId semanticId = new SemanticId(sematicId);
 
 		List<Endpoint> endpoints = prepareDtEndpoint(shellId, identification);
 
@@ -86,9 +81,7 @@ public class DigitalTwinsUtility {
 	
 	@SneakyThrows
 	public CreateSubModelRequest getCreateSubModelRequestForChild(String shellId, String sematicId, String idShortofModel, String identification) {
-		ArrayList<String> value = new ArrayList<>();
-		value.add(sematicId);
-		SemanticId semanticId = new SemanticId(value);
+		SemanticId semanticId = new SemanticId(sematicId);
 
 		List<Endpoint> endpoints = prepareDtEndpoint(shellId, identification);
 
@@ -103,9 +96,18 @@ public class DigitalTwinsUtility {
 						.endpointAddress(edcEndpoint + "/" + encodedUrl(shellId + "-" + submodelIdentification)
 								+ CommonConstants.SUBMODEL_CONTEXT_URL)
 						.endpointProtocol(CommonConstants.ENDPOINT_PROTOCOL)
-						.endpointProtocolVersion(CommonConstants.ENDPOINT_PROTOCOL_VERSION).build())
+						.endpointProtocolVersion(List.of(CommonConstants.ENDPOINT_PROTOCOL_VERSION)).build())
 				.build());
 		return endpoints;
+	}
+	
+	private ArrayList<KeyValuePair> getSpecificAssetIds(Map<String, String> specificAssetIds) {
+
+		ArrayList<KeyValuePair> specificIdentifiers = new ArrayList<>();
+
+		specificAssetIds.entrySet().stream()
+				.forEach(entry -> specificIdentifiers.add(new KeyValuePair(entry.getKey(), entry.getValue())));
+		return specificIdentifiers;
 	}
 
 	private String encodedUrl(String format) {

@@ -19,14 +19,13 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.submodels.psiap.steps;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseException;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
-import org.eclipse.tractusx.sde.digitaltwins.entities.common.KeyValuePair;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.CreateSubModelRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellDescriptorRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellLookupRequest;
@@ -73,7 +72,7 @@ public class DigitalTwinsPartSiteInformationAsPlannedHandlerStep extends Step {
 			logDebug(String.format("No shell id for '%s'", shellLookupRequest.toJsonString()));
 			
 			ShellDescriptorRequest aasDescriptorRequest = digitalTwinsUtility.getShellDescriptorRequest(
-					getSpecificIds(partSiteInformationAsPlannedAspect), partSiteInformationAsPlannedAspect);
+					getSpecificAssetIds(partSiteInformationAsPlannedAspect), partSiteInformationAsPlannedAspect);
 			
 			ShellDescriptorResponse result = digitalTwinsFacilitator.createShellDescriptor(aasDescriptorRequest);
 			shellId = result.getIdentification();
@@ -91,10 +90,10 @@ public class DigitalTwinsPartSiteInformationAsPlannedHandlerStep extends Step {
 		SubModelListResponse subModelResponse = digitalTwinsFacilitator.getSubModels(shellId);
 		SubModelResponse foundSubmodel = null;
 		if (subModelResponse != null) {
-			foundSubmodel = subModelResponse.stream().filter(x -> getIdShortOfModel().equals(x.getIdShort()))
+			foundSubmodel = subModelResponse.getResult().stream().filter(x -> getIdShortOfModel().equals(x.getIdShort()))
 					.findFirst().orElse(null);
 			if (foundSubmodel != null)
-				partSiteInformationAsPlannedAspect.setSubModelId(foundSubmodel.getIdentification());
+				partSiteInformationAsPlannedAspect.setSubModelId(foundSubmodel.getId());
 		}
 
 		if (subModelResponse == null || foundSubmodel == null) {
@@ -110,26 +109,21 @@ public class DigitalTwinsPartSiteInformationAsPlannedHandlerStep extends Step {
 
 		return partSiteInformationAsPlannedAspect;
 	}
-
+	
 	private ShellLookupRequest getShellLookupRequest(PartSiteInformationAsPlanned partSiteInformationAsPlannedAspect) {
 
 		ShellLookupRequest shellLookupRequest = new ShellLookupRequest();
-		shellLookupRequest.addLocalIdentifier(CommonConstants.MANUFACTURER_PART_ID,
-				partSiteInformationAsPlannedAspect.getManufacturerPartId());
-		shellLookupRequest.addLocalIdentifier(CommonConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId());
-		shellLookupRequest.addLocalIdentifier(CommonConstants.ASSET_LIFECYCLE_PHASE, CommonConstants.AS_PLANNED);
+		getSpecificAssetIds(partSiteInformationAsPlannedAspect).entrySet().stream()
+				.forEach(entry -> shellLookupRequest.addLocalIdentifier(entry.getKey(), entry.getValue()));
 
 		return shellLookupRequest;
 	}
 
-	private List<KeyValuePair> getSpecificIds(PartSiteInformationAsPlanned partSiteInformationAsPlannedAspect) {
-
-		List<KeyValuePair> specificIdentifiers = new ArrayList<>();
-		specificIdentifiers.add(new KeyValuePair(CommonConstants.MANUFACTURER_PART_ID,
-				partSiteInformationAsPlannedAspect.getManufacturerPartId()));
-		specificIdentifiers
-				.add(new KeyValuePair(CommonConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId()));
-		specificIdentifiers.add(new KeyValuePair(CommonConstants.ASSET_LIFECYCLE_PHASE, CommonConstants.AS_PLANNED));
+	private Map<String, String> getSpecificAssetIds(PartSiteInformationAsPlanned partSiteInformationAsPlannedAspect) {
+		Map<String, String> specificIdentifiers = new HashMap<>();
+		specificIdentifiers.put(CommonConstants.MANUFACTURER_PART_ID, partSiteInformationAsPlannedAspect.getManufacturerPartId());
+		specificIdentifiers.put(CommonConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId());
+		specificIdentifiers.put(CommonConstants.ASSET_LIFECYCLE_PHASE, CommonConstants.AS_PLANNED);
 
 		return specificIdentifiers;
 	}

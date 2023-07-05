@@ -44,8 +44,7 @@ public class CreateSubModelRequest {
 
     private List<MultiLanguage> description;
     private String idShort;
-    @JsonProperty("id")
-    private String identification;
+    private String id;
     private SemanticId semanticId;
     private List<Endpoint> endpoints;
 

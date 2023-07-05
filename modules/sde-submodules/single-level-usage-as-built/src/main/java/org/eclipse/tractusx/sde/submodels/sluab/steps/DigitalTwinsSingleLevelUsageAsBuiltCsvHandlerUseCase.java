@@ -102,7 +102,7 @@ public class DigitalTwinsSingleLevelUsageAsBuiltCsvHandlerUseCase extends Step {
 					aspectSingleLevelUsageAsBuilt.getShellId(), getsemanticIdOfModel(), getIdShortOfModel());
 
 			digitalTwinsFacilitator.createSubModel(shellId, createSubModelRequest);
-			aspectSingleLevelUsageAsBuilt.setSubModelId(createSubModelRequest.getIdentification());
+			aspectSingleLevelUsageAsBuilt.setSubModelId(createSubModelRequest.getId());
 		} else {
 			aspectSingleLevelUsageAsBuilt.setUpdated(CommonConstants.UPDATED_Y);
 			logDebug("Complete Digital Twins Update Update Digital Twins");

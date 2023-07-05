@@ -98,7 +98,7 @@ public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 			CreateSubModelRequest createSubModelRequest = digitalTwinsUtility.getCreateSubModelRequest(
 					partAsPlannedAspect.getShellId(), getsemanticIdOfModel(), getIdShortOfModel());
 			digitalTwinsFacilitator.createSubModel(shellId, createSubModelRequest);
-			partAsPlannedAspect.setSubModelId(createSubModelRequest.getIdentification());
+			partAsPlannedAspect.setSubModelId(createSubModelRequest.getId());
 		} else {
 			partAsPlannedAspect.setUpdated(CommonConstants.UPDATED_Y);
 			logDebug("Complete Digital Twins Update Update Digital Twins");

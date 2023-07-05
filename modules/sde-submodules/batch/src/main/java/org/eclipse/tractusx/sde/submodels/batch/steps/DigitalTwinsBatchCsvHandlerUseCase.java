@@ -101,7 +101,7 @@ public class DigitalTwinsBatchCsvHandlerUseCase extends Step {
 			CreateSubModelRequest createSubModelRequest = digitalTwinsUtility
 					.getCreateSubModelRequest(batch.getShellId(), getsemanticIdOfModel(), getIdShortOfModel());
 			digitalTwinsFacilitator.createSubModel(shellId, createSubModelRequest);
-			batch.setSubModelId(createSubModelRequest.getIdentification());
+			batch.setSubModelId(createSubModelRequest.getId());
 		} else {
 			batch.setUpdated(CommonConstants.UPDATED_Y);
 			logDebug("Complete Digital Twins Update Update Digital Twins");

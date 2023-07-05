@@ -94,7 +94,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 			logDebug(String.format("No submodels for '%s'", shellId));
 			createSubModelSteps(aspectRelationShip, shellId, createSubModelRequest);
 		} else {
-			if (!foundSubmodel.getId().equals(createSubModelRequest.getIdentification())) {
+			if (!foundSubmodel.getId().equals(createSubModelRequest.getId())) {
 				digitalTwinfacilitaor.deleteSubmodelfromShellById(shellId, foundSubmodel.getId());
 				createSubModelSteps(aspectRelationShip, shellId, createSubModelRequest);
 				aspectRelationShip.setOldSubmodelIdforUpdateCase(foundSubmodel.getId());
@@ -150,8 +150,8 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 	private void createSubModelSteps(AspectRelationship aspectRelationShip, String shellId,
 			CreateSubModelRequest createSubModelRequest) {
 		digitalTwinfacilitaor.createSubModel(shellId, createSubModelRequest);
-		aspectRelationShip.setSubModelId(createSubModelRequest.getIdentification());
-		aspectRelationShip.setChildUuid(createSubModelRequest.getIdentification());
+		aspectRelationShip.setSubModelId(createSubModelRequest.getId());
+		aspectRelationShip.setChildUuid(createSubModelRequest.getId());
 	}
 
 	private ShellLookupRequest getShellLookupRequest(AspectRelationship aspectRelationShip) {

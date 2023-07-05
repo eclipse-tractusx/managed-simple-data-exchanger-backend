@@ -103,7 +103,7 @@ public class DigitalTwinsSingleLevelBoMAsPlannedHandlerStep extends Step {
 					singleLevelBoMAsPlannedAspect.getShellId(), getsemanticIdOfModel(), getIdShortOfModel());
 
 			digitalTwinsFacilitator.createSubModel(shellId, createSubModelRequest);
-			singleLevelBoMAsPlannedAspect.setSubModelId(createSubModelRequest.getIdentification());
+			singleLevelBoMAsPlannedAspect.setSubModelId(createSubModelRequest.getId());
 		} else {
 			singleLevelBoMAsPlannedAspect.setUpdated(CommonConstants.UPDATED_Y);
 			logDebug("Complete Digital Twins Update Update Digital Twins");

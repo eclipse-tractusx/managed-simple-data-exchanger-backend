@@ -99,7 +99,7 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends Step {
 			CreateSubModelRequest createSubModelRequest = digitalTwinsUtility
 					.getCreateSubModelRequest(aspect.getShellId(), getsemanticIdOfModel(), getIdShortOfModel());
 			digitalTwinsFacilitator.createSubModel(shellId, createSubModelRequest);
-			aspect.setSubModelId(createSubModelRequest.getIdentification());
+			aspect.setSubModelId(createSubModelRequest.getId());
 		} else {
 			aspect.setUpdated(CommonConstants.UPDATED_Y);
 			logDebug("Complete Digital Twins Update Update Digital Twins");

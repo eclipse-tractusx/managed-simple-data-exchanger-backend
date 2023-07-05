@@ -27,6 +27,7 @@ import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.utils.UUIdGenerator;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.Endpoint;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.KeyValuePair;
+import org.eclipse.tractusx.sde.digitaltwins.entities.common.Keys;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.ProtocolInformation;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.SemanticId;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.CreateSubModelRequest;
@@ -71,32 +72,52 @@ public class DigitalTwinsUtility {
 	@SneakyThrows
 	public CreateSubModelRequest getCreateSubModelRequest(String shellId, String sematicId, String idShortofModel) {
 		String identification = UUIdGenerator.getUrnUuid();
-		SemanticId semanticId = new SemanticId(sematicId);
+		
+		SemanticId semanticId = SemanticId.builder()
+				.type(CommonConstants.EXTERNAL_REFERENCE)
+				.keys(List.of(new Keys(CommonConstants.GLOBAL_REFERENCE,sematicId)))
+				.build();
 
 		List<Endpoint> endpoints = prepareDtEndpoint(shellId, identification);
 
-		return CreateSubModelRequest.builder().idShort(idShortofModel).identification(identification)
-				.semanticId(semanticId).endpoints(endpoints).build();
+		return CreateSubModelRequest.builder()
+				.id(identification)
+				.idShort(idShortofModel)
+				.semanticId(semanticId)
+				.endpoints(endpoints)
+				.build();
 	}
 	
 	@SneakyThrows
 	public CreateSubModelRequest getCreateSubModelRequestForChild(String shellId, String sematicId, String idShortofModel, String identification) {
-		SemanticId semanticId = new SemanticId(sematicId);
+		
+		SemanticId semanticId = SemanticId.builder()
+				.type(CommonConstants.EXTERNAL_REFERENCE)
+				.keys(List.of(new Keys(CommonConstants.GLOBAL_REFERENCE,sematicId)))
+				.build();
 
 		List<Endpoint> endpoints = prepareDtEndpoint(shellId, identification);
 
-		return CreateSubModelRequest.builder().idShort(idShortofModel).identification(identification)
-				.semanticId(semanticId).endpoints(endpoints).build();
+		return CreateSubModelRequest.builder()
+				.idShort(idShortofModel)
+				.id(identification)
+				.semanticId(semanticId)
+				.endpoints(endpoints)
+				.build();
 	}
 
 	public List<Endpoint> prepareDtEndpoint(String shellId, String submodelIdentification) {
 		List<Endpoint> endpoints = new ArrayList<>();
-		endpoints.add(Endpoint.builder().endpointInterface(CommonConstants.INTERFACE_EDC)
+		endpoints.add(Endpoint.builder()
+				.endpointInterface(CommonConstants.INTERFACE)
 				.protocolInformation(ProtocolInformation.builder()
-						.endpointAddress(edcEndpoint + "/" + encodedUrl(shellId + "-" + submodelIdentification)
+						.endpointAddress(edcEndpoint + "/api/public/" + encodedUrl("shells/"+shellId+ "/submodels/"+submodelIdentification)
 								+ CommonConstants.SUBMODEL_CONTEXT_URL)
-						.endpointProtocol(CommonConstants.ENDPOINT_PROTOCOL)
-						.endpointProtocolVersion(List.of(CommonConstants.ENDPOINT_PROTOCOL_VERSION)).build())
+						.endpointProtocol(CommonConstants.HTTP)
+						.endpointProtocolVersion(List.of(CommonConstants.ENDPOINT_PROTOCOL_VERSION))
+						.subProtocol(CommonConstants.SUB_PROTOCOL)
+						.subprotocolBodyEncoding(CommonConstants.BODY_ENCODING)
+						.build())
 				.build());
 		return endpoints;
 	}

@@ -42,4 +42,7 @@ public class ProtocolInformation {
     private String endpointAddress;
     private String endpointProtocol;
     private List<String> endpointProtocolVersion;
+    private String subProtocol;
+    private String subprotocolBody;
+    private String subprotocolBodyEncoding;
 }

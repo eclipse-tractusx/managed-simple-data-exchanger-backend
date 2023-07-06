@@ -55,7 +55,10 @@ public class DigitalTwinsFacilitator {
 	private final AuthTokenUtility authTokenUtility;
 
 	@Value(value = "${digital-twins.hostname:default}")
-	private URI digitalTwinsHost;
+	private String digitalTwinsHost;
+
+	@Value(value = "${digital-twins.api:/api/v3.0}")
+	private String dtApiUri;
 
 	public ShellLookupResponse shellLookup(ShellLookupRequest request) throws ServiceException {
 		return shellLookupFromDDTR(request, null);
@@ -64,7 +67,7 @@ public class DigitalTwinsFacilitator {
 	@SneakyThrows
 	public ShellLookupResponse shellLookupFromDDTR(ShellLookupRequest request, String ddtrUrl) throws ServiceException {
 
-		URI dtURL = (ddtrUrl == null || ddtrUrl.length() <= 0) ? digitalTwinsHost : new URI(ddtrUrl);
+		URI dtURL = (ddtrUrl == null || ddtrUrl.length() <= 0) ? getDtURL(digitalTwinsHost) : getDtURL(ddtrUrl);
 
 		ShellLookupResponse responseBody = null;
 
@@ -90,7 +93,7 @@ public class DigitalTwinsFacilitator {
 	public String deleteShell(String assetId) {
 		String deleteResponse = "";
 		try {
-			ResponseEntity<Void> response = digitalTwinsFeignClient.deleteShell(digitalTwinsHost, assetId,
+			ResponseEntity<Void> response = digitalTwinsFeignClient.deleteShell(getDtURL(digitalTwinsHost), assetId,
 					getHeaders());
 
 			if (response.getStatusCode() == HttpStatus.NO_CONTENT) {
@@ -116,14 +119,15 @@ public class DigitalTwinsFacilitator {
 
 	public ShellDescriptorResponse getShellDetailsById(String shellId) {
 		ResponseEntity<ShellDescriptorResponse> shellDescriptorResponse = digitalTwinsFeignClient
-				.getShellDescriptorByShellId(digitalTwinsHost, getHeaders(), shellId);
+				.getShellDescriptorByShellId(getDtURL(digitalTwinsHost), getHeaders(), shellId);
 		return shellDescriptorResponse.getBody();
 	}
 
 	@SneakyThrows
 	public void deleteSubmodelfromShellById(String shellId, String subModelId) {
 		try {
-			digitalTwinsFeignClient.deleteSubmodelfromShellById(digitalTwinsHost, shellId, subModelId, getHeaders());
+			digitalTwinsFeignClient.deleteSubmodelfromShellById(getDtURL(digitalTwinsHost), shellId, subModelId,
+					getHeaders());
 		} catch (Exception e) {
 			parseExceptionMessage(e);
 		}
@@ -138,7 +142,7 @@ public class DigitalTwinsFacilitator {
 	public ShellDescriptorResponse createShellDescriptor(ShellDescriptorRequest request) {
 		ShellDescriptorResponse responseBody;
 		ResponseEntity<ShellDescriptorResponse> registerSubmodel = digitalTwinsFeignClient
-				.createShellDescriptor(digitalTwinsHost, getHeaders(), request);
+				.createShellDescriptor(getDtURL(digitalTwinsHost), getHeaders(), request);
 		if (registerSubmodel.getStatusCode() != HttpStatus.CREATED) {
 			responseBody = null;
 		} else {
@@ -149,7 +153,7 @@ public class DigitalTwinsFacilitator {
 
 	public void createSubModel(String shellId, CreateSubModelRequest request) {
 
-		ResponseEntity<String> response = digitalTwinsFeignClient.createSubModel(digitalTwinsHost, shellId,
+		ResponseEntity<String> response = digitalTwinsFeignClient.createSubModel(getDtURL(digitalTwinsHost), shellId,
 				getHeaders(), request);
 		if (response.getStatusCode() != HttpStatus.CREATED) {
 			log.error("Unable to create submodel descriptor");
@@ -159,8 +163,8 @@ public class DigitalTwinsFacilitator {
 
 	public SubModelListResponse getSubModels(String shellId) {
 
-		ResponseEntity<SubModelListResponse> response = digitalTwinsFeignClient.getSubModels(digitalTwinsHost, shellId,
-				getHeaders());
+		ResponseEntity<SubModelListResponse> response = digitalTwinsFeignClient.getSubModels(getDtURL(digitalTwinsHost),
+				shellId, getHeaders());
 		SubModelListResponse responseBody = null;
 		if (response.getStatusCode() == HttpStatus.OK) {
 			responseBody = response.getBody();
@@ -173,5 +177,10 @@ public class DigitalTwinsFacilitator {
 		if (!e.toString().contains("FeignException$NotFound") || !e.toString().contains("404 Not Found")) {
 			throw new ServiceException("Exception in Digital delete request process: " + e.getMessage());
 		}
+	}
+
+	@SneakyThrows
+	private URI getDtURL(String dtURL) {
+		return new URI(dtURL.concat(dtApiUri));
 	}
 }

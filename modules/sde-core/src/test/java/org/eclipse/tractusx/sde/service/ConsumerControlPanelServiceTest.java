@@ -36,6 +36,7 @@ import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.edc.api.ContractOfferCatalogApi;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ActionRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
+import org.eclipse.tractusx.sde.edc.entities.request.policies.Operator;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyConstraintBuilderService;
 import org.eclipse.tractusx.sde.edc.facilitator.ContractNegotiateManagementHelper;
 import org.eclipse.tractusx.sde.edc.gateways.database.ContractNegotiationInfoRepository;
@@ -138,8 +139,10 @@ class ConsumerControlPanelServiceTest {
 		assertEquals("https://example.org/example", consumerRequest.getProviderUrl());
 		List<UsagePolicies> policies = consumerRequest.getPolicies();
 		ActionRequest list = ActionRequest.builder().build();
-		ConstraintRequest constraintRequest = ConstraintRequest.builder().leftOperand("A").rightOperand("A")
-				.operator("EQ").build();
+		ConstraintRequest constraintRequest = ConstraintRequest.builder().leftOperand("A")
+				.rightOperand("A")
+				.operator(Operator.builder().id("odrl:eq").build())
+				.build();
 		list.addProperty("odrl:and", constraintRequest);
 		when(policyConstraintBuilderService.getUsagePolicyConstraints(any())).thenReturn(list);
 		assertEquals(usagePolicies, policies);
@@ -157,7 +160,7 @@ class ConsumerControlPanelServiceTest {
 						        "@id": "c14cbd4d-41b5-43fb-9629-d914e478ba73",
 						        "@type": "dcat:Dataset",
 						        "odrl:hasPolicy": {
-						            "@id": "d694c7b4-17ec-4540-9991-9cc67eeb4c99:urn_uuid_40598c0f-8c53-4aa3-8281-1d82c9299bc3-urn_uuid_df0013c4-8296-41fa-a8b9-f251e5e1f638:29c448d4-a931-42f5-8605-b00608daee7a",
+						            "@id": "d694c7b4-17ec-4540-9991-9cc67eeb4c99:urn:uuid:40598c0f-8c53-4aa3-8281-1d82c9299bc3-urn:uuid:df0013c4-8296-41fa-a8b9-f251e5e1f638:29c448d4-a931-42f5-8605-b00608daee7a",
 						            "@type": "odrl:Set",
 						            "odrl:permission": {
 						                "odrl:target": "urn_uuid_40598c0f-8c53-4aa3-8281-1d82c9299bc3-urn_uuid_df0013c4-8296-41fa-a8b9-f251e5e1f638",
@@ -167,7 +170,7 @@ class ConsumerControlPanelServiceTest {
 						                "odrl:constraint": {
 						                    "odrl:or": {
 						                        "odrl:leftOperand": "BusinessPartnerNumber",
-						                        "odrl:operator": "EQ",
+						                        "odrl:operator": {"@id": "odrl:eq"},
 						                        "odrl:rightOperand": "BPNL001000TS0100"
 						                    }
 						                }

@@ -37,7 +37,6 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellLookupRequest
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellLookupResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelResponse;
-import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubmodelDescriptionListResponse;
 import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsFacilitator;
 import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsUtility;
 import org.eclipse.tractusx.sde.submodels.apr.model.AspectRelationship;
@@ -109,12 +108,11 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 	private SubModelResponse checkShellforSubmodelExistorNot(AspectRelationship aspectRelationShip,
 			ShellLookupRequest shellLookupRequest, ShellLookupResponse shellIds, SubModelResponse foundSubmodel)
 			throws CsvHandlerDigitalTwinUseCaseException {
-		SubmodelDescriptionListResponse shellDescriptorWithsubmodelDetails = digitalTwinfacilitaor
-				.getShellDescriptorsWithSubmodelDetails(shellIds);
+		List<ShellDescriptorResponse> items = digitalTwinfacilitaor.getShellDescriptorsWithSubmodelDetails(shellIds);
 
 		List<String> submodelExistinceCount = new ArrayList<>();
 
-		for (ShellDescriptorResponse shellDescriptorResponse : shellDescriptorWithsubmodelDetails.getItems()) {
+		for (ShellDescriptorResponse shellDescriptorResponse : items) {
 
 			foundSubmodel = findMatchingSubmodel(aspectRelationShip, foundSubmodel, submodelExistinceCount,
 					shellDescriptorResponse);
@@ -211,12 +209,9 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 			}
 
 			if (childshellIds.size() == 1) {
-				SubmodelDescriptionListResponse shellDescriptorWithsubmodelDetails = digitalTwinfacilitaor
-						.getShellDescriptorsWithSubmodelDetails(childshellIds);
-
-				for (ShellDescriptorResponse shellDescriptorResponse : shellDescriptorWithsubmodelDetails.getItems()) {
-					childUUID = shellDescriptorResponse.getGlobalAssetId();
-				}
+				ShellDescriptorResponse shellDescriptorResponse = digitalTwinfacilitaor
+						.getShellDetailsById(childshellIds.get(0));
+				childUUID = shellDescriptorResponse.getGlobalAssetId();
 			}
 
 		}

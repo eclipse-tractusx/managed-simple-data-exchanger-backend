@@ -21,6 +21,7 @@
 package org.eclipse.tractusx.sde.digitaltwins.facilitator;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +33,6 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellLookupRequest
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellLookupResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelListResponse;
-import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubmodelDescriptionListResponse;
 import org.eclipse.tractusx.sde.digitaltwins.gateways.external.AuthTokenUtility;
 import org.eclipse.tractusx.sde.digitaltwins.gateways.external.DigitalTwinsFeignClient;
 import org.springframework.beans.factory.annotation.Value;
@@ -105,8 +105,19 @@ public class DigitalTwinsFacilitator {
 	}
 
 	@SneakyThrows
-	public SubmodelDescriptionListResponse getShellDescriptorsWithSubmodelDetails(List<String> shellIds) {
-		return digitalTwinsFeignClient.getShellDescriptorsWithSubmodelDetails(digitalTwinsHost, getHeaders(), shellIds);
+	public List<ShellDescriptorResponse> getShellDescriptorsWithSubmodelDetails(List<String> shellIds) {
+
+		List<ShellDescriptorResponse> items = new ArrayList<>();
+		for (String shellId : shellIds) {
+			items.add(getShellDetailsById(shellId));
+		}
+		return items;
+	}
+
+	public ShellDescriptorResponse getShellDetailsById(String shellId) {
+		ResponseEntity<ShellDescriptorResponse> shellDescriptorResponse = digitalTwinsFeignClient
+				.getShellDescriptorByShellId(digitalTwinsHost, getHeaders(), shellId);
+		return shellDescriptorResponse.getBody();
 	}
 
 	@SneakyThrows

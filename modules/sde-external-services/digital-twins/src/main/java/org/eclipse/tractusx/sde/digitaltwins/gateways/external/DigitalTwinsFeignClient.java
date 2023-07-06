@@ -21,7 +21,6 @@
 package org.eclipse.tractusx.sde.digitaltwins.gateways.external;
 
 import java.net.URI;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.model.KeycloakJWTTokenResponse;
@@ -30,7 +29,6 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellDescriptorReq
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellLookupResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelListResponse;
-import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubmodelDescriptionListResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
@@ -53,13 +51,13 @@ public interface DigitalTwinsFeignClient {
 			@PathVariable("submodelIdentifier") String submodelIdentifier,
 			@RequestHeader Map<String, String> requestHeader);
 
-	@PostMapping(path = "/shell-descriptors/fetch")
-	SubmodelDescriptionListResponse getShellDescriptorsWithSubmodelDetails(URI url,
-			@RequestHeader Map<String, String> requestHeader, @RequestBody List<String> body);
-
 	@PostMapping(path = "/shell-descriptors")
 	ResponseEntity<ShellDescriptorResponse> createShellDescriptor(URI url,
 			@RequestHeader Map<String, String> requestHeader, @RequestBody ShellDescriptorRequest request);
+	
+	@GetMapping(path = "/shell-descriptors/{aasIdentifier}")
+	ResponseEntity<ShellDescriptorResponse> getShellDescriptorByShellId(URI url,
+			@RequestHeader Map<String, String> requestHeader,@PathVariable("aasIdentifier") String shellId);
 
 	@PostMapping(path = "/shell-descriptors/{aasIdentifier}/submodel-descriptors")
 	ResponseEntity<String> createSubModel(URI url, @PathVariable("aasIdentifier") String shellId,

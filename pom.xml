@@ -56,7 +56,6 @@
 
 		<module>modules/sde-common</module>
 		<module>modules/sde-core</module>
-		<module>modules/sde-usecases/traceability</module>
 
 		<module>modules/sde-submodules/serial-part-typization</module>
 		<module>modules/sde-submodules/batch</module>

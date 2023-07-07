@@ -91,6 +91,7 @@ public class BatchExecutor extends SubmodelExecutor {
 
 	}
 
+	@SneakyThrows
 	private void nextSteps(Integer rowIndex, ObjectNode jsonObject, String processId)
 			throws CsvHandlerDigitalTwinUseCaseException {
 		generateUrnUUID.run(jsonObject, processId);

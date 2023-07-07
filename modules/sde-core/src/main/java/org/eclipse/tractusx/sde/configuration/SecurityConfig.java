@@ -35,6 +35,7 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -42,7 +43,6 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.header.writers.XXssProtectionHeaderWriter.HeaderValue;
-import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -99,36 +99,36 @@ public class SecurityConfig {
 			ServerProperties serverProperties) {
 
 		// Enable OAuth2 with custom authorities mapping
-		http.oauth2ResourceServer().jwt().jwtAuthenticationConverter(authenticationConverter);
+		http.oauth2ResourceServer(oauth -> oauth.jwt(jwt -> jwt.jwtAuthenticationConverter(authenticationConverter)));
 
 		// Enable anonymous
 		http.anonymous();
 
 		// Enable and configure CORS
-		http.cors().configurationSource(corsConfigurationSource());
+		http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
 		// State-less session (state in access-token only)
-		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		http.sessionManagement(
+				sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
 		// Disable CSRF because of state-less session-management
-		http.csrf().disable();
+		http.csrf(AbstractHttpConfigurer::disable);
 
 		// Route security: authenticated to all routes but actuator and Swagger-UI
 		// @formatter:off
-        http.authorizeHttpRequests()
-            .requestMatchers(PUBLIC_URL).permitAll()
-            .anyRequest().authenticated();
-        // @formatter:on
-
-        http.headers().xssProtection(xssProtection -> xssProtection.headerValue(HeaderValue.ENABLED_MODE_BLOCK));
-		
-		http.headers()
-				.contentSecurityPolicy("default-src 'self'; script-src 'self'").and()
-				.httpStrictTransportSecurity().requestMatcher(AnyRequestMatcher.INSTANCE);
+		        http.authorizeHttpRequests(authz -> authz
+		        		.requestMatchers(PUBLIC_URL).permitAll()
+		                .anyRequest().authenticated());
+		            
+		        // @formatter:on
+		http.headers(headers -> headers
+				.xssProtection(xssProtection -> xssProtection.headerValue(HeaderValue.ENABLED_MODE_BLOCK))
+				.contentSecurityPolicy(policy -> policy.policyDirectives("default-src 'self'; script-src 'self'"))
+				.httpStrictTransportSecurity(httStrict -> httStrict.includeSubDomains(true).maxAgeInSeconds(15724800)));
 
 		return http.build();
 	}
-	
+
 	@Bean
 	protected CorsConfigurationSource corsConfigurationSource() {
 		// Very permissive CORS config...

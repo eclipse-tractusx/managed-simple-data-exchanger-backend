@@ -23,6 +23,7 @@ package org.eclipse.tractusx.sde.edc.model.contractoffers;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -40,8 +41,10 @@ import java.util.List;
 @JsonInclude(Include.NON_NULL)
 public class ContractOffersCatalogResponse {
 
+	@JsonProperty("@id")
 	private String id;
 
+	@JsonProperty("dcat:dataset")
 	private List<ContractOffer> contractOffers;
 
 	@SneakyThrows

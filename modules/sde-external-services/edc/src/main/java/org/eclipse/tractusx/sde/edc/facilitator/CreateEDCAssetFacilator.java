@@ -30,7 +30,7 @@ import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.contractdefinition.ContractDefinitionRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.contractdefinition.ContractDefinitionRequestFactory;
-import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
+import org.eclipse.tractusx.sde.edc.entities.request.policies.ActionRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyConstraintBuilderService;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyDefinitionRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyRequestFactory;
@@ -59,21 +59,23 @@ public class CreateEDCAssetFacilator extends AbstractEDCStepsHelper {
 
 		String assetId = assetEntryRequest.getAsset().getId();
 
-		List<ConstraintRequest> accessAction = policyConstraintBuilderService.getAccessConstraints(bpns);
-		List<ConstraintRequest> usageAction = policyConstraintBuilderService.getUsagePolicyConstraints(usagePolicies);
+		ActionRequest usageAction = policyConstraintBuilderService.getUsagePolicyConstraints(usagePolicies);
+		ActionRequest accessAction = policyConstraintBuilderService.getAccessConstraints(bpns);
 
 		String customValue = getCustomValue(usagePolicies);
 		if (StringUtils.isNotBlank(getCustomValue(usagePolicies))) {
 			extensibleProperties.put(UsagePolicyEnum.CUSTOM.name(), customValue);
 		}
 
-		PolicyDefinitionRequest accessPolicyDefinitionRequest = policyFactory.getPolicy(assetId, customValue, accessAction, extensibleProperties);
+		PolicyDefinitionRequest accessPolicyDefinitionRequest = policyFactory.getPolicy(assetId, accessAction,
+				new HashMap<>());
 		edcGateway.createPolicyDefinition(accessPolicyDefinitionRequest);
 		String accessPolicyId = accessPolicyDefinitionRequest.getId();
 		String usagePolicyId = accessPolicyDefinitionRequest.getId();
 
 		if (usageAction != null) {
-			PolicyDefinitionRequest usagePolicyDefinitionRequest = policyFactory.getPolicy(accessPolicyId, usagePolicyId, accessAction, extensibleProperties);
+			PolicyDefinitionRequest usagePolicyDefinitionRequest = policyFactory.getPolicy(assetId, usageAction,
+					extensibleProperties);
 			edcGateway.createPolicyDefinition(usagePolicyDefinitionRequest);
 			usagePolicyId = usagePolicyDefinitionRequest.getId();
 		}

@@ -8,9 +8,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Renamed AssemblyPartRelationship aspect submodel to SingleLevelBoMAsBuilt
 
 ## [2.0.3] - 2023-07-12
+### Added
+- added umbrella charts for sde frontend and backend.
+- removed the older charts.
+
 ### Fixed
 - BPN discovery update.
-- remove unwanted maven module
+- remove unwanted maven module.
 
 ## [2.0.2] - 2023-06-21
 ### Added

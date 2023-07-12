@@ -1,12 +1,17 @@
 # Changelog
 All notable changes to this project will be documented in this file.
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 - Support EDC version 4.1.
 - Renamed SerialPartTypization aspect submodel to SerialPart.
-- Renamed AssemblyPartRelationship aspect submodel to SingleLevelBoMAsBuilt.
+- Renamed AssemblyPartRelationship aspect submodel to SingleLevelBoMAsBuilt
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+## [2.0.3] - 2023-07-12
+### Fixed
+- BPN discovery update.
+- remove unwanted maven module
+
 ## [2.0.2] - 2023-06-21
 ### Added
 - BPN Discovery service integration for DDTR.
@@ -146,7 +151,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Compliance with Catena-X Guidelines
 - Integration with Digital Twin registry service.
 
-[unreleased]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/dftbackend-2.0.2...main
+[unreleased]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/dftbackend-2.0.3...main
+[2.0.3]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/dftbackend-2.0.2...dftbackend-2.0.3
 [2.0.2]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/dftbackend-2.0.1...dftbackend-2.0.2
 [2.0.1]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/dftbackend-2.0.0...dftbackend-2.0.1
 [2.0.0]: https://github.com/eclipse-tractusx/dft-backend/compare/1.9.1...2.0.0

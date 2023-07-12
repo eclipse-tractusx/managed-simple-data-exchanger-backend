@@ -1,13 +1,13 @@
- # Assembly Part Relationship (SDE Maven module)
+ # Single Level BoM As Built (SDE Maven module)
 ---
 ## Description
 
-This module use for AssemblyPartRelationship submodel specification and descriptors. It's contain the codes related to AssemblyPartRelationship to validate, parse and transfer data for DigitalTwins and EDC to create aspect twins and data offer.
+This module use for SingleLevelBoMAsBuilt submodel specification and descriptors. It's contain the codes related to SingleLevelBoMAsBuilt to validate, parse and transfer data for DigitalTwins and EDC to create aspect twins and data offer.
 
 ---
-#### Version: 1.1.1
-#### AssemblyPartRelationship Aspect Model URN: urn:bamm:io.catenax.assembly_part_relationship:1.1.1#AssemblyPartRelationship
-#### Semantic Id: urn:bamm:io.catenax.assembly_part_relationship:1.1.1
+#### Version: 1.0.0
+#### SingleLevelBoMAsBuilt Aspect Model URN: urn:bamm:io.catenax.single_level_bom_as_built:1.0.0#SingleLevelBomAsBuilt
+#### Semantic Id: urn:bamm:io.catenax.single_level_bom_as_built:1.0.0
 ---
 
 ### Schema
@@ -31,7 +31,6 @@ Please find below links for schema details:
 | manufacturer_part_id 		      	| Yes                           | 	 8	  	|
 | optional_identifier_key	 		| No                           	|    9 	 	|
 | optional_identifier_value			| No                           	|    10 	|
-| lifecycle_context		    		| Yes                        	| 	 11	 	|
 | quantity_number		 			| Yes                           |    12	 	|
 | measurement_unit				 	| Yes                           |    13	 	|
 | created_on	 					| Yes                           |    14	 	|
@@ -40,7 +39,7 @@ Please find below links for schema details:
 
 #### [CSV Sample File Link]
 
-#### Example for submodel AssemblyPartRelationship
+#### Example for submodel SingleLevelBoMAsBuilt
 
 <br/><br/><img src="src/main/resources/images/assemblypartrelationship.png" height="60%" width="80%"/><br/><br/>
 

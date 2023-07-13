@@ -3,9 +3,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
+- Integration with BPDM api interface.
+
+## [2.0.8] - 2023-07-13
+### Added
 - Support EDC version 0.5.1
 
 ## [2.0.7] - 2023-07-13
+### Added
 - Support AAS version 0.3
 
 ## [2.0.6] - 2023-07-12
@@ -169,7 +174,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Compliance with Catena-X Guidelines
 - Integration with Digital Twin registry service.
 
-[unreleased]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/dftbackend-2.0.7...main
+[unreleased]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/dftbackend-2.0.8...main
+[2.0.8]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/dftbackend-2.0.7...dftbackend-2.0.8
 [2.0.7]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/dftbackend-2.0.6...dftbackend-2.0.7
 [2.0.6]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/dftbackend-2.0.5...dftbackend-2.0.6
 [2.0.5]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/dftbackend-2.0.4...dftbackend-2.0.5

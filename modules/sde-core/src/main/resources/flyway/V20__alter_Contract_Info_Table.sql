@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023 T-Systems International GmbH
+ * Copyright (c) 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -18,31 +18,8 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.edc.entities.request.policies.accesspolicy;
+ALTER TABLE IF EXISTS contract_negotiation_info ADD id varchar NOT NULL;
+ALTER TABLE IF EXISTS contract_negotiation_info DROP CONSTRAINT contract_negotiation_info_pkey;
+ALTER TABLE IF EXISTS contract_negotiation_info ADD CONSTRAINT contract_negotiation_info_pk PRIMARY KEY (id);
+ALTER TABLE IF EXISTS contract_negotiation_info ALTER COLUMN offer_id TYPE text USING offer_id::text;
 
-import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
-import org.eclipse.tractusx.sde.edc.entities.request.policies.Operator;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-public class AccessPolicyDTO {
-
-	String bpnNumber;
-
-	public ConstraintRequest toConstraint() {
-
-		String operator = "odrl:eq";
-		return ConstraintRequest.builder()
-				.leftOperand("BusinessPartnerNumber")
-				.operator(Operator.builder().id(operator).build())
-				.rightOperand(bpnNumber)
-				.build();
-	}
-}

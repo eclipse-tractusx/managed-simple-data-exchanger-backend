@@ -60,8 +60,6 @@ public class AssetEntryRequestFactory {
     private AssetEntryRequest buildAsset(String submodel, String shellId, String subModelId, String assetName, String uuid) {
         String assetId = shellId + "-" + subModelId;
         
-        assetId=assetId.replace(":", "_");
-        
         HashMap<String, String> assetProperties = getAssetProperties(assetId, assetName);
         AssetRequest assetRequest = AssetRequest.builder().id(assetId).properties(assetProperties).build();
 

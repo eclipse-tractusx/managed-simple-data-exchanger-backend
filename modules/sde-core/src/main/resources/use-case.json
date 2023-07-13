@@ -4,8 +4,8 @@
 		"title": "Traceability",
 		"description": "Traceability",
 		"submodules": [
-			"serialparttypization",
-			"assemblypartrelationship",
+			"serialpart",
+			"singlelevelbomasbuilt",
 			"batch",
 			"partasplanned",
 			"singlelevelbomasplanned",
@@ -18,8 +18,8 @@
 		"title": "Circular Economy",
 		"description": "Circular Economy",
 		"submodules": [
-			"serialparttypization",
-			"assemblypartrelationship",
+			"serialpart",
+			"singlelevelbomasbuilt",
 			"batch"
 		]
 	},
@@ -28,8 +28,8 @@
 		"title": "Quality",
 		"description": "Quality",
 		"submodules": [
-			"serialparttypization",
-			"assemblypartrelationship",
+			"serialpart",
+			"singlelevelbomasbuilt",
 			"batch",
 			"singlelevelusageasbuilt"
 		]

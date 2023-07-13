@@ -22,7 +22,6 @@
 package org.eclipse.tractusx.sde.edc.entities.request.policies;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,40 +31,32 @@ import org.springframework.stereotype.Service;
 @Service
 public class PolicyRequestFactory {
 
-    public PolicyDefinitionRequest getPolicy(String shellId, String subModelId, List<ConstraintRequest> constraints, Map<String, String> extensibleProperties) {
-        String assetId = shellId + "-" + subModelId;
+	public PolicyDefinitionRequest getPolicy(String assetId, ActionRequest action,
+			Map<String, String> extensibleProperties) {
 
-        List<PermissionRequest> permissions = getPermissions(assetId, constraints);
-        HashMap<String, String> type = new HashMap<>();
-        type.put("@policytype", "set");
-        PolicyRequest policyRequest = PolicyRequest.builder().permissions(permissions).obligations(new ArrayList<>())
-                .extensibleProperties(extensibleProperties).inheritsFrom(null).assignee(null).assigner(null)
-                .target(assetId).type(type).prohibitions(new ArrayList<>()).build();
+		List<PermissionRequest> permissions = getPermissions(assetId, action);
 
-        return PolicyDefinitionRequest.builder()
-                .id(UUIdGenerator.getUrnUuid())
-                .policyRequest(policyRequest)
-                .build();
-    }
+		PolicyRequest policyRequest = PolicyRequest.builder()
+				.permissions(permissions)
+				.obligations(new ArrayList<>())
+				.extensibleProperties(extensibleProperties)
+				.prohibitions(new ArrayList<>()).build();
 
-    public List<PermissionRequest> getPermissions(String assetId, List<ConstraintRequest> constraints) {
-        ArrayList<PermissionRequest> permissions = new ArrayList<>();
-        ActionRequest action = ActionRequest.builder()
-                .type("USE")
-                .includedIn(null)
-                .constraint(null)
-                .build();
+		return PolicyDefinitionRequest.builder()
+				.id(UUIdGenerator.getUuid())
+				.policyRequest(policyRequest).build();
+	}
 
-        PermissionRequest permissionRequest = PermissionRequest.builder()
-                .target(assetId)
-                .action(action)
-                .assignee(null)
-                .assigner(null)
-                .constraints(constraints)
-                .duties(new ArrayList<>())
-                .edcType("dataspaceconnector:permission")
-                .build();
-        permissions.add(permissionRequest);
-        return permissions;
-    }
+	public List<PermissionRequest> getPermissions(String assetId, ActionRequest action) {
+
+		ArrayList<PermissionRequest> permissions = new ArrayList<>();
+		PermissionRequest permissionRequest = PermissionRequest.builder()
+				.action(Map.of("odrl:type", "USE"))
+				.target(assetId)
+				.constraint(action.getAction())
+				.build();
+		permissions.add(permissionRequest);
+
+		return permissions;
+	}
 }

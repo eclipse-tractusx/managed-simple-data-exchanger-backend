@@ -1,4 +1,5 @@
 /********************************************************************************
+ * Copyright (c) 2022 BMW GmbH
  * Copyright (c) 2022, 2023 T-Systems International GmbH
  * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
@@ -17,32 +18,21 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-package org.eclipse.tractusx.sde.usecase;
 
-import org.eclipse.tractusx.sde.common.extensions.UsecaseExtension;
-import org.springframework.stereotype.Component;
+package org.eclipse.tractusx.sde.submodels.apr.model;
 
-import com.google.gson.JsonObject;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 
-@Component
-public class TraceabilityUsecase extends UsecaseExtension {
+@Data
+@AllArgsConstructor
+@Builder
+public class ChildItems {
 
-	private JsonObject useCase;
-
-	public TraceabilityUsecase() {
-
-		useCase = loadUsecae("traceability");
-
-		addSubmodel("Aspect");
-
-		addSubmodel("AspectRelationshiop");
-
-		addSubmodel("Batch");
-	}
-
-	@Override
-	public JsonObject getUseCase() {
-		return this.useCase;
-	}
-
+    private Quantity quantity;
+    private String createdOn;
+    private String lastModifiedOn;
+    private String catenaXId;
+    private String businessPartner;
 }

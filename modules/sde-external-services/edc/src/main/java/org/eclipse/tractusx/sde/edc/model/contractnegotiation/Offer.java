@@ -20,11 +20,12 @@
 
 package org.eclipse.tractusx.sde.edc.model.contractnegotiation;
 
-import org.eclipse.tractusx.sde.edc.model.policies.PolicyDefinition;
+import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyRequest;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -42,5 +43,5 @@ public class Offer {
 
     private String assetId;
 
-    private PolicyDefinition policy;
+    private PolicyRequest policy;
 }

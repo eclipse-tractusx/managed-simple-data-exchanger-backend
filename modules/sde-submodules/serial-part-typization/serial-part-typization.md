@@ -1,13 +1,13 @@
- # Serial Part Typization (SDE Maven module)
+ # Serial Part (SDE Maven module)
 ---
 ## Description
 
-This module use for SerialPartTypization submodel specification and descriptors. It's contain the codes related to SerialPartTypization to validate, parse and transfer data for DigitalTwins and EDC to create aspect twins and data offer.
+This module use for SerialPart submodel specification and descriptors. It's contain the codes related to SerialPart to validate, parse and transfer data for DigitalTwins and EDC to create aspect twins and data offer.
 
 ---
-#### Version: 1.1.0
-#### SerialPartTypization Aspect Model URN: urn:bamm:io.catenax.serial_part_typization:1.1.0#SerialPartTypization
-#### Semantic Id: urn:bamm:io.catenax.serial_part_typization:1.1.0
+#### Version: 1.0.0
+#### SerialPart Aspect Model URN: urn:bamm:io.catenax.serial_part:1.0.0#SerialPart
+#### Semantic Id: urn:bamm:io.catenax.serial_part:1.0.0
 ---
 
 ### Schema
@@ -17,7 +17,7 @@ Please find below links for schema details:
 - [schema](src/main/resources/serial-part-typization.json)
 
 
-### SerialPartTypization CSV file headers
+### SerialPart CSV file headers
 
 | Headers Name       	       		| Mandatory                     | Position 	|
 |-------------------------------	|-----------------------------	|--------	|
@@ -36,7 +36,7 @@ Please find below links for schema details:
 
 #### [CSV Sample File Link]
 
-#### Example for submodel SerialPartTypization
+#### Example for submodel SerialPart
 
 <br/><br/><img src="src/main/resources/images/serialparttypization.png" height="60%" width="80%"/><br/><br/>
 

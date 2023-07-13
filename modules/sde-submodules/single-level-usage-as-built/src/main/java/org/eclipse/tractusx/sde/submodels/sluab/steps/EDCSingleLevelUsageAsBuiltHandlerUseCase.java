@@ -19,53 +19,32 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.submodels.sluab.steps;
 
-import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
-import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequestFactory;
-import org.eclipse.tractusx.sde.edc.entities.request.contractdefinition.ContractDefinitionRequest;
-import org.eclipse.tractusx.sde.edc.entities.request.contractdefinition.ContractDefinitionRequestFactory;
-import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
-import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyConstraintBuilderService;
-import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyDefinitionRequest;
-import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyRequestFactory;
+import org.eclipse.tractusx.sde.edc.facilitator.CreateEDCAssetFacilator;
 import org.eclipse.tractusx.sde.edc.gateways.external.EDCGateway;
 import org.eclipse.tractusx.sde.submodels.sluab.entity.SingleLevelUsageAsBuiltEntity;
 import org.eclipse.tractusx.sde.submodels.sluab.model.SingleLevelUsageAsBuilt;
 import org.eclipse.tractusx.sde.submodels.sluab.service.SingleLevelUsageAsBuiltService;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 @Service
+@RequiredArgsConstructor
 public class EDCSingleLevelUsageAsBuiltHandlerUseCase extends Step {
 
 	private final AssetEntryRequestFactory assetFactory;
 	private final EDCGateway edcGateway;
-	private final PolicyRequestFactory policyFactory;
-	private final ContractDefinitionRequestFactory contractFactory;
-	private final PolicyConstraintBuilderService policyConstraintBuilderService;
+	private final CreateEDCAssetFacilator createEDCAssetFacilator;
 	private final SingleLevelUsageAsBuiltService singleLevelUsageAsBuiltService;
-
-	public EDCSingleLevelUsageAsBuiltHandlerUseCase(EDCGateway edcGateway, AssetEntryRequestFactory assetFactory,
-			PolicyRequestFactory policyFactory, ContractDefinitionRequestFactory contractFactory,
-			PolicyConstraintBuilderService policyConstraintBuilderService,
-			SingleLevelUsageAsBuiltService singleLevelUsageAsBuiltService) {
-		this.assetFactory = assetFactory;
-		this.edcGateway = edcGateway;
-		this.policyFactory = policyFactory;
-		this.contractFactory = contractFactory;
-		this.policyConstraintBuilderService = policyConstraintBuilderService;
-		this.singleLevelUsageAsBuiltService = singleLevelUsageAsBuiltService;
-	}
 
 	@SneakyThrows
 	public SingleLevelUsageAsBuilt run(String submodel, SingleLevelUsageAsBuilt input, String processId) {
@@ -76,7 +55,8 @@ public class EDCSingleLevelUsageAsBuiltHandlerUseCase extends Step {
 
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
 					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getParentUuid());
-			if (!edcGateway.assetExistsLookup(assetEntryRequest.getAsset().getProperties().get(CommonConstants.ASSET_PROP_ID))) {
+			if (!edcGateway.assetExistsLookup(
+					assetEntryRequest.getAsset().getId())) {
 
 				edcProcessingforAspectRelationship(assetEntryRequest, input);
 
@@ -101,56 +81,22 @@ public class EDCSingleLevelUsageAsBuiltHandlerUseCase extends Step {
 			singleLevelUsageAsBuiltService.deleteEDCAsset(aspectRelationshipEntity);
 		} catch (Exception e) {
 			if (!e.getMessage().contains("404 Not Found")) {
-				throw new ServiceException("Unable to delete EDC offer for update: "+ e.getMessage());
+				throw new ServiceException("Unable to delete EDC offer for update: " + e.getMessage());
 			}
 		}
 	}
 
 	@SneakyThrows
-	private void edcProcessingforAspectRelationship(AssetEntryRequest assetEntryRequest, SingleLevelUsageAsBuilt input) {
-		HashMap<String, String> extensibleProperties = new HashMap<>();
+	private void edcProcessingforAspectRelationship(AssetEntryRequest assetEntryRequest,
+			SingleLevelUsageAsBuilt input) {
 
-		String shellId = input.getShellId();
-		String subModelId = input.getSubModelId();
-		edcGateway.createAsset(assetEntryRequest);
-
-		List<ConstraintRequest> usageConstraints = policyConstraintBuilderService
-				.getUsagePolicyConstraints(input.getUsagePolicies());
-		List<ConstraintRequest> accessConstraints = policyConstraintBuilderService
-				.getAccessConstraints(input.getBpnNumbers());
-
-		String customValue = getCustomValue(input);
-		if (StringUtils.isNotBlank(customValue)) {
-			extensibleProperties.put(UsagePolicyEnum.CUSTOM.name(), customValue);
-		}
-
-		PolicyDefinitionRequest accessPolicyDefinitionRequest = policyFactory.getPolicy(shellId, subModelId,
-				accessConstraints, new HashMap<>());
-		PolicyDefinitionRequest usagePolicyDefinitionRequest = policyFactory.getPolicy(shellId, subModelId,
-				usageConstraints, extensibleProperties);
-
-		edcGateway.createPolicyDefinition(accessPolicyDefinitionRequest);
-
-		edcGateway.createPolicyDefinition(usagePolicyDefinitionRequest);
-
-		ContractDefinitionRequest contractDefinitionRequest = contractFactory.getContractDefinitionRequest(
-				assetEntryRequest.getAsset().getProperties().get(CommonConstants.ASSET_PROP_ID), accessPolicyDefinitionRequest.getId(),
-				usagePolicyDefinitionRequest.getId());
-
-		edcGateway.createContractDefinition(contractDefinitionRequest);
+		Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest,
+				input.getBpnNumbers(), input.getUsagePolicies());
 
 		// EDC transaction information for DB
-		input.setAssetId(assetEntryRequest.getAsset().getProperties().get(CommonConstants.ASSET_PROP_ID));
-		input.setAccessPolicyId(accessPolicyDefinitionRequest.getId());
-		input.setUsagePolicyId(usagePolicyDefinitionRequest.getId());
-		input.setContractDefinationId(contractDefinitionRequest.getId());
-	}
-
-	private String getCustomValue(SingleLevelUsageAsBuilt input) {
-		if (!CollectionUtils.isEmpty(input.getUsagePolicies())) {
-			return input.getUsagePolicies().stream().filter(policy -> policy.getType().equals(UsagePolicyEnum.CUSTOM))
-					.map(value -> value.getValue()).findFirst().orElse(null);
-		}
-		return null;
+		input.setAssetId(assetEntryRequest.getAsset().getId());
+		input.setAccessPolicyId(createEDCAsset.get("accessPolicyId"));
+		input.setUsagePolicyId(createEDCAsset.get("usagePolicyId"));
+		input.setContractDefinationId(createEDCAsset.get("contractDefinitionId"));
 	}
 }

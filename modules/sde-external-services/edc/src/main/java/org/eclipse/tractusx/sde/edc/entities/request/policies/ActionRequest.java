@@ -20,6 +20,11 @@
 
 package org.eclipse.tractusx.sde.edc.entities.request.policies;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AllArgsConstructor;
@@ -32,15 +37,21 @@ import lombok.SneakyThrows;
 @AllArgsConstructor
 @Data
 @Builder
+@JsonInclude(Include.NON_NULL)
 public class ActionRequest {
 
-    private String type;
-    private String includedIn;
-    private ConstraintRequest constraint;
+	private Map<String, Object> action;
 
-    @SneakyThrows
-    public String toJsonString() {
-        final ObjectMapper mapper = new ObjectMapper();
-        return mapper.writeValueAsString(this);
-    }
+	public void addProperty(String key, Object value) {
+		if (action == null) {
+			action = new HashMap<>();
+		}
+		action.put(key, value);
+	}
+
+	@SneakyThrows
+	public String toJsonString() {
+		final ObjectMapper mapper = new ObjectMapper();
+		return mapper.writeValueAsString(this);
+	}
 }

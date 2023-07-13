@@ -23,6 +23,7 @@ package org.eclipse.tractusx.sde.edc.entities.request.asset;
 
 import java.util.HashMap;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AllArgsConstructor;
@@ -37,11 +38,18 @@ import lombok.SneakyThrows;
 @Builder
 public class AssetRequest {
 
-    private HashMap<String, String> properties;
+	@JsonProperty("@type")
+	@Builder.Default
+	private String type = "Asset";
 
-    @SneakyThrows
-    public String toJsonString() {
-        final ObjectMapper mapper = new ObjectMapper();
-        return mapper.writeValueAsString(this);
-    }
+	@JsonProperty("@id")
+	private String id;
+
+	private HashMap<String, String> properties;
+
+	@SneakyThrows
+	public String toJsonString() {
+		final ObjectMapper mapper = new ObjectMapper();
+		return mapper.writeValueAsString(this);
+	}
 }

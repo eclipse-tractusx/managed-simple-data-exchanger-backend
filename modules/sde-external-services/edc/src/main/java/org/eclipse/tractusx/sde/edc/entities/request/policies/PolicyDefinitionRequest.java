@@ -21,6 +21,8 @@
 
 package org.eclipse.tractusx.sde.edc.entities.request.policies;
 
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -36,7 +38,17 @@ import lombok.SneakyThrows;
 @AllArgsConstructor
 public class PolicyDefinitionRequest {
 
+	@JsonProperty("@context")
+	@Builder.Default
+	private Map<String, String> context = Map.of("odrl","http://www.w3.org/ns/odrl/2/");
+
+	@JsonProperty("@type")
+	@Builder.Default
+	private String polityRootType = "PolicyDefinitionRequestDto";
+
+	@JsonProperty("@id")
     private String id;
+	
     @JsonProperty("policy")
     private PolicyRequest policyRequest;
 

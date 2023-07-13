@@ -30,19 +30,22 @@ import org.springframework.stereotype.Service;
 @Service
 public class ContractDefinitionRequestFactory {
 
-    public ContractDefinitionRequest getContractDefinitionRequest(String uuid, String accessPolicyId, String usagePolicyId) {
-        List<Criterion> criteria = new ArrayList<>();
-        criteria.add(Criterion.builder()
-                .operandLeft("asset:prop:id")
-                .operator("=")
-                .operandRight(uuid)
-                .build());
-        return ContractDefinitionRequest.builder()
-                .contractPolicyId(usagePolicyId)
-                .accessPolicyId(accessPolicyId)
-                .id(UUIdGenerator.getUuid())
-                .criteria(criteria)
-                .build();
-    }
-    
+	public ContractDefinitionRequest getContractDefinitionRequest(String uuid, String accessPolicyId,
+			String usagePolicyId) {
+		
+		List<Criterion> criteria = new ArrayList<>();
+		criteria.add(Criterion.builder()
+				.operandLeft("https://w3id.org/edc/v0.0.1/ns/id")
+				.operator("=")
+				.operandRight(uuid)
+				.build());
+		
+		return ContractDefinitionRequest.builder()
+				.contractPolicyId(usagePolicyId == null ? accessPolicyId : usagePolicyId)
+				.accessPolicyId(accessPolicyId)
+				.id(UUIdGenerator.getUuid())
+				.assetsSelector(criteria)
+				.build();
+	}
+
 }

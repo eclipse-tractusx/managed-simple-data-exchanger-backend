@@ -20,9 +20,13 @@
 
 package org.eclipse.tractusx.sde.edc.model.contractnegotiation;
 
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -36,7 +40,21 @@ import lombok.NoArgsConstructor;
 @JsonInclude(Include.NON_NULL)
 public class ContractNegotiations {
 
-    private String connectorId;
-    private String connectorAddress;
-    private Offer offer;
+	@JsonProperty("@context")
+	@Builder.Default
+	private Map<String, String> context = Map.of("odrl", "http://www.w3.org/ns/odrl/2/");
+
+	@JsonProperty("@type")
+	@Builder.Default
+	private String type = "NegotiationInitiateRequestDto";
+
+	private String connectorAddress;
+
+	private String protocol;
+
+	private String connectorId;
+
+	private String providerId;
+
+	private Offer offer;
 }

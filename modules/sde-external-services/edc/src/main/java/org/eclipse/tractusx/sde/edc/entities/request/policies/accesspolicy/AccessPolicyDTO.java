@@ -20,40 +20,28 @@
 
 package org.eclipse.tractusx.sde.edc.entities.request.policies.accesspolicy;
 
+import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
-import org.eclipse.tractusx.sde.edc.entities.request.policies.Expression;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class AccessPolicyDTO {
-    private static final String DATASPACECONNECTOR_LITERALEXPRESSION = "dataspaceconnector:literalexpression";
 
-    String bpnNumber;
+	String bpnNumber;
 
-    public ConstraintRequest toConstraint() {
-        Expression lExpression = Expression.builder()
-                .edcType(DATASPACECONNECTOR_LITERALEXPRESSION)
-                .value("BusinessPartnerNumber")
-                .build();
+	public ConstraintRequest toConstraint() {
 
-        String operator = "EQ";
-        Expression rExpression = null;
-        rExpression = Expression.builder()
-                    .edcType(DATASPACECONNECTOR_LITERALEXPRESSION)
-                    .value(bpnNumber)
-                    .build();
-
-        return ConstraintRequest.builder().edcType("AtomicConstraint")
-                .leftExpression(lExpression)
-                .rightExpression(rExpression)
-                .operator(operator)
-                .build();
-    }
+		String operator = "EQ";
+		return ConstraintRequest.builder()
+				.leftOperand("BusinessPartnerNumber")
+				.operator(operator)
+				.rightOperand(bpnNumber)
+				.build();
+	}
 }

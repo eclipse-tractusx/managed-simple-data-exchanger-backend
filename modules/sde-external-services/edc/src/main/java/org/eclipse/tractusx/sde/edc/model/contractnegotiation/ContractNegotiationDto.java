@@ -22,6 +22,9 @@ package org.eclipse.tractusx.sde.edc.model.contractnegotiation;
 
 import org.eclipse.tractusx.sde.edc.enums.Type;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,15 +34,32 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ContractNegotiationDto {
-    private String contractAgreementId; // is null until state == CONFIRMED
-    private String counterPartyAddress;
-    private String errorDetail;
-    private String id;
-    private String protocol = "ids-multipart";
-    private String state;
-    private Type type;
-    private long createdAt;
-    private long updatedAt;
+
+	@JsonProperty("edc:contractAgreementId")
+	private String contractAgreementId; // is null until state == FINALIZED
+
+	@JsonProperty("edc:counterPartyAddress")
+	private String counterPartyAddress;
+
+	@JsonProperty("edc:errorDetail")
+	private String errorDetail;
+
+	@JsonProperty("@id")
+	private String id;
+
+	@JsonProperty("edc:protocol")
+	@Builder.Default
+	private String protocol = "dataspace-protocol-http";
+
+	@JsonProperty("edc:state")
+	private String state;
+
+	@JsonProperty("edc:type")
+	private Type type;
+
+	private long createdAt;
+	private long updatedAt;
 
 }

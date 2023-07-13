@@ -91,6 +91,7 @@ public class PartAsPlannedExecutor extends SubmodelExecutor {
 
 	}
 
+	@SneakyThrows
 	private void nextSteps(Integer rowIndex, ObjectNode jsonObject, String processId)
 			throws CsvHandlerDigitalTwinUseCaseException {
 

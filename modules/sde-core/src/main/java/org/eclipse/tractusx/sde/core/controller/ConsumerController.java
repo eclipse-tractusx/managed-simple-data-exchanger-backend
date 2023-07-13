@@ -57,7 +57,7 @@ public class ConsumerController {
 		if (offset == null) {
 			offset = 0;
 		}
-		return ok().body(consumerControlPanelService.queryOnDataOffers(providerUrl, limit, offset));
+		return ok().body(consumerControlPanelService.queryOnDataOffers(providerUrl, offset, limit, null));
 	}
 
 	@PostMapping(value = "/subscribe-data-offers")

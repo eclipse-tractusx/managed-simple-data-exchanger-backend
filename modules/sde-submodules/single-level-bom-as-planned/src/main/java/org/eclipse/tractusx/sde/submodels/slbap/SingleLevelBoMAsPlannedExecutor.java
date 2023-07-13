@@ -19,8 +19,13 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.submodels.slbap;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+import org.eclipse.tractusx.sde.bpndiscovery.handler.BPNDiscoveryUseCaseHandler;
+import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.entities.csv.RowData;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseException;
 import org.eclipse.tractusx.sde.common.submodel.executor.SubmodelExecutor;
@@ -65,6 +70,8 @@ public class SingleLevelBoMAsPlannedExecutor extends SubmodelExecutor {
 	private final SingleLevelBoMAsPlannedMapper singleLevelBoMAsPlannedMapper;
 
 	private final SingleLevelBoMAsPlannedService singleLevelBoMAsPlannedService;
+	
+	private final BPNDiscoveryUseCaseHandler bPNDiscoveryUseCaseHandler;
 
 	
 	@SneakyThrows
@@ -86,6 +93,7 @@ public class SingleLevelBoMAsPlannedExecutor extends SubmodelExecutor {
 
 	}
 	
+	@SneakyThrows
 	private void nextSteps(Integer rowIndex, ObjectNode jsonObject, String processId) throws CsvHandlerDigitalTwinUseCaseException {
 
 		SingleLevelBoMAsPlanned singleLevelBoMAsPlanned = singleLevelBoMAsPlannedMapper.mapFrom(jsonObject);
@@ -103,6 +111,12 @@ public class SingleLevelBoMAsPlannedExecutor extends SubmodelExecutor {
 
 		eDCHandlerStep.init(getSubmodelSchema());
 		eDCHandlerStep.run(getNameOfModel(), singleLevelBoMAsPlanned, processId);
+		
+		if (StringUtils.isBlank(singleLevelBoMAsPlanned.getUpdated())) {
+			Map<String, String> bpnKeyMap = new HashMap<>();
+			bpnKeyMap.put(CommonConstants.MANUFACTURER_PART_ID, singleLevelBoMAsPlanned.getChildManufacturerPartId());
+			bPNDiscoveryUseCaseHandler.run(bpnKeyMap);
+		}
 
 		storeSingleLevelBoMAsPlannedStep.run(singleLevelBoMAsPlanned);
 	}

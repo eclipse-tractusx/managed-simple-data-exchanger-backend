@@ -95,7 +95,7 @@ public class CreateEDCAssetFacilator extends AbstractEDCStepsHelper {
 	private String getCustomValue(List<UsagePolicies> usagePolicies) {
 		if (!CollectionUtils.isEmpty(usagePolicies)) {
 			return usagePolicies.stream().filter(policy -> policy.getType().equals(UsagePolicyEnum.CUSTOM))
-					.map(value -> value.getValue()).findFirst().orElse(null);
+					.map(UsagePolicies::getValue).findFirst().orElse(null);
 		}
 		return null;
 	}

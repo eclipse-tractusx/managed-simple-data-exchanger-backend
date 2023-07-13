@@ -23,10 +23,12 @@ package org.eclipse.tractusx.sde.digitaltwins.entities.response;
 
 import java.util.List;
 
-import org.eclipse.tractusx.sde.digitaltwins.entities.common.Description;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.Endpoint;
+import org.eclipse.tractusx.sde.digitaltwins.entities.common.Extensions;
+import org.eclipse.tractusx.sde.digitaltwins.entities.common.MultiLanguage;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.SemanticId;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AllArgsConstructor;
@@ -39,13 +41,16 @@ import lombok.SneakyThrows;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SubModelResponse {
 
-    private List<Description> description;
+    private List<MultiLanguage> description;
     private String idShort;
-    private String identification;
+    private String id;
     private SemanticId semanticId;
     private List<Endpoint> endpoints;
+    private List<MultiLanguage> displayName;  
+    private Extensions extensions;
 
     @SneakyThrows
     public String toJsonString() {

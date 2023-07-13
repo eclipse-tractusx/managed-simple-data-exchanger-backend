@@ -22,8 +22,6 @@
 
 package org.eclipse.tractusx.sde.submodels.apr.steps;
 
-import static org.eclipse.tractusx.sde.common.constants.CommonConstants.ASSET_PROP_ID;
-
 import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
@@ -62,7 +60,7 @@ public class EDCAspectRelationshipHandlerUseCase extends Step {
 
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
 					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getParentUuid());
-			if (!edcGateway.assetExistsLookup(assetEntryRequest.getAsset().getProperties().get(ASSET_PROP_ID))) {
+			if (!edcGateway.assetExistsLookup(assetEntryRequest.getAsset().getId())) {
 
 				if (CommonConstants.UPDATED_Y.equals(input.getUpdated())
 						&& input.getOldSubmodelIdforUpdateCase() != null) {

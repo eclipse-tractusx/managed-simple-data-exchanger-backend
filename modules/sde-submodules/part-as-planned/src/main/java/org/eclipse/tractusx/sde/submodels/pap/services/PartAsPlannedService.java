@@ -24,7 +24,7 @@ import java.util.Optional;
 
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
-import org.eclipse.tractusx.sde.digitaltwins.facilitator.DeleteDigitalTwinsFacilitator;
+import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsFacilitator;
 import org.eclipse.tractusx.sde.edc.facilitator.DeleteEDCFacilitator;
 import org.eclipse.tractusx.sde.submodels.pap.entity.PartAsPlannedEntity;
 import org.eclipse.tractusx.sde.submodels.pap.mapper.PartAsPlannedMapper;
@@ -45,7 +45,7 @@ public class PartAsPlannedService {
 
 	private final DeleteEDCFacilitator deleteEDCFacilitator;
 
-	private final DeleteDigitalTwinsFacilitator deleteDigitalTwinsFacilitator;
+	private final DigitalTwinsFacilitator deleteDigitalTwinsFacilitator;
 
 	public List<JsonObject> readCreatedTwinsforDelete(String refProcessId) {
 
@@ -67,7 +67,7 @@ public class PartAsPlannedService {
 
 		deleteEDCAsset(partAsPlannedEntity);
 
-		deleteDigitalTwinsFacilitator.deleteDigitalTwinsById(partAsPlannedEntity.getShellId(),
+		deleteDigitalTwinsFacilitator.deleteSubmodelfromShellById(partAsPlannedEntity.getShellId(),
 				partAsPlannedEntity.getSubModelId());
 
 		saveAspectWithDeleted(partAsPlannedEntity);

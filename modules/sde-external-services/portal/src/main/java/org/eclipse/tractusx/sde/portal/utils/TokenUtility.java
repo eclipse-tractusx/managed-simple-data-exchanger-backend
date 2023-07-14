@@ -22,8 +22,7 @@ package org.eclipse.tractusx.sde.portal.utils;
 
 import java.net.URI;
 
-import org.eclipse.tractusx.sde.portal.api.IPortalExternalServiceApi;
-import org.springframework.beans.factory.annotation.Value;
+import org.eclipse.tractusx.sde.common.utils.ITokenUtility;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -37,25 +36,15 @@ import lombok.SneakyThrows;
 @RequiredArgsConstructor
 public class TokenUtility {
 
-	@Value(value = "${digital-twins.authentication.url}")
-	private URI appTokenURI;
+	private final ITokenUtility itokenUtility;
 	
-	@Value(value = "${digital-twins.authentication.clientSecret}")
-	private String appClientSecret;
-
-	@Value(value = "${digital-twins.authentication.clientId}")
-	private String appClientId;
-
-
-	private final IPortalExternalServiceApi portalExternalServiceApi;
-
 	@SneakyThrows
-	public String getValidJWTTokenforAppTechUser() {
+	public String getValidJWTTokenforAppTechUser(URI appTokenURI, String clientId, String clientSecret) {
 		MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
 		body.add("grant_type", "client_credentials");
-		body.add("client_id", appClientId);
-		body.add("client_secret", appClientSecret);
-		var resultBody = portalExternalServiceApi.readAuthToken(appTokenURI, body);
+		body.add("client_id", clientId);
+		body.add("client_secret", clientSecret);
+		var resultBody = itokenUtility.getToken(appTokenURI, body);
 
 		if (resultBody != null) {
 			return resultBody.getAccessToken();
@@ -63,6 +52,7 @@ public class TokenUtility {
 		return null;
 	}
 
+	
 	public String getOriginalRequestAuthToken() {
 		return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest()
 				.getHeader("Authorization");

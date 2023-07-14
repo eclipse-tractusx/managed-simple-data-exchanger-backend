@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023 T-Systems International GmbH
+ * Copyright (c) 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,31 +17,12 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-
-package org.eclipse.tractusx.sde.core.role.entity;
-
-import jakarta.persistence.Cacheable;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@Table(name = "sde_role")
-@Entity
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Cacheable(value = false)
-public class RoleEntity {
-
-	@Id
-	@Column(name = "sde_role")
-	private String sdeRole;
+INSERT INTO sde_permission (sde_permission,description)
+	VALUES ('delete_role','Allows user to delete role');
 	
-	private String description;
-}
+INSERT INTO sde_role_permission_mapping (sde_permission,sde_role)
+	VALUES ('delete_role','Admin');
+
+INSERT INTO sde_role_permission_mapping (sde_permission,sde_role)
+	VALUES ('delete_role','User');
+

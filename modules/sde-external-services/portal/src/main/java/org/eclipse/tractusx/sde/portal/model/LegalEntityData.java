@@ -43,17 +43,22 @@ public class LegalEntityData {
     @Builder
     public static class Content {
         private double score;
-        private LegalEntity legalEntity;
+        private String legalName;
+        private String legalShortName;
+        private String bpnl;
+        private String bpnLegalEntity;
+        private LegalForm legalForm;
+        
     }
 
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static class LegalEntity {
-        private String bpn;
-        private List<Name> names;
-
+    public static class LegalForm {
+        private String technicalKey;
+        private String name;
+        private String abbreviation;
     }
 
     @Data

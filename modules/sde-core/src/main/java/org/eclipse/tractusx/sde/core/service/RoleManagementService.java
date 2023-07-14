@@ -21,12 +21,14 @@
 package org.eclipse.tractusx.sde.core.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
+import org.eclipse.tractusx.sde.core.role.entity.RoleEntity;
 import org.eclipse.tractusx.sde.core.role.entity.RolePermissionEntity;
+import org.eclipse.tractusx.sde.core.role.entity.RolePojo;
 import org.eclipse.tractusx.sde.core.role.repository.RolePermissionCustomRepository;
 import org.eclipse.tractusx.sde.core.role.repository.RolePermissionRepository;
+import org.eclipse.tractusx.sde.core.role.repository.RoleRepository;
 import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
@@ -36,10 +38,15 @@ import lombok.SneakyThrows;
 @AllArgsConstructor
 public class RoleManagementService {
 
+	private final RoleRepository roleRepository;
 	private final RolePermissionRepository rolePermissionRepository;
 	private final RolePermissionCustomRepository rolePermissionCustomRepository;
 
+	@SneakyThrows
 	public String saveRoleWithPermission(String role, List<String> rolemappping) {
+
+		checkRoleExistOrNot(List.of(role));
+
 		List<RolePermissionEntity> allentity = rolemappping.stream()
 				.map(e -> RolePermissionEntity.builder().sdePermission(e).sdeRole(role).build()).toList();
 		rolePermissionRepository.deleteRolePermissionMappingBySdeRole(role);
@@ -54,8 +61,26 @@ public class RoleManagementService {
 
 	@SneakyThrows
 	public List<String> getRolePermission(List<String> role) {
-		List<RolePermissionEntity> allPermission = Optional.ofNullable(rolePermissionRepository.findAll(role))
-				.orElseThrow(() -> new NoDataFoundException(role + " Role not found to update permission"));
+		checkRoleExistOrNot(role);
+		List<RolePermissionEntity> allPermission = rolePermissionRepository.findAll(role);
 		return allPermission.stream().map(RolePermissionEntity::getSdePermission).toList();
+	}
+
+	@SneakyThrows
+	public RolePojo saveRole(RolePojo role) {
+		roleRepository.save(RoleEntity.builder().sdeRole(role.getRole()).description(role.getDescription()).build());
+		return role;
+	}
+
+	@SneakyThrows
+	private void checkRoleExistOrNot(List<String> role) {
+		if (roleRepository.findAllById(role).isEmpty())
+			throw new NoDataFoundException(role + " role does not exist in SDE");
+	}
+
+	public void deleteRole(String role) {
+		checkRoleExistOrNot(List.of(role));
+		rolePermissionRepository.deleteRolePermissionMappingBySdeRole(role);
+		roleRepository.deleteById(role);
 	}
 }

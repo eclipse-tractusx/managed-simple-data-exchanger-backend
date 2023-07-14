@@ -17,47 +17,57 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-package org.eclipse.tractusx.sde.bpndiscovery.utils;
+
+package org.eclipse.tractusx.sde.portal.api;
 
 import java.net.URI;
 import java.util.Base64;
 
-import org.eclipse.tractusx.sde.bpndiscovery.api.IBpndiscoveryExternalServiceApi;
-import org.eclipse.tractusx.sde.common.exception.ServiceException;
+import org.eclipse.tractusx.sde.portal.utils.TokenUtility;
+import org.hibernate.service.spi.ServiceException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
+import org.springframework.context.annotation.Bean;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import lombok.RequiredArgsConstructor;
+import feign.RequestInterceptor;
+import feign.RequestTemplate;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
-@Component
-@RequiredArgsConstructor
-public class BpnDiscoveryAuthToken {
+public class PartnerPoolExternalServiceApiConfiguration {
 
-	private final IBpndiscoveryExternalServiceApi bpndiscoveryExternalServiceApi;
+	@Bean(name = "partnerPoolExternalServiceApiInterceptor")
+	public PartnerPoolExternalServiceApiInterceptor appRequestInterceptor() {
+		return new PartnerPoolExternalServiceApiInterceptor();
+	}
+}
 
-	private static final String CLIENT_ID = "client_id";
-	private static final String CLIENT_SECRET = "client_secret";
-	private static final String GRANT_TYPE = "grant_type";
+@Slf4j
+class PartnerPoolExternalServiceApiInterceptor implements RequestInterceptor {
 
-	@Value(value = "${discovery.authentication.url}")
-	private URI authTokenUrl;
+	@Value(value = "${partner.pool.authentication.url}")
+	private URI appTokenURI;
 
-	@Value(value = "${discovery.clientId}")
-	private String clientId;
+	@Value(value = "${partner.pool.clientSecret}")
+	private String appClientSecret;
 
-	@Value(value = "${discovery.clientSecret}")
-	private String clientSecret;
+	@Value(value = "${partner.pool.clientId}")
+	private String appClientId;
 
-	@Value(value = "${discovery.grantType}")
-	private String grantType;
+
+	@Autowired
+	private TokenUtility tokenUtility;
 
 	private String accessToken;
+
+	@Override
+	public void apply(RequestTemplate template) {
+		template.header("Authorization", getToken());
+		log.debug("Bearer authentication applied for PartnerPoolExternalServiceApiInterceptor");
+	}
 
 	@SneakyThrows
 	public String getToken() {
@@ -65,22 +75,11 @@ public class BpnDiscoveryAuthToken {
 			if (accessToken != null && isTokenValid()) {
 				return "Bearer " + accessToken;
 			}
-
-			MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-			body.add(GRANT_TYPE, grantType);
-			body.add(CLIENT_ID, clientId);
-			body.add(CLIENT_SECRET, clientSecret);
-
-			var resultBody = bpndiscoveryExternalServiceApi.getBpnDiscoveryAuthToken(authTokenUrl, body);
-
-			if (resultBody != null) {
-				accessToken = resultBody.getAccessToken();
-				return "Bearer " + accessToken;
-			}
+			accessToken = tokenUtility.getValidJWTTokenforAppTechUser(appTokenURI, appClientId, appClientSecret);
+			return "Bearer " + accessToken;
 		} catch (Exception e) {
-			throw new ServiceException("Unable to process auth request: " + authTokenUrl + ", " + e.getMessage());
+			throw new ServiceException("Unable to process auth request: " + appTokenURI + ", " + e.getMessage());
 		}
-		return null;
 	}
 
 	@SneakyThrows

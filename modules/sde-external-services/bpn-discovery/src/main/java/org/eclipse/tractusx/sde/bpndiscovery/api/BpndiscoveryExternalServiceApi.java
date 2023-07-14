@@ -54,14 +54,17 @@ class BpndiscoveryExternalServiceApiInterceptor implements RequestInterceptor {
 	private static final String CLIENT_SECRET = "client_secret";
 	private static final String GRANT_TYPE =  "client_credentials";
 
-	@Value(value = "${portal.backend.authentication.url}")
+	@Value(value = "${discovery.authentication.url}")
 	private URI appTokenURI;
 
-	@Value(value = "${portal.backend.clientId}")
+	@Value(value = "${discovery.clientId}")
 	private String appClientId;
 
-	@Value(value = "${portal.backend.clientSecret}")
+	@Value(value = "${discovery.clientSecret}")
 	private String appClientSecret;
+
+	@Value(value = "${discovery.grantType}")
+	private String grantType;
 
 	@Autowired
 	private ITokenUtility tokenUtility;

@@ -84,7 +84,7 @@ class BpndiscoveryExternalServiceApiInterceptor implements RequestInterceptor {
 				return "Bearer " + accessToken;
 			}
 			MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-			body.add(GRANT_TYPE,  GRANT_TYPE);
+			body.add(GRANT_TYPE,  grantType);
 			body.add(CLIENT_ID, appClientId);
 			body.add(CLIENT_SECRET, appClientSecret);
 

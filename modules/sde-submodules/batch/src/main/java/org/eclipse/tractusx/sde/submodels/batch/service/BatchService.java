@@ -24,7 +24,7 @@ import java.util.Optional;
 
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
-import org.eclipse.tractusx.sde.digitaltwins.facilitator.DeleteDigitalTwinsFacilitator;
+import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsFacilitator;
 import org.eclipse.tractusx.sde.edc.facilitator.DeleteEDCFacilitator;
 import org.eclipse.tractusx.sde.submodels.batch.entity.BatchEntity;
 import org.eclipse.tractusx.sde.submodels.batch.mapper.BatchMapper;
@@ -48,7 +48,7 @@ public class BatchService {
 
 	private final DeleteEDCFacilitator deleteEDCFacilitator;
 
-	private final DeleteDigitalTwinsFacilitator deleteDigitalTwinsFacilitator;
+	private final DigitalTwinsFacilitator deleteDigitalTwinsFacilitator;
 
 	public List<JsonObject> readCreatedTwinsforDelete(String refProcessId) {
 
@@ -69,7 +69,8 @@ public class BatchService {
 
 		deleteEDCAsset(batchEntity);
 
-		deleteDigitalTwinsFacilitator.deleteDigitalTwinsById(batchEntity.getShellId(), batchEntity.getSubModelId());
+		deleteDigitalTwinsFacilitator.deleteSubmodelfromShellById(batchEntity.getShellId(),
+				batchEntity.getSubModelId());
 
 		saveBatchWithDeleted(batchEntity);
 	}

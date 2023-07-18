@@ -1,7 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023 T-Systems International GmbH
+ * Copyright (c) 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -18,29 +17,26 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-
-package org.eclipse.tractusx.sde.digitaltwins.entities.response;
+package org.eclipse.tractusx.sde.digitaltwins.entities.common;
 
 import java.util.List;
 
-import org.eclipse.tractusx.sde.digitaltwins.entities.common.KeyValuePair;
-import org.eclipse.tractusx.sde.digitaltwins.entities.common.MultiLanguage;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ShellDescriptorResponse {
-	private String idShort;
-	@JsonProperty("id")
-	private String identification;
-	private List<MultiLanguage> description;
-	private String globalAssetId;
-	private List<KeyValuePair> specificAssetIds;
-	private List<SubModelResponse> submodelDescriptors;
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class Reference {
+	
+	private String type;
+	private List<Keys> keys;
+	
+
 }

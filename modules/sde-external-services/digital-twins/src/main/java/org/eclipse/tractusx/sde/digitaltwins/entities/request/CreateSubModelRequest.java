@@ -23,10 +23,11 @@ package org.eclipse.tractusx.sde.digitaltwins.entities.request;
 
 import java.util.List;
 
-import org.eclipse.tractusx.sde.digitaltwins.entities.common.Description;
+import org.eclipse.tractusx.sde.digitaltwins.entities.common.MultiLanguage;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.Endpoint;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.SemanticId;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AllArgsConstructor;
@@ -41,9 +42,9 @@ import lombok.SneakyThrows;
 @Getter
 public class CreateSubModelRequest {
 
-    private List<Description> description;
+    private List<MultiLanguage> description;
     private String idShort;
-    private String identification;
+    private String id;
     private SemanticId semanticId;
     private List<Endpoint> endpoints;
 

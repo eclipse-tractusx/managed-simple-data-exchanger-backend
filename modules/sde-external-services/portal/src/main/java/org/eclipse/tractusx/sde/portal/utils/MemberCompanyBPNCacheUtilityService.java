@@ -58,7 +58,7 @@ public class MemberCompanyBPNCacheUtilityService {
 	@CacheEvict(value = "memberCompaniesList", allEntries = true)
 	@Scheduled(fixedRateString = "3600000")
 	public void removeAllBPNNumberCache() {
-		log.info("All member companies BPN cache removed from cache");
+		log.info("All member companies BPN cache removed");
 	}
 
 }

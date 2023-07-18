@@ -17,20 +17,24 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-package org.eclipse.tractusx.sde.bpndiscovery.model.response;
+package org.eclipse.tractusx.sde.digitaltwins.entities.common;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-public class KeycloakJWTTokenResponse {
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class Extensions {
 	
-	@JsonProperty("access_token")
-	private String accessToken;
-	@JsonProperty("expires_in")
-	private Integer expiresIn;
-	@JsonProperty("token_type")
-	private String tokenType;
-	private String scope;
+	private List<Reference> supplementalSemanticIds;
+	private List<Reference> refersTo;
 }

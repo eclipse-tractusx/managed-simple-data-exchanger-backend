@@ -21,7 +21,16 @@
 
 package org.eclipse.tractusx.sde.digitaltwins.entities.response;
 
-import java.util.ArrayList;
+import java.util.List;
 
-public class SubModelListResponse extends ArrayList<SubModelResponse> {
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import lombok.Data;
+
+@Data
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class SubModelListResponse {
+	
+	private List<SubModelResponse> result;
+	
 }

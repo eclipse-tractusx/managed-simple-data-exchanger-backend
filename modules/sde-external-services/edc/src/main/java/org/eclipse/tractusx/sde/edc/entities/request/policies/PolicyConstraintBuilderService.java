@@ -33,7 +33,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class PolicyConstraintBuilderService {
 
-	public List<ConstraintRequest> getAccessConstraints(List<String> bpnNumbers) {
+	public ActionRequest getAccessConstraints(List<String> bpnNumbers) {
 		List<ConstraintRequest> constraints = new ArrayList<>();
 
 		if (bpnNumbers != null && !bpnNumbers.isEmpty()) {
@@ -42,17 +42,29 @@ public class PolicyConstraintBuilderService {
 				constraints.add(accessPolicy.toConstraint());
 			});
 		}
-		return constraints;
+		ActionRequest action = ActionRequest.builder().build();
+		action.addProperty("@type", "LogicalConstraint");
+		action.addProperty("odrl:or", constraints);
+		return action;
 	}
 
-	public List<ConstraintRequest> getUsagePolicyConstraints(List<UsagePolicies> usagePolicies) {
+	public ActionRequest getUsagePolicyConstraints(List<UsagePolicies> usagePolicies) {
 		List<ConstraintRequest> usageConstraintList = new ArrayList<>();
 		if (usagePolicies != null && !usagePolicies.isEmpty()) {
 			usagePolicies.stream().forEach(policy -> {
 				usagePolicy(usageConstraintList, policy);
 			});
 		}
-		return usageConstraintList;
+
+		if (usageConstraintList.isEmpty())
+			return null;
+		else {
+			ActionRequest action = ActionRequest.builder().build();
+			action.addProperty("@type", "LogicalConstraint");
+			action.addProperty("odrl:and", usageConstraintList);
+			return action;
+
+		}
 	}
 
 	private void usagePolicy(List<ConstraintRequest> usageConstraintList, UsagePolicies policy) {

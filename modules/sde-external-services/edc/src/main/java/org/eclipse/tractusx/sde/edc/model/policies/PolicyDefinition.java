@@ -20,22 +20,22 @@
 
 package org.eclipse.tractusx.sde.edc.model.policies;
 
+import java.util.List;
+import java.util.Map;
+
+import org.eclipse.tractusx.sde.edc.entities.request.policies.PermissionRequest;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.eclipse.tractusx.sde.edc.entities.request.policies.PermissionRequest;
 
 @Data
 @Builder
@@ -45,18 +45,31 @@ import org.eclipse.tractusx.sde.edc.entities.request.policies.PermissionRequest;
 @JsonInclude(Include.NON_NULL)
 public class PolicyDefinition {
 
-    private ArrayList<PermissionRequest> permissions;
-    private ArrayList<Prohibition> prohibitions;
-    private ArrayList<Obligation> obligations;
+	@JsonProperty("@id")
+	private String id;
+	
+	@JsonProperty("odrl:permission")
+    private PermissionRequest permissions;
+	
+	@JsonProperty("odrl:prohibition")
+    private List<Prohibition> prohibitions;
+	
+	@JsonProperty( "odrl:obligation")
+    private List<Obligation> obligations;
+	
     private Map<String, String> extensibleProperties;
+    
     private String inheritsFrom;
+    
     private String assigner;
+    
     private String assignee;
+    
     private String target;
     
     @JsonProperty("@type")
-    private HashMap<String, String> type;
-
+    private String type;
+    
     @SneakyThrows
     public String toJsonString() {
         final ObjectMapper mapper = new ObjectMapper();

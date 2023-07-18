@@ -253,12 +253,19 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 
 		List<String> dtURls = new ArrayList<>();
 
+		String filterExpression = String.format("""
+				 "filterExpression": [{
+				    "operandLeft": "https://w3id.org/edc/v0.0.1/ns/type",
+				    "operator": "=",
+				    "operandRight": "data.core.digitalTwinRegistry"
+				}]""");
+
 		connectorInfos.stream().forEach(
 				connectorInfo -> connectorInfo.getConnectorEndpoint().parallelStream().distinct().forEach(connector -> {
 					try {
 
 						List<QueryDataOfferModel> queryDataOfferModel = consumerControlPanelService
-								.queryOnDataOffers(connector, 0, 100);
+								.queryOnDataOffers(connector, 0, 100, filterExpression);
 
 						log.info("For Connector " + connector + ", found asset :" + queryDataOfferModel.size());
 

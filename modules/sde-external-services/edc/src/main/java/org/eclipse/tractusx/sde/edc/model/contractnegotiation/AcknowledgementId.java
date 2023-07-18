@@ -21,6 +21,8 @@
 package org.eclipse.tractusx.sde.edc.model.contractnegotiation;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,5 +35,6 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AcknowledgementId {
 
+	@JsonProperty("@id")
 	private String id;
 }

@@ -21,12 +21,10 @@
 package org.eclipse.tractusx.sde.edc.mapper;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
-import org.eclipse.tractusx.sde.edc.entities.request.policies.PermissionRequest;
+import org.eclipse.tractusx.sde.edc.entities.request.policies.ActionRequest;
+import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyRequestFactory;
-import org.eclipse.tractusx.sde.edc.model.policies.PolicyDefinition;
 import org.mapstruct.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -36,12 +34,14 @@ public abstract class ContractPolicyMapper {
     @Autowired
     PolicyRequestFactory policyRequestFactory;
 
-    public PolicyDefinition preparePolicy(String assetId, List<ConstraintRequest> constraintRequests) {
+    public PolicyRequest preparePolicy(String assetId, ActionRequest action) {
 
-        ArrayList<PermissionRequest> permissions = new ArrayList<>();
-        permissions.addAll(policyRequestFactory.getPermissions(assetId, constraintRequests));
-
-        return PolicyDefinition.builder().permissions(permissions)
-                .prohibitions(new ArrayList<>()).obligations(new ArrayList<>()).build();
+        return PolicyRequest.builder()
+        		.type("odrl:Set")
+				.target(assetId)
+				.permissions(policyRequestFactory.getPermissions(assetId, action))
+                .prohibitions(new ArrayList<>())
+                .obligations(new ArrayList<>())
+                .build();
     }
 }

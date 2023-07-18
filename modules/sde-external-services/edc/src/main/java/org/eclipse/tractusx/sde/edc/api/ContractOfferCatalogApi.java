@@ -20,19 +20,15 @@
 
 package org.eclipse.tractusx.sde.edc.api;
 
-import org.eclipse.tractusx.sde.edc.model.contractoffers.ContractOffersCatalogResponse;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.Map;
+import com.fasterxml.jackson.databind.JsonNode;
 
-@FeignClient(value = "ContractOfferCatalogApi", url = "${edc.consumer.hostname}")
+@FeignClient(value = "ContractOfferCatalogApi", url = "${edc.consumer.hostname}${edc.consumer.managementpath:/data/v2}", configuration = EDCDataConsumerConfiguration.class)
 public interface ContractOfferCatalogApi {
-    @GetMapping(value = "/data/catalog")
-    public ContractOffersCatalogResponse getContractOffersCatalog(
-            @RequestHeader Map<String, String> requestHeader,
-            @RequestParam String providerUrl, @RequestParam("limit") Integer limit,
-			@RequestParam("offset") Integer offset);
+
+	@PostMapping(value = "/catalog/request")
+	public JsonNode getContractOffersCatalog(@RequestBody JsonNode body);
 }

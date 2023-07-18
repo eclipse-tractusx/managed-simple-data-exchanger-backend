@@ -21,5 +21,5 @@
 package org.eclipse.tractusx.sde.edc.enums;
 
 public enum NegotiationState {
-    CONFIRMED,DECLINED,ERROR
+	FINALIZED, TERMINATED, CANCELED, DECLINED, ERROR
 }

@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
+- Support EDC version 0.5.1
+- Support AAS version 0.3
+
+## [2.0.6] - 2023-07-12
+### Added
 - Renamed SerialPartTypization aspect submodel to SerialPart.
 - Renamed AssemblyPartRelationship aspect submodel to SingleLevelBoMAsBuilt. 
 
@@ -162,7 +167,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Compliance with Catena-X Guidelines
 - Integration with Digital Twin registry service.
 
-[unreleased]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/dftbackend-2.0.5...main
+[unreleased]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/dftbackend-2.0.6...main
+[2.0.6]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/dftbackend-2.0.5...dftbackend-2.0.6
 [2.0.5]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/dftbackend-2.0.4...dftbackend-2.0.5
 [2.0.4]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/dftbackend-2.0.3...dftbackend-2.0.4
 [2.0.3]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/dftbackend-2.0.2...dftbackend-2.0.3

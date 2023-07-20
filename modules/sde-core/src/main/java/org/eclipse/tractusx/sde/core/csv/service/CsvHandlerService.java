@@ -36,6 +36,7 @@ import java.util.Objects;
 import java.util.Scanner;
 import java.util.UUID;
 
+import org.apache.commons.io.IOExceptionList;
 import org.eclipse.tractusx.sde.common.entities.csv.CsvContent;
 import org.eclipse.tractusx.sde.common.entities.csv.RowData;
 import org.eclipse.tractusx.sde.common.exception.CsvException;
@@ -138,9 +139,10 @@ public class CsvHandlerService {
         return csvContent;
     }
 
-    public boolean deleteFile(String fileName) {
+    public boolean deleteFile(String fileName) throws IOException {
         File file = new File(getFilePath(fileName));
-        return file.delete();
+        Files.delete(file.toPath());
+        return true;
     }
 
     public String getFilePath(String fileName) {

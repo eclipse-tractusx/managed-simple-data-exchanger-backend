@@ -20,6 +20,7 @@
 
 package org.eclipse.tractusx.sde.edc.entities.request.policies.usagepolicy;
 
+import lombok.Data;
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.DurationEnum;
 import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
@@ -33,6 +34,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
+@Data
 public class DurationPolicyDTO extends UsagePolicyDTO {
 	private DurationEnum durationUnit;
 

@@ -1,5 +1,5 @@
 # our base build image
-FROM maven:3.9.0-eclipse-temurin-19 as build
+FROM maven:3.9.0-eclipse-temurin-19 AS build
 
 # copy the project files
 COPY ../pom.xml ./pom.xml

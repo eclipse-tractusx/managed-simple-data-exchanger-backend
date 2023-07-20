@@ -22,6 +22,7 @@ package org.eclipse.tractusx.sde.portal.utils;
 
 import java.net.URI;
 
+import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.common.utils.ITokenUtility;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -52,10 +53,14 @@ public class TokenUtility {
 		return null;
 	}
 
-	
-	public String getOriginalRequestAuthToken() {
-		return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest()
-				.getHeader("Authorization");
+	public String getOriginalRequestAuthToken() throws ServiceException {
+		ServletRequestAttributes reqAtt = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		if(reqAtt != null) {
+			return reqAtt.getRequest()
+					.getHeader("Authorization");
+		} else {
+			throw new ServiceException("Auth token is not present");
+		}
 	}
 
 }

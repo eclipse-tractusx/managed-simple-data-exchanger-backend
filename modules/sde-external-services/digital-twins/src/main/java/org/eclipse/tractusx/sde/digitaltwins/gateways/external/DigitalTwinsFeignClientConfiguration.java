@@ -1,7 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023 T-Systems International GmbH
+ * Copyright (c) 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,16 +18,26 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.digitaltwins.entities.response;
+package org.eclipse.tractusx.sde.digitaltwins.gateways.external;
 
-import java.util.List;
+import org.springframework.context.annotation.Bean;
 
-import lombok.Data;
+import feign.RequestInterceptor;
+import feign.RequestTemplate;
 
-@Data
-public class ShellLookupResponse {
-	
-	private Paging paging_metadata;
-	
-	private List<String> result;
+public class DigitalTwinsFeignClientConfiguration {
+
+	@Bean(name = "digitalTwinsFeignClientConfigurationInterceptor")
+	public DigitalTwinsFeignClientConfigurationInterceptor appRequestInterceptor() {
+		return new DigitalTwinsFeignClientConfigurationInterceptor();
+	}
+}
+
+class DigitalTwinsFeignClientConfigurationInterceptor implements RequestInterceptor {
+
+	@Override
+	public void apply(RequestTemplate template) {
+	    
+	}
+
 }

@@ -60,25 +60,24 @@ public class DigitalTwinsFacilitator {
 	@Value(value = "${digital-twins.api:/api/v3.0}")
 	private String dtApiUri;
 
-	public ShellLookupResponse shellLookup(ShellLookupRequest request) throws ServiceException {
+	public List<String> shellLookup(ShellLookupRequest request) throws ServiceException {
 		return shellLookupFromDDTR(request, null);
 	}
 
 	@SneakyThrows
-	public ShellLookupResponse shellLookupFromDDTR(ShellLookupRequest request, String ddtrUrl) throws ServiceException {
+	public List<String> shellLookupFromDDTR(ShellLookupRequest request, String ddtrUrl) throws ServiceException {
 
 		URI dtURL = (ddtrUrl == null || ddtrUrl.length() <= 0) ? getDtURL(digitalTwinsHost) : getDtURL(ddtrUrl);
 
-		ShellLookupResponse responseBody = null;
+		List<String> shellIds = List.of();
 
 		try {
 			ResponseEntity<ShellLookupResponse> response = digitalTwinsFeignClient.shellLookup(dtURL,
 					request.toJsonString(), getHeaders());
 
 			if (response.getStatusCode() != HttpStatus.OK) {
-				responseBody = new ShellLookupResponse();
 			} else {
-				responseBody = response.getBody();
+				shellIds = response.getBody().getResult();
 			}
 		} catch (Exception e) {
 			String error = "Error in lookup DT lookup:" + ddtrUrl + ", " + request.toJsonString() + ", "
@@ -86,7 +85,7 @@ public class DigitalTwinsFacilitator {
 			log.error(error);
 			throw new ServiceException(error);
 		}
-		return responseBody;
+		return shellIds;
 	}
 
 	@SneakyThrows

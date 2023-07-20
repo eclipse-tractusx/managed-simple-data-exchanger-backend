@@ -40,7 +40,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(value = "DigitalTwinsFeignClient", url = "placeholder")
+@FeignClient(value = "DigitalTwinsFeignClient", url = "placeholder", configuration =DigitalTwinsFeignClientConfiguration.class)
 public interface DigitalTwinsFeignClient {
 
 	@PostMapping

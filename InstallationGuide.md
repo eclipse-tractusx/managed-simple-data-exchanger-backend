@@ -39,7 +39,7 @@ For more details, please refer configuration section from [README.md](README.md)
 When a file .csv is uploaded, the program checks whether the file is a SerialPartTypization or an AssemblyPartRelationship and there is a pipeline for each one.
 Apart from both upload Batch upload is additional feature were added into DFT.
 
-<b>For Serial Part Typization:</b>
+<b>For Serial Part:</b>
 
 1. Maps the content of the line with an Serial Part Typization Aspect.
 2. Generates the UUID if it does not contain a UUID.
@@ -47,7 +47,7 @@ Apart from both upload Batch upload is additional feature were added into DFT.
 4. Create Asset in EDC Connector.
 5. Stores the line in the database.
 
-<b>For Assembly Part Relationship:</b>
+<b>For Single Level BoM As Built:</b>
 
 1. Maps the content of the line with an Assembly Part Relationship Aspect Relationship.
 2. checks if an Serial Part Typization Aspect exists so it can be related to that Aspect.

@@ -23,9 +23,8 @@ package org.eclipse.tractusx.sde.digitaltwins.entities.request;
 
 import java.util.List;
 
-import org.eclipse.tractusx.sde.digitaltwins.entities.common.Description;
-import org.eclipse.tractusx.sde.digitaltwins.entities.common.GlobalAssetId;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.KeyValuePair;
+import org.eclipse.tractusx.sde.digitaltwins.entities.common.MultiLanguage;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -42,9 +41,9 @@ import lombok.SneakyThrows;
 public class ShellDescriptorRequest {
 
     private String idShort;
-    private String identification;
-    private List<Description> description;
-    private GlobalAssetId globalAssetId;
+    private String id;
+    private List<MultiLanguage> description;
+    private String globalAssetId;
     private List<KeyValuePair> specificAssetIds;
 
     @SneakyThrows

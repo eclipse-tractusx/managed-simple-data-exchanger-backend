@@ -20,18 +20,13 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.submodels.pap.steps;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseException;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
-import org.eclipse.tractusx.sde.digitaltwins.entities.common.Endpoint;
-import org.eclipse.tractusx.sde.digitaltwins.entities.common.GlobalAssetId;
-import org.eclipse.tractusx.sde.digitaltwins.entities.common.KeyValuePair;
-import org.eclipse.tractusx.sde.digitaltwins.entities.common.SemanticId;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.CreateSubModelRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellDescriptorRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellLookupRequest;
@@ -39,22 +34,21 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorRe
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellLookupResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelListResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelResponse;
+import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsFacilitator;
 import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsUtility;
-import org.eclipse.tractusx.sde.digitaltwins.gateways.external.DigitalTwinGateway;
 import org.eclipse.tractusx.sde.submodels.pap.model.PartAsPlanned;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 @Service
+@RequiredArgsConstructor
 public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 
-	@Autowired
-	private DigitalTwinGateway gateway;
+	private final DigitalTwinsFacilitator digitalTwinsFacilitator;
 
-	@Autowired
-	private DigitalTwinsUtility digitalTwinsUtility;
+	private final DigitalTwinsUtility digitalTwinsUtility;
 
 	@SneakyThrows
 	public PartAsPlanned run(PartAsPlanned partAsPlannedAspect) throws CsvHandlerDigitalTwinUseCaseException {
@@ -69,14 +63,15 @@ public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 	@SneakyThrows
 	private PartAsPlanned doRun(PartAsPlanned partAsPlannedAspect) throws CsvHandlerDigitalTwinUseCaseException {
 		ShellLookupRequest shellLookupRequest = getShellLookupRequest(partAsPlannedAspect);
-		ShellLookupResponse shellIds = gateway.shellLookup(shellLookupRequest);
+		ShellLookupResponse shellIds = digitalTwinsFacilitator.shellLookup(shellLookupRequest);
 
 		String shellId;
 
 		if (shellIds.isEmpty()) {
 			logDebug(String.format("No shell id for '%s'", shellLookupRequest.toJsonString()));
-			ShellDescriptorRequest aasDescriptorRequest = getShellDescriptorRequest(partAsPlannedAspect);
-			ShellDescriptorResponse result = gateway.createShellDescriptor(aasDescriptorRequest);
+			ShellDescriptorRequest aasDescriptorRequest = digitalTwinsUtility
+					.getShellDescriptorRequest(getSpecificAssetIds(partAsPlannedAspect), partAsPlannedAspect);
+			ShellDescriptorResponse result = digitalTwinsFacilitator.createShellDescriptor(aasDescriptorRequest);
 			shellId = result.getIdentification();
 			logDebug(String.format("Shell created with id '%s'", shellId));
 		} else if (shellIds.size() == 1) {
@@ -89,20 +84,21 @@ public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 		}
 
 		partAsPlannedAspect.setShellId(shellId);
-		SubModelListResponse subModelResponse = gateway.getSubModels(shellId);
+		SubModelListResponse subModelResponse = digitalTwinsFacilitator.getSubModels(shellId);
 		SubModelResponse foundSubmodel = null;
 		if (subModelResponse != null) {
-			foundSubmodel = subModelResponse.stream().filter(x -> getIdShortOfModel().equals(x.getIdShort()))
+			foundSubmodel = subModelResponse.getResult().stream().filter(x -> getIdShortOfModel().equals(x.getIdShort()))
 					.findFirst().orElse(null);
 			if (foundSubmodel != null)
-				partAsPlannedAspect.setSubModelId(foundSubmodel.getIdentification());
+				partAsPlannedAspect.setSubModelId(foundSubmodel.getId());
 		}
 
 		if (subModelResponse == null || foundSubmodel == null) {
 			logDebug(String.format("No submodels for '%s'", shellId));
-			CreateSubModelRequest createSubModelRequest = getCreateSubModelRequest(partAsPlannedAspect);
-			gateway.createSubModel(shellId, createSubModelRequest);
-			partAsPlannedAspect.setSubModelId(createSubModelRequest.getIdentification());
+			CreateSubModelRequest createSubModelRequest = digitalTwinsUtility.getCreateSubModelRequest(
+					partAsPlannedAspect.getShellId(), getsemanticIdOfModel(), getIdShortOfModel());
+			digitalTwinsFacilitator.createSubModel(shellId, createSubModelRequest);
+			partAsPlannedAspect.setSubModelId(createSubModelRequest.getId());
 		} else {
 			partAsPlannedAspect.setUpdated(CommonConstants.UPDATED_Y);
 			logDebug("Complete Digital Twins Update Update Digital Twins");
@@ -110,48 +106,22 @@ public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 
 		return partAsPlannedAspect;
 	}
-
+	
 	private ShellLookupRequest getShellLookupRequest(PartAsPlanned partAsPlannedAspect) {
 
 		ShellLookupRequest shellLookupRequest = new ShellLookupRequest();
-		shellLookupRequest.addLocalIdentifier(CommonConstants.MANUFACTURER_PART_ID,
-				partAsPlannedAspect.getManufacturerPartId());
-		shellLookupRequest.addLocalIdentifier(CommonConstants.MANUFACTURER_ID,
-				digitalTwinsUtility.getManufacturerId());
-		shellLookupRequest.addLocalIdentifier(CommonConstants.ASSET_LIFECYCLE_PHASE,
-				CommonConstants.AS_PLANNED);
+		getSpecificAssetIds(partAsPlannedAspect).entrySet().stream()
+				.forEach(entry -> shellLookupRequest.addLocalIdentifier(entry.getKey(), entry.getValue()));
 
 		return shellLookupRequest;
 	}
 
-	private CreateSubModelRequest getCreateSubModelRequest(PartAsPlanned partAsPlannedAspect) {
+	private Map<String, String> getSpecificAssetIds(PartAsPlanned partAsPlannedAspect) {
+		Map<String, String> specificIdentifiers = new HashMap<>();
+		specificIdentifiers.put(CommonConstants.MANUFACTURER_PART_ID, partAsPlannedAspect.getManufacturerPartId());
+		specificIdentifiers.put(CommonConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId());
+		specificIdentifiers.put(CommonConstants.ASSET_LIFECYCLE_PHASE, CommonConstants.AS_PLANNED);
 
-		ArrayList<String> value = new ArrayList<>();
-		value.add(getsemanticIdOfModel());
-		SemanticId semanticId = new SemanticId(value);
-		String identification = CommonConstants.PREFIX + UUID.randomUUID();
-
-		List<Endpoint> endpoints = digitalTwinsUtility.prepareDtEndpoint(partAsPlannedAspect.getShellId(),
-				identification);
-
-		return CreateSubModelRequest.builder().idShort(getIdShortOfModel()).identification(identification)
-				.semanticId(semanticId).endpoints(endpoints).build();
-	}
-
-	private ShellDescriptorRequest getShellDescriptorRequest(PartAsPlanned partAsPlannedAspect) {
-
-		ArrayList<KeyValuePair> specificIdentifiers = new ArrayList<>();
-		specificIdentifiers.add(new KeyValuePair(CommonConstants.MANUFACTURER_PART_ID,partAsPlannedAspect.getManufacturerPartId()));
-		specificIdentifiers.add(new KeyValuePair(CommonConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId()));
-		specificIdentifiers.add(new KeyValuePair(CommonConstants.ASSET_LIFECYCLE_PHASE, CommonConstants.AS_PLANNED));
-		List<String> values = new ArrayList<>();
-		values.add(partAsPlannedAspect.getUuid());
-		GlobalAssetId globalIdentifier = new GlobalAssetId(values);
-
-		return ShellDescriptorRequest.builder()
-				.idShort(String.format("%s_%s_%s", partAsPlannedAspect.getNameAtManufacturer(),
-						digitalTwinsUtility.getManufacturerId(), partAsPlannedAspect.getManufacturerPartId()))
-				.globalAssetId(globalIdentifier).specificAssetIds(specificIdentifiers)
-				.identification(CommonConstants.PREFIX + UUID.randomUUID()).build();
+		return specificIdentifiers;
 	}
 }

@@ -1,7 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023 T-Systems International GmbH
+ * Copyright (c) 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,18 +18,8 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.digitaltwins.entities.response;
+ALTER TABLE IF EXISTS contract_negotiation_info ADD id varchar NOT NULL;
+ALTER TABLE IF EXISTS contract_negotiation_info DROP CONSTRAINT contract_negotiation_info_pkey;
+ALTER TABLE IF EXISTS contract_negotiation_info ADD CONSTRAINT contract_negotiation_info_pk PRIMARY KEY (id);
+ALTER TABLE IF EXISTS contract_negotiation_info ALTER COLUMN offer_id TYPE text USING offer_id::text;
 
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-import lombok.Data;
-
-@Data
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class SubModelListResponse {
-	
-	private List<SubModelResponse> result;
-	
-}

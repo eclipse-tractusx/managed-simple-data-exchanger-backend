@@ -25,15 +25,36 @@ import static org.springframework.http.ResponseEntity.ok;
 
 import java.time.LocalDateTime;
 
+import org.eclipse.tractusx.sde.portal.utils.MemberCompanyBPNCacheUtilityService;
+import org.eclipse.tractusx.sde.submodels.apr.steps.DigitalTwinsAspectRelationShipCsvHandlerUseCase;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
+
 @RestController
+@RequiredArgsConstructor
 public class PingController {
 
-    @GetMapping(value = "/ping")
-    public ResponseEntity<String> getProcessReportById() {
-        return ok().body(LocalDateTime.now().toString());
-    }
+	private final DigitalTwinsAspectRelationShipCsvHandlerUseCase digitalTwinsAspectRelationShipCsvHandlerUseCase;
+
+	private final MemberCompanyBPNCacheUtilityService memberCompanyBPNCacheUtilityService;
+
+	@GetMapping(value = "/ping")
+	public ResponseEntity<String> getProcessReportById() {
+		return ok().body(LocalDateTime.now().toString());
+	}
+
+	@GetMapping(value = "/cache/clear-memebercompany-bpnnumber")
+	public ResponseEntity<String> clearBpnnumberCache() {
+		memberCompanyBPNCacheUtilityService.removeAllBPNNumberCache();
+		return ok().body("Cleared");
+	}
+
+	@GetMapping(value = "/cache/clear-ddtrurl")
+	public ResponseEntity<String> clearDdtrurlCache() {
+		digitalTwinsAspectRelationShipCsvHandlerUseCase.clearDDTRUrlCache();
+		return ok().body("Cleared");
+	}
 }

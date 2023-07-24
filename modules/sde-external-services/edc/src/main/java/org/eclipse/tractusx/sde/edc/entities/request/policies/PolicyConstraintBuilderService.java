@@ -51,9 +51,7 @@ public class PolicyConstraintBuilderService {
 	public ActionRequest getUsagePolicyConstraints(List<UsagePolicies> usagePolicies) {
 		List<ConstraintRequest> usageConstraintList = new ArrayList<>();
 		if (usagePolicies != null && !usagePolicies.isEmpty()) {
-			usagePolicies.stream().forEach(policy -> {
-				usagePolicy(usageConstraintList, policy);
-			});
+			usagePolicies.stream().forEach(policy -> usagePolicy(usageConstraintList, policy));
 		}
 
 		if (usageConstraintList.isEmpty())

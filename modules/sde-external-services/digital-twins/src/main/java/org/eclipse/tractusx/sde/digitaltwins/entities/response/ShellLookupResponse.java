@@ -23,12 +23,15 @@ package org.eclipse.tractusx.sde.digitaltwins.entities.response;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Data;
 
 @Data
 public class ShellLookupResponse {
 	
-	private Paging paging_metadata;
+	@JsonProperty("paging_metadata")
+	private Paging pagingMetadata;
 	
 	private List<String> result;
 }

@@ -40,21 +40,21 @@ import java.util.List;
 
 @Configuration
 public class FtpsConfig {
-    @Value("${ftps.url}")
+    @Value("${sftp.url}")
     private String serverUrl;
-    @Value("${ftps.username}")
+    @Value("${sftp.username}")
     private String username;
-    @Value("${ftps.password}")
+    @Value("${sftp.password}")
     private String password;
-    @Value("${ftps.location.tobeprocessed}")
+    @Value("${sftp.location.tobeprocessed}")
     private String toBeProcessed;
-    @Value("${ftps.location.inprogress}")
+    @Value("${sftp.location.inprogress}")
     private String inProgress;
-    @Value("${ftps.location.success}")
+    @Value("${sftp.location.success}")
     private String success;
-    @Value("${ftps.location.partialsucess}")
+    @Value("${sftp.location.partialsucess}")
     private String partialSuccess;
-    @Value("${ftps.location.failed}")
+    @Value("${sftp.location.failed}")
     private String failed;
 
     @Autowired

@@ -28,11 +28,11 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 @Builder
-public class ChildPart {
+public class ChildItems {
 
-    private String lifecycleContext;
     private Quantity quantity;
     private String createdOn;
     private String lastModifiedOn;
-    private String childCatenaXId;
+    private String catenaXId;
+    private String businessPartner;
 }

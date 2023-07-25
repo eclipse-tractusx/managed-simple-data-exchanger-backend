@@ -17,12 +17,11 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-package org.eclipse.tractusx.sde.bpndiscovery.utils;
+package org.eclipse.tractusx.sde.digitaltwins.gateways.external;
 
 import java.net.URI;
 import java.util.Base64;
 
-import org.eclipse.tractusx.sde.bpndiscovery.api.IBpndiscoveryExternalServiceApi;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -37,25 +36,25 @@ import lombok.SneakyThrows;
 
 @Component
 @RequiredArgsConstructor
-public class BpnDiscoveryAuthToken {
+public class AuthTokenUtility {
 
-	private final IBpndiscoveryExternalServiceApi bpndiscoveryExternalServiceApi;
+	private final DigitalTwinsFeignClient digitalTwinsFeignClient;
 
 	private static final String CLIENT_ID = "client_id";
 	private static final String CLIENT_SECRET = "client_secret";
 	private static final String GRANT_TYPE = "grant_type";
 
-	@Value(value = "${discovery.authentication.url}")
-	private URI authTokenUrl;
-
-	@Value(value = "${discovery.clientId}")
-	private String clientId;
-
-	@Value(value = "${discovery.clientSecret}")
+	@Value(value = "${digital-twins.authentication.clientSecret}")
 	private String clientSecret;
 
-	@Value(value = "${discovery.grantType}")
+	@Value(value = "${digital-twins.authentication.clientId}")
+	private String clientId;
+
+	@Value(value = "${digital-twins.authentication.grantType}")
 	private String grantType;
+
+	@Value(value = "${digital-twins.authentication.url:default}")
+	private URI authTokenUrl;
 
 	private String accessToken;
 
@@ -67,11 +66,11 @@ public class BpnDiscoveryAuthToken {
 			}
 
 			MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-			body.add(GRANT_TYPE, grantType);
 			body.add(CLIENT_ID, clientId);
 			body.add(CLIENT_SECRET, clientSecret);
+			body.add(GRANT_TYPE, grantType);
 
-			var resultBody = bpndiscoveryExternalServiceApi.getBpnDiscoveryAuthToken(authTokenUrl, body);
+			var resultBody = digitalTwinsFeignClient.readAuthToken(authTokenUrl, body);
 
 			if (resultBody != null) {
 				accessToken = resultBody.getAccessToken();

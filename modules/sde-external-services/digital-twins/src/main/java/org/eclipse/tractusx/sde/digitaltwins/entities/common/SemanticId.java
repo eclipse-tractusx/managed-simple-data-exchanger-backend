@@ -22,14 +22,20 @@ package org.eclipse.tractusx.sde.digitaltwins.entities.common;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
 public class SemanticId {
 
-    private List<String> value;
+	private String type;
+	private List<Keys> keys;
 }

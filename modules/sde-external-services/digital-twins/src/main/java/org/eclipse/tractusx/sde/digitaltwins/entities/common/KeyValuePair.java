@@ -30,6 +30,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class KeyValuePair {
 
-    private String key;
+    private String name;
     private String value;
 }

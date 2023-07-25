@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 import org.eclipse.tractusx.sde.submodels.apr.entity.AspectRelationshipEntity;
 import org.eclipse.tractusx.sde.submodels.apr.model.AspectRelationship;
 import org.eclipse.tractusx.sde.submodels.apr.model.AspectRelationshipResponse;
-import org.eclipse.tractusx.sde.submodels.apr.model.ChildPart;
+import org.eclipse.tractusx.sde.submodels.apr.model.ChildItems;
 import org.eclipse.tractusx.sde.submodels.apr.model.Quantity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -70,10 +70,12 @@ public abstract class AspectRelationshipMapper {
 			return null;
 		}
 
-		Set<ChildPart> childParts = aspectRelationships.stream().map(this::toChildPart).collect(Collectors.toSet());
+		Set<ChildItems> childItems = aspectRelationships.stream().map(this::toChildItems).collect(Collectors.toSet());
 		return new Gson().toJsonTree(
-				AspectRelationshipResponse.builder().catenaXId(parentCatenaXUuid).childParts(childParts).build())
-				.getAsJsonObject();
+				AspectRelationshipResponse.builder()
+				.catenaXId(parentCatenaXUuid)
+				.childItems(childItems)
+				.build()).getAsJsonObject();
 
 	}
 
@@ -81,15 +83,18 @@ public abstract class AspectRelationshipMapper {
 		return new Gson().fromJson(entity, AspectRelationshipResponse.class);
 	}
 
-	private ChildPart toChildPart(AspectRelationshipEntity entity) {
-		Quantity quantity = Quantity.builder().quantityNumber(entity.getQuantityNumber())
+	private ChildItems toChildItems(AspectRelationshipEntity entity) {
+		Quantity quantity = Quantity.builder()
+				.quantityNumber(entity.getQuantityNumber())
 				.measurementUnit(entity.getMeasurementUnit())
 				.build();
 
-		return ChildPart.builder()
-				.lifecycleContext(entity.getLifecycleContext())
+		return ChildItems.builder()
 				.createdOn(entity.getCreatedOn())
-				.childCatenaXId(entity.getChildCatenaXId()).quantity(quantity).build();
+				.businessPartner(entity.getChildManufacturerId())
+				.catenaXId(entity.getChildCatenaXId())
+				.quantity(quantity)
+				.build();
 	}
 
 }

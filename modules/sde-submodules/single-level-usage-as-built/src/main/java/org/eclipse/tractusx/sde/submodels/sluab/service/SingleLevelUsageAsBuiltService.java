@@ -24,7 +24,7 @@ import java.util.Optional;
 
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
-import org.eclipse.tractusx.sde.digitaltwins.facilitator.DeleteDigitalTwinsFacilitator;
+import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsFacilitator;
 import org.eclipse.tractusx.sde.edc.facilitator.DeleteEDCFacilitator;
 import org.eclipse.tractusx.sde.submodels.sluab.entity.SingleLevelUsageAsBuiltEntity;
 import org.eclipse.tractusx.sde.submodels.sluab.mapper.SingleLevelUsageAsBuiltMapper;
@@ -39,14 +39,14 @@ import lombok.SneakyThrows;
 @Service
 @AllArgsConstructor
 public class SingleLevelUsageAsBuiltService {
-	
+
 	private final SingleLevelUsageAsBuiltRepository singleLevelUsageAsBuiltRepository;
 
 	private final SingleLevelUsageAsBuiltMapper singleLevelUsageAsBuiltMapper;
 
 	private final DeleteEDCFacilitator deleteEDCFacilitator;
 
-	private final DeleteDigitalTwinsFacilitator deleteDigitalTwinsFacilitator;
+	private final DigitalTwinsFacilitator deleteDigitalTwinsFacilitator;
 
 	public List<JsonObject> readCreatedTwinsforDelete(String refProcessId) {
 
@@ -67,7 +67,8 @@ public class SingleLevelUsageAsBuiltService {
 
 		deleteEDCAsset(aspectRelationshipEntity);
 
-		deleteDigitalTwinsFacilitator.deleteDigitalTwinsById(aspectRelationshipEntity.getShellId(),aspectRelationshipEntity.getSubModelId());
+		deleteDigitalTwinsFacilitator.deleteSubmodelfromShellById(aspectRelationshipEntity.getShellId(),
+				aspectRelationshipEntity.getSubModelId());
 
 		saveAspectRelationshipWithDeleted(aspectRelationshipEntity);
 	}
@@ -104,7 +105,8 @@ public class SingleLevelUsageAsBuiltService {
 
 	public int getUpdatedData(String refProcessId) {
 
-		return (int) singleLevelUsageAsBuiltRepository.countByUpdatedAndProcessId(CommonConstants.UPDATED_Y, refProcessId);
+		return (int) singleLevelUsageAsBuiltRepository.countByUpdatedAndProcessId(CommonConstants.UPDATED_Y,
+				refProcessId);
 	}
 
 }

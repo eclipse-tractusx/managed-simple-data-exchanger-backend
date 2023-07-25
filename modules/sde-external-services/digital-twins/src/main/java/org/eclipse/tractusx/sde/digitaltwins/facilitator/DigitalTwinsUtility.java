@@ -21,14 +21,26 @@ package org.eclipse.tractusx.sde.digitaltwins.facilitator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
+import org.eclipse.tractusx.sde.common.utils.UUIdGenerator;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.Endpoint;
+import org.eclipse.tractusx.sde.digitaltwins.entities.common.KeyValuePair;
+import org.eclipse.tractusx.sde.digitaltwins.entities.common.Keys;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.ProtocolInformation;
+import org.eclipse.tractusx.sde.digitaltwins.entities.common.SemanticId;
+import org.eclipse.tractusx.sde.digitaltwins.entities.request.CreateSubModelRequest;
+import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellDescriptorRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 @Component
 @Getter
@@ -40,21 +52,94 @@ public class DigitalTwinsUtility {
 	@Value(value = "${edc.hostname}")
 	public String edcEndpoint;
 
+	ObjectMapper mapper = new ObjectMapper();
+
+	@SneakyThrows
+	public ShellDescriptorRequest getShellDescriptorRequest(Map<String, String> specificIdentifiers, Object object) {
+
+		JsonNode jsonNode = mapper.convertValue(object, ObjectNode.class);
+
+		return ShellDescriptorRequest.builder()
+				.idShort(String.format("%s_%s_%s", getFieldFromJsonNode(jsonNode, "name_at_manufacturer"),
+						manufacturerId, getFieldFromJsonNode(jsonNode, "manufacturer_part_id")))
+				.globalAssetId(getFieldFromJsonNode(jsonNode, "uuid"))
+				.specificAssetIds(getSpecificAssetIds(specificIdentifiers))
+				.description(List.of())
+				.id(UUIdGenerator.getUrnUuid())
+				.build();
+	}
+
+	@SneakyThrows
+	public CreateSubModelRequest getCreateSubModelRequest(String shellId, String sematicId, String idShortofModel) {
+		String identification = UUIdGenerator.getUrnUuid();
+		
+		SemanticId semanticId = SemanticId.builder()
+				.type(CommonConstants.EXTERNAL_REFERENCE)
+				.keys(List.of(new Keys(CommonConstants.GLOBAL_REFERENCE,sematicId)))
+				.build();
+
+		List<Endpoint> endpoints = prepareDtEndpoint(shellId, identification);
+
+		return CreateSubModelRequest.builder()
+				.id(identification)
+				.idShort(idShortofModel)
+				.semanticId(semanticId)
+				.endpoints(endpoints)
+				.build();
+	}
+	
+	@SneakyThrows
+	public CreateSubModelRequest getCreateSubModelRequestForChild(String shellId, String sematicId, String idShortofModel, String identification) {
+		
+		SemanticId semanticId = SemanticId.builder()
+				.type(CommonConstants.EXTERNAL_REFERENCE)
+				.keys(List.of(new Keys(CommonConstants.GLOBAL_REFERENCE,sematicId)))
+				.build();
+
+		List<Endpoint> endpoints = prepareDtEndpoint(shellId, identification);
+
+		return CreateSubModelRequest.builder()
+				.idShort(idShortofModel)
+				.id(identification)
+				.semanticId(semanticId)
+				.endpoints(endpoints)
+				.build();
+	}
+
 	public List<Endpoint> prepareDtEndpoint(String shellId, String submodelIdentification) {
 		List<Endpoint> endpoints = new ArrayList<>();
-		endpoints.add(Endpoint.builder().endpointInterface(CommonConstants.INTERFACE_EDC)
+		endpoints.add(Endpoint.builder()
+				.endpointInterface(CommonConstants.INTERFACE)
 				.protocolInformation(ProtocolInformation.builder()
-						.endpointAddress(edcEndpoint+"/"+encodedUrl(shellId+"-"+
-								submodelIdentification)+CommonConstants.SUBMODEL_CONTEXT_URL)
-						.endpointProtocol(CommonConstants.ENDPOINT_PROTOCOL)
-						.endpointProtocolVersion(CommonConstants.ENDPOINT_PROTOCOL_VERSION).build())
+						.endpointAddress(edcEndpoint + "/api/public/" + encodedUrl("shells/"+shellId+ "/submodels/"+submodelIdentification)
+								+ CommonConstants.SUBMODEL_CONTEXT_URL)
+						.endpointProtocol(CommonConstants.HTTP)
+						.endpointProtocolVersion(List.of(CommonConstants.ENDPOINT_PROTOCOL_VERSION))
+						.subProtocol(CommonConstants.SUB_PROTOCOL)
+						.subprotocolBodyEncoding(CommonConstants.BODY_ENCODING)
+						.build())
 				.build());
 		return endpoints;
+	}
+	
+	private ArrayList<KeyValuePair> getSpecificAssetIds(Map<String, String> specificAssetIds) {
+
+		ArrayList<KeyValuePair> specificIdentifiers = new ArrayList<>();
+
+		specificAssetIds.entrySet().stream()
+				.forEach(entry -> specificIdentifiers.add(new KeyValuePair(entry.getKey(), entry.getValue())));
+		return specificIdentifiers;
 	}
 
 	private String encodedUrl(String format) {
 		return format.replace(":", "%3A");
 	}
-	
+
+	private String getFieldFromJsonNode(JsonNode jnode, String fieldName) {
+		if (jnode.get(fieldName) != null)
+			return jnode.get(fieldName).asText();
+		else
+			return "";
+	}
 
 }

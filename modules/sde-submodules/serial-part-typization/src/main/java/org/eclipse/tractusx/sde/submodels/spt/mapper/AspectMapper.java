@@ -23,6 +23,7 @@
 package org.eclipse.tractusx.sde.submodels.spt.mapper;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -50,8 +51,8 @@ public abstract class AspectMapper {
 	@Value(value = "${manufacturerId}")
 	private String manufacturerId;
 
-	ObjectMapper mapper=new ObjectMapper();
-	
+	ObjectMapper mapper = new ObjectMapper();
+
 	@Mapping(target = "rowNumber", ignore = true)
 	@Mapping(target = "subModelId", ignore = true)
 	public abstract Aspect mapFrom(AspectEntity aspect);
@@ -63,7 +64,7 @@ public abstract class AspectMapper {
 	public Aspect mapFrom(ObjectNode aspect) {
 		return mapper.readValue(aspect.toString(), Aspect.class);
 	}
-	
+
 	public AspectEntity mapforEntity(JsonObject aspect) {
 		return new Gson().fromJson(aspect, AspectEntity.class);
 	}
@@ -106,9 +107,11 @@ public abstract class AspectMapper {
 
 	@Named("prettyName")
 	String getPrettyName(String optionalIdentifierKey) {
-		return optionalIdentifierKey == null || optionalIdentifierKey.isBlank()  ? null
-				: Stream.of(OptionalIdentifierKeyEnum.values())
-						.filter(v -> v.getPrettyName().equalsIgnoreCase(optionalIdentifierKey)).findFirst().get()
-						.getPrettyName();
+
+		Optional<OptionalIdentifierKeyEnum> findFirst = Stream.of(OptionalIdentifierKeyEnum.values())
+				.filter(v -> v.getPrettyName().equalsIgnoreCase(optionalIdentifierKey)).findFirst();
+		if (findFirst.isPresent())
+			return findFirst.get().getPrettyName();
+		return null;
 	}
 }

@@ -162,24 +162,24 @@ To find information about supported submodules and there version in SDE please v
 
 ## DFT(Simple Data Exchanger) Compatible with :=
 1. ***File Uploads***
-    * SerialPartTypization
-    * AssemblyPartRelationship
+    * SerialPart
+    * SingleLevelBoMAsBuilt
     * Batch
     * PartAsPlanned
     * SingleLevelBoMAsPlanned
     * PartSiteInformationAsPlanned
     * SingleLevelUsageAsBuilt
 2. ***Json Update***
-    * SerialPartTypization
-    * AssemblyRelationship
+    * SerialPart
+    * SingleLevelBoMAsBuilt
     * Batch
     * PartAsPlanned
     * SingleLevelBoMAsPlanned
     * PartSiteInformationAsPlanned
  	* SingleLevelUsageAsBuilt
 3. ***Application UI***
-    * SerialPartTypization
-    * AssemblyRelationship
+    * SerialPart
+    * SingleLevelBoMAsBuilt
     * Batch
     * PartAsPlanned
     * SingleLevelBoMAsPlanned

@@ -12,6 +12,7 @@ SDE backend splited into multiple services loosely-coupled Maven modules.
 - modules/sde-external-services/edc
 - modules/sde-external-services/digital-twins
 - modules/sde-external-services/portal
+- modules/sde-external-services/bpn-discovery
 - modules/sde-common
 - modules/sde-core
 - modules/sde-submodules/serial-part-typization

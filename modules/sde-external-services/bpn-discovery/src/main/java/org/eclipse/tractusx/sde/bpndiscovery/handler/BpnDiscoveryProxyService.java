@@ -27,7 +27,6 @@ import org.eclipse.tractusx.sde.bpndiscovery.model.request.BpnDiscoverySearchReq
 import org.eclipse.tractusx.sde.bpndiscovery.model.response.BpnDiscoveryBatchResponse;
 import org.eclipse.tractusx.sde.bpndiscovery.model.response.BpnDiscoveryResponse;
 import org.eclipse.tractusx.sde.bpndiscovery.model.response.BpnDiscoverySearchResponse;
-import org.eclipse.tractusx.sde.bpndiscovery.utils.BpnDiscoveryAuthToken;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -39,27 +38,24 @@ public class BpnDiscoveryProxyService {
 	
 	private final IBpndiscoveryExternalServiceApi bpndiscoveryExternalServiceApi;
 
-	private final BpnDiscoveryAuthToken bpnDiscoveryAuthToken;
-	
-	
 	@SneakyThrows
 	public BpnDiscoveryResponse bpnDiscoveryData(BpnDiscoveryRequest bpnDiscoveryRequest) {
-		return bpndiscoveryExternalServiceApi.bpnDiscoveryDataByKey(bpnDiscoveryRequest, bpnDiscoveryAuthToken.getToken());
+		return bpndiscoveryExternalServiceApi.bpnDiscoveryDataByKey(bpnDiscoveryRequest);
 	}
 	
 	@SneakyThrows
 	public  BpnDiscoverySearchResponse bpnDiscoverySearchData(BpnDiscoverySearchRequest bpnDiscoverySearchRequest) {
-		return bpndiscoveryExternalServiceApi.bpnDiscoverySearchData(bpnDiscoverySearchRequest, bpnDiscoveryAuthToken.getToken());
+		return bpndiscoveryExternalServiceApi.bpnDiscoverySearchData(bpnDiscoverySearchRequest);
 	}
 	
 	@SneakyThrows
 	public List<BpnDiscoveryBatchResponse> bpnDiscoveryBatchData(List<BpnDiscoveryRequest> bpnDiscoveryKeyList) {
-		return bpndiscoveryExternalServiceApi.bpnDiscoveryBatchDataByList(bpnDiscoveryKeyList, bpnDiscoveryAuthToken.getToken());
+		return bpndiscoveryExternalServiceApi.bpnDiscoveryBatchDataByList(bpnDiscoveryKeyList);
 	}
 	
 	@SneakyThrows
 	public  void deleteBpnDiscoveryData(String resourceId) {
-		bpndiscoveryExternalServiceApi.deleteBpnDiscoveryData(resourceId, bpnDiscoveryAuthToken.getToken());
+		bpndiscoveryExternalServiceApi.deleteBpnDiscoveryData(resourceId);
 	}
 
 }

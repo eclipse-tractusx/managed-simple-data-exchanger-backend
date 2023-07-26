@@ -38,7 +38,7 @@ import lombok.SneakyThrows;
 public class DataAddressRequest {
 
 	@Builder.Default
-	private String type = "DataAddress";
+	private String type = "HttpProxy";
 
 	private HashMap<String, String> properties;
 

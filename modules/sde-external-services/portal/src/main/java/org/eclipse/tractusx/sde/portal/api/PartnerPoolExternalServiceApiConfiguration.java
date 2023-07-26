@@ -21,16 +21,11 @@
 package org.eclipse.tractusx.sde.portal.api;
 
 import java.net.URI;
-import java.util.Base64;
 
-import org.eclipse.tractusx.sde.portal.utils.TokenUtility;
-import org.hibernate.service.spi.ServiceException;
+import org.eclipse.tractusx.sde.common.utils.TokenUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
@@ -57,6 +52,8 @@ class PartnerPoolExternalServiceApiInterceptor implements RequestInterceptor {
 	@Value(value = "${partner.pool.clientId}")
 	private String appClientId;
 
+	@Value(value = "${partner.pool.grantType}")
+	private String grantType;
 
 	@Autowired
 	private TokenUtility tokenUtility;
@@ -71,29 +68,11 @@ class PartnerPoolExternalServiceApiInterceptor implements RequestInterceptor {
 
 	@SneakyThrows
 	public String getToken() {
-		try {
-			if (accessToken != null && isTokenValid()) {
-				return "Bearer " + accessToken;
-			}
-			accessToken = tokenUtility.getValidJWTTokenforAppTechUser(appTokenURI, appClientId, appClientSecret);
+		if (accessToken != null && tokenUtility.isTokenValid(accessToken)) {
 			return "Bearer " + accessToken;
-		} catch (Exception e) {
-			throw new ServiceException("Unable to process auth request: " + appTokenURI + ", " + e.getMessage());
 		}
-	}
-
-	@SneakyThrows
-	private boolean isTokenValid() {
-		String[] str = accessToken.split("\\.");
-		Base64.Decoder decoder = Base64.getUrlDecoder();
-		String body = new String(decoder.decode(str[1]));
-
-		ObjectMapper mapper = new ObjectMapper();
-		JsonNode actualObj = mapper.readTree(body);
-		long tokenExpirationTime = actualObj.get("exp").asLong() * 1000;
-		long currentTime = System.currentTimeMillis();
-
-		return tokenExpirationTime - 20000 > currentTime;
+		accessToken = tokenUtility.getToken(appTokenURI, grantType, appClientId, appClientSecret);
+		return "Bearer " + accessToken;
 	}
 
 }

@@ -17,16 +17,18 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-package org.eclipse.tractusx.sde.digitaltwins.gateways.external;
+
+package org.eclipse.tractusx.sde.common.utils;
 
 import java.net.URI;
 import java.util.Base64;
 
-import org.eclipse.tractusx.sde.common.exception.ServiceException;
-import org.springframework.beans.factory.annotation.Value;
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,54 +38,46 @@ import lombok.SneakyThrows;
 
 @Component
 @RequiredArgsConstructor
-public class AuthTokenUtility {
-
-	private final DigitalTwinsFeignClient digitalTwinsFeignClient;
+public class TokenUtility {
 
 	private static final String CLIENT_ID = "client_id";
 	private static final String CLIENT_SECRET = "client_secret";
 	private static final String GRANT_TYPE = "grant_type";
 
-	@Value(value = "${digital-twins.authentication.clientSecret}")
-	private String clientSecret;
-
-	@Value(value = "${digital-twins.authentication.clientId}")
-	private String clientId;
-
-	@Value(value = "${digital-twins.authentication.grantType}")
-	private String grantType;
-
-	@Value(value = "${digital-twins.authentication.url:default}")
-	private URI authTokenUrl;
-
-	private String accessToken;
+	private final ITokenUtilityProxy tokenUtilityProxy;
 
 	@SneakyThrows
-	public String getToken() {
+	public String getToken(URI appTokenURI, String grantType, String appClientId, String appClientSecret) {
 		try {
-			if (accessToken != null && isTokenValid()) {
-				return "Bearer " + accessToken;
-			}
-
 			MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-			body.add(CLIENT_ID, clientId);
-			body.add(CLIENT_SECRET, clientSecret);
 			body.add(GRANT_TYPE, grantType);
+			body.add(CLIENT_ID, appClientId);
+			body.add(CLIENT_SECRET, appClientSecret);
 
-			var resultBody = digitalTwinsFeignClient.readAuthToken(authTokenUrl, body);
+			var resultBody = tokenUtilityProxy.getToken(appTokenURI, body);
 
-			if (resultBody != null) {
-				accessToken = resultBody.getAccessToken();
-				return "Bearer " + accessToken;
-			}
+			if (resultBody != null)
+				return resultBody.getAccessToken();
+			else
+				throw new ServiceException(
+						"Unable to get auth token because auth response resultBody is: " + resultBody);
 		} catch (Exception e) {
-			throw new ServiceException("Unable to process auth request: " + authTokenUrl + ", " + e.getMessage());
+			throw new ServiceException("Unable to process auth request: " + appTokenURI + ", " + e.getMessage());
 		}
-		return null;
+
+	}
+
+	public String getOriginalRequestAuthToken() throws ServiceException {
+		ServletRequestAttributes reqAtt = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		if (reqAtt != null) {
+			return reqAtt.getRequest().getHeader("Authorization");
+		} else {
+			throw new ServiceException("Auth token is not present");
+		}
 	}
 
 	@SneakyThrows
-	private boolean isTokenValid() {
+	public boolean isTokenValid(String accessToken) {
 		String[] str = accessToken.split("\\.");
 		Base64.Decoder decoder = Base64.getUrlDecoder();
 		String body = new String(decoder.decode(str[1]));

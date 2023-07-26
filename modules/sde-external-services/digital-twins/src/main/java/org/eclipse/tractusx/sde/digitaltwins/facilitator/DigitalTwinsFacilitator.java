@@ -23,9 +23,7 @@ package org.eclipse.tractusx.sde.digitaltwins.facilitator;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.CreateSubModelRequest;
@@ -34,7 +32,6 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellLookupRequest
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellLookupResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelListResponse;
-import org.eclipse.tractusx.sde.digitaltwins.gateways.external.AuthTokenUtility;
 import org.eclipse.tractusx.sde.digitaltwins.gateways.external.DigitalTwinsFeignClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -50,10 +47,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class DigitalTwinsFacilitator {
 
-	private static final String AUTHORIZATION = "Authorization";
-
 	private final DigitalTwinsFeignClient digitalTwinsFeignClient;
-	private final AuthTokenUtility authTokenUtility;
 
 	@Value(value = "${digital-twins.hostname:default}")
 	private String digitalTwinsHost;
@@ -74,7 +68,7 @@ public class DigitalTwinsFacilitator {
 
 		try {
 			ResponseEntity<ShellLookupResponse> response = digitalTwinsFeignClient.shellLookup(dtURL,
-					request.toJsonString(), getHeaders());
+					request.toJsonString());
 
 			ShellLookupResponse body = response.getBody();
 			if (response.getStatusCode() == HttpStatus.OK && body != null) {
@@ -82,8 +76,7 @@ public class DigitalTwinsFacilitator {
 			}
 
 		} catch (Exception e) {
-			String error = "Error in lookup DT lookup:" + dtURL + ", " + request.toJsonString() + ", "
-					+ e.getMessage();
+			String error = "Error in lookup DT lookup:" + dtURL + ", " + request.toJsonString() + ", " + e.getMessage();
 			log.error(error);
 			throw new ServiceException(error);
 		}
@@ -94,8 +87,8 @@ public class DigitalTwinsFacilitator {
 	public String deleteShell(String shellId) {
 		String deleteResponse = "";
 		try {
-			ResponseEntity<Void> response = digitalTwinsFeignClient.deleteShell(getDtURL(digitalTwinsHost), encodeShellIdBase64Utf8(shellId),
-					getHeaders());
+			ResponseEntity<Void> response = digitalTwinsFeignClient.deleteShell(getDtURL(digitalTwinsHost),
+					encodeShellIdBase64Utf8(shellId));
 
 			if (response.getStatusCode() == HttpStatus.NO_CONTENT) {
 				deleteResponse = "Asset identifier" + shellId + "deleted successfully";
@@ -121,7 +114,7 @@ public class DigitalTwinsFacilitator {
 	public ShellDescriptorResponse getShellDetailsById(String shellId) {
 
 		ResponseEntity<ShellDescriptorResponse> shellDescriptorResponse = digitalTwinsFeignClient
-				.getShellDescriptorByShellId(getDtURL(digitalTwinsHost), getHeaders(), encodeShellIdBase64Utf8(shellId));
+				.getShellDescriptorByShellId(getDtURL(digitalTwinsHost), encodeShellIdBase64Utf8(shellId));
 		return shellDescriptorResponse.getBody();
 	}
 
@@ -129,22 +122,16 @@ public class DigitalTwinsFacilitator {
 	public void deleteSubmodelfromShellById(String shellId, String subModelId) {
 		try {
 			digitalTwinsFeignClient.deleteSubmodelfromShellById(getDtURL(digitalTwinsHost),
-					encodeShellIdBase64Utf8(shellId), encodeShellIdBase64Utf8(subModelId), getHeaders());
+					encodeShellIdBase64Utf8(shellId), encodeShellIdBase64Utf8(subModelId));
 		} catch (Exception e) {
 			parseExceptionMessage(e);
 		}
 	}
 
-	private Map<String, String> getHeaders() {
-		Map<String, String> headers = new HashMap<>();
-		headers.put(AUTHORIZATION, authTokenUtility.getToken());
-		return headers;
-	}
-
 	public ShellDescriptorResponse createShellDescriptor(ShellDescriptorRequest request) {
 		ShellDescriptorResponse responseBody;
 		ResponseEntity<ShellDescriptorResponse> registerSubmodel = digitalTwinsFeignClient
-				.createShellDescriptor(getDtURL(digitalTwinsHost), getHeaders(), request);
+				.createShellDescriptor(getDtURL(digitalTwinsHost), request);
 		if (registerSubmodel.getStatusCode() != HttpStatus.CREATED) {
 			responseBody = null;
 		} else {
@@ -158,7 +145,7 @@ public class DigitalTwinsFacilitator {
 		request.setDescription(List.of());
 
 		ResponseEntity<String> response = digitalTwinsFeignClient.createSubModel(getDtURL(digitalTwinsHost),
-				encodeShellIdBase64Utf8(shellId), getHeaders(), request);
+				encodeShellIdBase64Utf8(shellId), request);
 		if (response.getStatusCode() != HttpStatus.CREATED) {
 			log.error("Unable to create submodel descriptor");
 		}
@@ -168,7 +155,7 @@ public class DigitalTwinsFacilitator {
 	public SubModelListResponse getSubModels(String shellId) {
 
 		ResponseEntity<SubModelListResponse> response = digitalTwinsFeignClient.getSubModels(getDtURL(digitalTwinsHost),
-				encodeShellIdBase64Utf8(shellId), getHeaders());
+				encodeShellIdBase64Utf8(shellId));
 		SubModelListResponse responseBody = null;
 		if (response.getStatusCode() == HttpStatus.OK) {
 			responseBody = response.getBody();

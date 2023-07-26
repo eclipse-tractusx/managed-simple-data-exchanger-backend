@@ -45,4 +45,13 @@ public class AccessPolicyDTO {
 				.rightOperand(bpnNumber)
 				.build();
 	}
+	
+	public ConstraintRequest toTraceabilityConstraint() {
+		String operator = "odrl:eq";
+		return ConstraintRequest.builder()
+				.leftOperand("FrameworkAgreement.traceability")
+				.operator(Operator.builder().id(operator).build())
+				.rightOperand("active")
+				.build();
+	}
 }

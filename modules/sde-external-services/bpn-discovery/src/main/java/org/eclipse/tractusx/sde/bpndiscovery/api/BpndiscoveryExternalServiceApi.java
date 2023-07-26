@@ -21,18 +21,11 @@
 package org.eclipse.tractusx.sde.bpndiscovery.api;
 
 import java.net.URI;
-import java.util.Base64;
 
-import org.eclipse.tractusx.sde.common.utils.ITokenUtility;
-import org.hibernate.service.spi.ServiceException;
+import org.eclipse.tractusx.sde.common.utils.TokenUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
@@ -50,10 +43,6 @@ public class BpndiscoveryExternalServiceApi {
 @Slf4j
 class BpndiscoveryExternalServiceApiInterceptor implements RequestInterceptor {
 
-	private static final String CLIENT_ID = "client_id";
-	private static final String CLIENT_SECRET = "client_secret";
-	private static final String GRANT_TYPE =  "grant_type";
-
 	@Value(value = "${discovery.authentication.url}")
 	private URI appTokenURI;
 
@@ -67,7 +56,7 @@ class BpndiscoveryExternalServiceApiInterceptor implements RequestInterceptor {
 	private String grantType;
 
 	@Autowired
-	private ITokenUtility tokenUtility;
+	private TokenUtility tokenUtility;
 
 	private String accessToken;
 
@@ -79,39 +68,11 @@ class BpndiscoveryExternalServiceApiInterceptor implements RequestInterceptor {
 
 	@SneakyThrows
 	public String getToken() {
-		try {
-			if (accessToken != null && isTokenValid()) {
-				return "Bearer " + accessToken;
-			}
-			MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-			body.add(GRANT_TYPE,  grantType);
-			body.add(CLIENT_ID, appClientId);
-			body.add(CLIENT_SECRET, appClientSecret);
-
-			var resultBody = tokenUtility.getToken(appTokenURI, body);
-
-			if (resultBody != null) {
-				accessToken = resultBody.getAccessToken();
-				return "Bearer " + accessToken;
-			}
-		} catch (Exception e) {
-			throw new ServiceException("Unable to process auth request: " + appTokenURI + ", " + e.getMessage());
+		if (accessToken != null && tokenUtility.isTokenValid(accessToken)) {
+			return "Bearer " + accessToken;
 		}
-		return null;
-	}
-
-	@SneakyThrows
-	private boolean isTokenValid() {
-		String[] str = accessToken.split("\\.");
-		Base64.Decoder decoder = Base64.getUrlDecoder();
-		String body = new String(decoder.decode(str[1]));
-
-		ObjectMapper mapper = new ObjectMapper();
-		JsonNode actualObj = mapper.readTree(body);
-		long tokenExpirationTime = actualObj.get("exp").asLong() * 1000;
-		long currentTime = System.currentTimeMillis();
-
-		return tokenExpirationTime - 20000 > currentTime;
+		accessToken = tokenUtility.getToken(appTokenURI, grantType, appClientId, appClientSecret);
+		return "Bearer " + accessToken;
 	}
 
 }

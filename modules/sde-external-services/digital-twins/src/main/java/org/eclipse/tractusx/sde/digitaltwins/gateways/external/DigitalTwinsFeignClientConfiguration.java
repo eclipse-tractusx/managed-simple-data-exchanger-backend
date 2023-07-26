@@ -20,10 +20,17 @@
 
 package org.eclipse.tractusx.sde.digitaltwins.gateways.external;
 
+import java.net.URI;
+
+import org.eclipse.tractusx.sde.common.utils.TokenUtility;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 public class DigitalTwinsFeignClientConfiguration {
 
@@ -33,11 +40,39 @@ public class DigitalTwinsFeignClientConfiguration {
 	}
 }
 
+@Slf4j
 class DigitalTwinsFeignClientConfigurationInterceptor implements RequestInterceptor {
 
+	@Value(value = "${digital-twins.authentication.clientSecret}")
+	private String appClientSecret;
+
+	@Value(value = "${digital-twins.authentication.clientId}")
+	private String appClientId;
+
+	@Value(value = "${digital-twins.authentication.grantType}")
+	private String grantType;
+
+	@Value(value = "${digital-twins.authentication.url:default}")
+	private URI appTokenURI;
+
+	@Autowired
+	private TokenUtility tokenUtility;
+	
+	private String accessToken;
+	
 	@Override
 	public void apply(RequestTemplate template) {
-	    
+		template.header("Authorization", getToken());
+		log.debug("Bearer authentication applied for DigitalTwinsFeignClientConfigurationInterceptor");
+	}
+
+	@SneakyThrows
+	public String getToken() {
+		if (accessToken != null && tokenUtility.isTokenValid(accessToken)) {
+			return "Bearer " + accessToken;
+		}
+		accessToken = tokenUtility.getToken(appTokenURI, grantType, appClientId, appClientSecret);
+		return "Bearer " + accessToken;
 	}
 
 }

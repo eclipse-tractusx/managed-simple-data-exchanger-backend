@@ -28,10 +28,9 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(value = "iTokenUtility", url = "placeholder")
-public interface ITokenUtility {
+@FeignClient(value = "iTokenUtilityProxy", url = "placeholder")
+public interface ITokenUtilityProxy {
 	
 	@PostMapping
 	KeycloakJWTTokenResponse getToken(URI url, @RequestBody MultiValueMap<String, Object> body);
-
 }

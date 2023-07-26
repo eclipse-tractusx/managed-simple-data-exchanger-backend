@@ -20,6 +20,7 @@
 package org.eclipse.tractusx.sde.submodels.slbap.steps;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
@@ -31,7 +32,6 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.request.CreateSubModelRequ
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellDescriptorRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellLookupRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorResponse;
-import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellLookupResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelListResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelResponse;
 import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsFacilitator;
@@ -71,7 +71,7 @@ public class DigitalTwinsSingleLevelBoMAsPlannedHandlerStep extends Step {
 			throws CsvHandlerUseCaseException, CsvHandlerDigitalTwinUseCaseException {
 
 		ShellLookupRequest shellLookupRequest = getShellLookupRequest(singleLevelBoMAsPlannedAspect);
-		ShellLookupResponse shellIds = digitalTwinsFacilitator.shellLookup(shellLookupRequest);
+		List<String> shellIds = digitalTwinsFacilitator.shellLookup(shellLookupRequest);
 
 		String shellId;
 

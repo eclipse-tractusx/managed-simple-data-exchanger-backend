@@ -1,7 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023 T-Systems International GmbH
+ * Copyright (c) 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -21,17 +20,12 @@
 
 package org.eclipse.tractusx.sde.digitaltwins.entities.response;
 
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Data;
 
 @Data
-public class ShellLookupResponse {
-	
-	@JsonProperty("paging_metadata")
-	private Paging pagingMetadata;
-	
-	private List<String> result;
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class Paging {
+
 }

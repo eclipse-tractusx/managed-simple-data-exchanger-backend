@@ -1,7 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023 T-Systems International GmbH
+ * Copyright (c) 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -21,9 +20,9 @@
 
 package org.eclipse.tractusx.sde.digitaltwins.entities.common;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,11 +34,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(Include. NON_NULL)
-public class KeyValuePair {
+public class ExternalSubjectId {
+	
+	private String type;
+	
+	private List<Keys> keys;
 
-    private String name;
-    private String value;
-    
-    private ExternalSubjectId externalSubjectId;
 }

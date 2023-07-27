@@ -1,0 +1,6 @@
+product: "Managed-Simple-Data-Exchanger-Backend"
+leadingRepository: "https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend"
+repositories:
+- name: "managed-simple-data-exchanger-backend"
+  usage: "reference implementation of Managed-Simple-Data-Exchanger-Backend"
+  url: "https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend"

@@ -26,6 +26,7 @@ import java.util.Map;
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.utils.UUIdGenerator;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.Endpoint;
+import org.eclipse.tractusx.sde.digitaltwins.entities.common.ExternalSubjectId;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.KeyValuePair;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.Keys;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.ProtocolInformation;
@@ -35,6 +36,7 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellDescriptorReq
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -59,75 +61,73 @@ public class DigitalTwinsUtility {
 
 		JsonNode jsonNode = mapper.convertValue(object, ObjectNode.class);
 
+		List<String> bpns = getFieldFromJsonNodeArray(jsonNode, "bpn_numbers");
+
 		return ShellDescriptorRequest.builder()
 				.idShort(String.format("%s_%s_%s", getFieldFromJsonNode(jsonNode, "name_at_manufacturer"),
 						manufacturerId, getFieldFromJsonNode(jsonNode, "manufacturer_part_id")))
 				.globalAssetId(getFieldFromJsonNode(jsonNode, "uuid"))
-				.specificAssetIds(getSpecificAssetIds(specificIdentifiers))
-				.description(List.of())
-				.id(UUIdGenerator.getUrnUuid())
-				.build();
+				.specificAssetIds(getSpecificAssetIds(specificIdentifiers, bpns)).description(List.of())
+				.id(UUIdGenerator.getUrnUuid()).build();
 	}
 
 	@SneakyThrows
 	public CreateSubModelRequest getCreateSubModelRequest(String shellId, String sematicId, String idShortofModel) {
 		String identification = UUIdGenerator.getUrnUuid();
-		
-		SemanticId semanticId = SemanticId.builder()
-				.type(CommonConstants.EXTERNAL_REFERENCE)
-				.keys(List.of(new Keys(CommonConstants.GLOBAL_REFERENCE,sematicId)))
-				.build();
+
+		SemanticId semanticId = SemanticId.builder().type(CommonConstants.EXTERNAL_REFERENCE)
+				.keys(List.of(new Keys(CommonConstants.GLOBAL_REFERENCE, sematicId))).build();
 
 		List<Endpoint> endpoints = prepareDtEndpoint(shellId, identification);
 
-		return CreateSubModelRequest.builder()
-				.id(identification)
-				.idShort(idShortofModel)
-				.semanticId(semanticId)
-				.endpoints(endpoints)
-				.build();
+		return CreateSubModelRequest.builder().id(identification).idShort(idShortofModel).semanticId(semanticId)
+				.endpoints(endpoints).build();
 	}
-	
+
 	@SneakyThrows
-	public CreateSubModelRequest getCreateSubModelRequestForChild(String shellId, String sematicId, String idShortofModel, String identification) {
-		
-		SemanticId semanticId = SemanticId.builder()
-				.type(CommonConstants.EXTERNAL_REFERENCE)
-				.keys(List.of(new Keys(CommonConstants.GLOBAL_REFERENCE,sematicId)))
-				.build();
+	public CreateSubModelRequest getCreateSubModelRequestForChild(String shellId, String sematicId,
+			String idShortofModel, String identification) {
+
+		SemanticId semanticId = SemanticId.builder().type(CommonConstants.EXTERNAL_REFERENCE)
+				.keys(List.of(new Keys(CommonConstants.GLOBAL_REFERENCE, sematicId))).build();
 
 		List<Endpoint> endpoints = prepareDtEndpoint(shellId, identification);
 
-		return CreateSubModelRequest.builder()
-				.idShort(idShortofModel)
-				.id(identification)
-				.semanticId(semanticId)
-				.endpoints(endpoints)
-				.build();
+		return CreateSubModelRequest.builder().idShort(idShortofModel).id(identification).semanticId(semanticId)
+				.endpoints(endpoints).build();
 	}
 
 	public List<Endpoint> prepareDtEndpoint(String shellId, String submodelIdentification) {
 		List<Endpoint> endpoints = new ArrayList<>();
-		endpoints.add(Endpoint.builder()
-				.endpointInterface(CommonConstants.INTERFACE)
+		endpoints.add(Endpoint.builder().endpointInterface(CommonConstants.INTERFACE)
 				.protocolInformation(ProtocolInformation.builder()
-						.endpointAddress(edcEndpoint + "/api/public/" + encodedUrl("shells/"+shellId+ "/submodels/"+submodelIdentification)
+						.endpointAddress(edcEndpoint + "/api/public/"
+								+ encodedUrl("shells/" + shellId + "/submodels/" + submodelIdentification)
 								+ CommonConstants.SUBMODEL_CONTEXT_URL)
 						.endpointProtocol(CommonConstants.HTTP)
 						.endpointProtocolVersion(List.of(CommonConstants.ENDPOINT_PROTOCOL_VERSION))
 						.subProtocol(CommonConstants.SUB_PROTOCOL)
-						.subprotocolBodyEncoding(CommonConstants.BODY_ENCODING)
-						.build())
+						.subprotocolBodyEncoding(CommonConstants.BODY_ENCODING).build())
 				.build());
 		return endpoints;
 	}
-	
-	private ArrayList<KeyValuePair> getSpecificAssetIds(Map<String, String> specificAssetIds) {
+
+	private ArrayList<KeyValuePair> getSpecificAssetIds(Map<String, String> specificAssetIds, List<String> bpns) {
 
 		ArrayList<KeyValuePair> specificIdentifiers = new ArrayList<>();
 
-		specificAssetIds.entrySet().stream()
-				.forEach(entry -> specificIdentifiers.add(new KeyValuePair(entry.getKey(), entry.getValue())));
+		if (!bpns.isEmpty()) {
+			for (String bpn : bpns) {
+				ExternalSubjectId externalSubjectId = ExternalSubjectId.builder().type("ExternalReference")
+						.keys(List.of(Keys.builder().type("Property").value(bpn).build())).build();
+
+				specificAssetIds.entrySet().stream().forEach(entry -> specificIdentifiers
+						.add(new KeyValuePair(entry.getKey(), entry.getValue(), externalSubjectId)));
+			}
+		} else {
+			specificAssetIds.entrySet().stream().forEach(
+					entry -> specificIdentifiers.add(new KeyValuePair(entry.getKey(), entry.getValue(), null)));
+		}
 		return specificIdentifiers;
 	}
 
@@ -140,6 +140,18 @@ public class DigitalTwinsUtility {
 			return jnode.get(fieldName).asText();
 		else
 			return "";
+	}
+
+	@SneakyThrows
+	private List<String> getFieldFromJsonNodeArray(JsonNode jsonNode, String fieldName) {
+		ObjectMapper objectMapper = new ObjectMapper();
+
+		if (jsonNode.get(fieldName) != null)
+			return objectMapper.readValue(jsonNode.get(fieldName).asText(), new TypeReference<List<String>>() {
+			});
+
+		else
+			return List.of();
 	}
 
 }

@@ -37,13 +37,13 @@ public class CommonConstants {
 	public static final String MANUFACTURER_ID = "manufacturerId";
 	public static final String CUSTOMER_PART_ID = "customerPartId";
 	public static final String ASSET_LIFECYCLE_PHASE = "assetLifecyclePhase";
-	public static final String HTTP = "http";
+	public static final String HTTP = "HTTP";
 	public static final String HTTPS = "HTTPS";
-	public static final String ENDPOINT_PROTOCOL_VERSION = "0.1";
+	public static final String ENDPOINT_PROTOCOL_VERSION = "1.1";
 	public static final String PREFIX = "urn:uuid:";
 
 	public static final String INTERFACE_EDC = "EDC";
-	public static final String SUB_PROTOCOL = "IDS";
+	public static final String SUB_PROTOCOL = "DSP";
 	public static final String SUBMODEL_CONTEXT_URL = "/submodel";
 
 	public static final String AS_PLANNED = "AsPlanned";
@@ -51,6 +51,6 @@ public class CommonConstants {
 	public static final String EXTERNAL_REFERENCE = "ExternalReference";
 	public static final String GLOBAL_REFERENCE = "GlobalReference";
 	public static final String BODY_ENCODING = "plain";
-	public static final String INTERFACE = "https://admin-shell.io/aas/API/3/0/SubmodelServiceSpecification/SSP-003";
+	public static final String INTERFACE = "SUBMODEL-3.0";
 	
 }

@@ -30,6 +30,7 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.common.ExternalSubjectId;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.KeyValuePair;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.Keys;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.ProtocolInformation;
+import org.eclipse.tractusx.sde.digitaltwins.entities.common.SecurityAttributes;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.SemanticId;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.CreateSubModelRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellDescriptorRequest;
@@ -118,8 +119,13 @@ public class DigitalTwinsUtility {
 
 		if (!bpns.isEmpty()) {
 			for (String bpn : bpns) {
-				ExternalSubjectId externalSubjectId = ExternalSubjectId.builder().type("ExternalReference")
-						.keys(List.of(Keys.builder().type("Property").value(bpn).build())).build();
+				ExternalSubjectId externalSubjectId = ExternalSubjectId.builder()
+						.type("ExternalReference")
+						.keys(List.of(Keys.builder()
+								.type("Property")
+								.value(bpn)
+								.build()))
+						.build();
 
 				specificAssetIds.entrySet().stream().forEach(entry -> specificIdentifiers
 						.add(new KeyValuePair(entry.getKey(), entry.getValue(), externalSubjectId)));
@@ -147,7 +153,7 @@ public class DigitalTwinsUtility {
 		ObjectMapper objectMapper = new ObjectMapper();
 
 		if (jsonNode.get(fieldName) != null)
-			return objectMapper.readValue(jsonNode.get(fieldName).asText(), new TypeReference<List<String>>() {
+			return objectMapper.readValue(jsonNode.get(fieldName).toString(), new TypeReference<List<String>>() {
 			});
 
 		else

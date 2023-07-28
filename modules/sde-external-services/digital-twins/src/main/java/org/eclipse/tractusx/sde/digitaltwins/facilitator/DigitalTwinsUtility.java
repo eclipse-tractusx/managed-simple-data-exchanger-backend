@@ -102,13 +102,14 @@ public class DigitalTwinsUtility {
 		List<Endpoint> endpoints = new ArrayList<>();
 		endpoints.add(Endpoint.builder().endpointInterface(CommonConstants.INTERFACE)
 				.protocolInformation(ProtocolInformation.builder()
-						.endpointAddress(edcEndpoint + "/api/public/"
-								+ encodedUrl("shells/" + shellId + "/submodels/" + submodelIdentification)
-								+ CommonConstants.SUBMODEL_CONTEXT_URL)
+						.endpointAddress(edcEndpoint + CommonConstants.SUBMODEL_CONTEXT_URL)
 						.endpointProtocol(CommonConstants.HTTP)
 						.endpointProtocolVersion(List.of(CommonConstants.ENDPOINT_PROTOCOL_VERSION))
 						.subProtocol(CommonConstants.SUB_PROTOCOL)
-						.subprotocolBodyEncoding(CommonConstants.BODY_ENCODING).build())
+						.subprotocolBody(encodedUrl("id="+shellId+"-"+submodelIdentification)+";dspEndpoint="+edcEndpoint)
+						.subprotocolBodyEncoding(CommonConstants.BODY_ENCODING)
+						.securityAttributes(List.of(new SecurityAttributes("NONE","NONE","NONE")))
+						.build())
 				.build());
 		return endpoints;
 	}

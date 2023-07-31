@@ -44,35 +44,35 @@ public class PortalExternalServiceApi {
 class PortalExternalServiceApiInterceptor implements RequestInterceptor {
 
 	@Value(value = "${portal.backend.authentication.url}")
-	private URI appTokenURI;
+	private URI portalAppTokenURI;
 
 	@Value(value = "${portal.backend.clientId}")
-	private String appClientId;
+	private String portalAppClientId;
 
 	@Value(value = "${portal.backend.clientSecret}")
-	private String appClientSecret;
+	private String portalAppClientSecret;
 
 	@Value(value = "${portal.backend.grantType}")
-	private String grantType;
+	private String portalGrantType;
 
 	@Autowired
-	private TokenUtility tokenUtility;
+	private TokenUtility tokenUtilityForPortal;
 
-	private String accessToken;
+	private String portalAaccessToken;
 
 	@Override
 	public void apply(RequestTemplate template) {
-		template.header("Authorization", getToken());
+		template.header("Authorization", getTokenForPortal());
 		log.debug("Bearer authentication applied for PortalExternalServiceApiInterceptor");
 	}
 
 	@SneakyThrows
-	public String getToken() {
-		if (accessToken != null && tokenUtility.isTokenValid(accessToken)) {
-			return "Bearer " + accessToken;
+	public String getTokenForPortal() {
+		if (portalAaccessToken != null && tokenUtilityForPortal.isTokenValid(portalAaccessToken)) {
+			return "Bearer " + portalAaccessToken;
 		}
-		accessToken = tokenUtility.getToken(appTokenURI, grantType, appClientId, appClientSecret);
-		return "Bearer " + accessToken;
+		portalAaccessToken = tokenUtilityForPortal.getToken(portalAppTokenURI, portalGrantType, portalAppClientId, portalAppClientSecret);
+		return "Bearer " + portalAaccessToken;
 	}
 
 }

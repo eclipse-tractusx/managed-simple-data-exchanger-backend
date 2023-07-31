@@ -44,35 +44,36 @@ public class PartnerPoolExternalServiceApiConfiguration {
 class PartnerPoolExternalServiceApiInterceptor implements RequestInterceptor {
 
 	@Value(value = "${partner.pool.authentication.url}")
-	private URI appTokenURI;
+	private URI partnerAppTokenURI;
 
 	@Value(value = "${partner.pool.clientSecret}")
-	private String appClientSecret;
+	private String partnerAppClientSecret;
 
 	@Value(value = "${partner.pool.clientId}")
-	private String appClientId;
+	private String partnerAppClientId;
 
 	@Value(value = "${partner.pool.grantType}")
-	private String grantType;
+	private String partnerGrantType;
 
 	@Autowired
-	private TokenUtility tokenUtility;
+	private TokenUtility tokenUtilityForPartner;
 
-	private String accessToken;
+	private String accessTokenForPartner;
 
 	@Override
 	public void apply(RequestTemplate template) {
-		template.header("Authorization", getToken());
+		template.header("Authorization", getTokenForPartner());
 		log.debug("Bearer authentication applied for PartnerPoolExternalServiceApiInterceptor");
 	}
 
 	@SneakyThrows
-	public String getToken() {
-		if (accessToken != null && tokenUtility.isTokenValid(accessToken)) {
-			return "Bearer " + accessToken;
+	public String getTokenForPartner() {
+		if (accessTokenForPartner != null && tokenUtilityForPartner.isTokenValid(accessTokenForPartner)) {
+			return "Bearer " + accessTokenForPartner;
 		}
-		accessToken = tokenUtility.getToken(appTokenURI, grantType, appClientId, appClientSecret);
-		return "Bearer " + accessToken;
+		accessTokenForPartner = tokenUtilityForPartner.getToken(partnerAppTokenURI, partnerGrantType,
+				partnerAppClientId, partnerAppClientSecret);
+		return "Bearer " + accessTokenForPartner;
 	}
 
 }

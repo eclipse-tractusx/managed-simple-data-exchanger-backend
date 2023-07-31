@@ -207,6 +207,9 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 						&& !checkContractNegotiationStatus.get().getState().equals("FINALIZED")
 						&& !checkContractNegotiationStatus.get().getState().equals("TERMINATED") && counter <= retry);
 
+			} catch(InterruptedException ie) {
+				log.error("Exception in subscribeDataOffers" + ie.getMessage());
+				Thread.currentThread().interrupt();
 			} catch (Exception e) {
 				log.error("Exception in subscribeDataOffers" + e.getMessage());
 			} finally {

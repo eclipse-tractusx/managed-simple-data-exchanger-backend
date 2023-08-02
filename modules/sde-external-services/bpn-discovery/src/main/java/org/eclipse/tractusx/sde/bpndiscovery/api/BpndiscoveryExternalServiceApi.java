@@ -44,35 +44,35 @@ public class BpndiscoveryExternalServiceApi {
 class BpndiscoveryExternalServiceApiInterceptor implements RequestInterceptor {
 
 	@Value(value = "${discovery.authentication.url}")
-	private URI appTokenURI;
+	private URI bpnAppTokenURI;
 
 	@Value(value = "${discovery.clientId}")
-	private String appClientId;
+	private String bpnAppClientId;
 
 	@Value(value = "${discovery.clientSecret}")
-	private String appClientSecret;
+	private String bpnAppClientSecret;
 
 	@Value(value = "${discovery.grantType}")
-	private String grantType;
+	private String bpnGrantType;
 
 	@Autowired
-	private TokenUtility tokenUtility;
+	private TokenUtility tokenUtilityforBpn;
 
-	private String accessToken;
+	private String bpnAccessToken;
 
 	@Override
 	public void apply(RequestTemplate template) {
-		template.header("Authorization", getToken());
+		template.header("Authorization", getTokenForBPN());
 		log.debug("Bearer authentication applied for PortalExternalServiceApiInterceptor");
 	}
 
 	@SneakyThrows
-	public String getToken() {
-		if (accessToken != null && tokenUtility.isTokenValid(accessToken)) {
-			return "Bearer " + accessToken;
+	public String getTokenForBPN() {
+		if (bpnAccessToken != null && tokenUtilityforBpn.isTokenValid(bpnAccessToken)) {
+			return "Bearer " + bpnAccessToken;
 		}
-		accessToken = tokenUtility.getToken(appTokenURI, grantType, appClientId, appClientSecret);
-		return "Bearer " + accessToken;
+		bpnAccessToken = tokenUtilityforBpn.getToken(bpnAppTokenURI, bpnGrantType, bpnAppClientId, bpnAppClientSecret);
+		return "Bearer " + bpnAccessToken;
 	}
 
 }

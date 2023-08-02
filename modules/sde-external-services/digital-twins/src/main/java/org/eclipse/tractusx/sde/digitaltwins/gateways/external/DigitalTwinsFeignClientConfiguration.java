@@ -44,35 +44,35 @@ public class DigitalTwinsFeignClientConfiguration {
 class DigitalTwinsFeignClientConfigurationInterceptor implements RequestInterceptor {
 
 	@Value(value = "${digital-twins.authentication.clientSecret}")
-	private String appClientSecret;
+	private String digitalAppClientSecret;
 
 	@Value(value = "${digital-twins.authentication.clientId}")
-	private String appClientId;
+	private String digitalAppClientId;
 
 	@Value(value = "${digital-twins.authentication.grantType}")
-	private String grantType;
+	private String digitalGrantType;
 
 	@Value(value = "${digital-twins.authentication.url:default}")
-	private URI appTokenURI;
+	private URI digitalAppTokenURI;
 
 	@Autowired
-	private TokenUtility tokenUtility;
+	private TokenUtility tokenUtilityForDigital;
 	
-	private String accessToken;
+	private String accessTokenForDigital;
 	
 	@Override
 	public void apply(RequestTemplate template) {
-		template.header("Authorization", getToken());
+		template.header("Authorization", getTokenForDigital());
 		log.debug("Bearer authentication applied for DigitalTwinsFeignClientConfigurationInterceptor");
 	}
 
 	@SneakyThrows
-	public String getToken() {
-		if (accessToken != null && tokenUtility.isTokenValid(accessToken)) {
-			return "Bearer " + accessToken;
+	public String getTokenForDigital() {
+		if (accessTokenForDigital != null && tokenUtilityForDigital.isTokenValid(accessTokenForDigital)) {
+			return "Bearer " + accessTokenForDigital;
 		}
-		accessToken = tokenUtility.getToken(appTokenURI, grantType, appClientId, appClientSecret);
-		return "Bearer " + accessToken;
+		accessTokenForDigital = tokenUtilityForDigital.getToken(digitalAppTokenURI, digitalGrantType, digitalAppClientId, digitalAppClientSecret);
+		return "Bearer " + accessTokenForDigital;
 	}
 
 }

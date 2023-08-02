@@ -43,7 +43,7 @@ public class SubmodelDiscovery {
 	@PostConstruct
 	private void submodels() {
 		Collection<SubmodelExtension> interfaces = beanFactory.getBeansOfType(SubmodelExtension.class).values();
-		interfaces.forEach(subomdelService -> submoduleRegistration.register(subomdelService));
+		interfaces.forEach(submoduleRegistration::register);
 	}
 
 }

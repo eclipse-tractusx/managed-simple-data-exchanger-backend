@@ -19,7 +19,6 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.bpndiscovery.api;
 
-import java.net.URI;
 import java.util.List;
 
 import org.eclipse.tractusx.sde.bpndiscovery.model.request.BpnDiscoveryRequest;
@@ -27,33 +26,27 @@ import org.eclipse.tractusx.sde.bpndiscovery.model.request.BpnDiscoverySearchReq
 import org.eclipse.tractusx.sde.bpndiscovery.model.response.BpnDiscoveryBatchResponse;
 import org.eclipse.tractusx.sde.bpndiscovery.model.response.BpnDiscoveryResponse;
 import org.eclipse.tractusx.sde.bpndiscovery.model.response.BpnDiscoverySearchResponse;
-import org.eclipse.tractusx.sde.common.model.KeycloakJWTTokenResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 
-@FeignClient(value = "IBpndiscoveryExternalServiceApi", url = "${bpndiscovery.hostname}")
+@FeignClient(value = "IBpndiscoveryExternalServiceApi", url = "${bpndiscovery.hostname}", configuration = BpndiscoveryExternalServiceApi.class)
 public interface IBpndiscoveryExternalServiceApi {
-	
-	@PostMapping
-	KeycloakJWTTokenResponse getBpnDiscoveryAuthToken(URI url, @RequestBody MultiValueMap<String, Object> body);
-	
+
 	@PostMapping(path = "/api/administration/connectors/bpnDiscovery")
-	BpnDiscoveryResponse bpnDiscoveryDataByKey(@RequestBody BpnDiscoveryRequest bpnDiscoveryKey, @RequestHeader("Authorization") String bearerToken);
+	BpnDiscoveryResponse bpnDiscoveryDataByKey(@RequestBody BpnDiscoveryRequest bpnDiscoveryKey);
 
 	@PostMapping(path = "/api/administration/connectors/bpnDiscovery/batch")
-	List<BpnDiscoveryBatchResponse> bpnDiscoveryBatchDataByList(@RequestBody List<BpnDiscoveryRequest> bpnDiscoveryKeyList, @RequestHeader("Authorization") String bearerToken);
-	
+	List<BpnDiscoveryBatchResponse> bpnDiscoveryBatchDataByList(
+			@RequestBody List<BpnDiscoveryRequest> bpnDiscoveryKeyList);
+
 	@PostMapping(path = "/api/administration/connectors/bpnDiscovery/search")
-	BpnDiscoverySearchResponse bpnDiscoverySearchData(@RequestBody BpnDiscoverySearchRequest bpnDiscoverySearchRequest, @RequestHeader("Authorization") String bearerToken);
-	
+	BpnDiscoverySearchResponse bpnDiscoverySearchData(@RequestBody BpnDiscoverySearchRequest bpnDiscoverySearchRequest);
+
 	@DeleteMapping(path = "/api/administration/connectors/bpnDiscovery/{resourceId}")
-	ResponseEntity<Object> deleteBpnDiscoveryData(@PathVariable String resourceId, @RequestHeader("Authorization") String bearerToken);
-	
-	
+	ResponseEntity<Object> deleteBpnDiscoveryData(@PathVariable String resourceId);
+
 }

@@ -35,25 +35,25 @@ public class PolicyConstraintBuilderService {
 
 	public ActionRequest getAccessConstraints(List<String> bpnNumbers) {
 		List<ConstraintRequest> constraints = new ArrayList<>();
-
 		if (bpnNumbers != null && !bpnNumbers.isEmpty()) {
-			bpnNumbers.stream().forEach(bpnNumber -> {
-				AccessPolicyDTO accessPolicy = AccessPolicyDTO.builder().bpnNumber(bpnNumber).build();
+			AccessPolicyDTO accessPolicy = null;
+			for (String bpnNumber : bpnNumbers) {
+				accessPolicy = AccessPolicyDTO.builder().bpnNumber(bpnNumber).build();
 				constraints.add(accessPolicy.toConstraint());
-			});
+			}
+			if (accessPolicy != null)
+				constraints.add(accessPolicy.toTraceabilityConstraint());
 		}
 		ActionRequest action = ActionRequest.builder().build();
 		action.addProperty("@type", "LogicalConstraint");
-		action.addProperty("odrl:or", constraints);
+		action.addProperty("odrl:and", constraints);
 		return action;
 	}
 
 	public ActionRequest getUsagePolicyConstraints(List<UsagePolicies> usagePolicies) {
 		List<ConstraintRequest> usageConstraintList = new ArrayList<>();
 		if (usagePolicies != null && !usagePolicies.isEmpty()) {
-			usagePolicies.stream().forEach(policy -> {
-				usagePolicy(usageConstraintList, policy);
-			});
+			usagePolicies.stream().forEach(policy -> usagePolicy(usageConstraintList, policy));
 		}
 
 		if (usageConstraintList.isEmpty())

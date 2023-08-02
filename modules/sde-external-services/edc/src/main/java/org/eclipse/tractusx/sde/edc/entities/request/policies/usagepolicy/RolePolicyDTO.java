@@ -23,6 +23,7 @@ package org.eclipse.tractusx.sde.edc.entities.request.policies.usagepolicy;
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
+import org.eclipse.tractusx.sde.edc.entities.request.policies.Operator;
 
 import lombok.AllArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -41,9 +42,11 @@ public class RolePolicyDTO extends UsagePolicyDTO {
 	public ConstraintRequest toConstraint() {
 		if (getTypeOfAccess().equals(PolicyAccessEnum.RESTRICTED)) {
 
-			String operator = "EQ";
+			String operator = "odrl:eq";
 
-			return ConstraintRequest.builder().leftOperand("idsc:ROLE").operator(operator).rightOperand(getValue())
+			return ConstraintRequest.builder().leftOperand("idsc:ROLE")
+					.operator(Operator.builder().id(operator).build())
+					.rightOperand(getValue())
 					.build();
 
 		}

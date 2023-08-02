@@ -22,14 +22,13 @@ package org.eclipse.tractusx.sde.portal.api;
 import org.eclipse.tractusx.sde.portal.model.LegalEntityData;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
-@FeignClient(value = "IPartnerPoolExternalServiceApi", url = "${partner.pool.hostname}")
+@FeignClient(value = "IPartnerPoolExternalServiceApi", url = "${partner.pool.hostname}" , configuration = PartnerPoolExternalServiceApiConfiguration.class)
 public interface IPartnerPoolExternalServiceApi {
     
 	@GetMapping(path = "/api/catena/legal-entities")
-    LegalEntityData fetchLegalEntityData(@RequestParam String name, @RequestParam Integer page, @RequestParam Integer size, @RequestHeader("Authorization") String bearerToken);
+    LegalEntityData fetchLegalEntityData(@RequestParam String name, @RequestParam Integer page, @RequestParam Integer size);
 
 }

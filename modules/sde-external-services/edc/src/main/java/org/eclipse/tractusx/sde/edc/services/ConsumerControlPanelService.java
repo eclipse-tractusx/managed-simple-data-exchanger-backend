@@ -159,7 +159,9 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 		if (leftOperand.equals("BusinessPartnerNumber")) {
 			bpnNumbers.add(rightOperand);
 		} else {
-			usagePolicies.add(UtilityFunctions.identyAndGetUsagePolicy(leftOperand, rightOperand));
+			UsagePolicies policyResponse = UtilityFunctions.identyAndGetUsagePolicy(leftOperand, rightOperand);
+			if (policyResponse != null)
+				usagePolicies.add(policyResponse);
 		}
 	}
 

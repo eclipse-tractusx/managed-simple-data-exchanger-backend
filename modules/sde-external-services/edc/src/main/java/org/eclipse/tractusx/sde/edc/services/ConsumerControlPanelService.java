@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
@@ -158,7 +159,9 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 		if (leftOperand.equals("BusinessPartnerNumber")) {
 			bpnNumbers.add(rightOperand);
 		} else {
-			usagePolicies.add(UtilityFunctions.identyAndGetUsagePolicy(leftOperand, rightOperand));
+			UsagePolicies policyResponse = UtilityFunctions.identyAndGetUsagePolicy(leftOperand, rightOperand);
+			if (policyResponse != null)
+				usagePolicies.add(policyResponse);
 		}
 	}
 
@@ -204,15 +207,21 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 					counter++;
 				} while (checkContractNegotiationStatus.get() != null
 						&& !checkContractNegotiationStatus.get().getState().equals("FINALIZED")
-						&& !checkContractNegotiationStatus.get().getState().equals("DECLINED") && counter <= retry);
+						&& !checkContractNegotiationStatus.get().getState().equals("TERMINATED") && counter <= retry);
 
+			} catch(InterruptedException ie) {
+				log.error("Exception in subscribeDataOffers" + ie.getMessage());
+				Thread.currentThread().interrupt();
 			} catch (Exception e) {
 				log.error("Exception in subscribeDataOffers" + e.getMessage());
 			} finally {
 
 				// Local DB entry
 				ContractNegotiationInfoEntity contractNegotiationInfoEntity = ContractNegotiationInfoEntity.builder()
-						.processId(processId).connectorId(consumerRequest.getConnectorId()).offerId(offer.getOfferId())
+						.id(UUID.randomUUID().toString())
+						.processId(processId)
+						.connectorId(consumerRequest.getConnectorId())
+						.offerId(offer.getOfferId())
 						.contractNegotiationId(negotiateContractId != null ? negotiateContractId.get() : null)
 						.status(checkContractNegotiationStatus.get() != null
 								? checkContractNegotiationStatus.get().getState()

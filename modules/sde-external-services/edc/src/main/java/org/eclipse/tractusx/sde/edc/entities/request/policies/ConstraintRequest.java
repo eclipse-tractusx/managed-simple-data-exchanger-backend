@@ -20,6 +20,7 @@
 
 package org.eclipse.tractusx.sde.edc.entities.request.policies;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -33,6 +34,7 @@ import lombok.SneakyThrows;
 @AllArgsConstructor
 @Data
 @Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ConstraintRequest {
 
 	@JsonProperty("@type")
@@ -43,10 +45,10 @@ public class ConstraintRequest {
 	private String leftOperand;
 
 	@JsonProperty("odrl:rightOperand")
-	private String rightOperand;
+	private Object rightOperand;
 
 	@JsonProperty("odrl:operator")
-	private String operator;
+	private Operator operator;
 
 	@SneakyThrows
 	public String toJsonString() {

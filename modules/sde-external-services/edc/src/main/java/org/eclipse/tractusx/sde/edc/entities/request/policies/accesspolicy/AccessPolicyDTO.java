@@ -21,6 +21,7 @@
 package org.eclipse.tractusx.sde.edc.entities.request.policies.accesspolicy;
 
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
+import org.eclipse.tractusx.sde.edc.entities.request.policies.Operator;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,14 +34,14 @@ import lombok.NoArgsConstructor;
 @Builder
 public class AccessPolicyDTO {
 
-	String bpnNumber;
+	Object bpnNumber;
 
 	public ConstraintRequest toConstraint() {
 
-		String operator = "EQ";
+		String operator = "odrl:eq";
 		return ConstraintRequest.builder()
 				.leftOperand("BusinessPartnerNumber")
-				.operator(operator)
+				.operator(Operator.builder().id(operator).build())
 				.rightOperand(bpnNumber)
 				.build();
 	}

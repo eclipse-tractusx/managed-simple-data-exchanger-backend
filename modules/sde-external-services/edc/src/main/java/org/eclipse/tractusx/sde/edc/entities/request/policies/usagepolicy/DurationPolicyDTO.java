@@ -20,10 +20,12 @@
 
 package org.eclipse.tractusx.sde.edc.entities.request.policies.usagepolicy;
 
+import lombok.Data;
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.DurationEnum;
 import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
+import org.eclipse.tractusx.sde.edc.entities.request.policies.Operator;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -32,6 +34,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
+@Data
 public class DurationPolicyDTO extends UsagePolicyDTO {
 	private DurationEnum durationUnit;
 
@@ -49,7 +52,7 @@ public class DurationPolicyDTO extends UsagePolicyDTO {
 	public ConstraintRequest toConstraint() {
 		if (getTypeOfAccess().equals(PolicyAccessEnum.RESTRICTED)) {
 
-			String operator = "LEQ";
+			String operator = "odrl:lteq";
 			String value = "P";
 			switch (this.durationUnit) {
 			case YEAR:
@@ -74,7 +77,10 @@ public class DurationPolicyDTO extends UsagePolicyDTO {
 				break;
 			}
 
-			return ConstraintRequest.builder().leftOperand("idsc:ELAPSED_TIME").operator(operator).rightOperand(value)
+			return ConstraintRequest.builder()
+					.leftOperand("idsc:ELAPSED_TIME")
+					.operator(Operator.builder().id(operator).build())
+					.rightOperand(value)
 					.build();
 
 		}

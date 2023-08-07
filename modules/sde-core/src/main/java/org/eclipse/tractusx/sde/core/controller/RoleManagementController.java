@@ -22,11 +22,13 @@ package org.eclipse.tractusx.sde.core.controller;
 
 import java.util.List;
 
+import org.eclipse.tractusx.sde.core.role.entity.RolePojo;
 import org.eclipse.tractusx.sde.core.service.RoleManagementService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,8 +45,20 @@ public class RoleManagementController {
 
 	@PostMapping(value = "/role/{role}/permissions")
 	@PreAuthorize("hasPermission(#role,'create_role')")
-	public String fileUpload(@PathVariable("role") String role, @RequestBody List<String> rolePermission) {
+	public String saveRolePermission(@PathVariable("role") String role, @RequestBody List<String> rolePermission) {
 		return roleManagementService.saveRoleWithPermission(role, rolePermission);
+	}
+	
+	@PostMapping(value = "/role")
+	@PreAuthorize("hasPermission(#role,'create_role')")
+	public RolePojo saveRole(@RequestBody RolePojo role) {
+		return roleManagementService.saveRole(role);
+	}
+	
+	@DeleteMapping(value = "/role/{role}")
+	@PreAuthorize("hasPermission(#role,'delete_role')")
+	public void deleteRole(@PathVariable("role") String role) {
+		roleManagementService.deleteRole(role);
 	}
 
 	@GetMapping(value = "/role/{role}/permissions")

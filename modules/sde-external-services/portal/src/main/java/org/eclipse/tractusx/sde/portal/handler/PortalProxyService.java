@@ -19,8 +19,9 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.portal.handler;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.tractusx.sde.portal.api.IPartnerPoolExternalServiceApi;
 import org.eclipse.tractusx.sde.portal.api.IPortalExternalServiceApi;
@@ -30,7 +31,6 @@ import org.eclipse.tractusx.sde.portal.model.response.LegalEntityResponse;
 import org.eclipse.tractusx.sde.portal.model.response.UnifiedBPNValidationStatusEnum;
 import org.eclipse.tractusx.sde.portal.model.response.UnifiedBpnValidationResponse;
 import org.eclipse.tractusx.sde.portal.utils.MemberCompanyBPNCacheUtilityService;
-import org.eclipse.tractusx.sde.portal.utils.TokenUtility;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -46,29 +46,22 @@ public class PortalProxyService {
 
 	private final IPartnerPoolExternalServiceApi partnerPoolExternalServiceApi;
 
-	private final TokenUtility keycloakUtil;
-
 	@SneakyThrows
 	public List<LegalEntityResponse> fetchLegalEntitiesData(String searchText, Integer page, Integer size) {
-		List<LegalEntityResponse> result = new ArrayList<>();
-		LegalEntityData legalEntity = partnerPoolExternalServiceApi.fetchLegalEntityData(searchText, page, size,
-				keycloakUtil.getOriginalRequestAuthToken());
-		if (null != legalEntity) {
-			legalEntity.getContent().stream().forEach(companyData -> {
-				companyData.getLegalEntity().getNames().stream().forEach(name -> {
-					LegalEntityResponse legalEntityResponse = LegalEntityResponse.builder()
-							.bpn(companyData.getLegalEntity().getBpn()).name(name.getValue()).build();
-					result.add(legalEntityResponse);
-				});
-			});
-		}
-		return result;
+		LegalEntityData legalEntity = partnerPoolExternalServiceApi.fetchLegalEntityData(searchText, page, size);
+		return Optional
+				.ofNullable(legalEntity.getContent()
+						.stream()
+						.map(companyData -> LegalEntityResponse.builder()
+						.bpn(companyData.getBpnl()).name(companyData.getLegalName()).build())
+						.toList())
+				.orElse(Collections.emptyList());  
+		
 	}
 
 	@SneakyThrows
 	public List<ConnectorInfo> fetchConnectorInfo(List<String> bpns) {
-		String token = keycloakUtil.getValidJWTTokenforAppTechUser();
-		return portalExternalServiceApi.fetchConnectorInfo(bpns, "Bearer " + token);
+		return portalExternalServiceApi.fetchConnectorInfo(bpns);
 	}
 
 	@SneakyThrows

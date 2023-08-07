@@ -21,7 +21,17 @@
 
 package org.eclipse.tractusx.sde.digitaltwins.entities.response;
 
-import java.util.ArrayList;
+import java.util.List;
 
-public class ShellLookupResponse extends ArrayList<String> {
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.Data;
+
+@Data
+public class ShellLookupResponse {
+	
+	@JsonProperty("paging_metadata")
+	private Paging pagingMetadata;
+	
+	private List<String> result;
 }

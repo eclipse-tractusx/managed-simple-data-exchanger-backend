@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
-## [2.0.8] - 2023-08-02
+## [2.0.8] - 2023-08-07
 ### Added
 - Support EDC version 0.5.1
 - Integration with BPDM api interface.
@@ -24,6 +24,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - refactor EDC and de-centralized digital-twins api calls.
 - BPN discovery update.
 - remove unwanted maven module.
+- fix to disable traceability use case policy.
 
 ## [2.0.7] - non-released
 ### Added

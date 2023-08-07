@@ -101,7 +101,7 @@ public class UtilityFunctions {
 		List<UsagePolicies> usagePolicies = new ArrayList<>();
 		constraints.forEach(constraint -> {
 			String leftExpVal = constraint.getLeftOperand();
-			String rightExpVal = constraint.getRightOperand();
+			String rightExpVal = constraint.getRightOperand().toString();
 			UsagePolicies policyResponse = identyAndGetUsagePolicy(leftExpVal, rightExpVal);
 			if (policyResponse != null)
 				usagePolicies.add(policyResponse);

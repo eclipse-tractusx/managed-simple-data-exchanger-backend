@@ -34,7 +34,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class AccessPolicyDTO {
 
-	String bpnNumber;
+	Object bpnNumber;
 
 	public ConstraintRequest toConstraint() {
 
@@ -43,15 +43,6 @@ public class AccessPolicyDTO {
 				.leftOperand("BusinessPartnerNumber")
 				.operator(Operator.builder().id(operator).build())
 				.rightOperand(bpnNumber)
-				.build();
-	}
-	
-	public ConstraintRequest toTraceabilityConstraint() {
-		String operator = "odrl:eq";
-		return ConstraintRequest.builder()
-				.leftOperand("FrameworkAgreement.traceability")
-				.operator(Operator.builder().id(operator).build())
-				.rightOperand("active")
 				.build();
 	}
 }

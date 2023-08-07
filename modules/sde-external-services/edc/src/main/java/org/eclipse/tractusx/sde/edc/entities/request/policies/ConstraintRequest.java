@@ -45,7 +45,7 @@ public class ConstraintRequest {
 	private String leftOperand;
 
 	@JsonProperty("odrl:rightOperand")
-	private String rightOperand;
+	private Object rightOperand;
 
 	@JsonProperty("odrl:operator")
 	private Operator operator;

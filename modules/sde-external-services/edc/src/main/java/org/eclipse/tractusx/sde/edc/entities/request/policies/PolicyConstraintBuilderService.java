@@ -44,7 +44,7 @@ public class PolicyConstraintBuilderService {
 		}
 		ActionRequest action = ActionRequest.builder().build();
 		action.addProperty("@type", "LogicalConstraint");
-		action.addProperty("odrl:and", constraints);
+		action.addProperty("odrl:or", constraints);
 		return action;
 	}
 

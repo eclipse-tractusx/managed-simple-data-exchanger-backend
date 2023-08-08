@@ -134,7 +134,7 @@ public class ContractNegotiateManagementHelper extends AbstractEDCStepsHelper {
 		List<ContractAgreementResponse> contractAgreementResponses = new ArrayList<>();
 		List<ContractNegotiationDto> contractNegotiationDtoList = getAllContractNegotiations(type, limit, offset);
 
-		contractNegotiationDtoList.stream().forEach(contract -> {
+		contractNegotiationDtoList.stream().filter(contract-> type.equalsIgnoreCase(contract.getType().name())).forEach(contract -> {
 			if (StringUtils.isNotBlank(contract.getContractAgreementId())
 					&& (contract.getState().equals(NegotiationState.FINALIZED.name())
 					|| (NegotiationState.DECLINED.name().equalsIgnoreCase(contract.getErrorDetail())

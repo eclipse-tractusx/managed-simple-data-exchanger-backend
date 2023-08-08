@@ -107,7 +107,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 	private SubModelResponse checkShellforSubmodelExistorNot(AspectRelationship aspectRelationShip,
 			ShellLookupRequest shellLookupRequest, List<String> shellIds, SubModelResponse foundSubmodel)
 			throws CsvHandlerDigitalTwinUseCaseException {
-		List<ShellDescriptorResponse> items = digitalTwinfacilitaor.getShellDescriptorsWithSubmodelDetails(shellIds);
+		List<ShellDescriptorResponse> items = digitalTwinfacilitaor.getShellDescriptorsWithSubmodelDetails(shellIds, null);
 
 		List<String> submodelExistinceCount = new ArrayList<>();
 
@@ -209,7 +209,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 
 			if (childshellIds.size() == 1) {
 				ShellDescriptorResponse shellDescriptorResponse = digitalTwinfacilitaor
-						.getShellDetailsById(childshellIds.get(0));
+						.getShellDetailsById(childshellIds.get(0), ddtUrl);
 				childUUID = shellDescriptorResponse.getGlobalAssetId();
 			}
 

@@ -102,19 +102,21 @@ public class DigitalTwinsFacilitator {
 	}
 
 	@SneakyThrows
-	public List<ShellDescriptorResponse> getShellDescriptorsWithSubmodelDetails(List<String> shellIds) {
+	public List<ShellDescriptorResponse> getShellDescriptorsWithSubmodelDetails(List<String> shellIds, String ddtrUrl) {
 
 		List<ShellDescriptorResponse> items = new ArrayList<>();
 		for (String shellId : shellIds) {
-			items.add(getShellDetailsById(shellId));
+			items.add(getShellDetailsById(shellId, ddtrUrl));
 		}
 		return items;
 	}
 
-	public ShellDescriptorResponse getShellDetailsById(String shellId) {
+	public ShellDescriptorResponse getShellDetailsById(String shellId, String ddtrUrl) {
+		
+		URI dtURL = (ddtrUrl == null || ddtrUrl.length() <= 0) ? getDtURL(digitalTwinsHost) : getDtURL(ddtrUrl);
 
 		ResponseEntity<ShellDescriptorResponse> shellDescriptorResponse = digitalTwinsFeignClient
-				.getShellDescriptorByShellId(getDtURL(digitalTwinsHost), encodeShellIdBase64Utf8(shellId));
+				.getShellDescriptorByShellId(dtURL, encodeShellIdBase64Utf8(shellId));
 		return shellDescriptorResponse.getBody();
 	}
 

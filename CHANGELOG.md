@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [2.0.9] - 2023-08-08
+### Fixed
+- Access policy for BPN check should be or not and constraint.
+- Filter contract as Provider and Consumer.
+
 ## [2.0.8] - 2023-08-07
 ### Added
 - Support EDC version 0.5.1

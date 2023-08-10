@@ -191,4 +191,17 @@ entries:
     urls:
     - https://github.com/eclipse-tractusx/dft-backend/releases/download/dftbackend-1.9.0/dftbackend-1.9.0.tgz
     version: 1.9.0
-generated: "2023-06-22T08:21:58.6172918Z"
+  sdebackend:
+  - apiVersion: v2
+    appVersion: 2.0.8
+    created: "2023-08-10T10:05:41.263041276Z"
+    description: SDE Backend
+    digest: dd6b07ed4d4106678a7ed4885ea1dde5992f19efd5b5ccd61b69dbfa002ecec1
+    name: sdebackend
+    sources:
+    - https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend
+    type: application
+    urls:
+    - https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/releases/download/sdebackend-2.0.8/sdebackend-2.0.8.tgz
+    version: 2.0.8
+generated: "2023-08-10T10:05:41.263168276Z"

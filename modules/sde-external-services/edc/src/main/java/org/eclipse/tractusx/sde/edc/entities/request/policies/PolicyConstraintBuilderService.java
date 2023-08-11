@@ -53,16 +53,11 @@ public class PolicyConstraintBuilderService {
 		if (usagePolicies != null && !usagePolicies.isEmpty()) {
 			usagePolicies.stream().forEach(policy -> usagePolicy(usageConstraintList, policy));
 		}
+		ActionRequest action = ActionRequest.builder().build();
+		action.addProperty("@type", "LogicalConstraint");
+		action.addProperty("odrl:and", usageConstraintList);
+		return action;
 
-		if (usageConstraintList.isEmpty())
-			return null;
-		else {
-			ActionRequest action = ActionRequest.builder().build();
-			action.addProperty("@type", "LogicalConstraint");
-			action.addProperty("odrl:and", usageConstraintList);
-			return action;
-
-		}
 	}
 
 	private void usagePolicy(List<ConstraintRequest> usageConstraintList, UsagePolicies policy) {
@@ -89,13 +84,10 @@ public class PolicyConstraintBuilderService {
 			break;
 		}
 	}
-	
+
 	public ConstraintRequest toTraceabilityConstraint() {
 		String operator = "odrl:eq";
-		return ConstraintRequest.builder()
-				.leftOperand("FrameworkAgreement.traceability")
-				.operator(Operator.builder().id(operator).build())
-				.rightOperand("active")
-				.build();
+		return ConstraintRequest.builder().leftOperand("FrameworkAgreement.traceability")
+				.operator(Operator.builder().id(operator).build()).rightOperand("active").build();
 	}
 }

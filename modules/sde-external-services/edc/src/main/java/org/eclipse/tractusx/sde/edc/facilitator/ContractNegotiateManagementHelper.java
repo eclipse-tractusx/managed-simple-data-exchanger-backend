@@ -101,18 +101,14 @@ public class ContractNegotiateManagementHelper extends AbstractEDCStepsHelper {
 			List<UsagePolicies> policies = new ArrayList<>();
 
 			Object object = agreement.getPolicy().getPermissions().getConstraint().get("odrl:and");
-
-			if (object instanceof ArrayList) {
-				List<ConstraintRequest> convertValue = objeMapper.convertValue(object,
-						new TypeReference<List<ConstraintRequest>>() {
-						});
-				policies.addAll(UtilityFunctions.getUsagePolicies(convertValue));
-			} else {
-				
-				ConstraintRequest convertValue = objeMapper.convertValue(object, ConstraintRequest.class);
-				policies.addAll(UtilityFunctions.getUsagePolicies(List.of(convertValue)));
+			if (object != null)
+				setContraint(objeMapper, policies, object);
+			else {
+				object = agreement.getPolicy().getPermissions().getConstraint().get("odrl:or");
+				if (object != null)
+					setContraint(objeMapper, policies, object);
 			}
-
+			
 			UtilityFunctions.addCustomUsagePolicy(agreement.getPolicy().getExtensibleProperties(), policies);
 
 			ContractAgreementInfo agreementInfo = ContractAgreementInfo.builder()
@@ -128,6 +124,19 @@ public class ContractNegotiateManagementHelper extends AbstractEDCStepsHelper {
 		}
 
 		return agreementResponse;
+	}
+
+	private void setContraint(ObjectMapper objeMapper, List<UsagePolicies> policies, Object object) {
+		if (object instanceof ArrayList) {
+			List<ConstraintRequest> convertValue = objeMapper.convertValue(object,
+					new TypeReference<List<ConstraintRequest>>() {
+					});
+			policies.addAll(UtilityFunctions.getUsagePolicies(convertValue));
+		} else if (object !=null ){
+			
+			ConstraintRequest convertValue = objeMapper.convertValue(object, ConstraintRequest.class);
+			policies.addAll(UtilityFunctions.getUsagePolicies(List.of(convertValue)));
+		}
 	}
 
 	public Map<String, Object> getAllContractOffers(String type, Integer limit, Integer offset) {

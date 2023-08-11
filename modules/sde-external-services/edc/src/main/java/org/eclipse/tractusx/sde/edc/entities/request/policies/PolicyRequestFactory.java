@@ -50,13 +50,14 @@ public class PolicyRequestFactory {
 	public List<PermissionRequest> getPermissions(String assetId, ActionRequest action) {
 
 		ArrayList<PermissionRequest> permissions = new ArrayList<>();
-		PermissionRequest permissionRequest = PermissionRequest.builder()
-				.action(Map.of("odrl:type", "USE"))
-				.target(assetId)
-				.constraint(action.getAction())
-				.build();
-		permissions.add(permissionRequest);
-
+		if (action != null) {
+			PermissionRequest permissionRequest = PermissionRequest
+					.builder().action(Map.of("odrl:type", "USE"))
+					.target(assetId)
+					.constraint(action.getAction())
+					.build();
+			permissions.add(permissionRequest);
+		}
 		return permissions;
 	}
 }

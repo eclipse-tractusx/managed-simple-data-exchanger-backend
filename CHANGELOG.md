@@ -6,7 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 - Access policy for BPN check should be or not and constraint.
 - Filter contract as Provider and Consumer.
-- Fix for look up functionality, dtURL use from cache
+- Fix for look up functionality, dtURL use from cache.
+- fix for Offer subscription issue.
 
 ## [2.0.8] - 2023-08-07
 ### Added

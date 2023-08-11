@@ -193,6 +193,18 @@ entries:
     version: 1.9.0
   sdebackend:
   - apiVersion: v2
+    appVersion: 2.0.9
+    created: "2023-08-11T12:55:13.458666877Z"
+    description: SDE Backend
+    digest: d031cafffea31908e4e884e75947ccc5947dfe949b6ab40545459d730efa1908
+    name: sdebackend
+    sources:
+    - https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend
+    type: application
+    urls:
+    - https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/releases/download/sdebackend-2.0.9/sdebackend-2.0.9.tgz
+    version: 2.0.9
+  - apiVersion: v2
     appVersion: 2.0.8
     created: "2023-08-10T10:05:41.263041276Z"
     description: SDE Backend
@@ -204,4 +216,4 @@ entries:
     urls:
     - https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/releases/download/sdebackend-2.0.8/sdebackend-2.0.8.tgz
     version: 2.0.8
-generated: "2023-08-10T10:05:41.263168276Z"
+generated: "2023-08-11T12:55:13.458699677Z"

@@ -29,6 +29,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface IPartnerPoolExternalServiceApi {
     
 	@GetMapping(path = "/api/catena/legal-entities")
-    LegalEntityData fetchLegalEntityData(@RequestParam String name, @RequestParam Integer page, @RequestParam Integer size);
+    LegalEntityData fetchLegalEntityData(@RequestParam String legalName, @RequestParam Integer page, @RequestParam Integer size);
 
 }

@@ -1,13 +1,33 @@
+#********************************************************************************
+# Copyright (c) 2023 T-Systems International GmbH
+# Copyright (c) 2023 Contributors to the Eclipse Foundation
+#
+# See the NOTICE file(s) distributed with this work for additional
+# information regarding copyright ownership.
+
+# This program and the accompanying materials are made available under the
+# terms of the Apache License, Version 2.0 which is available at
+# https://www.apache.org/licenses/LICENSE-2.0.
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+#*******************************************************************************/
+
 openapi: 3.0.1
 info:
   title: DFT/SDE API information
   description: This Service handles all DFT data provider and consumer operations
   version: '1.0'
 servers:
-  - url: https://dft-api.dev.demo.catena-x.net/api
+  - url: https://dft-api.int.demo.catena-x.net/api
     description: Generated server url
 security:
-  - Authentication: []
+  - bearerAuth: []
 paths:
   /{submodel}/upload:
     post:
@@ -20,13 +40,11 @@ paths:
           required: true
           schema:
             type: string
-            example: null
         - name: meta_data
           in: query
           required: true
           schema:
             type: string
-            example: null
       requestBody:
         content:
           application/json:
@@ -38,9 +56,6 @@ paths:
                 file:
                   type: string
                   format: binary
-                  example: null
-              example: null
-            example: null
       responses:
         '200':
           description: OK
@@ -48,8 +63,6 @@ paths:
             '*/*':
               schema:
                 type: string
-                example: null
-              example: null
   /{submodel}/manualentry:
     post:
       tags:
@@ -61,13 +74,11 @@ paths:
           required: true
           schema:
             type: string
-            example: null
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/SubmodelJsonRequestObjectNode'
-            example: null
         required: true
       responses:
         '200':
@@ -76,8 +87,6 @@ paths:
             '*/*':
               schema:
                 type: string
-                example: null
-              example: null
   /subscribe-data-offers:
     post:
       tags:
@@ -88,7 +97,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ConsumerRequest'
-            example: null
         required: true
       responses:
         '200':
@@ -97,8 +105,24 @@ paths:
             '*/*':
               schema:
                 type: object
-                example: null
-              example: null
+  /role:
+    post:
+      tags:
+        - role-management-controller
+      operationId: saveRole
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RolePojo'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/RolePojo'
   /role/{role}/permissions:
     get:
       tags:
@@ -110,7 +134,6 @@ paths:
           required: true
           schema:
             type: string
-            example: null
       responses:
         '200':
           description: OK
@@ -118,33 +141,25 @@ paths:
             '*/*':
               schema:
                 type: array
-				maxItems: 3
-                example: null
                 items:
                   type: string
-                  example: null
-              example: null
     post:
       tags:
         - role-management-controller
-      operationId: fileUpload_1
+      operationId: saveRolePermission
       parameters:
         - name: role
           in: path
           required: true
           schema:
             type: string
-            example: null
       requestBody:
         content:
           application/json:
             schema:
               type: array
-              example: null
               items:
                 type: string
-                example: null
-            example: null
         required: true
       responses:
         '200':
@@ -153,23 +168,72 @@ paths:
             '*/*':
               schema:
                 type: string
-                example: null
-              example: null
+  /contract-agreements/{negotiationId}/provider/decline:
+    post:
+      tags:
+        - contract-management-controller
+      operationId: declineContractProvider
+      parameters:
+        - name: negotiationId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+  /contract-agreements/{negotiationId}/provider/cancel:
+    post:
+      tags:
+        - contract-management-controller
+      operationId: cancelContractProvider
+      parameters:
+        - name: negotiationId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+  /contract-agreements/{negotiationId}/consumer/cancel:
+    post:
+      tags:
+        - contract-management-controller
+      operationId: cancelContractConsumer
+      parameters:
+        - name: negotiationId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
   /connectors-discovery:
     post:
       tags:
-        - consumer-controller
+        - portal-proxy-controller
       operationId: fetchConnectorInfo
       requestBody:
         content:
           application/json:
             schema:
               type: array
-              example: null
               items:
                 type: string
-                example: null
-            example: null
         required: true
       responses:
         '200':
@@ -178,11 +242,8 @@ paths:
             '*/*':
               schema:
                 type: array
-				maxItems: 3
-                example: null
                 items:
                   $ref: '#/components/schemas/ConnectorInfo'
-              example: null
   /{submodel}/public/{uuid}:
     get:
       tags:
@@ -194,13 +255,11 @@ paths:
           required: true
           schema:
             type: string
-            example: null
         - name: uuid
           in: path
           required: true
           schema:
             type: string
-            example: null
       responses:
         '200':
           description: OK
@@ -210,9 +269,6 @@ paths:
                 type: object
                 additionalProperties:
                   type: object
-                  example: null
-                example: null
-              example: null
   /user/role/permissions:
     get:
       tags:
@@ -225,17 +281,13 @@ paths:
             '*/*':
               schema:
                 type: array
-				maxItems: 3
-                example: null
                 items:
                   type: string
-                  example: null
-              example: null
-  /submodels:
+  /usecases:
     get:
       tags:
         - submodel-controller
-      operationId: getAllSubmodels
+      operationId: getAllUsecases
       responses:
         '200':
           description: OK
@@ -243,15 +295,52 @@ paths:
             '*/*':
               schema:
                 type: array
-				maxItems: 3
-                example: null
+                items:
+                  type: object
+                  additionalProperties:
+                    type: object
+  /unified-bpn-validation/{bpn}:
+    get:
+      tags:
+        - portal-proxy-controller
+      operationId: unifiedBpnValidation
+      parameters:
+        - name: bpn
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UnifiedBpnValidationResponse'
+  /submodels:
+    get:
+      tags:
+        - submodel-controller
+      operationId: getAllSubmodels
+      parameters:
+        - name: usecases
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
                 items:
                   type: object
                   additionalProperties:
                     type: string
-                    example: null
-                  example: null
-              example: null
   /submodels/{submodelName}:
     get:
       tags:
@@ -263,7 +352,6 @@ paths:
           required: true
           schema:
             type: string
-            example: null
       responses:
         '200':
           description: OK
@@ -273,9 +361,30 @@ paths:
                 type: object
                 additionalProperties:
                   type: object
-                  example: null
-                example: null
-              example: null
+  /submodels/schema-details:
+    get:
+      tags:
+        - submodel-controller
+      operationId: getAllSubmodelswithDetails
+      parameters:
+        - name: usecases
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties:
+                    type: object
   /query-data-offers:
     get:
       tags:
@@ -287,7 +396,18 @@ paths:
           required: true
           schema:
             type: string
-            example: null
+        - name: maxLimit
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
       responses:
         '200':
           description: OK
@@ -295,8 +415,6 @@ paths:
             '*/*':
               schema:
                 type: object
-                example: null
-              example: null
   /processing-report:
     get:
       tags:
@@ -309,14 +427,12 @@ paths:
           schema:
             type: integer
             format: int32
-            example: null
         - name: pageSize
           in: query
           required: true
           schema:
             type: integer
             format: int32
-            example: null
       responses:
         '200':
           description: OK
@@ -324,7 +440,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProcessReportPageResponse'
-              example: null
+  /processing-report/{submodel}/success-details/{id}:
+    get:
+      tags:
+        - process-report-controller
+      operationId: getProcessSuccessDetailsReportById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: submodel
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: array
+                  items:
+                    type: string
   /processing-report/{id}:
     get:
       tags:
@@ -336,7 +478,6 @@ paths:
           required: true
           schema:
             type: string
-            example: null
       responses:
         '200':
           description: OK
@@ -344,7 +485,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProcessReport'
-              example: null
+  /processing-report/failure-details/{id}:
+    get:
+      tags:
+        - process-report-controller
+      operationId: getProcessFailureDetailsReportById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProcessFailureDetails'
   /ping:
     get:
       tags:
@@ -357,12 +517,10 @@ paths:
             '*/*':
               schema:
                 type: string
-                example: null
-              example: null
   /legal-entities:
     get:
       tags:
-        - consumer-controller
+        - portal-proxy-controller
       operationId: fetchLegalEntitiesData
       parameters:
         - name: searchText
@@ -370,21 +528,18 @@ paths:
           required: true
           schema:
             type: string
-            example: null
         - name: page
           in: query
           required: true
           schema:
             type: integer
             format: int32
-            example: null
         - name: size
           in: query
           required: true
           schema:
             type: integer
             format: int32
-            example: null
       responses:
         '200':
           description: OK
@@ -392,31 +547,19 @@ paths:
             '*/*':
               schema:
                 type: array
-				maxItems: 3
-                example: null
                 items:
                   $ref: '#/components/schemas/LegalEntityResponse'
-              example: null
-  /contract-offers:
+  /contract-agreements/{negotiationId}/consumer/decline:
     get:
       tags:
-        - consumer-controller
-      operationId: queryOnDataOffersStatus
+        - contract-management-controller
+      operationId: declineContractConsumer
       parameters:
-        - name: limit
-          in: query
-          required: false
+        - name: negotiationId
+          in: path
+          required: true
           schema:
-            type: integer
-            format: int32
-            example: null
-        - name: offset
-          in: query
-          required: false
-          schema:
-            type: integer
-            format: int32
-            example: null
+            type: string
       responses:
         '200':
           description: OK
@@ -424,8 +567,80 @@ paths:
             application/json:
               schema:
                 type: object
-                example: null
-              example: null
+  /contract-agreements/provider:
+    get:
+      tags:
+        - contract-management-controller
+      operationId: contractAgreementsProvider
+      parameters:
+        - name: maxLimit
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+  /contract-agreements/consumer:
+    get:
+      tags:
+        - contract-management-controller
+      operationId: contractAgreementsConsumer
+      parameters:
+        - name: maxLimit
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+  /cache/clear-memebercompany-bpnnumber:
+    get:
+      tags:
+        - ping-controller
+      operationId: clearBpnnumberCache
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /cache/clear-ddtrurl:
+    get:
+      tags:
+        - ping-controller
+      operationId: clearDdtrurlCache
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
   /{submodel}/delete/{processId}:
     delete:
       tags:
@@ -437,22 +652,34 @@ paths:
           required: true
           schema:
             type: string
-            example: null
         - name: submodel
           in: path
           required: true
           schema:
             type: string
-            example: null
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                type: string
-                example: null
-              example: null
+                type: object
+                additionalProperties:
+                  type: string
+  /role/{role}:
+    delete:
+      tags:
+        - role-management-controller
+      operationId: deleteRole
+      parameters:
+        - name: role
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
 components:
   schemas:
     SubmodelJsonRequestObjectNode:
@@ -460,31 +687,23 @@ components:
       properties:
         row_data:
           type: array
-          example: null
           items:
             type: object
-            example: null
         type_of_access:
           type: string
-          example: null
         bpn_numbers:
           type: array
-          example: null
           items:
             type: string
-            example: null
         usage_policies:
           type: array
-          example: null
           items:
             $ref: '#/components/schemas/UsagePolicies'
-      example: null
     UsagePolicies:
       type: object
       properties:
         type:
           type: string
-          example: null
           enum:
             - DURATION
             - PURPOSE
@@ -492,16 +711,13 @@ components:
             - CUSTOM
         value:
           type: string
-          example: null
         typeOfAccess:
           type: string
-          example: null
           enum:
             - RESTRICTED
             - UNRESTRICTED
         durationUnit:
           type: string
-          example: null
           enum:
             - YEAR
             - MONTH
@@ -509,7 +725,6 @@ components:
             - HOUR
             - MINUTE
             - SECOND
-      example: null
     ConsumerRequest:
       required:
         - connectorId
@@ -520,21 +735,16 @@ components:
       properties:
         connectorId:
           type: string
-          example: null
         providerUrl:
           type: string
-          example: null
         offers:
           type: array
-          example: null
           items:
             $ref: '#/components/schemas/OfferRequest'
         policies:
           type: array
-          example: null
           items:
             $ref: '#/components/schemas/UsagePolicies'
-      example: null
     OfferRequest:
       required:
         - assetId
@@ -543,51 +753,55 @@ components:
       properties:
         offerId:
           type: string
-          example: null
         assetId:
           type: string
-          example: null
         policyId:
           type: string
-          example: null
-      example: null
+    RolePojo:
+      type: object
+      properties:
+        role:
+          type: string
+        description:
+          type: string
     ConnectorInfo:
       type: object
       properties:
         bpn:
           type: string
-          example: null
         connectorEndpoint:
           type: array
-          example: null
           items:
             type: string
-            example: null
-      example: null
+    UnifiedBpnValidationResponse:
+      type: object
+      properties:
+        msg:
+          type: string
+        bpnStatus:
+          type: string
+          enum:
+            - FULL_PARTNER
+            - NOT_PARTNER
+            - PARTNER
     ProcessReport:
       type: object
       properties:
         processId:
           type: string
-          example: null
         csvType:
           type: string
-          example: null
         numberOfItems:
           type: integer
           format: int32
-          example: null
         numberOfFailedItems:
           type: integer
           format: int32
-          example: null
         numberOfSucceededItems:
           type: integer
           format: int32
-          example: null
         status:
           type: string
-          example: null
           enum:
             - IN_PROGRESS
             - COMPLETED
@@ -595,73 +809,62 @@ components:
         startDate:
           type: string
           format: date-time
-          example: null
         endDate:
           type: string
           format: date-time
-          example: null
         bpnNumbers:
           type: array
-          example: null
           items:
             type: string
-            example: null
         typeOfAccess:
           type: string
-          example: null
         usagePolicies:
           type: string
-          example: null
         numberOfUpdatedItems:
           type: integer
           format: int32
-          example: null
         numberOfDeletedItems:
           type: integer
           format: int32
-          example: null
         referenceProcessId:
           type: string
-          example: null
-      example: null
     ProcessReportPageResponse:
       type: object
       properties:
         pageNumber:
           type: integer
           format: int32
-          example: null
         pageSize:
           type: integer
           format: int32
-          example: null
         totalItems:
           type: integer
           format: int64
-          example: null
         items:
           type: array
-          example: null
           items:
             $ref: '#/components/schemas/ProcessReport'
-      example: null
+    ProcessFailureDetails:
+      type: object
+      properties:
+        uuid:
+          type: string
+        processId:
+          type: string
+        log:
+          type: string
+        dateTime:
+          type: string
+          format: date-time
     LegalEntityResponse:
       type: object
       properties:
         name:
           type: string
-          example: null
         bpn:
           type: string
-          example: null
-      example: null
   securitySchemes:
-    Authentication:
-      type: oauth2
-      flows:
-        authorizationCode:
-          authorizationUrl: https://centralidp.dev.demo.catena-x.net/auth/realms/CX-Central/protocol/openid-connect/auth
-          tokenUrl: https://centralidp.dev.demo.catena-x.net/auth/realms/CX-Central/protocol/openid-connect/token
-          scopes:
-           read: read access for user
-           write: write access for user
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

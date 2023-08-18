@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023 T-Systems International GmbH
+ * Copyright (c) 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -18,30 +18,14 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.core.role.entity;
+package org.eclipse.tractusx.sde.digitaltwins.entities.response;
 
-import jakarta.persistence.Cacheable;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Table(name = "sde_role")
-@Entity
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Cacheable(value = false)
-public class RoleEntity {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class Paging {
 
-	@Id
-	@Column(name = "sde_role")
-	private String sdeRole;
-	
-	private String description;
 }

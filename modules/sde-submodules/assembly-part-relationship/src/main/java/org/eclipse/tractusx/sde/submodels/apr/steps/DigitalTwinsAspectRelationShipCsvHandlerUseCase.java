@@ -35,7 +35,6 @@ import org.eclipse.tractusx.sde.common.submodel.executor.Step;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.CreateSubModelRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellLookupRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorResponse;
-import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellLookupResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelResponse;
 import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsFacilitator;
 import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsUtility;
@@ -72,7 +71,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 			throws CsvHandlerUseCaseException, CsvHandlerDigitalTwinUseCaseException {
 
 		ShellLookupRequest shellLookupRequest = getShellLookupRequest(aspectRelationShip);
-		ShellLookupResponse shellIds = digitalTwinfacilitaor.shellLookup(shellLookupRequest);
+		List<String> shellIds = digitalTwinfacilitaor.shellLookup(shellLookupRequest);
 
 		String shellId = null;
 		SubModelResponse foundSubmodel = null;
@@ -106,9 +105,9 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 	}
 
 	private SubModelResponse checkShellforSubmodelExistorNot(AspectRelationship aspectRelationShip,
-			ShellLookupRequest shellLookupRequest, ShellLookupResponse shellIds, SubModelResponse foundSubmodel)
+			ShellLookupRequest shellLookupRequest, List<String> shellIds, SubModelResponse foundSubmodel)
 			throws CsvHandlerDigitalTwinUseCaseException {
-		List<ShellDescriptorResponse> items = digitalTwinfacilitaor.getShellDescriptorsWithSubmodelDetails(shellIds);
+		List<ShellDescriptorResponse> items = digitalTwinfacilitaor.getShellDescriptorsWithSubmodelDetails(shellIds, null);
 
 		List<String> submodelExistinceCount = new ArrayList<>();
 
@@ -196,7 +195,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 
 		for (String ddtUrl : dtURls) {
 
-			ShellLookupResponse childshellIds = digitalTwinfacilitaor.shellLookupFromDDTR(shellLookupRequest, ddtUrl);
+			List<String> childshellIds = digitalTwinfacilitaor.shellLookupFromDDTR(shellLookupRequest, ddtUrl);
 
 			if (childshellIds.isEmpty()) {
 				log.warn(aspectRelationShip.getRowNumber() + ", " + ddtUrl + ", No child aspect found for "
@@ -210,7 +209,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 
 			if (childshellIds.size() == 1) {
 				ShellDescriptorResponse shellDescriptorResponse = digitalTwinfacilitaor
-						.getShellDetailsById(childshellIds.get(0));
+						.getShellDetailsById(childshellIds.get(0), ddtUrl);
 				childUUID = shellDescriptorResponse.getGlobalAssetId();
 			}
 

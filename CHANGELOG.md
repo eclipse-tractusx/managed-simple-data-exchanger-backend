@@ -2,31 +2,48 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
-## [Unreleased]
-- Integration with BPDM api interface.
-
-## [2.0.8] - 2023-07-13
+## [2.0.8] - 2023-08-07
 ### Added
 - Support EDC version 0.5.1
+- Integration with BPDM api interface.
+- add Traceability use case as access policy.
+- refactor token utilty api.
+- update varible name for uniqueness.
+- refactor dt look up api for new version.
+- Adapt DTR API new changes.
+- Support AAS version 0.3
+- Renamed SerialPartTypization aspect submodel to SerialPart.
+- Renamed AssemblyPartRelationship aspect submodel to SingleLevelBoMAsBuilt.
+- Support EDC version 4.1
+- added umbrella charts for sde frontend and backend.
+- removed the older charts.
 
-## [2.0.7] - 2023-07-13
+### Fixed
+- Sonar lint issues fixed.
+- Spring security trivy issue fixed.
+- refactor EDC and de-centralized digital-twins api calls.
+- BPN discovery update.
+- remove unwanted maven module.
+- fix to disable traceability use case policy.
+
+## [2.0.7] - non-released
 ### Added
 - Support AAS version 0.3
 
-## [2.0.6] - 2023-07-12
+## [2.0.6] - non-released
 ### Added
 - Renamed SerialPartTypization aspect submodel to SerialPart.
 - Renamed AssemblyPartRelationship aspect submodel to SingleLevelBoMAsBuilt. 
 
-## [2.0.5] - 2023-07-12
+## [2.0.5] - non-released
 ### Added
 - Support EDC version 4.1.
 
-## [2.0.4] - 2023-07-12
+## [2.0.4] -non-released
 ### Fixed
 - refactor EDC and de-centralized digital-twins api calls.
 
-## [2.0.3] - 2023-07-12
+## [2.0.3] - non-released
 ### Added
 - added umbrella charts for sde frontend and backend.
 - removed the older charts.
@@ -175,12 +192,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Integration with Digital Twin registry service.
 
 [unreleased]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/dftbackend-2.0.8...main
-[2.0.8]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/dftbackend-2.0.7...dftbackend-2.0.8
-[2.0.7]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/dftbackend-2.0.6...dftbackend-2.0.7
-[2.0.6]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/dftbackend-2.0.5...dftbackend-2.0.6
-[2.0.5]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/dftbackend-2.0.4...dftbackend-2.0.5
-[2.0.4]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/dftbackend-2.0.3...dftbackend-2.0.4
-[2.0.3]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/dftbackend-2.0.2...dftbackend-2.0.3
+[2.0.8]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/dftbackend-2.0.2...dftbackend-2.0.8
 [2.0.2]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/dftbackend-2.0.1...dftbackend-2.0.2
 [2.0.1]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/dftbackend-2.0.0...dftbackend-2.0.1
 [2.0.0]: https://github.com/eclipse-tractusx/dft-backend/compare/1.9.1...2.0.0

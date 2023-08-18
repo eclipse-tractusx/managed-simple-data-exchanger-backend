@@ -62,9 +62,6 @@ public class ContractNegotiateManagementHelper extends AbstractEDCStepsHelper {
 		ContractNegotiations contractNegotiations = contractMapper
 				.prepareContractNegotiations(providerUrl + protocolPath, offerId, assetId, providerId, action);
 
-		// it looks extensible property not supporting
-		// contractNegotiations.getOffer().getPolicy().setExtensibleProperties(extensibleProperty);
-
 		AcknowledgementId acknowledgementId = contractApi.contractnegotiations(new URI(consumerHost),
 				contractNegotiations, getAuthHeader());
 		return acknowledgementId.getId();
@@ -137,30 +134,28 @@ public class ContractNegotiateManagementHelper extends AbstractEDCStepsHelper {
 		List<ContractAgreementResponse> contractAgreementResponses = new ArrayList<>();
 		List<ContractNegotiationDto> contractNegotiationDtoList = getAllContractNegotiations(type, limit, offset);
 
-		contractNegotiationDtoList.stream().forEach((contract) -> {
-			if (StringUtils.isBlank(type) || contract.getType().name().equals(type)) {
-				if (contract.getState().equals(NegotiationState.FINALIZED.name())
-						|| contract.getState().equals(NegotiationState.DECLINED.name())) {
-					String negotiationId = contract.getId();
-					if (StringUtils.isNotBlank(contract.getContractAgreementId())) {
-						ContractAgreementResponse agreementResponse = getAgreementBasedOnNegotiationId(type,
-								negotiationId);
-						agreementResponse.setCounterPartyAddress(contract.getCounterPartyAddress());
-						agreementResponse.setDateCreated(contract.getCreatedAt());
-						agreementResponse.setDateUpdated(contract.getUpdatedAt());
-						agreementResponse.setType(contract.getType());
-						agreementResponse.setState(contract.getState());
-						contractAgreementResponses.add(agreementResponse);
-					}
-				} else {
-					ContractAgreementResponse agreementResponse = ContractAgreementResponse.builder()
-							.contractAgreementId(StringUtils.EMPTY).organizationName(StringUtils.EMPTY)
-							.title(StringUtils.EMPTY).negotiationId(contract.getId()).state(contract.getState())
-							.contractAgreementInfo(null).counterPartyAddress(contract.getCounterPartyAddress())
-							.type(contract.getType()).dateCreated(contract.getCreatedAt())
-							.dateUpdated(contract.getUpdatedAt()).build();
-					contractAgreementResponses.add(agreementResponse);
-				}
+		contractNegotiationDtoList.stream().filter(contract-> type.equalsIgnoreCase(contract.getType().name())).forEach(contract -> {
+			if (StringUtils.isNotBlank(contract.getContractAgreementId())
+					&& (contract.getState().equals(NegotiationState.FINALIZED.name())
+					|| (NegotiationState.DECLINED.name().equalsIgnoreCase(contract.getErrorDetail())
+							&& contract.getState().equals(NegotiationState.TERMINATED.name())))) {
+				String negotiationId = contract.getId();
+				ContractAgreementResponse agreementResponse = getAgreementBasedOnNegotiationId(type, negotiationId);
+				agreementResponse.setCounterPartyAddress(contract.getCounterPartyAddress());
+				agreementResponse.setDateCreated(contract.getCreatedAt());
+				agreementResponse.setDateUpdated(contract.getUpdatedAt());
+				agreementResponse.setType(contract.getType());
+				agreementResponse.setState(contract.getState());
+				agreementResponse.setErrorDetail(contract.getErrorDetail());
+				contractAgreementResponses.add(agreementResponse);
+			} else {
+				ContractAgreementResponse agreementResponse = ContractAgreementResponse.builder()
+						.contractAgreementId(StringUtils.EMPTY).organizationName(StringUtils.EMPTY)
+						.title(StringUtils.EMPTY).negotiationId(contract.getId()).state(contract.getState())
+						.contractAgreementInfo(null).counterPartyAddress(contract.getCounterPartyAddress())
+						.type(contract.getType()).dateCreated(contract.getCreatedAt())
+						.dateUpdated(contract.getUpdatedAt()).errorDetail(contract.getErrorDetail()).build();
+				contractAgreementResponses.add(agreementResponse);
 			}
 		});
 

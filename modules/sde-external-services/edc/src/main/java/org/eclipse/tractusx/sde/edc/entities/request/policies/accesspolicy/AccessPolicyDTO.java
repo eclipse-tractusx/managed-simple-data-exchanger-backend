@@ -34,7 +34,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class AccessPolicyDTO {
 
-	String bpnNumber;
+	Object bpnNumber;
 
 	public ConstraintRequest toConstraint() {
 

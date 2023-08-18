@@ -43,6 +43,7 @@ public class ContractAgreementResponse {
     private String organizationName;
     private String contractAgreementId;
     private ContractAgreementInfo contractAgreementInfo;
+    private String errorDetail;
     private long dateCreated;
     private long dateUpdated;
 }

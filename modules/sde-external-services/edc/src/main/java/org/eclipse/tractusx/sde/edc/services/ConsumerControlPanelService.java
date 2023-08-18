@@ -159,7 +159,9 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 		if (leftOperand.equals("BusinessPartnerNumber")) {
 			bpnNumbers.add(rightOperand);
 		} else {
-			usagePolicies.add(UtilityFunctions.identyAndGetUsagePolicy(leftOperand, rightOperand));
+			UsagePolicies policyResponse = UtilityFunctions.identyAndGetUsagePolicy(leftOperand, rightOperand);
+			if (policyResponse != null)
+				usagePolicies.add(policyResponse);
 		}
 	}
 
@@ -207,6 +209,9 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 						&& !checkContractNegotiationStatus.get().getState().equals("FINALIZED")
 						&& !checkContractNegotiationStatus.get().getState().equals("TERMINATED") && counter <= retry);
 
+			} catch(InterruptedException ie) {
+				log.error("Exception in subscribeDataOffers" + ie.getMessage());
+				Thread.currentThread().interrupt();
 			} catch (Exception e) {
 				log.error("Exception in subscribeDataOffers" + e.getMessage());
 			} finally {

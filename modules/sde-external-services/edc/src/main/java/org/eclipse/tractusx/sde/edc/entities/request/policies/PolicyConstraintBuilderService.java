@@ -35,12 +35,12 @@ public class PolicyConstraintBuilderService {
 
 	public ActionRequest getAccessConstraints(List<String> bpnNumbers) {
 		List<ConstraintRequest> constraints = new ArrayList<>();
-
 		if (bpnNumbers != null && !bpnNumbers.isEmpty()) {
-			bpnNumbers.stream().forEach(bpnNumber -> {
-				AccessPolicyDTO accessPolicy = AccessPolicyDTO.builder().bpnNumber(bpnNumber).build();
+			AccessPolicyDTO accessPolicy = null;
+			for (String bpnNumber : bpnNumbers) {
+				accessPolicy = AccessPolicyDTO.builder().bpnNumber(bpnNumber).build();
 				constraints.add(accessPolicy.toConstraint());
-			});
+			}
 		}
 		ActionRequest action = ActionRequest.builder().build();
 		action.addProperty("@type", "LogicalConstraint");
@@ -88,5 +88,14 @@ public class PolicyConstraintBuilderService {
 		default:
 			break;
 		}
+	}
+	
+	public ConstraintRequest toTraceabilityConstraint() {
+		String operator = "odrl:eq";
+		return ConstraintRequest.builder()
+				.leftOperand("FrameworkAgreement.traceability")
+				.operator(Operator.builder().id(operator).build())
+				.rightOperand("active")
+				.build();
 	}
 }

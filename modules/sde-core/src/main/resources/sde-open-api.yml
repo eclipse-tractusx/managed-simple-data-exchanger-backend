@@ -141,6 +141,7 @@ paths:
             '*/*':
               schema:
                 type: array
+                maxItems: 3
                 items:
                   type: string
     post:
@@ -158,6 +159,7 @@ paths:
           application/json:
             schema:
               type: array
+              maxItems: 3
               items:
                 type: string
         required: true
@@ -232,6 +234,7 @@ paths:
           application/json:
             schema:
               type: array
+              maxItems: 3
               items:
                 type: string
         required: true
@@ -242,6 +245,7 @@ paths:
             '*/*':
               schema:
                 type: array
+                maxItems: 3
                 items:
                   $ref: '#/components/schemas/ConnectorInfo'
   /{submodel}/public/{uuid}:
@@ -281,6 +285,7 @@ paths:
             '*/*':
               schema:
                 type: array
+                maxItems: 3
                 items:
                   type: string
   /usecases:
@@ -295,6 +300,7 @@ paths:
             '*/*':
               schema:
                 type: array
+                maxItems: 3
                 items:
                   type: object
                   additionalProperties:
@@ -328,6 +334,7 @@ paths:
           required: false
           schema:
             type: array
+            maxItems: 3
             items:
               type: string
       responses:
@@ -337,6 +344,7 @@ paths:
             '*/*':
               schema:
                 type: array
+                maxItems: 3
                 items:
                   type: object
                   additionalProperties:
@@ -372,6 +380,7 @@ paths:
           required: false
           schema:
             type: array
+            maxItems: 3
             items:
               type: string
       responses:
@@ -381,6 +390,7 @@ paths:
             '*/*':
               schema:
                 type: array
+                maxItems: 3
                 items:
                   type: object
                   additionalProperties:
@@ -463,8 +473,10 @@ paths:
             application/json:
               schema:
                 type: array
+                maxItems: 3
                 items:
                   type: array
+                  maxItems: 3
                   items:
                     type: string
   /processing-report/{id}:
@@ -503,6 +515,7 @@ paths:
             application/json:
               schema:
                 type: array
+                maxItems: 3
                 items:
                   $ref: '#/components/schemas/ProcessFailureDetails'
   /ping:
@@ -547,6 +560,7 @@ paths:
             '*/*':
               schema:
                 type: array
+                maxItems: 3
                 items:
                   $ref: '#/components/schemas/LegalEntityResponse'
   /contract-agreements/{negotiationId}/consumer/decline:
@@ -687,16 +701,19 @@ components:
       properties:
         row_data:
           type: array
+          maxItems: 3
           items:
             type: object
         type_of_access:
           type: string
         bpn_numbers:
           type: array
+          maxItems: 3
           items:
             type: string
         usage_policies:
           type: array
+          maxItems: 3
           items:
             $ref: '#/components/schemas/UsagePolicies'
     UsagePolicies:
@@ -739,10 +756,12 @@ components:
           type: string
         offers:
           type: array
+          maxItems: 3
           items:
             $ref: '#/components/schemas/OfferRequest'
         policies:
           type: array
+          maxItems: 3
           items:
             $ref: '#/components/schemas/UsagePolicies'
     OfferRequest:
@@ -771,6 +790,7 @@ components:
           type: string
         connectorEndpoint:
           type: array
+          maxItems: 3
           items:
             type: string
     UnifiedBpnValidationResponse:
@@ -814,6 +834,7 @@ components:
           format: date-time
         bpnNumbers:
           type: array
+          maxItems: 3
           items:
             type: string
         typeOfAccess:
@@ -842,6 +863,7 @@ components:
           format: int64
         items:
           type: array
+          maxItems: 3
           items:
             $ref: '#/components/schemas/ProcessReport'
     ProcessFailureDetails:

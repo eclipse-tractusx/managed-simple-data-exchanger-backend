@@ -81,10 +81,8 @@ public abstract class BatchMapper {
 
 		PartTypeInformation partTypeInformation = PartTypeInformation.builder()
 				.manufacturerPartId(entity.getManufacturerPartId())
-				.customerPartId(entity.getCustomerPartId())
 				.classification(entity.getClassification())
 				.nameAtManufacturer(entity.getNameAtManufacturer())
-				.nameAtCustomer(entity.getNameAtCustomer())
 				.build();
 
 		return new Gson().toJsonTree(SubmodelResultResponse.builder().localIdentifiers(localIdentifiers)

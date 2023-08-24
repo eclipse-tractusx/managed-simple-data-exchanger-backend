@@ -18,6 +18,8 @@ The SDE project has three dependencies: Digital Twins, Portal and EDC.
 
 ## How to run
 
+For SDE installation, please refer the [INSTALL](INSTALL.md) file 
+
 SDE is a SpringBoot Java Maven software project.
 
 When running, the project requires a postgresql database to be available to connect.

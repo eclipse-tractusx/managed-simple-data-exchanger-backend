@@ -1,7 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023 T-Systems International GmbH
+ * Copyright (c) 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -18,27 +17,24 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
+package org.eclipse.tractusx.sde.digitaltwins.entities.request;
 
-package org.eclipse.tractusx.sde.digitaltwins.entities.common;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import org.eclipse.tractusx.sde.digitaltwins.entities.common.LookupQuery;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(Include. NON_NULL)
-public class KeyValuePair {
+@AllArgsConstructor
+@Getter
+public class ShellLookupQueryRequest {
+	
+    private LookupQuery query;
 
-    private String name;
-    private String value;
-    private ExternalSubjectId externalSubjectId;
+	
+	
+
 }

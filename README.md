@@ -310,9 +310,7 @@ Authentication for the backend is handled via an API Key. This can be set in the
 GitHub repository with correct version of the Eclipse DataSpace Connector Project: [repository](https://github.com/eclipse-tractusx/tractusx-edc).
 
 ### Licenses
-Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0).
-<<<<<<< Updated upstream
-=======
+For used licenses, please see the [NOTICE](https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/blob/main/NOTICE.md).
 
 ## Notice for Docker image
 
@@ -325,7 +323,7 @@ Eclipse Tractus-X product(s) installed within the image:
 - GitHub: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend
 - Project home: https://projects.eclipse.org/projects/automotive.tractusx
 - Dockerfile: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/blob/main/build/Dockerfile
-- Project license: [Apache License, Version 2.0]
+- Project license: [Apache License, Version 2.0] https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/blob/main/LICENSE
 
 **Used base image**
 - [eclipse-temurin:19-jdk-jammy](https://github.com/adoptium/containers)
@@ -337,4 +335,3 @@ As with all Docker images, these likely also contain other software which may be
 
 As for any pre-built image usage, it is the image user's responsibility to ensure that any use of this image complies with any relevant licenses for all software contained within.
 
->>>>>>> Stashed changes

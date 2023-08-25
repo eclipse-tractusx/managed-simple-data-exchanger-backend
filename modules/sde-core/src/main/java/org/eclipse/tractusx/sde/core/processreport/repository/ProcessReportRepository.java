@@ -39,6 +39,10 @@ public interface ProcessReportRepository extends JpaRepository<ProcessReportEnti
 
     Optional<ProcessReportEntity> findByProcessIdAndStatus(String processId, ProgressStatusEnum status);
 
+    long countByProcessIdInAndStatus(List<String> processIdList, ProgressStatusEnum status);
+
+    List<ProcessReportEntity> findByProcessIdIn(List<String> processIds);
+
     Optional<ProcessReportEntity> findByProcessId(String processId);
 
     List<ProcessReportEntity> findByStatus(ProgressStatusEnum status);

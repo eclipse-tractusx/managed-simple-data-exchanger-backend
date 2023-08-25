@@ -31,4 +31,7 @@ import java.util.List;
 public interface SftpReportRepository extends JpaRepository<SftpSchedulerReport, String> {
 
     List<SftpSchedulerReport> findByStatus(SftpReportStatusEnum inProgress);
+
+    List<SftpSchedulerReport> findByProcessIdIn(List<String> processIds);
+
 }

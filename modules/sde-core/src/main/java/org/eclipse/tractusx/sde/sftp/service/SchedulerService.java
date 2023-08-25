@@ -19,7 +19,6 @@ import org.eclipse.tractusx.sde.core.processreport.entity.ProcessReportEntity;
 import org.eclipse.tractusx.sde.core.processreport.repository.ProcessReportRepository;
 import org.eclipse.tractusx.sde.core.service.SubmodelOrchestartorService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ConcurrentTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
@@ -118,11 +117,11 @@ public class SchedulerService implements Runnable {
                     // 1. Send file to DFT backend
                     String filePath = sftpConfigModel.getToBeProcessedLocation() + "/" +file.getName();
                     log.info("File content type:" +Files.probeContentType(Paths.get(filePath)));
-                    MultipartFile multipartFile = new MockMultipartFile(file.getName(), file.getName(), Files.probeContentType(Paths.get(filePath)),
-                            new FileInputStream(new File(filePath)));
+                    //MultipartFile multipartFile = new MockMultipartFile(file.getName(), file.getName(), Files.probeContentType(Paths.get(filePath)),
+                    //        new FileInputStream(new File(filePath)));
                     String processId = UUID.randomUUID().toString();
                     try {
-                        processId = csvHandlerService.storeFile(multipartFile);
+                        //processId = csvHandlerService.storeFile(multipartFile);
                         log.info("File UUID: "+processId);
                         SubmodelFileRequest submodelFileRequest = objectMapper.readValue(metadata, SubmodelFileRequest.class);
                         submodelOrchestartorService.processSubmodelAutomationCsv(submodelFileRequest, processId);

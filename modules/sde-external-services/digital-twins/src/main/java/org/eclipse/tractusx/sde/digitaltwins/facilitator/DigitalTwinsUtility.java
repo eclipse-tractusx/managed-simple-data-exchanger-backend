@@ -19,6 +19,9 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.digitaltwins.facilitator;
 
+import static org.eclipse.tractusx.sde.common.constants.CommonConstants.ASSET_LIFECYCLE_PHASE;
+import static org.eclipse.tractusx.sde.common.constants.CommonConstants.MANUFACTURER_PART_ID;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +52,8 @@ import lombok.SneakyThrows;
 @Getter
 public class DigitalTwinsUtility {
 
+	private static final String PUBLIC_READABLE = "PUBLIC_READABLE";
+
 	@Value(value = "${manufacturerId}")
 	public String manufacturerId;
 
@@ -56,6 +61,9 @@ public class DigitalTwinsUtility {
 	public String edcEndpoint;
 
 	ObjectMapper mapper = new ObjectMapper();
+
+	private static final Map<String, List<String>> publicReadableSpecificAssetIDs = Map.of(MANUFACTURER_PART_ID,
+			List.of("*"), ASSET_LIFECYCLE_PHASE, List.of("AsBuilt", "AsPlanned"));
 
 	@SneakyThrows
 	public ShellDescriptorRequest getShellDescriptorRequest(Map<String, String> specificIdentifiers, Object object) {
@@ -106,10 +114,10 @@ public class DigitalTwinsUtility {
 						.endpointProtocol(CommonConstants.HTTP)
 						.endpointProtocolVersion(List.of(CommonConstants.ENDPOINT_PROTOCOL_VERSION))
 						.subProtocol(CommonConstants.SUB_PROTOCOL)
-						.subprotocolBody(encodedUrl("id="+shellId+"-"+submodelIdentification)+";dspEndpoint="+edcEndpoint)
+						.subprotocolBody(encodedUrl("id=" + shellId + "-" + submodelIdentification) + ";dspEndpoint="
+								+ edcEndpoint)
 						.subprotocolBodyEncoding(CommonConstants.BODY_ENCODING)
-						.securityAttributes(List.of(new SecurityAttributes("NONE","NONE","NONE")))
-						.build())
+						.securityAttributes(List.of(new SecurityAttributes("NONE", "NONE", "NONE"))).build())
 				.build());
 		return endpoints;
 	}
@@ -118,23 +126,32 @@ public class DigitalTwinsUtility {
 
 		ArrayList<KeyValuePair> specificIdentifiers = new ArrayList<>();
 
-		if (!bpns.isEmpty()) {
-			for (String bpn : bpns) {
-				ExternalSubjectId externalSubjectId = ExternalSubjectId.builder()
-						.type("ExternalReference")
-						.keys(List.of(Keys.builder()
-								.type("Property")
-								.value(bpn)
-								.build()))
-						.build();
+		specificAssetIds.entrySet().stream().forEach(entry -> {
 
-				specificAssetIds.entrySet().stream().forEach(entry -> specificIdentifiers
-						.add(new KeyValuePair(entry.getKey(), entry.getValue(), externalSubjectId)));
+			List<String> list = publicReadableSpecificAssetIDs.get(entry.getKey());
+			ExternalSubjectId externalSubjectId = null;
+
+			if (list != null && (list.contains("*") || list.contains(entry.getValue()))) {
+				
+				externalSubjectId = ExternalSubjectId.builder()
+						.type("ExternalReference")
+						.keys(List.of(Keys.builder().type("GlobalReference").value(PUBLIC_READABLE).build()))
+						.build();
+				
+				specificIdentifiers.add(new KeyValuePair(entry.getKey(), entry.getValue(), externalSubjectId));
 			}
-		} else {
-			specificAssetIds.entrySet().stream().forEach(
-					entry -> specificIdentifiers.add(new KeyValuePair(entry.getKey(), entry.getValue(), null)));
-		}
+			else {
+				for (String bpn : bpns) {
+					externalSubjectId = ExternalSubjectId.builder()
+							.type("ExternalReference")
+							.keys(List.of(Keys.builder().type("GlobalReference").value(bpn).build()))
+							.build();
+					specificIdentifiers.add(new KeyValuePair(entry.getKey(), entry.getValue(), externalSubjectId));
+				}
+				
+			}
+		});
+
 		return specificIdentifiers;
 	}
 

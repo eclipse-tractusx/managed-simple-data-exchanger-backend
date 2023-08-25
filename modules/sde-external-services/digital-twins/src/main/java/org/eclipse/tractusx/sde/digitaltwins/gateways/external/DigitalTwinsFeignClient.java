@@ -25,6 +25,7 @@ import java.net.URI;
 import org.eclipse.tractusx.sde.common.model.KeycloakJWTTokenResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.CreateSubModelRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellDescriptorRequest;
+import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellLookupQueryRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellLookupResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelListResponse;
@@ -68,5 +69,8 @@ public interface DigitalTwinsFeignClient {
 
 	@DeleteMapping(path = "/lookup/shells/{assetIds}")
 	ResponseEntity<Void> deleteShell(URI url, @PathVariable("assetIds") String shellId);
+	
+	@PostMapping(path = "/lookup/shells/query")
+	ResponseEntity<ShellLookupResponse> shellLookupByQuery(URI url, @RequestBody ShellLookupQueryRequest request);
 
 }

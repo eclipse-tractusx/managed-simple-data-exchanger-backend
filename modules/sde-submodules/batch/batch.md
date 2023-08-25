@@ -7,7 +7,7 @@ This module use for Batch submodel specification and descriptors. It's contain t
 ---
 #### Version: 2.0.0
 #### Batch Aspect Model URN: urn:bamm:io.catenax.batch:2.0.0#Batch
-#### Semantic Id: urn:bamm:io.catenax.batch:2.0.0
+#### Semantic Id: urn:samm:io.catenax.batch:2.0.0
 ---
 
 ### Schema

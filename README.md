@@ -2,11 +2,11 @@
 ---
 ## Description
 
-This repository is part of the overarching Catena-X project. It contains the Backend for the SDE/DFT.
+This repository is part of the overarching Eclipse Tractus-X project. It contains the Backend for the SDE/DFT.
 SDE Simple data exchanger(formally known DFT is short for Data Format Transformer)
 
 It is a standalone service which can be self-hosted. 
-It enables companies to provide their data in the Catena-X network via an EDC.
+It enables companies to provide their data in the Eclipse Tractus-X network via an EDC.
 
 ## Important !!!
 ### Deployment of SDE backend

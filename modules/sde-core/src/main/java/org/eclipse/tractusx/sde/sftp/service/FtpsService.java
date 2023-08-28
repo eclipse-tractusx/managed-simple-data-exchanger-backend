@@ -21,26 +21,16 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.sftp.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.validation.constraints.NotBlank;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
-import org.eclipse.tractusx.sde.agent.entity.SftpConfig;
-import org.eclipse.tractusx.sde.agent.entity.SftpMetadataEntity;
 import org.eclipse.tractusx.sde.agent.model.SftpConfigModel;
-import org.eclipse.tractusx.sde.agent.repository.SftpConfigRepository;
-import org.eclipse.tractusx.sde.agent.repository.SftpMetadataRepository;
 import org.eclipse.tractusx.sde.agent.repository.SftpReportRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 @Service
 @Slf4j
@@ -54,14 +44,6 @@ public class FtpsService {
 
     @Autowired
     private SftpReportRepository sftpReportRepository;
-
-    @Autowired
-    private SftpMetadataRepository sftpMetadataRepository;
-
-    @Autowired
-    private SftpConfigRepository sftpConfigRepository;
-
-    private ObjectMapper objectMapper;
 
     @SneakyThrows
     public boolean connectFtpsClient() {
@@ -82,44 +64,4 @@ public class FtpsService {
         ftpsClient.disconnect();
     }
 
-    public void updateMetadata(@NotBlank Map<String, Object> metadataDto) throws JsonProcessingException {
-        List<SftpMetadataEntity> sftpMetadataEntities = sftpMetadataRepository.findAll();
-        log.debug("Updating ftps metadata");
-        if (sftpMetadataEntities.size() > 1) {
-            SftpMetadataEntity metadata = sftpMetadataEntities.get(0);
-            String metadataContent = objectMapper.writeValueAsString(metadataDto);
-            metadata.setContent(metadataContent);
-            sftpMetadataRepository.save(metadata);
-        } else {
-            SftpMetadataEntity metadata = new SftpMetadataEntity();
-            String metadataContent = objectMapper.writeValueAsString(metadataDto);
-            metadata.setUuid(UUID.randomUUID().toString());
-            metadata.setContent(metadataContent);
-            sftpMetadataRepository.save(metadata);
-        }
-    }
-
-    public void updateFtpsConfig(@NotBlank SftpConfigModel sftpConfigDto) {
-        List<SftpConfig> sftpConfigs = sftpConfigRepository.findAll();
-        log.debug("Updating ftps config");
-        if (sftpConfigs.size() > 1) {
-            SftpConfig config = sftpConfigs.get(0);
-            sftpConfigRepository.save(mapDtoToEntity(sftpConfigDto, config));
-        } else {
-            SftpConfig config = new SftpConfig();
-            sftpConfigRepository.save(mapDtoToEntity(sftpConfigDto, config));
-        }
-    }
-
-    private SftpConfig mapDtoToEntity(SftpConfigModel sftpConfigDto, SftpConfig sftpConfig) {
-        sftpConfig.setFailedLocation(sftpConfigDto.getFailedLocation());
-        sftpConfig.setUrl(sftpConfigDto.getUrl());
-        sftpConfig.setPassword(sftpConfigDto.getPassword());
-        sftpConfig.setUsername(sftpConfigDto.getUsername());
-        sftpConfig.setSuccessLocation(sftpConfigDto.getSuccessLocation());
-        sftpConfig.setInProgressLocation(sftpConfigDto.getInProgressLocation());
-        sftpConfig.setPartialSuccessLocation(sftpConfigDto.getPartialSuccessLocation());
-        sftpConfig.setToBeProcessedLocation(sftpConfigDto.getToBeProcessedLocation());
-        return sftpConfig;
-    }
 }

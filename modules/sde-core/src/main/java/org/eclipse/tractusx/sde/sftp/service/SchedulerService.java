@@ -1,5 +1,6 @@
 package org.eclipse.tractusx.sde.sftp.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import lombok.SneakyThrows;
@@ -60,7 +61,7 @@ public class SchedulerService implements Runnable {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    private String metadata = "{\"bpn_numbers\":[\"BPNL00000005PROV\",\"BPNL00000005CONS\",\"TESTVV009\"],\"type_of_access\":\"restricted\",\"usage_policies\":[{\"type\":\"DURATION\",\"typeOfAccess\":\"UNRESTRICTED\",\"value\":\"\",\"durationUnit\":\"SECOND\"},{\"type\":\"ROLE\",\"typeOfAccess\":\"UNRESTRICTED\",\"value\":\"\"},{\"type\":\"PURPOSE\",\"typeOfAccess\":\"UNRESTRICTED\",\"value\":\"\"},{\"type\":\"CUSTOM\",\"typeOfAccess\":\"UNRESTRICTED\",\"value\":\"\"}]}";
+    private MetadataProvider metadataProvider;
 
     private SubmodelOrchestartorService submodelOrchestartorService;
 
@@ -72,7 +73,8 @@ public class SchedulerService implements Runnable {
                             FtpsService ftpsService,
                             ProcessReportRepository processReportRepository,
                             SftpReportRepository sftpReportRepository,
-                            SubmodelOrchestartorService submodelOrchestartorService) {
+                            SubmodelOrchestartorService submodelOrchestartorService,
+                            MetadataProvider metadataProvider) {
         this.sftpConfigModel = sftpConfigModel;
         this.csvHandlerService = csvHandlerService;
         this.sftpReportMapper = sftpReportMapper;
@@ -81,6 +83,7 @@ public class SchedulerService implements Runnable {
         this.processReportRepository = processReportRepository;
         this.sftpReportRepository = sftpReportRepository;
         this.submodelOrchestartorService = submodelOrchestartorService;
+        this.metadataProvider = metadataProvider;
     }
 
     @PostConstruct
@@ -123,7 +126,8 @@ public class SchedulerService implements Runnable {
                     try {
                         //processId = csvHandlerService.storeFile(multipartFile);
                         log.info("File UUID: "+processId);
-                        SubmodelFileRequest submodelFileRequest = objectMapper.readValue(metadata, SubmodelFileRequest.class);
+                        JsonNode jsonNode = metadataProvider.getMetadata();
+                        SubmodelFileRequest submodelFileRequest = objectMapper.convertValue(metadataProvider.getMetadata(), SubmodelFileRequest.class);
                         submodelOrchestartorService.processSubmodelAutomationCsv(submodelFileRequest, processId);
                         // **********move file to inprogress directory and make entry in the DB
                         ftpsClient.rename(sftpConfigModel.getToBeProcessedLocation()+"/"+file.getName(),

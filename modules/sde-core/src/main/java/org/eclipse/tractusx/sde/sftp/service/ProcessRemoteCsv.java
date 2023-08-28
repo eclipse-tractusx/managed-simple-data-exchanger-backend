@@ -1,5 +1,6 @@
 package org.eclipse.tractusx.sde.sftp.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -55,7 +56,7 @@ public class ProcessRemoteCsv {
 
 
     @SuppressWarnings({"CallToPrintStackTrace","ResultOfMethodCallIgnored"})
-    public void process(TaskScheduler taskScheduler) {
+    public void process(TaskScheduler taskScheduler) throws JsonProcessingException {
         log.info("Scheduler started");
         var submodelFileRequest = objectMapper.convertValue(metadataProvider.getMetadata(), SubmodelFileRequest.class);
         var schedulerId = UUID.randomUUID().toString();

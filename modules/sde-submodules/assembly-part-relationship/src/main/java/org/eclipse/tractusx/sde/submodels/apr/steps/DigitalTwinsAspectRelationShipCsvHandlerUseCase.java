@@ -195,7 +195,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 
 		for (String ddtUrl : dtURls) {
 
-			List<String> childshellIds = digitalTwinfacilitaor.shellLookupFromDDTR(shellLookupRequest, ddtUrl);
+			List<String> childshellIds = digitalTwinfacilitaor.shellLookupFromDDTR(shellLookupRequest, ddtUrl, aspectRelationShip.getChildManufacturerId());
 
 			if (childshellIds.isEmpty()) {
 				log.warn(aspectRelationShip.getRowNumber() + ", " + ddtUrl + ", No child aspect found for "

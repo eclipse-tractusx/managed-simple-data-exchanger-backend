@@ -102,10 +102,10 @@ public class AssetEntryRequestFactory {
     private HashMap<String, String> getDataAddressProperties(String shellId, String subModelId, String endpoint) {
         HashMap<String, String> dataAddressProperties = new HashMap<>();
         dataAddressProperties.put("type", TYPE);
-        dataAddressProperties.put("baseUrl", String.format(endpoint, shellId, subModelId));
+        dataAddressProperties.put("baseUrl", "https://jsonplaceholder.typicode.com/todos");//String.format(endpoint, shellId, subModelId));
         dataAddressProperties.put("name", NAME);
-        dataAddressProperties.put("authKey", apiKeyHeader);
-        dataAddressProperties.put("authCode", apiKey);
+       // dataAddressProperties.put("authKey", apiKeyHeader);
+        //dataAddressProperties.put("authCode", apiKey);
         return dataAddressProperties;
     }
 

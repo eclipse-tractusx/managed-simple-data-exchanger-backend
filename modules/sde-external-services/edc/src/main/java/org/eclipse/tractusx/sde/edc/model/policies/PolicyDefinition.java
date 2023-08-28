@@ -23,8 +23,6 @@ package org.eclipse.tractusx.sde.edc.model.policies;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.tractusx.sde.edc.entities.request.policies.PermissionRequest;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -49,7 +47,7 @@ public class PolicyDefinition {
 	private String id;
 	
 	@JsonProperty("odrl:permission")
-    private PermissionRequest permissions;
+    private Object permissions;
 	
 	@JsonProperty("odrl:prohibition")
     private List<Prohibition> prohibitions;

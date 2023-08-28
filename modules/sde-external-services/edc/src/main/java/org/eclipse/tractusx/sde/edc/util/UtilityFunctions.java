@@ -20,7 +20,6 @@
 
 package org.eclipse.tractusx.sde.edc.util;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -97,8 +96,7 @@ public class UtilityFunctions {
 		return policyResponse;
 	}
 
-	public static List<UsagePolicies> getUsagePolicies(List<ConstraintRequest> constraints) {
-		List<UsagePolicies> usagePolicies = new ArrayList<>();
+	public static List<UsagePolicies> getUsagePolicies(List<UsagePolicies> usagePolicies, List<ConstraintRequest> constraints) {
 		constraints.forEach(constraint -> {
 			String leftExpVal = constraint.getLeftOperand();
 			String rightExpVal = constraint.getRightOperand().toString();

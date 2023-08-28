@@ -37,6 +37,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(value = "DigitalTwinsFeignClient", url = "placeholder", configuration = DigitalTwinsFeignClientConfiguration.class)
@@ -65,7 +66,8 @@ public interface DigitalTwinsFeignClient {
 			@PathVariable("aasIdentifier") String shellId);
 
 	@GetMapping(path = "/lookup/shells")
-	ResponseEntity<ShellLookupResponse> shellLookup(URI url, @RequestParam String assetIds);
+	ResponseEntity<ShellLookupResponse> shellLookup(URI url, @RequestParam String assetIds,
+			@RequestHeader("Edc-Bpn") String edcBpn);
 
 	@DeleteMapping(path = "/lookup/shells/{assetIds}")
 	ResponseEntity<Void> deleteShell(URI url, @PathVariable("assetIds") String shellId);

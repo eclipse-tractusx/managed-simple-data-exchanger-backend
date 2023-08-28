@@ -23,22 +23,29 @@ package org.eclipse.tractusx.sde.digitaltwins.entities.common;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(Include. NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class KeyValuePair {
 
     private String name;
     private String value;
     private ExternalSubjectId externalSubjectId;
+    
+    @SneakyThrows
+    public String toJsonString() {
+        final ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(this);
+    }
 }

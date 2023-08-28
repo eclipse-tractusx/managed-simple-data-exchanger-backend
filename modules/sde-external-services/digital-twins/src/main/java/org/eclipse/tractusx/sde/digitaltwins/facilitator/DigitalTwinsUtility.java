@@ -23,6 +23,7 @@ import static org.eclipse.tractusx.sde.common.constants.CommonConstants.ASSET_LI
 import static org.eclipse.tractusx.sde.common.constants.CommonConstants.MANUFACTURER_PART_ID;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -122,10 +123,10 @@ public class DigitalTwinsUtility {
 		return endpoints;
 	}
 
-	private ArrayList<KeyValuePair> getSpecificAssetIds(Map<String, String> specificAssetIds, List<String> bpns) {
+	@SneakyThrows
+	private ArrayList<Object> getSpecificAssetIds(Map<String, String> specificAssetIds, List<String> bpns) {
 
-		ArrayList<KeyValuePair> specificIdentifiers = new ArrayList<>();
-
+		ArrayList<Object> specificIdentifiers = new ArrayList<>();
 		specificAssetIds.entrySet().stream().forEach(entry -> {
 
 			List<String> list = publicReadableSpecificAssetIDs.get(entry.getKey());
@@ -137,18 +138,23 @@ public class DigitalTwinsUtility {
 						.type("ExternalReference")
 						.keys(List.of(Keys.builder().type("GlobalReference").value(PUBLIC_READABLE).build()))
 						.build();
-				
 				specificIdentifiers.add(new KeyValuePair(entry.getKey(), entry.getValue(), externalSubjectId));
 			}
 			else {
-				for (String bpn : bpns) {
-					externalSubjectId = ExternalSubjectId.builder()
-							.type("ExternalReference")
-							.keys(List.of(Keys.builder().type("GlobalReference").value(bpn).build()))
-							.build();
-					specificIdentifiers.add(new KeyValuePair(entry.getKey(), entry.getValue(), externalSubjectId));
+				if (bpns!=null && !bpns.isEmpty()) {
+					for (String bpn : bpns) {
+						externalSubjectId = ExternalSubjectId.builder()
+								.type("ExternalReference")
+								.keys(List.of(Keys.builder().type("GlobalReference").value(bpn).build()))
+								.build();
+						specificIdentifiers.add(new KeyValuePair(entry.getKey(), entry.getValue(), externalSubjectId));
+					}
+				} else {
+					Map<String, Object> map = new HashMap<>();
+					map.put("name", entry.getKey());
+					map.put("value", entry.getValue());
+					specificIdentifiers.add(map);
 				}
-				
 			}
 		});
 

@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public class RetrieverConfigurationProviderImpl implements RetrieverConfigurationProvider {
+public class FtpConfigurationProviderImpl implements RetrieverConfigurationProvider {
 
     @Value("${sftp.url}")
     private String serverUrl;

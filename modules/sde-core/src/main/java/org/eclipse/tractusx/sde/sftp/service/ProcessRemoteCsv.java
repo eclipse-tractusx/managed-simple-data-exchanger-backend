@@ -41,7 +41,6 @@ import static org.eclipse.tractusx.sde.core.utils.TryUtils.tryRun;
 public class ProcessRemoteCsv {
 
     private final CsvHandlerService csvHandlerService;
-    private final RetrieverConfigurationProvider retrieverConfigurationProvider;
     private final MetadataProvider metadataProvider;
     private final RetrieverFactory retrieverFactory;
     private final SubmodelOrchestartorService submodelOrchestartorService;
@@ -60,9 +59,8 @@ public class ProcessRemoteCsv {
         log.info("Scheduler started");
         var submodelFileRequest = objectMapper.convertValue(metadataProvider.getMetadata(), SubmodelFileRequest.class);
         var schedulerId = UUID.randomUUID().toString();
-        var retrieverConfig = retrieverConfigurationProvider.getRetrieverConfig();
         boolean loginSuccess = false;
-        try (var retriever = retrieverFactory.create(retrieverConfig)) {
+        try (var retriever = retrieverFactory.create()) {
             loginSuccess = true;
             var inProgress = StreamSupport.stream(retriever.spliterator(), false)
                     .filter(processId -> tryRun(

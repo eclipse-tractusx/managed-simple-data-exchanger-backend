@@ -54,13 +54,16 @@ public class DigitalTwinsFacilitator {
 
 	@Value(value = "${digital-twins.api:/api/v3.0}")
 	private String dtApiUri;
+	
+	@Value(value = "${manufacturerId}")
+	public String manufacturerId;
 
 	public List<String> shellLookup(ShellLookupRequest request) throws ServiceException {
-		return shellLookupFromDDTR(request, null);
+		return shellLookupFromDDTR(request, null, manufacturerId);
 	}
 
 	@SneakyThrows
-	public List<String> shellLookupFromDDTR(ShellLookupRequest request, String ddtrUrl) throws ServiceException {
+	public List<String> shellLookupFromDDTR(ShellLookupRequest request, String ddtrUrl, String edcBPN) throws ServiceException {
 
 		URI dtURL = (ddtrUrl == null || ddtrUrl.length() <= 0) ? getDtURL(digitalTwinsHost) : getDtURL(ddtrUrl);
 
@@ -68,7 +71,7 @@ public class DigitalTwinsFacilitator {
 
 		try {
 			ResponseEntity<ShellLookupResponse> response = digitalTwinsFeignClient.shellLookup(dtURL,
-					request.toJsonString());
+					request.toJsonString(), edcBPN);
 
 			ShellLookupResponse body = response.getBody();
 			if (response.getStatusCode() == HttpStatus.OK && body != null) {

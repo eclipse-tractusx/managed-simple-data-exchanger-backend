@@ -25,6 +25,7 @@ import java.net.URI;
 import org.eclipse.tractusx.sde.common.model.KeycloakJWTTokenResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.CreateSubModelRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellDescriptorRequest;
+import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellLookupQueryRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellLookupResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelListResponse;
@@ -36,6 +37,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(value = "DigitalTwinsFeignClient", url = "placeholder", configuration = DigitalTwinsFeignClientConfiguration.class)
@@ -64,9 +66,13 @@ public interface DigitalTwinsFeignClient {
 			@PathVariable("aasIdentifier") String shellId);
 
 	@GetMapping(path = "/lookup/shells")
-	ResponseEntity<ShellLookupResponse> shellLookup(URI url, @RequestParam String assetIds);
+	ResponseEntity<ShellLookupResponse> shellLookup(URI url, @RequestParam String assetIds,
+			@RequestHeader("Edc-Bpn") String edcBpn);
 
 	@DeleteMapping(path = "/lookup/shells/{assetIds}")
 	ResponseEntity<Void> deleteShell(URI url, @PathVariable("assetIds") String shellId);
+	
+	@PostMapping(path = "/lookup/shells/query")
+	ResponseEntity<ShellLookupResponse> shellLookupByQuery(URI url, @RequestBody ShellLookupQueryRequest request);
 
 }

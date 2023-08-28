@@ -54,7 +54,7 @@ public class DigitalTwinsFacilitator {
 
 	@Value(value = "${digital-twins.api:/api/v3.0}")
 	private String dtApiUri;
-	
+
 	@Value(value = "${manufacturerId}")
 	public String manufacturerId;
 
@@ -63,7 +63,8 @@ public class DigitalTwinsFacilitator {
 	}
 
 	@SneakyThrows
-	public List<String> shellLookupFromDDTR(ShellLookupRequest request, String ddtrUrl, String edcBPN) throws ServiceException {
+	public List<String> shellLookupFromDDTR(ShellLookupRequest request, String ddtrUrl, String edcBPN)
+			throws ServiceException {
 
 		URI dtURL = (ddtrUrl == null || ddtrUrl.length() <= 0) ? getDtURL(digitalTwinsHost) : getDtURL(ddtrUrl);
 
@@ -143,6 +144,18 @@ public class DigitalTwinsFacilitator {
 			responseBody = registerSubmodel.getBody();
 		}
 		return responseBody;
+	}
+
+	public void updateShellSpecificAssetIdentifiers(String shellId, List<Object> specificAssetIds) {
+
+		digitalTwinsFeignClient.deleteShellSpecificAttributes(getDtURL(digitalTwinsHost),
+				encodeShellIdBase64Utf8(shellId), manufacturerId);
+
+		ResponseEntity<List<Object>> registerSubmodel = digitalTwinsFeignClient.createShellSpecificAttributes(
+				getDtURL(digitalTwinsHost), encodeShellIdBase64Utf8(shellId), manufacturerId, specificAssetIds);
+		if (registerSubmodel.getStatusCode() != HttpStatus.CREATED) {
+			log.error("Error in shell SpecificAssetIdentifiers deletion: " + registerSubmodel.toString());
+		}
 	}
 
 	public void createSubModel(String shellId, CreateSubModelRequest request) {

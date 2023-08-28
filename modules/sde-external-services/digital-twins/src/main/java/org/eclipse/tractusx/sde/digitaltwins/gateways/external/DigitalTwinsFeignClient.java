@@ -21,11 +21,11 @@
 package org.eclipse.tractusx.sde.digitaltwins.gateways.external;
 
 import java.net.URI;
+import java.util.List;
 
 import org.eclipse.tractusx.sde.common.model.KeycloakJWTTokenResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.CreateSubModelRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellDescriptorRequest;
-import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellLookupQueryRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellLookupResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelListResponse;
@@ -46,33 +46,40 @@ public interface DigitalTwinsFeignClient {
 	@PostMapping
 	KeycloakJWTTokenResponse readAuthToken(URI url, @RequestBody MultiValueMap<String, Object> body);
 
-	@DeleteMapping(path = "/shell-descriptors/{aasIdentifier}/submodel-descriptors/{submodelIdentifier}")
-	ResponseEntity<Object> deleteSubmodelfromShellById(URI url, @PathVariable("aasIdentifier") String shellId,
-			@PathVariable("submodelIdentifier") String submodelIdentifier);
-
 	@PostMapping(path = "/shell-descriptors")
 	ResponseEntity<ShellDescriptorResponse> createShellDescriptor(URI url, @RequestBody ShellDescriptorRequest request);
 
+	
 	@GetMapping(path = "/shell-descriptors/{aasIdentifier}")
 	ResponseEntity<ShellDescriptorResponse> getShellDescriptorByShellId(URI url,
 			@PathVariable("aasIdentifier") String shellId);
+	
+	@DeleteMapping(path = "/shell-descriptors/{aasIdentifier}")
+	ResponseEntity<Void> deleteShell(URI url, @PathVariable("assetIds") String shellId);
 
 	@PostMapping(path = "/shell-descriptors/{aasIdentifier}/submodel-descriptors")
 	ResponseEntity<String> createSubModel(URI url, @PathVariable("aasIdentifier") String shellId,
 			@RequestBody CreateSubModelRequest request);
-
+	
 	@GetMapping(path = "/shell-descriptors/{aasIdentifier}/submodel-descriptors")
 	ResponseEntity<SubModelListResponse> getSubModels(URI digitalTwinsHost,
 			@PathVariable("aasIdentifier") String shellId);
 
+	@DeleteMapping(path = "/shell-descriptors/{aasIdentifier}/submodel-descriptors/{submodelIdentifier}")
+	ResponseEntity<Object> deleteSubmodelfromShellById(URI url, @PathVariable("aasIdentifier") String shellId,
+			@PathVariable("submodelIdentifier") String submodelIdentifier);
+
 	@GetMapping(path = "/lookup/shells")
 	ResponseEntity<ShellLookupResponse> shellLookup(URI url, @RequestParam String assetIds,
 			@RequestHeader("Edc-Bpn") String edcBpn);
-
-	@DeleteMapping(path = "/lookup/shells/{assetIds}")
-	ResponseEntity<Void> deleteShell(URI url, @PathVariable("assetIds") String shellId);
 	
-	@PostMapping(path = "/lookup/shells/query")
-	ResponseEntity<ShellLookupResponse> shellLookupByQuery(URI url, @RequestBody ShellLookupQueryRequest request);
+	@PostMapping(path = "/lookup/shells/{assetIds}")
+	ResponseEntity<List<Object>> createShellSpecificAttributes(URI url, @PathVariable("assetIds") String shellId,
+			@RequestHeader("Edc-Bpn") String edcBpn, @RequestBody List<Object> specificAssetIds);
+	
+	@DeleteMapping(path = "/lookup/shells/{assetIds}")
+	ResponseEntity<Void> deleteShellSpecificAttributes(URI url, @PathVariable("assetIds") String shellId,
+			@RequestHeader("Edc-Bpn") String edcBpn);
+
 
 }

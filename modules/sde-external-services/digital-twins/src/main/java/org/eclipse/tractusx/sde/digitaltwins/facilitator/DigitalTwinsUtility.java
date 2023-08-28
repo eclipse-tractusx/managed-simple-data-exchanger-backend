@@ -23,6 +23,7 @@ import static org.eclipse.tractusx.sde.common.constants.CommonConstants.ASSET_LI
 import static org.eclipse.tractusx.sde.common.constants.CommonConstants.MANUFACTURER_PART_ID;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -124,16 +125,18 @@ public class DigitalTwinsUtility {
 	}
 
 	@SneakyThrows
-	private ArrayList<Object> getSpecificAssetIds(Map<String, String> specificAssetIds, List<String> bpns) {
+	public List<Object> getSpecificAssetIds(Map<String, String> specificAssetIds, List<String> bpns) {
 
-		ArrayList<Object> specificIdentifiers = new ArrayList<>();
+		List<Object> specificIdentifiers = new ArrayList<>();
+		
+		List<Keys> keyList = bpnKeyRefrence(bpns);
+		
 		specificAssetIds.entrySet().stream().forEach(entry -> {
 
 			List<String> list = publicReadableSpecificAssetIDs.get(entry.getKey());
 			ExternalSubjectId externalSubjectId = null;
 
 			if (list != null && (list.contains("*") || list.contains(entry.getValue()))) {
-				
 				externalSubjectId = ExternalSubjectId.builder()
 						.type("ExternalReference")
 						.keys(List.of(Keys.builder().type("GlobalReference").value(PUBLIC_READABLE).build()))
@@ -141,14 +144,13 @@ public class DigitalTwinsUtility {
 				specificIdentifiers.add(new KeyValuePair(entry.getKey(), entry.getValue(), externalSubjectId));
 			}
 			else {
-				if (bpns!=null && !bpns.isEmpty()) {
-					for (String bpn : bpns) {
-						externalSubjectId = ExternalSubjectId.builder()
-								.type("ExternalReference")
-								.keys(List.of(Keys.builder().type("GlobalReference").value(bpn).build()))
-								.build();
-						specificIdentifiers.add(new KeyValuePair(entry.getKey(), entry.getValue(), externalSubjectId));
-					}
+				if (keyList != null && !keyList.isEmpty()) {
+					
+					externalSubjectId = ExternalSubjectId.builder()
+							.type("ExternalReference").keys(keyList)
+							.build();
+					specificIdentifiers.add(new KeyValuePair(entry.getKey(), entry.getValue(), externalSubjectId));
+
 				} else {
 					Map<String, Object> map = new HashMap<>();
 					map.put("name", entry.getKey());
@@ -159,6 +161,15 @@ public class DigitalTwinsUtility {
 		});
 
 		return specificIdentifiers;
+	}
+
+	private List<Keys> bpnKeyRefrence(List<String> bpns) {
+		if (bpns != null && !(bpns.size() == 1 && bpns.contains(manufacturerId))) {
+			return bpns.stream()
+					.map(bpn -> Keys.builder().type("GlobalReference").value(bpn).build())
+					.toList();
+		}
+		return Collections.emptyList();
 	}
 
 	private String encodedUrl(String format) {

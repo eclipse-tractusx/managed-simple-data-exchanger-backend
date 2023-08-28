@@ -80,6 +80,12 @@ public class DigitalTwinsSingleLevelBoMAsPlannedHandlerStep extends Step {
 		} else if (shellIds.size() == 1) {
 			logDebug(String.format("Shell id found for '%s'", shellLookupRequest.toJsonString()));
 			shellId = shellIds.stream().findFirst().orElse(null);
+			
+			digitalTwinsFacilitator.updateShellSpecificAssetIdentifiers(shellId,
+					digitalTwinsUtility.getSpecificAssetIds(
+							getSpecificAssetIdsForSingleLevel(singleLevelBoMAsPlannedAspect),
+							singleLevelBoMAsPlannedAspect.getBpnNumbers()));
+			
 			logDebug(String.format("Shell id '%s'", shellId));
 		} else {
 			throw new CsvHandlerDigitalTwinUseCaseException(
@@ -145,13 +151,21 @@ public class DigitalTwinsSingleLevelBoMAsPlannedHandlerStep extends Step {
 	}
 	
 	private ShellLookupRequest getShellLookupRequest(SingleLevelBoMAsPlanned singleLevelBoMAsPlannedAspect) {
+
 		ShellLookupRequest shellLookupRequest = new ShellLookupRequest();
-		shellLookupRequest.addLocalIdentifier(CommonConstants.ASSET_LIFECYCLE_PHASE, CommonConstants.AS_PLANNED);
-		shellLookupRequest.addLocalIdentifier(CommonConstants.MANUFACTURER_PART_ID,
-				singleLevelBoMAsPlannedAspect.getParentManufacturerPartId());
-		shellLookupRequest.addLocalIdentifier(CommonConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId());
+		getSpecificAssetIdsForSingleLevel(singleLevelBoMAsPlannedAspect).entrySet().stream()
+				.forEach(entry -> shellLookupRequest.addLocalIdentifier(entry.getKey(), entry.getValue()));
 
 		return shellLookupRequest;
+	}
+	
+	private Map<String, String> getSpecificAssetIdsForSingleLevel(SingleLevelBoMAsPlanned singleLevelBoMAsPlannedAspect) {
+		Map<String, String> specificIdentifiers = new HashMap<>();
+		specificIdentifiers.put(CommonConstants.ASSET_LIFECYCLE_PHASE, CommonConstants.AS_PLANNED);
+		specificIdentifiers.put(CommonConstants.MANUFACTURER_PART_ID,
+				singleLevelBoMAsPlannedAspect.getParentManufacturerPartId());
+		specificIdentifiers.put(CommonConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId());
+		return specificIdentifiers;
 	}
 
 	private ShellDescriptorRequest getShellDescriptorRequest(PartAsPlanned partAsPlannedAspect) {

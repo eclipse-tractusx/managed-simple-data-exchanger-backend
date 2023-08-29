@@ -316,7 +316,7 @@ For used licenses, please see the [NOTICE](https://github.com/eclipse-tractusx/m
 
 This application provides container images for demonstration purposes.
 
-DockerHub: https://hub.docker.com/r/tractusx/sdebackend
+DockerHub: https://hub.docker.com/r/tractusx/managed-simple-data-exchanger-backend
 
 Eclipse Tractus-X product(s) installed within the image:
 

@@ -3,10 +3,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [2.0.10] - 2023-08-23
-### Added
-- release workflow added.
 ### Fixed
 - Updated openAPI file for kics issue.
+- Documentation updated.
 
 ## [2.0.9] - 2023-08-08
 ### Fixed

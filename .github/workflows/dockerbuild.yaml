@@ -32,7 +32,7 @@ on:
 
 env:
    IMAGE_NAMESPACE: "tractusx"
-   IMAGE_NAME: "sdebackend"
+   IMAGE_NAME: "managed-simple-data-exchanger-backend"
 
 jobs:
   docker:

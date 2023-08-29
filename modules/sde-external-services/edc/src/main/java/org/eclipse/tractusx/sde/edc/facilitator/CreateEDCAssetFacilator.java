@@ -59,26 +59,24 @@ public class CreateEDCAssetFacilator extends AbstractEDCStepsHelper {
 
 		String assetId = assetEntryRequest.getAsset().getId();
 
-		ActionRequest usageAction = policyConstraintBuilderService.getUsagePolicyConstraints(usagePolicies);
+		
 		ActionRequest accessAction = policyConstraintBuilderService.getAccessConstraints(bpns);
 
 		String customValue = getCustomValue(usagePolicies);
 		if (StringUtils.isNotBlank(getCustomValue(usagePolicies))) {
 			extensibleProperties.put(UsagePolicyEnum.CUSTOM.name(), customValue);
 		}
-
+		
 		PolicyDefinitionRequest accessPolicyDefinitionRequest = policyFactory.getPolicy(assetId, accessAction,
 				new HashMap<>());
 		edcGateway.createPolicyDefinition(accessPolicyDefinitionRequest);
 		String accessPolicyId = accessPolicyDefinitionRequest.getId();
-		String usagePolicyId = accessPolicyDefinitionRequest.getId();
 
-		if (usageAction != null) {
-			PolicyDefinitionRequest usagePolicyDefinitionRequest = policyFactory.getPolicy(assetId, usageAction,
-					extensibleProperties);
-			edcGateway.createPolicyDefinition(usagePolicyDefinitionRequest);
-			usagePolicyId = usagePolicyDefinitionRequest.getId();
-		}
+		ActionRequest usageAction = policyConstraintBuilderService.getUsagePolicyConstraints(usagePolicies);
+		PolicyDefinitionRequest usagePolicyDefinitionRequest = policyFactory.getPolicy(assetId, usageAction,
+				extensibleProperties);
+		edcGateway.createPolicyDefinition(usagePolicyDefinitionRequest);
+		String usagePolicyId = usagePolicyDefinitionRequest.getId();
 
 		ContractDefinitionRequest contractDefinitionRequest = contractFactory.getContractDefinitionRequest(assetId,
 				accessPolicyId, usagePolicyId);

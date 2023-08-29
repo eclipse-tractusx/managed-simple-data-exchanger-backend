@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.CreateSubModelRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellDescriptorRequest;
@@ -55,20 +56,24 @@ public class DigitalTwinsFacilitator {
 	@Value(value = "${digital-twins.api:/api/v3.0}")
 	private String dtApiUri;
 
+	@Value(value = "${manufacturerId}")
+	public String manufacturerId;
+
 	public List<String> shellLookup(ShellLookupRequest request) throws ServiceException {
-		return shellLookupFromDDTR(request, null);
+		return shellLookupFromDDTR(request, null, manufacturerId);
 	}
 
 	@SneakyThrows
-	public List<String> shellLookupFromDDTR(ShellLookupRequest request, String ddtrUrl) throws ServiceException {
+	public List<String> shellLookupFromDDTR(ShellLookupRequest request, String ddtrUrl, String edcBpn)
+			throws ServiceException {
 
-		URI dtURL = (ddtrUrl == null || ddtrUrl.length() <= 0) ? getDtURL(digitalTwinsHost) : getDtURL(ddtrUrl);
+		URI dtURL = StringUtils.isAllEmpty(ddtrUrl) ? getDtURL(digitalTwinsHost) : getDtURL(ddtrUrl);
 
 		List<String> shellIds = List.of();
 
 		try {
 			ResponseEntity<ShellLookupResponse> response = digitalTwinsFeignClient.shellLookup(dtURL,
-					request.toJsonString());
+					request.toJsonString(), edcBpn);
 
 			ShellLookupResponse body = response.getBody();
 			if (response.getStatusCode() == HttpStatus.OK && body != null) {
@@ -106,17 +111,17 @@ public class DigitalTwinsFacilitator {
 
 		List<ShellDescriptorResponse> items = new ArrayList<>();
 		for (String shellId : shellIds) {
-			items.add(getShellDetailsById(shellId, ddtrUrl));
+			items.add(getShellDetailsById(shellId, ddtrUrl, manufacturerId));
 		}
 		return items;
 	}
 
-	public ShellDescriptorResponse getShellDetailsById(String shellId, String ddtrUrl) {
+	public ShellDescriptorResponse getShellDetailsById(String shellId, String ddtrUrl, String edcBpn) {
 		
-		URI dtURL = (ddtrUrl == null || ddtrUrl.length() <= 0) ? getDtURL(digitalTwinsHost) : getDtURL(ddtrUrl);
+		URI dtURL = StringUtils.isAllEmpty(ddtrUrl) ? getDtURL(digitalTwinsHost) : getDtURL(ddtrUrl);
 
 		ResponseEntity<ShellDescriptorResponse> shellDescriptorResponse = digitalTwinsFeignClient
-				.getShellDescriptorByShellId(dtURL, encodeShellIdBase64Utf8(shellId));
+				.getShellDescriptorByShellId(dtURL, encodeShellIdBase64Utf8(shellId), edcBpn);
 		return shellDescriptorResponse.getBody();
 	}
 
@@ -140,6 +145,18 @@ public class DigitalTwinsFacilitator {
 			responseBody = registerSubmodel.getBody();
 		}
 		return responseBody;
+	}
+
+	public void updateShellSpecificAssetIdentifiers(String shellId, List<Object> specificAssetIds) {
+
+		digitalTwinsFeignClient.deleteShellSpecificAttributes(getDtURL(digitalTwinsHost),
+				encodeShellIdBase64Utf8(shellId), manufacturerId);
+
+		ResponseEntity<List<Object>> registerSubmodel = digitalTwinsFeignClient.createShellSpecificAttributes(
+				getDtURL(digitalTwinsHost), encodeShellIdBase64Utf8(shellId), manufacturerId, specificAssetIds);
+		if (registerSubmodel.getStatusCode() != HttpStatus.CREATED) {
+			log.error("Error in shell SpecificAssetIdentifiers deletion: " + registerSubmodel.toString());
+		}
 	}
 
 	public void createSubModel(String shellId, CreateSubModelRequest request) {

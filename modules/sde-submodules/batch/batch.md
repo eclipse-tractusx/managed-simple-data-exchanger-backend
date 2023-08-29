@@ -5,9 +5,9 @@
 This module use for Batch submodel specification and descriptors. It's contain the codes related to Batch to validate, parse and transfer data for DigitalTwins and EDC to create aspect twins and data offer.
 
 ---
-#### Version: 1.0.2
-#### Batch Aspect Model URN: urn:bamm:io.catenax.batch:1.0.2#Batch
-#### Semantic Id: urn:bamm:io.catenax.batch:1.0.2
+#### Version: 2.0.0
+#### Batch Aspect Model URN: urn:bamm:io.catenax.batch:2.0.0#Batch
+#### Semantic Id: urn:samm:io.catenax.batch:2.0.0
 ---
 
 ### Schema
@@ -27,10 +27,8 @@ Please find below links for schema details:
 | manufacturing_date    			| Yes 							    | 	 4	   	|
 | manufacturing_country  	    	| No                            	| 	 5	  	|
 | manufacturer_part_id 		      	| Yes                           	| 	 6	  	|
-| customer_part_id		    		| No                     		    | 	 7	 	|
-| classification		 			| Yes                               |    8 	 	|
-| name_at_manufacturer	 			| Yes                           	|    9 	 	|
-| name_at_customer	 				| No                           	    |    10 	|
+| classification		 			| Yes                               |    7	 	|
+| name_at_manufacturer	 			| Yes                           	|    8 	 	|
 
 
 #### [CSV Sample File Link]

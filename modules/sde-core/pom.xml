@@ -191,7 +191,12 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>com.github.mwiede</groupId>
+			<artifactId>jsch</artifactId>
+			<version>0.2.11</version>
+		</dependency>
+	</dependencies>
 
 	<build>
 		<plugins>

@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@Profile("FTP")
-public class FtpConfigurationProviderImpl implements RetrieverConfigurationProvider {
+@Profile("SSH")
+public class SshConfigurationProviderImpl implements RetrieverConfigurationProvider {
 
     @Value("${sftp.url}")
     private String serverUrl;
@@ -65,8 +65,8 @@ public class FtpConfigurationProviderImpl implements RetrieverConfigurationProvi
         } else {
             JsonNode node = objectMapper.readTree(entities.get(0).getContent());
             SftpConfigModel configModel = objectMapper.convertValue(node, SftpConfigModel.class);
-            return new FtpRetriever.FtpConfiguration(configModel.getUrl(), configModel.getUsername(),
-                    configModel.getPassword(), configModel.getToBeProcessedLocation(),
+            return new SftpRetriever.SshConfiguration(configModel.getUrl(), configModel.getUsername(),
+                    configModel.getPassword(), null, configModel.getToBeProcessedLocation(),
                     configModel.getInProgressLocation(), configModel.getSuccessLocation(),
                     configModel.getPartialSuccessLocation(), configModel.getFailedLocation());
         }

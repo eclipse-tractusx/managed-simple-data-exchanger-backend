@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Slf4j
-public class Ftps implements RetrieverI {
+public class FtpRetriever implements RetrieverI {
 
     public record FtpConfiguration(
         String url,
@@ -37,7 +37,7 @@ public class Ftps implements RetrieverI {
 
     public static final FTPFileFilter CSV_FILTER = file -> file.isFile() && file.getName().substring(file.getName().lastIndexOf('.')).equalsIgnoreCase(".csv");
 
-    public Ftps(FtpConfiguration ftpConfiguration, CsvHandlerService csvHandlerService) throws IOException {
+    public FtpRetriever(FtpConfiguration ftpConfiguration, CsvHandlerService csvHandlerService) throws IOException {
         this.ftpConfiguration = ftpConfiguration;
         this.csvHandlerService = csvHandlerService;
         ftpClient = new FTPClient();

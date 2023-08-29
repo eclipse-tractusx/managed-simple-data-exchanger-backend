@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.tractusx.sde.agent.entity.SftpConfigEntity;
 import org.eclipse.tractusx.sde.agent.repository.FtpsConfigRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.stereotype.Service;
 
 import java.util.List;

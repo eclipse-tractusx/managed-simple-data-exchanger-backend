@@ -1,5 +1,7 @@
 package org.eclipse.tractusx.sde.sftp.service;
 
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.SftpException;
 import org.eclipse.tractusx.sde.sftp.RetrieverI;
 
 import java.io.IOException;

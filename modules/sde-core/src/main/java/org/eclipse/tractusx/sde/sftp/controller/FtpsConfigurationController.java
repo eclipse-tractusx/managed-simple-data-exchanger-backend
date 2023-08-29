@@ -20,8 +20,8 @@ import java.util.Map;
 @RestController
 public class FtpsConfigurationController {
 
-    private MetadataProvider metadataProvider;
-    private RetrieverConfigurationProvider retrieverConfigurationProvider;
+    private final MetadataProvider metadataProvider;
+    private final RetrieverConfigurationProvider retrieverConfigurationProvider;
 
     @Autowired
     public FtpsConfigurationController(MetadataProvider metadataProvider,

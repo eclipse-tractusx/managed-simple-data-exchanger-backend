@@ -2,11 +2,11 @@
 ---
 ## Description
 
-This repository is part of the overarching Catena-X project. It contains the Backend for the SDE/DFT.
+This repository is part of the overarching Eclipse Tractus-X project. It contains the Backend for the SDE/DFT.
 SDE Simple data exchanger(formally known DFT is short for Data Format Transformer)
 
 It is a standalone service which can be self-hosted. 
-It enables companies to provide their data in the Catena-X network via an EDC.
+It enables companies to provide their data in the Eclipse Tractus-X network via an EDC.
 
 ## Important !!!
 ### Deployment of SDE backend
@@ -17,6 +17,8 @@ Once SDE deployed, The data is uploaded via CSV-files or tabular entry. The SDE 
 The SDE project has three dependencies: Digital Twins, Portal and EDC.
 
 ## How to run
+
+For SDE installation, please refer the [INSTALL](INSTALL.md) file 
 
 SDE is a SpringBoot Java Maven software project.
 
@@ -150,6 +152,24 @@ connector.discovery.clientId=default
 connector.discovery.clientSecret=default
 portal.backend.hostname=default
 springdoc.api-docs.path=/api-docs
+bpndiscovery.hostname=default
+discovery.authentication.url=default
+discovery.clientId=default
+discovery.clientSecret=default
+discovery.grantType=default
+edc.consumer.protocol.path=default
+edc.consumer.managementpath=default
+edc.managementpath=default
+partner.pool.hostname=default
+partner.pool.authentication.url=default
+partner.pool.clientId=default
+partner.pool.clientSecret=default
+partner.pool.grantType=default
+portal.backend.hostname=default
+portal.backend.authentication.url=default
+portal.backend.clientId=default
+portal.backend.clientSecret=default
+portal.backend.grantType=default
 ```
 
 The above configuration we can use as for different deployment as specified here [InstallationGuide.md](InstallationGuide.md)
@@ -290,4 +310,28 @@ Authentication for the backend is handled via an API Key. This can be set in the
 GitHub repository with correct version of the Eclipse DataSpace Connector Project: [repository](https://github.com/eclipse-tractusx/tractusx-edc).
 
 ### Licenses
-Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0).
+For used licenses, please see the [NOTICE](https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/blob/main/NOTICE.md).
+
+## Notice for Docker image
+
+This application provides container images for demonstration purposes.
+
+DockerHub: https://hub.docker.com/r/tractusx/managed-simple-data-exchanger-backend
+
+Eclipse Tractus-X product(s) installed within the image:
+
+- GitHub: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend
+- Project home: https://projects.eclipse.org/projects/automotive.tractusx
+- Dockerfile: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/blob/main/build/Dockerfile
+- Project license: [Apache License, Version 2.0] https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/blob/main/LICENSE
+
+**Used base image**
+- [eclipse-temurin:19-jdk-jammy](https://github.com/adoptium/containers)
+- Official Eclipse Temurin DockerHub page: https://hub.docker.com/_/eclipse-temurin  
+- Eclipse Temurin Project: https://projects.eclipse.org/projects/adoptium.temurin  
+- Additional information about the Eclipse Temurin images: https://github.com/docker-library/repo-info/tree/master/repos/eclipse-temurin
+
+As with all Docker images, these likely also contain other software which may be under other licenses (such as Bash, etc from the base distribution, along with any direct or indirect dependencies of the primary software being contained).
+
+As for any pre-built image usage, it is the image user's responsibility to ensure that any use of this image complies with any relevant licenses for all software contained within.
+

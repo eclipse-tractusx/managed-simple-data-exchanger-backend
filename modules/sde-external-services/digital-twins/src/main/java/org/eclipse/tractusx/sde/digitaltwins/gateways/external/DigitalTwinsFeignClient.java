@@ -52,7 +52,7 @@ public interface DigitalTwinsFeignClient {
 	
 	@GetMapping(path = "/shell-descriptors/{aasIdentifier}")
 	ResponseEntity<ShellDescriptorResponse> getShellDescriptorByShellId(URI url,
-			@PathVariable("aasIdentifier") String shellId);
+			@PathVariable("aasIdentifier") String shellId, @RequestHeader("Edc-Bpn") String edcBpn);
 	
 	@DeleteMapping(path = "/shell-descriptors/{aasIdentifier}")
 	ResponseEntity<Void> deleteShell(URI url, @PathVariable("assetIds") String shellId);

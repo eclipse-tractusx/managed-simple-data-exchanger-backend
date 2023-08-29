@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.CreateSubModelRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellDescriptorRequest;
@@ -63,16 +64,16 @@ public class DigitalTwinsFacilitator {
 	}
 
 	@SneakyThrows
-	public List<String> shellLookupFromDDTR(ShellLookupRequest request, String ddtrUrl, String edcBPN)
+	public List<String> shellLookupFromDDTR(ShellLookupRequest request, String ddtrUrl, String edcBpn)
 			throws ServiceException {
 
-		URI dtURL = (ddtrUrl == null || ddtrUrl.length() <= 0) ? getDtURL(digitalTwinsHost) : getDtURL(ddtrUrl);
+		URI dtURL = StringUtils.isAllEmpty(ddtrUrl) ? getDtURL(digitalTwinsHost) : getDtURL(ddtrUrl);
 
 		List<String> shellIds = List.of();
 
 		try {
 			ResponseEntity<ShellLookupResponse> response = digitalTwinsFeignClient.shellLookup(dtURL,
-					request.toJsonString(), edcBPN);
+					request.toJsonString(), edcBpn);
 
 			ShellLookupResponse body = response.getBody();
 			if (response.getStatusCode() == HttpStatus.OK && body != null) {
@@ -110,17 +111,17 @@ public class DigitalTwinsFacilitator {
 
 		List<ShellDescriptorResponse> items = new ArrayList<>();
 		for (String shellId : shellIds) {
-			items.add(getShellDetailsById(shellId, ddtrUrl));
+			items.add(getShellDetailsById(shellId, ddtrUrl, manufacturerId));
 		}
 		return items;
 	}
 
-	public ShellDescriptorResponse getShellDetailsById(String shellId, String ddtrUrl) {
+	public ShellDescriptorResponse getShellDetailsById(String shellId, String ddtrUrl, String edcBpn) {
 		
-		URI dtURL = (ddtrUrl == null || ddtrUrl.length() <= 0) ? getDtURL(digitalTwinsHost) : getDtURL(ddtrUrl);
+		URI dtURL = StringUtils.isAllEmpty(ddtrUrl) ? getDtURL(digitalTwinsHost) : getDtURL(ddtrUrl);
 
 		ResponseEntity<ShellDescriptorResponse> shellDescriptorResponse = digitalTwinsFeignClient
-				.getShellDescriptorByShellId(dtURL, encodeShellIdBase64Utf8(shellId));
+				.getShellDescriptorByShellId(dtURL, encodeShellIdBase64Utf8(shellId), edcBpn);
 		return shellDescriptorResponse.getBody();
 	}
 

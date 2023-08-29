@@ -64,7 +64,7 @@ public class DigitalTwinsFacilitator {
 	}
 
 	@SneakyThrows
-	public List<String> shellLookupFromDDTR(ShellLookupRequest request, String ddtrUrl, String edcBPN)
+	public List<String> shellLookupFromDDTR(ShellLookupRequest request, String ddtrUrl, String edcBpn)
 			throws ServiceException {
 
 		URI dtURL = StringUtils.isAllEmpty(ddtrUrl) ? getDtURL(digitalTwinsHost) : getDtURL(ddtrUrl);
@@ -73,7 +73,7 @@ public class DigitalTwinsFacilitator {
 
 		try {
 			ResponseEntity<ShellLookupResponse> response = digitalTwinsFeignClient.shellLookup(dtURL,
-					request.toJsonString(), edcBPN);
+					request.toJsonString(), edcBpn);
 
 			ShellLookupResponse body = response.getBody();
 			if (response.getStatusCode() == HttpStatus.OK && body != null) {
@@ -116,12 +116,12 @@ public class DigitalTwinsFacilitator {
 		return items;
 	}
 
-	public ShellDescriptorResponse getShellDetailsById(String shellId, String ddtrUrl, String edcBPN) {
+	public ShellDescriptorResponse getShellDetailsById(String shellId, String ddtrUrl, String edcBpn) {
 		
 		URI dtURL = StringUtils.isAllEmpty(ddtrUrl) ? getDtURL(digitalTwinsHost) : getDtURL(ddtrUrl);
 
 		ResponseEntity<ShellDescriptorResponse> shellDescriptorResponse = digitalTwinsFeignClient
-				.getShellDescriptorByShellId(dtURL, encodeShellIdBase64Utf8(shellId), edcBPN);
+				.getShellDescriptorByShellId(dtURL, encodeShellIdBase64Utf8(shellId), edcBpn);
 		return shellDescriptorResponse.getBody();
 	}
 

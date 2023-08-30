@@ -3,7 +3,7 @@ package org.eclipse.tractusx.sde.agent.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
-@Table(name = "ftpsConfig")
+@Table(name = "ftps_config")
 @Entity
 @Data
 public class SftpConfigEntity {

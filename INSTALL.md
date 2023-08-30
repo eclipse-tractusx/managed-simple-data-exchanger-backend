@@ -31,7 +31,7 @@ For more details, please refer configuration section from [README.md](README.md)
 - Postgres 11.9.13
 
 #### Steps
-1. Clone the GitHub Repository - https://github.com/eclipse-tractusx/dft-backend.
+1. Clone the GitHub Repository - https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend.
 2. Get your instance of postgres running (Create **dftdb** new database).
 3. Setup your project environment to JDK 18.
 4. Provide require application configuration in application.properties as specified in step configuration.properties.

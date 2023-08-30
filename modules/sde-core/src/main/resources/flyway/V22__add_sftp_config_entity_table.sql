@@ -22,5 +22,5 @@ CREATE TABLE ftps_config
 (
     uuid                      VARCHAR(50) PRIMARY KEY,
     type                      VARCHAR(50),
-    content                   VARCHAR(2000)
+    content                   TEXT
 );

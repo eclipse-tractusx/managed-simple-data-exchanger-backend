@@ -195,7 +195,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 
 		for (String ddtUrl : dtURls) {
 
-			List<String> childshellIds = digitalTwinfacilitaor.shellLookupFromDDTR(shellLookupRequest, ddtUrl);
+			List<String> childshellIds = digitalTwinfacilitaor.shellLookupFromDDTR(shellLookupRequest, ddtUrl, aspectRelationShip.getChildManufacturerId());
 
 			if (childshellIds.isEmpty()) {
 				log.warn(aspectRelationShip.getRowNumber() + ", " + ddtUrl + ", No child aspect found for "
@@ -209,8 +209,11 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 
 			if (childshellIds.size() == 1) {
 				ShellDescriptorResponse shellDescriptorResponse = digitalTwinfacilitaor
-						.getShellDetailsById(childshellIds.get(0), ddtUrl);
+						.getShellDetailsById(childshellIds.get(0), ddtUrl, aspectRelationShip.getChildManufacturerId());
 				childUUID = shellDescriptorResponse.getGlobalAssetId();
+				log.debug(aspectRelationShip.getRowNumber() + ", " + ddtUrl + ", Child aspect found for "
+						+ shellLookupRequest.toJsonString());
+				break;
 			}
 
 		}

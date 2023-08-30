@@ -31,6 +31,7 @@ import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.edc.api.ContractApi;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ActionRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
+import org.eclipse.tractusx.sde.edc.entities.request.policies.PermissionRequest;
 import org.eclipse.tractusx.sde.edc.enums.NegotiationState;
 import org.eclipse.tractusx.sde.edc.mapper.ContractMapper;
 import org.eclipse.tractusx.sde.edc.model.contractnegotiation.AcknowledgementId;
@@ -84,6 +85,7 @@ public class ContractNegotiateManagementHelper extends AbstractEDCStepsHelper {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	@SneakyThrows
 	public ContractAgreementResponse getAgreementBasedOnNegotiationId(String type, String negotiationId) {
 		ContractAgreementResponse agreementResponse = null;
@@ -99,18 +101,20 @@ public class ContractNegotiateManagementHelper extends AbstractEDCStepsHelper {
 		}
 		if (agreement != null) {
 			List<UsagePolicies> policies = new ArrayList<>();
-
-			Object object = agreement.getPolicy().getPermissions().getConstraint().get("odrl:and");
-			if (object != null)
-				setContraint(objeMapper, policies, object);
-			else {
-				object = agreement.getPolicy().getPermissions().getConstraint().get("odrl:or");
-				if (object != null)
-					setContraint(objeMapper, policies, object);
+			Object permissionObj = agreement.getPolicy().getPermissions();
+			
+			if (permissionObj instanceof ArrayList) {
+				for (Object obj : (ArrayList<Object>) permissionObj)
+					formatPermissionConstraint(objeMapper, policies, obj);
+			} else if (permissionObj != null) {
+				formatPermissionConstraint(objeMapper, policies, permissionObj);
 			}
 			
+			if (policies.isEmpty())
+				UtilityFunctions.getUsagePolicies(policies, List.of());
+			
 			UtilityFunctions.addCustomUsagePolicy(agreement.getPolicy().getExtensibleProperties(), policies);
-
+			
 			ContractAgreementInfo agreementInfo = ContractAgreementInfo.builder()
 					.contractEndDate(agreement.getContractEndDate())
 					.contractSigningDate(agreement.getContractSigningDate())
@@ -126,16 +130,31 @@ public class ContractNegotiateManagementHelper extends AbstractEDCStepsHelper {
 		return agreementResponse;
 	}
 
+	private void formatPermissionConstraint(ObjectMapper objeMapper, List<UsagePolicies> policies,
+			Object permissionObj) {
+		ObjectMapper objMapper = new ObjectMapper();
+		PermissionRequest permissionRequest = objMapper.convertValue(permissionObj, PermissionRequest.class);
+
+		Object object = permissionRequest.getConstraint().get("odrl:and");
+		if (object != null)
+			setContraint(objeMapper, policies, object);
+		else {
+			object = permissionRequest.getConstraint().get("odrl:or");
+			if (object != null)
+				setContraint(objeMapper, policies, object);
+		}
+	}
+
 	private void setContraint(ObjectMapper objeMapper, List<UsagePolicies> policies, Object object) {
 		if (object instanceof ArrayList) {
 			List<ConstraintRequest> convertValue = objeMapper.convertValue(object,
 					new TypeReference<List<ConstraintRequest>>() {
 					});
-			policies.addAll(UtilityFunctions.getUsagePolicies(convertValue));
+			UtilityFunctions.getUsagePolicies(policies, convertValue);
 		} else if (object !=null ){
 			
 			ConstraintRequest convertValue = objeMapper.convertValue(object, ConstraintRequest.class);
-			policies.addAll(UtilityFunctions.getUsagePolicies(List.of(convertValue)));
+			UtilityFunctions.getUsagePolicies(policies, List.of(convertValue));
 		}
 	}
 

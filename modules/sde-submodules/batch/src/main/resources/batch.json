@@ -4,8 +4,8 @@
 	"type": "array",
 	"id": "batch",
 	"idShort": "Batch",
-	"version": "1.0.2",
-	"semantic_id": "urn:bamm:io.catenax.batch:1.0.2#Batch",
+	"version": "2.0.0",
+	"semantic_id": "urn:samm:io.catenax.batch:2.0.0#Batch",
 	"title": "Batch",
 	"shortDescription": "BoM AsBuilt - Submodel Batch",
 	"description": "A batch is a quantity of (semi-) finished products or (raw) material product that have been produced under the same circumstances (e.g. same production location), as specified groups or amounts, within a certain time frame. Every batch can differ in the number or amount of products. Different batches can have varied specifications, e.g., different colors. A batch is identified via a Batch ID.",
@@ -280,17 +280,6 @@
 					"37754B7-76"
 				]
 			},
-			"customer_part_id": {
-				"type": [
-					"string",
-					"null"
-				],
-				"title": "Customer Part ID",
-				"description": "Part ID as assigned by the manufacturer of the part. The Part ID identifies the part (as designed) in the customer`s dataspace. The Part ID does not reference a specific instance of a part and thus should not be confused with the serial number or batch number. Note: This property may only be populated in case there is a single customer for the batch.",
-				"examples": [
-					"37754B7-76"
-				]
-			},
 			"classification": {
 				"type": [
 					"string"
@@ -319,17 +308,6 @@
 				"examples": [
 					"Sensor"
 				]
-			},
-			"name_at_customer": {
-				"type": [
-					"string",
-					"null"
-				],
-				"title": "Name At Customer",
-				"description": "Name of the part as assigned by the customer",
-				"examples": [
-					"Customer"
-				]
 			}
 		}
 	},
@@ -337,14 +315,12 @@
 		{
 			"uuid": "urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2",
 			"batch_id": "NO-159040131155901488695376",
-			"part_instance_id":"PINO-34634534535",
+			"part_instance_id": "PINO-34634534535",
 			"manufacturing_date": "2022-02-04T14:48:54.709Z",
 			"manufacturing_country": "DEU",
 			"manufacturer_part_id": "37754B7-76",
-			"customer_part_id": "37754B7-76",
 			"classification": "component",
-			"name_at_manufacturer": "Sensor",
-			"name_at_customer": "Sensor"
+			"name_at_manufacturer": "Sensor"
 		}
 	]
 }

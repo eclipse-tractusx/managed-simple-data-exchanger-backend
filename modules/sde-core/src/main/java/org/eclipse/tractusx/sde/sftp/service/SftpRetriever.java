@@ -38,14 +38,14 @@ public class SftpRetriever implements RetrieverI {
     private final CsvHandlerService csvHandlerService;
     private final Map<String, String> idToPath;
 
-    public SftpRetriever(SftpRetriever.SshConfiguration sshConfiguration, CsvHandlerService csvHandlerService) throws JSchException, SftpException {
+    public SftpRetriever(SftpRetriever.SshConfiguration sshConfiguration, CsvHandlerService csvHandlerService, int port) throws JSchException, SftpException {
         this.sshConfiguration = sshConfiguration;
         this.csvHandlerService = csvHandlerService;
         JSch jsch = new JSch();
         if (sshConfiguration.pKey != null) {
             jsch.addIdentity(sshConfiguration.url + "-agent", sshConfiguration.pKey.getBytes(), null, null);
         }
-        session = jsch.getSession(sshConfiguration.username, sshConfiguration.url, 22);
+        session = jsch.getSession(sshConfiguration.username, sshConfiguration.url, port);
         if (sshConfiguration.password != null) {
             session.setPassword(sshConfiguration.password);
         }

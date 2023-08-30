@@ -60,7 +60,7 @@ public class SshConfigurationProviderImpl implements RetrieverConfigurationProvi
     public RetrieverConfiguration getRetrieverConfig() throws JsonProcessingException {
         List<SftpConfigEntity> entities = repository.findAllByType(ConfigType.CLIENT.toString());
         if (entities.isEmpty()) {
-            return new FtpRetriever.FtpConfiguration(serverUrl, username, password, toBeProcessed,
+            return new SftpRetriever.SshConfiguration(serverUrl, username, password, null, toBeProcessed,
                     inProgress, success, partialSuccess, failed);
         } else {
             JsonNode node = objectMapper.readTree(entities.get(0).getContent());

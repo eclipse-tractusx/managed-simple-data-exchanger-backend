@@ -34,7 +34,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 
-@Service
 @Slf4j
 public class SchedulerService implements Runnable {
     private SftpConfigModel sftpConfigModel;

@@ -1,5 +1,3 @@
-package org.eclipse.tractusx.sde.sftp.service;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
@@ -23,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ConcurrentTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
-import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -43,8 +40,6 @@ public class SchedulerService implements Runnable {
     private SftpReportMapper sftpReportMapper;
 
     private FTPClient ftpsClient;
-
-    private FtpsService ftpsService;
 
     private ProcessReportRepository processReportRepository;
 
@@ -66,7 +61,6 @@ public class SchedulerService implements Runnable {
                             CsvHandlerService csvHandlerService,
                             SftpReportMapper sftpReportMapper,
                             FTPClient ftpsClient,
-                            FtpsService ftpsService,
                             ProcessReportRepository processReportRepository,
                             SftpReportRepository sftpReportRepository,
                             SubmodelOrchestartorService submodelOrchestartorService,
@@ -75,7 +69,6 @@ public class SchedulerService implements Runnable {
         this.csvHandlerService = csvHandlerService;
         this.sftpReportMapper = sftpReportMapper;
         this.ftpsClient = ftpsClient;
-        this.ftpsService = ftpsService;
         this.processReportRepository = processReportRepository;
         this.sftpReportRepository = sftpReportRepository;
         this.submodelOrchestartorService = submodelOrchestartorService;
@@ -109,7 +102,7 @@ public class SchedulerService implements Runnable {
         log.info("Scheduler started");
         String schedulerId = UUID.randomUUID().toString();
         try {
-            if (ftpsService.connectFtpsClient()) {
+            if (true) {//ftpsService.connectFtpsClient()) {
                 FTPFile[] files = ftpsClient.listFiles(sftpConfigModel.getToBeProcessedLocation());
                 log.info("Number of files: " + files.length);
                 for (FTPFile file : files) {
@@ -165,7 +158,7 @@ public class SchedulerService implements Runnable {
         } catch(Exception e) {
             log.info("Exception in the scheduler: "+ e.getMessage());
         } finally {
-            ftpsService.disconnectFtpClient();
+            //ftpsService.disconnectFtpClient();
         }
     }
 

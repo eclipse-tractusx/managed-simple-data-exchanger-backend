@@ -1,5 +1,6 @@
 package org.eclipse.tractusx.sde.sftp.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 import org.eclipse.tractusx.sde.sftp.RetrieverI;
@@ -13,4 +14,5 @@ public interface RetrieverFactory {
      * @return retriever
      */
     RetrieverI create() throws IOException;
+    void saveConfig(JsonNode config);
 }

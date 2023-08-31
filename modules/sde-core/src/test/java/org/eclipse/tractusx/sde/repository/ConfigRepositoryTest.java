@@ -4,15 +4,11 @@ package org.eclipse.tractusx.sde.repository;
 import org.eclipse.tractusx.sde.EnableTestContainers;
 import org.eclipse.tractusx.sde.agent.entity.SftpConfigEntity;
 import org.eclipse.tractusx.sde.agent.repository.FtpsConfigRepository;
-import org.eclipse.tractusx.sde.agent.repository.SftpConfigRepository;
 import org.eclipse.tractusx.sde.sftp.service.ConfigType;
-import org.eclipse.tractusx.sde.sftp.service.SftpRetrieverFactory;
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.List;
 import java.util.UUID;

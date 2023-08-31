@@ -32,9 +32,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SftpConfigModel {
-    private String url;
+    private String host;
+    private int port;
     private String username;
     private String password;
+    private String accessKey;
     private String toBeProcessedLocation;
     private String inProgressLocation;
     private String successLocation;

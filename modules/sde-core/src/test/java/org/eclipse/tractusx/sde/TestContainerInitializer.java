@@ -4,6 +4,7 @@ package org.eclipse.tractusx.sde;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.lifecycle.Startables;
@@ -15,11 +16,10 @@ public class TestContainerInitializer implements ApplicationContextInitializer<C
             .withUsername("root")
             .withPassword("P@ssword21");
 
-    static GenericContainer<?> sftp = new GenericContainer<>("dvasunin/sftp:latest")
+    static public GenericContainer<?>  sftp = new GenericContainer<>("atmoz/sftp:alpine")
             .withCopyFileToContainer(
                     MountableFile.forClasspathResource("sftp/", 0777),
-                    "/home/foo/upload/sftp"
-            )
+                    "/home/foo/upload/sftp")
             .withExposedPorts(22)
             .withCommand("foo:pass:::upload");
 
@@ -27,14 +27,18 @@ public class TestContainerInitializer implements ApplicationContextInitializer<C
         Startables.deepStart(postgres, sftp).join();
     }
 
-
     @Override
     public void initialize(ConfigurableApplicationContext applicationContext) {
         TestPropertyValues.of(
             "spring.datasource.url=" + postgres.getJdbcUrl(),
             "sftp.location.tobeprocessed=/upload/sftp/tobe",
+            "sftp.location.success=/upload/sftp/success",
+            "sftp.location.failed=/upload/sftp/failed",
+            "sftp.location.partialsucess=/upload/sftp/partial",
+            "sftp.location.inprogress=/upload/sftp/inprogress",
             "sftp.username=foo",
             "sftp.password=pass",
+            "sftp.host=127.0.0.1",
             "sftp.port=" + sftp.getMappedPort(22)
         ).applyTo(applicationContext);
     }

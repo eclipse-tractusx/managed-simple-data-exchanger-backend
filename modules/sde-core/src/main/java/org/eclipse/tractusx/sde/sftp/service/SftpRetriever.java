@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
 import org.eclipse.tractusx.sde.core.utils.TryUtils;
-import org.eclipse.tractusx.sde.sftp.RetrieverConfiguration;
 import org.eclipse.tractusx.sde.sftp.RetrieverI;
 
 import java.io.File;
@@ -19,48 +18,54 @@ import java.util.stream.StreamSupport;
 @Slf4j
 @RequiredArgsConstructor
 public class SftpRetriever implements RetrieverI {
-
-    public record SshConfiguration(
-            String url,
-            String username,
-            String password,
-            String pKey,
-            String toBeProcessedLocation,
-            String inProgressLocation,
-            String successLocation,
-            String partialSuccessLocation,
-            String failedLocation
-    ) implements RetrieverConfiguration {}
-
     private ChannelSftp channelSftp;
     private final Session session;
-    private final SftpRetriever.SshConfiguration sshConfiguration;
     private final CsvHandlerService csvHandlerService;
     private final Map<String, String> idToPath;
+    private final String inProgressLocation;
+    private final String successLocation;
+    private final String partialSuccessLocation;
+    private final String failedLocation;
+    private final String host;
 
-    public SftpRetriever(SftpRetriever.SshConfiguration sshConfiguration, CsvHandlerService csvHandlerService, int port) throws JSchException, SftpException {
-        this.sshConfiguration = sshConfiguration;
+    public SftpRetriever(CsvHandlerService csvHandlerService,
+                         String host,
+                         int port,
+                         String username,
+                         String password,
+                         String pKey,
+                         String toBeProcessedLocation,
+                         String inProgressLocation,
+                         String successLocation,
+                         String partialSuccessLocation,
+                         String failedLocation
+                         ) throws JSchException, SftpException {
         this.csvHandlerService = csvHandlerService;
         JSch jsch = new JSch();
-        if (sshConfiguration.pKey != null) {
-            jsch.addIdentity(sshConfiguration.url + "-agent", sshConfiguration.pKey.getBytes(), null, null);
+        if (pKey != null) {
+            jsch.addIdentity(host + "-agent", pKey.getBytes(), null, null);
         }
-        session = jsch.getSession(sshConfiguration.username, sshConfiguration.url, port);
-        if (sshConfiguration.password != null) {
-            session.setPassword(sshConfiguration.password);
+        session = jsch.getSession(username, host, port);
+        if (password != null) {
+            session.setPassword(password);
         }
         session.setConfig("StrictHostKeyChecking", "no");
         session.setConfig("PreferredAuthentications", "publickey,password");
         session.connect();
         channelSftp = (ChannelSftp) session.openChannel("sftp");
-        idToPath = ensureConnected().ls(sshConfiguration.toBeProcessedLocation()).stream()
+        idToPath = ensureConnected().ls(toBeProcessedLocation).stream()
                 .filter(lsEntry -> !lsEntry.getAttrs().isDir())
                 .filter(lsEntry -> lsEntry.getFilename().toLowerCase().endsWith(".csv"))
-                .map(lsEntry -> sshConfiguration.toBeProcessedLocation() + "/" + lsEntry.getFilename())
+                .map(lsEntry -> toBeProcessedLocation + "/" + lsEntry.getFilename())
                 .collect(Collectors.toMap(
                         path -> UUID.randomUUID().toString(),
                         Function.identity()
                 ));
+        this.inProgressLocation = inProgressLocation;
+        this.successLocation = successLocation;
+        this.partialSuccessLocation = partialSuccessLocation;
+        this.failedLocation = failedLocation;
+        this.host = host;
     }
 
     private ChannelSftp ensureConnected() throws JSchException {
@@ -100,28 +105,28 @@ public class SftpRetriever implements RetrieverI {
 
     @Override
     public void setProgress(String id) throws IOException {
-        moveTo(id, sshConfiguration.inProgressLocation());
+        moveTo(id, inProgressLocation);
     }
 
     @Override
     public void setSuccess(String id) throws IOException {
-        moveTo(id, sshConfiguration.successLocation());
+        moveTo(id, successLocation);
     }
 
     @Override
     public void setPartial(String id) throws IOException {
-        moveTo(id, sshConfiguration.partialSuccessLocation());
+        moveTo(id, partialSuccessLocation);
     }
 
     @Override
     public void setFailed(String id) throws IOException {
-        moveTo(id, sshConfiguration.failedLocation());
+        moveTo(id, failedLocation);
     }
 
     @Override
     public void close() {
         disconnect();
-        log.debug("Ftps client {} disconnected", sshConfiguration.url);
+        log.debug("Ftps client {} disconnected", host);
     }
 
     @Override

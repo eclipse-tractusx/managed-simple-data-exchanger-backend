@@ -1,6 +1,5 @@
 package org.eclipse.tractusx.sde.sftp.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +26,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -55,13 +55,15 @@ public class ProcessRemoteCsv {
 
 
     @SuppressWarnings({"CallToPrintStackTrace","ResultOfMethodCallIgnored"})
-    public void process(TaskScheduler taskScheduler) throws JsonProcessingException {
+    public void process(TaskScheduler taskScheduler) {
         log.info("Scheduler started");
-        var submodelFileRequest = objectMapper.convertValue(metadataProvider.getMetadata(), SubmodelFileRequest.class);
         var schedulerId = UUID.randomUUID().toString();
         boolean loginSuccess = false;
         try (var retriever = retrieverFactory.create()) {
             loginSuccess = true;
+            var submodelFileRequest = Optional.ofNullable(
+                    objectMapper.convertValue(metadataProvider.getMetadata(), SubmodelFileRequest.class)
+            ).orElseThrow(() -> new RuntimeException("Metadata is incorrect"));
             var inProgress = StreamSupport.stream(retriever.spliterator(), false)
                     .filter(processId -> tryRun(
                             () -> retriever.setProgress(processId),

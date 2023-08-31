@@ -53,7 +53,7 @@ public class SftpRetrieverTest {
         private final String name;
     }
 
-    static Stream<TestMethod> provider() {
+    static Stream<Function<RetrieverI, ThrowableExec>> provider() {
         return Stream.of(
                 new TestMethod(r -> r::setSuccess, "SetSuccess"),
                 new TestMethod(r -> r::setFailed,"SetFailed"),

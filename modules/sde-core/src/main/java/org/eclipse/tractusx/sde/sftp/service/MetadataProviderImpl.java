@@ -37,10 +37,15 @@ public class MetadataProviderImpl implements MetadataProvider {
     }
 
     @Override
-    public JsonNode getMetadata() throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        List<SftpConfigEntity> entities = repository.findAllByType(ConfigType.METADADA.toString());
-        if (entities.isEmpty()) return objectMapper.readTree(metadata);
-        else return objectMapper.readTree(entities.get(0).getContent());
+    public JsonNode getMetadata() {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<SftpConfigEntity> entities = repository.findAllByType(ConfigType.METADADA.toString());
+            if (entities.isEmpty()) return objectMapper.readTree(metadata);
+            else return objectMapper.readTree(entities.get(0).getContent());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

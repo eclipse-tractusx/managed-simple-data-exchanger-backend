@@ -16,7 +16,7 @@ public class TestContainerInitializer implements ApplicationContextInitializer<C
             .withUsername("root")
             .withPassword("P@ssword21");
 
-    static public GenericContainer<?>  sftp = new GenericContainer<>("atmoz/sftp:alpine")
+    static public GenericContainer<?>  sftp = new GenericContainer<>("dvasunin/sftp:latest")
             .withCopyFileToContainer(
                     MountableFile.forClasspathResource("sftp/", 0777),
                     "/home/foo/upload/sftp")

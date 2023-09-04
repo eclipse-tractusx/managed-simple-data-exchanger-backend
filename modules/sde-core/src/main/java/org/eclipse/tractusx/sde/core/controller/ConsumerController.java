@@ -68,4 +68,22 @@ public class ConsumerController {
 		consumerControlPanelService.subscribeDataOffers(consumerRequest, processId);
 		return ResponseEntity.ok().body(processId);
 	}
+
+	@PostMapping(value = "/subscribe-download-data-using-edr")
+	@PreAuthorize("hasPermission('','consumer_download_data')")
+	public ResponseEntity<Object> subscribeAndDownloadDataOffers(@Valid @RequestBody ConsumerRequest consumerRequest) {
+		String processId = UUID.randomUUID().toString();
+		log.info("Request recevied : /api/subscribe-download-data-edr");
+		consumerControlPanelService.subscribeAndDownloadDataOffers(consumerRequest, processId);
+		return ResponseEntity.ok().body(processId);
+	}
+
+	@GetMapping(value = "/download-data-using-edr")
+	@PreAuthorize("hasPermission('','consumer_download_data')")
+	public ResponseEntity<Object> downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(@RequestParam String assetId)
+			throws Exception {
+		log.info("Request received : /api/download-data-using-edr");
+		return ok().body(consumerControlPanelService.downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(assetId));
+	}
+
 }

@@ -54,7 +54,7 @@ public class CsvUtil {
 
 	@SneakyThrows
 	public static ByteArrayInputStream writeCsv(List<List<String>> data) {
-		final CSVFormat format = CSVFormat.EXCEL.withEscape(' ').withQuoteMode(QuoteMode.NONE).withDelimiter(';');
+		final CSVFormat format = CSVFormat.EXCEL.withEscape('/').withQuoteMode(QuoteMode.NONE).withDelimiter(';');
 
 		try (ByteArrayOutputStream out = new ByteArrayOutputStream();
 				CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format);) {

@@ -25,8 +25,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
@@ -55,6 +57,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -235,12 +238,10 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
 	}
 
-	public Object subscribeAndDownloadDataOffers(@Valid ConsumerRequest consumerRequest, String processId) {
+	public Object subscribeAndDownloadDataOffers(@Valid ConsumerRequest consumerRequest) {
 
 		HashMap<String, String> extensibleProperty = new HashMap<>();
-		AtomicReference<String> negotiateContractId = new AtomicReference<>();
-		AtomicReference<EDRCachedResponse> checkContractNegotiationStatus = new AtomicReference<>();
-		AtomicReference<Object> response = new AtomicReference<>();
+		Map<String, Object> response = new ConcurrentHashMap<>();
 
 		var recipientURL = UtilityFunctions.removeLastSlashOfUrl(consumerRequest.getProviderUrl());
 
@@ -256,33 +257,22 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 		ActionRequest action = policyConstraintBuilderService.getUsagePolicyConstraints(policies);
 		consumerRequest.getOffers().parallelStream().forEach(offer -> {
 			try {
+				edrRequestHelper.edrRequestInitiate(recipientURL, consumerRequest.getConnectorId(), offer.getOfferId(),
+						offer.getAssetId(), action, extensibleProperty);
 
-				negotiateContractId
-						.set(edrRequestHelper.edrRequestInitiate(recipientURL, consumerRequest.getConnectorId(),
-								offer.getOfferId(), offer.getAssetId(), action, extensibleProperty));
+				EDRCachedResponse checkContractNegotiationStatus = verifyEDRRequestStatus(offer.getAssetId());
 
-				checkContractNegotiationStatus.set(verifyEDRRequestStatus(offer.getAssetId()));
-
-				downloadFile(checkContractNegotiationStatus.get());
+				response.put(offer.getAssetId(), downloadFile(checkContractNegotiationStatus));
 
 			} catch (Exception e) {
 				log.error("Exception in subscribeAndDownloadDataOffers" + e.getMessage());
-			} finally {
-				ContractNegotiationInfoEntity contractNegotiationInfoEntity = ContractNegotiationInfoEntity.builder()
-						.id(UUID.randomUUID().toString()).processId(processId)
-						.connectorId(consumerRequest.getConnectorId()).offerId(offer.getOfferId())
-						.contractNegotiationId(negotiateContractId != null ? negotiateContractId.get() : null)
-						.status(checkContractNegotiationStatus.get() != null
-								? checkContractNegotiationStatus.get().getEdrState()
-								: "Failed:Exception")
-						.dateTime(LocalDateTime.now()).build();
-
-				contractNegotiationInfoRepository.save(contractNegotiationInfoEntity);
+				response.put(offer.getAssetId(), e.getMessage());
 			}
 		});
-		return response.get();
+		return response;
 	}
 
+	@SneakyThrows
 	private EDRCachedResponse verifyEDRRequestStatus(String assetId) {
 		EDRCachedResponse eDRCachedResponse = null;
 		List<EDRCachedResponse> eDRCachedResponseList = null;
@@ -301,16 +291,20 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 		} catch (InterruptedException ie) {
 			log.error("Exception in verifyEDRRequestStatus" + ie.getMessage());
 			Thread.currentThread().interrupt();
+			throw ie;
 		} catch (Exception e) {
 			log.error("Exception in verifyEDRRequestStatus" + e.getMessage());
+			throw e;
 		}
 		return eDRCachedResponse;
 	}
 
+	@SneakyThrows
 	private EDRCachedByIdResponse getAuthorizationTokenForDataDownload(String transferProcessId) {
 		return edrRequestHelper.getEDRCachedByTransferProcessId(transferProcessId);
 	}
 
+	@SneakyThrows
 	public Object downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(String assetId) {
 		EDRCachedResponse verifyEDRRequestStatus = verifyEDRRequestStatus(assetId);
 		return downloadFile(verifyEDRRequestStatus);

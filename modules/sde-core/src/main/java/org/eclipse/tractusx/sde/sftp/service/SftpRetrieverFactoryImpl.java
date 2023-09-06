@@ -47,7 +47,7 @@ public class SftpRetrieverFactoryImpl implements RetrieverFactory {
 
     public RetrieverI create(OptionalInt port) throws IOException {
         try {
-            var configEntityOptional = repository.findById(SftpConfigEntity.SFTP_CONFIG_ID);
+            var configEntityOptional = repository.findById(SftpConfigEntity.SFTP_CLIENT_CONFIG_ID);
             if (configEntityOptional.isPresent()) {
                 SftpConfigModel configModel = objectMapper.convertValue(configEntityOptional.get().getContent(), SftpConfigModel.class);
                 return new SftpRetriever(
@@ -91,11 +91,11 @@ public class SftpRetrieverFactoryImpl implements RetrieverFactory {
     @Override
     @Transactional
     public void saveConfig(JsonNode configuration) {
-        var configEntityOptional = repository.findById(SftpConfigEntity.SFTP_CONFIG_ID);
+        var configEntityOptional = repository.findById(SftpConfigEntity.SFTP_CLIENT_CONFIG_ID);
         configEntityOptional.ifPresent(configEntity -> configEntity.setContent(configuration.toString()));
         if (configEntityOptional.isEmpty()) {
             SftpConfigEntity configEntity = new SftpConfigEntity();
-            configEntity.setUuid(SftpConfigEntity.SFTP_CONFIG_ID);
+            configEntity.setUuid(SftpConfigEntity.SFTP_CLIENT_CONFIG_ID);
             configEntity.setContent(configuration.toString());
             configEntity.setType(ConfigType.CLIENT.toString());
             repository.save(configEntity);

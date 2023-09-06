@@ -1,6 +1,5 @@
 package org.eclipse.tractusx.sde.sftp.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.tractusx.sde.agent.entity.SftpConfigEntity;
@@ -8,8 +7,7 @@ import org.eclipse.tractusx.sde.agent.repository.FtpsConfigRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.Optional;
 
 @Service
 public class MetadataProviderImpl implements MetadataProvider {
@@ -22,16 +20,16 @@ public class MetadataProviderImpl implements MetadataProvider {
 
     @Override
     public void saveMetadata(JsonNode metadata) {
-        List<SftpConfigEntity> entities = repository.findAllByType(ConfigType.METADADA.toString());
-        if (!entities.isEmpty()) {
-            SftpConfigEntity configEntity = entities.get(0);
+        Optional<SftpConfigEntity> config = repository.findById(SftpConfigEntity.METADATA_CONFIG_ID);
+        if (config.isPresent()) {
+            SftpConfigEntity configEntity = config.get();
             configEntity.setContent(metadata.toString());
             repository.save(configEntity);
         } else {
             SftpConfigEntity configEntity = new SftpConfigEntity();
-            configEntity.setUuid(UUID.randomUUID().toString());
+            configEntity.setUuid(SftpConfigEntity.METADATA_CONFIG_ID);
             configEntity.setContent(metadata.toString());
-            configEntity.setType(ConfigType.METADADA.toString());
+            configEntity.setType(ConfigType.METADATA.toString());
             repository.save(configEntity);
         }
     }
@@ -40,9 +38,9 @@ public class MetadataProviderImpl implements MetadataProvider {
     public JsonNode getMetadata() {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            List<SftpConfigEntity> entities = repository.findAllByType(ConfigType.METADADA.toString());
-            if (entities.isEmpty()) return objectMapper.readTree(metadata);
-            else return objectMapper.readTree(entities.get(0).getContent());
+            Optional<SftpConfigEntity> config = repository.findById(SftpConfigEntity.METADATA_CONFIG_ID);
+            if (config.isEmpty()) return objectMapper.readTree(metadata);
+            else return objectMapper.readTree(config.get().getContent());
         } catch (Exception e) {
             e.printStackTrace();
             return null;

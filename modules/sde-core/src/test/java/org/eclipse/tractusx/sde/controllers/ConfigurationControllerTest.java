@@ -76,7 +76,7 @@ public class ConfigurationControllerTest {
                         .post("/updateFtpsConfig")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(getJsonBody()))
-                        .param("type", ConfigType.METADADA.toString()))
+                        .param("type", ConfigType.METADATA.toString()))
                 .andExpect(status().isOk());
 
         Assertions.assertEquals(2, ftpsConfigRepository.findAll().size());

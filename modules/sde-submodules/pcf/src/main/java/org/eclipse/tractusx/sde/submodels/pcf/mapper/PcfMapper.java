@@ -21,6 +21,7 @@ package org.eclipse.tractusx.sde.submodels.pcf.mapper;
 
 import java.util.List;
 
+import org.eclipse.tractusx.sde.common.mapper.AspectResponseFactory;
 import org.eclipse.tractusx.sde.submodels.pcf.entity.PcfEntity;
 import org.eclipse.tractusx.sde.submodels.pcf.model.CompanyIds;
 import org.eclipse.tractusx.sde.submodels.pcf.model.CrossSectoralStandardsUsed;
@@ -35,6 +36,7 @@ import org.eclipse.tractusx.sde.submodels.pcf.model.ProductOrSectorSpecificRules
 import org.eclipse.tractusx.sde.submodels.pcf.model.SecondaryEmissionFactorSources;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,7 +51,10 @@ public abstract class PcfMapper {
 	
 	@Value(value = "${manufacturerId}")
 	private String manufacturerId;
-
+	
+	@Autowired
+	private AspectResponseFactory aspectResponseFactory;
+	
 	ObjectMapper mapper = new ObjectMapper();
 
 	@Mapping(target = "rowNumberforPcf", ignore = true)
@@ -137,35 +142,74 @@ public abstract class PcfMapper {
 				.carbonContentBiogenic(entity.getCarbonContentBiogenic())
 				.build();
 		
-		
-		return new Gson().toJsonTree(PcfSubmodelResponse.builder()
-				.specVersion(entity.getSpecVersion())
-				.companyIds(CompanyIds.builder()
-						.companyId(entity.getCompanyId())
-						.build())
-				.extWBCSDProductCodeCpc(entity.getExtWBCSDProductCodeCpc())
-				.created(entity.getCreated())
-				.companyName(entity.getCompanyName())
-				.extWBCSDPfStatus(entity.getExtWBCSDPfStatus())
-				.version(entity.getVersion())
-				.productName(entity.getProductName())
-				.pcf(pcfResponse)
+		PcfSubmodelResponse build = PcfSubmodelResponse.builder().specVersion(entity.getSpecVersion())
+				.companyIds(CompanyIds.builder().companyId(entity.getCompanyId()).build())
+				.extWBCSDProductCodeCpc(entity.getExtWBCSDProductCodeCpc()).created(entity.getCreated())
+				.companyName(entity.getCompanyName()).extWBCSDPfStatus(entity.getExtWBCSDPfStatus())
+				.version(entity.getVersion()).productName(entity.getProductName()).pcf(pcfResponse)
 				.partialFullPcf(entity.getPartialFullPcf())
-				.productIds(ProductIds.builder()
-						.productId(entity.getProductId())
-						.build())
-				
-				.validityPeriodStart(entity.getValidityPeriodStart())
-				.comment(entity.getComment())
-				.id(entity.getId())
-				.validityPeriodEnd(entity.getValidityPeriodEnd())
-				.pcfLegalStatement(entity.getPcfLegalStatement())
+				.productIds(ProductIds.builder().productId(entity.getProductId()).build())
+
+				.validityPeriodStart(entity.getValidityPeriodStart()).comment(entity.getComment()).id(entity.getId())
+				.validityPeriodEnd(entity.getValidityPeriodEnd()).pcfLegalStatement(entity.getPcfLegalStatement())
 				.productDescription(entity.getProductDescription())
-				
-				.precedingPfIds(PrecedingPfIds.builder()
-						.id(entity.getPrecedingPfId())
-						.build())
-				.build()).getAsJsonObject();
+
+				.precedingPfIds(PrecedingPfIds.builder().id(entity.getPrecedingPfId()).build()).build();
+
+		PcfAspect csv = PcfAspect.builder().id(entity.getId()).specVersion(entity.getSpecVersion())
+				.partialFullPcf(entity.getPartialFullPcf()).precedingPfId(entity.getPrecedingPfId())
+				.version(entity.getVersion() + "").created(entity.getCreated())
+				.extWBCSDPfStatus(entity.getExtWBCSDPfStatus()).validityPeriodStart(entity.getValidityPeriodStart())
+				.validityPeriodEnd(entity.getValidityPeriodEnd()).comment(entity.getComment())
+				.pcfLegalStatement(entity.getPcfLegalStatement()).companyName(entity.getCompanyName())
+				.companyId(entity.getCompanyId()).productDescription(entity.getProductDescription())
+				.productId(entity.getProductId()).extWBCSDProductCodeCpc(entity.getExtWBCSDProductCodeCpc())
+				.productName(entity.getProductName()).declaredUnit(entity.getDeclaredUnit())
+				.unitaryProductAmount(entity.getUnitaryProductAmount() + "")
+				.productMassPerDeclaredUnit(entity.getProductMassPerDeclaredUnit() + "")
+				.exemptedEmissionsPercent(entity.getExemptedEmissionsPercent() + "")
+				.exemptedEmissionsDescription(entity.getExemptedEmissionsDescription())
+				.extWBCSDPackagingEmissionsIncluded(
+						Boolean.parseBoolean(entity.getExtWBCSDPackagingEmissionsIncluded()))
+				.boundaryProcessesDescription(entity.getBoundaryProcessesDescription())
+				.geographyCountrySubdivision(entity.getGeographyCountrySubdivision())
+				.geographyCountry(entity.getGeographyCountry())
+				.geographyRegionOrSubregion(entity.getGeographyRegionOrSubregion())
+				.referencePeriodStart(entity.getReferencePeriodStart())
+				.referencePeriodEnd(entity.getReferencePeriodEnd())
+				.crossSectoralStandard(entity.getCrossSectoralStandard()).extWBCSDOperator(entity.getExtWBCSDOperator())
+				.ruleName(entity.getRuleName()).extWBCSDOtherOperatorName(entity.getExtWBCSDOtherOperatorName())
+				.extWBCSDCharacterizationFactors(entity.getExtWBCSDCharacterizationFactors())
+				.extWBCSDAllocationRulesDescription(entity.getExtWBCSDAllocationRulesDescription())
+				.extTFSAllocationWasteIncineration(entity.getExtTFSAllocationWasteIncineration())
+				.primaryDataShare(entity.getPrimaryDataShare() + "")
+				.secondaryEmissionFactorSource(entity.getSecondaryEmissionFactorSource())
+				.coveragePercent(entity.getCoveragePercent() + "").technologicalDQR(entity.getTechnologicalDQR() + "")
+				.temporalDQR(entity.getTemporalDQR() + "").geographicalDQR(entity.getGeographicalDQR() + "")
+				.completenessDQR(entity.getCompletenessDQR() + "").reliabilityDQR(entity.getReliabilityDQR() + "")
+				.pcfExcludingBiogenic(entity.getPcfExcludingBiogenic() + "")
+				.pcfIncludingBiogenic(entity.getPcfIncludingBiogenic() + "")
+				.fossilGhgEmissions(entity.getFossilGhgEmissions() + "")
+				.biogenicCarbonEmissionsOtherThanCO2(entity.getBiogenicCarbonEmissionsOtherThanCO2() + "")
+				.biogenicCarbonWithdrawal(entity.getBiogenicCarbonWithdrawal() + "")
+				.dlucGhgEmissions(entity.getDlucGhgEmissions() + "")
+				.extTFSLuGhgEmissions(entity.getExtTFSLuGhgEmissions() + "")
+				.aircraftGhgEmissions(entity.getAircraftGhgEmissions() + "")
+				.extWBCSDPackagingGhgEmissions(entity.getExtWBCSDPackagingGhgEmissions() + "")
+				.distributionStagePcfExcludingBiogenic(entity.getDistributionStagePcfExcludingBiogenic() + "")
+				.distributionStagePcfIncludingBiogenic(entity.getDistributionStagePcfIncludingBiogenic() + "")
+				.distributionStageFossilGhgEmissions(entity.getDistributionStageFossilGhgEmissions() + "")
+				.distributionStageBiogenicCarbonEmissionsOtherThanCO2(
+						entity.getDistributionStageBiogenicCarbonEmissionsOtherThanCO2() + "")
+				.distributionStageBiogenicCarbonWithdrawal(entity.getDistributionStageBiogenicCarbonWithdrawal() + "")
+				.extTFSDistributionStageDlucGhgEmissions(entity.getExtTFSDistributionStageDlucGhgEmissions() + "")
+				.extTFSDistributionStageLuGhgEmissions(entity.getExtTFSDistributionStageLuGhgEmissions() + "")
+				.carbonContentTotal(entity.getCarbonContentTotal() + "")
+				.extWBCSDFossilCarbonContent(entity.getExtWBCSDFossilCarbonContent() + "")
+				.carbonContentBiogenic(entity.getCarbonContentBiogenic() + "")
+				.assetLifeCyclePhase(entity.getAssetLifeCyclePhase()).build();
+		
+		return aspectResponseFactory.maptoReponse(csv, build);
 
 	}
 

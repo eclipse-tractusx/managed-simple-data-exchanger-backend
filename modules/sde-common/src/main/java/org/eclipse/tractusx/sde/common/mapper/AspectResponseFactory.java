@@ -31,9 +31,8 @@ public class AspectResponseFactory {
 	public JsonObject maptoReponse(Object csvObject, Object aspectObject) {
 		
 		JsonObject jobj = new JsonObject();
-		JsonObject asJsonObject = new Gson().toJsonTree(csvObject).getAsJsonObject();
-		jobj.add("csvObject", asJsonObject);
-		jobj.add("aspectJson", new Gson().toJsonTree(aspectObject).getAsJsonObject());
+		jobj.add("csv", new Gson().toJsonTree(csvObject).getAsJsonObject());
+		jobj.add("json", new Gson().toJsonTree(aspectObject).getAsJsonObject());
 		
 		return jobj;
 	}

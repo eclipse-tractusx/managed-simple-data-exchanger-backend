@@ -40,6 +40,7 @@ public class SftpReportModel {
     private String fileName;
     private int numberOfFailedItems;
     private int numberOfSucceededItems;
+    private boolean isNotificationSent;
     private SftpReportStatusEnum status;
     private LocalDateTime startDate;
     private LocalDateTime endDate;

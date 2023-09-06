@@ -32,6 +32,8 @@ public interface SftpReportRepository extends JpaRepository<SftpSchedulerReport,
 
     List<SftpSchedulerReport> findByStatus(SftpReportStatusEnum inProgress);
 
+    List<SftpSchedulerReport> findByIsNotificationSent(boolean isNotificationSent);
+
     List<SftpSchedulerReport> findByProcessIdIn(List<String> processIds);
 
 }

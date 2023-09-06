@@ -56,4 +56,6 @@ public class SftpSchedulerReport implements Serializable {
     private LocalDateTime startDate;
     @Column(name = "end_date")
     private LocalDateTime endDate;
+    @Column(name = "is_notification_sent")
+    private boolean isNotificationSent;
 }

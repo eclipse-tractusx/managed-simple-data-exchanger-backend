@@ -11,21 +11,27 @@ import org.eclipse.tractusx.sde.agent.model.SftpReportModel;
 import org.eclipse.tractusx.sde.agent.repository.SftpReportRepository;
 import org.eclipse.tractusx.sde.common.entities.SubmodelFileRequest;
 import org.eclipse.tractusx.sde.common.enums.ProgressStatusEnum;
+import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
+import org.eclipse.tractusx.sde.core.manager.EmailManager;
 import org.eclipse.tractusx.sde.core.processreport.entity.ProcessReportEntity;
 import org.eclipse.tractusx.sde.core.processreport.repository.ProcessReportRepository;
 import org.eclipse.tractusx.sde.core.service.SubmodelOrchestartorService;
 import org.eclipse.tractusx.sde.sftp.RetrieverI;
 import org.springframework.beans.factory.ObjectFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
@@ -49,6 +55,8 @@ public class ProcessRemoteCsv {
     private final SftpReportMapper sftpReportMapper;
     private final ObjectFactory<ProcessRemoteCsv> selfFactory;
 
+    @Autowired
+    private EmailManager emailManager;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -100,11 +108,61 @@ public class ProcessRemoteCsv {
     }
 
     public void checkStatusOfInprogressFiles(TaskScheduler taskScheduler, RetrieverI retriever, List<String> inProgress) {
-        if (processReportRepository.countByProcessIdInAndStatus(inProgress, ProgressStatusEnum.COMPLETED) != inProgress.size()) {
-            taskScheduler.schedule(() -> checkStatusOfInprogressFiles(taskScheduler, retriever, inProgress), Instant.now().plus(Duration.ofSeconds(5)));
-        } else {
-            selfFactory.getObject().createDbReport(retriever, inProgress).forEach(Runnable::run);
-            tryRun(retriever::close, IGNORE());
+        if(inProgress.size()>0) {
+            if (processReportRepository.countByProcessIdInAndStatus(inProgress, ProgressStatusEnum.COMPLETED) != inProgress.size()) {
+                taskScheduler.schedule(() -> checkStatusOfInprogressFiles(taskScheduler, retriever, inProgress), Instant.now().plus(Duration.ofSeconds(5)));
+            } else {
+                selfFactory.getObject().createDbReport(retriever, inProgress).forEach(Runnable::run);
+                tryRun(retriever::close, IGNORE());
+                // Notification method call
+                try {
+                    sendNotificationForProcessedFiles();
+                } catch (IOException e) {
+                    log.info("Error while sending the notification");
+                }
+            }
+        }
+    }
+
+    private void sendNotificationForProcessedFiles() throws IOException {
+        List<SftpSchedulerReport> sftpReportList = sftpReportRepository.findByIsNotificationSent(false);
+        if(!sftpReportList.isEmpty()) {
+            Map<String, List<SftpSchedulerReport>> groupedList = sftpReportList.stream().collect(Collectors.groupingBy(SftpSchedulerReport::getSchedulerId));
+
+            for(Map.Entry<String, List<SftpSchedulerReport>> entry: groupedList.entrySet()) {
+                if(!entry.getValue().stream().anyMatch(report -> report.getStatus().equals(SftpReportStatusEnum.IN_PROGRESS))) {
+                    log.info("Send notification for scheduler: "+entry.getKey());
+                    Map<String, Object> emailContent = new HashMap<>();
+                    emailContent.put("toemail", "test@email.com");
+                    String tableData = "";
+                    for(SftpSchedulerReport report : entry.getValue()) {
+                        tableData += "<tr>";
+                        emailContent.put("schedulerTime", report.getStartDate());
+                        String rowData = "<td>";
+                        rowData += report.getFileName() + "</td>";
+                        rowData += "<td>" + report.getStatus() + "</td>";
+                        rowData += "<td>" + report.getNumberOfSucceededItems() + "</td>";
+                        rowData += "<td>" + report.getNumberOfFailedItems() + "</td>";
+                        tableData += rowData;
+                        tableData += "</tr>";
+                    }
+
+                    emailContent.put("fileTableData", tableData);
+                    try {
+                        emailManager.sendEmail(emailContent, "Scheduler status", "scheduler_status.html");
+                    } catch (ServiceException se) {
+                        log.info("Exception occurred while sending email for scheduler id: "+ entry.getKey()+"\n"+se);
+                    }
+
+                    // Update DB as notification is sent
+                    entry.getValue().stream().forEach(report -> {
+                        report.setNotificationSent(true);
+                        sftpReportRepository.save(report);
+                    });
+                } else {
+                    log.info("Don't Send notification for scheduler: "+entry.getKey());
+                }
+            }
         }
     }
 
@@ -117,33 +175,36 @@ public class ProcessRemoteCsv {
     @Transactional
     public List<Runnable> createDbReport(RetrieverI retriever, List<String> completed) {
         List<Runnable> remoteActions = new ArrayList<>();
-        List<SftpSchedulerReport> sftpReportList = sftpReportRepository.findByProcessIdIn(completed);
-        var processReportMap = processReportRepository.findByProcessIdIn(completed).stream().collect(Collectors.toMap(ProcessReportEntity::getProcessId, Function.identity()));
-        for (var sftpSchedulerReport : sftpReportList) {
-            final var processId = sftpSchedulerReport.getProcessId();
-            final var processReport = processReportMap.get(processId);
-            final var numberOfSucceededItems = processReport.getNumberOfSucceededItems() + processReport.getNumberOfUpdatedItems();
-            final var numberOfFailedItems = processReport.getNumberOfFailedItems();
-            sftpSchedulerReport.setNumberOfSucceededItems(numberOfSucceededItems);
-            sftpSchedulerReport.setNumberOfFailedItems(numberOfFailedItems);
-            if (processReport.getNumberOfItems() == numberOfSucceededItems) {
-                sftpSchedulerReport.setStatus(SftpReportStatusEnum.SUCCESS);
-                remoteActions.add(() -> tryRun(
-                        () -> retriever.setSuccess(processId),
-                        e -> log.info("Could not move file {} to Success Folder", retriever.getFileName(processId))
-                ));
-            } else if (numberOfSucceededItems > 0) {
-                sftpSchedulerReport.setStatus(SftpReportStatusEnum.PARTIAL_SUCCESS);
-                remoteActions.add(() -> tryRun(
-                        () -> retriever.setPartial(processId),
-                        e -> log.info("Could not move file {} to Partial Success Folder", retriever.getFileName(processId))
-                ));
-            } else {
-                sftpSchedulerReport.setStatus(SftpReportStatusEnum.FAILED);
-                remoteActions.add(() -> tryRun(
-                        () -> retriever.setFailed(processId),
-                        e -> log.info("Could not move file {} to Failed Folder", retriever.getFileName(processId))
-                ));
+        if(completed.size() > 0) {
+            List<SftpSchedulerReport> sftpReportList = sftpReportRepository.findByProcessIdIn(completed);
+            var processReportMap = processReportRepository.findByProcessIdIn(completed).stream().collect(Collectors.toMap(ProcessReportEntity::getProcessId, Function.identity()));
+            for (var sftpSchedulerReport : sftpReportList) {
+                final var fileName = sftpSchedulerReport.getFileName();
+                final var processId = sftpSchedulerReport.getProcessId();
+                final var processReport = processReportMap.get(processId);
+                final var numberOfSucceededItems = processReport.getNumberOfSucceededItems() + processReport.getNumberOfUpdatedItems();
+                final var numberOfFailedItems = processReport.getNumberOfFailedItems();
+                sftpSchedulerReport.setNumberOfSucceededItems(numberOfSucceededItems);
+                sftpSchedulerReport.setNumberOfFailedItems(numberOfFailedItems);
+                if (processReport.getNumberOfItems() == numberOfSucceededItems) {
+                    sftpSchedulerReport.setStatus(SftpReportStatusEnum.SUCCESS);
+                    remoteActions.add(() -> tryRun(
+                            () -> retriever.setSuccess(processId),
+                            e -> log.info("Could not move file {} to Success Folder", retriever.getFileName(processId))
+                    ));
+                } else if (numberOfSucceededItems > 0) {
+                    sftpSchedulerReport.setStatus(SftpReportStatusEnum.PARTIAL_SUCCESS);
+                    remoteActions.add(() -> tryRun(
+                            () -> retriever.setPartial(processId),
+                            e -> log.info("Could not move file {} to Partial Success Folder", retriever.getFileName(processId))
+                    ));
+                } else {
+                    sftpSchedulerReport.setStatus(SftpReportStatusEnum.FAILED);
+                    remoteActions.add(() -> tryRun(
+                            () -> retriever.setFailed(processId),
+                            e -> log.info("Could not move file {} to Failed Folder", retriever.getFileName(processId))
+                    ));
+                }
             }
         }
         return remoteActions;

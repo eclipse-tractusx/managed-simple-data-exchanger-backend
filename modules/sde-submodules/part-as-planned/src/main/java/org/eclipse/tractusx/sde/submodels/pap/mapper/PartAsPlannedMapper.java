@@ -19,6 +19,7 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.submodels.pap.mapper;
 
+import org.eclipse.tractusx.sde.common.mapper.AspectResponseFactory;
 import org.eclipse.tractusx.sde.submodels.pap.entity.PartAsPlannedEntity;
 import org.eclipse.tractusx.sde.submodels.pap.model.PartAsPlanned;
 import org.eclipse.tractusx.sde.submodels.pap.model.PartAsPlannedAspectResponse;
@@ -26,6 +27,7 @@ import org.eclipse.tractusx.sde.submodels.pap.model.PartTypeInformation;
 import org.eclipse.tractusx.sde.submodels.pap.model.ValidityPeriod;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -38,6 +40,9 @@ import lombok.SneakyThrows;
 public abstract class PartAsPlannedMapper {
 
 	ObjectMapper mapper = new ObjectMapper();
+	
+	@Autowired
+	private AspectResponseFactory aspectResponseFactory;
 
 	@Mapping(target = "rowNumber", ignore = true)
 	@Mapping(target = "subModelId", ignore = true)
@@ -71,7 +76,15 @@ public abstract class PartAsPlannedMapper {
 		ValidityPeriod validityPeriod = ValidityPeriod.builder().validFrom(entity.getValidFrom())
 				.validTo(entity.getValidTo()).build();
 
-		return new Gson().toJsonTree(PartAsPlannedAspectResponse.builder().partTypeInformation(partTypeInformation)
-				.validityPeriod(validityPeriod).catenaXId(entity.getUuid()).build()).getAsJsonObject();
+		PartAsPlannedAspectResponse build = PartAsPlannedAspectResponse.builder()
+				.partTypeInformation(partTypeInformation).validityPeriod(validityPeriod).catenaXId(entity.getUuid())
+				.build();
+
+		PartAsPlanned csvObj = PartAsPlanned.builder().uuid(entity.getUuid())
+				.manufacturerPartId(entity.getManufacturerPartId()).validFrom(entity.getValidFrom())
+				.validTo(entity.getValidTo()).classification(entity.getClassification())
+				.customerPartId(entity.getCustomerPartId()).nameAtManufacturer(entity.getNameAtManufacturer()).build();
+
+		return aspectResponseFactory.maptoReponse(csvObj, build);
 	}
 }

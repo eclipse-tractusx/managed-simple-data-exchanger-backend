@@ -22,8 +22,10 @@ package org.eclipse.tractusx.sde.core.controller;
 
 import static org.springframework.http.ResponseEntity.ok;
 
+import java.util.List;
 import java.util.UUID;
 
+import org.eclipse.tractusx.sde.core.service.ConsumerService;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
 import org.eclipse.tractusx.sde.edc.services.ConsumerControlPanelService;
 import org.springframework.http.ResponseEntity;
@@ -44,6 +46,8 @@ import lombok.extern.slf4j.Slf4j;
 public class ConsumerController {
 
 	private final ConsumerControlPanelService consumerControlPanelService;
+
+	private final ConsumerService consumerService;
 
 	@GetMapping(value = "/query-data-offers")
 	@PreAuthorize("hasPermission('','consumer_view_contract_offers')")
@@ -73,15 +77,15 @@ public class ConsumerController {
 	@PreAuthorize("hasPermission('','consumer_download_data')")
 	public ResponseEntity<Object> subscribeAndDownloadDataOffers(@Valid @RequestBody ConsumerRequest consumerRequest) {
 		log.info("Request recevied : /api/subscribe-download-data-edr");
-		return ResponseEntity.ok().body(consumerControlPanelService.subscribeAndDownloadDataOffers(consumerRequest));
+		return consumerService.subscribeAndDownloadDataOffers(consumerRequest);
 	}
 
 	@GetMapping(value = "/download-data")
 	@PreAuthorize("hasPermission('','consumer_download_data')")
-	public ResponseEntity<Object> downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(@RequestParam String assetId)
+	public ResponseEntity<Object> downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(@RequestParam List<String> assetIdList)
 			throws Exception {
 		log.info("Request received : /api/download-data-using-edr");
-		return ok().body(consumerControlPanelService.downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(assetId));
+		return consumerService.downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(assetIdList);
 	}
 
 }

@@ -238,7 +238,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
 	}
 
-	public Object subscribeAndDownloadDataOffers(@Valid ConsumerRequest consumerRequest) {
+	public Map<String, Object> subscribeAndDownloadDataOffers(@Valid ConsumerRequest consumerRequest) {
 
 		HashMap<String, String> extensibleProperty = new HashMap<>();
 		Map<String, Object> response = new ConcurrentHashMap<>();
@@ -305,9 +305,13 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 	}
 
 	@SneakyThrows
-	public Object downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(String assetId) {
-		EDRCachedResponse verifyEDRRequestStatus = verifyEDRRequestStatus(assetId);
-		return downloadFile(verifyEDRRequestStatus);
+	public Map<String, Object> downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(List<String> assetIdList) {
+		Map<String, Object> response = new ConcurrentHashMap<>();
+		for (String assetId : assetIdList) {
+			EDRCachedResponse verifyEDRRequestStatus = verifyEDRRequestStatus(assetId);
+			response.put(assetId, downloadFile(verifyEDRRequestStatus));
+		}
+		return response;
 	}
 
 	private Object downloadFile(EDRCachedResponse verifyEDRRequestStatus) {

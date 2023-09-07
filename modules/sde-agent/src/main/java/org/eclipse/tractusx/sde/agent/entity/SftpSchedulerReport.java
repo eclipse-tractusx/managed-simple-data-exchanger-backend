@@ -45,10 +45,6 @@ public class SftpSchedulerReport implements Serializable {
     private String schedulerId;
     @Column(name = "file_name")
     private String fileName;
-    @Column(name = "number_of_failed_items")
-    private int numberOfFailedItems;
-    @Column(name = "number_of_succeeded_items")
-    private int numberOfSucceededItems;
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private SftpReportStatusEnum status;

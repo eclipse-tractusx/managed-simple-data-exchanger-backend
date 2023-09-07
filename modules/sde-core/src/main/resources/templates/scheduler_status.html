@@ -33,14 +33,18 @@
 	</td>
 	<div>
 		<p><strong>Hello,</strong></p>
-		<p>Your file batch sent on ${schedulerTime} processed successfully.</p>
+		<p>Your file batch sent on ${schedulerTime} has been processed.</p>
 
 		<p>Below is the file status.</p>
 		<table border="1">
 			<tr>
-				<td>File name</td>
-				<td>Processing status</td>
-				<td>Successful entries count</td>
+				<td>Process Id </td>
+				<td>File name </td>
+				<td>CSV Type </td>
+				<td>Processing start time </td>
+				<td>Processing end time </td>
+				<td>Processing Status </td>
+				<td>Successful entries count </td>
 				<td>Failed entries count</td>
 			</tr>
 			${fileTableData}

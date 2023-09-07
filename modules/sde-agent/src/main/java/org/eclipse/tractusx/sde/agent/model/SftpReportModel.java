@@ -38,8 +38,6 @@ public class SftpReportModel {
     private String processId;
     private String schedulerId;
     private String fileName;
-    private int numberOfFailedItems;
-    private int numberOfSucceededItems;
     private SftpReportStatusEnum status;
     private LocalDateTime startDate;
     private LocalDateTime endDate;

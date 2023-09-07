@@ -12,7 +12,9 @@ import org.eclipse.tractusx.sde.agent.repository.SftpReportRepository;
 import org.eclipse.tractusx.sde.common.entities.SubmodelFileRequest;
 import org.eclipse.tractusx.sde.common.enums.ProgressStatusEnum;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
+import org.eclipse.tractusx.sde.common.utils.DateUtil;
 import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
+import org.eclipse.tractusx.sde.core.processreport.model.ProcessReport;
 import org.eclipse.tractusx.sde.notification.manager.EmailManager;
 import org.eclipse.tractusx.sde.core.processreport.entity.ProcessReportEntity;
 import org.eclipse.tractusx.sde.core.processreport.repository.ProcessReportRepository;
@@ -60,7 +62,6 @@ public class ProcessRemoteCsv {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
 
-
     @SuppressWarnings({"CallToPrintStackTrace","ResultOfMethodCallIgnored"})
     public void process(TaskScheduler taskScheduler) {
         log.info("Scheduler started");
@@ -97,7 +98,7 @@ public class ProcessRemoteCsv {
                                             .build()
                             ))
                     ).toList();
-            taskScheduler.schedule(() -> checkStatusOfInprogressFiles(taskScheduler, retriever, inProgressIdList, schedulerId), Instant.now().plus(Duration.ofSeconds(5)));
+            taskScheduler.schedule(() -> checkStatusOfInprogressFilesAndNotify(taskScheduler, retriever, inProgressIdList, schedulerId), Instant.now().plus(Duration.ofSeconds(5)));
         } catch (Exception e) {
             if (!loginSuccess) {
                 log.info("Possible wrong credentials");
@@ -106,9 +107,9 @@ public class ProcessRemoteCsv {
         }
     }
 
-    public void checkStatusOfInprogressFiles(TaskScheduler taskScheduler, RetrieverI retriever, List<String> inProgressIdList, String schedulerId) {
+    public void checkStatusOfInprogressFilesAndNotify(TaskScheduler taskScheduler, RetrieverI retriever, List<String> inProgressIdList, String schedulerId) {
         if (processReportRepository.countByProcessIdInAndStatus(inProgressIdList, ProgressStatusEnum.COMPLETED) != inProgressIdList.size()) {
-            taskScheduler.schedule(() -> checkStatusOfInprogressFiles(taskScheduler, retriever, inProgressIdList, schedulerId), Instant.now().plus(Duration.ofSeconds(5)));
+            taskScheduler.schedule(() -> checkStatusOfInprogressFilesAndNotify(taskScheduler, retriever, inProgressIdList, schedulerId), Instant.now().plus(Duration.ofSeconds(5)));
         } else {
             selfFactory.getObject().createDbReport(retriever, inProgressIdList).forEach(Runnable::run);
             tryRun(retriever::close, IGNORE());
@@ -126,15 +127,23 @@ public class ProcessRemoteCsv {
             emailContent.put("toemail", "test@email.com");
             String tableData = "";
             for (SftpSchedulerReport sftpSchedulerReport : sftpReportList) {
-                tableData += "<tr>";
-                emailContent.put("schedulerTime", sftpSchedulerReport.getStartDate());
-                String rowData = "<td>";
-                rowData += sftpSchedulerReport.getFileName() + "</td>";
-                rowData += "<td>" + sftpSchedulerReport.getStatus() + "</td>";
-                rowData += "<td>" + sftpSchedulerReport.getNumberOfSucceededItems() + "</td>";
-                rowData += "<td>" + sftpSchedulerReport.getNumberOfFailedItems() + "</td>";
-                tableData += rowData;
-                tableData += "</tr>";
+                Optional<ProcessReportEntity> processReport = processReportRepository.findByProcessId(sftpSchedulerReport.getProcessId());
+                if(processReport.isPresent()) {
+                    final int numberOfSucceededItems = processReport.get().getNumberOfSucceededItems() + processReport.get().getNumberOfUpdatedItems();
+                    tableData += "<tr>";
+                    emailContent.put("schedulerTime", DateUtil.formatter.format(sftpSchedulerReport.getStartDate()).toString());
+                    String rowData = "<td>";
+                    rowData += processReport.get().getProcessId() + "</td>";
+                    rowData += "<td>" + sftpSchedulerReport.getFileName() + "</td>";
+                    rowData += "<td>" + processReport.get().getCsvType() + "</td>";
+                    rowData += "<td>" + DateUtil.formatter.format(processReport.get().getStartDate()).toString() + "</td>";
+                    rowData += "<td>" + DateUtil.formatter.format(processReport.get().getEndDate()).toString() + "</td>";
+                    rowData += "<td>" + sftpSchedulerReport.getStatus() + "</td>";
+                    rowData += "<td>" + numberOfSucceededItems + "</td>";
+                    rowData += "<td>" + processReport.get().getNumberOfFailedItems() + "</td>";
+                    tableData += rowData;
+                    tableData += "</tr>";
+                }
             }
             emailContent.put("fileTableData", tableData);
             try {
@@ -162,9 +171,6 @@ public class ProcessRemoteCsv {
                 final var processId = sftpSchedulerReport.getProcessId();
                 final var processReport = processReportMap.get(processId);
                 final var numberOfSucceededItems = processReport.getNumberOfSucceededItems() + processReport.getNumberOfUpdatedItems();
-                final var numberOfFailedItems = processReport.getNumberOfFailedItems();
-                sftpSchedulerReport.setNumberOfSucceededItems(numberOfSucceededItems);
-                sftpSchedulerReport.setNumberOfFailedItems(numberOfFailedItems);
                 if (processReport.getNumberOfItems() == numberOfSucceededItems) {
                     sftpSchedulerReport.setStatus(SftpReportStatusEnum.SUCCESS);
                     remoteActions.add(() -> tryRun(
@@ -184,6 +190,7 @@ public class ProcessRemoteCsv {
                             e -> log.info("Could not move file {} to Failed Folder", retriever.getFileName(processId))
                     ));
                 }
+                sftpSchedulerReport.setEndDate(LocalDateTime.now());
             }
         }
         return remoteActions;

@@ -8,7 +8,8 @@ import lombok.Data;
 @Data
 public class SftpConfigEntity {
 
-    public final static String SFTP_CONFIG_ID = "755FCA09-884B-4A05-91C9-EB2D3E7A45FF";
+    public final static String SFTP_CLIENT_CONFIG_ID = "755FCA09-884B-4A05-91C9-EB2D3E7A45FF";
+    public final static String METADATA_CONFIG_ID = "878ef54e-ec3d-4e9b-b775-cb8e83151570";
 
     @Id
     @Column(name = "uuid")

@@ -21,7 +21,7 @@ public class FtpsConfigurationController {
     @PostMapping("/updateFtpsConfig")
     public Object updateFtpsConfig(@NotBlank @RequestBody JsonNode config,
                                    @RequestParam("type") ConfigType type) {
-        if (type.equals(ConfigType.METADADA)) {
+        if (type.equals(ConfigType.METADATA)) {
             metadataProvider.saveMetadata(config);
         } else if (type.equals(ConfigType.CLIENT)) {
             sftpRetrieverFactory.saveConfig(config);

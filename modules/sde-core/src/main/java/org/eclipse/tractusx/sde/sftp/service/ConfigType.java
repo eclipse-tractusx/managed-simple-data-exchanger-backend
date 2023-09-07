@@ -2,5 +2,5 @@ package org.eclipse.tractusx.sde.sftp.service;
 
 public enum ConfigType {
 
-    METADADA, CLIENT
+    METADATA, CLIENT
 }

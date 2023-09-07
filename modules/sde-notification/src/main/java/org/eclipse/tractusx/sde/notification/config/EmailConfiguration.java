@@ -1,4 +1,4 @@
-package org.eclipse.tractusx.sde.configuration;
+package org.eclipse.tractusx.sde.notification.config;
 
 import java.util.Properties;
 import javax.mail.PasswordAuthentication;

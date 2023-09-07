@@ -1,4 +1,4 @@
-package org.eclipse.tractusx.sde.core.model;
+package org.eclipse.tractusx.sde.notification.model;
 
 import lombok.Builder;
 import lombok.Data;

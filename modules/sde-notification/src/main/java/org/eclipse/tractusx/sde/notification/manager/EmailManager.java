@@ -1,10 +1,10 @@
-package org.eclipse.tractusx.sde.core.manager;
+package org.eclipse.tractusx.sde.notification.manager;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.StringEscapeUtils;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.common.exception.ValidationException;
-import org.eclipse.tractusx.sde.core.model.EmailRequest;
+import org.eclipse.tractusx.sde.notification.model.EmailRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

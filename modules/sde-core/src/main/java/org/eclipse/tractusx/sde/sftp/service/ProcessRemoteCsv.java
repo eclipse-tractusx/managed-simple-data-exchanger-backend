@@ -13,7 +13,7 @@ import org.eclipse.tractusx.sde.common.entities.SubmodelFileRequest;
 import org.eclipse.tractusx.sde.common.enums.ProgressStatusEnum;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
-import org.eclipse.tractusx.sde.core.manager.EmailManager;
+import org.eclipse.tractusx.sde.notification.manager.EmailManager;
 import org.eclipse.tractusx.sde.core.processreport.entity.ProcessReportEntity;
 import org.eclipse.tractusx.sde.core.processreport.repository.ProcessReportRepository;
 import org.eclipse.tractusx.sde.core.service.SubmodelOrchestartorService;
@@ -23,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
@@ -72,7 +71,7 @@ public class ProcessRemoteCsv {
             var submodelFileRequest = Optional.ofNullable(
                     objectMapper.convertValue(metadataProvider.getMetadata(), SubmodelFileRequest.class)
             ).orElseThrow(() -> new RuntimeException("Metadata is incorrect"));
-            var inProgress = StreamSupport.stream(retriever.spliterator(), false)
+            var inProgressIdList = StreamSupport.stream(retriever.spliterator(), false)
                     .filter(processId -> tryRun(
                             () -> retriever.setProgress(processId),
                             e -> {
@@ -98,7 +97,7 @@ public class ProcessRemoteCsv {
                                             .build()
                             ))
                     ).toList();
-            taskScheduler.schedule(() -> checkStatusOfInprogressFiles(taskScheduler, retriever, inProgress), Instant.now().plus(Duration.ofSeconds(5)));
+            taskScheduler.schedule(() -> checkStatusOfInprogressFiles(taskScheduler, retriever, inProgressIdList, schedulerId), Instant.now().plus(Duration.ofSeconds(5)));
         } catch (Exception e) {
             if (!loginSuccess) {
                 log.info("Possible wrong credentials");
@@ -107,61 +106,41 @@ public class ProcessRemoteCsv {
         }
     }
 
-    public void checkStatusOfInprogressFiles(TaskScheduler taskScheduler, RetrieverI retriever, List<String> inProgress) {
-        if(inProgress.size()>0) {
-            if (processReportRepository.countByProcessIdInAndStatus(inProgress, ProgressStatusEnum.COMPLETED) != inProgress.size()) {
-                taskScheduler.schedule(() -> checkStatusOfInprogressFiles(taskScheduler, retriever, inProgress), Instant.now().plus(Duration.ofSeconds(5)));
-            } else {
-                selfFactory.getObject().createDbReport(retriever, inProgress).forEach(Runnable::run);
-                tryRun(retriever::close, IGNORE());
-                // Notification method call
-                try {
-                    sendNotificationForProcessedFiles();
-                } catch (IOException e) {
-                    log.info("Error while sending the notification");
-                }
-            }
+    public void checkStatusOfInprogressFiles(TaskScheduler taskScheduler, RetrieverI retriever, List<String> inProgressIdList, String schedulerId) {
+        if (processReportRepository.countByProcessIdInAndStatus(inProgressIdList, ProgressStatusEnum.COMPLETED) != inProgressIdList.size()) {
+            taskScheduler.schedule(() -> checkStatusOfInprogressFiles(taskScheduler, retriever, inProgressIdList, schedulerId), Instant.now().plus(Duration.ofSeconds(5)));
+        } else {
+            selfFactory.getObject().createDbReport(retriever, inProgressIdList).forEach(Runnable::run);
+            tryRun(retriever::close, IGNORE());
+            // Notification method call
+            taskScheduler.schedule(() -> sendNotificationForProcessedFiles(schedulerId), Instant.now());
+
         }
     }
 
-    private void sendNotificationForProcessedFiles() throws IOException {
-        List<SftpSchedulerReport> sftpReportList = sftpReportRepository.findByIsNotificationSent(false);
+    private void sendNotificationForProcessedFiles(String schedulerId) {
+        List<SftpSchedulerReport> sftpReportList = sftpReportRepository.findBySchedulerId(schedulerId);
         if(!sftpReportList.isEmpty()) {
-            Map<String, List<SftpSchedulerReport>> groupedList = sftpReportList.stream().collect(Collectors.groupingBy(SftpSchedulerReport::getSchedulerId));
-
-            for(Map.Entry<String, List<SftpSchedulerReport>> entry: groupedList.entrySet()) {
-                if(!entry.getValue().stream().anyMatch(report -> report.getStatus().equals(SftpReportStatusEnum.IN_PROGRESS))) {
-                    log.info("Send notification for scheduler: "+entry.getKey());
-                    Map<String, Object> emailContent = new HashMap<>();
-                    emailContent.put("toemail", "test@email.com");
-                    String tableData = "";
-                    for(SftpSchedulerReport report : entry.getValue()) {
-                        tableData += "<tr>";
-                        emailContent.put("schedulerTime", report.getStartDate());
-                        String rowData = "<td>";
-                        rowData += report.getFileName() + "</td>";
-                        rowData += "<td>" + report.getStatus() + "</td>";
-                        rowData += "<td>" + report.getNumberOfSucceededItems() + "</td>";
-                        rowData += "<td>" + report.getNumberOfFailedItems() + "</td>";
-                        tableData += rowData;
-                        tableData += "</tr>";
-                    }
-
-                    emailContent.put("fileTableData", tableData);
-                    try {
-                        emailManager.sendEmail(emailContent, "Scheduler status", "scheduler_status.html");
-                    } catch (ServiceException se) {
-                        log.info("Exception occurred while sending email for scheduler id: "+ entry.getKey()+"\n"+se);
-                    }
-
-                    // Update DB as notification is sent
-                    entry.getValue().stream().forEach(report -> {
-                        report.setNotificationSent(true);
-                        sftpReportRepository.save(report);
-                    });
-                } else {
-                    log.info("Don't Send notification for scheduler: "+entry.getKey());
-                }
+            log.info("Send notification for scheduler: " + schedulerId);
+            Map<String, Object> emailContent = new HashMap<>();
+            emailContent.put("toemail", "test@email.com");
+            String tableData = "";
+            for (SftpSchedulerReport sftpSchedulerReport : sftpReportList) {
+                tableData += "<tr>";
+                emailContent.put("schedulerTime", sftpSchedulerReport.getStartDate());
+                String rowData = "<td>";
+                rowData += sftpSchedulerReport.getFileName() + "</td>";
+                rowData += "<td>" + sftpSchedulerReport.getStatus() + "</td>";
+                rowData += "<td>" + sftpSchedulerReport.getNumberOfSucceededItems() + "</td>";
+                rowData += "<td>" + sftpSchedulerReport.getNumberOfFailedItems() + "</td>";
+                tableData += rowData;
+                tableData += "</tr>";
+            }
+            emailContent.put("fileTableData", tableData);
+            try {
+                emailManager.sendEmail(emailContent, "Scheduler status", "scheduler_status.html");
+            } catch (ServiceException se) {
+                log.info("Exception occurred while sending email for scheduler id: " + schedulerId + "\n" + se);
             }
         }
     }

@@ -22,4 +22,5 @@ SDE backend splited into multiple services loosely-coupled Maven modules.
 - modules/sde-submodules/part-site-information-as-planned
 - modules/sde-submodules/single-level-usage-as-built
 - modules/sde-submodules/single-level-bom-as-planned
+- modules/sde-submodules/pcf
 - modules/sde-usecases/traceability

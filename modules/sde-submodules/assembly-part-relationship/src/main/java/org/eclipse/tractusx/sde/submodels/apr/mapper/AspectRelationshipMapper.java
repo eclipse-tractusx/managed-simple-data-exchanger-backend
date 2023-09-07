@@ -56,6 +56,11 @@ public abstract class AspectRelationshipMapper {
 	@Mapping(source = "childUuid", target = "childCatenaXId")
 	public abstract AspectRelationshipEntity mapFrom(AspectRelationship aspectRelationShip);
 
+	@Mapping(source = "parentCatenaXId", target = "parentUuid")
+	@Mapping(source = "childCatenaXId", target = "childUuid")
+	public abstract AspectRelationship mapFrom(AspectRelationshipEntity entity);
+
+	
 	@SneakyThrows
 	public AspectRelationship mapFrom(ObjectNode aspectRelationship) {
 		return mapper.readValue(aspectRelationship.toString(), AspectRelationship.class);
@@ -84,20 +89,7 @@ public abstract class AspectRelationshipMapper {
 		
 		AspectRelationshipEntity aspectRelationshipEntity = aspectRelationships.get(0);
 		
-		AspectRelationship csvObj = AspectRelationship.builder()
-				.parentPartInstanceId(aspectRelationshipEntity.getParentCatenaXId())
-				.parentManufacturerPartId(aspectRelationshipEntity.getParentManufacturerPartId())
-				.parentOptionalIdentifierKey(aspectRelationshipEntity.getParentOptionalIdentifierKey())
-				.parentOptionalIdentifierValue(aspectRelationshipEntity.getParentOptionalIdentifierValue())
-				.parentPartInstanceId(aspectRelationshipEntity.getParentPartInstanceId())
-				.childManufacturerPartId(aspectRelationshipEntity.getChildManufacturerPartId())
-				.childManufacturerId(aspectRelationshipEntity.getChildManufacturerId())
-				.childOptionalIdentifierKey(aspectRelationshipEntity.getChildOptionalIdentifierKey())
-				.childOptionalIdentifierValue(aspectRelationshipEntity.getChildOptionalIdentifierValue())
-				.quantityNumber(aspectRelationshipEntity.getQuantityNumber() + "")
-				.measurementUnit(aspectRelationshipEntity.getMeasurementUnit())
-				.createdOn(aspectRelationshipEntity.getCreatedOn())
-				.lastModifiedOn(aspectRelationshipEntity.getLastModifiedOn()).build();
+		JsonObject csvObj = mapFromEntity(aspectRelationshipEntity);
 
 		return aspectResponseFactory.maptoReponse(csvObj, build);
 

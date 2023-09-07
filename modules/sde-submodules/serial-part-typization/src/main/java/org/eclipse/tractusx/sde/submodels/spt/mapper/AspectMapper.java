@@ -59,7 +59,6 @@ public abstract class AspectMapper {
 	private AspectResponseFactory aspectResponseFactory;
 
 	@Mapping(target = "rowNumber", ignore = true)
-	@Mapping(target = "subModelId", ignore = true)
 	public abstract Aspect mapFrom(AspectEntity aspect);
 
 	@Mapping(source = "optionalIdentifierKey", target = "optionalIdentifierKey", qualifiedByName = "prettyName")
@@ -101,12 +100,7 @@ public abstract class AspectMapper {
 				.classification(entity.getClassification()).nameAtManufacturer(entity.getNameAtManufacturer())
 				.nameAtCustomer(entity.getNameAtCustomer()).build();
 
-		Aspect csvObj = Aspect.builder().uuid(entity.getUuid()).partInstanceId(entity.getPartInstanceId())
-				.manufacturingDate(entity.getManufacturingDate()).manufacturingCountry(entity.getManufacturingCountry())
-				.manufacturerPartId(entity.getManufacturerPartId()).customerPartId(entity.getCustomerPartId())
-				.classification(entity.getClassification()).nameAtManufacturer(entity.getNameAtManufacturer())
-				.nameAtCustomer(entity.getNameAtCustomer()).optionalIdentifierKey(entity.getOptionalIdentifierKey())
-				.optionalIdentifierValue(entity.getOptionalIdentifierValue()).build();
+		Aspect csvObj = mapFrom(entity);
 
 		SubmodelResultResponse build = SubmodelResultResponse.builder().localIdentifiers(localIdentifiers)
 				.manufacturingInformation(manufacturingInformation).partTypeInformation(partTypeInformation)

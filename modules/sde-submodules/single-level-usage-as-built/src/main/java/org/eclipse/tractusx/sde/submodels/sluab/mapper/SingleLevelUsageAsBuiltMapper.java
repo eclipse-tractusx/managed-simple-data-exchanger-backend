@@ -51,6 +51,10 @@ public abstract class SingleLevelUsageAsBuiltMapper {
 	@Mapping(source = "parentUuid", target = "parentCatenaXId")
 	@Mapping(source = "childUuid", target = "childCatenaXId")
 	public abstract SingleLevelUsageAsBuiltEntity mapFrom(SingleLevelUsageAsBuilt singleLevelUsageAsBuilt);
+	
+	@Mapping(source = "parentCatenaXId", target = "parentUuid")
+	@Mapping(source = "childCatenaXId", target = "childUuid")
+	public abstract SingleLevelUsageAsBuilt mapFromEntityToObject(SingleLevelUsageAsBuiltEntity entity);
 
 	@SneakyThrows
 	public SingleLevelUsageAsBuilt mapFrom(ObjectNode singleLevelUsageAsBuilt) {
@@ -77,22 +81,7 @@ public abstract class SingleLevelUsageAsBuiltMapper {
 
 		SingleLevelUsageAsBuiltEntity singleLevelUsageAsBuiltEntity = entity.get(0);
 
-		SingleLevelUsageAsBuilt csvObj = SingleLevelUsageAsBuilt.builder()
-				.parentUuid(singleLevelUsageAsBuiltEntity.getParentCatenaXId())
-				.parentPartInstanceId(singleLevelUsageAsBuiltEntity.getParentPartInstanceId())
-				.parentManufacturerPartId(singleLevelUsageAsBuiltEntity.getParentManufacturerPartId())
-				.parentOptionalIdentifierKey(singleLevelUsageAsBuiltEntity.getParentOptionalIdentifierKey())
-				.parentOptionalIdentifierValue(singleLevelUsageAsBuiltEntity.getParentOptionalIdentifierValue())
-				.childUuid(singleLevelUsageAsBuiltEntity.getChildCatenaXId())
-				.childPartInstanceId(singleLevelUsageAsBuiltEntity.getChildPartInstanceId())
-				.childManufacturerPartId(singleLevelUsageAsBuiltEntity.getChildManufacturerPartId())
-				.childOptionalIdentifierKey(singleLevelUsageAsBuiltEntity.getChildOptionalIdentifierKey())
-				.childOptionalIdentifierValue(singleLevelUsageAsBuiltEntity.getChildOptionalIdentifierValue())
-				.quantityNumber(singleLevelUsageAsBuiltEntity.getQuantityNumber() + "")
-				.measurementUnit(singleLevelUsageAsBuiltEntity.getMeasurementUnit())
-				.createdOn(singleLevelUsageAsBuiltEntity.getCreatedOn())
-				.lastModifiedOn(singleLevelUsageAsBuiltEntity.getLastModifiedOn())
-				.build();
+		SingleLevelUsageAsBuilt csvObj = mapFromEntityToObject(singleLevelUsageAsBuiltEntity);
 
 		return aspectResponseFactory.maptoReponse(csvObj, build);
 

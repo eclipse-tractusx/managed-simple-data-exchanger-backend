@@ -22,16 +22,21 @@ package org.eclipse.tractusx.sde.common.mapper;
 
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+
+import lombok.SneakyThrows;
 
 @Component
 public class AspectResponseFactory {
 
+	ObjectMapper mapper = new ObjectMapper();
+	
+	@SneakyThrows
 	public JsonObject maptoReponse(Object csvObject, Object aspectObject) {
-		
 		JsonObject jobj = new JsonObject();
-		jobj.add("csv", new Gson().toJsonTree(csvObject).getAsJsonObject());
+		jobj.add("csv", new Gson().fromJson(mapper.writeValueAsString(csvObject), JsonObject.class));
 		jobj.add("json", new Gson().toJsonTree(aspectObject).getAsJsonObject());
 		
 		return jobj;

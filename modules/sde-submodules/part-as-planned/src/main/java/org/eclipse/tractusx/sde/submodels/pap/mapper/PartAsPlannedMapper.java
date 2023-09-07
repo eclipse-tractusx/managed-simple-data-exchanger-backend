@@ -45,7 +45,6 @@ public abstract class PartAsPlannedMapper {
 	private AspectResponseFactory aspectResponseFactory;
 
 	@Mapping(target = "rowNumber", ignore = true)
-	@Mapping(target = "subModelId", ignore = true)
 	public abstract PartAsPlanned mapFrom(PartAsPlannedEntity partAsPlannedEntity);
 
 	public abstract PartAsPlannedEntity mapFrom(PartAsPlanned partAsPlanned);
@@ -80,10 +79,7 @@ public abstract class PartAsPlannedMapper {
 				.partTypeInformation(partTypeInformation).validityPeriod(validityPeriod).catenaXId(entity.getUuid())
 				.build();
 
-		PartAsPlanned csvObj = PartAsPlanned.builder().uuid(entity.getUuid())
-				.manufacturerPartId(entity.getManufacturerPartId()).validFrom(entity.getValidFrom())
-				.validTo(entity.getValidTo()).classification(entity.getClassification())
-				.customerPartId(entity.getCustomerPartId()).nameAtManufacturer(entity.getNameAtManufacturer()).build();
+		PartAsPlanned csvObj = mapFrom(entity);
 
 		return aspectResponseFactory.maptoReponse(csvObj, build);
 	}

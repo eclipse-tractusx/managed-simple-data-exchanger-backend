@@ -52,7 +52,6 @@ public abstract class BatchMapper {
 	private AspectResponseFactory aspectResponseFactory;
 
 	@Mapping(target = "rowNumber", ignore = true)
-	@Mapping(target = "subModelId", ignore = true)
 	public abstract Batch mapFrom(BatchEntity batch);
 
 	public abstract BatchEntity mapFrom(Batch batch);
@@ -76,11 +75,7 @@ public abstract class BatchMapper {
 			return null;
 		}
 
-		Batch csvObj = Batch.builder().uuid(entity.getUuid()).batchId(entity.getBatchId())
-				.partInstanceId(entity.getPartInstanceId()).manufacturingDate(entity.getManufacturingDate())
-				.manufacturingCountry(entity.getManufacturingCountry())
-				.manufacturerPartId(entity.getManufacturerPartId()).classification(entity.getClassification())
-				.nameAtManufacturer(entity.getNameAtManufacturer()).build();
+		Batch csvObj = mapFrom(entity);
 
 		Set<LocalIdentifier> localIdentifiers = new HashSet<>();
 		localIdentifiers.add(new LocalIdentifier(BatchConstants.BATCH_ID, entity.getBatchId()));

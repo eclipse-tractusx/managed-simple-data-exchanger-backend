@@ -52,6 +52,10 @@ public abstract class SingleLevelBoMAsPlannedMapper {
 	@Mapping(source = "parentUuid", target = "parentCatenaXId")
 	@Mapping(source = "childUuid", target = "childCatenaXId")
 	public abstract SingleLevelBoMAsPlannedEntity mapFrom(SingleLevelBoMAsPlanned singleLevelBoMAsPlanned);
+	
+	@Mapping(source = "parentCatenaXId", target = "parentUuid")
+	@Mapping(source = "childCatenaXId", target = "childUuid")
+	public abstract SingleLevelBoMAsPlanned mapFrom(SingleLevelBoMAsPlannedEntity entity);
 
 	@SneakyThrows
 	public SingleLevelBoMAsPlanned mapFrom(ObjectNode singleLevelBoMAsPlanned) {
@@ -81,13 +85,7 @@ public abstract class SingleLevelBoMAsPlannedMapper {
 
 		SingleLevelBoMAsPlannedEntity entity = singleLevelBoMAsPlannedEntity.get(0);
 
-		SingleLevelBoMAsPlanned csvObj = SingleLevelBoMAsPlanned.builder().parentUuid(entity.getParentCatenaXId())
-				.parentManufacturerPartId(entity.getParentManufacturerPartId()).childUuid(entity.getChildCatenaXId())
-				.childManufacturerPartId(entity.getChildManufacturerPartId()).customerPartId(entity.getCustomerPartId())
-				.quantityNumber(entity.getQuantityNumber() + "")
-				.measurementUnitLexicalValue(entity.getMeasurementUnitLexicalValue())
-				.datatypeURI(entity.getDatatypeURI()).createdOn(entity.getCreatedOn())
-				.lastModifiedOn(entity.getLastModifiedOn()).build();
+		SingleLevelBoMAsPlanned csvObj = mapFrom(entity);
 
 		return aspectResponseFactory.maptoReponse(csvObj, build);
 	}

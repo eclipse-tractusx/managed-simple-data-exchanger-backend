@@ -48,7 +48,6 @@ public abstract class PartSiteInformationAsPlannedMapper {
 	private AspectResponseFactory aspectResponseFactory;
 	
 	@Mapping(target = "rowNumber", ignore = true)
-	@Mapping(target = "subModelId", ignore = true)
 	public abstract PartSiteInformationAsPlanned mapFrom( PartSiteInformationAsPlannedEntity partSiteInformationAsPlannedEntity);
 
 	public abstract PartSiteInformationAsPlannedEntity mapFrom(PartSiteInformationAsPlanned partSiteInformationAsPlanned);
@@ -77,11 +76,7 @@ public abstract class PartSiteInformationAsPlannedMapper {
 				.catenaXId(catenaXId).sites(sites).build();
 
 		PartSiteInformationAsPlannedEntity entity = partSiteInformationAsPlannedEntity.get(0);
-		PartSiteInformationAsPlanned csvObj = PartSiteInformationAsPlanned.builder().uuid(entity.getUuid())
-				.manufacturerPartId(entity.getManufacturerPartId()).catenaXSiteId(entity.getCatenaXSiteId())
-				.nameAtManufacturer(entity.getNameAtManufacturer()).function(entity.getFunction())
-				.functionValidFrom(entity.getFunctionValidFrom()).functionValidUntil(entity.getFunctionValidUntil())
-				.build();
+		PartSiteInformationAsPlanned csvObj = mapFrom(entity);
 
 		return aspectResponseFactory.maptoReponse(csvObj, build);
 	}

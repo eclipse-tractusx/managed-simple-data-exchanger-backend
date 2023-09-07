@@ -2,6 +2,43 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [2.2.0] - 2023-09-06
+### Added
+- Change csv download escape character for space.
+- PCF final working version.
+
+## [2.1.2] - 2023-09-06
+### Added
+- Add entity mapping and model for pcf model execution.
+
+## [2.1.1] - 2023-09-06
+### Added
+- Pcf model schema and model registration.
+
+## [2.1.0] - 2023-08-30
+### Fixed
+- Added external subject in specific asset Ids.
+- Update AAS submodel endpoints subprotocolBody.
+- Supported Batch submodel version 2.0.0.
+- DDTR update with latest version.
+- Feign Client changes updated for child aspect relationship.
+
+## [2.0.11] - 2023-08-29
+### Changed 
+- Docker image name changed.
+
+## [2.0.10] - 2023-08-23
+### Fixed
+- Updated openAPI file for kics issue.
+- Documentation updated.
+
+## [2.0.9] - 2023-08-08
+### Fixed
+- Access policy for BPN check should be or not and constraint.
+- Filter contract as Provider and Consumer.
+- Fix for look up functionality, dtURL use from cache.
+- fix for Offer subscription issue.
+
 ## [2.0.8] - 2023-08-07
 ### Added
 - Support EDC version 0.5.1
@@ -191,7 +228,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Compliance with Catena-X Guidelines
 - Integration with Digital Twin registry service.
 
-[unreleased]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/dftbackend-2.0.8...main
+[unreleased]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.2.0...main
+[2.2.0]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.1.2...v2.2.0
+[2.1.2]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.1.1...v2.1.2
+[2.1.1]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.1.0...v2.1.1
+[2.1.0]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.0.11...v2.1.0
+[2.0.11]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.0.10...v2.0.11
+[2.0.10]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/sdebackend-2.0.9...v2.0.10
+[2.0.9]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/sdebackend-2.0.8...sdebackend-2.0.9
 [2.0.8]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/dftbackend-2.0.2...dftbackend-2.0.8
 [2.0.2]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/dftbackend-2.0.1...dftbackend-2.0.2
 [2.0.1]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/dftbackend-2.0.0...dftbackend-2.0.1

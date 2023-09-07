@@ -23,9 +23,11 @@ package org.eclipse.tractusx.sde.digitaltwins.entities.request;
 
 import java.util.List;
 
-import org.eclipse.tractusx.sde.digitaltwins.entities.common.KeyValuePair;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.MultiLanguage;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AllArgsConstructor;
@@ -38,13 +40,15 @@ import lombok.SneakyThrows;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(Include.NON_NULL)
 public class ShellDescriptorRequest {
 
     private String idShort;
     private String id;
     private List<MultiLanguage> description;
     private String globalAssetId;
-    private List<KeyValuePair> specificAssetIds;
+    private List<Object> specificAssetIds;
 
     @SneakyThrows
     public String toJsonString() {

@@ -53,40 +53,36 @@ public class PolicyConstraintBuilderService {
 		if (usagePolicies != null && !usagePolicies.isEmpty()) {
 			usagePolicies.stream().forEach(policy -> usagePolicy(usageConstraintList, policy));
 		}
-
-		if (usageConstraintList.isEmpty())
-			return null;
-		else {
+		
+		if (!usageConstraintList.isEmpty()) {
 			ActionRequest action = ActionRequest.builder().build();
 			action.addProperty("@type", "LogicalConstraint");
 			action.addProperty("odrl:and", usageConstraintList);
 			return action;
-
 		}
+		return null;
+
 	}
 
 	private void usagePolicy(List<ConstraintRequest> usageConstraintList, UsagePolicies policy) {
+		ConstraintRequest request = null;
+
 		switch (policy.getType()) {
 		case DURATION:
-			ConstraintRequest request = DurationPolicyDTO.fromUsagePolicy(policy).toConstraint();
-			if (request != null) {
-				usageConstraintList.add(request);
-			}
+			request = DurationPolicyDTO.fromUsagePolicy(policy).toConstraint();
 			break;
 		case PURPOSE:
-			ConstraintRequest purposeRequest = PurposePolicyDTO.fromUsagePolicy(policy).toConstraint();
-			if (purposeRequest != null) {
-				usageConstraintList.add(purposeRequest);
-			}
+			request = PurposePolicyDTO.fromUsagePolicy(policy).toConstraint();
 			break;
 		case ROLE:
-			ConstraintRequest roleRequest = RolePolicyDTO.fromUsagePolicy(policy).toConstraint();
-			if (roleRequest != null) {
-				usageConstraintList.add(roleRequest);
-			}
+			request = RolePolicyDTO.fromUsagePolicy(policy).toConstraint();
 			break;
 		default:
 			break;
+		}
+
+		if (request != null) {
+			usageConstraintList.add(request);
 		}
 	}
 	

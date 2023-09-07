@@ -107,6 +107,10 @@
 					<groupId>org.springframework.security</groupId>
 					<artifactId>spring-security-config</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>org.springframework.security</groupId>
+					<artifactId>spring-security-core</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
@@ -206,9 +210,28 @@
 			<artifactId>postgresql</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.eclipse.tractusx</groupId>
+			<artifactId>pcf</artifactId>
+			<version>0.0.1</version>
+		</dependency>
 	</dependencies>
 
 	<build>
+		<resources>
+			<resource>
+				<directory>${project.basedir}/src/main/resources</directory>
+			</resource>
+			<resource>
+				<directory>${project.basedir}/../..</directory>
+				<includes>
+					<include>LICENSE</include>
+					<include>NOTICE.md</include>
+					<include>DEPENDENCIES</include>
+				</includes>
+				<targetPath>META-INF/</targetPath>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

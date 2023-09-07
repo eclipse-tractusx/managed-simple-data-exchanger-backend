@@ -80,6 +80,12 @@ public class DigitalTwinsSingleLevelUsageAsBuiltCsvHandlerUseCase extends Step {
 		} else if (shellIds.size() == 1) {
 			logDebug(String.format("Shell id found for '%s'", shellLookupRequest.toJsonString()));
 			shellId = shellIds.stream().findFirst().orElse(null);
+			
+			digitalTwinsFacilitator.updateShellSpecificAssetIdentifiers(shellId,
+					digitalTwinsUtility.getSpecificAssetIds(
+							getSpecificAssetIdsForSingleLevel(aspectSingleLevelUsageAsBuilt),
+							aspectSingleLevelUsageAsBuilt.getBpnNumbers()));
+			
 			logDebug(String.format("Shell id '%s'", shellId));
 		} else {
 			throw new CsvHandlerDigitalTwinUseCaseException(
@@ -143,18 +149,29 @@ public class DigitalTwinsSingleLevelUsageAsBuiltCsvHandlerUseCase extends Step {
 
 	private ShellLookupRequest getShellLookupRequest(SingleLevelUsageAsBuilt aspectSingleLevelUsageAsBuilt) {
 		ShellLookupRequest shellLookupRequest = new ShellLookupRequest();
-		shellLookupRequest.addLocalIdentifier(CommonConstants.PART_INSTANCE_ID,
-				aspectSingleLevelUsageAsBuilt.getParentPartInstanceId());
-		shellLookupRequest.addLocalIdentifier(CommonConstants.MANUFACTURER_PART_ID,
-				aspectSingleLevelUsageAsBuilt.getParentManufacturerPartId());
-		shellLookupRequest.addLocalIdentifier(CommonConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId());
 
-		if (aspectSingleLevelUsageAsBuilt.hasOptionalParentIdentifier()) {
-			shellLookupRequest.addLocalIdentifier(aspectSingleLevelUsageAsBuilt.getParentOptionalIdentifierKey(),
-					aspectSingleLevelUsageAsBuilt.getParentOptionalIdentifierValue());
-		}
+		getSpecificAssetIdsForSingleLevel(aspectSingleLevelUsageAsBuilt).entrySet().stream()
+				.forEach(entry -> shellLookupRequest.addLocalIdentifier(entry.getKey(), entry.getValue()));
 
 		return shellLookupRequest;
+	}
+
+	private Map<String, String> getSpecificAssetIdsForSingleLevel(
+			SingleLevelUsageAsBuilt aspectSingleLevelUsageAsBuilt) {
+
+		Map<String, String> specificIdentifiers = new HashMap<>();
+
+		specificIdentifiers.put(CommonConstants.PART_INSTANCE_ID,
+				aspectSingleLevelUsageAsBuilt.getParentPartInstanceId());
+		specificIdentifiers.put(CommonConstants.MANUFACTURER_PART_ID,
+				aspectSingleLevelUsageAsBuilt.getParentManufacturerPartId());
+		specificIdentifiers.put(CommonConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId());
+
+		if (aspectSingleLevelUsageAsBuilt.hasOptionalParentIdentifier()) {
+			specificIdentifiers.put(aspectSingleLevelUsageAsBuilt.getParentOptionalIdentifierKey(),
+					aspectSingleLevelUsageAsBuilt.getParentOptionalIdentifierValue());
+		}
+		return specificIdentifiers;
 	}
 	
 	private Map<String, String> getSpecificAssetIds(Aspect aspect) {

@@ -18,22 +18,39 @@ For more details, please refer configuration section from [README.md](README.md)
 
  In values.yaml you can find `default` as value for all required configuration. You need to change all those values as per your need. For reference, please refer configuration example section.
 
- ```helm repo add eclipse-tractusx-dft-backend https://github.com/eclipse-tractusx/dft-backend/tree/main/charts ```
-   
- ```helm install release-name eclipse-tractusx/dft-backend ```
+ ```shell
+  helm repo add sdebackend https://eclipse-tractusx.github.io/charts/dev 
 
+  helm search repo sdebackend/sde
+
+  helm install -f your-values.yaml release-name sdebackend/sde-app 
+ ``` 
 ### RUN SDE Backend Locally
 #### Prerequisites
 - JDK18
 - Postgres 11.9.13
 
 #### Steps
-1. Clone the GitHub Repository - https://github.com/eclipse-tractusx/dft-backend.
+1. Clone the GitHub Repository - https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend.
 2. Get your instance of postgres running (Create **dftdb** new database).
 3. Setup your project environment to JDK 18.
 4. Provide require application configuration in application.properties as specified in step configuration.properties.
 5. Start the SDE spring boot application from your IDE using main class or use spring CLI.
 
+#### Building 
+SDE-backend use Maven for building process. To build a service from sources one need to go to corresponding directory and trigger building process:
+
+ ``` shell
+  cd managed-simple-data-exchanger-backend 
+
+  ./mvnw clean install 
+ ```
+
+Then fat jar file can be found in modules/sde-core/target folder as well as in local Maven repository. it can be run with this command: 
+
+ ``` shell
+  java -jar target/sde-core-0.0.1.jar 
+ ```
 
 ## Upload a file:
 When a file .csv is uploaded, the program checks whether the file is a SerialPartTypization or an AssemblyPartRelationship and there is a pipeline for each one.

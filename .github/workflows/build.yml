@@ -22,7 +22,7 @@ name: sdebuild
 on:
   push:
     branches:
-      - 'main'
+      - 'support_combine_zip_download'
     tags:
       - 'v*.*.*'
       - 'v*.*.*-*'
@@ -66,11 +66,11 @@ jobs:
           images: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}
-            type=semver,pattern={{major}}.{{minor}}
+#            type=ref,event=branch
+#            type=ref,event=pr
+            type=semver,pattern={{version}},value=2.2.0-int
+#            type=semver,pattern={{major}}
+#            type=semver,pattern={{major}}.{{minor}}
           flavor: |
             latest=true
               

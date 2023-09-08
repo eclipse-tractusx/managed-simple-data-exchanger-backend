@@ -68,7 +68,7 @@ jobs:
           tags: |
             type=semver,pattern={{version}},value=v2.2.0-int
           flavor: |
-              latest=true
+            latest=true
               
       - name: Build and push Docker image
         uses: docker/build-push-action@v2

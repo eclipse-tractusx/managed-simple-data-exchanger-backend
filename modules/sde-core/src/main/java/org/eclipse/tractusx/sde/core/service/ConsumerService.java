@@ -23,18 +23,25 @@ package org.eclipse.tractusx.sde.core.service;
 import static org.springframework.http.ResponseEntity.ok;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.eclipse.tractusx.sde.common.model.Submodel;
+import org.eclipse.tractusx.sde.core.failurelog.mapper.DownloadHistoryMapper;
+import org.eclipse.tractusx.sde.core.failurelog.repository.ConsumerDownloadHistoryRepository;
+import org.eclipse.tractusx.sde.core.processreport.model.ConsumerDownloadHistory;
+import org.eclipse.tractusx.sde.core.role.entity.ConsumerDownloadHistoryEntity;
 import org.eclipse.tractusx.sde.core.utils.CsvUtil;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
 import org.eclipse.tractusx.sde.edc.services.ConsumerControlPanelService;
@@ -58,48 +65,96 @@ public class ConsumerService {
 
 	private final SubmodelOrchestartorService submodelOrchestartorService;
 
+	private final ConsumerDownloadHistoryRepository consumerDownloadHistoryRepository;
+
 	ObjectMapper mapper = new ObjectMapper();
+
+	private DownloadHistoryMapper downloadHistoryMapper;
 
 	@SneakyThrows
 	public void subscribeAndDownloadDataOffers(ConsumerRequest consumerRequest, HttpServletResponse response) {
+
+		ConsumerDownloadHistory consumerDownloadHistory = new ConsumerDownloadHistory();
+		consumerDownloadHistory.setStartDate(LocalDateTime.now().toString());
+		String processId = UUID.randomUUID().toString();
+
 		Map<String, Object> subscribeAndDownloadDataOffers = consumerControlPanelService
 				.subscribeAndDownloadDataOffers(consumerRequest);
 
-		String processId = UUID.randomUUID().toString();
+		int failedCount = 0;
+		int successCount = 0;
+		consumerDownloadHistory.setConnectorId(consumerRequest.getConnectorId());
+		consumerDownloadHistory.setProviderUrl(consumerRequest.getProviderUrl());
+		consumerDownloadHistory.setNumberOfItems(consumerRequest.getOffers().size());
+		consumerDownloadHistory.setProcessId(processId);
 
 		Map<String, List<List<String>>> csvWithValue = new TreeMap<>();
+		
+		consumerRequest.getOffers().stream().forEach(offer -> {
+			
+			Object object = subscribeAndDownloadDataOffers.get(offer.getAssetId());
+			if (object != null) {
+				
+				JsonNode node = mapper.convertValue(object, JsonNode.class);
+				JsonNode status = node.get("status");
+				JsonNode dataNode = node.get("data");
+				JsonNode edrNode = node.get("edr");
 
-		subscribeAndDownloadDataOffers.entrySet().stream().forEach(entry -> {
+				if (dataNode != null) {
+					JsonNode csvNode = dataNode.get("csv");
+					if (csvNode != null) {
+						List<String> csvHeader = new ArrayList<>();
+						List<String> csvValues = new ArrayList<>();
 
-			JsonNode node = mapper.convertValue(entry.getValue(), JsonNode.class);
-			JsonNode status = node.get("status");
-			JsonNode csv = node.get("csv");
-			if (status == null && csv != null) {
+						csvNode.fieldNames().forEachRemaining(csvHeader::add);
+						csvNode.fields().forEachRemaining(obje -> csvValues.add(obje.getValue().asText()));
 
-				List<String> csvHeader = new ArrayList<>();
-				List<String> csvValues = new ArrayList<>();
+						Submodel findSubmodel = submodelOrchestartorService.findSubmodel(csvHeader);
+						List<List<String>> csvValueList = csvWithValue.get(findSubmodel.getId());
+						if (csvValueList == null) {
+							csvValueList = new ArrayList<>();
+							csvValueList.add(csvHeader);
+						}
 
-				JsonNode jsonNode = node.get("csv");
-				jsonNode.fieldNames().forEachRemaining(csvHeader::add);
-				jsonNode.fields().forEachRemaining(obje -> csvValues.add(obje.getValue().asText()));
-
-				Submodel findSubmodel = submodelOrchestartorService.findSubmodel(csvHeader);
-				List<List<String>> csvValueList = csvWithValue.get(findSubmodel.getId());
-				if (csvValueList == null) {
-					csvValueList = new ArrayList<>();
-					csvValueList.add(csvHeader);
+						csvValueList.add(csvValues);
+						csvWithValue.put(findSubmodel.getId(), csvValueList);
+						consumerDownloadHistory.setDownloadSuccessed(successCount + 1);
+						offer.setStatus(status.asText());
+					} else {
+						consumerDownloadHistory.setDownloadFailed(failedCount + 1);
+						offer.setStatus("FAILED");
+						offer.setDownloadErrorMsg("The data does not found in csv type");
+					}
+				} else {
+					offer.setStatus(status.asText());
+					consumerDownloadHistory.setDownloadFailed(failedCount + 1);
+					offer.setDownloadErrorMsg(readFieldFromJsonNode(dataNode, "error"));
 				}
-				csvValueList.add(csvValues);
-				csvWithValue.put(findSubmodel.getId(), csvValueList);
-			} else {
-				/// handle error log
+				
+				if (edrNode != null) {
+					offer.setAgreementId(readFieldFromJsonNode(edrNode, "agreementId"));
+					offer.setExpirationDate(readFieldFromJsonNode(edrNode, "expirationDate"));
+					offer.setTransferProcessId(readFieldFromJsonNode(edrNode, "transferProcessId"));
+				}
 			}
 		});
 
+		consumerDownloadHistory.setEndDate(LocalDateTime.now().toString());
+		consumerDownloadHistory.setOffers(mapper.writeValueAsString(consumerRequest.getOffers()));
+		consumerDownloadHistory.setPolicies(mapper.writeValueAsString(consumerRequest.getPolicies()));
+
+		// Save consumer Download history in DB
+		saveConsumerDownloadHistory(consumerDownloadHistory);
+
+		prepareHttpResponse(response, processId, csvWithValue);
+	}
+
+	private void prepareHttpResponse(HttpServletResponse response, String processId,
+			Map<String, List<List<String>>> csvWithValue) throws IOException {
 		if (csvWithValue.isEmpty()) {
 			Map<String, String> errorResponse = new HashMap<>();
 			errorResponse.put("msg",
-					"Unable to complete subscribe and download Data Offers, please try again, if error persist contact to admin");
+					"Unable to process your request, please try again, if error persist contact to admin");
 			response.setContentType("application/json");
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			response.setCharacterEncoding("UTF-8");
@@ -113,6 +168,14 @@ public class ConsumerService {
 		} else {
 			prepareZipFiles(response, csvWithValue, processId);
 		}
+	}
+
+	private String readFieldFromJsonNode(JsonNode node, String fieldName) {
+		JsonNode jsonNode = node.get(fieldName);
+		if (Optional.of(jsonNode).isPresent())
+			return jsonNode.asText();
+		else
+			return null;
 	}
 
 	@SneakyThrows
@@ -148,7 +211,12 @@ public class ConsumerService {
 	}
 
 	public ResponseEntity<Object> downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(List<String> assetId) {
+		Map<String, Object> downloadFileFromEDCUsingifAlreadyTransferStatusCompleted = consumerControlPanelService.downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(assetId);
 		return ok().body(consumerControlPanelService.downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(assetId));
 	}
 
+	public void saveConsumerDownloadHistory(ConsumerDownloadHistory input) {
+		ConsumerDownloadHistoryEntity entity = downloadHistoryMapper.mapFrom(input);
+		consumerDownloadHistoryRepository.save(entity);
+	}
 }

@@ -33,11 +33,16 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class OfferRequest {
+public class Offer {
     @NotNull
     private String offerId;
     @NotNull
     private String assetId;
     private String policyId;
+	private String agreementId;
+	private String expirationDate;
+	private String transferProcessId;
+	private String status;
+	private String downloadErrorMsg;
 }
 

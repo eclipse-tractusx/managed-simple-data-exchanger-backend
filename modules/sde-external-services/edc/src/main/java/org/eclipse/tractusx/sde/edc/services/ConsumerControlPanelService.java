@@ -257,23 +257,27 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
 		ActionRequest action = policyConstraintBuilderService.getUsagePolicyConstraints(policies);
 		consumerRequest.getOffers().parallelStream().forEach(offer -> {
+			Map<String, Object> resultFields = new ConcurrentHashMap<>();
 			try {
 				edrRequestHelper.edrRequestInitiate(recipientURL, consumerRequest.getConnectorId(), offer.getOfferId(),
 						offer.getAssetId(), action, extensibleProperty);
 
 				EDRCachedResponse checkContractNegotiationStatus = verifyEDRRequestStatus(offer.getAssetId());
+				resultFields.put("edr", checkContractNegotiationStatus);
+				resultFields.put("data", downloadFile(checkContractNegotiationStatus));
+				resultFields.put("status", "SUCCESS");
 
-				response.put(offer.getAssetId(), downloadFile(checkContractNegotiationStatus));
 			} catch (FeignException e) {
 				log.error("RequestBody: " + e.request());
-				log.error("SubscribeAndDownloadDataOffers Oops! We have an FeignException - " + e.request().url() + "-"
-						+ e.contentUTF8());
-				response.put(offer.getAssetId(),
-						errorMap("Unable to complete subscribeAndDownloadDataOffers because: " + e.contentUTF8()));
+				String errorMsg = "Unable to complete subscribeAndDownloadDataOffers because: " + e.contentUTF8();
+				log.error(errorMsg);
+				prepareErrorMap(resultFields, errorMsg);
 			} catch (Exception e) {
 				log.error("SubscribeAndDownloadDataOffers Oops! We have an Exception -" + e.getMessage());
-				response.put(offer.getAssetId(),
-						errorMap("Unable to complete subscribeAndDownloadDataOffers because: " + e.getMessage()));
+				String errorMsg = "Unable to complete subscribeAndDownloadDataOffers because: " + e.getMessage();
+				prepareErrorMap(resultFields, errorMsg);
+			} finally {
+				response.put(offer.getAssetId(), resultFields);
 			}
 		});
 
@@ -316,32 +320,31 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 	public Map<String, Object> downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(List<String> assetIdList) {
 		Map<String, Object> response = new ConcurrentHashMap<>();
 		for (String assetId : assetIdList) {
+			Map<String, Object> resultFields = new ConcurrentHashMap<>();
 			try {
-
 				EDRCachedResponse verifyEDRRequestStatus = verifyEDRRequestStatus(assetId);
-				response.put(assetId, downloadFile(verifyEDRRequestStatus));
-
+				resultFields.put("edr", verifyEDRRequestStatus);
+				resultFields.put("data", downloadFile(verifyEDRRequestStatus));
+				resultFields.put("status", "SUCCESS");
 			} catch (FeignException e) {
 				log.error("RequestBody: " + e.request());
-				log.error("downloadFileFromEDCUsingifAlreadyTransferStatusCompleted Oops! We have an FeignException - "
-						+ e.request().url() + "-" + e.contentUTF8());
-				response.put(assetId,
-						errorMap("Unable to download existing subcribe data offer because: " + e.contentUTF8()));
+				String errorMsg = "Unable to download existing subcribe data offer because: " + e.contentUTF8();
+				log.error(errorMsg);
+				prepareErrorMap(resultFields, errorMsg);
 			} catch (Exception e) {
-				log.error("downloadFileFromEDCUsingifAlreadyTransferStatusCompleted Oops! We have an Exception -"
-						+ e.getMessage());
-				response.put(assetId,
-						errorMap("Unable to download existing subcribe data offer because: " + e.getMessage()));
+				log.error("SubscribeAndDownloadDataOffers Oops! We have an Exception -" + e.getMessage());
+				String errorMsg = "Unable to download existing subcribe data offer because: " + e.getMessage();
+				prepareErrorMap(resultFields, errorMsg);
+			} finally {
+				response.put(assetId, resultFields);
 			}
 		}
 		return response;
 	}
 
-	private Map<String, Object> errorMap(String errorMsg) {
-		Map<String, Object> errorMaps = new ConcurrentHashMap<>();
-		errorMaps.put("status", "FAILED");
-		errorMaps.put("error", errorMsg);
-		return errorMaps;
+	private void prepareErrorMap(Map<String, Object> resultFields, String errorMsg) {
+		resultFields.put("status", "FAILED");
+		resultFields.put("error", errorMsg);
 	}
 
 	private Object downloadFile(EDRCachedResponse verifyEDRRequestStatus) {

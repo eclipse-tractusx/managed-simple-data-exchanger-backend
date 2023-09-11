@@ -34,14 +34,14 @@ public class ConsumerDownloadHistory {
 	private String processId;
 	private String providerUrl;
 	private String connectorId;
-	private int numberOfItems;
-	private int downloadFailed;
-	private int downloadSuccessed;
+	private Integer numberOfItems;
+	private Integer downloadFailed;
+	private Integer downloadSuccessed;
 	private String status;
 	private String startDate;
 	private String endDate;
-	private String offers;
-	private String policies;
+	private Object offers;
+	private Object policies;
     private String referenceProcessId;
 
 }

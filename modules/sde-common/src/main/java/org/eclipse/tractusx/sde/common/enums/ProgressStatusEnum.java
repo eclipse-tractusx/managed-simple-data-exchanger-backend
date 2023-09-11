@@ -25,5 +25,6 @@ package org.eclipse.tractusx.sde.common.enums;
 public enum ProgressStatusEnum {
     IN_PROGRESS,
     COMPLETED,
-    FAILED
+    FAILED,
+    PARTIALED_FAILED
 }

@@ -18,14 +18,39 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.core.failurelog.mapper;
+package org.eclipse.tractusx.sde.core.processreport.mapper;
 
+import java.util.List;
+
+import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
+import org.eclipse.tractusx.sde.core.processreport.entity.ConsumerDownloadHistoryEntity;
 import org.eclipse.tractusx.sde.core.processreport.model.ConsumerDownloadHistory;
-import org.eclipse.tractusx.sde.core.role.entity.ConsumerDownloadHistoryEntity;
+import org.eclipse.tractusx.sde.edc.model.request.Offer;
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "spring")
-public interface DownloadHistoryMapper {
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-    ConsumerDownloadHistoryEntity mapFrom(ConsumerDownloadHistory consumerDownloadHistory);
+import lombok.SneakyThrows;
+
+@Mapper(componentModel = "spring")
+public interface ConsumerDownloadHistoryMapper {
+
+	ObjectMapper mapper = new ObjectMapper();
+
+	ConsumerDownloadHistory mapFrom(ConsumerDownloadHistoryEntity entity);
+
+	@SneakyThrows
+	default ConsumerDownloadHistory mapFromCustom(ConsumerDownloadHistoryEntity entity) {
+		ConsumerDownloadHistory mapFrom = mapFrom(entity);
+		
+		if (entity.getOffers() != null)
+			mapFrom.setOffers(mapper.readValue(entity.getOffers(), new TypeReference<List<Offer>>() {
+			}));
+		if (entity.getPolicies() != null)
+			mapFrom.setPolicies(mapper.readValue(entity.getPolicies(), new TypeReference<List<UsagePolicies>>() {
+			}));
+			
+		return mapFrom;
+	}
 }

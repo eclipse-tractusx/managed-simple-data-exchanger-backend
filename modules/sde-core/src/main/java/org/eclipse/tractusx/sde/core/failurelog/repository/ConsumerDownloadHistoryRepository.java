@@ -21,14 +21,11 @@
 package org.eclipse.tractusx.sde.core.failurelog.repository;
 
 
-import java.util.List;
-
-import org.eclipse.tractusx.sde.core.failurelog.entity.FailureLogEntity;
-import org.eclipse.tractusx.sde.core.role.entity.ConsumerDownloadHistoryEntity;
+import org.eclipse.tractusx.sde.core.processreport.entity.ConsumerDownloadHistoryEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ConsumerDownloadHistoryRepository extends JpaRepository<ConsumerDownloadHistoryEntity, String> {
 
-	List<FailureLogEntity> findByProcessId(String id);
+	ConsumerDownloadHistoryEntity findByProcessId(String id);
 
 }

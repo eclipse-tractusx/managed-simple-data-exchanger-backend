@@ -22,7 +22,6 @@ package org.eclipse.tractusx.sde.core.controller;
 
 import static org.springframework.http.ResponseEntity.ok;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.eclipse.tractusx.sde.core.service.ConsumerService;
@@ -75,18 +74,34 @@ public class ConsumerController {
 	}
 
 	@PostMapping(value = "/subscribe-download-data-offers")
-	@PreAuthorize("hasPermission('','consumer_download_data')")
+	@PreAuthorize("hasPermission('','consumer_subscribe_download_data_offers')")
 	public void subscribeAndDownloadDataOffers(@Valid @RequestBody ConsumerRequest consumerRequest, HttpServletResponse response) {
-		log.info("Request recevied : /api/subscribe-download-data-edr");
+		log.info("Request recevied : /api/subscribe-download-data-offers");
 		consumerService.subscribeAndDownloadDataOffers(consumerRequest, response);
 	}
 
 	@GetMapping(value = "/download-data-offers")
-	@PreAuthorize("hasPermission('','consumer_download_data')")
-	public ResponseEntity<Object> downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(@RequestParam List<String> assetIdList)
+	@PreAuthorize("hasPermission('','consumer_download_data_offer')")
+	public void downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(@RequestParam("processId") String referenceProcessId, HttpServletResponse response)
 			throws Exception {
-		log.info("Request received : /api/download-data-using-edr");
-		return consumerService.downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(assetIdList);
+		log.info("Request received : /api/download-data-offers");
+		consumerService.downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(referenceProcessId,response);
+	}
+	
+	@GetMapping(value = "/view-download-history")
+	@PreAuthorize("hasPermission('','consumer_view_download_history')")
+	public ResponseEntity<Object> viewConsumerDownloadHistory()
+			throws Exception {
+		log.info("Request received : /api/view-download-history");
+		return ok().body(consumerService.viewDownloadHistory());
+	}
+	
+	@GetMapping(value = "/view-download-history-details")
+	@PreAuthorize("hasPermission('','consumer_view_download_history')")
+	public ResponseEntity<Object> viewConsumerDownloadHistoryDetails(@RequestParam("processId") String processId)
+			throws Exception {
+		log.info("Request received : /api/view-download-history-details");
+		return ok().body(consumerService.viewConsumerDownloadHistoryDetails(processId));
 	}
 
 }

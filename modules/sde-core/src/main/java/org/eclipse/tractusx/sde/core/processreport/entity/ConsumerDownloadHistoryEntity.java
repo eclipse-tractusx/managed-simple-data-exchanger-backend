@@ -17,17 +17,13 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-package org.eclipse.tractusx.sde.core.role.entity;
-
-import java.util.List;
-
-import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
-import org.eclipse.tractusx.sde.edc.model.request.Offer;
+package org.eclipse.tractusx.sde.core.processreport.entity;
 
 import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -50,19 +46,22 @@ public class ConsumerDownloadHistoryEntity {
 	@Column(name = "connector_id")
 	private String connectorId;
 	@Column(name = "number_of_items")
-	private String numberOfItems;
+	private Integer numberOfItems;
 	@Column(name = "download_failed")
-	private String downloadFailed;
+	private Integer downloadFailed;
 	@Column(name = "download_successed")
-	private String downloadSuccessed;
+	private Integer downloadSuccessed;
 	@Column(name = "status")
 	private String status;
 	@Column(name = "start_date")
 	private String startDate;
 	@Column(name = "end_date")
 	private String endDate;
+	
+	@Lob
 	@Column(name = "offers")
 	private String offers;
+	@Lob
 	private String policies;
 	private String referenceProcessId;
 

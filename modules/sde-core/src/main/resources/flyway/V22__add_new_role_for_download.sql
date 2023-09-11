@@ -18,11 +18,20 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 INSERT INTO sde_permission (sde_permission,description)
-	VALUES ('consumer_download_data','Allows consumer user to download data');
+	VALUES ('consumer_subscribe_download_data_offers','Allows consumer user to subscribe and download data');
+INSERT INTO sde_permission (sde_permission,description)
+	VALUES ('consumer_download_data_offer','Allows consumer user to download data again');
+INSERT INTO sde_permission (sde_permission,description)
+	VALUES ('consumer_view_download_history','Allows consumer user to view download data history');
 	
 INSERT INTO sde_role_permission_mapping (sde_permission,sde_role)
-	VALUES ('consumer_download_data','User');
-
+	VALUES ('consumer_subscribe_download_data_offers','Creator');
 INSERT INTO sde_role_permission_mapping (sde_permission,sde_role)
-	VALUES ('consumer_download_data','Creator');
-
+	VALUES ('consumer_download_data_offer','Creator');
+INSERT INTO sde_role_permission_mapping (sde_permission,sde_role)
+	VALUES ('consumer_view_download_history','Creator');
+	
+INSERT INTO sde_role_permission_mapping (sde_permission,sde_role)
+	VALUES ('consumer_download_data_offer','User');
+INSERT INTO sde_role_permission_mapping (sde_permission,sde_role)
+	VALUES ('consumer_view_download_history','User');

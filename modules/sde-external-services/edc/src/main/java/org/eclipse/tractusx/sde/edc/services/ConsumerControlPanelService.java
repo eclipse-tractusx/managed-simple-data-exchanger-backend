@@ -361,23 +361,23 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 		Map<String, Object> response = new ConcurrentHashMap<>();
 		assetIdList.parallelStream().forEach(assetId -> {
 
-			Map<String, Object> resultFields = new ConcurrentHashMap<>();
+			Map<String, Object> downloadResultFields = new ConcurrentHashMap<>();
 			try {
 				EDRCachedResponse verifyEDRRequestStatus = verifyEDRRequestStatus(assetId, 1);
-				resultFields.put("edr", verifyEDRRequestStatus);
-				resultFields.put("data", downloadFile(verifyEDRRequestStatus));
-				resultFields.put(STATUS, "SUCCESS");
+				downloadResultFields.put("edr", verifyEDRRequestStatus);
+				downloadResultFields.put("data", downloadFile(verifyEDRRequestStatus));
+				downloadResultFields.put(STATUS, "SUCCESS");
 			} catch (FeignException e) {
-				log.error("RequestBody: " + e.request());
+				log.error("Re-download RequestBody: " + e.request());
 				String errorMsg = "Unable to download existing subcribe data offer because: " + e.contentUTF8();
 				log.error(errorMsg);
-				prepareErrorMap(resultFields, errorMsg);
+				prepareErrorMap(downloadResultFields, errorMsg);
 			} catch (Exception e) {
-				log.error("SubscribeAndDownloadDataOffers Oops! We have an Exception -" + e.getMessage());
+				log.error("DownloadFileFromEDCUsingifAlreadyTransferStatusCompleted Oops! We have an Exception -" + e.getMessage());
 				String errorMsg = "Unable to download existing subcribe data offer because: " + e.getMessage();
-				prepareErrorMap(resultFields, errorMsg);
+				prepareErrorMap(downloadResultFields, errorMsg);
 			} finally {
-				response.put(assetId, resultFields);
+				response.put(assetId, downloadResultFields);
 			}
 		});
 		return response;

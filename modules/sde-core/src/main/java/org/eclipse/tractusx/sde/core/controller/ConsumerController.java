@@ -27,9 +27,11 @@ import java.util.UUID;
 import org.eclipse.tractusx.sde.core.service.ConsumerService;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
 import org.eclipse.tractusx.sde.edc.services.ConsumerControlPanelService;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -72,12 +74,19 @@ public class ConsumerController {
 		consumerControlPanelService.subscribeDataOffers(consumerRequest, processId);
 		return ResponseEntity.ok().body(processId);
 	}
+	
+	@PostMapping(value = "/subscribe-download-data-offers-async")
+	@PreAuthorize("hasPermission('','consumer_subscribe_download_data_offers')")
+	public ResponseEntity<Object> subscribeAndDownloadDataOffersAsync(@Valid @RequestBody ConsumerRequest consumerRequest) {
+		log.info("Request recevied : /api/subscribe-download-data-offers-async");
+		return ResponseEntity.ok().body(consumerService.subscribeAndDownloadDataOffersAsync(consumerRequest));
+	}
 
 	@PostMapping(value = "/subscribe-download-data-offers")
 	@PreAuthorize("hasPermission('','consumer_subscribe_download_data_offers')")
-	public void subscribeAndDownloadDataOffers(@Valid @RequestBody ConsumerRequest consumerRequest, HttpServletResponse response) {
+	public void subscribeAndDownloadDataOffersSynchronous(@Valid @RequestBody ConsumerRequest consumerRequest, HttpServletResponse response) {
 		log.info("Request recevied : /api/subscribe-download-data-offers");
-		consumerService.subscribeAndDownloadDataOffers(consumerRequest, response);
+		consumerService.subscribeAndDownloadDataOffersSynchronous(consumerRequest, response);
 	}
 
 	@GetMapping(value = "/download-data-offers")
@@ -90,15 +99,17 @@ public class ConsumerController {
 	
 	@GetMapping(value = "/view-download-history")
 	@PreAuthorize("hasPermission('','consumer_view_download_history')")
-	public ResponseEntity<Object> viewConsumerDownloadHistory()
-			throws Exception {
+	public ResponseEntity<Object> viewConsumerDownloadHistory(@Param("page") Integer page,
+			@Param("pageSize") Integer pageSize) throws Exception {
+		page = page == null ? 0 : page;
+		pageSize = pageSize == null ? 10 : pageSize;
 		log.info("Request received : /api/view-download-history");
-		return ok().body(consumerService.viewDownloadHistory());
+		return ok().body(consumerService.viewDownloadHistory(page, pageSize));
 	}
 	
-	@GetMapping(value = "/view-download-history-details")
+	@GetMapping(value = "/view-download-history/{processId}")
 	@PreAuthorize("hasPermission('','consumer_view_download_history')")
-	public ResponseEntity<Object> viewConsumerDownloadHistoryDetails(@RequestParam("processId") String processId)
+	public ResponseEntity<Object> viewConsumerDownloadHistoryDetails(@PathVariable("processId") String processId)
 			throws Exception {
 		log.info("Request received : /api/view-download-history-details");
 		return ok().body(consumerService.viewConsumerDownloadHistoryDetails(processId));

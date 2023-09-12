@@ -17,33 +17,18 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-package org.eclipse.tractusx.sde.core.processreport.model;
 
-import java.time.LocalDateTime;
+package org.eclipse.tractusx.sde.common.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class ConsumerDownloadHistory {
-	
+public class PagingResponse {
 
-	private String processId;
-	private String providerUrl;
-	private String connectorId;
-	private Integer numberOfItems;
-	private Integer downloadFailed;
-	private Integer downloadSuccessed;
-	private String status;
-	private LocalDateTime startDate;
-	private LocalDateTime endDate;
-	private Object offers;
-	private Object policies;
-    private String referenceProcessId;
-
+	private int page;
+	private int pageSize;
+	private long totalItems;
+	private Object items;
 }

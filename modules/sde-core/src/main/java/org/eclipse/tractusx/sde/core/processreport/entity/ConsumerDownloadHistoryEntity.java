@@ -19,6 +19,8 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.core.processreport.entity;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -54,9 +56,9 @@ public class ConsumerDownloadHistoryEntity {
 	@Column(name = "status")
 	private String status;
 	@Column(name = "start_date")
-	private String startDate;
+	private LocalDateTime startDate;
 	@Column(name = "end_date")
-	private String endDate;
+	private LocalDateTime endDate;
 	
 	@Lob
 	@Column(name = "offers")

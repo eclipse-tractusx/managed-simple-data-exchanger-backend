@@ -58,7 +58,6 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import feign.FeignException;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -246,7 +245,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
 	}
 
-	public Map<String, Object> subscribeAndDownloadDataOffers(@Valid ConsumerRequest consumerRequest) {
+	public Map<String, Object> subscribeAndDownloadDataOffers(ConsumerRequest consumerRequest, boolean flagToDownloadImidiate) {
 
 		HashMap<String, String> extensibleProperty = new HashMap<>();
 		Map<String, Object> response = new ConcurrentHashMap<>();
@@ -270,7 +269,10 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 						extensibleProperty, recipientURL, action, offer);
 
 				resultFields.put("edr", checkContractNegotiationStatus);
-				resultFields.put("data", downloadFile(checkContractNegotiationStatus));
+				
+				if (flagToDownloadImidiate)
+					resultFields.put("data", downloadFile(checkContractNegotiationStatus));
+				
 				resultFields.put(STATUS, "SUCCESS");
 
 			} catch (FeignException e) {

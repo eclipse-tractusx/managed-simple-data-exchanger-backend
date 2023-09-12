@@ -38,6 +38,8 @@ import java.util.zip.ZipOutputStream;
 
 import org.eclipse.tractusx.sde.common.enums.ProgressStatusEnum;
 import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
+import org.eclipse.tractusx.sde.common.model.Acknowledgement;
+import org.eclipse.tractusx.sde.common.model.PagingResponse;
 import org.eclipse.tractusx.sde.common.model.Submodel;
 import org.eclipse.tractusx.sde.core.failurelog.repository.ConsumerDownloadHistoryRepository;
 import org.eclipse.tractusx.sde.core.processreport.entity.ConsumerDownloadHistoryEntity;
@@ -47,6 +49,9 @@ import org.eclipse.tractusx.sde.core.utils.CsvUtil;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
 import org.eclipse.tractusx.sde.edc.model.request.Offer;
 import org.eclipse.tractusx.sde.edc.services.ConsumerControlPanelService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
 
@@ -71,69 +76,75 @@ public class ConsumerService {
 
 	private final ConsumerDownloadHistoryMapper consumerDownloadHistoryMapper;
 
-	
 	ObjectMapper mapper = new ObjectMapper();
 
-	@SneakyThrows
-	public void subscribeAndDownloadDataOffers(ConsumerRequest consumerRequest, HttpServletResponse response) {
-
+	public Acknowledgement subscribeAndDownloadDataOffersAsync(ConsumerRequest consumerRequest) {
 		String processId = UUID.randomUUID().toString();
+
+		Runnable runnable = () -> subscribeAndDownloadDataOffers(consumerRequest, processId, false);
+		new Thread(runnable).start();
+
+		return Acknowledgement.builder().id(processId).build();
+	}
+
+	@SneakyThrows
+	public void subscribeAndDownloadDataOffersSynchronous(ConsumerRequest consumerRequest, HttpServletResponse response) {
+		String processId = UUID.randomUUID().toString();
+		prepareHttpResponse(response, processId, subscribeAndDownloadDataOffers(consumerRequest, processId, true));
+	}
+
+	@SneakyThrows
+	public Map<String, List<List<String>>> subscribeAndDownloadDataOffers(ConsumerRequest consumerRequest,
+			String processId, boolean flagToDownloadImidiate) {
+
 		AtomicInteger failedCount = new AtomicInteger();
 		AtomicInteger successCount = new AtomicInteger();
-		String startDate = LocalDateTime.now().toString();
-		
-		ConsumerDownloadHistoryEntity entity = ConsumerDownloadHistoryEntity.builder()
-				.startDate(startDate)
-				.endDate(LocalDateTime.now().toString())
-				.connectorId(consumerRequest.getConnectorId())
-				.providerUrl(consumerRequest.getProviderUrl())
-				.numberOfItems(consumerRequest.getOffers().size())
-				.downloadSuccessed(successCount.get())
-				.downloadFailed(failedCount.get())
-				.processId(processId)
-				.status(ProgressStatusEnum.IN_PROGRESS.toString())
-				.build();
-		
+
+		ConsumerDownloadHistoryEntity entity = ConsumerDownloadHistoryEntity.builder().startDate(LocalDateTime.now())
+				.connectorId(consumerRequest.getConnectorId()).providerUrl(consumerRequest.getProviderUrl())
+				.numberOfItems(consumerRequest.getOffers().size()).downloadSuccessed(successCount.get())
+				.downloadFailed(failedCount.get()).processId(processId)
+				.status(ProgressStatusEnum.IN_PROGRESS.toString()).build();
+
 		// Save consumer Download history in DB
 		consumerDownloadHistoryRepository.save(entity);
-				
-		Map<String, Object> subscribeAndDownloadDataOffers = consumerControlPanelService
-				.subscribeAndDownloadDataOffers(consumerRequest);
 
+		Map<String, Object> subscribeAndDownloadDataOffers = consumerControlPanelService
+				.subscribeAndDownloadDataOffers(consumerRequest, flagToDownloadImidiate);
 
 		Map<String, List<List<String>>> csvWithValue = new TreeMap<>();
 
 		consumerRequest.getOffers().stream().forEach(offer -> prepareFromOfferResponse(subscribeAndDownloadDataOffers,
-				failedCount, successCount, csvWithValue, offer));
+				failedCount, successCount, csvWithValue, offer, flagToDownloadImidiate));
 
-		
-		entity.setEndDate(LocalDateTime.now().toString());
+		entity.setEndDate(LocalDateTime.now());
 		entity.setOffers(mapper.writeValueAsString(consumerRequest.getOffers()));
 		entity.setPolicies(mapper.writeValueAsString(consumerRequest.getPolicies()));
 		entity.setDownloadSuccessed(successCount.get());
 		entity.setDownloadFailed(failedCount.get());
-		
+
 		entity.setStatus(ProgressStatusEnum.FAILED.toString());
 		if (consumerRequest.getOffers().size() == successCount.get())
 			entity.setStatus(ProgressStatusEnum.COMPLETED.toString());
-		else if(successCount.get()!=0 && failedCount.get()!=0 )
+		else if (successCount.get() != 0 && failedCount.get() != 0)
 			entity.setStatus(ProgressStatusEnum.PARTIALED_FAILED.toString());
 
 		// Save consumer Download history in DB
 		consumerDownloadHistoryRepository.save(entity);
 
-		prepareHttpResponse(response, processId, csvWithValue);
+		return csvWithValue;
+
 	}
 
 	@SneakyThrows
 	public void downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(String referenceProcessId,
 			HttpServletResponse response) {
-		
+
 		String processId = UUID.randomUUID().toString();
-		
+
 		ConsumerDownloadHistoryEntity entity = consumerDownloadHistoryRepository.findByProcessId(referenceProcessId);
-		
-		if (entity!=null && entity.getOffers() != null) {
+
+		if (entity != null && entity.getOffers() != null) {
 
 			List<Offer> offerList = mapper.readValue(entity.getOffers(), new TypeReference<List<Offer>>() {
 			});
@@ -142,7 +153,7 @@ public class ConsumerService {
 				AtomicInteger failedCount = new AtomicInteger();
 				AtomicInteger successCount = new AtomicInteger();
 
-				entity.setStartDate(LocalDateTime.now().toString());
+				entity.setStartDate(LocalDateTime.now());
 				entity.setNumberOfItems(offerList.size());
 				entity.setDownloadSuccessed(successCount.get());
 				entity.setDownloadFailed(failedCount.get());
@@ -163,19 +174,19 @@ public class ConsumerService {
 				offerList.stream()
 						.forEach(offer -> prepareFromOfferResponse(
 								downloadFileFromEDCUsingifAlreadyTransferStatusCompleted, failedCount, successCount,
-								csvWithValue, offer));
+								csvWithValue, offer, true));
 
-				entity.setEndDate(LocalDateTime.now().toString());
+				entity.setEndDate(LocalDateTime.now());
 				entity.setOffers(mapper.writeValueAsString(offerList));
 				entity.setDownloadSuccessed(successCount.get());
 				entity.setDownloadFailed(failedCount.get());
 				entity.setProcessId(processId);
 				entity.setReferenceProcessId(referenceProcessId);
-				
+
 				entity.setStatus(ProgressStatusEnum.FAILED.toString());
 				if (offerList.size() == successCount.get())
 					entity.setStatus(ProgressStatusEnum.COMPLETED.toString());
-				else if(successCount.get()!=0 && failedCount.get()!=0 )
+				else if (successCount.get() != 0 && failedCount.get() != 0)
 					entity.setStatus(ProgressStatusEnum.PARTIALED_FAILED.toString());
 
 				// Save consumer Download history in DB
@@ -183,15 +194,16 @@ public class ConsumerService {
 
 				prepareHttpResponse(response, processId, csvWithValue);
 			} else {
-				generateFailureJsonResponse(response, "Unable to find data offer in SDE for redownload");
+				generateFailureJsonResponse(response, "Unable to find data offer in SDE for download");
 			}
 		} else {
-			generateFailureJsonResponse(response, "Unable to find data offer in SDE for redownload");
+			generateFailureJsonResponse(response, "Unable to find data offer in SDE for download");
 		}
 	}
 
 	private void prepareFromOfferResponse(Map<String, Object> subscribeAndDownloadDataOffers, AtomicInteger failedCount,
-			AtomicInteger successCount, Map<String, List<List<String>>> csvWithValue, Offer offer) {
+			AtomicInteger successCount, Map<String, List<List<String>>> csvWithValue, Offer offer,
+			boolean flagToDownloadImidiate) {
 		Object object = subscribeAndDownloadDataOffers.get(offer.getAssetId());
 		if (object != null) {
 
@@ -200,8 +212,11 @@ public class ConsumerService {
 			JsonNode dataNode = node.get("data");
 			JsonNode edrNode = node.get("edr");
 
-			if (dataNode != null) {
+			if (dataNode != null && flagToDownloadImidiate) {
 				processCSVDataObject(successCount, failedCount, csvWithValue, offer, status, dataNode);
+			} else if (!flagToDownloadImidiate && "SUCCESS".equals(status.asText())) {
+				offer.setStatus(status.asText());
+				successCount.getAndIncrement();
 			} else {
 				offer.setStatus(status.asText());
 				failedCount.getAndIncrement();
@@ -248,7 +263,8 @@ public class ConsumerService {
 	private void prepareHttpResponse(HttpServletResponse response, String processId,
 			Map<String, List<List<String>>> csvWithValue) throws IOException {
 		if (csvWithValue.isEmpty()) {
-			generateFailureJsonResponse(response, "Unable to process your request, please try again, if error persist contact to admin");
+			generateFailureJsonResponse(response,
+					"Unable to process your request, please try again");
 		} else {
 			prepareZipFiles(response, csvWithValue, processId);
 		}
@@ -309,9 +325,14 @@ public class ConsumerService {
 		}
 	}
 
-	public List<ConsumerDownloadHistory> viewDownloadHistory() {
-		return consumerDownloadHistoryRepository.findAll().stream()
-				.map(consumerDownloadHistoryMapper::mapFromCustom).toList();
+	public PagingResponse viewDownloadHistory(Integer page, Integer pageSize) {
+		Page<ConsumerDownloadHistoryEntity> result = consumerDownloadHistoryRepository
+				.findAll(PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "endDate")));
+		List<ConsumerDownloadHistory> processReports = result.stream().map(consumerDownloadHistoryMapper::mapFromCustom)
+				.toList();
+		return PagingResponse.builder().items(processReports).pageSize(result.getSize()).page(result.getNumber())
+				.totalItems(result.getTotalElements()).build();
+
 	}
 
 	public ConsumerDownloadHistory viewConsumerDownloadHistoryDetails(String processId) {

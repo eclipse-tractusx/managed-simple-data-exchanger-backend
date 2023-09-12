@@ -49,6 +49,7 @@ import org.eclipse.tractusx.sde.edc.model.contractoffers.ContractOfferRequestFac
 import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedByIdResponse;
 import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedResponse;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
+import org.eclipse.tractusx.sde.edc.model.request.Offer;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.eclipse.tractusx.sde.edc.util.UtilityFunctions;
 import org.springframework.scheduling.annotation.Async;
@@ -77,6 +78,10 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
 	private final ContractOfferRequestFactory contractOfferRequestFactory;
 
+	private static final Integer RETRY = 5;
+	
+	private static final Integer THRED_SLEEP_TIME=5000;
+	
 	public List<QueryDataOfferModel> queryOnDataOffers(String providerUrl, Integer offset, Integer limit,
 			String filterExpression) {
 
@@ -261,19 +266,9 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 		consumerRequest.getOffers().parallelStream().forEach(offer -> {
 			Map<String, Object> resultFields = new ConcurrentHashMap<>();
 			try {
-				
-				//Verify if there already contract established then use then contract for download
-				EDRCachedResponse checkContractNegotiationStatus = verifyEDRRequestStatus(offer.getAssetId());
+				EDRCachedResponse checkContractNegotiationStatus = verifyOrCreateContractNegotiation(consumerRequest,
+						extensibleProperty, recipientURL, action, offer);
 
-				if (checkContractNegotiationStatus == null) {
-					
-					log.info("Ther is not contract exist for "+offer.getAssetId()+", Initiating contract process");
-					
-					edrRequestHelper.edrRequestInitiate(recipientURL, consumerRequest.getConnectorId(),
-							offer.getOfferId(), offer.getAssetId(), action, extensibleProperty);
-				}
-
-				checkContractNegotiationStatus = verifyEDRRequestStatus(offer.getAssetId());
 				resultFields.put("edr", checkContractNegotiationStatus);
 				resultFields.put("data", downloadFile(checkContractNegotiationStatus));
 				resultFields.put(STATUS, "SUCCESS");
@@ -296,14 +291,29 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 	}
 
 	@SneakyThrows
-	private EDRCachedResponse verifyEDRRequestStatus(String assetId) {
+	private EDRCachedResponse verifyOrCreateContractNegotiation(ConsumerRequest consumerRequest,
+			HashMap<String, String> extensibleProperty, String recipientURL, ActionRequest action, Offer offer) {
+		EDRCachedResponse checkContractNegotiationStatus = null;
+		try {
+			// Verify if there already contract established then use then contract for
+			// download
+			checkContractNegotiationStatus = verifyEDRRequestStatus(offer.getAssetId(), RETRY);
+		} catch (Exception e) {
+			log.info("There is not contract exist for " + offer.getAssetId() + ", Initiating contract process");
+			edrRequestHelper.edrRequestInitiate(recipientURL, consumerRequest.getConnectorId(), offer.getOfferId(),
+					offer.getAssetId(), action, extensibleProperty);
+			checkContractNegotiationStatus = verifyEDRRequestStatus(offer.getAssetId(), 1);
+		}
+		return checkContractNegotiationStatus;
+	}
+
+	@SneakyThrows
+	private EDRCachedResponse verifyEDRRequestStatus(String assetId, int counter) {
 		EDRCachedResponse eDRCachedResponse = null;
 		List<EDRCachedResponse> eDRCachedResponseList = null;
 		try {
-			int retry = 5;
-			int counter = 1;
 			do {
-				Thread.sleep(3000);
+				Thread.sleep(THRED_SLEEP_TIME);
 				eDRCachedResponseList = edrRequestHelper.getEDRCachedByAsset(assetId);
 				counter++;
 
@@ -314,7 +324,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 						eDRCachedResponse = findAny.get();
 				}
 
-			} while ((eDRCachedResponse == null && counter <= retry)
+			} while ((eDRCachedResponse == null && counter <= RETRY)
 					|| (eDRCachedResponse != null && !eDRCachedResponse.getEdrState().equals("NEGOTIATED")));
 
 			if (eDRCachedResponse == null)
@@ -353,7 +363,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
 			Map<String, Object> resultFields = new ConcurrentHashMap<>();
 			try {
-				EDRCachedResponse verifyEDRRequestStatus = verifyEDRRequestStatus(assetId);
+				EDRCachedResponse verifyEDRRequestStatus = verifyEDRRequestStatus(assetId, 1);
 				resultFields.put("edr", verifyEDRRequestStatus);
 				resultFields.put("data", downloadFile(verifyEDRRequestStatus));
 				resultFields.put(STATUS, "SUCCESS");

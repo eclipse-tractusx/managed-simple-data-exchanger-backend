@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
@@ -67,6 +68,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
+	private static final String NEGOTIATED = "NEGOTIATED";
 	private static final String STATUS = "status";
 	private final ContractOfferCatalogApi contractOfferCatalogApiProxy;
 	private final ContractNegotiateManagementHelper contractNegotiateManagement;
@@ -78,9 +80,9 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 	private final ContractOfferRequestFactory contractOfferRequestFactory;
 
 	private static final Integer RETRY = 5;
-	
-	private static final Integer THRED_SLEEP_TIME=5000;
-	
+
+	private static final Integer THRED_SLEEP_TIME = 5000;
+
 	public List<QueryDataOfferModel> queryOnDataOffers(String providerUrl, Integer offset, Integer limit,
 			String filterExpression) {
 
@@ -245,7 +247,8 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
 	}
 
-	public Map<String, Object> subscribeAndDownloadDataOffers(ConsumerRequest consumerRequest, boolean flagToDownloadImidiate) {
+	public Map<String, Object> subscribeAndDownloadDataOffers(ConsumerRequest consumerRequest,
+			boolean flagToDownloadImidiate) {
 
 		HashMap<String, String> extensibleProperty = new HashMap<>();
 		Map<String, Object> response = new ConcurrentHashMap<>();
@@ -269,10 +272,10 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 						extensibleProperty, recipientURL, action, offer);
 
 				resultFields.put("edr", checkContractNegotiationStatus);
-				
+
 				if (flagToDownloadImidiate)
 					resultFields.put("data", downloadFile(checkContractNegotiationStatus));
-				
+
 				resultFields.put(STATUS, "SUCCESS");
 
 			} catch (FeignException e) {
@@ -281,7 +284,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 				log.error(errorMsg);
 				prepareErrorMap(resultFields, errorMsg);
 			} catch (Exception e) {
-				log.error("SubscribeAndDownloadDataOffers Oops! We have an Exception -" + e.getMessage());
+				log.error("SubscribeAndDownloadDataOffers Oops! We have -" + e.getMessage());
 				String errorMsg = "Unable to complete subscribeAndDownloadDataOffers because: " + e.getMessage();
 				prepareErrorMap(resultFields, errorMsg);
 			} finally {
@@ -312,43 +315,59 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 	@SneakyThrows
 	private EDRCachedResponse verifyEDRRequestStatus(String assetId, int counter) {
 		EDRCachedResponse eDRCachedResponse = null;
+		AtomicInteger isRefresheEDRToken = new AtomicInteger();
 		List<EDRCachedResponse> eDRCachedResponseList = null;
 		try {
 			do {
+				isRefresheEDRToken.set(0);
 				Thread.sleep(THRED_SLEEP_TIME);
 				eDRCachedResponseList = edrRequestHelper.getEDRCachedByAsset(assetId);
 				counter++;
-
-				if (eDRCachedResponseList != null && !eDRCachedResponseList.isEmpty()) {
-					Optional<EDRCachedResponse> findAny = eDRCachedResponseList.stream()
-							.filter(obj -> obj.getEdrState().equals("NEGOTIATED")).findAny();
-					if (findAny.isPresent())
-						eDRCachedResponse = findAny.get();
-				}
-
+				eDRCachedResponse = verifyEDRResponse(eDRCachedResponse, isRefresheEDRToken, eDRCachedResponseList);
 			} while ((eDRCachedResponse == null && counter <= RETRY)
-					|| (eDRCachedResponse != null && !eDRCachedResponse.getEdrState().equals("NEGOTIATED")));
+					|| (eDRCachedResponse != null && !eDRCachedResponse.getEdrState().equals(NEGOTIATED)));
+
+			if (eDRCachedResponseList != null && eDRCachedResponseList.size() >= isRefresheEDRToken.get()
+					&& eDRCachedResponse == null)
+				throw new ServiceException(
+						"Time out!! EDC refreshing EDR tokens, unable to get EDR negotiated status");
 
 			if (eDRCachedResponse == null)
-				throw new ServiceException("Time out!! to verify contract negotiated for asset " + assetId);
-			
+				throw new ServiceException("Time out!! unable to get EDR negotiated status");
+
 		} catch (FeignException e) {
 			log.error("RequestBody: " + e.request());
-			String errorMsg = "FeignExceptionton to verify negotiated contract for asset " + assetId + ",error: "
+			String errorMsg = "FeignExceptionton to verify EDR negotiated status for asset " + assetId + ","
 					+ e.contentUTF8();
 			log.error("Response: " + errorMsg);
 			throw new ServiceException(errorMsg);
 		} catch (InterruptedException ie) {
 			Thread.currentThread().interrupt();
-			String errorMsg = "InterruptedException to verify negotiated contract for asset " + assetId + ", error: "
+			String errorMsg = "InterruptedException to verify EDR negotiated status for asset " + assetId + ","
 					+ ie.getMessage();
 			log.error(errorMsg);
 			throw new ServiceException(errorMsg);
 		} catch (Exception e) {
-			String errorMsg = "Exception to verify negotiated contract for asset " + assetId + ",Exception error: "
+			String errorMsg = "Exception to verify EDR negotiated status for asset " + assetId + ","
 					+ e.getMessage();
 			log.error(errorMsg);
 			throw new ServiceException(errorMsg);
+		}
+		return eDRCachedResponse;
+	}
+
+	private EDRCachedResponse verifyEDRResponse(EDRCachedResponse eDRCachedResponse, AtomicInteger isRefresheEDRToken,
+			List<EDRCachedResponse> eDRCachedResponseList) {
+		if (eDRCachedResponseList != null && !eDRCachedResponseList.isEmpty()) {
+			for (EDRCachedResponse edrCachedResponseObj : eDRCachedResponseList) {
+				String edrState = edrCachedResponseObj.getEdrState();
+				if (edrState.equals(NEGOTIATED)) {
+					eDRCachedResponse = edrCachedResponseObj;
+				}
+				if ("REFRESHING".equalsIgnoreCase(edrState)) {
+					isRefresheEDRToken.getAndIncrement();
+				}
+			}
 		}
 		return eDRCachedResponse;
 	}
@@ -369,14 +388,8 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 				downloadResultFields.put("edr", verifyEDRRequestStatus);
 				downloadResultFields.put("data", downloadFile(verifyEDRRequestStatus));
 				downloadResultFields.put(STATUS, "SUCCESS");
-			} catch (FeignException e) {
-				log.error("Re-download RequestBody: " + e.request());
-				String errorMsg = "Unable to download existing subcribe data offer because: " + e.contentUTF8();
-				log.error(errorMsg);
-				prepareErrorMap(downloadResultFields, errorMsg);
 			} catch (Exception e) {
-				log.error("DownloadFileFromEDCUsingifAlreadyTransferStatusCompleted Oops! We have an Exception -" + e.getMessage());
-				String errorMsg = "Unable to download existing subcribe data offer because: " + e.getMessage();
+				String errorMsg = "DownloadFileFromEDCUsingifAlreadyTransferStatusCompleted Oops! We have -" + e.getMessage();
 				prepareErrorMap(downloadResultFields, errorMsg);
 			} finally {
 				response.put(assetId, downloadResultFields);
@@ -390,11 +403,22 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 		resultFields.put("error", errorMsg);
 	}
 
+	@SneakyThrows
 	private Object downloadFile(EDRCachedResponse verifyEDRRequestStatus) {
 		if (verifyEDRRequestStatus != null) {
-			EDRCachedByIdResponse authorizationToken = getAuthorizationTokenForDataDownload(
-					verifyEDRRequestStatus.getTransferProcessId());
-			return edrRequestHelper.getDataFromProvider(authorizationToken);
+			try {
+				EDRCachedByIdResponse authorizationToken = getAuthorizationTokenForDataDownload(
+						verifyEDRRequestStatus.getTransferProcessId());
+				return edrRequestHelper.getDataFromProvider(authorizationToken);
+			} catch (FeignException e) {
+				log.error("Download RequestBody: " + e.request());
+				String errorMsg = "Unable to download subcribe data offer because: " + e.contentUTF8();
+				throw new ServiceException(errorMsg);
+			} catch (Exception e) {
+				log.error("DownloadFileFromEDCUsingifAlreadyTransferStatusCompleted Oops! We have -" + e.getMessage());
+				String errorMsg = "Unable to download subcribe data offer because: " + e.getMessage();
+				throw new ServiceException(errorMsg);
+			}
 		}
 		return null;
 	}

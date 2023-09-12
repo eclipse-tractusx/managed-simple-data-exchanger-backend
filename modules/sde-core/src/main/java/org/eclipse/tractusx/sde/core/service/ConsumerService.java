@@ -224,9 +224,9 @@ public class ConsumerService {
 			}
 
 			if (edrNode != null) {
-				offer.setAgreementId(readFieldFromJsonNode(edrNode, "agreementId"));
-				offer.setExpirationDate(readFieldFromJsonNode(edrNode, "expirationDate"));
-				offer.setTransferProcessId(readFieldFromJsonNode(edrNode, "transferProcessId"));
+				offer.setAgreementId(readFieldFromJsonNode(edrNode, "edc:agreementId"));
+				offer.setExpirationDate(readFieldFromJsonNode(edrNode, "tx:expirationDate"));
+				offer.setTransferProcessId(readFieldFromJsonNode(edrNode, "edc:transferProcessId"));
 			}
 		}
 	}

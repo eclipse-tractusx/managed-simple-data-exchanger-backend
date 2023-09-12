@@ -2,13 +2,8 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
-## [2.1.2] - 2023-09-06
-### Added
-- Add entity mapping and model for pcf model execution.
-
 ## [2.1.1] - 2023-09-06
-### Added
-- Pcf model schema and model registration.
+- bumped version
 
 ## [2.1.0] - 2023-08-30
 ### Fixed
@@ -223,8 +218,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Compliance with Catena-X Guidelines
 - Integration with Digital Twin registry service.
 
-[unreleased]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.1.2...main
-[2.1.2]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.1.1...v2.1.2
+[unreleased]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.1.1...main
 [2.1.1]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.0.11...v2.1.0
 [2.0.11]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.0.10...v2.0.11

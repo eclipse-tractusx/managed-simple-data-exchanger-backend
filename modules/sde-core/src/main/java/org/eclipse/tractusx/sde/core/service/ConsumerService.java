@@ -36,6 +36,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.catalina.startup.FailedContext;
 import org.eclipse.tractusx.sde.common.enums.ProgressStatusEnum;
 import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
 import org.eclipse.tractusx.sde.common.model.Submodel;
@@ -113,11 +114,11 @@ public class ConsumerService {
 		entity.setDownloadSuccessed(successCount.get());
 		entity.setDownloadFailed(failedCount.get());
 		
-		entity.setStatus(ProgressStatusEnum.COMPLETED.toString());
-		if (failedCount.get() > 0 && consumerRequest.getOffers().size() != failedCount.get())
+		entity.setStatus(ProgressStatusEnum.FAILED.toString());
+		if (consumerRequest.getOffers().size() == successCount.get())
+			entity.setStatus(ProgressStatusEnum.COMPLETED.toString());
+		else if(successCount.get()!=0 && failedCount.get()!=0 )
 			entity.setStatus(ProgressStatusEnum.PARTIALED_FAILED.toString());
-		else
-			entity.setStatus(ProgressStatusEnum.FAILED.toString());
 
 		// Save consumer Download history in DB
 		consumerDownloadHistoryRepository.save(entity);
@@ -172,11 +173,11 @@ public class ConsumerService {
 				entity.setProcessId(processId);
 				entity.setReferenceProcessId(referenceProcessId);
 				
-				entity.setStatus(ProgressStatusEnum.COMPLETED.toString());
-				if (failedCount.get() > 0 && offerList.size() != failedCount.get())
+				entity.setStatus(ProgressStatusEnum.FAILED.toString());
+				if (offerList.size() == successCount.get())
+					entity.setStatus(ProgressStatusEnum.COMPLETED.toString());
+				else if(successCount.get()!=0 && failedCount.get()!=0 )
 					entity.setStatus(ProgressStatusEnum.PARTIALED_FAILED.toString());
-				else
-					entity.setStatus(ProgressStatusEnum.FAILED.toString());
 
 				// Save consumer Download history in DB
 				consumerDownloadHistoryRepository.save(entity);

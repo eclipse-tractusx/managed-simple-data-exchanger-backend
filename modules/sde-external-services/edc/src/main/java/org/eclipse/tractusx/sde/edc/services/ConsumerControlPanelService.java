@@ -389,7 +389,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 				downloadResultFields.put("data", downloadFile(verifyEDRRequestStatus));
 				downloadResultFields.put(STATUS, "SUCCESS");
 			} catch (Exception e) {
-				String errorMsg = "DownloadFileFromEDCUsingifAlreadyTransferStatusCompleted Oops! We have -" + e.getMessage();
+				String errorMsg = "We have -" + e.getMessage();
 				prepareErrorMap(downloadResultFields, errorMsg);
 			} finally {
 				response.put(assetId, downloadResultFields);

@@ -127,7 +127,7 @@ public class ConsumerService {
 		if (consumerRequest.getOffers().size() == successCount.get())
 			entity.setStatus(ProgressStatusEnum.COMPLETED.toString());
 		else if (successCount.get() != 0 && failedCount.get() != 0)
-			entity.setStatus(ProgressStatusEnum.PARTIALED_FAILED.toString());
+			entity.setStatus(ProgressStatusEnum.PARTIALLY_FAILED.toString());
 
 		// Save consumer Download history in DB
 		consumerDownloadHistoryRepository.save(entity);
@@ -187,7 +187,7 @@ public class ConsumerService {
 				if (offerList.size() == successCount.get())
 					entity.setStatus(ProgressStatusEnum.COMPLETED.toString());
 				else if (successCount.get() != 0 && failedCount.get() != 0)
-					entity.setStatus(ProgressStatusEnum.PARTIALED_FAILED.toString());
+					entity.setStatus(ProgressStatusEnum.PARTIALLY_FAILED.toString());
 
 				// Save consumer Download history in DB
 				consumerDownloadHistoryRepository.save(entity);

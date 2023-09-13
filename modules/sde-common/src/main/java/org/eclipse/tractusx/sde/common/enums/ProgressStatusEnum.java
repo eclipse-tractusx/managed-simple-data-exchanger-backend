@@ -26,5 +26,5 @@ public enum ProgressStatusEnum {
     IN_PROGRESS,
     COMPLETED,
     FAILED,
-    PARTIALED_FAILED
+    PARTIALLY_FAILED
 }

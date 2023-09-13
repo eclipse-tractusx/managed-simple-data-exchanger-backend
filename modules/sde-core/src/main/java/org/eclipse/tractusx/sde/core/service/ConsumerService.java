@@ -20,8 +20,8 @@
 
 package org.eclipse.tractusx.sde.core.service;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -45,7 +45,6 @@ import org.eclipse.tractusx.sde.core.failurelog.repository.ConsumerDownloadHisto
 import org.eclipse.tractusx.sde.core.processreport.entity.ConsumerDownloadHistoryEntity;
 import org.eclipse.tractusx.sde.core.processreport.mapper.ConsumerDownloadHistoryMapper;
 import org.eclipse.tractusx.sde.core.processreport.model.ConsumerDownloadHistory;
-import org.eclipse.tractusx.sde.core.utils.CsvUtil;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
 import org.eclipse.tractusx.sde.edc.model.request.Offer;
 import org.eclipse.tractusx.sde.edc.services.ConsumerControlPanelService;
@@ -53,12 +52,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StreamUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.opencsv.CSVWriter;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
@@ -306,17 +305,22 @@ public class ConsumerService {
 				String fileName = entry.getKey();
 				List<List<String>> value = entry.getValue();
 
-				ByteArrayInputStream file = CsvUtil.writeCsv(value);
+				// create a zip entry and add it to ZipOutputStream
 				ZipEntry e = new ZipEntry(fileName + ".csv");
-				// Configure the zip entry, the properties of the file
-				e.setSize(file.read());
-
-				e.setTime(System.currentTimeMillis());
-				// etc.
 				zippedOut.putNextEntry(e);
-				// And the content of the resource:
-				StreamUtils.copy(file, zippedOut);
-
+				// There is no need for staging the CSV on filesystem or reading bytes into
+				// memory. Directly write bytes to the output stream.
+				CSVWriter writer = new CSVWriter(new OutputStreamWriter(zippedOut));
+				for (List<String> list : value) {
+					String[] strarray = new String[list.size()];
+					list.toArray(strarray);
+					// write the contents
+					writer.writeNext(strarray, false);
+				}
+				// flush the writer. Very important!
+				writer.flush();
+				// close the entry. Note : we are not closing the zos just yet as we need to add
+				// more files to our ZIP
 				zippedOut.closeEntry();
 			}
 			zippedOut.finish();

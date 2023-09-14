@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
@@ -68,7 +67,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
-	private static final String REFRESHING = "REFRESHING";
 	private static final String NEGOTIATED = "NEGOTIATED";
 	private static final String STATUS = "status";
 	private final ContractOfferCatalogApi contractOfferCatalogApiProxy;

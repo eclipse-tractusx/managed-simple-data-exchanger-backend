@@ -20,6 +20,10 @@
 
 package org.eclipse.tractusx.sde.core.service;
 
+import static org.eclipse.tractusx.sde.common.enums.ProgressStatusEnum.COMPLETED;
+import static org.eclipse.tractusx.sde.common.enums.ProgressStatusEnum.FAILED;
+import static org.eclipse.tractusx.sde.common.enums.ProgressStatusEnum.PARTIALLY_FAILED;
+
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -182,11 +186,11 @@ public class ConsumerService {
 				entity.setProcessId(processId);
 				entity.setReferenceProcessId(referenceProcessId);
 
-				entity.setStatus(ProgressStatusEnum.FAILED.toString());
+				entity.setStatus(FAILED.toString());
 				if (offerList.size() == successCount.get())
-					entity.setStatus(ProgressStatusEnum.COMPLETED.toString());
+					entity.setStatus(COMPLETED.toString());
 				else if (successCount.get() != 0 && failedCount.get() != 0)
-					entity.setStatus(ProgressStatusEnum.PARTIALLY_FAILED.toString());
+					entity.setStatus(PARTIALLY_FAILED.toString());
 
 				// Save consumer Download history in DB
 				consumerDownloadHistoryRepository.save(entity);
@@ -214,10 +218,10 @@ public class ConsumerService {
 			if (dataNode != null && flagToDownloadImidiate) {
 				processCSVDataObject(successCount, failedCount, csvWithValue, offer, status, dataNode);
 			} else if (!flagToDownloadImidiate && "SUCCESS".equals(status.asText())) {
-				offer.setStatus(status.asText());
+				offer.setStatus("SUCCESS");
 				successCount.getAndIncrement();
 			} else {
-				offer.setStatus(status.asText());
+				offer.setStatus(FAILED.toString());
 				failedCount.getAndIncrement();
 				offer.setDownloadErrorMsg(readFieldFromJsonNode(node, "error"));
 			}
@@ -253,7 +257,7 @@ public class ConsumerService {
 			offer.setStatus(status.asText());
 			successCount.getAndIncrement();
 		} else {
-			offer.setStatus("FAILED");
+			offer.setStatus(FAILED.toString());
 			offer.setDownloadErrorMsg("The csv type data does not found in response");
 			failedCount.getAndIncrement();
 		}

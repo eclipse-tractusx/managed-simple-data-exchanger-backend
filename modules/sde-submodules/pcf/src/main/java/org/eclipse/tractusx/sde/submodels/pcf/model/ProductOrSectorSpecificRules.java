@@ -19,6 +19,8 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.submodels.pcf.model;
 
+import java.util.List;
+
 import com.google.gson.annotations.SerializedName;
 
 import lombok.AllArgsConstructor;
@@ -34,7 +36,7 @@ public class ProductOrSectorSpecificRules {
 	private String extWBCSDOperator;
 	
 	@SerializedName(value = "productOrSectorSpecificRules")
-	private ProductOrSectorSpecificRule productOrSectorSpecificRulesObj;
+	private List<ProductOrSectorSpecificRule> productOrSectorSpecificRulesObj;
 	
 	@SerializedName(value = "extWBCSD_otherOperatorName")
 	private String extWBCSDOtherOperatorName;

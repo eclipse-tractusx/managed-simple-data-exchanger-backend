@@ -64,6 +64,7 @@
 		<module>modules/sde-submodules/single-level-bom-as-planned</module>
 		<module>modules/sde-submodules/part-site-information-as-planned</module>
 		<module>modules/sde-submodules/single-level-usage-as-built</module>
+		<module>modules/sde-submodules/pcf</module>
 	</modules>
 
 	<dependencies>

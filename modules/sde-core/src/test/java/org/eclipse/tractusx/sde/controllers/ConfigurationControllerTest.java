@@ -44,14 +44,14 @@ public class ConfigurationControllerTest {
     @Test
     void testSaveClientConfig() throws Exception {
         mvc.perform(MockMvcRequestBuilders
-                        .post("/updateFtpsConfig")
+                        .post("/ftpsConfig")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(getJsonBody()))
                         .param("type", ConfigType.CLIENT.toString()))
                 .andExpect(status().isOk());
 
         mvc.perform(MockMvcRequestBuilders
-                        .post("/updateFtpsConfig")
+                        .post("/ftpsConfig")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(getJsonBody()))
                         .param("type", ConfigType.CLIENT.toString()))
@@ -66,14 +66,14 @@ public class ConfigurationControllerTest {
         System.out.println(ftpsConfigRepository.findAll().size());
 
         mvc.perform(MockMvcRequestBuilders
-                        .post("/updateFtpsConfig")
+                        .post("/ftpsConfig")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(getJsonBody()))
                         .param("type", ConfigType.CLIENT.toString()))
                 .andExpect(status().isOk());
 
         mvc.perform(MockMvcRequestBuilders
-                        .post("/updateFtpsConfig")
+                        .post("/ftpsConfig")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(getJsonBody()))
                         .param("type", ConfigType.METADATA.toString()))

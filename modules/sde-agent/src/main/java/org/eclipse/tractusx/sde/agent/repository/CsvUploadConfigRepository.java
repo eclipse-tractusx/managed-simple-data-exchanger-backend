@@ -19,9 +19,17 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.sftp.service;
 
-public enum ConfigType {
+package org.eclipse.tractusx.sde.agent.repository;
 
-    METADATA, CLIENT, SFTP, SCHEDULER, NOTIFICATION, JOB_MAINTENANCE
+import org.eclipse.tractusx.sde.agent.entity.CsvUploadConfigEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface CsvUploadConfigRepository extends JpaRepository<CsvUploadConfigEntity, String> {
+
+    List<CsvUploadConfigEntity> findAllByType(String type);
 }

@@ -134,7 +134,7 @@ public class ProcessRemoteCsv {
         } else {
             selfFactory.getObject().createDbReport(retriever, inProgressIdList).forEach(Runnable::run);
             tryRun(retriever::close, IGNORE());
-            // Notification method call
+            // EmailNotificationModel method call
             taskScheduler.schedule(() -> sendNotificationForProcessedFiles(schedulerId), Instant.now());
 
         }

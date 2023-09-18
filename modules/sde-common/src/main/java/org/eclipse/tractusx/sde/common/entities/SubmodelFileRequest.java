@@ -35,6 +35,9 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SubmodelFileRequest {
 
+	@JsonProperty(value = "policy_name")
+	private String policyName;
+
 	@JsonProperty(value = "type_of_access")
 	private String typeOfAccess;
 	

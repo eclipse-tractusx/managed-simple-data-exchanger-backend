@@ -1,7 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2023 BMW GmbH
- * Copyright (c) 2023 T-Systems International GmbH
- * Copyright (c) 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,17 +18,9 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-
-package org.eclipse.tractusx.sde.agent.repository;
-
-import org.eclipse.tractusx.sde.agent.entity.SftpConfigEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
-import java.util.List;
-
-@Repository
-public interface FtpsConfigRepository extends JpaRepository<SftpConfigEntity, String> {
-
-    List<SftpConfigEntity> findAllByType(String type);
-}
+CREATE TABLE policy
+(
+    uuid                      VARCHAR(50) PRIMARY KEY,
+    name                      VARCHAR(50),
+    content                   TEXT
+);

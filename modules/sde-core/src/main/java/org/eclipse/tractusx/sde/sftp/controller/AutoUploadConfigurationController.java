@@ -21,25 +21,32 @@
 
 package org.eclipse.tractusx.sde.sftp.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
-import org.eclipse.tractusx.sde.sftp.service.ConfigType;
-import org.eclipse.tractusx.sde.sftp.service.MetadataProvider;
-import org.eclipse.tractusx.sde.sftp.service.SftpRetrieverFactoryImpl;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.eclipse.tractusx.sde.agent.model.SftpConfigModel;
+import org.eclipse.tractusx.sde.sftp.dto.EmailNotificationModel;
+import org.eclipse.tractusx.sde.sftp.service.*;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-public class FtpsConfigurationController {
+public class AutoUploadConfigurationController {
 
     private final MetadataProvider metadataProvider;
     private final SftpRetrieverFactoryImpl sftpRetrieverFactory;
+    private final SchedulerService schedulerService;
+    private final CsvUploadConfirationService csvUploadConfirationService;
 
-    @PostMapping("/updateFtpsConfig")
+
+    @PutMapping("/scheduler/{uuid}")
+    public String updateScheduler(@PathVariable String uuid,
+                                  @NotBlank @RequestBody JsonNode schedulerConfig) throws JsonProcessingException {
+        return schedulerService.updateScheduler(uuid, schedulerConfig);
+    }
+
+    @PostMapping("/ftpsConfig")
     public Object updateFtpsConfig(@NotBlank @RequestBody JsonNode config,
                                    @RequestParam("type") ConfigType type) {
         if (type.equals(ConfigType.METADATA)) {
@@ -49,5 +56,26 @@ public class FtpsConfigurationController {
         }
         return "success";
     }
+
+    @GetMapping("/ftpsConfig")
+    public SftpConfigModel getFtpsConfig() {
+        return sftpRetrieverFactory.getConfig();
+    }
+
+    @PostMapping("/notification")
+    public String updateNotificationConfig(@NotBlank @RequestBody JsonNode config) throws JsonProcessingException {
+        return csvUploadConfirationService.saveCsvUploadConfig(config, ConfigType.NOTIFICATION);
+    }
+
+    @GetMapping("/notification")
+    public EmailNotificationModel getNotificationConfig() {
+        return (EmailNotificationModel) csvUploadConfirationService.getCsvUploadConfig(ConfigType.NOTIFICATION);
+    }
+
+    @PostMapping("/job-maintenance")
+    public String updateJobMaintenanceConfig(@NotBlank @RequestBody JsonNode config) throws JsonProcessingException {
+        return csvUploadConfirationService.saveCsvUploadConfig(config, ConfigType.JOB_MAINTENANCE);
+    }
+
 
 }

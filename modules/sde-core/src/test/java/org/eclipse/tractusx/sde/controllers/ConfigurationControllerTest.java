@@ -3,7 +3,7 @@ package org.eclipse.tractusx.sde.controllers;
 
 import net.minidev.json.JSONObject;
 import org.eclipse.tractusx.sde.EnableTestContainers;
-import org.eclipse.tractusx.sde.agent.repository.FtpsConfigRepository;
+import org.eclipse.tractusx.sde.agent.repository.CsvUploadConfigRepository;
 import org.eclipse.tractusx.sde.sftp.service.ConfigType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +34,7 @@ public class ConfigurationControllerTest {
 
 
     @Autowired
-    FtpsConfigRepository ftpsConfigRepository;
+    CsvUploadConfigRepository ftpsConfigRepository;
 
     @BeforeEach
     public void init() {

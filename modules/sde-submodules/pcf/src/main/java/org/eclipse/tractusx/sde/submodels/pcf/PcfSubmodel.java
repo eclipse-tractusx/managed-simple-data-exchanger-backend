@@ -23,6 +23,7 @@ import java.io.InputStream;
 
 import org.eclipse.tractusx.sde.common.extensions.SubmodelExtension;
 import org.eclipse.tractusx.sde.common.model.Submodel;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import jakarta.annotation.PostConstruct;
@@ -32,6 +33,9 @@ public class PcfSubmodel extends SubmodelExtension {
 
 	private Submodel submodel = null;
 
+	@Autowired
+	private PcfExecutor pcfWorkflow;
+	
 	@PostConstruct
 	public void init() {
 
@@ -45,6 +49,7 @@ public class PcfSubmodel extends SubmodelExtension {
 
 		submodel = loadSubmodel(input);
 		
+		submodel.setExecutor(pcfWorkflow);
 
 		submodel.addProperties("tableName", "pcf_aspect");
 	}

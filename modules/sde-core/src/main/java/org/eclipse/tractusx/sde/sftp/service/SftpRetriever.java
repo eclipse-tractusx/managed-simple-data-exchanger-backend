@@ -40,7 +40,7 @@ import java.util.stream.StreamSupport;
 @RequiredArgsConstructor
 public class SftpRetriever implements RetrieverI {
     private ChannelSftp channelSftp;
-    private final Session session;
+    private Session session;
     private final CsvHandlerService csvHandlerService;
     private final Map<String, String> idToPath;
     private final String inProgressLocation;
@@ -48,6 +48,10 @@ public class SftpRetriever implements RetrieverI {
     private final String partialSuccessLocation;
     private final String failedLocation;
     private final String host;
+    private final int port;
+    private final String username;
+    private final String password;
+    private final String pKey;
 
     public SftpRetriever(CsvHandlerService csvHandlerService,
                          String host,
@@ -62,18 +66,16 @@ public class SftpRetriever implements RetrieverI {
                          String failedLocation
                          ) throws JSchException, SftpException {
         this.csvHandlerService = csvHandlerService;
-        JSch jsch = new JSch();
-        if (pKey != null) {
-            jsch.addIdentity(host + "-agent", pKey.getBytes(), null, null);
-        }
-        session = jsch.getSession(username, host, port);
-        if (password != null) {
-            session.setPassword(password);
-        }
-        session.setConfig("StrictHostKeyChecking", "no");
-        session.setConfig("PreferredAuthentications", "publickey,password");
-        session.connect();
-        channelSftp = (ChannelSftp) session.openChannel("sftp");
+        this.host = host;
+        this.port = port;
+        this.username = username;
+        this.password = password;
+        this.pKey = pKey;
+        this.inProgressLocation = inProgressLocation;
+        this.successLocation = successLocation;
+        this.partialSuccessLocation = partialSuccessLocation;
+        this.failedLocation = failedLocation;
+
         idToPath = ensureConnected().ls(toBeProcessedLocation).stream()
                 .filter(lsEntry -> !lsEntry.getAttrs().isDir())
                 .filter(lsEntry -> lsEntry.getFilename().toLowerCase().endsWith(".csv"))
@@ -82,16 +84,22 @@ public class SftpRetriever implements RetrieverI {
                         path -> UUID.randomUUID().toString(),
                         Function.identity()
                 ));
-        this.inProgressLocation = inProgressLocation;
-        this.successLocation = successLocation;
-        this.partialSuccessLocation = partialSuccessLocation;
-        this.failedLocation = failedLocation;
-        this.host = host;
     }
 
     private ChannelSftp ensureConnected() throws JSchException {
-        if (!session.isConnected()) {
+        if (session == null || !session.isConnected()) {
+            JSch jsch = new JSch();
+            if (pKey != null) {
+                jsch.addIdentity(host + "-agent", pKey.getBytes(), null, null);
+            }
+            session = jsch.getSession(username, host, port);
+            if (password != null) {
+                session.setPassword(password);
+            }
+            session.setConfig("StrictHostKeyChecking", "no");
+            session.setConfig("PreferredAuthentications", "publickey,password");
             session.connect();
+
             channelSftp = (ChannelSftp) session.openChannel("sftp");
         }
         if (!channelSftp.isConnected()) {
@@ -151,7 +159,6 @@ public class SftpRetriever implements RetrieverI {
     }
 
     @Override
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     public Iterator<String> iterator() {
         var it = idToPath.entrySet().iterator();
         return StreamSupport.stream(

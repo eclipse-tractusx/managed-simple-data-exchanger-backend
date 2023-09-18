@@ -4,6 +4,8 @@ package org.eclipse.tractusx.sde.controllers;
 import net.minidev.json.JSONObject;
 import org.eclipse.tractusx.sde.EnableTestContainers;
 import org.eclipse.tractusx.sde.agent.repository.CsvUploadConfigRepository;
+import org.eclipse.tractusx.sde.notification.config.EmailConfiguration;
+import org.eclipse.tractusx.sde.notification.manager.EmailManager;
 import org.eclipse.tractusx.sde.sftp.service.ConfigType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -35,6 +38,12 @@ public class ConfigurationControllerTest {
 
     @Autowired
     CsvUploadConfigRepository ftpsConfigRepository;
+
+    @MockBean
+    EmailManager emailManager;
+
+    @MockBean
+    EmailConfiguration emailConfiguration;
 
     @BeforeEach
     public void init() {

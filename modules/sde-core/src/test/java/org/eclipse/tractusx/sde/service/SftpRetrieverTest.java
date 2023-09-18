@@ -6,6 +6,8 @@ import lombok.experimental.Delegate;
 import org.eclipse.tractusx.sde.EnableTestContainers;
 import org.eclipse.tractusx.sde.TestContainerInitializer;
 import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
+import org.eclipse.tractusx.sde.notification.config.EmailConfiguration;
+import org.eclipse.tractusx.sde.notification.manager.EmailManager;
 import org.eclipse.tractusx.sde.sftp.RetrieverI;
 import org.eclipse.tractusx.sde.sftp.service.SftpRetrieverFactoryImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +17,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -30,6 +33,12 @@ public class SftpRetrieverTest {
 
     @Autowired
     CsvHandlerService csvHandlerService;
+
+    @MockBean
+    EmailManager emailManager;
+
+    @MockBean
+    EmailConfiguration emailConfiguration;
 
     @Autowired
     SftpRetrieverFactoryImpl sftpRetrieverFactory;

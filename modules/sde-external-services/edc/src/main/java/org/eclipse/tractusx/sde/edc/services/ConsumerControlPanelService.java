@@ -267,7 +267,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 		consumerRequest.getOffers().parallelStream().forEach(offer -> {
 			Map<String, Object> resultFields = new ConcurrentHashMap<>();
 			try {
-				EDRCachedResponse checkContractNegotiationStatus = verifyOrCreateContractNegotiation(consumerRequest,
+				EDRCachedResponse checkContractNegotiationStatus = verifyOrCreateContractNegotiation(consumerRequest.getConnectorId(),
 						extensibleProperty, recipientURL, action, offer);
 
 				resultFields.put("edr", checkContractNegotiationStatus);
@@ -301,26 +301,28 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 	}
 
 	@SneakyThrows
-	private EDRCachedResponse verifyOrCreateContractNegotiation(ConsumerRequest consumerRequest,
-			HashMap<String, String> extensibleProperty, String recipientURL, ActionRequest action, Offer offer) {
+	public EDRCachedResponse verifyOrCreateContractNegotiation(String connectorId,
+			Map<String, String> extensibleProperty, String recipientURL, ActionRequest action, Offer offer) {
 		// Verify if there already EDR process initiated then skip t for again download
 		List<EDRCachedResponse> eDRCachedResponseList = edrRequestHelper.getEDRCachedByAsset(offer.getAssetId());
 		EDRCachedResponse checkContractNegotiationStatus = verifyEDRResponse(eDRCachedResponseList);
 
 		if (checkContractNegotiationStatus == null) {
 			log.info("There was no EDR process initiated " + offer.getAssetId() + ", so initiating EDR process");
-			edrRequestHelper.edrRequestInitiate(recipientURL, consumerRequest.getConnectorId(), offer.getOfferId(),
-					offer.getAssetId(), action, extensibleProperty);
+			edrRequestHelper.edrRequestInitiate(recipientURL, connectorId, offer.getOfferId(), offer.getAssetId(),
+					action, extensibleProperty);
 		} else {
 			log.info("There was EDR process initiated " + offer.getAssetId() + ", so ignoring EDR process initiation");
 		}
-
-		checkContractNegotiationStatus = verifyEDRRequestStatus(offer.getAssetId());
+		
+		if (checkContractNegotiationStatus!=null && !NEGOTIATED.equals(checkContractNegotiationStatus.getEdrState()))
+			checkContractNegotiationStatus = verifyEDRRequestStatus(offer.getAssetId());
+		
 		return checkContractNegotiationStatus;
 	}
 
 	@SneakyThrows
-	private EDRCachedResponse verifyEDRRequestStatus(String assetId) {
+	public EDRCachedResponse verifyEDRRequestStatus(String assetId) {
 		EDRCachedResponse eDRCachedResponse = null;
 		String edrStatus = "NewToSDE";
 		List<EDRCachedResponse> eDRCachedResponseList = null;
@@ -379,7 +381,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 	}
 
 	@SneakyThrows
-	private EDRCachedByIdResponse getAuthorizationTokenForDataDownload(String transferProcessId) {
+	public EDRCachedByIdResponse getAuthorizationTokenForDataDownload(String transferProcessId) {
 		return edrRequestHelper.getEDRCachedByTransferProcessId(transferProcessId);
 	}
 

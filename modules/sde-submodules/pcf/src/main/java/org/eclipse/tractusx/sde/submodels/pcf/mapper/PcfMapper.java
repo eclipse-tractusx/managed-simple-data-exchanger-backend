@@ -99,9 +99,9 @@ public abstract class PcfMapper {
 				.productMassPerDeclaredUnit(entity.getProductMassPerDeclaredUnit())
 				.productOrSectorSpecificRules(List.of(ProductOrSectorSpecificRules.builder()
 						.extWBCSDOperator(entity.getExtWBCSDOperator())
-						.productOrSectorSpecificRulesObj(ProductOrSectorSpecificRule.builder()
+						.productOrSectorSpecificRulesObj(List.of(ProductOrSectorSpecificRule.builder()
 								.ruleName(entity.getRuleName())
-								.build())
+								.build()))
 						.extWBCSDOtherOperatorName(entity.getExtWBCSDOtherOperatorName())
 						.build()))
 				.extTFSAllocationWasteIncineration(entity.getExtTFSAllocationWasteIncineration())
@@ -142,18 +142,19 @@ public abstract class PcfMapper {
 				.build();
 		
 		PcfSubmodelResponse build = PcfSubmodelResponse.builder().specVersion(entity.getSpecVersion())
-				.companyIds(CompanyIds.builder().companyId(entity.getCompanyId()).build())
+				.companyIds(List.of(CompanyIds.builder().companyId(entity.getCompanyId()).build()))
 				.extWBCSDProductCodeCpc(entity.getExtWBCSDProductCodeCpc()).created(entity.getCreated())
 				.companyName(entity.getCompanyName()).extWBCSDPfStatus(entity.getExtWBCSDPfStatus())
-				.version(entity.getVersion()).productName(entity.getProductName()).pcf(pcfResponse)
+				.version(entity.getVersion())
+				.productName(entity.getProductName()).pcf(pcfResponse)
 				.partialFullPcf(entity.getPartialFullPcf())
-				.productIds(ProductIds.builder().productId(entity.getProductId()).build())
+				.productIds(List.of(ProductIds.builder().productId(entity.getProductId()).build()))
 
 				.validityPeriodStart(entity.getValidityPeriodStart()).comment(entity.getComment()).id(entity.getId())
 				.validityPeriodEnd(entity.getValidityPeriodEnd()).pcfLegalStatement(entity.getPcfLegalStatement())
 				.productDescription(entity.getProductDescription())
 
-				.precedingPfIds(PrecedingPfIds.builder().id(entity.getPrecedingPfId()).build()).build();
+				.precedingPfIds(List.of(PrecedingPfIds.builder().id(entity.getPrecedingPfId()).build())).build();
 	
 		PcfAspect csv = mapFrom(entity);
 		

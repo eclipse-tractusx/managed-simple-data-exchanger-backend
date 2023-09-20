@@ -33,7 +33,7 @@ import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.core.controller.ConsumerController;
 import org.eclipse.tractusx.sde.core.service.ConsumerService;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
-import org.eclipse.tractusx.sde.edc.model.request.OfferRequest;
+import org.eclipse.tractusx.sde.edc.model.request.Offer;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.eclipse.tractusx.sde.edc.services.ConsumerControlPanelService;
 import org.junit.jupiter.api.Test;
@@ -106,9 +106,9 @@ class ConsumerControllerTest {
 	// @Test
 	void testSubscribeDataOffers() throws Exception {
 		doNothing().when(consumerControlPanelService).subscribeDataOffers((ConsumerRequest) any(), anyString());
-		List<OfferRequest> offers = new ArrayList<>();
+		List<Offer> offers = new ArrayList<>();
 		List<UsagePolicies> policies = new ArrayList<>();
-		OfferRequest mockOffer = Mockito.mock(OfferRequest.class);
+		Offer mockOffer = Mockito.mock(Offer.class);
 		offers.add(mockOffer);
 		UsagePolicies mockPolicy = Mockito.mock(UsagePolicies.class);
 		policies.add(mockPolicy);

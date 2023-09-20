@@ -103,7 +103,7 @@ public class ProcessReportUseCase {
 				.findAll(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "startDate")));
 		List<ProcessReport> processReports = result.get().map(mapper::mapFrom).toList();
 		return ProcessReportPageResponse.builder().items(processReports).pageSize(result.getSize())
-				.pageNumber(result.getNumber()).totalItems(result.getTotalElements()).build();
+				.page(result.getNumber()).totalItems(result.getTotalElements()).build();
 	}
 
 	public ProcessReport getProcessReportById(String id) {

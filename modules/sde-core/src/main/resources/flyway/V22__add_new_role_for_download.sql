@@ -22,15 +22,13 @@ INSERT INTO sde_permission (sde_permission,description)
 INSERT INTO sde_permission (sde_permission,description)
 	VALUES ('consumer_download_data_offer','Allows consumer user to download data again');
 INSERT INTO sde_permission (sde_permission,description)
-	VALUES ('consumer_view_download_history','Allows consumer user to view download data history');
-	
+	VALUES ('consumer_view_download_history','Allows consumer user to view download data history');	
 INSERT INTO sde_role_permission_mapping (sde_permission,sde_role)
 	VALUES ('consumer_subscribe_download_data_offers','Creator');
 INSERT INTO sde_role_permission_mapping (sde_permission,sde_role)
 	VALUES ('consumer_download_data_offer','Creator');
 INSERT INTO sde_role_permission_mapping (sde_permission,sde_role)
 	VALUES ('consumer_view_download_history','Creator');
-	
 INSERT INTO sde_role_permission_mapping (sde_permission,sde_role)
 	VALUES ('consumer_download_data_offer','User');
 INSERT INTO sde_role_permission_mapping (sde_permission,sde_role)

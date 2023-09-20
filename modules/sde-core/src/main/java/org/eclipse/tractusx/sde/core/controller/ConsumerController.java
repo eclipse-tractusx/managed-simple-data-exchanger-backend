@@ -113,6 +113,7 @@ public class ConsumerController {
 			throws Exception {
 		log.info("Request received : /api/view-download-history-details");
 		return ok().body(consumerService.viewConsumerDownloadHistoryDetails(processId));
+
 	}
 
 }

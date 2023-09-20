@@ -56,7 +56,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
-
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -248,7 +247,6 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
 	public Map<String, Object> subscribeAndDownloadDataOffers(ConsumerRequest consumerRequest,
 			boolean flagToDownloadImidiate) {
-
 		HashMap<String, String> extensibleProperty = new HashMap<>();
 		Map<String, Object> response = new ConcurrentHashMap<>();
 
@@ -296,7 +294,6 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 				response.put(offer.getAssetId(), resultFields);
 			}
 		});
-
 		return response;
 	}
 

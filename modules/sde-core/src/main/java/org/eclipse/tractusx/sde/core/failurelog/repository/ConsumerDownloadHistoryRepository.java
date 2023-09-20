@@ -1,8 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 Critical TechWorks GmbH
- * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023 T-Systems International GmbH
+ * Copyright (c) 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,23 +18,14 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.core.processreport.model;
+package org.eclipse.tractusx.sde.core.failurelog.repository;
 
-import java.util.List;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.eclipse.tractusx.sde.core.processreport.entity.ConsumerDownloadHistoryEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class ProcessReportPageResponse {
+public interface ConsumerDownloadHistoryRepository extends JpaRepository<ConsumerDownloadHistoryEntity, String> {
 
-    private int page;
-    private int pageSize;
-    private long totalItems;
-    private List<ProcessReport> items;
+	ConsumerDownloadHistoryEntity findByProcessId(String id);
+
 }

@@ -25,8 +25,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
@@ -39,9 +41,12 @@ import org.eclipse.tractusx.sde.edc.entities.request.policies.ActionRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyConstraintBuilderService;
 import org.eclipse.tractusx.sde.edc.facilitator.AbstractEDCStepsHelper;
 import org.eclipse.tractusx.sde.edc.facilitator.ContractNegotiateManagementHelper;
+import org.eclipse.tractusx.sde.edc.facilitator.EDRRequestHelper;
 import org.eclipse.tractusx.sde.edc.gateways.database.ContractNegotiationInfoRepository;
 import org.eclipse.tractusx.sde.edc.model.contractnegotiation.ContractNegotiationDto;
 import org.eclipse.tractusx.sde.edc.model.contractoffers.ContractOfferRequestFactory;
+import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedByIdResponse;
+import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedResponse;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.eclipse.tractusx.sde.edc.util.UtilityFunctions;
@@ -50,7 +55,9 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -60,6 +67,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
 	private final ContractOfferCatalogApi contractOfferCatalogApiProxy;
 	private final ContractNegotiateManagementHelper contractNegotiateManagement;
+	private final EDRRequestHelper edrRequestHelper;
 
 	private final ContractNegotiationInfoRepository contractNegotiationInfoRepository;
 	private final PolicyConstraintBuilderService policyConstraintBuilderService;
@@ -95,7 +103,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 		JsonNode policy = offer.get("odrl:hasPolicy");
 
 		String edcstr = "edc:";
-		
+
 		QueryDataOfferModel build = QueryDataOfferModel.builder()
 				.assetId(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_ID))
 				.connectorOfferUrl(sproviderUrl + File.separator + getFieldFromJsonNode(offer, "@id"))
@@ -209,19 +217,15 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 						&& !checkContractNegotiationStatus.get().getState().equals("FINALIZED")
 						&& !checkContractNegotiationStatus.get().getState().equals("TERMINATED") && counter <= retry);
 
-			} catch(InterruptedException ie) {
+			} catch (InterruptedException ie) {
 				log.error("Exception in subscribeDataOffers" + ie.getMessage());
 				Thread.currentThread().interrupt();
 			} catch (Exception e) {
 				log.error("Exception in subscribeDataOffers" + e.getMessage());
 			} finally {
-
-				// Local DB entry
 				ContractNegotiationInfoEntity contractNegotiationInfoEntity = ContractNegotiationInfoEntity.builder()
-						.id(UUID.randomUUID().toString())
-						.processId(processId)
-						.connectorId(consumerRequest.getConnectorId())
-						.offerId(offer.getOfferId())
+						.id(UUID.randomUUID().toString()).processId(processId)
+						.connectorId(consumerRequest.getConnectorId()).offerId(offer.getOfferId())
 						.contractNegotiationId(negotiateContractId != null ? negotiateContractId.get() : null)
 						.status(checkContractNegotiationStatus.get() != null
 								? checkContractNegotiationStatus.get().getState()
@@ -234,4 +238,84 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
 	}
 
+	public Object subscribeAndDownloadDataOffers(@Valid ConsumerRequest consumerRequest) {
+
+		HashMap<String, String> extensibleProperty = new HashMap<>();
+		Map<String, Object> response = new ConcurrentHashMap<>();
+
+		var recipientURL = UtilityFunctions.removeLastSlashOfUrl(consumerRequest.getProviderUrl());
+
+		List<UsagePolicies> policies = consumerRequest.getPolicies();
+
+		Optional<UsagePolicies> findFirst = policies.stream()
+				.filter(type -> type.getType().equals(UsagePolicyEnum.CUSTOM)).findFirst();
+
+		if (findFirst.isPresent()) {
+			extensibleProperty.put(findFirst.get().getType().name(), findFirst.get().getValue());
+		}
+
+		ActionRequest action = policyConstraintBuilderService.getUsagePolicyConstraints(policies);
+		consumerRequest.getOffers().parallelStream().forEach(offer -> {
+			try {
+				edrRequestHelper.edrRequestInitiate(recipientURL, consumerRequest.getConnectorId(), offer.getOfferId(),
+						offer.getAssetId(), action, extensibleProperty);
+
+				EDRCachedResponse checkContractNegotiationStatus = verifyEDRRequestStatus(offer.getAssetId());
+
+				response.put(offer.getAssetId(), downloadFile(checkContractNegotiationStatus));
+
+			} catch (Exception e) {
+				log.error("Exception in subscribeAndDownloadDataOffers" + e.getMessage());
+				response.put(offer.getAssetId(), e.getMessage());
+			}
+		});
+		return response;
+	}
+
+	@SneakyThrows
+	private EDRCachedResponse verifyEDRRequestStatus(String assetId) {
+		EDRCachedResponse eDRCachedResponse = null;
+		List<EDRCachedResponse> eDRCachedResponseList = null;
+		try {
+			int retry = 5;
+			int counter = 1;
+			do {
+				Thread.sleep(5000);
+				eDRCachedResponseList = edrRequestHelper.getEDRCachedByAsset(assetId);
+				counter++;
+			} while (eDRCachedResponseList != null && !eDRCachedResponseList.isEmpty()
+					&& !eDRCachedResponseList.get(0).getEdrState().equals("NEGOTIATED") && counter <= retry);
+
+			if (eDRCachedResponseList != null && !eDRCachedResponseList.isEmpty())
+				eDRCachedResponse = eDRCachedResponseList.get(0);
+		} catch (InterruptedException ie) {
+			log.error("Exception in verifyEDRRequestStatus" + ie.getMessage());
+			Thread.currentThread().interrupt();
+			throw ie;
+		} catch (Exception e) {
+			log.error("Exception in verifyEDRRequestStatus" + e.getMessage());
+			throw e;
+		}
+		return eDRCachedResponse;
+	}
+
+	@SneakyThrows
+	private EDRCachedByIdResponse getAuthorizationTokenForDataDownload(String transferProcessId) {
+		return edrRequestHelper.getEDRCachedByTransferProcessId(transferProcessId);
+	}
+
+	@SneakyThrows
+	public Object downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(String assetId) {
+		EDRCachedResponse verifyEDRRequestStatus = verifyEDRRequestStatus(assetId);
+		return downloadFile(verifyEDRRequestStatus);
+	}
+
+	private Object downloadFile(EDRCachedResponse verifyEDRRequestStatus) {
+		if (verifyEDRRequestStatus != null) {
+			EDRCachedByIdResponse authorizationToken = getAuthorizationTokenForDataDownload(
+					verifyEDRRequestStatus.getTransferProcessId());
+			return edrRequestHelper.getDataFromProvider(authorizationToken);
+		}
+		return null;
+	}
 }

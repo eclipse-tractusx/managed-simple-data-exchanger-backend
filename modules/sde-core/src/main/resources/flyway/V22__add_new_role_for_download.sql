@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023 T-Systems International GmbH
+ * Copyright (c) 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,18 +17,12 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
+INSERT INTO sde_permission (sde_permission,description)
+	VALUES ('consumer_download_data','Allows consumer user to download data');
+	
+INSERT INTO sde_role_permission_mapping (sde_permission,sde_role)
+	VALUES ('consumer_download_data','User');
 
-package org.eclipse.tractusx.sde.edc.api;
+INSERT INTO sde_role_permission_mapping (sde_permission,sde_role)
+	VALUES ('consumer_download_data','Creator');
 
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-
-import com.fasterxml.jackson.databind.JsonNode;
-
-@FeignClient(value = "ContractOfferCatalogApi", url = "${edc.consumer.hostname}${edc.consumer.managementpath:/data}${edc.consumer.managementpath.apiversion:/v2}", configuration = EDCDataConsumerConfiguration.class)
-public interface ContractOfferCatalogApi {
-
-	@PostMapping(value = "/catalog/request")
-	public JsonNode getContractOffersCatalog(@RequestBody JsonNode body);
-}

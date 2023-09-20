@@ -88,6 +88,9 @@ class ConsumerControlPanelServiceTest {
 
 	@Autowired
 	private ConsumerControlPanelService consumerControlPanelService;
+	
+	@MockBean
+	private EDRRequestHelper edrRequestHelper;
 
 	@MockBean
 	private ContractOfferCatalogApi contractOfferCatalogApi;

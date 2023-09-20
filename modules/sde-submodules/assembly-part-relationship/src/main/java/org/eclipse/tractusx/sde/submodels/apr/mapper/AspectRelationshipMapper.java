@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.eclipse.tractusx.sde.common.mapper.AspectResponseFactory;
 import org.eclipse.tractusx.sde.submodels.apr.entity.AspectRelationshipEntity;
 import org.eclipse.tractusx.sde.submodels.apr.model.AspectRelationship;
 import org.eclipse.tractusx.sde.submodels.apr.model.AspectRelationshipResponse;
@@ -32,6 +33,7 @@ import org.eclipse.tractusx.sde.submodels.apr.model.ChildItems;
 import org.eclipse.tractusx.sde.submodels.apr.model.Quantity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,11 +48,19 @@ import lombok.SneakyThrows;
 public abstract class AspectRelationshipMapper {
 
 	ObjectMapper mapper = new ObjectMapper();
+	
+	@Autowired
+	private AspectResponseFactory aspectResponseFactory;
 
 	@Mapping(source = "parentUuid", target = "parentCatenaXId")
 	@Mapping(source = "childUuid", target = "childCatenaXId")
 	public abstract AspectRelationshipEntity mapFrom(AspectRelationship aspectRelationShip);
 
+	@Mapping(source = "parentCatenaXId", target = "parentUuid")
+	@Mapping(source = "childCatenaXId", target = "childUuid")
+	public abstract AspectRelationship mapFrom(AspectRelationshipEntity entity);
+
+	
 	@SneakyThrows
 	public AspectRelationship mapFrom(ObjectNode aspectRelationship) {
 		return mapper.readValue(aspectRelationship.toString(), AspectRelationship.class);
@@ -70,12 +80,18 @@ public abstract class AspectRelationshipMapper {
 			return null;
 		}
 
-		Set<ChildItems> childItems = aspectRelationships.stream().map(this::toChildItems).collect(Collectors.toSet());
-		return new Gson().toJsonTree(
-				AspectRelationshipResponse.builder()
+		Set<ChildItems> childItemsList = aspectRelationships.stream().map(this::toChildItems)
+				.collect(Collectors.toSet());
+		AspectRelationshipResponse build = AspectRelationshipResponse.builder()
 				.catenaXId(parentCatenaXUuid)
-				.childItems(childItems)
-				.build()).getAsJsonObject();
+				.childItems(childItemsList)
+				.build();
+		
+		AspectRelationshipEntity aspectRelationshipEntity = aspectRelationships.get(0);
+		
+		JsonObject csvObj = mapFromEntity(aspectRelationshipEntity);
+
+		return aspectResponseFactory.maptoReponse(csvObj, build);
 
 	}
 

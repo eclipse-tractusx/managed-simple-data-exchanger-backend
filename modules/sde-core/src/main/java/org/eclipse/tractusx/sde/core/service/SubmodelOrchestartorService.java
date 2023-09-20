@@ -67,7 +67,9 @@ public class SubmodelOrchestartorService {
 	private final FailureLogs failureLogs;
 
 	private final CsvHandlerService csvHandlerService;
-
+	
+	private final SubmodelCsvService submodelCsvService;
+	
 	ObjectMapper mapper = new ObjectMapper();
 
 	public void processSubmodelCsv(SubmodelFileRequest submodelFileRequest, String processId, String submodel) {
@@ -206,17 +208,31 @@ public class SubmodelOrchestartorService {
 	public Map<Object, Object> readCreatedTwinsDetails(String submodel, String uuid) {
 		Submodel submodelSchema = submodelService.findSubmodelByNameAsSubmdelObject(submodel);
 		SubmodelExecutor executor = submodelSchema.getExecutor();
-		return submodelMapper.jsonPojoToMap(executor.readCreatedTwinsDetails(uuid));
+		JsonObject readCreatedTwinsDetails = executor.readCreatedTwinsDetails(uuid);
+		List<String> csvHeader = submodelCsvService.getCSVHeader(submodelSchema);
+		JsonObject jElement = readCreatedTwinsDetails.get("csv").getAsJsonObject();
+		JsonObject jObject=new JsonObject();
+		for (String field : csvHeader) {
+			jObject.add(field, jElement.get(field));
+		}
+		readCreatedTwinsDetails.add("csv", jObject);
+		return submodelMapper.jsonPojoToMap(readCreatedTwinsDetails);
 	}
 	
 	//New method of CSV process for Automation
 	public void processSubmodelAutomationCsv(SubmodelFileRequest submodelFileRequest, String processId) {
 		
-		List<Submodel> submodelDetails = submodelService.getAllSubmodels();
 		CsvContent csvContent = csvHandlerService.processFile(processId);
 		List<String> columns = csvContent.getColumns();
-		Submodel foundSubmodelSchemaObject = null;
+		Submodel foundSubmodelSchemaObject = findSubmodel(columns);
 		
+		processCsv(submodelFileRequest, processId, foundSubmodelSchemaObject, csvContent);
+	}
+
+	public Submodel findSubmodel(List<String> columns) {
+		
+		Submodel foundSubmodelSchemaObject = null;
+		List<Submodel> submodelDetails = submodelService.getAllSubmodels();
 		for (Submodel submodel : submodelDetails) {
 			
 			if(sumodelcsvValidator.validate(submodel, columns)){
@@ -228,8 +244,7 @@ public class SubmodelOrchestartorService {
 		if(foundSubmodelSchemaObject == null) {
 			throw new ValidationException("Csv column header is not matching with any supported submodels");
 		}
-		
-		processCsv(submodelFileRequest, processId, foundSubmodelSchemaObject, csvContent);
+		return foundSubmodelSchemaObject;
 	}
 	
 }

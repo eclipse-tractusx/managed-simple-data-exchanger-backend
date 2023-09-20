@@ -31,6 +31,7 @@ import java.util.List;
 
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.core.controller.ConsumerController;
+import org.eclipse.tractusx.sde.core.service.ConsumerService;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
 import org.eclipse.tractusx.sde.edc.model.request.OfferRequest;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
@@ -56,6 +57,9 @@ class ConsumerControllerTest {
 	@MockBean
 	private ConsumerControlPanelService consumerControlPanelService;
 
+	@MockBean
+    private ConsumerService consumerService;
+    
 	@Autowired
 	private ConsumerController consumerController;
 

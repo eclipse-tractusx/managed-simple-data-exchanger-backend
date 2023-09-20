@@ -40,17 +40,17 @@ public class CsvUploadConfirationService {
     }
 
 
-    public Object getCsvUploadConfig(ConfigType configType) {
+    public Object getCsvUploadConfig(ConfigType configType) throws JsonProcessingException {
         List<CsvUploadConfigEntity> notificationList = repository.findAllByType(configType.toString());
         if (notificationList.isEmpty()) return null;
         else {
             CsvUploadConfigEntity configEntity = notificationList.get(0);
             switch (configType) {
                 case NOTIFICATION -> {
-                    return  mapper.convertValue(configEntity.getContent(), EmailNotificationModel.class);
+                    return  mapper.readValue(configEntity.getContent(), EmailNotificationModel.class);
                 }
                 case JOB_MAINTENANCE -> {
-                    return mapper.convertValue(configEntity.getContent(), JobMaintenanceModel.class);
+                    return mapper.readValue(configEntity.getContent(), JobMaintenanceModel.class);
                 }
             }
         }

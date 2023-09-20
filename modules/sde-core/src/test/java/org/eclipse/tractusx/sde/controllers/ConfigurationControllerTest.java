@@ -72,8 +72,6 @@ public class ConfigurationControllerTest {
     @Test
     void testSaveDifferentTypeConfig() throws Exception {
 
-        System.out.println(ftpsConfigRepository.findAll().size());
-
         mvc.perform(MockMvcRequestBuilders
                         .post("/ftpsConfig")
                         .contentType(MediaType.APPLICATION_JSON)

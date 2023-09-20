@@ -21,6 +21,6 @@
 CREATE TABLE policy
 (
     uuid                      VARCHAR(50) PRIMARY KEY,
-    name                      VARCHAR(50),
+    name                      VARCHAR(50) UNIQUE,
     content                   TEXT
 );

@@ -68,7 +68,7 @@ public class AutoUploadConfigurationController {
     }
 
     @GetMapping("/notification")
-    public EmailNotificationModel getNotificationConfig() {
+    public EmailNotificationModel getNotificationConfig() throws JsonProcessingException {
         return (EmailNotificationModel) csvUploadConfirationService.getCsvUploadConfig(ConfigType.NOTIFICATION);
     }
 

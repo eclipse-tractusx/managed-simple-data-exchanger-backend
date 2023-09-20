@@ -18,17 +18,17 @@ public class PolicyController {
     private final PolicyService policyService;
 
     @PostMapping("/policy")
-    public String savePolicy(@NotBlank @RequestBody SubmodelFileRequest request) throws JsonProcessingException {
+    public String savePolicy(@NotBlank @RequestBody SubmodelFileRequest request) throws Exception {
         return policyService.savePolicy(request);
     }
 
     @GetMapping("/policy/{uuid}")
-    public SubmodelFileRequest getPolicy(@PathVariable String uuid) {
+    public SubmodelFileRequest getPolicy(@PathVariable String uuid) throws JsonProcessingException {
         return policyService.getPolicy(uuid);
     }
 
     @GetMapping("/policy")
-    public List<SubmodelFileRequest> getAllPolicies() {
+    public List<SubmodelFileRequest> getAllPolicies() throws JsonProcessingException {
         return policyService.getAllPolicies();
     }
 

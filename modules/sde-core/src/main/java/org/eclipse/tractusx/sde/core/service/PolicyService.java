@@ -19,21 +19,24 @@ public class PolicyService {
     private final PolicyRepository repository;
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    public String savePolicy(SubmodelFileRequest request) throws JsonProcessingException {
-        PolicyEntity policy = new PolicyEntity();
-        policy.setName(request.getPolicyName());
-        policy.setUuid(UUID.randomUUID().toString());
-        policy.setContent(objectMapper.writeValueAsString(request));
-        repository.save(policy);
-        return policy.getUuid();
+    public String savePolicy(SubmodelFileRequest request) throws Exception {
+        Optional<PolicyEntity> optionalPolicy = repository.findByName(request.getPolicyName());
+        if (optionalPolicy.isEmpty()) {
+            PolicyEntity policy = new PolicyEntity();
+            policy.setName(request.getPolicyName());
+            policy.setUuid(UUID.randomUUID().toString());
+            policy.setContent(objectMapper.writeValueAsString(request));
+            repository.save(policy);
+            return policy.getUuid();
+        } else throw new Exception("Such policy name already exists");
     }
 
-    public SubmodelFileRequest getPolicy(String uuid) {
+    public SubmodelFileRequest getPolicy(String uuid) throws JsonProcessingException {
         Optional<PolicyEntity> optionalPolicy = repository.findById(uuid);
         if (optionalPolicy.isEmpty()) return null;
         else {
             PolicyEntity policy = optionalPolicy.get();
-            return objectMapper.convertValue(policy.getContent(), SubmodelFileRequest.class);
+            return objectMapper.readValue(policy.getContent(), SubmodelFileRequest.class);
         }
     }
 
@@ -41,7 +44,13 @@ public class PolicyService {
         List<PolicyEntity> policyEntities = repository.findAll();
         return policyEntities.stream()
                 .map(policyEntity ->
-                        objectMapper.convertValue(policyEntity.getContent(), SubmodelFileRequest.class)).toList();
+                {
+                    try {
+                        return objectMapper.readValue(policyEntity.getContent(), SubmodelFileRequest.class);
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+                }).toList();
     }
 
     public void deletePolicy(String uuid) {

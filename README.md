@@ -189,6 +189,7 @@ To find information about supported submodules and there version in SDE please v
     * SingleLevelBoMAsPlanned
     * PartSiteInformationAsPlanned
     * SingleLevelUsageAsBuilt
+    * Product Carbon Footprint(PCF)
 2. ***Json Update***
     * SerialPart
     * SingleLevelBoMAsBuilt
@@ -197,6 +198,7 @@ To find information about supported submodules and there version in SDE please v
     * SingleLevelBoMAsPlanned
     * PartSiteInformationAsPlanned
  	* SingleLevelUsageAsBuilt
+ 	* Product Carbon Footprint(PCF)
 3. ***Application UI***
     * SerialPart
     * SingleLevelBoMAsBuilt
@@ -205,6 +207,7 @@ To find information about supported submodules and there version in SDE please v
     * SingleLevelBoMAsPlanned
     * PartSiteInformationAsPlanned
     * SingleLevelUsageAsBuilt
+    * Product Carbon Footprint(PCF)
 
 
  ---   

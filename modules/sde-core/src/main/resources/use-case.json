@@ -31,7 +31,8 @@
 			"serialpart",
 			"singlelevelbomasbuilt",
 			"batch",
-			"singlelevelusageasbuilt"
+			"singlelevelusageasbuilt",
+			"pcf"
 		]
 	},
 	{

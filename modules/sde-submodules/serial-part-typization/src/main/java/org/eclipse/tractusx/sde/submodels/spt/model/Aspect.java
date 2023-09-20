@@ -47,7 +47,7 @@ public class Aspect {
     private String subModelId;
     
     @JsonProperty(value ="row_number")
-    private int rowNumber;
+    private Integer rowNumber;
 
     @JsonProperty(value ="bpn_numbers")
     private List<String> bpnNumbers;

@@ -22,8 +22,10 @@ package org.eclipse.tractusx.sde.core.controller;
 
 import static org.springframework.http.ResponseEntity.ok;
 
+import java.util.List;
 import java.util.UUID;
 
+import org.eclipse.tractusx.sde.core.service.ConsumerService;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
 import org.eclipse.tractusx.sde.edc.services.ConsumerControlPanelService;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +47,8 @@ import lombok.extern.slf4j.Slf4j;
 public class ConsumerController {
 
 	private final ConsumerControlPanelService consumerControlPanelService;
+
+	private final ConsumerService consumerService;
 
 	@GetMapping(value = "/query-data-offers")
 	@PreAuthorize("hasPermission('','consumer_view_contract_offers')")
@@ -69,19 +74,19 @@ public class ConsumerController {
 		return ResponseEntity.ok().body(processId);
 	}
 
-	@PostMapping(value = "/subscribe-download-data")
+	@PostMapping(value = "/subscribe-download-data-offers")
 	@PreAuthorize("hasPermission('','consumer_download_data')")
-	public ResponseEntity<Object> subscribeAndDownloadDataOffers(@Valid @RequestBody ConsumerRequest consumerRequest) {
+	public void subscribeAndDownloadDataOffers(@Valid @RequestBody ConsumerRequest consumerRequest, HttpServletResponse response) {
 		log.info("Request recevied : /api/subscribe-download-data-edr");
-		return ResponseEntity.ok().body(consumerControlPanelService.subscribeAndDownloadDataOffers(consumerRequest));
+		consumerService.subscribeAndDownloadDataOffers(consumerRequest, response);
 	}
 
-	@GetMapping(value = "/download-data")
+	@GetMapping(value = "/download-data-offers")
 	@PreAuthorize("hasPermission('','consumer_download_data')")
-	public ResponseEntity<Object> downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(@RequestParam String assetId)
+	public ResponseEntity<Object> downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(@RequestParam List<String> assetIdList)
 			throws Exception {
 		log.info("Request received : /api/download-data-using-edr");
-		return ok().body(consumerControlPanelService.downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(assetId));
+		return consumerService.downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(assetIdList);
 	}
 
 }

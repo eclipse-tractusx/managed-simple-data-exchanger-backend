@@ -55,6 +55,7 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import feign.FeignException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -238,7 +239,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
 	}
 
-	public Object subscribeAndDownloadDataOffers(@Valid ConsumerRequest consumerRequest) {
+	public Map<String, Object> subscribeAndDownloadDataOffers(@Valid ConsumerRequest consumerRequest) {
 
 		HashMap<String, String> extensibleProperty = new HashMap<>();
 		Map<String, Object> response = new ConcurrentHashMap<>();
@@ -263,12 +264,19 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 				EDRCachedResponse checkContractNegotiationStatus = verifyEDRRequestStatus(offer.getAssetId());
 
 				response.put(offer.getAssetId(), downloadFile(checkContractNegotiationStatus));
-
+			} catch (FeignException e) {
+				log.error("RequestBody: " + e.request());
+				log.error("SubscribeAndDownloadDataOffers Oops! We have an FeignException - " + e.request().url() + "-"
+						+ e.contentUTF8());
+				response.put(offer.getAssetId(),
+						errorMap("Unable to complete subscribeAndDownloadDataOffers because: " + e.contentUTF8()));
 			} catch (Exception e) {
-				log.error("Exception in subscribeAndDownloadDataOffers" + e.getMessage());
-				response.put(offer.getAssetId(), e.getMessage());
+				log.error("SubscribeAndDownloadDataOffers Oops! We have an Exception -" + e.getMessage());
+				response.put(offer.getAssetId(),
+						errorMap("Unable to complete subscribeAndDownloadDataOffers because: " + e.getMessage()));
 			}
 		});
+
 		return response;
 	}
 
@@ -305,9 +313,35 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 	}
 
 	@SneakyThrows
-	public Object downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(String assetId) {
-		EDRCachedResponse verifyEDRRequestStatus = verifyEDRRequestStatus(assetId);
-		return downloadFile(verifyEDRRequestStatus);
+	public Map<String, Object> downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(List<String> assetIdList) {
+		Map<String, Object> response = new ConcurrentHashMap<>();
+		for (String assetId : assetIdList) {
+			try {
+
+				EDRCachedResponse verifyEDRRequestStatus = verifyEDRRequestStatus(assetId);
+				response.put(assetId, downloadFile(verifyEDRRequestStatus));
+
+			} catch (FeignException e) {
+				log.error("RequestBody: " + e.request());
+				log.error("downloadFileFromEDCUsingifAlreadyTransferStatusCompleted Oops! We have an FeignException - "
+						+ e.request().url() + "-" + e.contentUTF8());
+				response.put(assetId,
+						errorMap("Unable to download existing subcribe data offer because: " + e.contentUTF8()));
+			} catch (Exception e) {
+				log.error("downloadFileFromEDCUsingifAlreadyTransferStatusCompleted Oops! We have an Exception -"
+						+ e.getMessage());
+				response.put(assetId,
+						errorMap("Unable to download existing subcribe data offer because: " + e.getMessage()));
+			}
+		}
+		return response;
+	}
+
+	private Map<String, Object> errorMap(String errorMsg) {
+		Map<String, Object> errorMaps = new ConcurrentHashMap<>();
+		errorMaps.put("status", "FAILED");
+		errorMaps.put("error", errorMsg);
+		return errorMaps;
 	}
 
 	private Object downloadFile(EDRCachedResponse verifyEDRRequestStatus) {

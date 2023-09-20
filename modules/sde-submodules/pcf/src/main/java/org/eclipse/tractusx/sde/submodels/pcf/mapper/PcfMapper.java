@@ -21,6 +21,7 @@ package org.eclipse.tractusx.sde.submodels.pcf.mapper;
 
 import java.util.List;
 
+import org.eclipse.tractusx.sde.common.mapper.AspectResponseFactory;
 import org.eclipse.tractusx.sde.submodels.pcf.entity.PcfEntity;
 import org.eclipse.tractusx.sde.submodels.pcf.model.CompanyIds;
 import org.eclipse.tractusx.sde.submodels.pcf.model.CrossSectoralStandardsUsed;
@@ -35,6 +36,7 @@ import org.eclipse.tractusx.sde.submodels.pcf.model.ProductOrSectorSpecificRules
 import org.eclipse.tractusx.sde.submodels.pcf.model.SecondaryEmissionFactorSources;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,11 +51,13 @@ public abstract class PcfMapper {
 	
 	@Value(value = "${manufacturerId}")
 	private String manufacturerId;
-
+	
+	@Autowired
+	private AspectResponseFactory aspectResponseFactory;
+	
 	ObjectMapper mapper = new ObjectMapper();
 
 	@Mapping(target = "rowNumberforPcf", ignore = true)
-	@Mapping(target = "subModelIdforPcf", ignore = true)
 	public abstract PcfAspect mapFrom(PcfEntity aspect);
 
 	public abstract PcfEntity mapFrom(PcfAspect aspect);
@@ -137,35 +141,24 @@ public abstract class PcfMapper {
 				.carbonContentBiogenic(entity.getCarbonContentBiogenic())
 				.build();
 		
-		
-		return new Gson().toJsonTree(PcfSubmodelResponse.builder()
-				.specVersion(entity.getSpecVersion())
-				.companyIds(CompanyIds.builder()
-						.companyId(entity.getCompanyId())
-						.build())
-				.extWBCSDProductCodeCpc(entity.getExtWBCSDProductCodeCpc())
-				.created(entity.getCreated())
-				.companyName(entity.getCompanyName())
-				.extWBCSDPfStatus(entity.getExtWBCSDPfStatus())
-				.version(entity.getVersion())
-				.productName(entity.getProductName())
-				.pcf(pcfResponse)
+		PcfSubmodelResponse build = PcfSubmodelResponse.builder().specVersion(entity.getSpecVersion())
+				.companyIds(CompanyIds.builder().companyId(entity.getCompanyId()).build())
+				.extWBCSDProductCodeCpc(entity.getExtWBCSDProductCodeCpc()).created(entity.getCreated())
+				.companyName(entity.getCompanyName()).extWBCSDPfStatus(entity.getExtWBCSDPfStatus())
+				.version(entity.getVersion()).productName(entity.getProductName()).pcf(pcfResponse)
 				.partialFullPcf(entity.getPartialFullPcf())
-				.productIds(ProductIds.builder()
-						.productId(entity.getProductId())
-						.build())
-				
-				.validityPeriodStart(entity.getValidityPeriodStart())
-				.comment(entity.getComment())
-				.id(entity.getId())
-				.validityPeriodEnd(entity.getValidityPeriodEnd())
-				.pcfLegalStatement(entity.getPcfLegalStatement())
+				.productIds(ProductIds.builder().productId(entity.getProductId()).build())
+
+				.validityPeriodStart(entity.getValidityPeriodStart()).comment(entity.getComment()).id(entity.getId())
+				.validityPeriodEnd(entity.getValidityPeriodEnd()).pcfLegalStatement(entity.getPcfLegalStatement())
 				.productDescription(entity.getProductDescription())
-				
-				.precedingPfIds(PrecedingPfIds.builder()
-						.id(entity.getPrecedingPfId())
-						.build())
-				.build()).getAsJsonObject();
+
+				.precedingPfIds(PrecedingPfIds.builder().id(entity.getPrecedingPfId()).build()).build();
+	
+		PcfAspect csv = mapFrom(entity);
+		
+		
+		return aspectResponseFactory.maptoReponse(csv, build);
 
 	}
 

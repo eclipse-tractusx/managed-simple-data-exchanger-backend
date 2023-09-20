@@ -72,12 +72,15 @@ public class SubmodelCsvService {
 
 		List<List<String>> records = new LinkedList<>();
 		Submodel schemaObj = submodelService.findSubmodelByNameAsSubmdelObject(submodel);
-		JsonObject schemaObject = schemaObj.getSchema();
 
-		Object autoPopulatefieldObj=  schemaObj.getProperties().get("autoPopulatedfields");
+		List<String> headerName = getCSVHeader(schemaObj);
+		headerName.add("shell_id");
+		headerName.add("sub_model_id");
+		headerName.add("asset_id");
+		headerName.add("usage_policy_id");
+		headerName.add("access_policy_id");
+		headerName.add("contract_defination_id");
 		
-		List<String> headerName = createCSVColumnHeader(schemaObject, autoPopulatefieldObj);
-
 		records.add(headerName);
 
 		String coloumns = String.join(",", headerName);
@@ -89,6 +92,12 @@ public class SubmodelCsvService {
 		records.addAll(submodelCustomHistoryGenerator.findAllSubmodelCsvHistory(coloumns, tableName, processId));
 
 		return records;
+	}
+
+	public List<String> getCSVHeader(Submodel schemaObj) {
+		JsonObject schemaObject = schemaObj.getSchema();
+		Object autoPopulatefieldObj = schemaObj.getProperties().get("autoPopulatedfields");
+		return createCSVColumnHeader(schemaObject, autoPopulatefieldObj);
 	}
 
 	private List<String> createCSVColumnHeader(JsonObject schemaObject, Object autoPopulatefieldObj) {
@@ -104,13 +113,6 @@ public class SubmodelCsvService {
 			List<String> autoPopulatefield = (List<String>) autoPopulatefieldObj;
 			headerName.addAll(autoPopulatefield);
 		}
-
-		headerName.add("shell_id");
-		headerName.add("sub_model_id");
-		headerName.add("asset_id");
-		headerName.add("usage_policy_id");
-		headerName.add("access_policy_id");
-		headerName.add("contract_defination_id");
 		return headerName;
 	}
 

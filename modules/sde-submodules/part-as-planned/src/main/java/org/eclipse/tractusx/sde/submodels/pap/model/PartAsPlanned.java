@@ -44,7 +44,7 @@ public class PartAsPlanned {
 	private String subModelId;
 	
 	@JsonProperty(value ="row_number")
-	private int rowNumber;
+	private Integer rowNumber;
 	
 	@JsonProperty(value ="uuid")
 	private String uuid;

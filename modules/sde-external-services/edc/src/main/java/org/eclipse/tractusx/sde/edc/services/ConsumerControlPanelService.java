@@ -34,6 +34,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
 import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
+import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.edc.api.ContractOfferCatalogApi;
 import org.eclipse.tractusx.sde.edc.constants.EDCAssetConstant;
 import org.eclipse.tractusx.sde.edc.entities.database.ContractNegotiationInfoEntity;
@@ -48,14 +49,14 @@ import org.eclipse.tractusx.sde.edc.model.contractoffers.ContractOfferRequestFac
 import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedByIdResponse;
 import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedResponse;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
+import org.eclipse.tractusx.sde.edc.model.request.Offer;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.eclipse.tractusx.sde.edc.util.UtilityFunctions;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
-
-import jakarta.validation.Valid;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -65,6 +66,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
+	private static final String NEGOTIATED = "NEGOTIATED";
+	private static final String STATUS = "status";
 	private final ContractOfferCatalogApi contractOfferCatalogApiProxy;
 	private final ContractNegotiateManagementHelper contractNegotiateManagement;
 	private final EDRRequestHelper edrRequestHelper;
@@ -73,6 +76,10 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 	private final PolicyConstraintBuilderService policyConstraintBuilderService;
 
 	private final ContractOfferRequestFactory contractOfferRequestFactory;
+
+	private static final Integer RETRY = 5;
+
+	private static final Integer THRED_SLEEP_TIME = 5000;
 
 	public List<QueryDataOfferModel> queryOnDataOffers(String providerUrl, Integer offset, Integer limit,
 			String filterExpression) {
@@ -238,8 +245,8 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
 	}
 
-	public Object subscribeAndDownloadDataOffers(@Valid ConsumerRequest consumerRequest) {
-
+	public Map<String, Object> subscribeAndDownloadDataOffers(ConsumerRequest consumerRequest,
+			boolean flagToDownloadImidiate) {
 		HashMap<String, String> extensibleProperty = new HashMap<>();
 		Map<String, Object> response = new ConcurrentHashMap<>();
 
@@ -256,45 +263,114 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
 		ActionRequest action = policyConstraintBuilderService.getUsagePolicyConstraints(policies);
 		consumerRequest.getOffers().parallelStream().forEach(offer -> {
+			Map<String, Object> resultFields = new ConcurrentHashMap<>();
 			try {
-				edrRequestHelper.edrRequestInitiate(recipientURL, consumerRequest.getConnectorId(), offer.getOfferId(),
-						offer.getAssetId(), action, extensibleProperty);
+				EDRCachedResponse checkContractNegotiationStatus = verifyOrCreateContractNegotiation(consumerRequest,
+						extensibleProperty, recipientURL, action, offer);
 
-				EDRCachedResponse checkContractNegotiationStatus = verifyEDRRequestStatus(offer.getAssetId());
+				resultFields.put("edr", checkContractNegotiationStatus);
 
-				response.put(offer.getAssetId(), downloadFile(checkContractNegotiationStatus));
+				if (!NEGOTIATED.equalsIgnoreCase(checkContractNegotiationStatus.getEdrState())) {
+					throw new ServiceException(
+							"Time out!! to get 'NEGOTIATED' EDC EDR status to download data, The current status is '"
+									+ checkContractNegotiationStatus.getEdrState() + "'");
+				}
 
+				if (flagToDownloadImidiate)
+					resultFields.put("data", downloadFile(checkContractNegotiationStatus));
+
+				resultFields.put(STATUS, "SUCCESS");
+
+			} catch (FeignException e) {
+				log.error("Feign RequestBody: " + e.request());
+				String errorMsg = "Unable to complete subscribeAndDownloadDataOffers because: " + e.contentUTF8();
+				log.error(errorMsg);
+				prepareErrorMap(resultFields, errorMsg);
 			} catch (Exception e) {
-				log.error("Exception in subscribeAndDownloadDataOffers" + e.getMessage());
-				response.put(offer.getAssetId(), e.getMessage());
+				log.error("SubscribeAndDownloadDataOffers Oops! We have -" + e.getMessage());
+				String errorMsg = "Unable to complete subscribeAndDownloadDataOffers because: " + e.getMessage();
+				prepareErrorMap(resultFields, errorMsg);
+			} finally {
+				response.put(offer.getAssetId(), resultFields);
 			}
 		});
 		return response;
 	}
 
 	@SneakyThrows
+	private EDRCachedResponse verifyOrCreateContractNegotiation(ConsumerRequest consumerRequest,
+			HashMap<String, String> extensibleProperty, String recipientURL, ActionRequest action, Offer offer) {
+		// Verify if there already EDR process initiated then skip t for again download
+		List<EDRCachedResponse> eDRCachedResponseList = edrRequestHelper.getEDRCachedByAsset(offer.getAssetId());
+		EDRCachedResponse checkContractNegotiationStatus = verifyEDRResponse(eDRCachedResponseList);
+
+		if (checkContractNegotiationStatus == null) {
+			log.info("There was no EDR process initiated " + offer.getAssetId() + ", so initiating EDR process");
+			edrRequestHelper.edrRequestInitiate(recipientURL, consumerRequest.getConnectorId(), offer.getOfferId(),
+					offer.getAssetId(), action, extensibleProperty);
+		} else {
+			log.info("There was EDR process initiated " + offer.getAssetId() + ", so ignoring EDR process initiation");
+		}
+
+		checkContractNegotiationStatus = verifyEDRRequestStatus(offer.getAssetId());
+		return checkContractNegotiationStatus;
+	}
+
+	@SneakyThrows
 	private EDRCachedResponse verifyEDRRequestStatus(String assetId) {
 		EDRCachedResponse eDRCachedResponse = null;
+		String edrStatus = "NewToSDE";
 		List<EDRCachedResponse> eDRCachedResponseList = null;
+		int counter = 1;
 		try {
-			int retry = 5;
-			int counter = 1;
 			do {
-				Thread.sleep(5000);
+				if (counter > 1)
+					Thread.sleep(THRED_SLEEP_TIME);
 				eDRCachedResponseList = edrRequestHelper.getEDRCachedByAsset(assetId);
-				counter++;
-			} while (eDRCachedResponseList != null && !eDRCachedResponseList.isEmpty()
-					&& !eDRCachedResponseList.get(0).getEdrState().equals("NEGOTIATED") && counter <= retry);
+				eDRCachedResponse = verifyEDRResponse(eDRCachedResponseList);
 
-			if (eDRCachedResponseList != null && !eDRCachedResponseList.isEmpty())
-				eDRCachedResponse = eDRCachedResponseList.get(0);
+				if (eDRCachedResponse != null)
+					edrStatus = eDRCachedResponse.getEdrState();
+
+				log.info("Verifying 'NEGOTIATED' EDC EDR status to download data for '" + assetId
+						+ "', The current status is '" + edrStatus + "', Attempt " + counter);
+				counter++;
+			} while (counter <= RETRY && !NEGOTIATED.equals(edrStatus));
+
+			if (eDRCachedResponse == null)
+				throw new ServiceException("Time out!! unable to get EDR negotiated status");
+
+		} catch (FeignException e) {
+			log.error("RequestBody: " + e.request());
+			String errorMsg = "FeignExceptionton for asset " + assetId + "," + e.contentUTF8();
+			log.error("Response: " + errorMsg);
+			throw new ServiceException(errorMsg);
 		} catch (InterruptedException ie) {
-			log.error("Exception in verifyEDRRequestStatus" + ie.getMessage());
 			Thread.currentThread().interrupt();
-			throw ie;
+			String errorMsg = "InterruptedException for asset " + assetId + "," + ie.getMessage();
+			log.error(errorMsg);
+			throw new ServiceException(errorMsg);
 		} catch (Exception e) {
-			log.error("Exception in verifyEDRRequestStatus" + e.getMessage());
-			throw e;
+			String errorMsg = "Exception for asset " + assetId + "," + e.getMessage();
+			log.error(errorMsg);
+			throw new ServiceException(errorMsg);
+		}
+		return eDRCachedResponse;
+	}
+
+	private EDRCachedResponse verifyEDRResponse(List<EDRCachedResponse> eDRCachedResponseList) {
+		EDRCachedResponse eDRCachedResponse = null;
+		if (eDRCachedResponseList != null && !eDRCachedResponseList.isEmpty()) {
+			for (EDRCachedResponse edrCachedResponseObj : eDRCachedResponseList) {
+				String edrState = edrCachedResponseObj.getEdrState();
+
+				if (NEGOTIATED.equalsIgnoreCase(edrState)) {
+					eDRCachedResponse = edrCachedResponseObj;
+					break;
+				} else {
+					eDRCachedResponse = edrCachedResponseObj;
+				}
+			}
 		}
 		return eDRCachedResponse;
 	}
@@ -305,16 +381,56 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 	}
 
 	@SneakyThrows
-	public Object downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(String assetId) {
-		EDRCachedResponse verifyEDRRequestStatus = verifyEDRRequestStatus(assetId);
-		return downloadFile(verifyEDRRequestStatus);
+	public Map<String, Object> downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(List<String> assetIdList) {
+		Map<String, Object> response = new ConcurrentHashMap<>();
+		assetIdList.parallelStream().forEach(assetId -> {
+
+			Map<String, Object> downloadResultFields = new ConcurrentHashMap<>();
+			try {
+				EDRCachedResponse verifyEDRRequestStatus = verifyEDRRequestStatus(assetId);
+
+				downloadResultFields.put("edr", verifyEDRRequestStatus);
+
+				if (!NEGOTIATED.equalsIgnoreCase(verifyEDRRequestStatus.getEdrState())) {
+					throw new ServiceException(
+							"Time out!! to get 'NEGOTIATED' EDC EDR status to download data, The current status is '"
+									+ verifyEDRRequestStatus.getEdrState() + "'");
+				}
+
+				downloadResultFields.put("data", downloadFile(verifyEDRRequestStatus));
+
+				downloadResultFields.put(STATUS, "SUCCESS");
+			} catch (Exception e) {
+				String errorMsg = "We have -" + e.getMessage();
+				prepareErrorMap(downloadResultFields, errorMsg);
+			} finally {
+				response.put(assetId, downloadResultFields);
+			}
+		});
+		return response;
 	}
 
+	private void prepareErrorMap(Map<String, Object> resultFields, String errorMsg) {
+		resultFields.put(STATUS, "FAILED");
+		resultFields.put("error", errorMsg);
+	}
+
+	@SneakyThrows
 	private Object downloadFile(EDRCachedResponse verifyEDRRequestStatus) {
-		if (verifyEDRRequestStatus != null) {
-			EDRCachedByIdResponse authorizationToken = getAuthorizationTokenForDataDownload(
-					verifyEDRRequestStatus.getTransferProcessId());
-			return edrRequestHelper.getDataFromProvider(authorizationToken);
+		if (verifyEDRRequestStatus != null && NEGOTIATED.equalsIgnoreCase(verifyEDRRequestStatus.getEdrState())) {
+			try {
+				EDRCachedByIdResponse authorizationToken = getAuthorizationTokenForDataDownload(
+						verifyEDRRequestStatus.getTransferProcessId());
+				return edrRequestHelper.getDataFromProvider(authorizationToken);
+			} catch (FeignException e) {
+				log.error("Download RequestBody: " + e.request());
+				String errorMsg = "Unable to download subcribe data offer because: " + e.contentUTF8();
+				throw new ServiceException(errorMsg);
+			} catch (Exception e) {
+				log.error("DownloadFileFromEDCUsingifAlreadyTransferStatusCompleted Oops! We have -" + e.getMessage());
+				String errorMsg = "Unable to download subcribe data offer because: " + e.getMessage();
+				throw new ServiceException(errorMsg);
+			}
 		}
 		return null;
 	}

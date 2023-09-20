@@ -1,8 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 Critical TechWorks GmbH
- * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023 T-Systems International GmbH
+ * Copyright (c) 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,10 +17,9 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-
 package org.eclipse.tractusx.sde.core.processreport.model;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,10 +30,20 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProcessReportPageResponse {
+public class ConsumerDownloadHistory {
+	
 
-    private int page;
-    private int pageSize;
-    private long totalItems;
-    private List<ProcessReport> items;
+	private String processId;
+	private String providerUrl;
+	private String connectorId;
+	private Integer numberOfItems;
+	private Integer downloadFailed;
+	private Integer downloadSuccessed;
+	private String status;
+	private LocalDateTime startDate;
+	private LocalDateTime endDate;
+	private Object offers;
+	private Object policies;
+    private String referenceProcessId;
+
 }

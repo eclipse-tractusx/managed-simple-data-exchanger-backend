@@ -44,7 +44,7 @@ public class ContractOfferRequestFactory {
 				{
 				 "@context": {},
 				 "protocol": "dataspace-protocol-http",
-				 "providerUrl": "%s",
+				 "counterPartyAddress": "%s",
 				 "querySpec": {
 				 "offset": %s,
 				 "limit": %s

@@ -12,6 +12,7 @@
 	"items": {
 		"type": "object",
 		"required": [
+			"id",
 			"specVersion",
 			"companyId",
 			"companyName",
@@ -37,19 +38,20 @@
 			"pcfExcludingBiogenic",
 			"extWBCSD_packagingGhgEmissions",
 			"precedingPfId",
-			"secondaryEmissionFactorSource"
+			"secondaryEmissionFactorSource",
+			"assetLifeCyclePhase"
 		],
 		"dependentRequired": {
 		},
 		"properties": {
 			"id": {
 				"type": [
-					"string",
-					"null"
+					"string"
 				],
 				"pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
 				"title": "Id",
 				"description": "Constraint for defining a UUID v4 identifier.",
+				"minLength": 1,
 				"examples": [
 					"3893bb5d-da16-4dc1-9185-11d97476c254"
 				]
@@ -351,7 +353,7 @@
 					"null"
 				],
 				"title": "GeographyCountry",
-				"pattern": "([A-Z]{2})",
+				"pattern": "([A-Z]{2}|)",
 				"description": "Two letter country code that must conform to data type ISO 3166CC as specified in the Catena-X PCF Rulebook in accordance with the technical specifications for PCF Data Exchange (Version 2.0.0) from the WBCSD (World Business Council for Sustainable Development)/ PACT initiative.",
 				"examples": [
 					"DE"
@@ -363,6 +365,7 @@
 					"null"
 				],
 				"enum": [
+					"",
 					"Africa",
 					"Americas",
 					"Asia",
@@ -488,11 +491,11 @@
 			},
             "extWBCSD_allocationRulesDescription": {
 				"type": [
-					"string"
+					"string",
+					"null"
 				],
 				"title": "ExtWBCSD_allocationRulesDescription",
 				"description": "Allocation rules used and underlying reasoning in context of a product carbon footprint as specified in the technical specifications for PCF Data Exchange (Version 2.0.0) from the WBCSD (World Business Council for Sustainable Development)/ PACT initiative. WBCSD specific extension, in Catena-X for example specified by default with value \"In accordance with Catena-X PCF Rulebook\".",
-				"minLength": 1,
 				"examples": [
 					"In accordance with Catena-X PCF Rulebook"
 				]
@@ -822,11 +825,11 @@
 					"AsMaintained",
 					"AsRecycled"
 				],
-				"minLength": 1,
 				"title": "Asset Life Cycle Phase",
+				"minLength": 1,
 				"description": "The lifecycle context in which the child part was assembled into the parent part.",
 				"examples": [
-					"lifecycle"
+					"AsPlanned"
 				]
 			}
 			

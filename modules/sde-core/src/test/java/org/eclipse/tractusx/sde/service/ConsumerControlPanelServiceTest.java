@@ -34,16 +34,18 @@ import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
 import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.common.utils.TokenUtility;
+import org.eclipse.tractusx.sde.core.service.ConsumerService;
 import org.eclipse.tractusx.sde.edc.api.ContractOfferCatalogApi;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ActionRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.Operator;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyConstraintBuilderService;
 import org.eclipse.tractusx.sde.edc.facilitator.ContractNegotiateManagementHelper;
+import org.eclipse.tractusx.sde.edc.facilitator.EDRRequestHelper;
 import org.eclipse.tractusx.sde.edc.gateways.database.ContractNegotiationInfoRepository;
 import org.eclipse.tractusx.sde.edc.model.contractoffers.ContractOfferRequestFactory;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
-import org.eclipse.tractusx.sde.edc.model.request.OfferRequest;
+import org.eclipse.tractusx.sde.edc.model.request.Offer;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.eclipse.tractusx.sde.edc.services.ConsumerControlPanelService;
 import org.eclipse.tractusx.sde.portal.api.IPartnerPoolExternalServiceApi;
@@ -68,6 +70,12 @@ class ConsumerControlPanelServiceTest {
 
 	@MockBean
 	private TokenUtility keycloakUtil;
+	
+	@MockBean
+    private ConsumerService consumerService;
+	
+	@MockBean
+	private EDRRequestHelper eDRRequestHelper;
 
 	@MockBean
 	private IPartnerPoolExternalServiceApi legalEntityDataApi;
@@ -126,7 +134,7 @@ class ConsumerControlPanelServiceTest {
 
 	@Test
 	void testSubscribeDataOffers1() {
-		ArrayList<OfferRequest> offerRequestList = new ArrayList<>();
+		ArrayList<Offer> offerRequestList = new ArrayList<>();
 		List<UsagePolicies> usagePolicies = new ArrayList<>();
 		UsagePolicies usagePolicy = UsagePolicies.builder().type(UsagePolicyEnum.CUSTOM).value("Sample")
 				.typeOfAccess(PolicyAccessEnum.RESTRICTED).build();

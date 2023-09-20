@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.eclipse.tractusx.sde.common.mapper.AspectResponseFactory;
 import org.eclipse.tractusx.sde.submodels.sluab.entity.SingleLevelUsageAsBuiltEntity;
 import org.eclipse.tractusx.sde.submodels.sluab.model.ParentParts;
 import org.eclipse.tractusx.sde.submodels.sluab.model.Quantity;
@@ -30,6 +31,7 @@ import org.eclipse.tractusx.sde.submodels.sluab.model.SingleLevelUsageAsBuilt;
 import org.eclipse.tractusx.sde.submodels.sluab.model.SingleLevelUsageAsBuiltResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -40,12 +42,19 @@ import lombok.SneakyThrows;
 
 @Mapper(componentModel = "spring")
 public abstract class SingleLevelUsageAsBuiltMapper {
+
+	@Autowired
+	private AspectResponseFactory aspectResponseFactory;
 	
 	ObjectMapper mapper = new ObjectMapper();
 
 	@Mapping(source = "parentUuid", target = "parentCatenaXId")
 	@Mapping(source = "childUuid", target = "childCatenaXId")
 	public abstract SingleLevelUsageAsBuiltEntity mapFrom(SingleLevelUsageAsBuilt singleLevelUsageAsBuilt);
+	
+	@Mapping(source = "parentCatenaXId", target = "parentUuid")
+	@Mapping(source = "childCatenaXId", target = "childUuid")
+	public abstract SingleLevelUsageAsBuilt mapFromEntityToObject(SingleLevelUsageAsBuiltEntity entity);
 
 	@SneakyThrows
 	public SingleLevelUsageAsBuilt mapFrom(ObjectNode singleLevelUsageAsBuilt) {
@@ -67,13 +76,14 @@ public abstract class SingleLevelUsageAsBuiltMapper {
 		}
 
 		Set<ParentParts> parentPartsSet = entity.stream().map(this::toParentParts).collect(Collectors.toSet());
-		
-		return new Gson().toJsonTree(
-				SingleLevelUsageAsBuiltResponse.builder()
-				.parentParts(parentPartsSet)
-				.catenaXId(catenaXUuid)
-				.build())
-				.getAsJsonObject();
+		SingleLevelUsageAsBuiltResponse build = SingleLevelUsageAsBuiltResponse.builder().parentParts(parentPartsSet)
+				.catenaXId(catenaXUuid).build();
+
+		SingleLevelUsageAsBuiltEntity singleLevelUsageAsBuiltEntity = entity.get(0);
+
+		SingleLevelUsageAsBuilt csvObj = mapFromEntityToObject(singleLevelUsageAsBuiltEntity);
+
+		return aspectResponseFactory.maptoReponse(csvObj, build);
 
 	}
 
@@ -82,17 +92,11 @@ public abstract class SingleLevelUsageAsBuiltMapper {
 	}
 
 	private ParentParts toParentParts(SingleLevelUsageAsBuiltEntity entity) {
-		Quantity quantity = Quantity.builder()
-				.quantityNumber(entity.getQuantityNumber())
-				.measurementUnit(entity.getMeasurementUnit())
-				.build();
+		Quantity quantity = Quantity.builder().quantityNumber(entity.getQuantityNumber())
+				.measurementUnit(entity.getMeasurementUnit()).build();
 
-		return ParentParts.builder()
-				.parentCatenaXId(entity.getParentCatenaXId())
-				.quantity(quantity)
-				.createdOn(entity.getCreatedOn())
-				.lastModifiedOn(entity.getLastModifiedOn())
-				.build();
+		return ParentParts.builder().parentCatenaXId(entity.getParentCatenaXId()).quantity(quantity)
+				.createdOn(entity.getCreatedOn()).lastModifiedOn(entity.getLastModifiedOn()).build();
 	}
 
 }

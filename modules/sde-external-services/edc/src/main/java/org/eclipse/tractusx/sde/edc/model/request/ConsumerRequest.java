@@ -48,7 +48,7 @@ public class ConsumerRequest {
     private String providerUrl;
     @NonNull
     @NotEmpty
-    private List<OfferRequest> offers;
+    private List<Offer> offers;
     @NonNull
     private List<UsagePolicies> policies;
 

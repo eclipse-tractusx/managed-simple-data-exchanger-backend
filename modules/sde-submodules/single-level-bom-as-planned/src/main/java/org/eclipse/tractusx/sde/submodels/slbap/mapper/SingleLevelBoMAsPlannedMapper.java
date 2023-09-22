@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.eclipse.tractusx.sde.common.mapper.AspectResponseFactory;
 import org.eclipse.tractusx.sde.submodels.slbap.entity.SingleLevelBoMAsPlannedEntity;
 import org.eclipse.tractusx.sde.submodels.slbap.model.ChildParts;
 import org.eclipse.tractusx.sde.submodels.slbap.model.MeasurementUnit;
@@ -31,6 +32,7 @@ import org.eclipse.tractusx.sde.submodels.slbap.model.SingleLevelBoMAsPlanned;
 import org.eclipse.tractusx.sde.submodels.slbap.model.SingleLevelBoMAsPlannedAspectResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -41,18 +43,25 @@ import lombok.SneakyThrows;
 
 @Mapper(componentModel = "spring")
 public abstract class SingleLevelBoMAsPlannedMapper {
+
+	ObjectMapper mapper = new ObjectMapper();
 	
-	ObjectMapper mapper=new ObjectMapper();
+	@Autowired
+	private AspectResponseFactory aspectResponseFactory;
 
 	@Mapping(source = "parentUuid", target = "parentCatenaXId")
 	@Mapping(source = "childUuid", target = "childCatenaXId")
 	public abstract SingleLevelBoMAsPlannedEntity mapFrom(SingleLevelBoMAsPlanned singleLevelBoMAsPlanned);
+	
+	@Mapping(source = "parentCatenaXId", target = "parentUuid")
+	@Mapping(source = "childCatenaXId", target = "childUuid")
+	public abstract SingleLevelBoMAsPlanned mapFrom(SingleLevelBoMAsPlannedEntity entity);
 
 	@SneakyThrows
 	public SingleLevelBoMAsPlanned mapFrom(ObjectNode singleLevelBoMAsPlanned) {
 		return mapper.readValue(singleLevelBoMAsPlanned.toString(), SingleLevelBoMAsPlanned.class);
 	}
-	
+
 	public SingleLevelBoMAsPlannedEntity mapforEntity(JsonObject singleLevelBoMAsPlanned) {
 		return new Gson().fromJson(singleLevelBoMAsPlanned, SingleLevelBoMAsPlannedEntity.class);
 	}
@@ -61,35 +70,35 @@ public abstract class SingleLevelBoMAsPlannedMapper {
 		return new Gson().toJsonTree(singleLevelBoMAsPlannedEntity).getAsJsonObject();
 	}
 
-	public JsonObject mapToResponse(String parentCatenaXUuid, List<SingleLevelBoMAsPlannedEntity> singleLevelBoMAsPlannedEntity) {
+	public JsonObject mapToResponse(String parentCatenaXUuid,
+			List<SingleLevelBoMAsPlannedEntity> singleLevelBoMAsPlannedEntity) {
 
 		if (singleLevelBoMAsPlannedEntity == null || singleLevelBoMAsPlannedEntity.isEmpty()) {
 			return null;
 		}
-		
-		Set<ChildParts> childPartsSet = singleLevelBoMAsPlannedEntity.stream().map(this::toChildPart).collect(Collectors.toSet());
-		
-		return new Gson().toJsonTree(SingleLevelBoMAsPlannedAspectResponse.builder()
-				.catenaXId(parentCatenaXUuid)
-				.childParts(childPartsSet)
-				.build()).getAsJsonObject();
-	}
-	
-	private ChildParts toChildPart(SingleLevelBoMAsPlannedEntity entity) {
-		
-		Quantity quantity = Quantity.builder().quantityNumber(entity.getQuantityNumber())
-							.measurementUnit(MeasurementUnit.builder()
-									.lexicalValue(entity.getMeasurementUnitLexicalValue())
-									.datatypeURI(entity.getDatatypeURI())
-									.build())
-							.build();
 
-		return ChildParts.builder()
-				.quantity(quantity)
-				.createdOn(entity.getCreatedOn())
-				.lastModifiedOn(entity.getLastModifiedOn())
-				.childCatenaXId(entity.getChildCatenaXId())
+		Set<ChildParts> childPartsSet = singleLevelBoMAsPlannedEntity.stream().map(this::toChildPart)
+				.collect(Collectors.toSet());
+
+		SingleLevelBoMAsPlannedAspectResponse build = SingleLevelBoMAsPlannedAspectResponse.builder()
+				.catenaXId(parentCatenaXUuid).childParts(childPartsSet).build();
+
+		SingleLevelBoMAsPlannedEntity entity = singleLevelBoMAsPlannedEntity.get(0);
+
+		SingleLevelBoMAsPlanned csvObj = mapFrom(entity);
+
+		return aspectResponseFactory.maptoReponse(csvObj, build);
+	}
+
+	private ChildParts toChildPart(SingleLevelBoMAsPlannedEntity entity) {
+
+		Quantity quantity = Quantity.builder().quantityNumber(entity.getQuantityNumber())
+				.measurementUnit(MeasurementUnit.builder().lexicalValue(entity.getMeasurementUnitLexicalValue())
+						.datatypeURI(entity.getDatatypeURI()).build())
 				.build();
+
+		return ChildParts.builder().quantity(quantity).createdOn(entity.getCreatedOn())
+				.lastModifiedOn(entity.getLastModifiedOn()).childCatenaXId(entity.getChildCatenaXId()).build();
 	}
 
 }

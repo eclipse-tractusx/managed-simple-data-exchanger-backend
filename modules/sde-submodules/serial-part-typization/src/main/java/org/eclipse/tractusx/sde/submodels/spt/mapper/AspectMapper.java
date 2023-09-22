@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import org.eclipse.tractusx.sde.common.enums.OptionalIdentifierKeyEnum;
+import org.eclipse.tractusx.sde.common.mapper.AspectResponseFactory;
 import org.eclipse.tractusx.sde.common.model.LocalIdentifier;
 import org.eclipse.tractusx.sde.common.model.ManufacturingInformation;
 import org.eclipse.tractusx.sde.common.model.PartTypeInformation;
@@ -37,6 +38,7 @@ import org.eclipse.tractusx.sde.submodels.spt.model.Aspect;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -52,9 +54,11 @@ public abstract class AspectMapper {
 	private String manufacturerId;
 
 	ObjectMapper mapper = new ObjectMapper();
+	
+	@Autowired
+	private AspectResponseFactory aspectResponseFactory;
 
 	@Mapping(target = "rowNumber", ignore = true)
-	@Mapping(target = "subModelId", ignore = true)
 	public abstract Aspect mapFrom(AspectEntity aspect);
 
 	@Mapping(source = "optionalIdentifierKey", target = "optionalIdentifierKey", qualifiedByName = "prettyName")
@@ -92,17 +96,17 @@ public abstract class AspectMapper {
 				.country(entity.getManufacturingCountry()).date(entity.getManufacturingDate()).build();
 
 		PartTypeInformation partTypeInformation = PartTypeInformation.builder()
-				.manufacturerPartId(entity.getManufacturerPartId())
-				.customerPartId(entity.getCustomerPartId())
-				.classification(entity.getClassification())
-				.nameAtManufacturer(entity.getNameAtManufacturer())
-				.nameAtCustomer(entity.getNameAtCustomer())
-				.build();
+				.manufacturerPartId(entity.getManufacturerPartId()).customerPartId(entity.getCustomerPartId())
+				.classification(entity.getClassification()).nameAtManufacturer(entity.getNameAtManufacturer())
+				.nameAtCustomer(entity.getNameAtCustomer()).build();
 
-		return new Gson().toJsonTree(SubmodelResultResponse.builder().localIdentifiers(localIdentifiers)
+		Aspect csvObj = mapFrom(entity);
+
+		SubmodelResultResponse build = SubmodelResultResponse.builder().localIdentifiers(localIdentifiers)
 				.manufacturingInformation(manufacturingInformation).partTypeInformation(partTypeInformation)
-				.catenaXId(entity.getUuid())
-				.build()).getAsJsonObject();
+				.catenaXId(entity.getUuid()).build();
+
+		return aspectResponseFactory.maptoReponse(csvObj, build);
 	}
 
 	@Named("prettyName")

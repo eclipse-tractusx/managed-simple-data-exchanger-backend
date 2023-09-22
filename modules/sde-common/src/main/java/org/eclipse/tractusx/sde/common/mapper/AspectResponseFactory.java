@@ -1,8 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 Critical TechWorks GmbH
- * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023 T-Systems International GmbH
+ * Copyright (c) 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,23 +18,28 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.core.processreport.model;
+package org.eclipse.tractusx.sde.common.mapper;
 
-import java.util.List;
+import org.springframework.stereotype.Component;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class ProcessReportPageResponse {
+import lombok.SneakyThrows;
 
-    private int page;
-    private int pageSize;
-    private long totalItems;
-    private List<ProcessReport> items;
+@Component
+public class AspectResponseFactory {
+
+	ObjectMapper mapper = new ObjectMapper();
+	
+	@SneakyThrows
+	public JsonObject maptoReponse(Object csvObject, Object aspectObject) {
+		JsonObject jobj = new JsonObject();
+		jobj.add("csv", new Gson().fromJson(mapper.writeValueAsString(csvObject), JsonObject.class));
+		jobj.add("json", new Gson().toJsonTree(aspectObject).getAsJsonObject());
+		
+		return jobj;
+	}
+
 }

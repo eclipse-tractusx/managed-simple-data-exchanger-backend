@@ -23,6 +23,7 @@ package org.eclipse.tractusx.sde.submodels.batch.mapper;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.tractusx.sde.common.mapper.AspectResponseFactory;
 import org.eclipse.tractusx.sde.common.model.LocalIdentifier;
 import org.eclipse.tractusx.sde.common.model.ManufacturingInformation;
 import org.eclipse.tractusx.sde.common.model.PartTypeInformation;
@@ -32,6 +33,7 @@ import org.eclipse.tractusx.sde.submodels.batch.entity.BatchEntity;
 import org.eclipse.tractusx.sde.submodels.batch.model.Batch;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -45,9 +47,11 @@ public abstract class BatchMapper {
 	
 	
 	ObjectMapper mapper = new ObjectMapper();
+	
+	@Autowired
+	private AspectResponseFactory aspectResponseFactory;
 
 	@Mapping(target = "rowNumber", ignore = true)
-	@Mapping(target = "subModelId", ignore = true)
 	public abstract Batch mapFrom(BatchEntity batch);
 
 	public abstract BatchEntity mapFrom(Batch batch);
@@ -71,23 +75,21 @@ public abstract class BatchMapper {
 			return null;
 		}
 
+		Batch csvObj = mapFrom(entity);
+
 		Set<LocalIdentifier> localIdentifiers = new HashSet<>();
 		localIdentifiers.add(new LocalIdentifier(BatchConstants.BATCH_ID, entity.getBatchId()));
 
 		ManufacturingInformation manufacturingInformation = ManufacturingInformation.builder()
-				.date(entity.getManufacturingDate())
-				.country(entity.getManufacturingCountry())
-				.build();
+				.date(entity.getManufacturingDate()).country(entity.getManufacturingCountry()).build();
 
 		PartTypeInformation partTypeInformation = PartTypeInformation.builder()
-				.manufacturerPartId(entity.getManufacturerPartId())
-				.classification(entity.getClassification())
-				.nameAtManufacturer(entity.getNameAtManufacturer())
-				.build();
-
-		return new Gson().toJsonTree(SubmodelResultResponse.builder().localIdentifiers(localIdentifiers)
+				.manufacturerPartId(entity.getManufacturerPartId()).classification(entity.getClassification())
+				.nameAtManufacturer(entity.getNameAtManufacturer()).build();
+		SubmodelResultResponse build = SubmodelResultResponse.builder().localIdentifiers(localIdentifiers)
 				.manufacturingInformation(manufacturingInformation).partTypeInformation(partTypeInformation)
-				.catenaXId(entity.getUuid())
-				.build()).getAsJsonObject();
+				.catenaXId(entity.getUuid()).build();
+
+		return aspectResponseFactory.maptoReponse(csvObj, build);
 	}
 }

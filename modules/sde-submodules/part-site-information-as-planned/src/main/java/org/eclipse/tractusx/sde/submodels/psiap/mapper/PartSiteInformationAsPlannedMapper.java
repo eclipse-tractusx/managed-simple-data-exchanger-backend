@@ -23,12 +23,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.eclipse.tractusx.sde.common.mapper.AspectResponseFactory;
 import org.eclipse.tractusx.sde.submodels.psiap.entity.PartSiteInformationAsPlannedEntity;
 import org.eclipse.tractusx.sde.submodels.psiap.model.PartSiteInformationAsPlanned;
 import org.eclipse.tractusx.sde.submodels.psiap.model.PartSiteInformationAsPlannedAspectResponse;
 import org.eclipse.tractusx.sde.submodels.psiap.model.Sites;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -42,8 +44,10 @@ public abstract class PartSiteInformationAsPlannedMapper {
 
 	ObjectMapper mapper=new ObjectMapper();
 	
+	@Autowired
+	private AspectResponseFactory aspectResponseFactory;
+	
 	@Mapping(target = "rowNumber", ignore = true)
-	@Mapping(target = "subModelId", ignore = true)
 	public abstract PartSiteInformationAsPlanned mapFrom( PartSiteInformationAsPlannedEntity partSiteInformationAsPlannedEntity);
 
 	public abstract PartSiteInformationAsPlannedEntity mapFrom(PartSiteInformationAsPlanned partSiteInformationAsPlanned);
@@ -68,11 +72,13 @@ public abstract class PartSiteInformationAsPlannedMapper {
 		}
 		
 		Set<Sites> sites = partSiteInformationAsPlannedEntity.stream().map(this::toSites).collect(Collectors.toSet());
-		
-		return new Gson().toJsonTree(PartSiteInformationAsPlannedAspectResponse.builder()
-				.catenaXId(catenaXId)
-				.sites(sites)
-				.build()).getAsJsonObject();
+		PartSiteInformationAsPlannedAspectResponse build = PartSiteInformationAsPlannedAspectResponse.builder()
+				.catenaXId(catenaXId).sites(sites).build();
+
+		PartSiteInformationAsPlannedEntity entity = partSiteInformationAsPlannedEntity.get(0);
+		PartSiteInformationAsPlanned csvObj = mapFrom(entity);
+
+		return aspectResponseFactory.maptoReponse(csvObj, build);
 	}
 	
 	private Sites toSites(PartSiteInformationAsPlannedEntity entity) {

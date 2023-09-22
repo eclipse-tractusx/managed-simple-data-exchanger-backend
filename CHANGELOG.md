@@ -2,18 +2,22 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
-## [2.2.0] - 2023-09-06
+## [2.3.0] - 2023-09-20
 ### Added
-- Change csv download escape character for space.
-- PCF final working version.
+- Support_edc_edr_api_use.
+- Support combine zip download.
+- Maintain download history for the re-download.
+### Fixed
+- Update pcf schema.
 
-## [2.1.2] - 2023-09-06
-### Added
-- Add entity mapping and model for pcf model execution.
-
-## [2.1.1] - 2023-09-06
+## [2.2.0] - 2023-09-20
 ### Added
 - Pcf model schema and model registration.
+- Add entity mapping and model for pcf model execution.
+- Support pcf submodel in sde.
+
+## [2.1.1] - 2023-09-06
+- bumped version
 
 ## [2.1.0] - 2023-08-30
 ### Fixed
@@ -228,9 +232,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Compliance with Catena-X Guidelines
 - Integration with Digital Twin registry service.
 
-[unreleased]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.2.0...main
-[2.2.0]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.1.2...v2.2.0
-[2.1.2]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.1.1...v2.1.2
+[unreleased]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.3.0...main
+[2.3.0]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.2.0...v2.3.0
+[2.2.0]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.1.1...v2.2.0
 [2.1.1]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.0.11...v2.1.0
 [2.0.11]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.0.10...v2.0.11

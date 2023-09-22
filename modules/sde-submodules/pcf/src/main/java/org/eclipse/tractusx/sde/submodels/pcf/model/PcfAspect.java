@@ -46,7 +46,7 @@ public class PcfAspect {
 	private String subModelIdforPcf;
 
 	@JsonProperty(value = "row_number")
-	private int rowNumberforPcf;
+	private Integer rowNumberforPcf;
 
 	@JsonProperty(value = "bpn_numbers")
 	private List<String> bpnNumbersforPcf;

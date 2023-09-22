@@ -35,5 +35,5 @@ public interface RetrieverFactory {
      * @return retriever
      */
     RetrieverI create() throws IOException;
-    void saveConfig(JsonNode config);
+    String saveConfig(JsonNode config);
 }

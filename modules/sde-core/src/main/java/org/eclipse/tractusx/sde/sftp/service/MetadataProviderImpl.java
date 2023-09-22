@@ -40,19 +40,20 @@ public class MetadataProviderImpl implements MetadataProvider {
 
 
     @Override
-    public void saveMetadata(JsonNode metadata) {
+    public String saveMetadata(JsonNode metadata) {
         Optional<CsvUploadConfigEntity> config = repository.findById(CsvUploadConfigEntity.METADATA_CONFIG_ID);
+        CsvUploadConfigEntity configEntity;
         if (config.isPresent()) {
-            CsvUploadConfigEntity configEntity = config.get();
+            configEntity = config.get();
             configEntity.setContent(metadata.toString());
-            repository.save(configEntity);
         } else {
-            CsvUploadConfigEntity configEntity = new CsvUploadConfigEntity();
+            configEntity = new CsvUploadConfigEntity();
             configEntity.setUuid(CsvUploadConfigEntity.METADATA_CONFIG_ID);
             configEntity.setContent(metadata.toString());
             configEntity.setType(ConfigType.METADATA.toString());
-            repository.save(configEntity);
         }
+        repository.save(configEntity);
+        return configEntity.getUuid();
     }
 
     @Override

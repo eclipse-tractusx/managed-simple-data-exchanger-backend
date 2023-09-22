@@ -25,10 +25,17 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import org.eclipse.tractusx.sde.agent.model.SchedulerConfigModel;
 import org.eclipse.tractusx.sde.agent.model.SftpConfigModel;
 import org.eclipse.tractusx.sde.sftp.dto.EmailNotificationModel;
+import org.eclipse.tractusx.sde.sftp.dto.JobMaintenanceModel;
 import org.eclipse.tractusx.sde.sftp.service.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
+
+import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
 @RequiredArgsConstructor
@@ -37,28 +44,38 @@ public class AutoUploadConfigurationController {
     private final MetadataProvider metadataProvider;
     private final SftpRetrieverFactoryImpl sftpRetrieverFactory;
     private final SchedulerService schedulerService;
-    private final CsvUploadConfirationService csvUploadConfirationService;
+    private final CsvUploadConfigurationService csvUploadConfirationService;
 
 
-    @PutMapping("/scheduler/{uuid}")
-    public String updateScheduler(@PathVariable String uuid,
-                                  @NotBlank @RequestBody JsonNode schedulerConfig) throws JsonProcessingException {
-        return schedulerService.updateScheduler(uuid, schedulerConfig);
+    @PutMapping("/schedulerConfig")
+    public String updateScheduler(@NotBlank @RequestBody SchedulerConfigModel schedulerConfig) {
+        return schedulerService.updateScheduler(schedulerConfig);
     }
 
-    @PostMapping("/ftpsConfig")
-    public Object updateFtpsConfig(@NotBlank @RequestBody JsonNode config,
+    @GetMapping("/schedulerConfig")
+    public SchedulerConfigModel getSchedulerConfig() {
+        return schedulerService.getCurrentSchedule();
+    }
+
+    @PostMapping("/sdeAgentConfig")
+    public String updateSftpConfig(@NotBlank @RequestBody JsonNode config,
                                    @RequestParam("type") ConfigType type) {
         if (type.equals(ConfigType.METADATA)) {
-            metadataProvider.saveMetadata(config);
+            return metadataProvider.saveMetadata(config);
         } else if (type.equals(ConfigType.CLIENT)) {
-            sftpRetrieverFactory.saveConfig(config);
+            return sftpRetrieverFactory.saveConfig(config);
         }
-        return "success";
+        return "Unsupported type";
     }
 
-    @GetMapping("/ftpsConfig")
-    public SftpConfigModel getFtpsConfig() {
+    @GetMapping("/sftpMetadata")
+    public JsonNode getSftpMetadata() {
+        return metadataProvider.getMetadata();
+    }
+
+
+    @GetMapping("/sftpConfig")
+    public SftpConfigModel getSftpConfig() {
         return sftpRetrieverFactory.getConfig();
     }
 
@@ -68,13 +85,23 @@ public class AutoUploadConfigurationController {
     }
 
     @GetMapping("/notification")
-    public EmailNotificationModel getNotificationConfig() throws JsonProcessingException {
-        return (EmailNotificationModel) csvUploadConfirationService.getCsvUploadConfig(ConfigType.NOTIFICATION);
+    public EmailNotificationModel getNotificationConfig()  {
+        return Optional.ofNullable((EmailNotificationModel)csvUploadConfirationService.getCsvUploadConfig(ConfigType.NOTIFICATION))
+                .orElse(new EmailNotificationModel());
     }
 
     @PostMapping("/job-maintenance")
-    public String updateJobMaintenanceConfig(@NotBlank @RequestBody JsonNode config) throws JsonProcessingException {
+    public String updateJobMaintenanceConfig(@NotBlank @RequestBody JsonNode config){
         return csvUploadConfirationService.saveCsvUploadConfig(config, ConfigType.JOB_MAINTENANCE);
+    }
+
+    @GetMapping("/job-maintenance")
+    public ResponseEntity<JobMaintenanceModel> getJobMaintenanceConfig() {
+        JobMaintenanceModel res = (JobMaintenanceModel)csvUploadConfirationService.getCsvUploadConfig(ConfigType.JOB_MAINTENANCE);
+        if(res != null) {return ok().body(res);}
+        else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 

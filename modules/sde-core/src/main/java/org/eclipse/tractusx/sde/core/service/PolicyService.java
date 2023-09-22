@@ -1,9 +1,32 @@
+/********************************************************************************
+ * Copyright (c) 2023 BMW GmbH
+ * Copyright (c) 2023 T-Systems International GmbH
+ * Copyright (c) 2023 Contributors to the Eclipse Foundation
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ ********************************************************************************/
+
 package org.eclipse.tractusx.sde.core.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.eclipse.tractusx.sde.common.entities.SubmodelFileRequest;
+import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.core.policy.entity.PolicyEntity;
 import org.eclipse.tractusx.sde.core.policy.repository.PolicyRepository;
 import org.springframework.stereotype.Service;
@@ -19,24 +42,34 @@ public class PolicyService {
     private final PolicyRepository repository;
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    public String savePolicy(SubmodelFileRequest request) throws Exception {
+    @SneakyThrows
+    public String savePolicy(SubmodelFileRequest request) {
         Optional<PolicyEntity> optionalPolicy = repository.findByName(request.getPolicyName());
         if (optionalPolicy.isEmpty()) {
             PolicyEntity policy = new PolicyEntity();
             policy.setName(request.getPolicyName());
             policy.setUuid(UUID.randomUUID().toString());
-            policy.setContent(objectMapper.writeValueAsString(request));
+            try {
+                policy.setContent(objectMapper.writeValueAsString(request));
+            } catch (JsonProcessingException e) {
+                throw new ServiceException("Error while saving the policy");
+            }
             repository.save(policy);
             return policy.getUuid();
-        } else throw new Exception("Such policy name already exists");
+        } else return "Such policy name already exists";
     }
 
-    public SubmodelFileRequest getPolicy(String uuid) throws JsonProcessingException {
-        Optional<PolicyEntity> optionalPolicy = repository.findById(uuid);
-        if (optionalPolicy.isEmpty()) return null;
-        else {
-            PolicyEntity policy = optionalPolicy.get();
-            return objectMapper.readValue(policy.getContent(), SubmodelFileRequest.class);
+    @SneakyThrows
+    public SubmodelFileRequest getPolicy(String uuid) {
+        try {
+            Optional<PolicyEntity> optionalPolicy = repository.findById(uuid);
+            if (optionalPolicy.isEmpty()) return null;
+            else {
+                PolicyEntity policy = optionalPolicy.get();
+                return objectMapper.readValue(policy.getContent(), SubmodelFileRequest.class);
+            }
+        } catch (JsonProcessingException e) {
+            throw new ServiceException("Error while getting the policy details");
         }
     }
 

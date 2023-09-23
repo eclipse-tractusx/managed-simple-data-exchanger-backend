@@ -51,8 +51,8 @@ public class EDRRequestHelper extends AbstractEDCStepsHelper {
 		ContractNegotiations contractNegotiations = contractMapper
 				.prepareContractNegotiations(providerUrl + protocolPath, offerId, assetId, providerId, action);
 
-		AcknowledgementId acknowledgementId = edrApiProxy.edrCacheCreate(new URI(consumerHostWithDataPath), contractNegotiations,
-				getAuthHeader());
+		AcknowledgementId acknowledgementId = edrApiProxy.edrCacheCreate(new URI(consumerHostWithDataPath),
+				contractNegotiations, getAuthHeader());
 		return acknowledgementId.getId();
 	}
 
@@ -63,14 +63,20 @@ public class EDRRequestHelper extends AbstractEDCStepsHelper {
 
 	@SneakyThrows
 	public EDRCachedByIdResponse getEDRCachedByTransferProcessId(String transferProcessId) {
-		return edrApiProxy.getEDRCachedByTransferProcessId(new URI(consumerHostWithDataPath), transferProcessId, getAuthHeader());
+		return edrApiProxy.getEDRCachedByTransferProcessId(new URI(consumerHostWithDataPath), transferProcessId,
+				getAuthHeader());
 	}
 
 	@SneakyThrows
-	public Object getDataFromProvider(EDRCachedByIdResponse authorizationToken) {
+	public Object getDataFromProvider(EDRCachedByIdResponse authorizationToken, String downloadDataAs) {
 		Map<String, String> authHeader = new HashMap<>();
 		authHeader.put(authorizationToken.getAuthKey(), authorizationToken.getAuthCode());
-		return edrApiProxy.getActualDataFromProviderDataPlane(new URI(authorizationToken.getEndpoint()), authHeader);
+		if ("csv".equalsIgnoreCase(downloadDataAs))
+			downloadDataAs = "/" + downloadDataAs;
+		else
+			downloadDataAs = "";
+		return edrApiProxy.getActualDataFromProviderDataPlane(
+				new URI(authorizationToken.getEndpoint() + downloadDataAs), authHeader);
 	}
 
 }

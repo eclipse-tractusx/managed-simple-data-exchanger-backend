@@ -277,7 +277,8 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 				}
 
 				if (flagToDownloadImidiate)
-					resultFields.put("data", downloadFile(checkContractNegotiationStatus));
+					resultFields.put("data",
+							downloadFile(checkContractNegotiationStatus, consumerRequest.getDownloadDataAs()));
 
 				resultFields.put(STATUS, "SUCCESS");
 
@@ -399,7 +400,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 									+ verifyEDRRequestStatus.getEdrState() + "'");
 				}
 
-				downloadResultFields.put("data", downloadFile(verifyEDRRequestStatus));
+				downloadResultFields.put("data", downloadFile(verifyEDRRequestStatus, "csv"));
 
 				downloadResultFields.put(STATUS, "SUCCESS");
 			} catch (Exception e) {
@@ -418,12 +419,12 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 	}
 
 	@SneakyThrows
-	private Object downloadFile(EDRCachedResponse verifyEDRRequestStatus) {
+	private Object downloadFile(EDRCachedResponse verifyEDRRequestStatus, String downloadDataAs) {
 		if (verifyEDRRequestStatus != null && NEGOTIATED.equalsIgnoreCase(verifyEDRRequestStatus.getEdrState())) {
 			try {
 				EDRCachedByIdResponse authorizationToken = getAuthorizationTokenForDataDownload(
 						verifyEDRRequestStatus.getTransferProcessId());
-				return edrRequestHelper.getDataFromProvider(authorizationToken);
+				return edrRequestHelper.getDataFromProvider(authorizationToken, downloadDataAs);
 			} catch (FeignException e) {
 				log.error("Download RequestBody: " + e.request());
 				String errorMsg = "Unable to download subcribe data offer because: " + e.contentUTF8();

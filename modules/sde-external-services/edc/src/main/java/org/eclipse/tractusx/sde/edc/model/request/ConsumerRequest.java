@@ -34,7 +34,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 @Data
 @Builder
 @AllArgsConstructor
@@ -42,14 +41,17 @@ import lombok.NoArgsConstructor;
 @JsonInclude(Include.NON_NULL)
 public class ConsumerRequest {
 
-    @NonNull
-    private String connectorId;
-    @NonNull
-    private String providerUrl;
-    @NonNull
-    @NotEmpty
-    private List<Offer> offers;
-    @NonNull
-    private List<UsagePolicies> policies;
+	@NonNull
+	private String connectorId;
+	@NonNull
+	private String providerUrl;
+	@NonNull
+	@NotEmpty
+	private List<Offer> offers;
+	@NonNull
+	private List<UsagePolicies> policies;
+
+	@Builder.Default
+	private String downloadDataAs = "csv";
 
 }

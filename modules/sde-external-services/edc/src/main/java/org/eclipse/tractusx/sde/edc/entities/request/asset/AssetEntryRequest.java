@@ -40,7 +40,10 @@ public class AssetEntryRequest {
 
 	@JsonProperty("@context")
 	@Builder.Default
-	private Map<String,String> context = Map.of();
+	private Map<String,String> context = Map.of("edc", "https://w3id.org/edc/v0.0.1/ns/",
+	        "oauth2", "https://datatracker.ietf.org/doc/html/rfc6749",
+	        "dcat", "https://www.w3.org/ns/dcat/",
+	        "rdfs", "http://www.w3.org/2000/01/rdf-schema#");
 
 	private AssetRequest asset;
 	private DataAddressRequest dataAddress;

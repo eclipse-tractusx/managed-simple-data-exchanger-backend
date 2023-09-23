@@ -36,7 +36,6 @@ public class AssetEntryRequestFactory {
     private static final String ASSET_PROP_CONTENT_TYPE = "application/json";
     private static final String ASSET_PROP_TYPE = "data.core.digitalTwin.submodel";
     private static final String ASSET_PROP_VERSION = "1.0.0";
-    private static final String NAME = "Backend Data Service - AAS Server";
     private static final String TYPE = "HttpData";
     private static final String DATE_FORMATTER = "dd/MM/yyyy HH:mm:ss";
 	private static final String ASSET_PROP_POLICYID = "use-eu";
@@ -51,7 +50,6 @@ public class AssetEntryRequestFactory {
     private String manufacturerId;
     @Value(value = "${edc.hostname}")
     private String edcEndpoint;
-
     
     public AssetEntryRequest getAssetRequest(String submodel, String assetName, String shellId, String subModelId, String uuid) {
         return buildAsset(submodel, shellId, subModelId, assetName, uuid);
@@ -103,9 +101,13 @@ public class AssetEntryRequestFactory {
         HashMap<String, String> dataAddressProperties = new HashMap<>();
         dataAddressProperties.put("type", TYPE);
         dataAddressProperties.put("baseUrl", String.format(endpoint, shellId, subModelId));
-        dataAddressProperties.put("name", NAME);
         dataAddressProperties.put("authKey", apiKeyHeader);
         dataAddressProperties.put("authCode", apiKey);
+        dataAddressProperties.put("proxyMethod", "true");
+        dataAddressProperties.put("proxyBody", "true");
+        dataAddressProperties.put("proxyPath", "true");
+        dataAddressProperties.put("proxyQueryParams", "true");
+        dataAddressProperties.put("contentType", ASSET_PROP_CONTENT_TYPE);
         return dataAddressProperties;
     }
 

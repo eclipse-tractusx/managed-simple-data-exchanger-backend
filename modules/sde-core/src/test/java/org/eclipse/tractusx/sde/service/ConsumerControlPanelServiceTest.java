@@ -70,10 +70,10 @@ class ConsumerControlPanelServiceTest {
 
 	@MockBean
 	private TokenUtility keycloakUtil;
-	
+
 	@MockBean
-    private ConsumerService consumerService;
-	
+	private ConsumerService consumerService;
+
 	@MockBean
 	private EDRRequestHelper eDRRequestHelper;
 
@@ -111,18 +111,16 @@ class ConsumerControlPanelServiceTest {
 		verify(contractOfferCatalogApi).getContractOffersCatalog((JsonNode) any());
 	}
 
-	
-
 	@Test
 	void testQueryOnDataOffersWithUsagePolicies() throws Exception {
-		
+
 		String filterExpression = String.format("""
 				 "filterExpression": [{
 				    "operandLeft": "https://w3id.org/edc/v0.0.1/ns/type",
 				    "operator": "=",
 				    "operandRight": "data.core.digitalTwinRegistry"
 				}]""");
-		
+
 		JsonNode contractOffersCatalogResponse = getCatalogResponse();
 		when(contractOfferCatalogApi.getContractOffersCatalog((JsonNode) any()))
 				.thenReturn(contractOffersCatalogResponse);
@@ -130,7 +128,6 @@ class ConsumerControlPanelServiceTest {
 				.queryOnDataOffers("https://example.org/example", 0, 1, filterExpression).size());
 		verify(contractOfferCatalogApi).getContractOffersCatalog((JsonNode) any());
 	}
-
 
 	@Test
 	void testSubscribeDataOffers1() {
@@ -140,23 +137,20 @@ class ConsumerControlPanelServiceTest {
 				.typeOfAccess(PolicyAccessEnum.RESTRICTED).build();
 		usagePolicies.add(usagePolicy);
 		ConsumerRequest consumerRequest = new ConsumerRequest("42", "https://example.org/example", offerRequestList,
-				usagePolicies);
+				usagePolicies, "csv");
 		String processId = UUID.randomUUID().toString();
 		consumerControlPanelService.subscribeDataOffers(consumerRequest, processId);
 		assertEquals("42", consumerRequest.getConnectorId());
 		assertEquals("https://example.org/example", consumerRequest.getProviderUrl());
 		List<UsagePolicies> policies = consumerRequest.getPolicies();
 		ActionRequest list = ActionRequest.builder().build();
-		ConstraintRequest constraintRequest = ConstraintRequest.builder().leftOperand("A")
-				.rightOperand("A")
-				.operator(Operator.builder().id("odrl:eq").build())
-				.build();
+		ConstraintRequest constraintRequest = ConstraintRequest.builder().leftOperand("A").rightOperand("A")
+				.operator(Operator.builder().id("odrl:eq").build()).build();
 		list.addProperty("odrl:and", constraintRequest);
 		when(policyConstraintBuilderService.getUsagePolicyConstraints(any())).thenReturn(list);
 		assertEquals(usagePolicies, policies);
 		assertEquals(1, consumerControlPanelService.getAuthHeader().size());
 	}
-
 
 	private JsonNode getCatalogResponse() throws JsonProcessingException, JsonMappingException {
 		String resBody = String
@@ -234,31 +228,30 @@ class ConsumerControlPanelServiceTest {
 		JsonNode json = (JsonNode) new ObjectMapper().readTree(resBody);
 		return json;
 	}
-	
+
 	private JsonNode getCatalogEmptyResponse() throws JsonProcessingException, JsonMappingException {
-		String resBody = String
-				.format("""
-							{
-						    "@id": "c6b93e69-4894-4353-85bd-3f4ce097af99",
-						    "@type": "dcat:Catalog",
-						    "dcat:dataset": [],
-						    "dcat:service": {
-						        "@id": "db548bb3-3341-4ae3-8d70-6d0cd4482570",
-						        "@type": "dcat:DataService",
-						        "dct:terms": "connector",
-						        "dct:endpointUrl": "https://tsyste-f783465e-us.local.cx.dih-cloud.com/api/v1/dsp"
-						    },
-						    "edc:participantId": "BPNL001000TS0100",
-						    "@context": {
-						        "dct": "https://purl.org/dc/terms/",
-						        "tx": "https://w3id.org/tractusx/v0.0.1/ns/",
-						        "edc": "https://w3id.org/edc/v0.0.1/ns/",
-						        "dcat": "https://www.w3.org/ns/dcat/",
-						        "odrl": "http://www.w3.org/ns/odrl/2/",
-						        "dspace": "https://w3id.org/dspace/v0.8/"
-						    }
-						}
-														""");
+		String resBody = String.format("""
+					{
+				    "@id": "c6b93e69-4894-4353-85bd-3f4ce097af99",
+				    "@type": "dcat:Catalog",
+				    "dcat:dataset": [],
+				    "dcat:service": {
+				        "@id": "db548bb3-3341-4ae3-8d70-6d0cd4482570",
+				        "@type": "dcat:DataService",
+				        "dct:terms": "connector",
+				        "dct:endpointUrl": "https://tsyste-f783465e-us.local.cx.dih-cloud.com/api/v1/dsp"
+				    },
+				    "edc:participantId": "BPNL001000TS0100",
+				    "@context": {
+				        "dct": "https://purl.org/dc/terms/",
+				        "tx": "https://w3id.org/tractusx/v0.0.1/ns/",
+				        "edc": "https://w3id.org/edc/v0.0.1/ns/",
+				        "dcat": "https://www.w3.org/ns/dcat/",
+				        "odrl": "http://www.w3.org/ns/odrl/2/",
+				        "dspace": "https://w3id.org/dspace/v0.8/"
+				    }
+				}
+												""");
 		JsonNode json = (JsonNode) new ObjectMapper().readTree(resBody);
 		return json;
 	}

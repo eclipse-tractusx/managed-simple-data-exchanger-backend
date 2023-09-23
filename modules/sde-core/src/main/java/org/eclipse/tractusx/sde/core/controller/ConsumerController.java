@@ -74,29 +74,33 @@ public class ConsumerController {
 		consumerControlPanelService.subscribeDataOffers(consumerRequest, processId);
 		return ResponseEntity.ok().body(processId);
 	}
-	
+
 	@PostMapping(value = "/subscribe-download-data-offers-async")
 	@PreAuthorize("hasPermission('','consumer_subscribe_download_data_offers')")
-	public ResponseEntity<Object> subscribeAndDownloadDataOffersAsync(@Valid @RequestBody ConsumerRequest consumerRequest) {
+	public ResponseEntity<Object> subscribeAndDownloadDataOffersAsync(
+			@Valid @RequestBody ConsumerRequest consumerRequest) {
 		log.info("Request recevied : /api/subscribe-download-data-offers-async");
 		return ResponseEntity.ok().body(consumerService.subscribeAndDownloadDataOffersAsync(consumerRequest));
 	}
 
 	@PostMapping(value = "/subscribe-download-data-offers")
 	@PreAuthorize("hasPermission('','consumer_subscribe_download_data_offers')")
-	public void subscribeAndDownloadDataOffersSynchronous(@Valid @RequestBody ConsumerRequest consumerRequest, HttpServletResponse response) {
+	public void subscribeAndDownloadDataOffersSynchronous(@Valid @RequestBody ConsumerRequest consumerRequest,
+			HttpServletResponse response) {
 		log.info("Request recevied : /api/subscribe-download-data-offers");
 		consumerService.subscribeAndDownloadDataOffersSynchronous(consumerRequest, response);
 	}
 
 	@GetMapping(value = "/download-data-offers")
 	@PreAuthorize("hasPermission('','consumer_download_data_offer')")
-	public void downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(@RequestParam("processId") String referenceProcessId, HttpServletResponse response)
+	public void downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(
+			@RequestParam("processId") String referenceProcessId,
+			@RequestParam(value = "type", defaultValue = "csv", required = false) String type, HttpServletResponse response)
 			throws Exception {
 		log.info("Request received : /api/download-data-offers");
-		consumerService.downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(referenceProcessId,response);
+		consumerService.downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(referenceProcessId, type, response);
 	}
-	
+
 	@GetMapping(value = "/view-download-history")
 	@PreAuthorize("hasPermission('','consumer_view_download_history')")
 	public ResponseEntity<Object> viewConsumerDownloadHistory(@Param("page") Integer page,
@@ -106,7 +110,7 @@ public class ConsumerController {
 		log.info("Request received : /api/view-download-history");
 		return ok().body(consumerService.viewDownloadHistory(page, pageSize));
 	}
-	
+
 	@GetMapping(value = "/view-download-history/{processId}")
 	@PreAuthorize("hasPermission('','consumer_view_download_history')")
 	public ResponseEntity<Object> viewConsumerDownloadHistoryDetails(@PathVariable("processId") String processId)

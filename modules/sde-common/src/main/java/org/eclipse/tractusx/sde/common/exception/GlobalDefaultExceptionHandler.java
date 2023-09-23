@@ -90,7 +90,7 @@ public class GlobalDefaultExceptionHandler extends ResponseEntityExceptionHandle
 			log.error("FeignException JsonProcessingException " + e.getMessage());
 		}
 
-		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(errorResponse, HttpStatus.valueOf(ex.status()));
 	}
 
 	@ExceptionHandler(ConstraintViolationException.class)

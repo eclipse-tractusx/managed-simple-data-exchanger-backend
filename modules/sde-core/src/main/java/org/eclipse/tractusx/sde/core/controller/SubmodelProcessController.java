@@ -91,16 +91,10 @@ public class SubmodelProcessController {
 
 	@GetMapping(value = "/{submodel}/public/{uuid}")
 	public ResponseEntity<Map<Object, Object>> readCreatedTwinsDetails(@PathVariable("submodel") String submodel,
-			@PathVariable("uuid") String uuid) {
-		return ok().body(submodelOrchestartorService.readCreatedTwinsDetails(submodel, uuid, null));
+			@PathVariable("uuid") String uuid, @RequestParam(value = "type", defaultValue = "json", required = false) String type) {
+		return ok().body(submodelOrchestartorService.readCreatedTwinsDetails(submodel, uuid, type));
 	}
 	
-	@GetMapping(value = "/{submodel}/public/{uuid}/csv")
-	public ResponseEntity<Map<Object, Object>> readCreatedTwinsDetailsAsCSV(@PathVariable("submodel") String submodel,
-			@PathVariable("uuid") String uuid) {
-		return ok().body(submodelOrchestartorService.readCreatedTwinsDetails(submodel, uuid, "csv"));
-	}
-
 	@DeleteMapping(value = "/{submodel}/delete/{processId}", produces = APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasPermission(#submodel,'provider_delete_contract_offer')")
 	public ResponseEntity<Map<String, String>> deleteRecordsWithDigitalTwinAndEDC(

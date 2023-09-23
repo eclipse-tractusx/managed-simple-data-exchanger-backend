@@ -72,7 +72,7 @@ public class EDRRequestHelper extends AbstractEDCStepsHelper {
 		Map<String, String> authHeader = new HashMap<>();
 		authHeader.put(authorizationToken.getAuthKey(), authorizationToken.getAuthCode());
 		if ("csv".equalsIgnoreCase(downloadDataAs))
-			downloadDataAs = "/" + downloadDataAs;
+			downloadDataAs = "?type=" + downloadDataAs;
 		else
 			downloadDataAs = "";
 		return edrApiProxy.getActualDataFromProviderDataPlane(

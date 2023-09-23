@@ -382,7 +382,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 	}
 
 	@SneakyThrows
-	public Map<String, Object> downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(List<String> assetIdList) {
+	public Map<String, Object> downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(List<String> assetIdList, String type) {
 		Map<String, Object> response = new ConcurrentHashMap<>();
 		assetIdList.parallelStream().forEach(assetId -> {
 
@@ -398,7 +398,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 									+ verifyEDRRequestStatus.getEdrState() + "'");
 				}
 
-				downloadResultFields.put("data", downloadFile(verifyEDRRequestStatus, "csv"));
+				downloadResultFields.put("data", downloadFile(verifyEDRRequestStatus, type));
 
 				downloadResultFields.put(STATUS, "SUCCESS");
 			} catch (Exception e) {

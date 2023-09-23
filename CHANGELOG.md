@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
-## [2.3.0] - 2023-09-
+## [2.3.0] - 2023-09-20
 ### Added
 - Support_edc_edr_api_use.
 - Support combine zip download.

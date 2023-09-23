@@ -67,9 +67,9 @@ public class SubmodelOrchestartorService {
 	private final FailureLogs failureLogs;
 
 	private final CsvHandlerService csvHandlerService;
-	
+
 	private final SubmodelCsvService submodelCsvService;
-	
+
 	ObjectMapper mapper = new ObjectMapper();
 
 	public void processSubmodelCsv(SubmodelFileRequest submodelFileRequest, String processId, String submodel) {
@@ -78,8 +78,8 @@ public class SubmodelOrchestartorService {
 
 		CsvContent csvContent = csvHandlerService.processFile(processId);
 		List<String> columns = csvContent.getColumns();
-		
-		if(!sumodelcsvValidator.validate(submodelSchemaObject, columns)) {
+
+		if (!sumodelcsvValidator.validate(submodelSchemaObject, columns)) {
 			throw new ValidationException(String.format("Csv column header is not matching %s submodel", submodel));
 		}
 
@@ -87,8 +87,9 @@ public class SubmodelOrchestartorService {
 
 	}
 
-	private void processCsv(SubmodelFileRequest submodelFileRequest, String processId, Submodel submodelSchemaObject, CsvContent csvContent) {
-		
+	private void processCsv(SubmodelFileRequest submodelFileRequest, String processId, Submodel submodelSchemaObject,
+			CsvContent csvContent) {
+
 		Runnable runnable = () -> {
 			processReportUseCase.startBuildProcessReport(processId, submodelSchemaObject.getId(),
 					csvContent.getRows().size(), submodelFileRequest.getBpnNumbers(),
@@ -205,47 +206,50 @@ public class SubmodelOrchestartorService {
 
 	}
 
-	public Map<Object, Object> readCreatedTwinsDetails(String submodel, String uuid) {
+	public Map<Object, Object> readCreatedTwinsDetails(String submodel, String uuid, String type) {
 		Submodel submodelSchema = submodelService.findSubmodelByNameAsSubmdelObject(submodel);
 		SubmodelExecutor executor = submodelSchema.getExecutor();
 		JsonObject readCreatedTwinsDetails = executor.readCreatedTwinsDetails(uuid);
-		List<String> csvHeader = submodelCsvService.getCSVHeader(submodelSchema);
-		JsonObject jElement = readCreatedTwinsDetails.get("csv").getAsJsonObject();
-		JsonObject jObject=new JsonObject();
-		for (String field : csvHeader) {
-			jObject.add(field, jElement.get(field));
+		JsonObject jObject = new JsonObject();
+		if ("csv".equalsIgnoreCase(type)) {
+			List<String> csvHeader = submodelCsvService.getCSVHeader(submodelSchema);
+			JsonObject jElement = readCreatedTwinsDetails.get("csv").getAsJsonObject();
+			for (String field : csvHeader) {
+				jObject.add(field, jElement.get(field));
+			}
+		} else {
+			jObject = readCreatedTwinsDetails.get("json").getAsJsonObject();
 		}
-		readCreatedTwinsDetails.add("csv", jObject);
-		return submodelMapper.jsonPojoToMap(readCreatedTwinsDetails);
+
+		return submodelMapper.jsonPojoToMap(jObject);
 	}
-	
-	//New method of CSV process for Automation
+
+	// New method of CSV process for Automation
 	public void processSubmodelAutomationCsv(SubmodelFileRequest submodelFileRequest, String processId) {
-		
+
 		CsvContent csvContent = csvHandlerService.processFile(processId);
 		List<String> columns = csvContent.getColumns();
 		Submodel foundSubmodelSchemaObject = findSubmodel(columns);
-		
+
 		processCsv(submodelFileRequest, processId, foundSubmodelSchemaObject, csvContent);
 	}
 
 	public Submodel findSubmodel(List<String> columns) {
-		
+
 		Submodel foundSubmodelSchemaObject = null;
 		List<Submodel> submodelDetails = submodelService.getAllSubmodels();
 		for (Submodel submodel : submodelDetails) {
-			
-			if(sumodelcsvValidator.validate(submodel, columns)){
+
+			if (sumodelcsvValidator.validate(submodel, columns)) {
 				foundSubmodelSchemaObject = submodel;
 				break;
 			}
 		}
 
-		if(foundSubmodelSchemaObject == null) {
+		if (foundSubmodelSchemaObject == null) {
 			throw new ValidationException("Csv column header is not matching with any supported submodels");
 		}
 		return foundSubmodelSchemaObject;
 	}
-	
-}
 
+}

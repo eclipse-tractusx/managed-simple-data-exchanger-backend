@@ -313,7 +313,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 			log.info("There was EDR process initiated " + offer.getAssetId() + ", so ignoring EDR process initiation");
 		}
 		
-		if (checkContractNegotiationStatus!=null && !NEGOTIATED.equals(checkContractNegotiationStatus.getEdrState()))
+		if (checkContractNegotiationStatus==null || !NEGOTIATED.equals(checkContractNegotiationStatus.getEdrState()))
 			checkContractNegotiationStatus = verifyEDRRequestStatus(offer.getAssetId());
 		
 		return checkContractNegotiationStatus;

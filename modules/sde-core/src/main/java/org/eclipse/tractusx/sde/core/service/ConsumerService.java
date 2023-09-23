@@ -62,6 +62,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.opencsv.CSVWriter;
+import com.opencsv.ICSVWriter;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
@@ -364,7 +365,12 @@ public class ConsumerService {
 				zippedOut.putNextEntry(e);
 				// There is no need for staging the CSV on filesystem or reading bytes into
 				// memory. Directly write bytes to the output stream.
-				CSVWriter writer = new CSVWriter(new OutputStreamWriter(zippedOut));
+				CSVWriter writer = new CSVWriter(new OutputStreamWriter(zippedOut),
+						';',
+						ICSVWriter.NO_QUOTE_CHARACTER,
+	                    '/',
+	                    ICSVWriter.DEFAULT_LINE_END);
+				
 				List<Object> valueList = (ArrayList<Object>) value;
 				for (Object list : valueList) {
 

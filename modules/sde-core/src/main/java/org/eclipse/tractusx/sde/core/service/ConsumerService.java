@@ -175,7 +175,7 @@ public class ConsumerService {
 				List<String> assetIds = offerList.stream().map(Offer::getAssetId).toList();
 
 				Map<String, Object> downloadFileFromEDCUsingifAlreadyTransferStatusCompleted = consumerControlPanelService
-						.downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(assetIds);
+						.downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(assetIds, type);
 
 				offerList.stream()
 						.forEach(offer -> prepareFromOfferResponse(

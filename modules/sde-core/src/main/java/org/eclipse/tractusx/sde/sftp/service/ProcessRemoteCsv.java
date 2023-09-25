@@ -20,16 +20,28 @@
 
 package org.eclipse.tractusx.sde.sftp.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import static org.eclipse.tractusx.sde.core.utils.TryUtils.IGNORE;
+import static org.eclipse.tractusx.sde.core.utils.TryUtils.tryRun;
+
+import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
 import org.eclipse.tractusx.sde.agent.entity.SftpSchedulerReport;
 import org.eclipse.tractusx.sde.agent.enums.SftpReportStatusEnum;
 import org.eclipse.tractusx.sde.agent.mapper.SftpReportMapper;
 import org.eclipse.tractusx.sde.agent.model.SftpReportModel;
 import org.eclipse.tractusx.sde.agent.repository.SftpReportRepository;
-import org.eclipse.tractusx.sde.common.entities.SubmodelFileRequest;
 import org.eclipse.tractusx.sde.common.enums.ProgressStatusEnum;
 import org.eclipse.tractusx.sde.common.utils.DateUtil;
 import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
@@ -42,17 +54,9 @@ import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 
-import java.nio.file.Paths;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
-import static org.eclipse.tractusx.sde.core.utils.TryUtils.IGNORE;
-import static org.eclipse.tractusx.sde.core.utils.TryUtils.tryRun;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
@@ -60,7 +64,7 @@ import static org.eclipse.tractusx.sde.core.utils.TryUtils.tryRun;
 public class ProcessRemoteCsv {
 
     private final CsvHandlerService csvHandlerService;
-    private final MetadataProvider metadataProvider;
+    private final PolicyProvider policyProvider;
     private final RetrieverFactory retrieverFactory;
     private final SubmodelOrchestartorService submodelOrchestartorService;
     private final SftpReportRepository sftpReportRepository;
@@ -69,9 +73,6 @@ public class ProcessRemoteCsv {
     private final ObjectFactory<ProcessRemoteCsv> selfFactory;
     private final EmailManager emailManager;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
-
     @SuppressWarnings({"CallToPrintStackTrace","ResultOfMethodCallIgnored"})
     public void process(TaskScheduler taskScheduler) {
         log.info("Scheduler started");
@@ -79,9 +80,7 @@ public class ProcessRemoteCsv {
         boolean loginSuccess = false;
         try (var retriever = retrieverFactory.create()) {
             loginSuccess = true;
-            var submodelFileRequest = Optional.ofNullable(
-                    objectMapper.convertValue(metadataProvider.getMetadata(), SubmodelFileRequest.class)
-            ).orElseThrow(() -> new RuntimeException("Metadata is incorrect"));
+            
             var inProgressIdList = StreamSupport.stream(retriever.spliterator(), false)
                     .filter(processId -> tryRun(
                             () -> retriever.setProgress(processId),
@@ -90,7 +89,11 @@ public class ProcessRemoteCsv {
                                 Paths.get(csvHandlerService.getFilePath(processId)).toFile().delete();
                             })
                     ).filter(processId -> tryRun(
-                            () -> submodelOrchestartorService.processSubmodelAutomationCsv(submodelFileRequest, processId),
+                            () -> {
+                            	 String originalFileName= retriever.getFileName(processId);//need original file for identify Usage policy
+                            	 var submodelFileRequest = policyProvider.getMatchingPolicyBasedOnFileName(originalFileName);
+                            	 submodelOrchestartorService.processSubmodelAutomationCsv(submodelFileRequest, processId);
+                            	},
                             e -> {
                                 log.info("Could not submit CVS file for processing. {}", csvHandlerService.getFilePath(processId));
                                 tryRun( () -> retriever.setFailed(processId),

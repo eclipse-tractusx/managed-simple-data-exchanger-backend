@@ -20,141 +20,90 @@
 
 package org.eclipse.tractusx.sde.sftp.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import org.eclipse.tractusx.sde.agent.entity.CsvUploadConfigEntity;
+import java.io.IOException;
+import java.util.Optional;
+import java.util.OptionalInt;
+
+import org.eclipse.tractusx.sde.agent.entity.ConfigEntity;
+import org.eclipse.tractusx.sde.agent.model.ConfigType;
 import org.eclipse.tractusx.sde.agent.model.SftpConfigModel;
-import org.eclipse.tractusx.sde.agent.repository.CsvUploadConfigRepository;
-import org.eclipse.tractusx.sde.common.exception.ServiceException;
+import org.eclipse.tractusx.sde.agent.repository.AutoUploadAgentConfigRepository;
 import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
 import org.eclipse.tractusx.sde.sftp.RetrieverI;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.util.OptionalInt;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 
 @Service
-@Profile("SSH")
 @RequiredArgsConstructor
 public class SftpRetrieverFactoryImpl implements RetrieverFactory {
 
-    @Value("${sftp.host}")
-    private String host;
-    @Value("${sftp.port:22}")
-    private int port;
-    @Value("${sftp.username}")
-    private String username;
-    @Value("${sftp.password}")
-    private String password;
-    @Value("${sftp.location.tobeprocessed}")
-    private String toBeProcessed;
-    @Value("${sftp.location.inprogress}")
-    private String inProgress;
-    @Value("${sftp.location.success}")
-    private String success;
-    @Value("${sftp.location.partialsucess}")
-    private String partialSuccess;
-    @Value("${sftp.location.failed}")
-    private String failed;
+	@Value("${sftp.host}")
+	private String host;
+	@Value("${sftp.port:22}")
+	private int port;
+	@Value("${sftp.username}")
+	private String username;
+	@Value("${sftp.password}")
+	private String password;
+	@Value("${sftp.location.tobeprocessed}")
+	private String toBeProcessed;
+	@Value("${sftp.location.inprogress}")
+	private String inProgress;
+	@Value("${sftp.location.success}")
+	private String success;
+	@Value("${sftp.location.partialsucess}")
+	private String partialSuccess;
+	@Value("${sftp.location.failed}")
+	private String failed;
 
-    private final CsvUploadConfigRepository repository;
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    private final CsvHandlerService csvHandlerService;
+	private final AutoUploadAgentConfigService autoUploadAgentConfigService;
+	private final AutoUploadAgentConfigRepository configRepository;
+	private final ObjectMapper objectMapper = new ObjectMapper();
+	private final CsvHandlerService csvHandlerService;
 
+	@SneakyThrows
+	public RetrieverI create(OptionalInt port) throws IOException {
+		var configEntityOptional = autoUploadAgentConfigService.getConfigurationAsObject(ConfigType.SFTP);
+		SftpConfigModel configModel = objectMapper.readValue(configEntityOptional.getContent(), SftpConfigModel.class);
+		return new SftpRetriever(csvHandlerService, 
+				configModel.getHost(),
+				port.orElse(configModel.getPort()),
+				configModel.getUsername(), 
+				configModel.getPassword(),
+				configModel.getAccessKey(),
+				configModel.getToBeProcessedLocation(), 
+				configModel.getInProgressLocation(),
+				configModel.getSuccessLocation(),
+				configModel.getPartialSuccessLocation(),
+				configModel.getFailedLocation());
 
-    public RetrieverI create(OptionalInt port) throws IOException {
-        try {
-            var configEntityOptional = repository.findById(CsvUploadConfigEntity.SFTP_CLIENT_CONFIG_ID);
-            if (configEntityOptional.isPresent()) {
-                SftpConfigModel configModel = objectMapper.readValue(configEntityOptional.get().getContent(), SftpConfigModel.class);
-                return new SftpRetriever(
-                        csvHandlerService,
-                        configModel.getHost(),
-                        port.orElse(configModel.getPort()),
-                        configModel.getUsername(),
-                        configModel.getPassword(),
-                        configModel.getAccessKey(),
-                        configModel.getToBeProcessedLocation(),
-                        configModel.getInProgressLocation(),
-                        configModel.getSuccessLocation(),
-                        configModel.getPartialSuccessLocation(),
-                        configModel.getFailedLocation()
-                );
-            } else {
-                return new SftpRetriever(
-                        csvHandlerService,
-                        host,
-                        port.orElse(this.port),
-                        username,
-                        password,
-                        null,
-                        toBeProcessed,
-                        inProgress,
-                        success,
-                        partialSuccess,
-                        failed
-                );
-            }
-        } catch (Exception e) {
-            throw new IOException(e);
-        }
-    }
+	}
 
-    @Override
-    public RetrieverI create() throws IOException {
-        return create(OptionalInt.empty());
-    }
+	@Override
+	public RetrieverI create() throws IOException {
+		return create(OptionalInt.empty());
+	}
 
-    @Override
-    @Transactional
-    public String saveConfig(JsonNode configuration) {
-        var configEntityOptional = repository.findById(CsvUploadConfigEntity.SFTP_CLIENT_CONFIG_ID);
-        CsvUploadConfigEntity configEntity;
-        if (configEntityOptional.isPresent()) {
-            configEntity = configEntityOptional.get();
-            configEntity.setContent(configuration.toString());
-        } else {
-            configEntity = new CsvUploadConfigEntity();
-            configEntity.setUuid(CsvUploadConfigEntity.SFTP_CLIENT_CONFIG_ID);
-            configEntity.setContent(configuration.toString());
-            configEntity.setType(ConfigType.CLIENT.toString());
-        }
-        repository.save(configEntity);
-        return configEntity.getUuid();
-    }
-
-    @SneakyThrows
-    public SftpConfigModel getConfig() {
-        var configEntityOptional = repository.findById(CsvUploadConfigEntity.SFTP_CLIENT_CONFIG_ID);
-        SftpConfigModel configModel;
-        if (configEntityOptional.isPresent()) {
-            try {
-                configModel = objectMapper.readValue(configEntityOptional.get().getContent(), SftpConfigModel.class);
-            } catch (JsonProcessingException e) {
-                throw new ServiceException("Error while getting the SFTP config");
-            }
-            return configModel;
-        } else {
-            SftpConfigModel sftpConfigModel =  SftpConfigModel.builder()
-                    .host(host)
-                    .port(port)
-                    .failedLocation(failed)
-                    .username(username)
-                    .password(password)
-                    .toBeProcessedLocation(toBeProcessed)
-                    .inProgressLocation(inProgress)
-                    .partialSuccessLocation(partialSuccess)
-                    .successLocation(success)
-                    .build();
-
-           return sftpConfigModel;
-        }
-
-    }
+	@SneakyThrows
+	public void saveDefaultConfig() {
+		Optional<ConfigEntity> config = configRepository.findAllByType(ConfigType.SFTP.toString());
+		if (config.isEmpty()) {
+		SftpConfigModel sftpConfigModel = SftpConfigModel.builder()
+				.host(host)
+				.port(port)
+				.failedLocation(failed)
+				.username(username)
+				.password(password)
+				.toBeProcessedLocation(toBeProcessed)
+				.inProgressLocation(inProgress)
+				.partialSuccessLocation(partialSuccess)
+				.successLocation(success).build();
+		autoUploadAgentConfigService.saveConfiguration(ConfigType.SFTP, sftpConfigModel);
+		}
+	}
 }

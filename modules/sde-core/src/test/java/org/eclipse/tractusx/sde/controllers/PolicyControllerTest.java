@@ -1,7 +1,11 @@
 package org.eclipse.tractusx.sde.controllers;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.List;
+
 import org.eclipse.tractusx.sde.EnableTestContainers;
-import org.eclipse.tractusx.sde.common.entities.SubmodelFileRequest;
+import org.eclipse.tractusx.sde.common.entities.SubmodelPolicyRequest;
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.DurationEnum;
 import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
@@ -19,17 +23,14 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.List;
-
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
 @EnableTestContainers
-public class PolicyControllerTest {
+class PolicyControllerTest {
 
 
     @Autowired
@@ -86,11 +87,11 @@ public class PolicyControllerTest {
 
 
 
-    private SubmodelFileRequest getPolicy(String policyName) {
-        SubmodelFileRequest request = new SubmodelFileRequest();
+    private SubmodelPolicyRequest getPolicy(String policyName) {
+        SubmodelPolicyRequest request = new SubmodelPolicyRequest();
         UsagePolicies policies = new UsagePolicies();
         policies.setType(UsagePolicyEnum.DURATION);
-        policies.setValue("");
+        policies.setValue("10");
         policies.setDurationUnit(DurationEnum.DAY);
         policies.setTypeOfAccess(PolicyAccessEnum.RESTRICTED);
         request.setPolicyName(policyName);

@@ -21,62 +21,55 @@
 
 package org.eclipse.tractusx.sde.core.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import jakarta.validation.constraints.NotBlank;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.tractusx.sde.common.entities.SubmodelFileRequest;
-import org.eclipse.tractusx.sde.core.processreport.model.ProcessReportPageResponse;
-import org.eclipse.tractusx.sde.core.service.PolicyService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
-import static org.springframework.http.ResponseEntity.ok;
-import static org.springframework.http.ResponseEntity.unprocessableEntity;
+import org.eclipse.tractusx.sde.common.entities.SubmodelPolicyRequest;
+import org.eclipse.tractusx.sde.core.policy.service.PolicyService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Slf4j
+import jakarta.validation.constraints.NotBlank;
+import lombok.RequiredArgsConstructor;
+
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("policy")
 public class PolicyController {
 
-    private final PolicyService policyService;
+	private final PolicyService policyService;
 
-    @PostMapping("/policy")
-    public ResponseEntity<String> savePolicy(@NotBlank @RequestBody SubmodelFileRequest request) {
-        String res = policyService.savePolicy(request);
-        if(res != null) {return ok().body(res);}
-        else {return unprocessableEntity().body("Policy with same name is already present");}
-    }
+	@PostMapping
+	public SubmodelPolicyRequest savePolicy(@NotBlank @RequestBody SubmodelPolicyRequest request) {
+		return policyService.savePolicy(request);
+	}
 
-    @GetMapping("/policy/{uuid}")
-    public ResponseEntity<SubmodelFileRequest> getPolicy(@PathVariable String uuid) {
-        SubmodelFileRequest res = policyService.getPolicy(uuid);
-        if(res != null) {return ok().body(res);}
-        else {
-            return ResponseEntity.notFound().build();
-        }
-    }
+	@PutMapping("/{uuid}")
+	public SubmodelPolicyRequest updatePolicy(@PathVariable String uuid,
+			@NotBlank @RequestBody SubmodelPolicyRequest request) {
+		return policyService.updatePolicy(uuid, request);
+	}
 
-    @GetMapping("/policy")
-    public List<SubmodelFileRequest> getAllPolicies() {
-        return policyService.getAllPolicies();
-    }
+	@GetMapping("/{uuid}")
+	public SubmodelPolicyRequest getPolicy(@PathVariable String uuid) {
+		return policyService.getPolicy(uuid);
+	}
 
-    @DeleteMapping("/policy/{uuid}")
-    public ResponseEntity<Object> deletePolicy(@PathVariable String uuid) {
-        policyService.deletePolicy(uuid);
-        return ResponseEntity.noContent().build();
-    }
+	@GetMapping
+	public List<SubmodelPolicyRequest> getAllPolicies() {
+		return policyService.getAllPolicies();
+	}
 
-    @PutMapping("/policy/{uuid}")
-    public ResponseEntity<String> updatePolicy(@PathVariable String uuid,
-                              @NotBlank @RequestBody SubmodelFileRequest request) throws JsonProcessingException {
-        String res = policyService.updatePolicy(uuid, request);
-        if(res != null) {return ok().body(res);}
-        else {
-            return ResponseEntity.notFound().build();
-        }
-    }
+	@DeleteMapping("/{uuid}")
+	public ResponseEntity<Object> deletePolicy(@PathVariable String uuid) {
+		policyService.deletePolicy(uuid);
+		return ResponseEntity.noContent().build();
+	}
+
 }

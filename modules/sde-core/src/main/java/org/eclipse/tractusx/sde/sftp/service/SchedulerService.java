@@ -20,106 +20,86 @@
 
 package org.eclipse.tractusx.sde.sftp.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import org.eclipse.tractusx.sde.agent.entity.CsvUploadConfigEntity;
-import org.eclipse.tractusx.sde.agent.model.SchedulerConfigModel;
-import org.eclipse.tractusx.sde.agent.model.SchedulerType;
-import org.eclipse.tractusx.sde.agent.repository.CsvUploadConfigRepository;
-import org.eclipse.tractusx.sde.common.exception.ServiceException;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 import java.util.Optional;
 
-import static org.eclipse.tractusx.sde.agent.entity.CsvUploadConfigEntity.SCHEDULER_CONFIG_ID;
+import org.eclipse.tractusx.sde.agent.entity.ConfigEntity;
+import org.eclipse.tractusx.sde.agent.model.ConfigType;
+import org.eclipse.tractusx.sde.agent.model.SchedulerConfigModel;
+import org.eclipse.tractusx.sde.agent.model.SchedulerType;
+import org.eclipse.tractusx.sde.agent.repository.AutoUploadAgentConfigRepository;
+import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SchedulerService {
 
-    private final CsvUploadConfigRepository csvUploadConfigRepository;
-    private final RetrieverScheduler retrieverScheduler;
-    private final ObjectMapper mapper = new ObjectMapper();
+	private final AutoUploadAgentConfigRepository configRepository;
+	private final RetrieverScheduler retrieverScheduler;
 
+	private final ObjectMapper mapper = new ObjectMapper();
 
-    @EventListener(ApplicationReadyEvent.class)
-    public void saveDefaultScheduler() throws JsonProcessingException {
-        List<CsvUploadConfigEntity> configList = csvUploadConfigRepository.findAllByType(ConfigType.SCHEDULER.toString());
-        if (configList == null || configList.isEmpty()) {
-            SchedulerConfigModel schedulerConfigModel =  SchedulerConfigModel.builder()
-                    .type(SchedulerType.HOURLY)
-                    .time("1")
-                    .build();
+	@SneakyThrows
+	public void saveDefaultScheduler() {
+		Optional<ConfigEntity> config = configRepository.findAllByType(ConfigType.SCHEDULER.toString());
+		if (config.isEmpty()) {
+			SchedulerConfigModel schedulerConfigModel = SchedulerConfigModel.builder().type(SchedulerType.HOURLY)
+					.time("1").build();
 
-            CsvUploadConfigEntity configEntity = new CsvUploadConfigEntity();
-            configEntity.setUuid(SCHEDULER_CONFIG_ID);
-            configEntity.setType(ConfigType.SCHEDULER.toString());
-            configEntity.setContent(mapper.writeValueAsString(schedulerConfigModel));
+			ConfigEntity configEntity = new ConfigEntity();
+			configEntity.setType(ConfigType.SCHEDULER.toString());
+			configEntity.setContent(mapper.writeValueAsString(schedulerConfigModel));
+			configRepository.save(configEntity);
 
-            csvUploadConfigRepository.save(configEntity);
+			// Start the scheduler
+			updateSchedulerExecution(schedulerConfigModel);
+			log.info("The Cron Scheduler update in database and context");
+		}
+	}
 
-            // Start the scheduler
-            retrieverScheduler.schedule(convertScheduleToCron(schedulerConfigModel));
-        } else {
-            SchedulerConfigModel model = mapper.readValue(configList.get(0).getContent(), SchedulerConfigModel.class);
-            retrieverScheduler.schedule(convertScheduleToCron(model));
-        }
-    }
+	public void updateSchedulerExecution(SchedulerConfigModel model) {
+		// update the scheduler
+		retrieverScheduler.schedule(convertScheduleToCron(model));
+	}
 
-    @SneakyThrows
-    public String updateScheduler(SchedulerConfigModel schedulerConfig) {
-        Optional<CsvUploadConfigEntity> optional = csvUploadConfigRepository.findById(SCHEDULER_CONFIG_ID);
-        CsvUploadConfigEntity configEntity;
-        if (optional.isPresent()) {
-            configEntity = optional.get();
-        } else {
-            configEntity = new CsvUploadConfigEntity();
-            configEntity.setUuid(SCHEDULER_CONFIG_ID);
-            configEntity.setType(ConfigType.SCHEDULER.toString());
-        }
-        try {
-            configEntity.setContent(mapper.writeValueAsString(schedulerConfig));
-        } catch (JsonProcessingException e) {
-            throw new ServiceException("Issue with the update scheduler config");
-        }
-        csvUploadConfigRepository.save(configEntity);
-        retrieverScheduler.schedule(convertScheduleToCron(schedulerConfig));
-        return configEntity.getUuid();
-    }
+	public String convertScheduleToCron(SchedulerConfigModel model) {
+		switch (model.getType()) {
+		case DAILY -> {
+			String time = model.getTime();
+			String[] timeArr = time.split(":");
+			String hour = "00";
+			String minute = "00";
 
+			if (timeArr.length == 2) {
+				hour = timeArr[0];
+				minute = timeArr[1];
+			}
+			return "0 " + minute + " " + hour + " * * *";
+		}
+		case HOURLY -> {
+			return "0 0 0/" + model.getTime() + " * * *";
+		}
+		case WEEKLY -> {
+			String time = model.getTime();
+			String[] timeArr = time.split(":");
+			String hour = "00";
+			String minute = "00";
 
-    @SneakyThrows
-    public SchedulerConfigModel getCurrentSchedule() {
-        List<CsvUploadConfigEntity> configList = csvUploadConfigRepository.findAllByType(ConfigType.SCHEDULER.toString());
-        if(configList != null && !configList.isEmpty()) {
-            SchedulerConfigModel schedulerConfigModel = mapper.readValue(configList.get(0).getContent(), SchedulerConfigModel.class);
-            return schedulerConfigModel;
-        } else {
-            throw new ServiceException("Scheduler config not found");
-        }
-    }
-
-
-
-    public String convertScheduleToCron(SchedulerConfigModel model) {
-        switch (model.getType()) {
-            case DAILY -> {
-                return "0 0 " + model.getTime() + " * * *";
-            }
-            case HOURLY -> {
-                return "0 0 0/" + model.getTime() + " * * *";
-            }
-            case WEEKLY -> {
-                return "0 0 " + model.getTime() + " * *" + model.getDay();
-            }
-            default -> {
-                return "0 0 * * * *";
-            }
-        }
-    }
+			if (timeArr.length == 2) {
+				hour = timeArr[0];
+				minute = timeArr[1];
+			}
+			return "0 " + minute + " " + hour + " * * " + model.getDay();
+		}
+		default -> {
+			return "0 0 * * * *";
+		}
+		}
+	}
 }

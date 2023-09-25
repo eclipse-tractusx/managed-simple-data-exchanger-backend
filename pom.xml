@@ -41,6 +41,8 @@
 
 	<properties>
 		<java.version>18</java.version>
+		<maven.compiler.source>18</maven.compiler.source>
+        <maven.compiler.target>18</maven.compiler.target>
 		<log4j2.version>2.17.1</log4j2.version>
 		<spring-cloud.version>2022.0.3</spring-cloud.version>
 		<org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
@@ -53,12 +55,12 @@
 		<module>modules/sde-external-services/digital-twins</module>
 		<module>modules/sde-external-services/portal</module>
 		<module>modules/sde-external-services/bpn-discovery</module>
+		<module>modules/sde-external-services/sde-agent</module>
+		<module>modules/sde-external-services/sde-notification</module>
 
 		<module>modules/sde-common</module>
 		<module>modules/sde-core</module>
-		<module>modules/sde-agent</module>
-		<module>modules/sde-notification</module>
-
+		
 		<module>modules/sde-submodules/serial-part-typization</module>
 		<module>modules/sde-submodules/batch</module>
 		<module>modules/sde-submodules/assembly-part-relationship</module>

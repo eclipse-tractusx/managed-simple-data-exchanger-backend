@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.eclipse.tractusx.sde.common.entities.SubmodelFileRequest;
+import org.eclipse.tractusx.sde.common.entities.SubmodelPolicyRequest;
 import org.eclipse.tractusx.sde.common.entities.SubmodelJsonRequest;
 import org.eclipse.tractusx.sde.common.entities.csv.CsvContent;
 import org.eclipse.tractusx.sde.common.exception.ValidationException;
@@ -72,7 +72,7 @@ public class SubmodelOrchestartorService {
 	
 	ObjectMapper mapper = new ObjectMapper();
 
-	public void processSubmodelCsv(SubmodelFileRequest submodelFileRequest, String processId, String submodel) {
+	public void processSubmodelCsv(SubmodelPolicyRequest submodelFileRequest, String processId, String submodel) {
 
 		Submodel submodelSchemaObject = submodelService.findSubmodelByNameAsSubmdelObject(submodel);
 
@@ -87,7 +87,7 @@ public class SubmodelOrchestartorService {
 
 	}
 
-	private void processCsv(SubmodelFileRequest submodelFileRequest, String processId, Submodel submodelSchemaObject, CsvContent csvContent) {
+	private void processCsv(SubmodelPolicyRequest submodelFileRequest, String processId, Submodel submodelSchemaObject, CsvContent csvContent) {
 		
 		Runnable runnable = () -> {
 			processReportUseCase.startBuildProcessReport(processId, submodelSchemaObject.getId(),
@@ -220,7 +220,7 @@ public class SubmodelOrchestartorService {
 	}
 	
 	//New method of CSV process for Automation
-	public void processSubmodelAutomationCsv(SubmodelFileRequest submodelFileRequest, String processId) {
+	public void processSubmodelAutomationCsv(SubmodelPolicyRequest submodelFileRequest, String processId) {
 		
 		CsvContent csvContent = csvHandlerService.processFile(processId);
 		List<String> columns = csvContent.getColumns();

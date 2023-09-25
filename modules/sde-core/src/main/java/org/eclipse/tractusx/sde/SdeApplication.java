@@ -21,7 +21,6 @@
 
 package org.eclipse.tractusx.sde;
 
-import org.eclipse.tractusx.sde.core.csv.service.CsvConfigurationProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

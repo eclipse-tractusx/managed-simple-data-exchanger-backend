@@ -1,8 +1,12 @@
 package org.eclipse.tractusx.sde.service;
 
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import lombok.experimental.Delegate;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.OptionalInt;
+import java.util.function.Function;
+import java.util.stream.Stream;
+
 import org.eclipse.tractusx.sde.EnableTestContainers;
 import org.eclipse.tractusx.sde.TestContainerInitializer;
 import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
@@ -18,18 +22,19 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.OptionalInt;
-import java.util.function.Function;
-import java.util.stream.Stream;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import lombok.experimental.Delegate;
+import lombok.extern.slf4j.Slf4j;
 
 @SpringBootTest
 @EnableTestContainers
 @Execution(ExecutionMode.SAME_THREAD)
-public class SftpRetrieverTest {
+@ActiveProfiles("test")
+@Slf4j
+class SftpRetrieverTest {
 
     @Autowired
     CsvHandlerService csvHandlerService;
@@ -77,7 +82,7 @@ public class SftpRetrieverTest {
         try(var sftp = sftpRetrieverFactory.create(OptionalInt.of(TestContainerInitializer.sftp.getMappedPort(22)))) {
             for (String fileId: sftp) {
                 final var filePath = Path.of(csvHandlerService.getFilePath(fileId));
-                System.out.println(fileId);
+                log.info(fileId);
                 tr.apply(sftp).exec(fileId);
                 Files.copy(filePath, System.out);
                 Files.delete(filePath);

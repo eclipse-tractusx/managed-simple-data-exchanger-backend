@@ -18,28 +18,38 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.agent.entity;
+package org.eclipse.tractusx.sde.agent.model;
 
-import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Table(name = "sftp_config")
-@Entity
 @Data
-public class CsvUploadConfigEntity {
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class SftpConfigModel {
 
-    public final static String SFTP_CLIENT_CONFIG_ID = "755FCA09-884B-4A05-91C9-EB2D3E7A45FF";
-    public final static String METADATA_CONFIG_ID = "878ef54e-ec3d-4e9b-b775-cb8e83151570";
-    public final static String SCHEDULER_CONFIG_ID = "e08cf6f2-1ff7-4c8b-9c4b-5572eeb3fc3c";
-    public final static String NOTIFICATION_CONFIG_ID = "5973a8fe-19d1-4633-a6c8-993ee9c4705c";
-    public final static String JOB_MAINTENANCE_CONFIG_ID = "b7fae548-083f-4947-aa54-a11c9ee918ec";
-    @Id
-    @Column(name = "uuid")
-    private String uuid;
+	@NotBlank
+	private String host;
 
-    @Column(name = "type")
-    private String type;
-
-    @Column(name = "content", length = 3000)
-    private String content;
+	private int port;
+	@NotBlank
+	private String username;
+	@NotBlank
+	private String password;
+	@NotBlank
+	private String accessKey;
+	@NotBlank
+	private String toBeProcessedLocation;
+	@NotBlank
+	private String inProgressLocation;
+	@NotBlank
+	private String successLocation;
+	@NotBlank
+	private String partialSuccessLocation;
+	@NotBlank
+	private String failedLocation;
 }

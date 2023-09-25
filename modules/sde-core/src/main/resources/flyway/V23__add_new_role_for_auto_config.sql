@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023 T-Systems International GmbH
+ * Copyright (c) 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,10 +17,8 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
+INSERT INTO sde_permission (sde_permission,description)
+	VALUES ('auto_config_management','Allows admin user to update auto upload configuration');
 
-CREATE TABLE policy
-(
-    uuid                      VARCHAR(50) PRIMARY KEY,
-    name                      VARCHAR(50) UNIQUE,
-    content                   TEXT
-);
+INSERT INTO sde_role_permission_mapping (sde_permission,sde_role)
+	VALUES ('auto_config_management','Admin');

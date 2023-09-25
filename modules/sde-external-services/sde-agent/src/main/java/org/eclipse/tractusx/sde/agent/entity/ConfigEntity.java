@@ -1,5 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
 /********************************************************************************
  * Copyright (c) 2023 T-Systems International GmbH
  * Copyright (c) 2023 Contributors to the Eclipse Foundation
@@ -19,25 +17,24 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>sde</artifactId>
-        <groupId>org.eclipse.tractusx</groupId>
-        <version>0.0.1</version>
-        <relativePath>../../pom.xml</relativePath>
-    </parent>
-    <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>sde-agent</artifactId>
+package org.eclipse.tractusx.sde.agent.entity;
 
-    <properties>
-        <maven.compiler.source>18</maven.compiler.source>
-        <maven.compiler.target>18</maven.compiler.target>
-    </properties>
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.Data;
 
-    <dependencies>
-    </dependencies>
-</project>
+@Table(name = "autoupload_agent_config")
+@Entity
+@Data
+public class ConfigEntity {
+
+	@Id
+	@Column(name = "type")
+	private String type;
+
+	@Column(name = "content", columnDefinition = "TEXT")
+	private String content;
+}

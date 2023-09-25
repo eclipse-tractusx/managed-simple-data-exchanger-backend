@@ -20,7 +20,7 @@
 
 package org.eclipse.tractusx.sde.common.validators;
 
-import org.eclipse.tractusx.sde.common.entities.SubmodelFileRequest;
+import org.eclipse.tractusx.sde.common.entities.SubmodelPolicyRequest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -45,7 +45,7 @@ public class UploadFileUsagePolicyValidationService implements ConstraintValidat
     @SneakyThrows
     @Override
     public boolean isValid(String metadata, ConstraintValidatorContext constraintValidatorContext) {
-        SubmodelFileRequest submodelFileRequest = objectMapper.readValue(metadata, SubmodelFileRequest.class);
+        SubmodelPolicyRequest submodelFileRequest = objectMapper.readValue(metadata, SubmodelPolicyRequest.class);
         return validationService.isValid(submodelFileRequest.getUsagePolicies());
     }
 }

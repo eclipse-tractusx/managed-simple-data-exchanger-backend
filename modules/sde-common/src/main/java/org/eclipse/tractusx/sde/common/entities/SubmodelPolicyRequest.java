@@ -18,9 +18,39 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-CREATE TABLE ftps_config
-(
-    uuid                      VARCHAR(50) PRIMARY KEY,
-    type                      VARCHAR(50),
-    content                   TEXT
-);
+package org.eclipse.tractusx.sde.common.entities;
+
+import java.util.List;
+
+import org.eclipse.tractusx.sde.common.validators.UsagePolicyValidation;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class SubmodelPolicyRequest {
+
+	private String uuid;
+	
+	@JsonProperty(value = "policy_name")
+	private String policyName;
+
+	@JsonProperty(value = "type_of_access")
+	private String typeOfAccess;
+	
+	@JsonProperty(value = "bpn_numbers")
+	private List<String> bpnNumbers;
+
+
+	@JsonProperty(value = "usage_policies")
+	@UsagePolicyValidation
+	private List<UsagePolicies> usagePolicies;
+
+}

@@ -18,26 +18,16 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.agent.model;
+package org.eclipse.tractusx.sde.agent.repository;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.util.Optional;
 
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class SftpConfigModel {
-    private String host;
-    private int port;
-    private String username;
-    private String password;
-    private String accessKey;
-    private String toBeProcessedLocation;
-    private String inProgressLocation;
-    private String successLocation;
-    private String partialSuccessLocation;
-    private String failedLocation;
+import org.eclipse.tractusx.sde.agent.entity.ConfigEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface AutoUploadAgentConfigRepository extends JpaRepository<ConfigEntity, String> {
+
+	Optional<ConfigEntity> findAllByType(String type);
 }

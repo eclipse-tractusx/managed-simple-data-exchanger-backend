@@ -4,7 +4,6 @@ package org.eclipse.tractusx.sde;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.lifecycle.Startables;
@@ -12,7 +11,8 @@ import org.testcontainers.utility.MountableFile;
 
 public class TestContainerInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15.4")
-            .withDatabaseName("dft")
+    		.withAccessToHost(true)
+            .withDatabaseName("sde")
             .withUsername("root")
             .withPassword("P@ssword21");
 
@@ -31,6 +31,8 @@ public class TestContainerInitializer implements ApplicationContextInitializer<C
     public void initialize(ConfigurableApplicationContext applicationContext) {
         TestPropertyValues.of(
             "spring.datasource.url=" + postgres.getJdbcUrl(),
+            "spring.datasource.username="+ postgres.getUsername(),
+            "spring.datasource.password="+postgres.getPassword(),
             "sftp.location.tobeprocessed=/upload/sftp/tobe",
             "sftp.location.success=/upload/sftp/success",
             "sftp.location.failed=/upload/sftp/failed",

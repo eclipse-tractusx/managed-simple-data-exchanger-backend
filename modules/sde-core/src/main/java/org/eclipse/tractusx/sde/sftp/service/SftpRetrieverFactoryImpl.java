@@ -20,7 +20,6 @@
 
 package org.eclipse.tractusx.sde.sftp.service;
 
-import java.io.IOException;
 import java.util.Optional;
 import java.util.OptionalInt;
 
@@ -32,8 +31,6 @@ import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
 import org.eclipse.tractusx.sde.sftp.RetrieverI;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -61,15 +58,13 @@ public class SftpRetrieverFactoryImpl implements RetrieverFactory {
 	@Value("${sftp.location.failed}")
 	private String failed;
 
-	private final AutoUploadAgentConfigService autoUploadAgentConfigService;
+	private final ConfigService configService;
 	private final AutoUploadAgentConfigRepository configRepository;
-	private final ObjectMapper objectMapper = new ObjectMapper();
 	private final CsvHandlerService csvHandlerService;
 
 	@SneakyThrows
-	public RetrieverI create(OptionalInt port) throws IOException {
-		var configEntityOptional = autoUploadAgentConfigService.getConfigurationAsObject(ConfigType.SFTP);
-		SftpConfigModel configModel = objectMapper.readValue(configEntityOptional.getContent(), SftpConfigModel.class);
+	public RetrieverI create(OptionalInt port) {
+		SftpConfigModel configModel = configService.getSFTPConfiguration();
 		return new SftpRetriever(csvHandlerService, 
 				configModel.getHost(),
 				port.orElse(configModel.getPort()),
@@ -85,7 +80,7 @@ public class SftpRetrieverFactoryImpl implements RetrieverFactory {
 	}
 
 	@Override
-	public RetrieverI create() throws IOException {
+	public RetrieverI create() {
 		return create(OptionalInt.empty());
 	}
 
@@ -103,7 +98,7 @@ public class SftpRetrieverFactoryImpl implements RetrieverFactory {
 				.inProgressLocation(inProgress)
 				.partialSuccessLocation(partialSuccess)
 				.successLocation(success).build();
-		autoUploadAgentConfigService.saveConfiguration(ConfigType.SFTP, sftpConfigModel);
+		configService.saveConfiguration(ConfigType.SFTP, sftpConfigModel);
 		}
 	}
 }

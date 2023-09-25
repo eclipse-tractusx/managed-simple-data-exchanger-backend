@@ -56,17 +56,17 @@ public class PolicyService {
 	@SneakyThrows
 	public SubmodelPolicyRequest savePolicy(String uuid, SubmodelPolicyRequest request) {
 
-		if (isPolicyNameValid("", request.getPolicyName())) {
+		if (isPolicyNameValid(uuid, request.getPolicyName())) {
 			PolicyEntity policy = policyMapper.mapFrom(request);
 			String policyId = UUID.randomUUID().toString();
 			policy.setUuid(policyId);
 			request.setUuid(policyId);
 			repository.save(policy);
-			log.info(request.getPolicyName()+" policy save in database successfully");
+			log.info("The '"+request.getPolicyName()+"' policy save in database successfully");
 			return request;
 		} else
 			throw new ValidationException(
-					String.format("The '%s' Such policy name already exists", request.getPolicyName()));
+					String.format("The '%s' such policy name already exists", request.getPolicyName()));
 	}
 
 	private boolean isPolicyNameValid(String id, String name) {

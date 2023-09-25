@@ -20,31 +20,47 @@
 
 package org.eclipse.tractusx.sde.sftp.service;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.concurrent.ConcurrentTaskScheduler;
-import org.springframework.scheduling.support.CronTrigger;
-import org.springframework.stereotype.Service;
-
 import java.time.Instant;
 import java.util.concurrent.ScheduledFuture;
 
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.scheduling.support.CronTrigger;
+import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RetrieverScheduler {
-    private final TaskScheduler taskScheduler = new ConcurrentTaskScheduler();
-    private final ProcessRemoteCsv processRemoteCsv;
 
-    private ScheduledFuture<?> cronFuture = null;
+	private final ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
+	private final ProcessRemoteCsv processRemoteCsv;
+	private final ConfigService configService;
+	private ScheduledFuture<?> cronFuture = null;
 
-    public synchronized void schedule(String cronExpression) {
-        if (cronFuture != null) {
-            cronFuture.cancel(false);
-        }
-        cronFuture = taskScheduler.schedule(() -> processRemoteCsv.process(taskScheduler), new CronTrigger(cronExpression));
-    }
+	public synchronized void schedule(String cronExpression) {
+		if (cronFuture != null) {
+			cronFuture.cancel(false);
+		}
 
-    public void fire() {
-        taskScheduler.schedule(() -> processRemoteCsv.process(taskScheduler), Instant.now());
-    }
+		if (configService.getJobMaintenanceDetails().isAutomaticUpload()) {
+			taskScheduler.initialize();
+			cronFuture = taskScheduler.schedule(() -> processRemoteCsv.process(taskScheduler),
+					new CronTrigger(cronExpression));
+			log.info("The Cron Scheduler started successfully as corn expresion " + cronExpression);
+		} else {
+			log.warn("Automatic file upload disable, no new scheduler set for run");
+		}
+	}
+
+	public void fire() {
+		taskScheduler.schedule(() -> processRemoteCsv.process(taskScheduler), Instant.now());
+	}
+
+	public void stopAll() {
+		taskScheduler.shutdown();
+		cronFuture = null;
+	}
 }

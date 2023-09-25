@@ -33,8 +33,8 @@ import lombok.NoArgsConstructor;
 public class EmailNotificationModel {
 
     @JsonProperty(value = "to_email")
-    private String[] to_email;
+    private String[] toEmail;
 
     @JsonProperty(value = "cc_email")
-    private String[] cc_email;
+    private String[] ccEmail;
 }

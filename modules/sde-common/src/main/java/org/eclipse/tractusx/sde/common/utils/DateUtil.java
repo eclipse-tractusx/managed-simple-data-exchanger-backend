@@ -25,5 +25,7 @@ import java.time.format.DateTimeFormatter;
 
 public class DateUtil {
 
+	private DateUtil() {}
+	
     public static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MMM/yyyy 'at' hh:mm a");
 }

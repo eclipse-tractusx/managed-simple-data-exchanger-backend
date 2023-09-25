@@ -1,5 +1,26 @@
+/********************************************************************************
+ * Copyright (c) 2023 T-Systems International GmbH
+ * Copyright (c) 2023 Contributors to the Eclipse Foundation
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ ********************************************************************************/
+
 package org.eclipse.tractusx.sde.sftp.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.tractusx.sde.agent.entity.ConfigEntity;
@@ -14,17 +35,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
-public class AutoUploadAgentDefaultConfigManagement {
+public class DefaultConfigManagement {
 
 	private final AutoUploadAgentConfigRepository configRepository;
+	private final ConfigService configService;
 	private final SchedulerService schedulerService;
 	private final PolicyProvider policyProvider;
+	private final  SftpRetrieverFactoryImpl sftpRetrieverFactoryImpl;
 	ObjectMapper mapper = new ObjectMapper();
 
 	@Value("${mail.to.address}")
@@ -36,21 +57,18 @@ public class AutoUploadAgentDefaultConfigManagement {
 	@SneakyThrows
 	@EventListener(ApplicationReadyEvent.class)
 	public void saveDefaultConfiguration() {
-		schedulerService.saveDefaultScheduler();
 		policyProvider.saveDefaultPolicy();
-		saveDefaultNotificationConfiguration();
 		saveJobMaintanceConfiguration();
+		saveDefaultNotificationConfiguration();
+		sftpRetrieverFactoryImpl.saveDefaultConfig();
+		schedulerService.saveDefaultScheduler();
 	}
 
 	@SneakyThrows
 	private void saveDefaultNotificationConfiguration() {
 		Optional<ConfigEntity> config = configRepository.findAllByType(ConfigType.NOTIFICATION.toString());
 		if (config.isEmpty()) {
-			ConfigEntity configEntity = new ConfigEntity();
-			configEntity.setType(ConfigType.NOTIFICATION.toString());
-			configEntity.setContent(mapper.writeValueAsString(getJsonNotificationBody()));
-			configRepository.save(configEntity);
-			log.info("The notification setting save in successfully");
+			configService.saveConfiguration(ConfigType.NOTIFICATION, getJsonNotificationBody());
 		}
 
 	}
@@ -59,26 +77,22 @@ public class AutoUploadAgentDefaultConfigManagement {
 	private void saveJobMaintanceConfiguration() {
 		Optional<ConfigEntity> config = configRepository.findAllByType(ConfigType.JOB_MAINTENANCE.toString());
 		if (config.isEmpty()) {
-			ConfigEntity configEntity = new ConfigEntity();
-			configEntity.setType(ConfigType.JOB_MAINTENANCE.toString());
-			configEntity.setContent(mapper.writeValueAsString(getJsonJobMaiantainceBody()));
-			configRepository.save(configEntity);
-			log.info("The job maintance setting save in successfully");
+			configService.saveConfiguration(ConfigType.JOB_MAINTENANCE, getJsonJobMaiantainceBody());
 		}
 
 	}
 
 	private JSONObject getJsonNotificationBody() {
 		JSONObject json = new JSONObject();
-		json.put("to_email", toEmail);
-		json.put("cc_email", ccEmail);
+		json.put("to_email", List.of(toEmail));
+		json.put("cc_email", List.of(ccEmail));
 		return json;
 	}
 
 	private JSONObject getJsonJobMaiantainceBody() {
 		JSONObject json = new JSONObject();
-		json.put("automatic_upload", "enable");
-		json.put("email_notification", "enable");
+		json.put("automatic_upload", true);
+		json.put("email_notification", true);
 		return json;
 	}
 }

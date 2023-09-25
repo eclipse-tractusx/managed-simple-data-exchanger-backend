@@ -5,18 +5,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.eclipse.tractusx.sde.EnableTestContainers;
 import org.eclipse.tractusx.sde.agent.model.ConfigType;
 import org.eclipse.tractusx.sde.agent.repository.AutoUploadAgentConfigRepository;
-import org.eclipse.tractusx.sde.notification.config.EmailConfiguration;
-import org.eclipse.tractusx.sde.notification.manager.EmailManager;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -29,8 +25,9 @@ import net.minidev.json.JSONObject;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
-@TestInstance(TestInstance.Lifecycle.PER_METHOD)
+@EnableTestContainers
 @ActiveProfiles("test")
+@WithMockUser(username = "Admin", authorities = { "Admin" })
 class AutoUploadAgentConfigControllerTest {
 
 	@Autowired
@@ -41,26 +38,18 @@ class AutoUploadAgentConfigControllerTest {
 	@Autowired
 	AutoUploadAgentConfigRepository ftpsConfigRepository;
 
-	@MockBean
-	EmailManager emailManager;
-
-	@MockBean
-	EmailConfiguration emailConfiguration;
-
-	@BeforeEach
-	public void init() {
-		ftpsConfigRepository.deleteAll();
-	}
 
 	@Test
 	void testSaveSFTPConfig() throws Exception {
+
 		mvc.perform(MockMvcRequestBuilders.put("/sftp").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(getJsonBody()))).andExpect(status().isOk());
 
 		mvc.perform(MockMvcRequestBuilders.get("/sftp").contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 
-		Assertions.assertEquals(ConfigType.SFTP.toString(), ftpsConfigRepository.findAllByType(ConfigType.SFTP.toString()).get().getType());
+		Assertions.assertEquals(ConfigType.SFTP.toString(),
+				ftpsConfigRepository.findAllByType(ConfigType.SFTP.toString()).get().getType());
 	}
 
 	@Test
@@ -71,7 +60,8 @@ class AutoUploadAgentConfigControllerTest {
 
 		mvc.perform(MockMvcRequestBuilders.get("/scheduler")).andExpect(status().isOk());
 
-		Assertions.assertEquals(ConfigType.SCHEDULER.toString(), ftpsConfigRepository.findAllByType(ConfigType.SCHEDULER.toString()).get().getType());
+		Assertions.assertEquals(ConfigType.SCHEDULER.toString(),
+				ftpsConfigRepository.findAllByType(ConfigType.SCHEDULER.toString()).get().getType());
 	}
 
 	@Test
@@ -82,7 +72,8 @@ class AutoUploadAgentConfigControllerTest {
 
 		mvc.perform(MockMvcRequestBuilders.get("/scheduler")).andExpect(status().isOk());
 
-		Assertions.assertEquals(ConfigType.SCHEDULER.toString(), ftpsConfigRepository.findAllByType(ConfigType.SCHEDULER.toString()).get().getType());
+		Assertions.assertEquals(ConfigType.SCHEDULER.toString(),
+				ftpsConfigRepository.findAllByType(ConfigType.SCHEDULER.toString()).get().getType());
 	}
 
 	@Test
@@ -94,7 +85,8 @@ class AutoUploadAgentConfigControllerTest {
 		mvc.perform(MockMvcRequestBuilders.get("/scheduler").contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 
-		Assertions.assertEquals(ConfigType.SCHEDULER.toString(), ftpsConfigRepository.findAllByType(ConfigType.SCHEDULER.toString()).get().getType());
+		Assertions.assertEquals(ConfigType.SCHEDULER.toString(),
+				ftpsConfigRepository.findAllByType(ConfigType.SCHEDULER.toString()).get().getType());
 	}
 
 	private JSONObject getJsonBody() {

@@ -20,6 +20,7 @@
 
 package org.eclipse.tractusx.sde.sftp.service;
 
+import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.tractusx.sde.agent.entity.ConfigEntity;
@@ -27,24 +28,29 @@ import org.eclipse.tractusx.sde.agent.model.ConfigType;
 import org.eclipse.tractusx.sde.agent.model.SchedulerConfigModel;
 import org.eclipse.tractusx.sde.agent.model.SchedulerType;
 import org.eclipse.tractusx.sde.agent.repository.AutoUploadAgentConfigRepository;
+import org.eclipse.tractusx.sde.sftp.dto.JobMaintenanceModel;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SchedulerService {
 
 	private final AutoUploadAgentConfigRepository configRepository;
+	private final ConfigService configService;
 	private final RetrieverScheduler retrieverScheduler;
 
 	private final ObjectMapper mapper = new ObjectMapper();
 
+	public Map<String,String> fire() {
+		retrieverScheduler.fire();
+		return Map.of("msg", "Job triggered successfully");
+	}
+	
 	@SneakyThrows
 	public void saveDefaultScheduler() {
 		Optional<ConfigEntity> config = configRepository.findAllByType(ConfigType.SCHEDULER.toString());
@@ -52,14 +58,13 @@ public class SchedulerService {
 			SchedulerConfigModel schedulerConfigModel = SchedulerConfigModel.builder().type(SchedulerType.HOURLY)
 					.time("1").build();
 
-			ConfigEntity configEntity = new ConfigEntity();
-			configEntity.setType(ConfigType.SCHEDULER.toString());
-			configEntity.setContent(mapper.writeValueAsString(schedulerConfigModel));
-			configRepository.save(configEntity);
+			configService.saveConfiguration(ConfigType.SCHEDULER, schedulerConfigModel);
 
 			// Start the scheduler
 			updateSchedulerExecution(schedulerConfigModel);
-			log.info("The Cron Scheduler update in database and context");
+		} else {
+			// start scehduler
+			updateSchedulerExecution(mapper.readValue(config.get().getContent(), SchedulerConfigModel.class));
 		}
 	}
 
@@ -68,10 +73,27 @@ public class SchedulerService {
 		retrieverScheduler.schedule(convertScheduleToCron(model));
 	}
 
+	public void updateScehdulreStatus(JobMaintenanceModel config) {
+		if (config.isAutomaticUpload()) {
+			// enable the scheduler
+			enable();
+		} else {
+			// disable the scheduler
+			retrieverScheduler.stopAll();
+		}
+	}
+	
+	
+	private void enable() {
+		SchedulerConfigModel config = configService.getSchedulerDetails();
+		retrieverScheduler.schedule(convertScheduleToCron(config));
+	}
+
 	public String convertScheduleToCron(SchedulerConfigModel model) {
 		switch (model.getType()) {
 		case DAILY -> {
 			String time = model.getTime();
+			//21:00
 			String[] timeArr = time.split(":");
 			String hour = "00";
 			String minute = "00";
@@ -83,7 +105,7 @@ public class SchedulerService {
 			return "0 " + minute + " " + hour + " * * *";
 		}
 		case HOURLY -> {
-			return "0 0 0/" + model.getTime() + " * * *";
+			 return "0 0 0/" + model.getTime() + " * * *";
 		}
 		case WEEKLY -> {
 			String time = model.getTime();
@@ -98,7 +120,7 @@ public class SchedulerService {
 			return "0 " + minute + " " + hour + " * * " + model.getDay();
 		}
 		default -> {
-			return "0 0 * * * *";
+			return "0 0 0/1 * * *";
 		}
 		}
 	}

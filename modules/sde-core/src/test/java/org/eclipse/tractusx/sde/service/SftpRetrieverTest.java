@@ -22,6 +22,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 
 import lombok.RequiredArgsConstructor;
@@ -29,11 +30,12 @@ import lombok.ToString;
 import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @SpringBootTest
 @EnableTestContainers
 @Execution(ExecutionMode.SAME_THREAD)
 @ActiveProfiles("test")
-@Slf4j
+@WithMockUser(username = "Admin", authorities = { "Admin" })
 class SftpRetrieverTest {
 
     @Autowired
@@ -52,6 +54,7 @@ class SftpRetrieverTest {
     public void before() {
         TestContainerInitializer.sftp.stop();
         TestContainerInitializer.sftp.start();
+        sftpRetrieverFactory.saveDefaultConfig();
     }
 
     @FunctionalInterface

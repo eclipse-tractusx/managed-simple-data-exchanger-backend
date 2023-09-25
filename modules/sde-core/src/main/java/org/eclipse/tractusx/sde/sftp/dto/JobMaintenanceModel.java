@@ -33,9 +33,9 @@ import lombok.NoArgsConstructor;
 public class JobMaintenanceModel {
 
     @JsonProperty(value = "automatic_upload")
-    private boolean automatic_upload;
+    private boolean automaticUpload;
 
     @JsonProperty(value = "email_notification")
-    private boolean email_notification;
+    private boolean emailNotification;
 
 }

@@ -20,13 +20,17 @@
 
 package org.eclipse.tractusx.sde.core.controller;
 
+import java.util.Map;
+
 import org.eclipse.tractusx.sde.agent.model.ConfigType;
 import org.eclipse.tractusx.sde.agent.model.SchedulerConfigModel;
 import org.eclipse.tractusx.sde.agent.model.SftpConfigModel;
-import org.eclipse.tractusx.sde.sftp.service.AutoUploadAgentConfigService;
+import org.eclipse.tractusx.sde.sftp.dto.JobMaintenanceModel;
+import org.eclipse.tractusx.sde.sftp.service.ConfigService;
 import org.eclipse.tractusx.sde.sftp.service.SchedulerService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,10 +43,15 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @PreAuthorize("hasPermission('','auto_config_management')")
-public class AutoUploadAgentConfigurationController {
+public class AutoUploadAgentConfigController {
 
-	private final AutoUploadAgentConfigService autoUploadAgentConfigurationService;
+	private final ConfigService autoUploadAgentConfigurationService;
 	private final SchedulerService schedulerService;
+
+	@PostMapping("/fire")
+	public Map<String, String> fire() {
+		return schedulerService.fire();
+	}
 
 	@PutMapping("/scheduler")
 	public JsonNode updateScheduler(@NotBlank @RequestBody SchedulerConfigModel schedulerConfig) {
@@ -78,8 +87,11 @@ public class AutoUploadAgentConfigurationController {
 	}
 
 	@PutMapping("/job-maintenance")
-	public JsonNode updateJobMaintenance(@NotBlank @RequestBody JsonNode config) {
-		return autoUploadAgentConfigurationService.saveConfiguration(ConfigType.JOB_MAINTENANCE, config);
+	public JsonNode updateJobMaintenance(@NotBlank @RequestBody JobMaintenanceModel config) {
+		JsonNode saveConfiguration = autoUploadAgentConfigurationService.saveConfiguration(ConfigType.JOB_MAINTENANCE,
+				config);
+		schedulerService.updateScehdulreStatus(config);
+		return saveConfiguration;
 	}
 
 	@GetMapping("/job-maintenance")

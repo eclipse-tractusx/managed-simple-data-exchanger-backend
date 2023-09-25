@@ -18,7 +18,13 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 INSERT INTO sde_permission (sde_permission,description)
-	VALUES ('auto_config_management','Allows admin user to update auto upload configuration');
+	VALUES ('auto_config_management','Allows Admin user to update auto upload configuration');
+
+INSERT INTO sde_permission (sde_permission,description)
+	VALUES ('policy_management','Allows Admin user to add/update/delete policy configuration');
 
 INSERT INTO sde_role_permission_mapping (sde_permission,sde_role)
 	VALUES ('auto_config_management','Admin');
+	
+INSERT INTO sde_role_permission_mapping (sde_permission,sde_role)
+	VALUES ('policy_management','Admin');

@@ -63,7 +63,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ProcessRemoteCsv {
 
-    private final CsvHandlerService csvHandlerService;
+    private static final String TD_CLOSE = "</td>";
+	private static final String TD = "<td>";
+	private final CsvHandlerService csvHandlerService;
     private final PolicyProvider policyProvider;
     private final RetrieverFactory retrieverFactory;
     private final SubmodelOrchestartorService submodelOrchestartorService;
@@ -90,7 +92,8 @@ public class ProcessRemoteCsv {
                             })
                     ).filter(processId -> tryRun(
                             () -> {
-                            	 String originalFileName= retriever.getFileName(processId);//need original file for identify Usage policy
+                            	//need original file for identify Usage policy
+                            	 String originalFileName= retriever.getFileName(processId);
                             	 var submodelFileRequest = policyProvider.getMatchingPolicyBasedOnFileName(originalFileName);
                             	 submodelOrchestartorService.processSubmodelAutomationCsv(submodelFileRequest, processId);
                             	},
@@ -146,15 +149,15 @@ public class ProcessRemoteCsv {
                     final int numberOfSucceededItems = processReport.get().getNumberOfSucceededItems() + processReport.get().getNumberOfUpdatedItems();
                     tableData.append("<tr>");
                     emailContent.put("schedulerTime", DateUtil.formatter.format(sftpSchedulerReport.getStartDate()));
-                    String rowData = "<td>";
-                    rowData += processReport.get().getProcessId() + "</td>";
-                    rowData += "<td>" + sftpSchedulerReport.getFileName() + "</td>";
-                    rowData += "<td>" + processReport.get().getCsvType() + "</td>";
-                    rowData += "<td>" + DateUtil.formatter.format(processReport.get().getStartDate()) + "</td>";
-                    rowData += "<td>" + DateUtil.formatter.format(processReport.get().getEndDate()) + "</td>";
-                    rowData += "<td>" + sftpSchedulerReport.getStatus() + "</td>";
-                    rowData += "<td>" + numberOfSucceededItems + "</td>";
-                    rowData += "<td>" + processReport.get().getNumberOfFailedItems() + "</td>";
+                    String rowData = TD;
+                    rowData += processReport.get().getProcessId() + TD_CLOSE;
+                    rowData += TD + sftpSchedulerReport.getFileName() + TD_CLOSE;
+                    rowData += TD + processReport.get().getCsvType() + TD_CLOSE;
+                    rowData += TD + DateUtil.formatter.format(processReport.get().getStartDate()) + TD_CLOSE;
+                    rowData += TD + DateUtil.formatter.format(processReport.get().getEndDate()) + TD_CLOSE;
+                    rowData += TD + sftpSchedulerReport.getStatus() + TD_CLOSE;
+                    rowData += TD + numberOfSucceededItems + TD_CLOSE;
+                    rowData += TD + processReport.get().getNumberOfFailedItems() + TD_CLOSE;
                     tableData.append(rowData);
                     tableData.append("</tr>");
                 }

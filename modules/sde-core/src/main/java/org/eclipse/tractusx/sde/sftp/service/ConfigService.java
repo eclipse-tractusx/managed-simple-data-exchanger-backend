@@ -24,8 +24,12 @@ import org.eclipse.tractusx.sde.agent.entity.ConfigEntity;
 import org.eclipse.tractusx.sde.agent.mapper.AutoUploadAgentConfigMapper;
 import org.eclipse.tractusx.sde.agent.model.ConfigResponse;
 import org.eclipse.tractusx.sde.agent.model.ConfigType;
+import org.eclipse.tractusx.sde.agent.model.SchedulerConfigModel;
+import org.eclipse.tractusx.sde.agent.model.SftpConfigModel;
 import org.eclipse.tractusx.sde.agent.repository.AutoUploadAgentConfigRepository;
 import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
+import org.eclipse.tractusx.sde.sftp.dto.EmailNotificationModel;
+import org.eclipse.tractusx.sde.sftp.dto.JobMaintenanceModel;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -38,7 +42,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Service
 @Slf4j
-public class AutoUploadAgentConfigService {
+public class ConfigService {
 
 	private final AutoUploadAgentConfigRepository repository;
 
@@ -52,7 +56,7 @@ public class AutoUploadAgentConfigService {
 		configEntity.setType(configType.toString());
 		configEntity.setContent(mapper.writeValueAsString(configObject));
 		repository.save(configEntity);
-		log.info(configType + " configuration save in database");
+		log.info("The "+configType + " configuration save in database");
 		return mapper.readValue(configMapper.mapFrom(configEntity).getContent(), JsonNode.class);
 	}
 
@@ -67,6 +71,30 @@ public class AutoUploadAgentConfigService {
 	public JsonNode getConfiguration(ConfigType configType) {
 		ConfigResponse response = getConfigurationAsObject(configType);
 		return mapper.readValue(response.getContent(), JsonNode.class);
+	}
+
+	@SneakyThrows
+	public SftpConfigModel getSFTPConfiguration() {
+		ConfigResponse configEntityOptional = getConfigurationAsObject(ConfigType.SFTP);
+		return mapper.readValue(configEntityOptional.getContent(), SftpConfigModel.class);
+	}
+
+	@SneakyThrows
+	public SchedulerConfigModel getSchedulerDetails() {
+		ConfigResponse response = getConfigurationAsObject(ConfigType.SCHEDULER);
+		return mapper.readValue(response.getContent(), SchedulerConfigModel.class);
+	}
+
+	@SneakyThrows
+	public JobMaintenanceModel getJobMaintenanceDetails() {
+		ConfigResponse response = getConfigurationAsObject(ConfigType.JOB_MAINTENANCE);
+		return mapper.readValue(response.getContent(), JobMaintenanceModel.class);
+	}
+
+	@SneakyThrows
+	public EmailNotificationModel getNotificationDetails() {
+		ConfigResponse response = getConfigurationAsObject(ConfigType.NOTIFICATION);
+		return mapper.readValue(response.getContent(), EmailNotificationModel.class);
 	}
 
 }

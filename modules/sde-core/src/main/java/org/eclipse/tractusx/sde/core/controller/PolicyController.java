@@ -26,6 +26,7 @@ import java.util.List;
 import org.eclipse.tractusx.sde.common.entities.SubmodelPolicyRequest;
 import org.eclipse.tractusx.sde.core.policy.service.PolicyService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,6 +42,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("policy")
+@PreAuthorize("hasPermission('','policy_management')")
 public class PolicyController {
 
 	private final PolicyService policyService;

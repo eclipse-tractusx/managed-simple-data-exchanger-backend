@@ -20,6 +20,7 @@
 
 package org.eclipse.tractusx.sde.core.policy.entity;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
@@ -54,4 +55,8 @@ public class PolicyEntity {
 	@Column(name = "usage_policy", columnDefinition = "TEXT")
 	@Convert(converter = PolicyListToStringConvertor.class)
 	private List<UsagePolicies> usagePolicies;
+	
+	@Column(name = "last_updated_time")
+	private LocalDateTime lastUpdatedTime;
+	
 }

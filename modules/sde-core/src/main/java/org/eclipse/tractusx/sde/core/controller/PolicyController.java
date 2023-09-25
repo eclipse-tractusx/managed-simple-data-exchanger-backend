@@ -24,7 +24,9 @@ package org.eclipse.tractusx.sde.core.controller;
 import java.util.List;
 
 import org.eclipse.tractusx.sde.common.entities.SubmodelPolicyRequest;
+import org.eclipse.tractusx.sde.common.model.PagingResponse;
 import org.eclipse.tractusx.sde.core.policy.service.PolicyService;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,6 +36,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.constraints.NotBlank;
@@ -63,9 +66,16 @@ public class PolicyController {
 		return policyService.getPolicy(uuid);
 	}
 
+	@GetMapping("/policyName")
+	public List<SubmodelPolicyRequest> findByPolicyNameLike(@RequestParam String policyName) {
+		return policyService.findByPolicyNameLike(policyName);
+	}
+
 	@GetMapping
-	public List<SubmodelPolicyRequest> getAllPolicies() {
-		return policyService.getAllPolicies();
+	public PagingResponse getAllPolicies(@Param("page") Integer page, @Param("pageSize") Integer pageSize) {
+		page = page == null ? 0 : page;
+		pageSize = pageSize == null ? 10 : pageSize;
+		return policyService.getAllPolicies(page, pageSize);
 	}
 
 	@DeleteMapping("/{uuid}")

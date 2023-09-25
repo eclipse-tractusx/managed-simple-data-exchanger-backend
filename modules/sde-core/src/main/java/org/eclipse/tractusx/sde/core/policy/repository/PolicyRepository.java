@@ -20,6 +20,7 @@
 
 package org.eclipse.tractusx.sde.core.policy.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.tractusx.sde.core.policy.entity.PolicyEntity;
@@ -29,11 +30,13 @@ import org.springframework.data.jpa.repository.Query;
 public interface PolicyRepository extends JpaRepository<PolicyEntity, String> {
 
 	@Query(value = "select e FROM PolicyEntity e where e.uuid <> :uuid and e.policyName = :policyName")
-	Optional<PolicyEntity> findByIdAndName(String uuid, String policyName);
+	List<PolicyEntity> findByIdAndName(String uuid, String policyName);
 
 	Optional<PolicyEntity> findByUuid(String uuid);
 
 	void deleteByUuid(String uuid);
 
-	Optional<PolicyEntity> findByPolicyNameLike(String policyName);
+	List<PolicyEntity> findByPolicyNameLike(String policyName);
+	
+	Optional<PolicyEntity> findByPolicyName(String policyName);
 }

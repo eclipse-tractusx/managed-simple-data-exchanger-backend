@@ -20,6 +20,7 @@
 
 package org.eclipse.tractusx.sde.common.entities;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.eclipse.tractusx.sde.common.validators.UsagePolicyValidation;
@@ -52,5 +53,7 @@ public class SubmodelPolicyRequest {
 	@JsonProperty(value = "usage_policies")
 	@UsagePolicyValidation
 	private List<UsagePolicies> usagePolicies;
+	
+	private LocalDateTime lastUpdatedTime;
 
 }

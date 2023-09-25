@@ -45,7 +45,8 @@ public class PolicyProvider {
 
 	private String defaultPolicy = """
 					{
-			    "bpn_numbers": [
+					"policy_name": "default",
+			        "bpn_numbers": [
 			                    "%s"
 			                ],
 			                "type_of_access": "restricted",
@@ -77,11 +78,10 @@ public class PolicyProvider {
 
 	@SneakyThrows
 	public void saveDefaultPolicy() {
-		if (policyService.getAllPolicies().isEmpty()) {
+		if (policyService.getPolicyByName("default") == null) {
 			SubmodelPolicyRequest policy = getDefaultPolicy();
-			policy.setPolicyName("default");
 			policyService.savePolicy(policy);
-			
+
 		}
 	}
 
@@ -92,8 +92,7 @@ public class PolicyProvider {
 	}
 
 	public SubmodelPolicyRequest getMatchingPolicyBasedOnFileName(String fileName) {
-		List<SubmodelPolicyRequest> matchingList = policyService.getAllPolicies().stream()
-				.filter(policyName -> fileName.contains(policyName.getPolicyName())).toList();
+		List<SubmodelPolicyRequest> matchingList = policyService.findByPolicyNameLike("%" + fileName + "%");
 		if (matchingList.isEmpty())
 			return getDefaultPolicy();
 		else

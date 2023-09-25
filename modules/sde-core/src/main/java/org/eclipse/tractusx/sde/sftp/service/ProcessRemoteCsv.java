@@ -88,7 +88,9 @@ public class ProcessRemoteCsv {
                             () -> retriever.setProgress(processId),
                             e -> {
                                 log.info("Could not move remote file to the Progress folder {}", retriever.getFileName(processId));
-                                Paths.get(csvHandlerService.getFilePath(processId)).toFile().delete();
+								boolean flag = Paths.get(csvHandlerService.getFilePath(processId)).toFile().delete();
+								if (flag)
+									log.info("File deleted successfully");
                             })
                     ).filter(processId -> tryRun(
                             () -> {
@@ -119,9 +121,9 @@ public class ProcessRemoteCsv {
             }
         } catch (Exception e) {
             if (!loginSuccess) {
-                log.info("Possible wrong credentials");
+                log.error("Possible wrong credentials :"+e.getMessage());
             }
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
     }
 

@@ -24,7 +24,12 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class TryUtils {
+	
+	private static Logger logger = LoggerFactory.getLogger(TryUtils.class);;
 
     /***
      * A Runnable which may throw an Exception
@@ -51,7 +56,7 @@ public class TryUtils {
             return Optional.of(v);
         } catch (Exception e) {
             onErr.accept(e);
-            e.printStackTrace();
+            logger.error("context", e);
             return Optional.empty();
         }
     }

@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.eclipse.tractusx.sde.common.enums.ProgressStatusEnum;
+import org.eclipse.tractusx.sde.core.utils.ListToStringConverter;
 
 import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;

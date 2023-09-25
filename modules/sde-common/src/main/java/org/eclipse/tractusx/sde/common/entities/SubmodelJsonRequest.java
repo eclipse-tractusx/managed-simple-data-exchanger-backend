@@ -34,15 +34,19 @@ import lombok.Data;
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SubmodelJsonRequest<T> {
-	
+
 	@JsonProperty(value = "row_data")
 	private List<T> rowData;
 	
+	@JsonProperty(value = "policy_name")
+	private String policyName;
+
 	@JsonProperty(value = "type_of_access")
 	private String typeOfAccess;
 	
 	@JsonProperty(value = "bpn_numbers")
 	private List<String> bpnNumbers;
+
 
 	@JsonProperty(value = "usage_policies")
 	@UsagePolicyValidation

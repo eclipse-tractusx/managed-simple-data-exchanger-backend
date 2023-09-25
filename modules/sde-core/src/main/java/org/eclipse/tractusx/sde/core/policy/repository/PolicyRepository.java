@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023 T-Systems International GmbH
+ * Copyright (c) 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -18,30 +18,25 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.common.entities;
+package org.eclipse.tractusx.sde.core.policy.repository;
 
 import java.util.List;
+import java.util.Optional;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.eclipse.tractusx.sde.core.policy.entity.PolicyEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+public interface PolicyRepository extends JpaRepository<PolicyEntity, String> {
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class SubmodelFileRequest {
+	@Query(value = "select e FROM PolicyEntity e where e.uuid <> :uuid and e.policyName = :policyName")
+	List<PolicyEntity> findByIdAndName(String uuid, String policyName);
 
-	@JsonProperty(value = "type_of_access")
-	private String typeOfAccess;
+	Optional<PolicyEntity> findByUuid(String uuid);
+
+	void deleteByUuid(String uuid);
+
+	List<PolicyEntity> findByPolicyNameLike(String policyName);
 	
-	@JsonProperty(value = "bpn_numbers")
-	private List<String> bpnNumbers;
-
-
-	@JsonProperty(value = "usage_policies")
-	private List<UsagePolicies> usagePolicies;
+	Optional<PolicyEntity> findByPolicyName(String policyName);
 }

@@ -41,10 +41,12 @@
 
 	<properties>
 		<java.version>18</java.version>
+		<maven.compiler.source>18</maven.compiler.source>
+        <maven.compiler.target>18</maven.compiler.target>
 		<log4j2.version>2.17.1</log4j2.version>
 		<spring-cloud.version>2022.0.3</spring-cloud.version>
 		<org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
-		<org.mapstruct.processor.version>1.3.1.Final</org.mapstruct.processor.version>
+		<org.mapstruct.processor.version>1.4.2.Final</org.mapstruct.processor.version>
 		<snakey-version>2.0</snakey-version>
 	</properties>
 
@@ -53,10 +55,12 @@
 		<module>modules/sde-external-services/digital-twins</module>
 		<module>modules/sde-external-services/portal</module>
 		<module>modules/sde-external-services/bpn-discovery</module>
+		<module>modules/sde-external-services/sde-agent</module>
+		<module>modules/sde-external-services/sde-notification</module>
 
 		<module>modules/sde-common</module>
 		<module>modules/sde-core</module>
-
+		
 		<module>modules/sde-submodules/serial-part-typization</module>
 		<module>modules/sde-submodules/batch</module>
 		<module>modules/sde-submodules/assembly-part-relationship</module>
@@ -146,7 +150,7 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -171,6 +175,13 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+			<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>testcontainers-bom</artifactId>
+				<version>1.19.0</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -180,6 +191,29 @@
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<configuration>
+						<annotationProcessorPaths>
+							<path>
+								<groupId>org.projectlombok</groupId>
+								<artifactId>lombok</artifactId>
+								<version>${lombok.version}</version>
+							</path>
+							<path>
+								<groupId>org.mapstruct</groupId>
+								<artifactId>mapstruct-processor</artifactId>
+								<version>${org.mapstruct.processor.version}</version>
+							</path>
+						</annotationProcessorPaths>
+						<compilerArgs>
+							<compilerArg>
+								-Amapstruct.unmappedTargetPolicy=IGNORE
+							</compilerArg>
+						</compilerArgs>
+					</configuration>
 				</plugin>
 			</plugins>
 		</pluginManagement>

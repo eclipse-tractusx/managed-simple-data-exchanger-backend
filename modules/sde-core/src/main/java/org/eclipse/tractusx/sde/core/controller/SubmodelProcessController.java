@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.eclipse.tractusx.sde.common.entities.SubmodelFileRequest;
+import org.eclipse.tractusx.sde.common.entities.SubmodelPolicyRequest;
 import org.eclipse.tractusx.sde.common.entities.SubmodelJsonRequest;
 import org.eclipse.tractusx.sde.common.validators.UsagePolicyValidation;
 import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
@@ -70,7 +70,7 @@ public class SubmodelProcessController {
 
 		String processId = csvHandlerService.storeFile(file);
 
-		SubmodelFileRequest submodelFileRequest = objectMapper.readValue(metaData, SubmodelFileRequest.class);
+		SubmodelPolicyRequest submodelFileRequest = objectMapper.readValue(metaData, SubmodelPolicyRequest.class);
 
 		submodelOrchestartorService.processSubmodelCsv(submodelFileRequest, processId, submodel);
 

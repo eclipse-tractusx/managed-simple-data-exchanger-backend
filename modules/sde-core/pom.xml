@@ -42,11 +42,6 @@
 			<version>0.0.1</version>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse.tractusx</groupId>
-			<artifactId>sde-notification</artifactId>
-			<version>0.0.1</version>
-		</dependency>
-		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
 			<artifactId>eclipselink</artifactId>
 			<version>3.0.3</version>
@@ -143,13 +138,7 @@
 			<artifactId>assembly-part-relationship</artifactId>
 			<version>0.0.1</version>
 		</dependency>
-
-		<dependency>
-			<groupId>org.eclipse.tractusx</groupId>
-			<artifactId>sde-agent</artifactId>
-			<version>0.0.1</version>
-		</dependency>
-
+		
 		<dependency>
 			<groupId>org.eclipse.tractusx</groupId>
 			<artifactId>batch</artifactId>
@@ -176,6 +165,16 @@
 		<dependency>
 			<groupId>org.eclipse.tractusx</groupId>
 			<artifactId>single-level-usage-as-built</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.tractusx</groupId>
+			<artifactId>sde-notification</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.tractusx</groupId>
+			<artifactId>sde-agent</artifactId>
 			<version>0.0.1</version>
 		</dependency>
 		<dependency>

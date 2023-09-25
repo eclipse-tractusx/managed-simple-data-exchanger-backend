@@ -62,6 +62,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.opencsv.CSVWriter;
+import com.opencsv.ICSVWriter;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
@@ -91,14 +92,16 @@ public class ConsumerService {
 	}
 
 	@SneakyThrows
-	public void subscribeAndDownloadDataOffersSynchronous(ConsumerRequest consumerRequest, HttpServletResponse response) {
+	public void subscribeAndDownloadDataOffersSynchronous(ConsumerRequest consumerRequest,
+			HttpServletResponse response) {
 		String processId = UUID.randomUUID().toString();
-		prepareHttpResponse(response, processId, subscribeAndDownloadDataOffers(consumerRequest, processId, true));
+		prepareHttpResponse(response, processId, subscribeAndDownloadDataOffers(consumerRequest, processId, true),
+				consumerRequest.getDownloadDataAs());
 	}
 
 	@SneakyThrows
-	public Map<String, List<List<String>>> subscribeAndDownloadDataOffers(ConsumerRequest consumerRequest,
-			String processId, boolean flagToDownloadImidiate) {
+	public Map<String, Object> subscribeAndDownloadDataOffers(ConsumerRequest consumerRequest, String processId,
+			boolean flagToDownloadImidiate) {
 
 		AtomicInteger failedCount = new AtomicInteger();
 		AtomicInteger successCount = new AtomicInteger();
@@ -115,10 +118,11 @@ public class ConsumerService {
 		Map<String, Object> subscribeAndDownloadDataOffers = consumerControlPanelService
 				.subscribeAndDownloadDataOffers(consumerRequest, flagToDownloadImidiate);
 
-		Map<String, List<List<String>>> csvWithValue = new TreeMap<>();
+		Map<String, Object> dataWithValue = new TreeMap<>();
 
-		consumerRequest.getOffers().stream().forEach(offer -> prepareFromOfferResponse(subscribeAndDownloadDataOffers,
-				failedCount, successCount, csvWithValue, offer, flagToDownloadImidiate));
+		consumerRequest.getOffers().stream()
+				.forEach(offer -> prepareFromOfferResponse(subscribeAndDownloadDataOffers, failedCount, successCount,
+						dataWithValue, offer, flagToDownloadImidiate, consumerRequest.getDownloadDataAs()));
 
 		entity.setEndDate(LocalDateTime.now());
 		entity.setOffers(mapper.writeValueAsString(consumerRequest.getOffers()));
@@ -135,12 +139,12 @@ public class ConsumerService {
 		// Save consumer Download history in DB
 		consumerDownloadHistoryRepository.save(entity);
 
-		return csvWithValue;
+		return dataWithValue;
 
 	}
 
 	@SneakyThrows
-	public void downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(String referenceProcessId,
+	public void downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(String referenceProcessId, String type,
 			HttpServletResponse response) {
 
 		String processId = UUID.randomUUID().toString();
@@ -167,17 +171,17 @@ public class ConsumerService {
 				// Save consumer Download history in DB
 				consumerDownloadHistoryRepository.save(entity);
 
-				Map<String, List<List<String>>> csvWithValue = new TreeMap<>();
+				Map<String, Object> dataWithValue = new TreeMap<>();
 
 				List<String> assetIds = offerList.stream().map(Offer::getAssetId).toList();
 
 				Map<String, Object> downloadFileFromEDCUsingifAlreadyTransferStatusCompleted = consumerControlPanelService
-						.downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(assetIds);
+						.downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(assetIds, type);
 
 				offerList.stream()
 						.forEach(offer -> prepareFromOfferResponse(
 								downloadFileFromEDCUsingifAlreadyTransferStatusCompleted, failedCount, successCount,
-								csvWithValue, offer, true));
+								dataWithValue, offer, true, type));
 
 				entity.setEndDate(LocalDateTime.now());
 				entity.setOffers(mapper.writeValueAsString(offerList));
@@ -195,7 +199,7 @@ public class ConsumerService {
 				// Save consumer Download history in DB
 				consumerDownloadHistoryRepository.save(entity);
 
-				prepareHttpResponse(response, processId, csvWithValue);
+				prepareHttpResponse(response, processId, dataWithValue, type);
 			} else {
 				generateFailureJsonResponse(response, "Unable to find data offer in SDE for download");
 			}
@@ -205,8 +209,8 @@ public class ConsumerService {
 	}
 
 	private void prepareFromOfferResponse(Map<String, Object> subscribeAndDownloadDataOffers, AtomicInteger failedCount,
-			AtomicInteger successCount, Map<String, List<List<String>>> csvWithValue, Offer offer,
-			boolean flagToDownloadImidiate) {
+			AtomicInteger successCount, Map<String, Object> dataWithValue, Offer offer, boolean flagToDownloadImidiate,
+			String downloadDataAs) {
 		Object object = subscribeAndDownloadDataOffers.get(offer.getAssetId());
 		if (object != null) {
 
@@ -216,7 +220,10 @@ public class ConsumerService {
 			JsonNode edrNode = node.get("edr");
 
 			if (dataNode != null && flagToDownloadImidiate) {
-				processCSVDataObject(successCount, failedCount, csvWithValue, offer, status, dataNode);
+				if ("csv".equalsIgnoreCase(downloadDataAs))
+					processCSVDataObject(successCount, failedCount, dataWithValue, offer, status, dataNode);
+				else
+					processJsonDataObject(successCount, failedCount, dataWithValue, offer, status, dataNode);
 			} else if (!flagToDownloadImidiate && "SUCCESS".equals(status.asText())) {
 				offer.setStatus("SUCCESS");
 				successCount.getAndIncrement();
@@ -234,10 +241,23 @@ public class ConsumerService {
 		}
 	}
 
-	private void processCSVDataObject(AtomicInteger successCount, AtomicInteger failedCount,
-			Map<String, List<List<String>>> csvWithValue, Offer offer, JsonNode status, JsonNode dataNode) {
+	private void processJsonDataObject(AtomicInteger successCount, AtomicInteger failedCount,
+			Map<String, Object> dataWithValue, Offer offer, JsonNode status, JsonNode jsonNode) {
+		if (jsonNode != null) {
+			dataWithValue.put(offer.getAssetId(), jsonNode);
+			offer.setStatus(status.asText());
+			successCount.getAndIncrement();
+		} else {
+			offer.setStatus(FAILED.toString());
+			offer.setDownloadErrorMsg("The json type data does not found in response");
+			failedCount.getAndIncrement();
+		}
+	}
 
-		JsonNode csvNode = dataNode.get("csv");
+	@SuppressWarnings("unchecked")
+	private void processCSVDataObject(AtomicInteger successCount, AtomicInteger failedCount,
+			Map<String, Object> dataWithValue, Offer offer, JsonNode status, JsonNode csvNode) {
+
 		if (csvNode != null) {
 			List<String> csvHeader = new ArrayList<>();
 			List<String> csvValues = new ArrayList<>();
@@ -246,14 +266,19 @@ public class ConsumerService {
 			csvNode.fields().forEachRemaining(obje -> csvValues.add(obje.getValue().asText()));
 
 			Submodel findSubmodel = submodelOrchestartorService.findSubmodel(csvHeader);
-			List<List<String>> csvValueList = csvWithValue.get(findSubmodel.getId());
-			if (csvValueList == null) {
+			Object obj = dataWithValue.get(findSubmodel.getId());
+
+			List<Object> csvValueList = null;
+
+			if (obj == null) {
 				csvValueList = new ArrayList<>();
 				csvValueList.add(csvHeader);
+			} else {
+				csvValueList = (ArrayList<Object>) obj;
 			}
 
 			csvValueList.add(csvValues);
-			csvWithValue.put(findSubmodel.getId(), csvValueList);
+			dataWithValue.put(findSubmodel.getId(), csvValueList);
 			offer.setStatus(status.asText());
 			successCount.getAndIncrement();
 		} else {
@@ -263,13 +288,12 @@ public class ConsumerService {
 		}
 	}
 
-	private void prepareHttpResponse(HttpServletResponse response, String processId,
-			Map<String, List<List<String>>> csvWithValue) throws IOException {
+	private void prepareHttpResponse(HttpServletResponse response, String processId, Map<String, Object> csvWithValue,
+			String typeAsDownload) throws IOException {
 		if (csvWithValue.isEmpty()) {
-			generateFailureJsonResponse(response,
-					"Unable to process your request, please try again");
+			generateFailureJsonResponse(response, "Unable to process your request, please try again");
 		} else {
-			prepareZipFiles(response, csvWithValue, processId);
+			prepareZipFiles(response, csvWithValue, processId, typeAsDownload);
 		}
 	}
 
@@ -297,27 +321,62 @@ public class ConsumerService {
 	}
 
 	@SneakyThrows
-	private void prepareZipFiles(HttpServletResponse response, Map<String, List<List<String>>> csvWithValue,
-			String processId) {
+	private void prepareZipFiles(HttpServletResponse response, Map<String, Object> csvWithValue, String processId,
+			String downloadDataAs) {
 
 		response.setContentType("application/zip");
 		response.setHeader("Content-Disposition", "attachment;filename=" + processId + "-download.zip");
 		response.setStatus(HttpServletResponse.SC_OK);
+		if ("csv".equalsIgnoreCase(downloadDataAs))
+			writeCSVFiles(response, csvWithValue);
+		else
+			writeJsonFiles(response, csvWithValue);
+	}
 
-		try (ZipOutputStream zippedOut = new ZipOutputStream(response.getOutputStream())) {
-			for (Entry<String, List<List<String>>> entry : csvWithValue.entrySet()) {
+	@SneakyThrows
+	private void writeJsonFiles(HttpServletResponse response, Map<String, Object> csvWithValue) {
+		try (ZipOutputStream zip = new ZipOutputStream(response.getOutputStream())) {
+			for (Entry<String, Object> entry : csvWithValue.entrySet()) {
 				String fileName = entry.getKey();
-				List<List<String>> value = entry.getValue();
+				fileName = fileName.replace(":", "-");
+				Object value = entry.getValue();
+				zip.putNextEntry(new ZipEntry(fileName + ".json"));
+				Object json = mapper.readValue(value.toString(), Object.class);
+				String jsonStr = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(json);
+				zip.write(jsonStr.getBytes());
+				zip.closeEntry();
+			}
+			zip.finish();
+		} catch (Exception e) {
+			e.getStackTrace();
+		}
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private void writeCSVFiles(HttpServletResponse response, Map<String, Object> csvWithValue) {
+		try (ZipOutputStream zippedOut = new ZipOutputStream(response.getOutputStream())) {
+			for (Entry<String, Object> entry : csvWithValue.entrySet()) {
+				String fileName = entry.getKey();
+				Object value = entry.getValue();
 
 				// create a zip entry and add it to ZipOutputStream
 				ZipEntry e = new ZipEntry(fileName + ".csv");
 				zippedOut.putNextEntry(e);
 				// There is no need for staging the CSV on filesystem or reading bytes into
 				// memory. Directly write bytes to the output stream.
-				CSVWriter writer = new CSVWriter(new OutputStreamWriter(zippedOut));
-				for (List<String> list : value) {
-					String[] strarray = new String[list.size()];
-					list.toArray(strarray);
+				CSVWriter writer = new CSVWriter(new OutputStreamWriter(zippedOut),
+						';',
+						ICSVWriter.NO_QUOTE_CHARACTER,
+	                    '/',
+	                    ICSVWriter.DEFAULT_LINE_END);
+				
+				List<Object> valueList = (ArrayList<Object>) value;
+				for (Object list : valueList) {
+
+					List<String> valArray = (ArrayList<String>) list;
+					String[] strarray = new String[valArray.size()];
+					valArray.toArray(strarray);
 					// write the contents
 					writer.writeNext(strarray, false);
 				}

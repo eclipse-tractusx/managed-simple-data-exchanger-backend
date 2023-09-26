@@ -90,7 +90,7 @@ public class SubmodelOrchestartorService {
 			throw new ValidationException(String.format("Csv column header is not matching %s submodel", submodel));
 		}
 
-		SubmodelPolicyRequest submodelPolicyRequest = policyTemplateRequest.getPolicy();
+		SubmodelPolicyRequest submodelPolicyRequest = onFlyPolicyManagement(policyTemplateRequest);
 
 		processCsv(submodelPolicyRequest, processId, submodelSchemaObject, csvContent);
 
@@ -148,7 +148,7 @@ public class SubmodelOrchestartorService {
 			SubmodelExecutor executor = submodelSchemaObject.getExecutor();
 			executor.init(submodelSchema);
 
-			SubmodelPolicyRequest policy = submodelJsonRequest.getPolicyInfo().getPolicy();
+			SubmodelPolicyRequest policy = onFlyPolicyManagement(submodelJsonRequest.getPolicyInfo());
 
 			Map<String, Object> mps = new HashMap<>();
 			mps.put("type_of_access", policy.getTypeOfAccess());
@@ -243,6 +243,7 @@ public class SubmodelOrchestartorService {
 	}
 
 	public SubmodelPolicyRequest onFlyPolicyManagement(PolicyTemplateRequest policyTemplateRequest) {
+
 		SubmodelPolicyRequest policy = null;
 		PolicyTemplateType type = policyTemplateRequest.getType();
 		switch (type) {
@@ -254,6 +255,7 @@ public class SubmodelOrchestartorService {
 			if (policyTemplateRequest.getUuid() != null && policyTemplateRequest.getPolicy() != null) {
 				policy = policyTemplateRequest.getPolicy();
 				policyService.updatePolicy(policyTemplateRequest.getUuid(), policy);
+				log.info("Updated existing policy " + policyTemplateRequest.getUuid());
 			}
 			break;
 		case NEW_POLICY:
@@ -261,7 +263,7 @@ public class SubmodelOrchestartorService {
 			policyService.savePolicy(policy);
 			break;
 		default:
-			throw new IllegalArgumentException("Unexpected value: " + type);
+			throw new ValidationException(type + " policy template type not found");
 		}
 
 		return policy;

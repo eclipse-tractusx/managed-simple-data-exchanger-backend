@@ -44,6 +44,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
+import org.testcontainers.lifecycle.Startables;
 
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -74,6 +75,7 @@ class SftpRetrieverTest {
     public void before() {
         TestContainerInitializer.sftp.stop();
         TestContainerInitializer.sftp.start();
+        Startables.deepStart(TestContainerInitializer.sftp).join();
         sftpRetrieverFactory.saveDefaultConfig();
     }
 

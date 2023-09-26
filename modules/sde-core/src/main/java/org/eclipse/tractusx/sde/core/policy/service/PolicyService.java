@@ -69,11 +69,11 @@ public class PolicyService {
 			request.setLastUpdatedTime(LocalDateTime.now());
 			request.setUuid(uuid);
 			repository.save(policy);
-			log.info("The '"+request.getPolicyName()+"' policy save in database successfully");
+			log.info("'"+request.getPolicyName()+"' policy saved in the database successfully");
 			return request;
 		} else
 			throw new ValidationException(
-					String.format("The '%s' such policy name already exists", request.getPolicyName()));
+					String.format("'%s' such policy name already exists", request.getPolicyName()));
 	}
 
 	private boolean isPolicyNameValid(String id, String name) {

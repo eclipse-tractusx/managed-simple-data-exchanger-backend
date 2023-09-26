@@ -26,6 +26,7 @@ import java.util.Optional;
 import org.eclipse.tractusx.sde.core.policy.entity.PolicyEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface PolicyRepository extends JpaRepository<PolicyEntity, String> {
 
@@ -34,6 +35,7 @@ public interface PolicyRepository extends JpaRepository<PolicyEntity, String> {
 
 	Optional<PolicyEntity> findByUuid(String uuid);
 
+	@Transactional
 	void deleteByUuid(String uuid);
 
 	List<PolicyEntity> findByPolicyNameLike(String policyName);

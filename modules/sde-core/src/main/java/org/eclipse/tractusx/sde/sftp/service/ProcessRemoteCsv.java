@@ -50,7 +50,9 @@ import org.eclipse.tractusx.sde.core.processreport.repository.ProcessReportRepos
 import org.eclipse.tractusx.sde.core.service.SubmodelOrchestartorService;
 import org.eclipse.tractusx.sde.notification.manager.EmailManager;
 import org.eclipse.tractusx.sde.sftp.RetrieverI;
+import org.eclipse.tractusx.sde.sftp.dto.EmailNotificationModel;
 import org.springframework.beans.factory.ObjectFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 
@@ -75,6 +77,13 @@ public class ProcessRemoteCsv {
     private final ObjectFactory<ProcessRemoteCsv> selfFactory;
     private final EmailManager emailManager;
     private final ConfigService configService;
+
+    @Value("mail.to.address")
+    private String toEmail;
+
+    @Value("mail.cc.address")
+    private String ccEmail;
+
 
     @SuppressWarnings({"CallToPrintStackTrace","ResultOfMethodCallIgnored"})
     public void process(TaskScheduler taskScheduler) {
@@ -149,8 +158,18 @@ public class ProcessRemoteCsv {
         List<SftpSchedulerReport> sftpReportList = sftpReportRepository.findBySchedulerId(schedulerId);
         if(!sftpReportList.isEmpty()) {
             log.info("Send notification for scheduler: " + schedulerId);
+            EmailNotificationModel emailNotification = configService.getNotificationDetails();
+            if(emailNotification.getToEmail() != null &&
+                    emailNotification.getToEmail().isEmpty()) {
+                toEmail = String.join(",", emailNotification.getToEmail());
+            }
+            if(emailNotification.getCcEmail() != null &&
+                    emailNotification.getCcEmail().isEmpty()) {
+                ccEmail = String.join(",", emailNotification.getCcEmail());
+            }
             Map<String, Object> emailContent = new HashMap<>();
-            emailContent.put("toemail", "test@email.com");
+            emailContent.put("toemail", toEmail);
+            emailContent.put("ccemail", ccEmail);
             StringBuilder tableData = new StringBuilder();
             for (SftpSchedulerReport sftpSchedulerReport : sftpReportList) {
                 Optional<ProcessReportEntity> processReport = processReportRepository.findByProcessId(sftpSchedulerReport.getProcessId());

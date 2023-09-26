@@ -39,6 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -78,7 +79,7 @@ public class AutoUploadAgentConfigController {
 	}
 
 	@PutMapping("/notification")
-	public JsonNode updateNotification(@NotBlank @RequestBody EmailNotificationModel config) {
+	public JsonNode updateNotification(@NotEmpty @RequestBody EmailNotificationModel config) {
 		return autoUploadAgentConfigurationService.saveConfiguration(ConfigType.NOTIFICATION, config);
 	}
 

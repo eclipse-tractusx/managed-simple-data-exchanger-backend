@@ -38,7 +38,8 @@ public interface PolicyRepository extends JpaRepository<PolicyEntity, String> {
 	@Transactional
 	void deleteByUuid(String uuid);
 
-	List<PolicyEntity> findByPolicyNameLike(String policyName);
+	@Query(value = "select * from policy_tbl as e where POSITION(policy_name  in ?1 ) > 0", nativeQuery = true)
+	List<PolicyEntity> findMatchingPolicyBasedOnFileName(String fileName);
 	
 	Optional<PolicyEntity> findByPolicyName(String policyName);
 }

@@ -33,6 +33,7 @@ import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
 import org.eclipse.tractusx.sde.notification.config.EmailConfiguration;
 import org.eclipse.tractusx.sde.notification.manager.EmailManager;
 import org.eclipse.tractusx.sde.sftp.RetrieverI;
+import org.eclipse.tractusx.sde.sftp.service.DefaultConfigManagement;
 import org.eclipse.tractusx.sde.sftp.service.SftpRetrieverFactoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.parallel.Execution;
@@ -58,58 +59,59 @@ import lombok.extern.slf4j.Slf4j;
 @WithMockUser(username = "Admin", authorities = { "Admin" })
 class SftpRetrieverTest {
 
-    @Autowired
-    CsvHandlerService csvHandlerService;
+	@Autowired
+	CsvHandlerService csvHandlerService;
 
-    @MockBean
-    EmailManager emailManager;
+	@MockBean
+	EmailManager emailManager;
 
-    @MockBean
-    EmailConfiguration emailConfiguration;
+	@MockBean
+	EmailConfiguration emailConfiguration;
 
-    @Autowired
-    SftpRetrieverFactoryImpl sftpRetrieverFactory;
+	@Autowired
+	SftpRetrieverFactoryImpl sftpRetrieverFactory;
 
-    @BeforeEach
-    public void before() {
-        TestContainerInitializer.sftp.stop();
-        TestContainerInitializer.sftp.start();
-        sftpRetrieverFactory.saveDefaultConfig();
-    }
+	@Autowired
+	DefaultConfigManagement defaultConfigManagement;
+	
+	@BeforeEach
+	public void before() {
+		defaultConfigManagement.deleteAllConfig();
+		TestContainerInitializer.sftp.stop();
+		TestContainerInitializer.sftp.start();
+		defaultConfigManagement.saveDefaultConfiguration();
+	}
 
-    @FunctionalInterface
-    interface ThrowableExec {
-        void exec(String param) throws IOException;
-    }
+	@FunctionalInterface
+	interface ThrowableExec {
+		void exec(String param) throws IOException;
+	}
 
-    @RequiredArgsConstructor
-    @ToString(of="name")
-    static class TestMethod implements Function<RetrieverI, ThrowableExec>{
-        @Delegate
-        private final Function<RetrieverI, ThrowableExec> delegate;
-        private final String name;
-    }
+	@RequiredArgsConstructor
+	@ToString(of = "name")
+	static class TestMethod implements Function<RetrieverI, ThrowableExec> {
+		@Delegate
+		private final Function<RetrieverI, ThrowableExec> delegate;
+		private final String name;
+	}
 
-    static Stream<Function<RetrieverI, ThrowableExec>> provider() {
-        return Stream.of(
-                new TestMethod(r -> r::setSuccess, "SetSuccess"),
-                new TestMethod(r -> r::setFailed,"SetFailed"),
-                new TestMethod(r-> r::setPartial, "SetPartial"),
-                new TestMethod(r->r::setProgress, "SetProgress")
-        );
-    }
+	static Stream<Function<RetrieverI, ThrowableExec>> provider() {
+		return Stream.of(new TestMethod(r -> r::setSuccess, "SetSuccess"),
+				new TestMethod(r -> r::setFailed, "SetFailed"), new TestMethod(r -> r::setPartial, "SetPartial"),
+				new TestMethod(r -> r::setProgress, "SetProgress"));
+	}
 
-    @ParameterizedTest(name = "testFtps Test: {index}, {argumentsWithNames}")
-    @MethodSource("provider")
-    void testFtps(Function<RetrieverI, ThrowableExec> tr) throws Exception {
-        try(var sftp = sftpRetrieverFactory.create(OptionalInt.of(TestContainerInitializer.sftp.getMappedPort(22)))) {
-            for (String fileId: sftp) {
-                final var filePath = Path.of(csvHandlerService.getFilePath(fileId));
-                log.info(fileId);
-                tr.apply(sftp).exec(fileId);
-                Files.copy(filePath, System.out);
-                Files.delete(filePath);
-            }
-        }
-    }
+	@ParameterizedTest(name = "testFtps Test: {index}, {argumentsWithNames}")
+	@MethodSource("provider")
+	void testFtps(Function<RetrieverI, ThrowableExec> tr) throws Exception {
+		try (var sftp = sftpRetrieverFactory.create(OptionalInt.of(TestContainerInitializer.sftp.getMappedPort(22)))) {
+			for (String fileId : sftp) {
+				final var filePath = Path.of(csvHandlerService.getFilePath(fileId));
+				log.info(fileId);
+				tr.apply(sftp).exec(fileId);
+				Files.copy(filePath, System.out);
+				Files.delete(filePath);
+			}
+		}
+	}
 }

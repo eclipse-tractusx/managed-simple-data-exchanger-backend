@@ -21,7 +21,7 @@
 
 package org.eclipse.tractusx.sde.core.controller;
 
-import java.util.List;
+import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.entities.SubmodelPolicyRequest;
 import org.eclipse.tractusx.sde.common.model.PagingResponse;
@@ -66,9 +66,9 @@ public class PolicyController {
 		return policyService.getPolicy(uuid);
 	}
 
-	@GetMapping("/policyName")
-	public List<SubmodelPolicyRequest> findByPolicyNameLike(@RequestParam String policyName) {
-		return policyService.findByPolicyNameLike(policyName);
+	@GetMapping("/is-policy-name-valid")
+	public Map<String, Boolean> isPolicyNameValid(@RequestParam String policyName) {
+		return Map.of("msg", policyService.isPolicyNameValid("", policyName));
 	}
 
 	@GetMapping

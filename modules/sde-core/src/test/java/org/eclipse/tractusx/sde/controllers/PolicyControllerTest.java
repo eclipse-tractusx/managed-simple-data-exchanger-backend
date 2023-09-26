@@ -1,6 +1,5 @@
 package org.eclipse.tractusx.sde.controllers;
 
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
@@ -13,6 +12,7 @@ import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
 import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.core.policy.entity.PolicyEntity;
 import org.eclipse.tractusx.sde.core.policy.repository.PolicyRepository;
+import org.eclipse.tractusx.sde.core.policy.service.PolicyService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -44,6 +43,9 @@ class PolicyControllerTest {
 
     @Autowired
     private PolicyRepository policyRepository;
+    
+    @Autowired
+    private PolicyService policyService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -92,20 +94,19 @@ class PolicyControllerTest {
     }
     
     @Test
-    void findByPolicyNameLike() throws Exception {
-        mvc.perform(MockMvcRequestBuilders
-                        .post("/policy")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(getPolicy("new_policy"))))
-                .andExpect(status().isOk());
+    void findMatchingPolicyBasedOnFileName() throws Exception {
+    	
+    	String fileName = "Mysubmodel_new_policy.csv";
+    	mvc.perform(MockMvcRequestBuilders
+                .post("/policy")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(getPolicy("new_policy"))))
+        .andExpect(status().isOk());
+    	
+    	List<SubmodelPolicyRequest> findMatchingPolicyBasedOnFileName = policyService.findMatchingPolicyBasedOnFileName(fileName);
+        Assertions.assertEquals(1, findMatchingPolicyBasedOnFileName.size());
+        Assertions.assertEquals("new_policy", findMatchingPolicyBasedOnFileName.get(0).getPolicyName());
 
-        Assertions.assertEquals(1, policyRepository.findAll().size());
-
-        mvc.perform(MockMvcRequestBuilders
-                        .get("/policy/policyName")
-                        .param("policyName", "%new%"))
-                .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().string(containsString("new_policy")));
     }
 
 

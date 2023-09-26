@@ -25,6 +25,7 @@ import java.util.Map;
 import org.eclipse.tractusx.sde.agent.model.ConfigType;
 import org.eclipse.tractusx.sde.agent.model.SchedulerConfigModel;
 import org.eclipse.tractusx.sde.agent.model.SftpConfigModel;
+import org.eclipse.tractusx.sde.sftp.dto.EmailNotificationModel;
 import org.eclipse.tractusx.sde.sftp.dto.JobMaintenanceModel;
 import org.eclipse.tractusx.sde.sftp.service.ConfigService;
 import org.eclipse.tractusx.sde.sftp.service.SchedulerService;
@@ -77,7 +78,7 @@ public class AutoUploadAgentConfigController {
 	}
 
 	@PutMapping("/notification")
-	public JsonNode updateNotification(@NotBlank @RequestBody JsonNode config) {
+	public JsonNode updateNotification(@NotBlank @RequestBody EmailNotificationModel config) {
 		return autoUploadAgentConfigurationService.saveConfiguration(ConfigType.NOTIFICATION, config);
 	}
 

@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.eclipse.tractusx.sde.common.entities.SubmodelPolicyRequest;
+import org.eclipse.tractusx.sde.common.entities.PolicyTemplateRequest;
 import org.eclipse.tractusx.sde.common.entities.SubmodelJsonRequest;
 import org.eclipse.tractusx.sde.common.validators.UsagePolicyValidation;
 import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
@@ -46,7 +46,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -70,9 +69,9 @@ public class SubmodelProcessController {
 
 		String processId = csvHandlerService.storeFile(file);
 
-		SubmodelPolicyRequest submodelFileRequest = objectMapper.readValue(metaData, SubmodelPolicyRequest.class);
+		PolicyTemplateRequest policyTemplateRequest = objectMapper.readValue(metaData, PolicyTemplateRequest.class);
 
-		submodelOrchestartorService.processSubmodelCsv(submodelFileRequest, processId, submodel);
+		submodelOrchestartorService.processSubmodelCsv(policyTemplateRequest, processId, submodel);
 
 		return ok().body(processId);
 	}
@@ -80,7 +79,7 @@ public class SubmodelProcessController {
 	@PostMapping(value = "/{submodel}/manualentry", consumes = APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasPermission(#submodel,'provider_create_contract_offer@provider_update_contract_offer')")
 	public ResponseEntity<String> createSubmodelAssets(@PathVariable("submodel") String submodel,
-			@RequestBody @Valid SubmodelJsonRequest<ObjectNode> submodelJsonRequest) {
+			@RequestBody @Valid SubmodelJsonRequest submodelJsonRequest) {
 
 		String processId = UUID.randomUUID().toString();
 

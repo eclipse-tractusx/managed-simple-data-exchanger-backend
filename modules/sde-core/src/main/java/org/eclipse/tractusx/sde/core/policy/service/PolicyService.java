@@ -76,7 +76,7 @@ public class PolicyService {
 					String.format("The '%s' such policy name already exists", request.getPolicyName()));
 	}
 
-	private boolean isPolicyNameValid(String id, String name) {
+	public boolean isPolicyNameValid(String id, String name) {
 
 		if (StringUtils.isBlank(name))
 			throw new ValidationException("The policy name should not be not null or empty");

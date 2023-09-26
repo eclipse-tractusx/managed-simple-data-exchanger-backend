@@ -49,7 +49,6 @@ public class SubmodelPolicyRequest {
 	@JsonProperty(value = "bpn_numbers")
 	private List<String> bpnNumbers;
 
-
 	@JsonProperty(value = "usage_policies")
 	@UsagePolicyValidation
 	private List<UsagePolicies> usagePolicies;

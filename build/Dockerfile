@@ -27,7 +27,9 @@ COPY ../pom.xml ./pom.xml
 COPY ../modules ./modules
 
 # build for release
-RUN mvn clean install 
+#Commeting this because workflow job already building jar file
+#As SDE its require some docker enviroment to run test cases so avoid it
+#RUN mvn clean install 
 
 # our final base image
 

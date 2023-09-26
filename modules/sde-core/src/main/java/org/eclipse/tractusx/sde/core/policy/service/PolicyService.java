@@ -69,14 +69,14 @@ public class PolicyService {
 			request.setLastUpdatedTime(LocalDateTime.now());
 			request.setUuid(uuid);
 			repository.save(policy);
-			log.info("The '"+request.getPolicyName()+"' policy save in database successfully");
+			log.info("'"+request.getPolicyName()+"' policy saved in the database successfully");
 			return request;
 		} else
 			throw new ValidationException(
-					String.format("The '%s' such policy name already exists", request.getPolicyName()));
+ 					String.format("'%s' such policy name already exists", request.getPolicyName()));
 	}
 
-	private boolean isPolicyNameValid(String id, String name) {
+	public boolean isPolicyNameValid(String id, String name) {
 
 		if (StringUtils.isBlank(name))
 			throw new ValidationException("The policy name should not be not null or empty");
@@ -89,21 +89,20 @@ public class PolicyService {
 				repository.findByUuid(uuid).orElseThrow(() -> new NoDataFoundException("No data found uuid " + uuid)));
 
 	}
-	
+
 	public SubmodelPolicyRequest getPolicyByName(String policyName) {
 		return policyMapper.mapFrom(repository.findByPolicyName(policyName).orElse(null));
 	}
-	
-	public List<SubmodelPolicyRequest> findByPolicyNameLike(String policyName) {
-		List<PolicyEntity> findByPolicyNameLike = repository.findByPolicyNameLike(policyName);
+
+	public List<SubmodelPolicyRequest> findMatchingPolicyBasedOnFileName(String policyName) {
+		List<PolicyEntity> findByPolicyNameLike = repository.findMatchingPolicyBasedOnFileName(policyName);
 		return findByPolicyNameLike.stream().map(policyMapper::mapFrom).toList();
 	}
 
 	public PagingResponse getAllPolicies(Integer page, Integer pageSize) {
 		Page<PolicyEntity> result = repository
 				.findAll(PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "lastUpdatedTime")));
-		List<SubmodelPolicyRequest> reports = result.stream().map(policyMapper::mapFrom)
-				.toList();
+		List<SubmodelPolicyRequest> reports = result.stream().map(policyMapper::mapFrom).toList();
 		return PagingResponse.builder().items(reports).pageSize(result.getSize()).page(result.getNumber())
 				.totalItems(result.getTotalElements()).build();
 

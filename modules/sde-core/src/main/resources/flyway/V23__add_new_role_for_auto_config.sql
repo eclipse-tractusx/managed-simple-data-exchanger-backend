@@ -28,3 +28,6 @@ INSERT INTO sde_role_permission_mapping (sde_permission,sde_role)
 	
 INSERT INTO sde_role_permission_mapping (sde_permission,sde_role)
 	VALUES ('policy_management','Admin');
+	
+INSERT INTO sde_role_permission_mapping (sde_permission,sde_role)
+	VALUES ('policy_management','Creator');	

@@ -65,6 +65,11 @@ public class DefaultConfigManagement {
 	}
 
 	@SneakyThrows
+	public void deleteAllConfig() {
+		configService.deleteAllConfig();
+	}
+	
+	@SneakyThrows
 	private void saveDefaultNotificationConfiguration() {
 		Optional<ConfigEntity> config = configRepository.findAllByType(ConfigType.NOTIFICATION.toString());
 		if (config.isEmpty()) {
@@ -84,8 +89,9 @@ public class DefaultConfigManagement {
 
 	private JSONObject getJsonNotificationBody() {
 		JSONObject json = new JSONObject();
-		json.put("to_email", List.of(toEmail));
-		json.put("cc_email", List.of(ccEmail));
+		
+		json.put("to_email", List.of(toEmail.split(";")));
+		json.put("cc_email", List.of(ccEmail.split(";")));
 		return json;
 	}
 

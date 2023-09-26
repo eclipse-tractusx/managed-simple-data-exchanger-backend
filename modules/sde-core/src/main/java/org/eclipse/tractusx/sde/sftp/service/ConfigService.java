@@ -68,6 +68,11 @@ public class ConfigService {
 	}
 
 	@SneakyThrows
+	public void deleteAllConfig() {
+		repository.deleteAll();
+	}
+	
+	@SneakyThrows
 	public JsonNode getConfiguration(ConfigType configType) {
 		ConfigResponse response = getConfigurationAsObject(configType);
 		return mapper.readValue(response.getContent(), JsonNode.class);

@@ -92,7 +92,7 @@ public class PolicyProvider {
 	}
 
 	public SubmodelPolicyRequest getMatchingPolicyBasedOnFileName(String fileName) {
-		List<SubmodelPolicyRequest> matchingList = policyService.findByPolicyNameLike("%" + fileName + "%");
+		List<SubmodelPolicyRequest> matchingList = policyService.findMatchingPolicyBasedOnFileName(fileName);
 		if (matchingList.isEmpty())
 			return getDefaultPolicy();
 		else

@@ -84,7 +84,6 @@ public class ProcessRemoteCsv {
     @Value("mail.cc.address")
     private String ccEmail;
 
-    private final ConfigService configService;
 
     @SuppressWarnings({"CallToPrintStackTrace","ResultOfMethodCallIgnored"})
     public void process(TaskScheduler taskScheduler) {
@@ -161,11 +160,11 @@ public class ProcessRemoteCsv {
             log.info("Send notification for scheduler: " + schedulerId);
             EmailNotificationModel emailNotification = configService.getNotificationDetails();
             if(emailNotification.getToEmail() != null &&
-                    emailNotification.getToEmail().length > 0) {
+                    emailNotification.getToEmail().isEmpty()) {
                 toEmail = String.join(",", emailNotification.getToEmail());
             }
             if(emailNotification.getCcEmail() != null &&
-                    emailNotification.getCcEmail().length > 0) {
+                    emailNotification.getCcEmail().isEmpty()) {
                 ccEmail = String.join(",", emailNotification.getCcEmail());
             }
             Map<String, Object> emailContent = new HashMap<>();

@@ -74,6 +74,7 @@ public class ProcessRemoteCsv {
     private final SftpReportMapper sftpReportMapper;
     private final ObjectFactory<ProcessRemoteCsv> selfFactory;
     private final EmailManager emailManager;
+    private final ConfigService configService;
 
     @SuppressWarnings({"CallToPrintStackTrace","ResultOfMethodCallIgnored"})
     public void process(TaskScheduler taskScheduler) {
@@ -133,8 +134,14 @@ public class ProcessRemoteCsv {
         } else {
             selfFactory.getObject().createDbReport(retriever, inProgressIdList, schedulerId).forEach(Runnable::run);
             tryRun(retriever::close, IGNORE());
+            
+            if(configService.getJobMaintenanceDetails().isEmailNotification()) {
             // EmailNotificationModel method call
             sendNotificationForProcessedFiles(schedulerId);
+            }
+            else {
+            	log.warn("The notification is disable, so avoiding sent email notification");
+            }
         }
     }
 

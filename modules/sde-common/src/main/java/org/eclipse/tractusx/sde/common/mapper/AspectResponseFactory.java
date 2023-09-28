@@ -50,7 +50,7 @@ public class AspectResponseFactory {
 		
 		fromJson.entrySet().forEach(entry ->{
 			String value = fromJson.get(entry.getKey()).toString();
-			if(StringUtils.isNotEmpty(value) || value.equals("null")){
+			if(StringUtils.isNoneEmpty(value) && value.equals("null")){
 				fromJson.add(entry.getKey(), null);
 			}
 		});

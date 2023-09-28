@@ -99,7 +99,6 @@
 				],
 				"title": "Version",
 				"minimum": 0,
-				"exclusiveMinimum": false,
 				"description": "Version of the product (carbon) footprint as specified in the Catena-X PCF Rulebook in accordance with the technical specifications for PCF Data Exchange (Version 2.0.0) from the WBCSD (World Business Council for Sustainable Development)/ PACT initiative. In Catena-X for example set to \"0\" per default.",
 				"minLength": 1,
 				"examples": [
@@ -278,7 +277,6 @@
 				],
 				"title": "UnitaryProductAmount",
 				"minimum": 0,
-				"exclusiveMinimum": true,
 				"description": "Amount of units contained within a product in context of the PCF (Product Carbon Footprint) as specified in the Catena-X PCF Rulebook in accordance with the technical specifications for PCF Data Exchange (Version 2.0.0) from the WBCSD (World Business Council for Sustainable Development)/ PACT initiative.",
 				"examples": [
 					1000.0
@@ -291,7 +289,6 @@
 				"title": "ProductMassPerDeclaredUnit",
 				"description": "Mass of a product per declared unit in context of the PCF (Product Carbon Footprint) as specified in the Catena-X PCF Rulebook.",
 				"minimum": 0,
-				"exclusiveMinimum": false,
 				"examples": [
 					0.456
 				]
@@ -303,9 +300,7 @@
 				"title": "ExemptedEmissionsPercent",
 				"description": "Percentage of emissions excluded from PCF (Product Carbon Footprint) as specified in the Catena-X PCF Rulebook in accordance with the technical specifications for PCF Data Exchange (Version 2.0.0) from the WBCSD (World Business Council for Sustainable Development)/ PACT initiative.",
 				"maximum": 5,
-				"exclusiveMaximum": false,
 				"minimum": 0,
-				"exclusiveMinimum": false,
 				"examples": [
 					0.0
 				]
@@ -538,9 +533,7 @@
 				],
 				"title": "PrimaryDataShare",
 				"maximum": 1E+2,
-				"exclusiveMaximum": false,
 				"minimum": 0,
-				"exclusiveMinimum": false,
 				"description": "Share of primary data in percent as specified in the Catena-X PCF Rulebook in accordance with the technical specifications for PCF Data Exchange (Version 2.0.0) from the WBCSD (World Business Council for Sustainable Development)/ PACT initiative.",
 				"examples": [
 					56.12
@@ -564,9 +557,7 @@
 				],
 				"title": "CoveragePercent",
 				"maximum": 1E+2,
-				"exclusiveMaximum": false,
 				"minimum": 0,
-				"exclusiveMinimum": false,
 				"description": "Percentage of PCF (Product Carbon Footprint) included in the data quality assessment based on the >5% emissions threshold as specified in the Catena-X PCF Rulebook in accordance with the technical specifications for PCF Data Exchange (Version 2.0.0) from the WBCSD (World Business Council for Sustainable Development)/ PACT initiative. In Catena-X for example set to \"100\" per default.",
 				"examples": [
 					100
@@ -579,9 +570,7 @@
 				],
 				"title": "TechnologicalDQR",
 				"maximum": 3,
-				"exclusiveMaximum": false,
 				"minimum": 1,
-				"exclusiveMinimum": false,
 				"description": "Technological representativeness of the sources used for PCF (Product Carbon Footprint) calculation based on weighted average of all inputs representing >5% of PCF emissions. Specified in the Catena-X PCF Rulebook in accordance with the technical specifications for PCF Data Exchange (Version 2.0.0) from the WBCSD (World Business Council for Sustainable Development)/ PACT initiative.",
 				"examples": [
 					2.0
@@ -594,9 +583,7 @@
 				],
 				"title": "TemporalDQR",
 				"maximum": 3,
-				"exclusiveMaximum": false,
 				"minimum": 1,
-				"exclusiveMinimum": false,
 				"description": "Temporal representativeness of the sources used for PCF (Product Carbon Footprint) calculation based on weighted average of all inputs representing >5% of PCF emissions. Specified in the Catena-X PCF Rulebook in accordance with the technical specifications for PCF Data Exchange (Version 2.0.0) from the WBCSD (World Business Council for Sustainable Development)/ PACT initiative.",
 				"examples": [
 					2.0
@@ -609,9 +596,7 @@
 				],
 				"title": "GeographicalDQR",
 				"maximum": 3,
-				"exclusiveMaximum": false,
 				"minimum": 1,
-				"exclusiveMinimum": false,
 				"description": "Geographical representativeness of the sources used for PCF (Product Carbon Footprint) calculation based on weighted average of all inputs representing >5% of PCF emissions. Specified in the Catena-X PCF Rulebook in accordance with the technical specifications for PCF Data Exchange (Version 2.0.0) from the WBCSD (World Business Council for Sustainable Development)/ PACT initiative.",
 				"examples": [
 					2.0
@@ -624,9 +609,7 @@
 				],
 				"title": "CompletenessDQR",
 				"maximum": 3,
-				"exclusiveMaximum": false,
 				"minimum": 1,
-				"exclusiveMinimum": false,
 				"description": "Completeness of the data collected for PCF (Product Carbon Footprint) calculation based on weighted average of all inputs representing >5% of PCF emissions. Specified in the Catena-X PCF Rulebook in accordance with the technical specifications for PCF Data Exchange (Version 2.0.0) from the WBCSD (World Business Council for Sustainable Development)/ PACT initiative.",
 				"examples": [
 					2.0
@@ -639,9 +622,7 @@
 				],
 				"title": "ReliabilityDQR",
 				"maximum": 3,
-				"exclusiveMaximum": false,
 				"minimum": 1,
-				"exclusiveMinimum": false,
 				"description": "Reliability of the data collected for PCF (Product Carbon Footprint) calculation based on weighted average of all inputs representing >5% of PCF emissions. Specified in the Catena-X PCF Rulebook in accordance with the technical specifications for PCF Data Exchange (Version 2.0.0) from the WBCSD (World Business Council for Sustainable Development)/ PACT initiative.",
 				"examples": [
 					2.0
@@ -653,7 +634,6 @@
 				],
 				"title": "PcfExcludingBiogenic",
 				"minimum": 0,
-				"exclusiveMinimum": false,
 				"description": "Product carbon footprint of a product excluding biogenic emissions as specified in the Catena-X PCF Rulebook in accordance with the technical specifications for PCF Data Exchange (Version 2.0.0) from the WBCSD (World Business Council for Sustainable Development)/ PACT initiative.",
 				"minLength": 1,
 				"examples": [
@@ -678,7 +658,6 @@
 				],
 				"title": "FossilGhgEmissions",
 				"minimum": 0,
-				"exclusiveMinimum": false,
 				"description": "Emissions from combustion of fossil sources as specified in the Catena-X PCF Rulebook in accordance with the technical specifications for PCF Data Exchange (Version 2.0.0) from the WBCSD (World Business Council for Sustainable Development)/ PACT initiative. Identical to \"pcfExcludingBiogenic\", will be removed in later version.",
 				"examples": [
 					0.5
@@ -691,7 +670,6 @@
 				],
 				"title": "BiogenicCarbonEmissionsOtherThanCO2",
 				"minimum": 0,
-				"exclusiveMinimum": false,
 				"description": "GWP (Global Warming Potential) of biogenic CO2e-emissions in production phase which contain only GHG (Greenhouse Gas) emissions other than CO2 - excludes biogenic CO2. For specification see Catena-X PCF Rulebook.",
 				"examples": [
 					1.0
@@ -704,7 +682,6 @@
 				],
 				"title": "BiogenicCarbonWithdrawal",
 				"minimum": 0,
-				"exclusiveMinimum": false,
 				"description": "Biogenic carbon content in the product converted to CO2e as specified in the Catena-X PCF Rulebook in accordance with the technical specifications for PCF Data Exchange (Version 2.0.0) from the WBCSD (World Business Council for Sustainable Development)/ PACT initiative.",
 				"examples": [
 					0.0
@@ -717,7 +694,6 @@
 				],
 				"title": "BlucGhgEmissions",
 				"minimum": 0,
-				"exclusiveMinimum": false,
 				"description": "Direct land use change CO2e emissions in context of a product carbon footprint as specified in the Catena-X PCF Rulebook in accordance with the technical specifications for PCF Data Exchange (Version 2.0.0) from the WBCSD (World Business Council for Sustainable Development)/ PACT initiative.",
 				"examples": [
 					0.4
@@ -730,7 +706,6 @@
 				],
 				"title": "ExtTFS_luGhgEmissions",
 				"minimum": 0,
-				"exclusiveMinimum": false,
 				"description": "Land use CO2 emissions in context of a product carbon footprint as specified by the TFS (Together For Sustainability) initiative. TFS specific extension.",
 				"examples": [
 					0.3
@@ -743,7 +718,6 @@
 				],
 				"title": "AircraftGhgEmissions",
 				"minimum": 0,
-				"exclusiveMinimum": false,
 				"description": "GHG (Greenhouse Gas) emissions resulting from aircraft engine usage for the transport of the product as specified in the Catena-X PCF Rulebook in accordance with the technical specifications for PCF Data Exchange (Version 2.0.0) from the WBCSD (World Business Council for Sustainable Development)/ PACT initiative.",
 				"examples": [
 					0.0
@@ -755,7 +729,6 @@
 				],
 				"title": "ExtWBCSD_packagingGhgEmissions",
 				"minimum": 0,
-				"exclusiveMinimum": false,
 				"description": "Emissions resulting from the packaging of the product as specified in the technical specifications for PCF Data Exchange (Version 2.0.0) from the WBCSD (World Business Council for Sustainable Development)/ PACT initiative. WBCSD specific extension, in Catena-X for example value is zero per default.",
 				"minLength": 1,
 				"examples": [
@@ -769,7 +742,6 @@
 				],
 				"title": "DistributionStagePcfExcludingBiogenic",
 				"minimum": 0,
-				"exclusiveMinimum": false,
 				"description": "Product carbon footprint for the distribution stage of a product excluding biogenic emissions as specified in the Catena-X PCF Rulebook.",
 				"examples": [
 					1.5
@@ -793,7 +765,6 @@
 				],
 				"title": "DistributionStageFossilGhgEmissions",
 				"minimum": 0,
-				"exclusiveMinimum": false,
 				"description": "Emissions from the combustion of fossil sources in the distribution stage as specified in the Catena-X PCF Rulebook.",
 				"examples": [
 					0.5
@@ -806,7 +777,6 @@
 				],
 				"title": "DistributionStageBiogenicCarbonEmissionsOtherThanCO2",
 				"minimum": 0,
-				"exclusiveMinimum": false,
 				"description": "GWP (Global Warming Potential) of biogenic CO2e-emissions in distribution phase which contain only GHG (Greenhouse Gas) emissions other than CO2 ? excludes biogenic CO2. For specification see Catena-X PCF Rulebook.",
 				"examples": [
 					1.0
@@ -819,7 +789,6 @@
 				],
 				"title": "DistributionStageBiogenicCarbonWithdrawal",
 				"minimum": 0,
-				"exclusiveMinimum": false,
 				"description": "GWP (Global Warming Potential) of biogenic CO2-withdrawal in distribution stage (biogenic CO2 contained in the product) as specified in the Catena-X PCF Rulebook.",
 				"examples": [
 					0.5
@@ -832,7 +801,6 @@
 				],
 				"title": "ExtTFS_distributionStageDlucGhgEmissions",
 				"minimum": 0,
-				"exclusiveMinimum": false,
 				"description": "Direct land use change CO2 emissions during distribution stage in context of a product carbon footprint as specified in the Catena-X PCF Rulebook. TFS specific extension.",
 				"examples": [
 					1.0
@@ -845,7 +813,6 @@
 				],
 				"title": "ExtTFS_distributionStageLuGhgEmissions",
 				"minimum": 0,
-				"exclusiveMinimum": false,
 				"description": "Land use CO2 emissions in context of a product carbon footprint as specified by the TFS (Together For Sustainability) initiative. TFS specific extension.",
 				"examples": [
 					1.1
@@ -858,7 +825,6 @@
 				],
 				"title": "CarbonContentTotal",
 				"minimum": 0,
-				"exclusiveMinimum": false,
 				"description": "Total carbon content per declared unit in context of a product carbon footprint as specified in the Catena-X PCF Rulebook.",
 				"examples": [
 					2.5
@@ -871,7 +837,6 @@
 				],
 				"title": "ExtWBCSD_fossilCarbonContent",
 				"minimum": 0,
-				"exclusiveMinimum": false,
 				"description": "Fossil carbon amount embodied in a product as specified in the technical specifications for PCF Data Exchange (Version 2.0.0) from the WBCSD (World Business Council for Sustainable Development)/ PACT initiative. WBCSD specific extension, in Catena-X for example specified by a calculated value.",
 				"examples": [
 					0.1
@@ -884,7 +849,6 @@
 				],
 				"title": "carbonContentBiogenic",
 				"minimum": 0,
-				"exclusiveMinimum": false,
 				"description": "Biogenic carbon amount embodied in a product as specified in the Catena-X PCF Rulebook in accordance with the technical specifications for PCF Data Exchange (Version 2.0.0) from the WBCSD (World Business Council for Sustainable Development)/ PACT initiative.",
 				"examples": [
 					0.0

@@ -29,15 +29,16 @@ import java.lang.annotation.Target;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
-@Target({ElementType.METHOD, ElementType.FIELD, ElementType.CONSTRUCTOR, ElementType.PARAMETER, ElementType.TYPE_USE})
+@Target({ ElementType.METHOD, ElementType.FIELD, ElementType.CONSTRUCTOR, ElementType.PARAMETER, ElementType.TYPE_USE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Constraint(validatedBy = {UsagePolicyValidationService.class, UploadFileUsagePolicyValidationService.class})
-public @interface UsagePolicyValidation {
+@Constraint(validatedBy = { PolicyTemplateValidationAsPojo.class, PolicyTemplateValidationAsString.class,
+		UsagePolicyValidator.class })
+public @interface ValidatePolicyTemplate {
 
-    String message() default "Usage Policies Validation Failed";
+	String message() default "policy must not be null";
 
-    Class<?>[] groups() default {};
+	Class<?>[] groups() default {};
 
-    Class<? extends Payload>[] payload() default {};
+	Class<? extends Payload>[] payload() default {};
 }

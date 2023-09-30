@@ -22,7 +22,7 @@ package org.eclipse.tractusx.sde.sftp.service;
 
 import java.util.List;
 
-import org.eclipse.tractusx.sde.common.entities.SubmodelPolicyRequest;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.core.policy.service.PolicyService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -79,20 +79,20 @@ public class PolicyProvider {
 	@SneakyThrows
 	public void saveDefaultPolicy() {
 		if (policyService.getPolicyByName("default") == null) {
-			SubmodelPolicyRequest policy = getDefaultPolicy();
+			PolicyModel policy = getDefaultPolicy();
 			policyService.savePolicy(policy);
 
 		}
 	}
 
 	@SneakyThrows
-	public SubmodelPolicyRequest getDefaultPolicy() {
+	public PolicyModel getDefaultPolicy() {
 		String defaultPolicyStr = String.format(defaultPolicy, bpnNumber);
-		return mapper.readValue(defaultPolicyStr, SubmodelPolicyRequest.class);
+		return mapper.readValue(defaultPolicyStr, PolicyModel.class);
 	}
 
-	public SubmodelPolicyRequest getMatchingPolicyBasedOnFileName(String fileName) {
-		List<SubmodelPolicyRequest> matchingList = policyService.findByPolicyNameLike("%" + fileName + "%");
+	public PolicyModel getMatchingPolicyBasedOnFileName(String fileName) {
+		List<PolicyModel> matchingList = policyService.findMatchingPolicyBasedOnFileName(fileName);
 		if (matchingList.isEmpty())
 			return getDefaultPolicy();
 		else

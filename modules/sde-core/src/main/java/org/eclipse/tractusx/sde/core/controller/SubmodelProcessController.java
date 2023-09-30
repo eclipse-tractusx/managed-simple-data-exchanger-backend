@@ -29,7 +29,7 @@ import java.util.UUID;
 
 import org.eclipse.tractusx.sde.common.entities.PolicyTemplateRequest;
 import org.eclipse.tractusx.sde.common.entities.SubmodelJsonRequest;
-import org.eclipse.tractusx.sde.common.validators.UsagePolicyValidation;
+import org.eclipse.tractusx.sde.common.validators.ValidatePolicyTemplate;
 import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
 import org.eclipse.tractusx.sde.core.service.SubmodelOrchestartorService;
 import org.springframework.http.ResponseEntity;
@@ -58,14 +58,27 @@ public class SubmodelProcessController {
 	private final SubmodelOrchestartorService submodelOrchestartorService;
 
 	private final CsvHandlerService csvHandlerService;
-	
+
 	private ObjectMapper objectMapper = new ObjectMapper();
+
+	@PostMapping(value = "/upload")
+	@PreAuthorize("hasPermission(#submodel,'provider_create_contract_offer@provider_update_contract_offer')")
+	public ResponseEntity<String> autoUpload(@RequestParam("file") MultipartFile file) {
+
+		String originalFileName = file.getOriginalFilename();
+
+		String processId = csvHandlerService.storeFile(file);
+
+		submodelOrchestartorService.processSubmodelAutomationCsvThroughAPI(originalFileName, processId);
+
+		return ok().body(processId);
+	}
 
 	@PostMapping(value = "/{submodel}/upload")
 	@PreAuthorize("hasPermission(#submodel,'provider_create_contract_offer@provider_update_contract_offer')")
-	public ResponseEntity<String> fileUpload(@PathVariable("submodel") String submodel,
-			@RequestParam("file") MultipartFile file, @UsagePolicyValidation @RequestParam("meta_data") String metaData)
-			throws JsonProcessingException {
+	public ResponseEntity<String> upload(@PathVariable("submodel") String submodel,
+			@RequestParam("file") MultipartFile file,
+			@RequestParam("meta_data") @Valid @ValidatePolicyTemplate String metaData) throws JsonProcessingException {
 
 		String processId = csvHandlerService.storeFile(file);
 
@@ -78,22 +91,23 @@ public class SubmodelProcessController {
 
 	@PostMapping(value = "/{submodel}/manualentry", consumes = APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasPermission(#submodel,'provider_create_contract_offer@provider_update_contract_offer')")
-	public ResponseEntity<String> createSubmodelAssets(@PathVariable("submodel") String submodel,
-			@RequestBody @Valid SubmodelJsonRequest submodelJsonRequest) {
+	public ResponseEntity<String> manualentry(@PathVariable("submodel") String submodel,
+			@RequestBody @Valid @ValidatePolicyTemplate SubmodelJsonRequest body) {
 
 		String processId = UUID.randomUUID().toString();
 
-		submodelOrchestartorService.processSubmodel(submodelJsonRequest, processId, submodel);
+		submodelOrchestartorService.processSubmodel(body, processId, submodel);
 
 		return ok().body(processId);
 	}
 
 	@GetMapping(value = "/{submodel}/public/{uuid}")
 	public ResponseEntity<Map<Object, Object>> readCreatedTwinsDetails(@PathVariable("submodel") String submodel,
-			@PathVariable("uuid") String uuid, @RequestParam(value = "type", defaultValue = "json", required = false) String type) {
+			@PathVariable("uuid") String uuid,
+			@RequestParam(value = "type", defaultValue = "json", required = false) String type) {
 		return ok().body(submodelOrchestartorService.readCreatedTwinsDetails(submodel, uuid, type));
 	}
-	
+
 	@DeleteMapping(value = "/{submodel}/delete/{processId}", produces = APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasPermission(#submodel,'provider_delete_contract_offer')")
 	public ResponseEntity<Map<String, String>> deleteRecordsWithDigitalTwinAndEDC(

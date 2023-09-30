@@ -22,6 +22,8 @@ package org.eclipse.tractusx.sde.agent.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,12 +35,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SchedulerConfigModel {
+	
+	@NotEmpty
     @JsonProperty(value = "type")
     private SchedulerType type;
 
     @JsonProperty(value = "day")
     private String day;
 
+    @NotEmpty
     @JsonProperty(value = "time")
     private String time;
 }

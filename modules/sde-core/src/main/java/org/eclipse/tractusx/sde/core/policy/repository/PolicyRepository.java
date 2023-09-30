@@ -26,6 +26,7 @@ import java.util.Optional;
 import org.eclipse.tractusx.sde.core.policy.entity.PolicyEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface PolicyRepository extends JpaRepository<PolicyEntity, String> {
 
@@ -34,9 +35,11 @@ public interface PolicyRepository extends JpaRepository<PolicyEntity, String> {
 
 	Optional<PolicyEntity> findByUuid(String uuid);
 
+	@Transactional
 	void deleteByUuid(String uuid);
 
-	List<PolicyEntity> findByPolicyNameLike(String policyName);
+	@Query(value = "select * from policy_tbl as e where POSITION(policy_name  in ?1 ) > 0", nativeQuery = true)
+	List<PolicyEntity> findMatchingPolicyBasedOnFileName(String fileName);
 	
 	Optional<PolicyEntity> findByPolicyName(String policyName);
 }

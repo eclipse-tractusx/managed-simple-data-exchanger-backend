@@ -20,7 +20,7 @@
 
 package org.eclipse.tractusx.sde.common.validators;
 
-import org.eclipse.tractusx.sde.common.entities.SubmodelPolicyRequest;
+import org.eclipse.tractusx.sde.common.entities.PolicyTemplateRequest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -28,24 +28,29 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import lombok.SneakyThrows;
 
-public class UploadFileUsagePolicyValidationService implements ConstraintValidator<UsagePolicyValidation, String> {
+public class PolicyTemplateValidationAsString implements ConstraintValidator<ValidatePolicyTemplate, String> {
 
-    private ObjectMapper objectMapper = new ObjectMapper();
-    private final ValidationService validationService;
+	private final ValidationService validationService;
 
-    public UploadFileUsagePolicyValidationService(ValidationService validationService) {
-        this.validationService = validationService;
-    }
+	private final ObjectMapper mapper = new ObjectMapper();
 
-    @Override
-    public void initialize(UsagePolicyValidation constraintAnnotation) {
-        ConstraintValidator.super.initialize(constraintAnnotation);
-    }
+	public PolicyTemplateValidationAsString(ValidationService validationService) {
+		this.validationService = validationService;
+	}
 
-    @SneakyThrows
-    @Override
-    public boolean isValid(String metadata, ConstraintValidatorContext constraintValidatorContext) {
-        SubmodelPolicyRequest submodelFileRequest = objectMapper.readValue(metadata, SubmodelPolicyRequest.class);
-        return validationService.isValid(submodelFileRequest.getUsagePolicies());
-    }
+	@Override
+	public void initialize(ValidatePolicyTemplate constraintAnnotation) {
+		ConstraintValidator.super.initialize(constraintAnnotation);
+	}
+
+	@SneakyThrows
+	@Override
+	public boolean isValid(String request, ConstraintValidatorContext constraintValidatorContext) {
+		PolicyTemplateRequest policyTemplateRequest = mapper.readValue(request, PolicyTemplateRequest.class);
+		if (policyTemplateRequest == null) {
+			return false;
+		}
+
+		return validationService.isPolicyTemplateRequestValid(policyTemplateRequest, constraintValidatorContext);
+	}
 }

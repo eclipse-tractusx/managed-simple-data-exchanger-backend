@@ -38,12 +38,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequiredArgsConstructor
 @PreAuthorize("hasPermission('','auto_config_management')")
+@RequiredArgsConstructor
 public class AutoUploadAgentConfigController {
 
 	private final ConfigService autoUploadAgentConfigurationService;
@@ -55,7 +55,7 @@ public class AutoUploadAgentConfigController {
 	}
 
 	@PutMapping("/scheduler")
-	public JsonNode updateScheduler(@NotBlank @RequestBody SchedulerConfigModel schedulerConfig) {
+	public JsonNode updateScheduler(@RequestBody @Valid SchedulerConfigModel schedulerConfig) {
 		JsonNode saveConfiguration = autoUploadAgentConfigurationService.saveConfiguration(ConfigType.SCHEDULER,
 				schedulerConfig);
 		schedulerService.updateSchedulerExecution(schedulerConfig);
@@ -68,7 +68,7 @@ public class AutoUploadAgentConfigController {
 	}
 
 	@PutMapping("/sftp")
-	public JsonNode updateSftp(@NotBlank @RequestBody SftpConfigModel config) {
+	public JsonNode updateSftp(@RequestBody @Valid SftpConfigModel config) {
 		return autoUploadAgentConfigurationService.saveConfiguration(ConfigType.SFTP, config);
 	}
 
@@ -78,7 +78,7 @@ public class AutoUploadAgentConfigController {
 	}
 
 	@PutMapping("/notification")
-	public JsonNode updateNotification(@NotBlank @RequestBody EmailNotificationModel config) {
+	public JsonNode updateNotification(@RequestBody @Valid EmailNotificationModel config) {
 		return autoUploadAgentConfigurationService.saveConfiguration(ConfigType.NOTIFICATION, config);
 	}
 
@@ -88,7 +88,7 @@ public class AutoUploadAgentConfigController {
 	}
 
 	@PutMapping("/job-maintenance")
-	public JsonNode updateJobMaintenance(@NotBlank @RequestBody JobMaintenanceModel config) {
+	public JsonNode updateJobMaintenance(@RequestBody @Valid JobMaintenanceModel config) {
 		JsonNode saveConfiguration = autoUploadAgentConfigurationService.saveConfiguration(ConfigType.JOB_MAINTENANCE,
 				config);
 		schedulerService.updateScehdulreStatus(config);

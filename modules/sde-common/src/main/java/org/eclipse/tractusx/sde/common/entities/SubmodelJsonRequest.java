@@ -26,18 +26,23 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
+@SuperBuilder
+@NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SubmodelJsonRequest {
+@EqualsAndHashCode(callSuper = true)
+public class SubmodelJsonRequest extends PolicyTemplateRequest {
 
+	@NotEmpty
 	@JsonProperty(value = "row_data")
 	private List<ObjectNode> rowData;
 	
-	@JsonProperty(value = "policy_info")
-	private PolicyTemplateRequest policyInfo;
-
 }

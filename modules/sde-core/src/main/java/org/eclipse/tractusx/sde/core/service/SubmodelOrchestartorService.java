@@ -25,10 +25,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.tractusx.sde.common.entities.PolicyTemplateRequest;
 import org.eclipse.tractusx.sde.common.entities.PolicyTemplateType;
 import org.eclipse.tractusx.sde.common.entities.SubmodelJsonRequest;
-import org.eclipse.tractusx.sde.common.entities.SubmodelPolicyRequest;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.entities.csv.CsvContent;
 import org.eclipse.tractusx.sde.common.exception.ValidationException;
 import org.eclipse.tractusx.sde.common.mapper.JsonObjectMapper;
@@ -38,9 +39,11 @@ import org.eclipse.tractusx.sde.common.submodel.executor.SubmodelExecutor;
 import org.eclipse.tractusx.sde.common.validators.SubmodelCSVValidator;
 import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
 import org.eclipse.tractusx.sde.core.failurelog.FailureLogs;
+import org.eclipse.tractusx.sde.core.policy.entity.PolicyMapper;
 import org.eclipse.tractusx.sde.core.policy.service.PolicyService;
 import org.eclipse.tractusx.sde.core.processreport.ProcessReportUseCase;
 import org.eclipse.tractusx.sde.core.processreport.model.ProcessReport;
+import org.eclipse.tractusx.sde.sftp.service.PolicyProvider;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -48,6 +51,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.JsonObject;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -77,6 +81,10 @@ public class SubmodelOrchestartorService {
 
 	private final PolicyService policyService;
 
+	private final PolicyMapper policyMapper;
+
+	private final PolicyProvider policyProvider;
+
 	ObjectMapper mapper = new ObjectMapper();
 
 	public void processSubmodelCsv(PolicyTemplateRequest policyTemplateRequest, String processId, String submodel) {
@@ -90,13 +98,28 @@ public class SubmodelOrchestartorService {
 			throw new ValidationException(String.format("Csv column header is not matching %s submodel", submodel));
 		}
 
-		SubmodelPolicyRequest submodelPolicyRequest = onFlyPolicyManagement(policyTemplateRequest);
+		PolicyModel submodelPolicyRequest = onFlyPolicyManagement(policyTemplateRequest);
 
 		processCsv(submodelPolicyRequest, processId, submodelSchemaObject, csvContent);
 
 	}
 
-	private void processCsv(SubmodelPolicyRequest submodelPolicyRequest, String processId,
+	public void processSubmodelAutomationCsvThroughAPI(String originalFileName, String processId) {
+
+		CsvContent csvContent = csvHandlerService.processFile(processId);
+
+		List<String> columns = csvContent.getColumns();
+
+		Submodel foundSubmodelSchemaObject = findSubmodel(columns);
+
+		PolicyModel matchingPolicyBasedOnFileName = policyProvider
+				.getMatchingPolicyBasedOnFileName(originalFileName);
+		
+		processCsv(matchingPolicyBasedOnFileName, processId, foundSubmodelSchemaObject, csvContent);
+
+	}
+
+	private void processCsv(PolicyModel submodelPolicyRequest, String processId,
 			Submodel submodelSchemaObject, CsvContent csvContent) {
 
 		Runnable runnable = () -> {
@@ -134,11 +157,14 @@ public class SubmodelOrchestartorService {
 		new Thread(runnable).start();
 	}
 
+	@SneakyThrows
 	public void processSubmodel(SubmodelJsonRequest submodelJsonRequest, String processId, String submodel) {
 		Submodel submodelSchemaObject = submodelService.findSubmodelByNameAsSubmdelObject(submodel);
 		JsonObject submodelSchema = submodelSchemaObject.getSchema();
 
 		List<ObjectNode> rowData = submodelJsonRequest.getRowData();
+
+		PolicyModel policy = onFlyPolicyManagement(policyMapper.mapFrom(submodelJsonRequest));
 
 		Runnable runnable = () -> {
 
@@ -147,8 +173,6 @@ public class SubmodelOrchestartorService {
 			AtomicInteger failureCount = new AtomicInteger();
 			SubmodelExecutor executor = submodelSchemaObject.getExecutor();
 			executor.init(submodelSchema);
-
-			SubmodelPolicyRequest policy = onFlyPolicyManagement(submodelJsonRequest.getPolicyInfo());
 
 			Map<String, Object> mps = new HashMap<>();
 			mps.put("type_of_access", policy.getTypeOfAccess());
@@ -233,7 +257,7 @@ public class SubmodelOrchestartorService {
 		return submodelMapper.jsonPojoToMap(jObject);
 	}
 
-	public void processSubmodelAutomationCsv(SubmodelPolicyRequest submodelFileRequest, String processId) {
+	public void processSubmodelAutomationCsv(PolicyModel submodelFileRequest, String processId) {
 
 		CsvContent csvContent = csvHandlerService.processFile(processId);
 		List<String> columns = csvContent.getColumns();
@@ -242,30 +266,32 @@ public class SubmodelOrchestartorService {
 		processCsv(submodelFileRequest, processId, foundSubmodelSchemaObject, csvContent);
 	}
 
-	public SubmodelPolicyRequest onFlyPolicyManagement(PolicyTemplateRequest policyTemplateRequest) {
+	public PolicyModel onFlyPolicyManagement(PolicyTemplateRequest policyTemplateRequest) {
 
-		SubmodelPolicyRequest policy = null;
 		PolicyTemplateType type = policyTemplateRequest.getType();
+		PolicyModel policy = policyMapper.mapFrom(policyTemplateRequest);
 		switch (type) {
 		case NONE:
 			log.info("Nothing to do with policy");
-			policy = policyTemplateRequest.getPolicy();
 			break;
+
 		case EXISTING:
-			if (policyTemplateRequest.getUuid() != null && policyTemplateRequest.getPolicy() != null) {
-				policy = policyTemplateRequest.getPolicy();
-				policyService.updatePolicy(policyTemplateRequest.getUuid(), policy);
-				log.info("Updated existing policy " + policyTemplateRequest.getUuid());
+			if (policy.getUuid() != null && CollectionUtils.isNotEmpty(policy.getBpnNumbers())
+					&& CollectionUtils.isNotEmpty(policy.getUsagePolicies())) {
+				policyService.updatePolicy(policy.getUuid(), policy);
+				log.info("Updated existing policy " + policy.getUuid());
+			} else {
+				policy = policyService.getPolicy(policy.getUuid());
+				log.info("Using existing policy for " + policy.getUuid());
 			}
 			break;
+
 		case NEW_POLICY:
-			policy = policyTemplateRequest.getPolicy();
 			policyService.savePolicy(policy);
 			break;
 		default:
 			throw new ValidationException(type + " policy template type not found");
 		}
-
 		return policy;
 	}
 

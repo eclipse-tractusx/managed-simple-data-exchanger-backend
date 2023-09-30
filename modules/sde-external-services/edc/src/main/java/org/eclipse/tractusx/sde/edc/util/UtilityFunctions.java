@@ -92,7 +92,7 @@ public class UtilityFunctions {
 	private static UsagePolicies getResponse(String value, DurationEnum durationUnit) {
 		UsagePolicies policyResponse;
 		policyResponse = UsagePolicies.builder().type(UsagePolicyEnum.DURATION)
-				.typeOfAccess(PolicyAccessEnum.RESTRICTED).value(value).durationUnit(durationUnit).build();
+				.typeOfAccess(PolicyAccessEnum.RESTRICTED).value(value).durationUnit(durationUnit.name()).build();
 		return policyResponse;
 	}
 

@@ -18,32 +18,40 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.common.validators;
+package org.eclipse.tractusx.sde.common.entities;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
-import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
-import org.springframework.stereotype.Service;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import jakarta.validation.ConstraintValidator;
-import jakarta.validation.ConstraintValidatorContext;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
-@Service
-public class UsagePolicyValidationService implements ConstraintValidator<UsagePolicyValidation, List<UsagePolicies>> {
+@Data
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class PolicyModel {
 
-    private final ValidationService validationService;
+	private String uuid;
 
-    public UsagePolicyValidationService(ValidationService validationService) {
-        this.validationService = validationService;
-    }
+	@JsonProperty(value = "policy_name")
+	private String policyName;
 
-    @Override
-    public void initialize(UsagePolicyValidation constraintAnnotation) {
-        ConstraintValidator.super.initialize(constraintAnnotation);
-    }
+	@JsonProperty(value = "type_of_access")
+	private String typeOfAccess;
 
-    @Override
-    public boolean isValid(List<UsagePolicies> usagePolicies, ConstraintValidatorContext constraintValidatorContext) {
-        return validationService.isValid(usagePolicies);
-    }
+	@JsonProperty(value = "bpn_numbers")
+	private List<String> bpnNumbers;
+
+	@JsonProperty(value = "usage_policies")
+	private List<UsagePolicies> usagePolicies;
+
+	private LocalDateTime lastUpdatedTime;
+
 }

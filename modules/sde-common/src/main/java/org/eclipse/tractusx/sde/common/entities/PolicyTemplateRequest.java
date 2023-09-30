@@ -20,15 +20,24 @@
 
 package org.eclipse.tractusx.sde.common.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
-public class PolicyTemplateRequest {
-	
-	private PolicyTemplateType type;
-	
-	private String uuid;
-	
-	private SubmodelPolicyRequest policy;
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
+@EqualsAndHashCode(callSuper = true)
+public class PolicyTemplateRequest extends PolicyModel {
+
+	@Builder.Default
+	private PolicyTemplateType type = PolicyTemplateType.NONE;
 
 }

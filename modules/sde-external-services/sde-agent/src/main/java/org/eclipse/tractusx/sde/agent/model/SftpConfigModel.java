@@ -36,11 +36,8 @@ public class SftpConfigModel {
 	private String host;
 
 	private int port;
-	@NotBlank
 	private String username;
-	@NotBlank
 	private String password;
-	@NotBlank
 	private String accessKey;
 	@NotBlank
 	private String toBeProcessedLocation;

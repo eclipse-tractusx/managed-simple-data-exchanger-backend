@@ -277,7 +277,7 @@ public class SubmodelOrchestartorService {
 
 		case EXISTING:
 			if (policy.getUuid() != null && CollectionUtils.isNotEmpty(policy.getBpnNumbers())
-					&& CollectionUtils.isNotEmpty(policy.getUsagePolicies())) {
+					&& !policy.getUsagePolicies().isEmpty()) {
 				policyService.updatePolicy(policy.getUuid(), policy);
 				log.info("Updated existing policy " + policy.getUuid());
 			} else {

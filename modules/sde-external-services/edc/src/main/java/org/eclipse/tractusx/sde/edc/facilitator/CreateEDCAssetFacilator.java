@@ -50,7 +50,7 @@ public class CreateEDCAssetFacilator extends AbstractEDCStepsHelper {
 	private final PolicyConstraintBuilderService policyConstraintBuilderService;
 
 	public Map<String, String> createEDCAsset(AssetEntryRequest assetEntryRequest, List<String> bpns,
-			List<UsagePolicies> usagePolicies) {
+			Map<UsagePolicyEnum, UsagePolicies> usagePolicies) {
 
 		HashMap<String, String> extensibleProperties = new HashMap<>();
 		HashMap<String, String> output = new HashMap<>();
@@ -90,10 +90,9 @@ public class CreateEDCAssetFacilator extends AbstractEDCStepsHelper {
 
 	}
 
-	private String getCustomValue(List<UsagePolicies> usagePolicies) {
+	private String getCustomValue(Map<UsagePolicyEnum, UsagePolicies> usagePolicies) {
 		if (!CollectionUtils.isEmpty(usagePolicies)) {
-			return usagePolicies.stream().filter(policy -> policy.getType().equals(UsagePolicyEnum.CUSTOM))
-					.map(UsagePolicies::getValue).findFirst().orElse(null);
+			return usagePolicies.getOrDefault(UsagePolicyEnum.CUSTOM, null).getValue();
 		}
 		return null;
 	}

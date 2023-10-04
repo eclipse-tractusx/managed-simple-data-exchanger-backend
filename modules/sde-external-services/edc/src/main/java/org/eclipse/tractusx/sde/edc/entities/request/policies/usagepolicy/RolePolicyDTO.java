@@ -22,6 +22,7 @@ package org.eclipse.tractusx.sde.edc.entities.request.policies.usagepolicy;
 
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
+import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.Operator;
 
@@ -33,7 +34,7 @@ import lombok.experimental.SuperBuilder;
 public class RolePolicyDTO extends UsagePolicyDTO {
 
 	public static RolePolicyDTO fromUsagePolicy(UsagePolicies usagePolicy) {
-		return RolePolicyDTO.builder().type(usagePolicy.getType()).typeOfAccess(usagePolicy.getTypeOfAccess())
+		return RolePolicyDTO.builder().type(UsagePolicyEnum.ROLE).typeOfAccess(usagePolicy.getTypeOfAccess())
 				.value(usagePolicy.getValue()).build();
 
 	}
@@ -45,9 +46,7 @@ public class RolePolicyDTO extends UsagePolicyDTO {
 			String operator = "odrl:eq";
 
 			return ConstraintRequest.builder().leftOperand("idsc:ROLE")
-					.operator(Operator.builder().id(operator).build())
-					.rightOperand(getValue())
-					.build();
+					.operator(Operator.builder().id(operator).build()).rightOperand(getValue()).build();
 
 		}
 		return null;

@@ -21,9 +21,11 @@
 package org.eclipse.tractusx.sde.edc.model.response;
 
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
+import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -72,6 +74,6 @@ QueryDataOfferModel {
 
 	private String policyId;
 	
-	private List<UsagePolicies> usagePolicies;
+	private Map<UsagePolicyEnum, UsagePolicies> usagePolicies;
 
 }

@@ -21,8 +21,10 @@
 package org.eclipse.tractusx.sde.submodels.pcf.model;
 
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
+import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -55,7 +57,7 @@ public class PcfAspect {
 	private String typeOfAccessforPcf;
 
 	@JsonProperty(value = "usage_policies")
-	private List<UsagePolicies> usagePoliciesforPcf;
+	private Map<UsagePolicyEnum, UsagePolicies> usagePoliciesforPcf;
 
 	@JsonProperty(value = "process_id")
 	private String processIdforPcf;

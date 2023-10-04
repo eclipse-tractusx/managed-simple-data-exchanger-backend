@@ -40,6 +40,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jakarta.validation.constraints.NotBlank;
 import net.minidev.json.JSONObject;
 
 @ExtendWith(SpringExtension.class)
@@ -111,15 +112,15 @@ class AutoUploadAgentConfigControllerTest {
 
 	private JSONObject getJsonBody() {
 		JSONObject json = new JSONObject();
-		json.put("sftp.host", "127.0.0.1");
-		json.put("sftp.port", 22);
-		json.put("sftp.usernam", "foo");
-		json.put("sftp.password", "pass");
-		json.put("sftp.location.tobeprocessed", "/upload/sftp/tobe");
-		json.put("sftp.location.failed", "/upload/sftp/failed");
-		json.put("sftp.location.partialsucess", "/upload/sftp/partial");
-		json.put("sftp.location.success", "/upload/sftp/success");
-		json.put("sftp.location.inprogress", "/upload/sftp/inprogress");
+		json.put("host", "127.0.0.1");
+		json.put("port", 22);
+		json.put("username", "foo");
+		json.put("password", "pass");
+		json.put("toBeProcessedLocation", "/upload/sftp/tobe");
+		json.put("failedLocation", "/upload/sftp/failed");
+		json.put("partialSuccessLocation", "/upload/sftp/partial");
+		json.put("successLocation", "/upload/sftp/success");
+		json.put("inProgressLocation", "/upload/sftp/inprogress");
 		return json;
 	}
 

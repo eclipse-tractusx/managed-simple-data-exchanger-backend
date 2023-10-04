@@ -20,8 +20,10 @@
 package org.eclipse.tractusx.sde.submodels.psiap.model;
 
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
+import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -74,7 +76,7 @@ public class PartSiteInformationAsPlanned {
 		private String typeOfAccess;
 		
 		@JsonProperty(value ="usage_policies")
-		private List<UsagePolicies> usagePolicies;
+		private Map<UsagePolicyEnum, UsagePolicies> usagePolicies;
 
 		@JsonProperty(value ="manufacturer_part_id")
 		private String manufacturerPartId;

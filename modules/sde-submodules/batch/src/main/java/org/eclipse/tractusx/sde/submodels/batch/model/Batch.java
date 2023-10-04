@@ -21,8 +21,10 @@
 package org.eclipse.tractusx.sde.submodels.batch.model;
 
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
+import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -41,20 +43,20 @@ public class Batch {
 
 	@JsonProperty(value = "shell_id")
 	private String shellId;
-	
-	private String subModelId;
-	
-    @JsonProperty(value ="row_number")
-    private Integer rowNumber;
 
-    @JsonProperty(value ="bpn_numbers")
-    private List<String> bpnNumbers;
-    
-    @JsonProperty(value ="type_of_access")
-    private String typeOfAccess;
-    
-    @JsonProperty(value ="usage_policies")
-    private List<UsagePolicies> usagePolicies;
+	private String subModelId;
+
+	@JsonProperty(value = "row_number")
+	private Integer rowNumber;
+
+	@JsonProperty(value = "bpn_numbers")
+	private List<String> bpnNumbers;
+
+	@JsonProperty(value = "type_of_access")
+	private String typeOfAccess;
+
+	@JsonProperty(value = "usage_policies")
+	private Map<UsagePolicyEnum, UsagePolicies> usagePolicies;
 
 	@JsonProperty(value = "uuid")
 	private String uuid;
@@ -64,7 +66,7 @@ public class Batch {
 
 	@JsonProperty(value = "batch_id")
 	private String batchId;
-	
+
 	@JsonProperty(value = "part_instance_id")
 	private String partInstanceId;
 
@@ -103,7 +105,7 @@ public class Batch {
 
 	@JsonProperty(value = "deleted")
 	private String deleted;
-	
+
 	@JsonProperty(value = "updated")
 	private String updated;
 

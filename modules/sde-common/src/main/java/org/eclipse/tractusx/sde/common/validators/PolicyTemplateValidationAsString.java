@@ -46,11 +46,18 @@ public class PolicyTemplateValidationAsString implements ConstraintValidator<Val
 	@SneakyThrows
 	@Override
 	public boolean isValid(String request, ConstraintValidatorContext constraintValidatorContext) {
-		PolicyTemplateRequest policyTemplateRequest = mapper.readValue(request, PolicyTemplateRequest.class);
+		PolicyTemplateRequest policyTemplateRequest = null;
+		try {
+			policyTemplateRequest = mapper.readValue(request, PolicyTemplateRequest.class);
+		} catch (Exception e) {
+			constraintValidatorContext.buildConstraintViolationWithTemplate("Unable to accept policy details :"+e.getMessage())
+					.addConstraintViolation().disableDefaultConstraintViolation();
+			return false;
+		}
 		if (policyTemplateRequest == null) {
 			return false;
 		}
-
 		return validationService.isPolicyTemplateRequestValid(policyTemplateRequest, constraintValidatorContext);
+
 	}
 }

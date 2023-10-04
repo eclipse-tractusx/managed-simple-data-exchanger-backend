@@ -23,10 +23,10 @@ package org.eclipse.tractusx.sde.edc.services;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
@@ -56,6 +56,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -148,7 +149,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
 		JsonNode constraints = permission.get("odrl:constraint");
 
-		List<UsagePolicies> usagePolicies = new ArrayList<>();
+		EnumMap<UsagePolicyEnum, UsagePolicies> usagePolicies = new EnumMap<>(UsagePolicyEnum.class);
 
 		List<String> bpnNumbers = new ArrayList<>();
 
@@ -166,7 +167,8 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 		build.setUsagePolicies(usagePolicies);
 	}
 
-	private void setConstraint(List<UsagePolicies> usagePolicies, List<String> bpnNumbers, JsonNode jsonNode) {
+	private void setConstraint(Map<UsagePolicyEnum, UsagePolicies> usagePolicies, List<String> bpnNumbers,
+			JsonNode jsonNode) {
 
 		String leftOperand = getFieldFromJsonNode(jsonNode, "odrl:leftOperand");
 		String rightOperand = getFieldFromJsonNode(jsonNode, "odrl:rightOperand");
@@ -174,9 +176,10 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 		if (leftOperand.equals("BusinessPartnerNumber")) {
 			bpnNumbers.add(rightOperand);
 		} else {
-			UsagePolicies policyResponse = UtilityFunctions.identyAndGetUsagePolicy(leftOperand, rightOperand);
+			Map<UsagePolicyEnum, UsagePolicies> policyResponse = UtilityFunctions.identyAndGetUsagePolicy(leftOperand,
+					rightOperand);
 			if (policyResponse != null)
-				usagePolicies.add(policyResponse);
+				usagePolicies.putAll(policyResponse);
 		}
 	}
 
@@ -196,13 +199,12 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
 		var recipientURL = UtilityFunctions.removeLastSlashOfUrl(consumerRequest.getProviderUrl());
 
-		List<UsagePolicies> policies = consumerRequest.getPolicies();
+		Map<UsagePolicyEnum, UsagePolicies> policies = consumerRequest.getPolicies();
 
-		Optional<UsagePolicies> findFirst = policies.stream()
-				.filter(type -> type.getType().equals(UsagePolicyEnum.CUSTOM)).findFirst();
+		UsagePolicies findFirst = policies.get(UsagePolicyEnum.CUSTOM);
 
-		if (findFirst.isPresent()) {
-			extensibleProperty.put(findFirst.get().getType().name(), findFirst.get().getValue());
+		if (findFirst != null) {
+			extensibleProperty.put(UsagePolicyEnum.CUSTOM.name(), findFirst.getValue());
 		}
 
 		ActionRequest action = policyConstraintBuilderService.getUsagePolicyConstraints(policies);
@@ -252,21 +254,20 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
 		var recipientURL = UtilityFunctions.removeLastSlashOfUrl(consumerRequest.getProviderUrl());
 
-		List<UsagePolicies> policies = consumerRequest.getPolicies();
+		Map<UsagePolicyEnum, UsagePolicies> policies = consumerRequest.getPolicies();
 
-		Optional<UsagePolicies> findFirst = policies.stream()
-				.filter(type -> type.getType().equals(UsagePolicyEnum.CUSTOM)).findFirst();
+		UsagePolicies findFirst = policies.get(UsagePolicyEnum.CUSTOM);
 
-		if (findFirst.isPresent()) {
-			extensibleProperty.put(findFirst.get().getType().name(), findFirst.get().getValue());
+		if (findFirst != null) {
+			extensibleProperty.put(UsagePolicyEnum.CUSTOM.name(), findFirst.getValue());
 		}
 
 		ActionRequest action = policyConstraintBuilderService.getUsagePolicyConstraints(policies);
 		consumerRequest.getOffers().parallelStream().forEach(offer -> {
 			Map<String, Object> resultFields = new ConcurrentHashMap<>();
 			try {
-				EDRCachedResponse checkContractNegotiationStatus = verifyOrCreateContractNegotiation(consumerRequest.getConnectorId(),
-						extensibleProperty, recipientURL, action, offer);
+				EDRCachedResponse checkContractNegotiationStatus = verifyOrCreateContractNegotiation(
+						consumerRequest.getConnectorId(), extensibleProperty, recipientURL, action, offer);
 
 				resultFields.put("edr", checkContractNegotiationStatus);
 
@@ -312,10 +313,10 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 		} else {
 			log.info("There was EDR process initiated " + offer.getAssetId() + ", so ignoring EDR process initiation");
 		}
-		
-		if (checkContractNegotiationStatus==null || !NEGOTIATED.equals(checkContractNegotiationStatus.getEdrState()))
+
+		if (checkContractNegotiationStatus == null || !NEGOTIATED.equals(checkContractNegotiationStatus.getEdrState()))
 			checkContractNegotiationStatus = verifyEDRRequestStatus(offer.getAssetId());
-		
+
 		return checkContractNegotiationStatus;
 	}
 
@@ -384,7 +385,8 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 	}
 
 	@SneakyThrows
-	public Map<String, Object> downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(List<String> assetIdList, String type) {
+	public Map<String, Object> downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(List<String> assetIdList,
+			String type) {
 		Map<String, Object> response = new ConcurrentHashMap<>();
 		assetIdList.parallelStream().forEach(assetId -> {
 

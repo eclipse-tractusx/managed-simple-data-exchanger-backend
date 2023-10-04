@@ -20,9 +20,10 @@
 
 package org.eclipse.tractusx.sde.edc.model.contractnegotiation;
 
-import java.util.List;
+import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
+import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,9 +36,9 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ContractAgreementInfo {
 
-    private long contractSigningDate;
-    private long contractStartDate;
-    private long contractEndDate;
-    private String assetId;
-    private List<UsagePolicies> policies;
+	private long contractSigningDate;
+	private long contractStartDate;
+	private long contractEndDate;
+	private String assetId;
+	private Map<UsagePolicyEnum, UsagePolicies> policies;
 }

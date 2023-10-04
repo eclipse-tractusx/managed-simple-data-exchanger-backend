@@ -3,6 +3,7 @@ package org.eclipse.tractusx.sde.controllers;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.tractusx.sde.EnableTestContainers;
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
@@ -114,12 +115,11 @@ class PolicyControllerTest {
     private PolicyModel getPolicy(String policyName) {
         PolicyModel request = new PolicyModel();
         UsagePolicies policies = new UsagePolicies();
-        policies.setType(UsagePolicyEnum.DURATION);
         policies.setValue("10");
         policies.setDurationUnit(DurationEnum.DAY.name());
         policies.setTypeOfAccess(PolicyAccessEnum.RESTRICTED);
         request.setPolicyName(policyName);
-        request.setUsagePolicies(List.of(policies));
+        request.setUsagePolicies(Map.of(UsagePolicyEnum.DURATION ,policies));
         request.setBpnNumbers(List.of("BPNL00000005PROV", "BPNL00000005PROW", "BPNL00000005PROB"));
         request.setTypeOfAccess("restricted");
         return request;

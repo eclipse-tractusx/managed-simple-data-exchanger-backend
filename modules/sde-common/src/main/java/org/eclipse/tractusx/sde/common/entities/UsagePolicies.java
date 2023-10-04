@@ -21,7 +21,6 @@
 package org.eclipse.tractusx.sde.common.entities;
 
 import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
-import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -41,8 +40,6 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UsagePolicies {
 
-	UsagePolicyEnum type;
-	
 	@JsonProperty("typeOfAccess")
 	@SerializedName(value = "type_of_access")
 	PolicyAccessEnum typeOfAccess;

@@ -36,7 +36,6 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SchedulerConfigModel {
 	
-	@NotEmpty
     @JsonProperty(value = "type")
     private SchedulerType type;
 

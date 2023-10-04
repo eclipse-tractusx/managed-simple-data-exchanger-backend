@@ -21,6 +21,7 @@
 package org.eclipse.tractusx.sde.edc.entities.request.policies.usagepolicy;
 
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
+import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
 import org.eclipse.tractusx.sde.edc.exceptions.EDCException;
 
@@ -35,7 +36,7 @@ public class CustomPolicyDTO extends UsagePolicyDTO{
     public static CustomPolicyDTO fromUsagePolicy(UsagePolicies usagePolicy)
     {
         return CustomPolicyDTO.builder()
-        		.type(usagePolicy.getType())
+        		.type(UsagePolicyEnum.CUSTOM)
         		.typeOfAccess(usagePolicy.getTypeOfAccess())
                 .value(usagePolicy.getValue()).build();
 

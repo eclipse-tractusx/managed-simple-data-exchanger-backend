@@ -50,29 +50,25 @@ public class PolicyProvider {
 			                    "%s"
 			                ],
 			                "type_of_access": "restricted",
-			                "usage_policies": [
-			                    {
-			                        "type": "DURATION",
+			                "usage_policies": {
+			                    "DURATION":{
 			                        "typeOfAccess": "UNRESTRICTED",
 			                        "value": "",
 			                        "durationUnit": "SECOND"
 			                    },
-			                    {
-			                        "type": "ROLE",
+			                    "ROLE": {
 			                        "typeOfAccess": "UNRESTRICTED",
 			                        "value": ""
 			                    },
-			                    {
-			                        "type": "PURPOSE",
+			                    "PURPOSE":{
 			                        "typeOfAccess": "UNRESTRICTED",
 			                        "value": ""
 			                    },
-			                    {
-			                        "type": "CUSTOM",
+			                    "CUSTOM": {
 			                        "typeOfAccess": "UNRESTRICTED",
 			                        "value": ""
 			                    }
-			                ]
+			                }
 			            }
 			""";
 

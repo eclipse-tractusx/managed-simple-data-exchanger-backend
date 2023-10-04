@@ -21,6 +21,7 @@
 package org.eclipse.tractusx.sde.common.validators;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
@@ -86,16 +87,17 @@ public class ValidationService {
 		return isValid;
 	}
 
-	public boolean usagePolicyValidation(List<UsagePolicies> usagePolicies,
+	public boolean usagePolicyValidation(Map<UsagePolicyEnum, UsagePolicies> usagePolicies,
 			ConstraintValidatorContext constraintValidatorContext) {
 		boolean isValid = true;
 		if (usagePolicies != null && !CollectionUtils.isEmpty(usagePolicies)) {
 			boolean validateFlag = false;
 			int index = 0;
-			for (UsagePolicies usagePolicy : usagePolicies) {
-				validateFlag = validatePolicy(usagePolicy, index, constraintValidatorContext);
-				if (usagePolicy.getType().equals(UsagePolicyEnum.DURATION)) {
-					validateFlag = validateDuration(usagePolicy, index, constraintValidatorContext);
+
+			for (Map.Entry<UsagePolicyEnum, UsagePolicies> entry : usagePolicies.entrySet()) {
+				validateFlag = validatePolicy(entry, index, constraintValidatorContext);
+				if (entry.getKey().equals(UsagePolicyEnum.DURATION)) {
+					validateFlag = validateDuration(entry.getValue(), index, constraintValidatorContext);
 				}
 				index++;
 				if (isValid)
@@ -105,22 +107,21 @@ public class ValidationService {
 			isValid = false;
 			constraintValidatorContext.buildConstraintViolationWithTemplate("Usage Policy must not be null or empty")
 					.addPropertyNode("usagePolicies").addConstraintViolation().disableDefaultConstraintViolation();
-
 		}
 
 		return isValid;
 
 	}
 
-	private boolean validatePolicy(UsagePolicies usagePolicy, int index,
+	private boolean validatePolicy(Map.Entry<UsagePolicyEnum, UsagePolicies> entry, int index,
 			ConstraintValidatorContext constraintValidatorContext) {
 
 		boolean isValid = true;
-		if (usagePolicy.getTypeOfAccess().equals(PolicyAccessEnum.RESTRICTED)
-				&& StringUtils.isBlank(usagePolicy.getValue())) {
+		if (entry.getValue().getTypeOfAccess().equals(PolicyAccessEnum.RESTRICTED)
+				&& StringUtils.isBlank(entry.getValue().getValue())) {
 			isValid = false;
 			constraintValidatorContext
-					.buildConstraintViolationWithTemplate(usagePolicy.getType() + " value must not be null or empty")
+					.buildConstraintViolationWithTemplate(entry.getKey() + " value must not be null or empty")
 					.addPropertyNode("usagePolicies[" + index + "]").addConstraintViolation()
 					.disableDefaultConstraintViolation();
 		}

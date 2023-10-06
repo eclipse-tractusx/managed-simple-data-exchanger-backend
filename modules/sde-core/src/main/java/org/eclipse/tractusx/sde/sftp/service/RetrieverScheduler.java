@@ -55,8 +55,8 @@ public class RetrieverScheduler {
 		}
 	}
 
-	public void fire() {
-		taskScheduler.schedule(() -> processRemoteCsv.process(taskScheduler), Instant.now());
+	public String fire() {
+		return processRemoteCsv.process(taskScheduler);
 	}
 
 	public void stopAll() {

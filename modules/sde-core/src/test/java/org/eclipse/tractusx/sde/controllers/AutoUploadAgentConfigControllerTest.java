@@ -111,15 +111,15 @@ class AutoUploadAgentConfigControllerTest {
 
 	private JSONObject getJsonBody() {
 		JSONObject json = new JSONObject();
-		json.put("sftp.host", "127.0.0.1");
-		json.put("sftp.port", 22);
-		json.put("sftp.usernam", "foo");
-		json.put("sftp.password", "pass");
-		json.put("sftp.location.tobeprocessed", "/upload/sftp/tobe");
-		json.put("sftp.location.failed", "/upload/sftp/failed");
-		json.put("sftp.location.partialsucess", "/upload/sftp/partial");
-		json.put("sftp.location.success", "/upload/sftp/success");
-		json.put("sftp.location.inprogress", "/upload/sftp/inprogress");
+		json.put("host", "127.0.0.1");
+		json.put("port", 22);
+		json.put("username", "foo");
+		json.put("password", "pass");
+		json.put("tobeprocessed", "/upload/sftp/tobe");
+		json.put("failed", "/upload/sftp/failed");
+		json.put("partialsucess", "/upload/sftp/partial");
+		json.put("success", "/upload/sftp/success");
+		json.put("inprogress", "/upload/sftp/inprogress");
 		return json;
 	}
 

@@ -47,8 +47,7 @@ public class SchedulerService {
 	private final ObjectMapper mapper = new ObjectMapper();
 
 	public Map<String,String> fire() {
-		retrieverScheduler.fire();
-		return Map.of("msg", "Job triggered successfully");
+		return Map.of("msg", retrieverScheduler.fire());
 	}
 	
 	@SneakyThrows

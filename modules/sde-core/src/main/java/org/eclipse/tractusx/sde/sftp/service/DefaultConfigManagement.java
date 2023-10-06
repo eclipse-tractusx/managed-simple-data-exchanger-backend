@@ -20,7 +20,6 @@
 
 package org.eclipse.tractusx.sde.sftp.service;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.tractusx.sde.agent.entity.ConfigEntity;
@@ -90,8 +89,8 @@ public class DefaultConfigManagement {
 	private JSONObject getJsonNotificationBody() {
 		JSONObject json = new JSONObject();
 		
-		json.put("to_email", List.of(toEmail.split(";")));
-		json.put("cc_email", List.of(ccEmail.split(";")));
+		json.put("to_email", toEmail);
+		json.put("cc_email", ccEmail);
 		return json;
 	}
 

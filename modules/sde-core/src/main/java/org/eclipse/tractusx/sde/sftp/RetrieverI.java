@@ -28,4 +28,9 @@ public interface RetrieverI extends Iterable<String>, AutoCloseable {
     void setPartial(String id) throws IOException;
     void setFailed(String id) throws IOException;
     String getFileName(String id);
+	
+    void setPolicyName(String id, String policyName);
+    String getPolicyName(String id);
+    
+    public int size();
 }

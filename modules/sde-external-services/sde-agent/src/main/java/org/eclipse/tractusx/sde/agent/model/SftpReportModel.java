@@ -36,6 +36,7 @@ public class SftpReportModel {
     private String processId;
     private String schedulerId;
     private String fileName;
+    private String policyName;
     private SftpReportStatusEnum status;
     private LocalDateTime startDate;
     private LocalDateTime endDate;

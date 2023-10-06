@@ -22,6 +22,7 @@ package org.eclipse.tractusx.sde.sftp.service;
 
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.sde.common.entities.SubmodelPolicyRequest;
 import org.eclipse.tractusx.sde.core.policy.service.PolicyService;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,6 +35,7 @@ import lombok.SneakyThrows;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PolicyProvider {
 
 	private final PolicyService policyService;
@@ -87,6 +89,7 @@ public class PolicyProvider {
 
 	@SneakyThrows
 	public SubmodelPolicyRequest getDefaultPolicy() {
+		log.info("Applying default policy");
 		String defaultPolicyStr = String.format(defaultPolicy, bpnNumber);
 		return mapper.readValue(defaultPolicyStr, SubmodelPolicyRequest.class);
 	}
@@ -95,7 +98,9 @@ public class PolicyProvider {
 		List<SubmodelPolicyRequest> matchingList = policyService.findMatchingPolicyBasedOnFileName(fileName);
 		if (matchingList.isEmpty())
 			return getDefaultPolicy();
-		else
+		else {
+			log.info("Applying policy "+matchingList.get(0).getPolicyName());
 			return matchingList.get(0);
+		}
 	}
 }

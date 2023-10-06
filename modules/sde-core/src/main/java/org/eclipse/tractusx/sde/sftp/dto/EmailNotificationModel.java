@@ -36,8 +36,8 @@ import lombok.NoArgsConstructor;
 public class EmailNotificationModel {
 	
 	@JsonProperty(value = "to_email")
-	private List<String> toEmail;
+	private String toEmail;
 	
 	@JsonProperty(value = "cc_email")
-	private List<String> ccEmail;
+	private String ccEmail;
 }

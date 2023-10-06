@@ -20,8 +20,6 @@
 
 package org.eclipse.tractusx.sde.sftp.dto;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -38,9 +36,9 @@ public class EmailNotificationModel {
 	
 	@NotEmpty
 	@JsonProperty(value = "to_email")
-	private List<String> toEmail;
+	private String toEmail;
 	
 	@NotEmpty
 	@JsonProperty(value = "cc_email")
-	private List<String> ccEmail;
+	private String ccEmail;
 }

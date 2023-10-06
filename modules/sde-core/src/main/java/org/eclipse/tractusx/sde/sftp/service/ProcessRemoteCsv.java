@@ -159,17 +159,9 @@ public class ProcessRemoteCsv {
         if(!sftpReportList.isEmpty()) {
             log.info("Send notification for scheduler: " + schedulerId);
             EmailNotificationModel emailNotification = configService.getNotificationDetails();
-            if(emailNotification.getToEmail() != null &&
-                    emailNotification.getToEmail().isEmpty()) {
-                toEmail = String.join(",", emailNotification.getToEmail());
-            }
-            if(emailNotification.getCcEmail() != null &&
-                    emailNotification.getCcEmail().isEmpty()) {
-                ccEmail = String.join(",", emailNotification.getCcEmail());
-            }
             Map<String, Object> emailContent = new HashMap<>();
-            emailContent.put("toemail", toEmail);
-            emailContent.put("ccemail", ccEmail);
+            emailContent.put("toemail", emailNotification.getToEmail());
+            emailContent.put("ccemail", emailNotification.getCcEmail());
             StringBuilder tableData = new StringBuilder();
             for (SftpSchedulerReport sftpSchedulerReport : sftpReportList) {
                 Optional<ProcessReportEntity> processReport = processReportRepository.findByProcessId(sftpSchedulerReport.getProcessId());

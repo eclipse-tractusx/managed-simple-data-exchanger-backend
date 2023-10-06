@@ -20,8 +20,6 @@
 
 package org.eclipse.tractusx.sde.core.controller;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.tractusx.sde.agent.model.ConfigType;
@@ -81,23 +79,7 @@ public class AutoUploadAgentConfigController {
 
 	@PutMapping("/notification")
 	public JsonNode updateNotification(@RequestBody @Valid EmailNotificationModel config) {
-
-		config.setCcEmail(getStrAsList(config.getCcEmail()));
-		config.setToEmail(getStrAsList(config.getToEmail()));
-
 		return autoUploadAgentConfigurationService.saveConfiguration(ConfigType.NOTIFICATION, config);
-	}
-
-	private List<String> getStrAsList(List<String> emails) {
-		if (emails != null && !emails.isEmpty()) {
-			String emailStr = emails.get(0);
-			if (emailStr.contains("."))
-				return Arrays.asList(emailStr.split(","));
-			else if (emailStr.contains(";"))
-				return Arrays.asList(emailStr.split(";"));
-
-		}
-		return emails;
 	}
 
 	@GetMapping("/notification")

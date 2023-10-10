@@ -27,10 +27,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.entities.PolicyTemplateRequest;
 import org.eclipse.tractusx.sde.common.entities.PolicyTemplateType;
 import org.eclipse.tractusx.sde.common.entities.SubmodelJsonRequest;
-import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.entities.csv.CsvContent;
 import org.eclipse.tractusx.sde.common.exception.ValidationException;
 import org.eclipse.tractusx.sde.common.mapper.JsonObjectMapper;
@@ -113,15 +113,14 @@ public class SubmodelOrchestartorService {
 
 		Submodel foundSubmodelSchemaObject = findSubmodel(columns);
 
-		PolicyModel matchingPolicyBasedOnFileName = policyProvider
-				.getMatchingPolicyBasedOnFileName(originalFileName);
-		
+		PolicyModel matchingPolicyBasedOnFileName = policyProvider.getMatchingPolicyBasedOnFileName(originalFileName);
+
 		processCsv(matchingPolicyBasedOnFileName, processId, foundSubmodelSchemaObject, csvContent);
 
 	}
 
-	private void processCsv(PolicyModel submodelPolicyRequest, String processId,
-			Submodel submodelSchemaObject, CsvContent csvContent) {
+	private void processCsv(PolicyModel submodelPolicyRequest, String processId, Submodel submodelSchemaObject,
+			CsvContent csvContent) {
 
 		Runnable runnable = () -> {
 			processReportUseCase.startBuildProcessReport(processId, submodelSchemaObject.getId(),
@@ -277,21 +276,30 @@ public class SubmodelOrchestartorService {
 			break;
 
 		case EXISTING:
-			if (StringUtils.isNotBlank(policy.getUuid()) && CollectionUtils.isNotEmpty(policy.getBpnNumbers())
-					&& !policy.getUsagePolicies().isEmpty()) {
-				policyService.updatePolicy(policy.getUuid(), policy);
-				log.info("Updated existing policy " + policy.getUuid());
-			} else {
-				if(StringUtils.isBlank(policy.getUuid())) {
-					throw new ValidationException(type + ": Policy UUId should not be null or empty.");
+			PolicyModel localPolicy = policyService.getPolicy(policy.getUuid());
+			if (StringUtils.isNotBlank(policy.getUuid()) && 
+					((CollectionUtils.isNotEmpty(policy.getBpnNumbers())
+					&& !localPolicy.getBpnNumbers().equals(policy.getBpnNumbers()))
+					|| (!policy.getUsagePolicies().isEmpty()
+							&& !localPolicy.getUsagePolicies().equals(policy.getUsagePolicies())))) {
+				if (StringUtils.isBlank(policy.getPolicyName())) {
+					policy.setPolicyName(localPolicy.getPolicyName());
 				}
+				if (StringUtils.isBlank(policy.getTypeOfAccess())) {
+					policy.setTypeOfAccess(localPolicy.getTypeOfAccess());
+				}
+
+				policy = policyService.updatePolicy(policy.getUuid(), policy);
+				log.info("Updated existing policy " + policy.getUuid());
+
+			} else {
 				policy = policyService.getPolicy(policy.getUuid());
 				log.info("Using existing policy for " + policy.getUuid());
 			}
 			break;
 
-		case NEW_POLICY:
-			policyService.savePolicy(policy);
+		case NEW:
+			policy = policyService.savePolicy(policy);
 			break;
 		default:
 			throw new ValidationException(type + " policy template type not found");

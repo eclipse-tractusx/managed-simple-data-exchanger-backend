@@ -46,15 +46,17 @@ public class ValidationService {
 
 		if (policy.getType().equals(PolicyTemplateType.NONE))
 			return extracted(policy, constraintValidatorContext);
-		else if (policy.getType().equals(PolicyTemplateType.NEW_POLICY)) {
+		else if (policy.getType().equals(PolicyTemplateType.NEW)) {
+			boolean accesstype = checkAccessType(policy.getTypeOfAccess(), constraintValidatorContext);
 			boolean policyCheck = extracted(policy, constraintValidatorContext);
 			boolean policyName = policyName(policy.getPolicyName(), constraintValidatorContext);
-			return policyCheck && policyName;
-		} else if (policy.getUuid() == null) {
+			return policyCheck && accesstype && policyName;
+		} else if (StringUtils.isBlank(policy.getUuid())) {
 			constraintValidatorContext.buildConstraintViolationWithTemplate("Policy UUID must not be null or empty")
 					.addPropertyNode("uuid").addConstraintViolation().disableDefaultConstraintViolation();
 			return false;
 		}
+
 		return true;
 	}
 
@@ -90,16 +92,13 @@ public class ValidationService {
 	public boolean usagePolicyValidation(Map<UsagePolicyEnum, UsagePolicies> usagePolicies,
 			ConstraintValidatorContext constraintValidatorContext) {
 		boolean isValid = true;
-		if (usagePolicies != null && !CollectionUtils.isEmpty(usagePolicies)) {
+		if (!CollectionUtils.isEmpty(usagePolicies)) {
 			boolean validateFlag = false;
-			int index = 0;
-
 			for (Map.Entry<UsagePolicyEnum, UsagePolicies> entry : usagePolicies.entrySet()) {
-				validateFlag = validatePolicy(entry, index, constraintValidatorContext);
-				if (entry.getKey().equals(UsagePolicyEnum.DURATION)) {
-					validateFlag = validateDuration(entry.getValue(), index, constraintValidatorContext);
+				validateFlag = validatePolicy(entry, constraintValidatorContext);
+				if (validateFlag && entry.getKey().equals(UsagePolicyEnum.DURATION)) {
+					validateFlag = validateDuration(entry.getValue(), constraintValidatorContext);
 				}
-				index++;
 				if (isValid)
 					isValid = validateFlag;
 			}
@@ -113,24 +112,22 @@ public class ValidationService {
 
 	}
 
-	private boolean validatePolicy(Map.Entry<UsagePolicyEnum, UsagePolicies> entry, int index,
+	private boolean validatePolicy(Map.Entry<UsagePolicyEnum, UsagePolicies> entry,
 			ConstraintValidatorContext constraintValidatorContext) {
 
 		boolean isValid = true;
 		if (entry.getValue().getTypeOfAccess().equals(PolicyAccessEnum.RESTRICTED)
 				&& StringUtils.isBlank(entry.getValue().getValue())) {
 			isValid = false;
-			constraintValidatorContext
-					.buildConstraintViolationWithTemplate(entry.getKey() + " value must not be null or empty")
-					.addPropertyNode("usagePolicies[" + index + "]").addConstraintViolation()
+			constraintValidatorContext.buildConstraintViolationWithTemplate("value must not be null or empty")
+					.addPropertyNode("usagePolicies." + entry.getKey()).addConstraintViolation()
 					.disableDefaultConstraintViolation();
 		}
 
 		return isValid;
 	}
 
-	private boolean validateDuration(UsagePolicies usagePolicy, int index,
-			ConstraintValidatorContext constraintValidatorContext) {
+	private boolean validateDuration(UsagePolicies usagePolicy, ConstraintValidatorContext constraintValidatorContext) {
 		boolean isValid = true;
 		List<String> result = Stream.of(DurationEnum.values()).map(Enum::name).toList();
 		if (!result.contains(usagePolicy.getDurationUnit())) {
@@ -138,8 +135,19 @@ public class ValidationService {
 			constraintValidatorContext
 					.buildConstraintViolationWithTemplate("durationUnit '" + usagePolicy.getDurationUnit()
 							+ "' not one of the values accepted for Enum class " + result)
-					.addPropertyNode("usagePolicies[" + index + "]").addConstraintViolation()
+					.addPropertyNode("usagePolicies.DURATION").addConstraintViolation()
 					.disableDefaultConstraintViolation();
+		}
+
+		return isValid;
+	}
+
+	public boolean checkAccessType(String typeOfAccess, ConstraintValidatorContext constraintValidatorContext) {
+		boolean isValid = true;
+		if (StringUtils.isBlank(typeOfAccess)) {
+			isValid = false;
+			constraintValidatorContext.buildConstraintViolationWithTemplate("Access type should not be null or empty")
+					.addPropertyNode("typeOfAccess").addConstraintViolation().disableDefaultConstraintViolation();
 		}
 
 		return isValid;

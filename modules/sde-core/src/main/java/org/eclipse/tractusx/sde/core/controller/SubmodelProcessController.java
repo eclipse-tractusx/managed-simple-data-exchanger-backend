@@ -29,6 +29,7 @@ import java.util.UUID;
 
 import org.eclipse.tractusx.sde.common.entities.PolicyTemplateRequest;
 import org.eclipse.tractusx.sde.common.entities.SubmodelJsonRequest;
+import org.eclipse.tractusx.sde.common.mapper.PolicyTemplateObjectMapper;
 import org.eclipse.tractusx.sde.common.validators.ValidatePolicyTemplate;
 import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
 import org.eclipse.tractusx.sde.core.service.SubmodelOrchestartorService;
@@ -44,9 +45,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -59,7 +57,7 @@ public class SubmodelProcessController {
 
 	private final CsvHandlerService csvHandlerService;
 
-	private ObjectMapper objectMapper = new ObjectMapper();
+	private final PolicyTemplateObjectMapper mapper;
 
 	@PostMapping(value = "/upload")
 	@PreAuthorize("hasPermission(#submodel,'provider_create_contract_offer@provider_update_contract_offer')")
@@ -78,11 +76,11 @@ public class SubmodelProcessController {
 	@PreAuthorize("hasPermission(#submodel,'provider_create_contract_offer@provider_update_contract_offer')")
 	public ResponseEntity<String> upload(@PathVariable("submodel") String submodel,
 			@RequestParam("file") MultipartFile file,
-			@RequestParam("meta_data") @Valid @ValidatePolicyTemplate String metaData) throws JsonProcessingException {
+			@RequestParam("meta_data") @Valid @ValidatePolicyTemplate String metaData) {
 
 		String processId = csvHandlerService.storeFile(file);
 
-		PolicyTemplateRequest policyTemplateRequest = objectMapper.readValue(metaData, PolicyTemplateRequest.class);
+		PolicyTemplateRequest policyTemplateRequest = mapper.strToObject(metaData);
 
 		submodelOrchestartorService.processSubmodelCsv(policyTemplateRequest, processId, submodel);
 

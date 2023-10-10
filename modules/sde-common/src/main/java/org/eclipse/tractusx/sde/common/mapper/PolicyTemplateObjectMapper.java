@@ -18,8 +18,28 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.common.entities;
+package org.eclipse.tractusx.sde.common.mapper;
 
-public enum PolicyTemplateType {
-	NONE, EXISTING, NEW
+import org.eclipse.tractusx.sde.common.entities.PolicyTemplateRequest;
+import org.mapstruct.Mapper;
+
+import com.fasterxml.jackson.databind.DeserializationConfig;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.SneakyThrows;
+
+@Mapper(componentModel = "spring")
+public abstract class PolicyTemplateObjectMapper {
+
+	ObjectMapper mapper = new ObjectMapper();
+
+	@SneakyThrows
+	public PolicyTemplateRequest strToObject(String metaData) {
+		final DeserializationConfig originalConfig = mapper.getDeserializationConfig();
+		final DeserializationConfig newConfig = originalConfig.with(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
+		mapper.setConfig(newConfig);
+		return mapper.readValue(metaData, PolicyTemplateRequest.class);
+	}
+
 }

@@ -21,22 +21,19 @@
 package org.eclipse.tractusx.sde.common.validators;
 
 import org.eclipse.tractusx.sde.common.entities.PolicyTemplateRequest;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.eclipse.tractusx.sde.common.mapper.PolicyTemplateObjectMapper;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
+@RequiredArgsConstructor
 public class PolicyTemplateValidationAsString implements ConstraintValidator<ValidatePolicyTemplate, String> {
 
 	private final ValidationService validationService;
 
-	private final ObjectMapper mapper = new ObjectMapper();
-
-	public PolicyTemplateValidationAsString(ValidationService validationService) {
-		this.validationService = validationService;
-	}
+	private final PolicyTemplateObjectMapper mapper;
 
 	@Override
 	public void initialize(ValidatePolicyTemplate constraintAnnotation) {
@@ -48,9 +45,10 @@ public class PolicyTemplateValidationAsString implements ConstraintValidator<Val
 	public boolean isValid(String request, ConstraintValidatorContext constraintValidatorContext) {
 		PolicyTemplateRequest policyTemplateRequest = null;
 		try {
-			policyTemplateRequest = mapper.readValue(request, PolicyTemplateRequest.class);
+			policyTemplateRequest = mapper.strToObject(request);
 		} catch (Exception e) {
-			constraintValidatorContext.buildConstraintViolationWithTemplate("Unable to accept policy details :"+e.getMessage())
+			constraintValidatorContext
+					.buildConstraintViolationWithTemplate("Unable to accept policy details :" + e.getMessage())
 					.addConstraintViolation().disableDefaultConstraintViolation();
 			return false;
 		}

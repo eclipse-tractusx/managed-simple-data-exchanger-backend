@@ -18,8 +18,11 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-
 package org.eclipse.tractusx.sde.agent.entity;
+
+import java.time.LocalDateTime;
+
+import org.eclipse.tractusx.sde.agent.enums.SftpReportStatusEnum;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -28,27 +31,25 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
-import org.eclipse.tractusx.sde.agent.enums.SftpReportStatusEnum;
-
-import java.io.Serializable;
-import java.time.LocalDateTime;
 
 @Table(name = "sftp_scheduler_report")
 @Entity
 @Data
-public class SftpSchedulerReport implements Serializable {
-    @Id
-    @Column(name = "process_id")
-    private String processId;
-    @Column(name = "scheduler_id")
-    private String schedulerId;
-    @Column(name = "file_name")
-    private String fileName;
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status")
-    private SftpReportStatusEnum status;
-    @Column(name = "start_date")
-    private LocalDateTime startDate;
-    @Column(name = "end_date")
-    private LocalDateTime endDate;
+public class SftpSchedulerReport {
+	@Id
+	@Column(name = "process_id")
+	private String processId;
+	@Column(name = "scheduler_id")
+	private String schedulerId;
+	@Column(name = "file_name")
+	private String fileName;
+	@Column(name = "policy_name")
+	private String policyName;
+	@Enumerated(EnumType.STRING)
+	@Column(name = "status")
+	private SftpReportStatusEnum status;
+	@Column(name = "start_date")
+	private LocalDateTime startDate;
+	@Column(name = "end_date")
+	private LocalDateTime endDate;
 }

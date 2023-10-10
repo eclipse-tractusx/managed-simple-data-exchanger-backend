@@ -31,9 +31,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PolicyProvider {
 
 	private final PolicyService policyService;
@@ -49,8 +51,8 @@ public class PolicyProvider {
 			        "bpn_numbers": [
 			                    "%s"
 			                ],
-			                "type_of_access": "restricted",
-			                "usage_policies": {
+			         "type_of_access": "restricted",
+			          "usage_policies": {
 			                    "DURATION":{
 			                        "typeOfAccess": "UNRESTRICTED",
 			                        "value": "",
@@ -69,7 +71,7 @@ public class PolicyProvider {
 			                        "value": ""
 			                    }
 			                }
-			            }
+			         }
 			""";
 
 	@SneakyThrows
@@ -83,6 +85,7 @@ public class PolicyProvider {
 
 	@SneakyThrows
 	public PolicyModel getDefaultPolicy() {
+		log.info("Applying default policy");
 		String defaultPolicyStr = String.format(defaultPolicy, bpnNumber);
 		return mapper.readValue(defaultPolicyStr, PolicyModel.class);
 	}
@@ -91,7 +94,9 @@ public class PolicyProvider {
 		List<PolicyModel> matchingList = policyService.findMatchingPolicyBasedOnFileName(fileName);
 		if (matchingList.isEmpty())
 			return getDefaultPolicy();
-		else
+		else {
+			log.info("Applying policy " + matchingList.get(0).getPolicyName());
 			return matchingList.get(0);
+		}
 	}
 }

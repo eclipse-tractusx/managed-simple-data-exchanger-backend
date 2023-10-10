@@ -20,7 +20,7 @@
 
 package org.eclipse.tractusx.sde.sftp.service;
 
-import java.time.Instant;
+import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -47,7 +47,7 @@ public class RetrieverScheduler {
 
 		if (configService.getJobMaintenanceDetails().isAutomaticUpload()) {
 			taskScheduler.initialize();
-			cronFuture = taskScheduler.schedule(() -> processRemoteCsv.process(taskScheduler),
+			cronFuture = taskScheduler.schedule(() -> processRemoteCsv.process(taskScheduler, UUID.randomUUID().toString()),
 					new CronTrigger(cronExpression));
 			log.info("The Cron Scheduler started successfully as corn expresion " + cronExpression);
 		} else {
@@ -55,8 +55,8 @@ public class RetrieverScheduler {
 		}
 	}
 
-	public void fire() {
-		taskScheduler.schedule(() -> processRemoteCsv.process(taskScheduler), Instant.now());
+	public String fire() {
+		return processRemoteCsv.process(taskScheduler, UUID.randomUUID().toString());
 	}
 
 	public void stopAll() {

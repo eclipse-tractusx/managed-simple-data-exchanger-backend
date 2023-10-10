@@ -56,10 +56,9 @@ public class AutoUploadAgentConfigController {
 
 	@PutMapping("/scheduler")
 	public JsonNode updateScheduler(@RequestBody @Valid SchedulerConfigModel schedulerConfig) {
-		JsonNode saveConfiguration = autoUploadAgentConfigurationService.saveConfiguration(ConfigType.SCHEDULER,
-				schedulerConfig);
 		schedulerService.updateSchedulerExecution(schedulerConfig);
-		return saveConfiguration;
+		return autoUploadAgentConfigurationService.saveConfiguration(ConfigType.SCHEDULER,
+				schedulerConfig);
 	}
 
 	@GetMapping("/scheduler")

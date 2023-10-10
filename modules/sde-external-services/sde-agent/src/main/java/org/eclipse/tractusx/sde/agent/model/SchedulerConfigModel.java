@@ -23,7 +23,7 @@ package org.eclipse.tractusx.sde.agent.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -42,7 +42,7 @@ public class SchedulerConfigModel {
     @JsonProperty(value = "day")
     private String day;
 
-    @NotEmpty
+    @NotBlank(message = "Time is mandatory")
     @JsonProperty(value = "time")
     private String time;
 }

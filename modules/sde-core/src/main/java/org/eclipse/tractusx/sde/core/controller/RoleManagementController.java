@@ -21,6 +21,7 @@
 package org.eclipse.tractusx.sde.core.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.tractusx.sde.core.role.entity.RolePojo;
 import org.eclipse.tractusx.sde.core.service.RoleManagementService;
@@ -45,7 +46,7 @@ public class RoleManagementController {
 
 	@PostMapping(value = "/role/{role}/permissions")
 	@PreAuthorize("hasPermission(#role,'create_role')")
-	public String saveRolePermission(@PathVariable("role") String role, @RequestBody List<String> rolePermission) {
+	public Map<String,String> saveRolePermission(@PathVariable("role") String role, @RequestBody List<String> rolePermission) {
 		return roleManagementService.saveRoleWithPermission(role, rolePermission);
 	}
 	

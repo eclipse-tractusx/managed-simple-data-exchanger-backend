@@ -23,8 +23,8 @@ package org.eclipse.tractusx.sde.edc.facilitator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequest;
@@ -62,9 +62,9 @@ public class CreateEDCAssetFacilator extends AbstractEDCStepsHelper {
 		
 		ActionRequest accessAction = policyConstraintBuilderService.getAccessConstraints(bpns);
 
-		String customValue = getCustomValue(usagePolicies);
-		if (StringUtils.isNotBlank(getCustomValue(usagePolicies))) {
-			extensibleProperties.put(UsagePolicyEnum.CUSTOM.name(), customValue);
+		UsagePolicies customValue = getCustomValue(usagePolicies);
+		if (!Optional.ofNullable(customValue).isEmpty()) {
+			extensibleProperties.put(UsagePolicyEnum.CUSTOM.name(), customValue.getValue());
 		}
 		
 		PolicyDefinitionRequest accessPolicyDefinitionRequest = policyFactory.getPolicy(assetId, accessAction,
@@ -90,9 +90,9 @@ public class CreateEDCAssetFacilator extends AbstractEDCStepsHelper {
 
 	}
 
-	private String getCustomValue(Map<UsagePolicyEnum, UsagePolicies> usagePolicies) {
+	private UsagePolicies getCustomValue(Map<UsagePolicyEnum, UsagePolicies> usagePolicies) {
 		if (!CollectionUtils.isEmpty(usagePolicies)) {
-			return usagePolicies.getOrDefault(UsagePolicyEnum.CUSTOM, null).getValue();
+			return usagePolicies.getOrDefault(UsagePolicyEnum.CUSTOM, null);
 		}
 		return null;
 	}

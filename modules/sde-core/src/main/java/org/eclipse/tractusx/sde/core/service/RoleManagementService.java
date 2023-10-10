@@ -21,6 +21,7 @@
 package org.eclipse.tractusx.sde.core.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
 import org.eclipse.tractusx.sde.core.role.entity.RoleEntity;
@@ -30,6 +31,7 @@ import org.eclipse.tractusx.sde.core.role.repository.RolePermissionCustomReposit
 import org.eclipse.tractusx.sde.core.role.repository.RolePermissionRepository;
 import org.eclipse.tractusx.sde.core.role.repository.RoleRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
@@ -43,7 +45,8 @@ public class RoleManagementService {
 	private final RolePermissionCustomRepository rolePermissionCustomRepository;
 
 	@SneakyThrows
-	public String saveRoleWithPermission(String role, List<String> rolemappping) {
+	@Transactional
+	public Map<String,String> saveRoleWithPermission(String role, List<String> rolemappping) {
 
 		checkRoleExistOrNot(List.of(role));
 
@@ -51,7 +54,7 @@ public class RoleManagementService {
 				.map(e -> RolePermissionEntity.builder().sdePermission(e).sdeRole(role).build()).toList();
 		rolePermissionRepository.deleteRolePermissionMappingBySdeRole(role);
 		rolePermissionRepository.saveAll(allentity);
-		return "Role Permission saved successfully";
+		return Map.of("msg","Role Permission saved successfully");
 	}
 
 	@SneakyThrows

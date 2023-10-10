@@ -94,16 +94,15 @@ public class ProcessRemoteCsv {
 	@SuppressWarnings({ "CallToPrintStackTrace", "ResultOfMethodCallIgnored" })
 	@Retryable(retryFor = {
 			ServiceException.class }, maxAttemptsExpression = "3", backoff = @Backoff(delayExpression = "5000"))
-	public String process(TaskScheduler taskScheduler) {
-		var schedulerId = UUID.randomUUID().toString();
-		log.info("Scheduler started " + schedulerId);
+	public String process(TaskScheduler taskScheduler, String schedulerUuid) {
+		log.info("Scheduler started " + schedulerUuid);
 		boolean loginSuccess = false;
 		String msg = null;
 		try (var retriever = retrieverFactory.create()) {
 			loginSuccess = true;
 			int size = retriever.size();
 			if (size>0) {
-				taskScheduler.schedule(() -> retriverProcess(taskScheduler, schedulerId, retriever), Instant.now());
+				taskScheduler.schedule(() -> retriverProcess(taskScheduler, schedulerUuid, retriever), Instant.now());
 				msg = "Job trigged successfully, "+size+" files founds";
 				log.info(msg);
 			} else {

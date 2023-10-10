@@ -40,7 +40,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import jakarta.validation.constraints.NotBlank;
 import net.minidev.json.JSONObject;
 
 @ExtendWith(SpringExtension.class)

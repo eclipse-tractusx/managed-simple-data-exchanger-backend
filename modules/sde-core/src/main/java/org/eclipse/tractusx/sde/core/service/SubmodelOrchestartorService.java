@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.entities.PolicyTemplateRequest;
 import org.eclipse.tractusx.sde.common.entities.PolicyTemplateType;
 import org.eclipse.tractusx.sde.common.entities.SubmodelJsonRequest;
@@ -276,11 +277,14 @@ public class SubmodelOrchestartorService {
 			break;
 
 		case EXISTING:
-			if (policy.getUuid() != null && CollectionUtils.isNotEmpty(policy.getBpnNumbers())
+			if (StringUtils.isNotBlank(policy.getUuid()) && CollectionUtils.isNotEmpty(policy.getBpnNumbers())
 					&& !policy.getUsagePolicies().isEmpty()) {
 				policyService.updatePolicy(policy.getUuid(), policy);
 				log.info("Updated existing policy " + policy.getUuid());
 			} else {
+				if(StringUtils.isBlank(policy.getUuid())) {
+					throw new ValidationException(type + ": Policy UUId should not be null or empty.");
+				}
 				policy = policyService.getPolicy(policy.getUuid());
 				log.info("Using existing policy for " + policy.getUuid());
 			}

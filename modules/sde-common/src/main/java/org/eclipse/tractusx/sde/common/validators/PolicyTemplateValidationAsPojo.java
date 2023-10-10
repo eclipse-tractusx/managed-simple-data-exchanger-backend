@@ -20,30 +20,35 @@
 
 package org.eclipse.tractusx.sde.common.validators;
 
-import java.util.List;
-
-import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
+import org.eclipse.tractusx.sde.common.entities.PolicyTemplateRequest;
+import org.eclipse.tractusx.sde.common.entities.SubmodelJsonRequest;
 import org.springframework.stereotype.Service;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 @Service
-public class UsagePolicyValidationService implements ConstraintValidator<UsagePolicyValidation, List<UsagePolicies>> {
+public class PolicyTemplateValidationAsPojo
+		implements ConstraintValidator<ValidatePolicyTemplate, SubmodelJsonRequest> {
 
-    private final ValidationService validationService;
+	private final ValidationService validationService;
 
-    public UsagePolicyValidationService(ValidationService validationService) {
-        this.validationService = validationService;
-    }
+	public PolicyTemplateValidationAsPojo(ValidationService validationService) {
+		this.validationService = validationService;
+	}
 
-    @Override
-    public void initialize(UsagePolicyValidation constraintAnnotation) {
-        ConstraintValidator.super.initialize(constraintAnnotation);
-    }
+	@Override
+	public void initialize(ValidatePolicyTemplate constraintAnnotation) {
+		ConstraintValidator.super.initialize(constraintAnnotation);
+	}
 
-    @Override
-    public boolean isValid(List<UsagePolicies> usagePolicies, ConstraintValidatorContext constraintValidatorContext) {
-        return validationService.isValid(usagePolicies);
-    }
+	@Override
+	public boolean isValid(SubmodelJsonRequest obj, ConstraintValidatorContext constraintValidatorContext) {
+
+		PolicyTemplateRequest policyTemplateRequest = PolicyTemplateRequest.builder().type(obj.getType())
+				.policyName(obj.getPolicyName()).bpnNumbers(obj.getBpnNumbers()).typeOfAccess(obj.getTypeOfAccess())
+				.usagePolicies(obj.getUsagePolicies()).uuid(obj.getUuid()).build();
+
+		return validationService.isPolicyTemplateRequestValid(policyTemplateRequest, constraintValidatorContext);
+	}
 }

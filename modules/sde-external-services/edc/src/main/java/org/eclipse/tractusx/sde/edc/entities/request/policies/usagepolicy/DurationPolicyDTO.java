@@ -20,14 +20,15 @@
 
 package org.eclipse.tractusx.sde.edc.entities.request.policies.usagepolicy;
 
-import lombok.Data;
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.DurationEnum;
 import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
+import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.Operator;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
@@ -40,10 +41,10 @@ public class DurationPolicyDTO extends UsagePolicyDTO {
 
 	public static DurationPolicyDTO fromUsagePolicy(UsagePolicies usagePolicy) {
 		return DurationPolicyDTO.builder()
-				.type(usagePolicy.getType())
+				.type(UsagePolicyEnum.DURATION)
 				.typeOfAccess(usagePolicy.getTypeOfAccess())
 				.value(usagePolicy.getValue())
-				.durationUnit(usagePolicy.getDurationUnit())
+				.durationUnit(DurationEnum.valueOf(usagePolicy.getDurationUnit()))
 				.build();
 
 	}

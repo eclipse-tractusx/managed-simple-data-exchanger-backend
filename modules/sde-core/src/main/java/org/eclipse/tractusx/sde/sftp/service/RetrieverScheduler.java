@@ -20,7 +20,6 @@
 
 package org.eclipse.tractusx.sde.sftp.service;
 
-import java.time.Instant;
 import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 

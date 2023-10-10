@@ -20,12 +20,12 @@
 
 package org.eclipse.tractusx.sde.common.submodel.executor.create.steps;
 
-import org.eclipse.tractusx.sde.common.entities.SubmodelPolicyRequest;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.entities.csv.RowData;
 
 import com.google.gson.JsonObject;
 
 public interface ICsvParseStep {
 
-	JsonObject execute(RowData rowData, String processId, SubmodelPolicyRequest submodelFileRequest);
+	JsonObject execute(RowData rowData, String processId, PolicyModel submodelFileRequest);
 }

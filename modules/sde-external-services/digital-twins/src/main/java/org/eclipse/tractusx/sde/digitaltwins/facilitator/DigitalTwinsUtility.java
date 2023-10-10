@@ -144,7 +144,7 @@ public class DigitalTwinsUtility {
 				specificIdentifiers.add(new KeyValuePair(entry.getKey(), entry.getValue(), externalSubjectId));
 			}
 			else {
-				if (keyList != null && !keyList.isEmpty()) {
+				if (keyList != null && !keyList.isEmpty() && !entry.getValue().isEmpty()) {
 					
 					externalSubjectId = ExternalSubjectId.builder()
 							.type("ExternalReference").keys(keyList)

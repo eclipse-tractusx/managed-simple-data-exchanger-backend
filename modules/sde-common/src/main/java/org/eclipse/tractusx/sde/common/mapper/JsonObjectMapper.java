@@ -22,7 +22,7 @@ package org.eclipse.tractusx.sde.common.mapper;
 
 import java.util.Map;
 
-import org.eclipse.tractusx.sde.common.entities.SubmodelPolicyRequest;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.mapstruct.Mapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,12 +39,12 @@ public abstract class JsonObjectMapper {
 	ObjectMapper mapper = new ObjectMapper();
 
 	@SneakyThrows
-	public JsonObject submodelFileRequestToJsonPojo(SubmodelPolicyRequest submodelFileRequest) {
+	public JsonObject submodelFileRequestToJsonPojo(PolicyModel submodelFileRequest) {
 		return gson.toJsonTree(submodelFileRequest).getAsJsonObject();
 	}
 
 	@SneakyThrows
-	public ObjectNode submodelFileRequestToJsonNodePojo(SubmodelPolicyRequest submodelFileRequest) {
+	public ObjectNode submodelFileRequestToJsonNodePojo(PolicyModel submodelFileRequest) {
 		return mapper.convertValue(submodelFileRequest, ObjectNode.class);
 	}
 

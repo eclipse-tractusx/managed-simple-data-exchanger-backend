@@ -18,27 +18,28 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.edc.model.contractnegotiation;
+package org.eclipse.tractusx.sde.common.mapper;
 
-import java.util.Map;
+import org.eclipse.tractusx.sde.common.entities.PolicyTemplateRequest;
+import org.mapstruct.Mapper;
 
-import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
-import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
+import com.fasterxml.jackson.databind.DeserializationConfig;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class ContractAgreementInfo {
+@Mapper(componentModel = "spring")
+public abstract class PolicyTemplateObjectMapper {
 
-	private long contractSigningDate;
-	private long contractStartDate;
-	private long contractEndDate;
-	private String assetId;
-	private Map<UsagePolicyEnum, UsagePolicies> policies;
+	ObjectMapper mapper = new ObjectMapper();
+
+	@SneakyThrows
+	public PolicyTemplateRequest strToObject(String metaData) {
+		final DeserializationConfig originalConfig = mapper.getDeserializationConfig();
+		final DeserializationConfig newConfig = originalConfig.with(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
+		mapper.setConfig(newConfig);
+		return mapper.readValue(metaData, PolicyTemplateRequest.class);
+	}
+
 }

@@ -91,38 +91,39 @@ public class UtilityFunctions {
 
 	private static UsagePolicies getResponse(String value, DurationEnum durationUnit) {
 		UsagePolicies policyResponse;
-		policyResponse = UsagePolicies.builder().type(UsagePolicyEnum.DURATION)
-				.typeOfAccess(PolicyAccessEnum.RESTRICTED).value(value).durationUnit(durationUnit).build();
+		policyResponse = UsagePolicies.builder().typeOfAccess(PolicyAccessEnum.RESTRICTED).value(value)
+				.durationUnit(durationUnit.name()).build();
 		return policyResponse;
 	}
 
-	public static List<UsagePolicies> getUsagePolicies(List<UsagePolicies> usagePolicies, List<ConstraintRequest> constraints) {
+	public static Map<UsagePolicyEnum, UsagePolicies> getUsagePolicies(
+			Map<UsagePolicyEnum, UsagePolicies> usagePolicies, List<ConstraintRequest> constraints) {
 		constraints.forEach(constraint -> {
 			String leftExpVal = constraint.getLeftOperand();
 			String rightExpVal = constraint.getRightOperand().toString();
-			UsagePolicies policyResponse = identyAndGetUsagePolicy(leftExpVal, rightExpVal);
+			Map<UsagePolicyEnum, UsagePolicies> policyResponse = identyAndGetUsagePolicy(leftExpVal, rightExpVal);
 			if (policyResponse != null)
-				usagePolicies.add(policyResponse);
+				usagePolicies.putAll(policyResponse);
 		});
 
 		addMissingPolicies(usagePolicies);
 		return usagePolicies;
 	}
 
-	public static UsagePolicies identyAndGetUsagePolicy(String leftExpVal, String rightExpVal) {
+	public static Map<UsagePolicyEnum, UsagePolicies> identyAndGetUsagePolicy(String leftExpVal, String rightExpVal) {
 
-		UsagePolicies policyResponse = null;
+		Map<UsagePolicyEnum, UsagePolicies> policyResponse = null;
 		switch (leftExpVal) {
 		case "idsc:ROLE":
-			policyResponse = UsagePolicies.builder().type(UsagePolicyEnum.ROLE)
-					.typeOfAccess(PolicyAccessEnum.RESTRICTED).value(rightExpVal).build();
+			policyResponse = Map.of(UsagePolicyEnum.ROLE,
+					UsagePolicies.builder().typeOfAccess(PolicyAccessEnum.RESTRICTED).value(rightExpVal).build());
 			break;
 		case "idsc:ELAPSED_TIME":
-			policyResponse = UtilityFunctions.getDurationPolicy(rightExpVal);
+			policyResponse = Map.of(UsagePolicyEnum.DURATION, UtilityFunctions.getDurationPolicy(rightExpVal));
 			break;
 		case "idsc:PURPOSE":
-			policyResponse = UsagePolicies.builder().type(UsagePolicyEnum.PURPOSE)
-					.typeOfAccess(PolicyAccessEnum.RESTRICTED).value(rightExpVal).build();
+			policyResponse = Map.of(UsagePolicyEnum.PURPOSE,
+					UsagePolicies.builder().typeOfAccess(PolicyAccessEnum.RESTRICTED).value(rightExpVal).build());
 			break;
 		default:
 			break;
@@ -131,28 +132,27 @@ public class UtilityFunctions {
 	}
 
 	public static void addCustomUsagePolicy(Map<String, String> extensibleProperties,
-			List<UsagePolicies> usagePolicies) {
+			Map<UsagePolicyEnum, UsagePolicies> usagePolicies) {
 		if (!CollectionUtils.isEmpty(extensibleProperties)
 				&& extensibleProperties.keySet().contains(UsagePolicyEnum.CUSTOM.name())) {
-			UsagePolicies policyObj = UsagePolicies.builder().type(UsagePolicyEnum.CUSTOM)
-					.typeOfAccess(PolicyAccessEnum.RESTRICTED)
+			UsagePolicies policyObj = UsagePolicies.builder().typeOfAccess(PolicyAccessEnum.RESTRICTED)
 					.value(extensibleProperties.get(UsagePolicyEnum.CUSTOM.name())).build();
-			usagePolicies.add(policyObj);
+			usagePolicies.put(UsagePolicyEnum.CUSTOM, policyObj);
 		} else {
-			UsagePolicies policyObj = UsagePolicies.builder().type(UsagePolicyEnum.CUSTOM)
-					.typeOfAccess(PolicyAccessEnum.UNRESTRICTED).value("").build();
-			usagePolicies.add(policyObj);
+			UsagePolicies policyObj = UsagePolicies.builder().typeOfAccess(PolicyAccessEnum.UNRESTRICTED).value("")
+					.build();
+			usagePolicies.put(UsagePolicyEnum.CUSTOM, policyObj);
 		}
 	}
 
-	private static void addMissingPolicies(List<UsagePolicies> usagePolicies) {
+	private static void addMissingPolicies(Map<UsagePolicyEnum, UsagePolicies> usagePolicies) {
 		Arrays.stream(UsagePolicyEnum.values()).forEach(policy -> {
 			if (!policy.equals(UsagePolicyEnum.CUSTOM)) {
-				boolean found = usagePolicies.stream().anyMatch(usagePolicy -> usagePolicy.getType().equals(policy));
+				boolean found = usagePolicies.containsKey(policy);
 				if (!found) {
-					UsagePolicies policyObj = UsagePolicies.builder().type(policy)
-							.typeOfAccess(PolicyAccessEnum.UNRESTRICTED).value("").build();
-					usagePolicies.add(policyObj);
+					UsagePolicies policyObj = UsagePolicies.builder().typeOfAccess(PolicyAccessEnum.UNRESTRICTED)
+							.value("").build();
+					usagePolicies.put(policy, policyObj);
 				}
 			}
 		});

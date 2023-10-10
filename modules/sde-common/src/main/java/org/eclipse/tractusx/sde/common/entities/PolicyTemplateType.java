@@ -18,27 +18,8 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.edc.model.contractnegotiation;
+package org.eclipse.tractusx.sde.common.entities;
 
-import java.util.Map;
-
-import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
-import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class ContractAgreementInfo {
-
-	private long contractSigningDate;
-	private long contractStartDate;
-	private long contractEndDate;
-	private String assetId;
-	private Map<UsagePolicyEnum, UsagePolicies> policies;
+public enum PolicyTemplateType {
+	NONE, EXISTING, NEW
 }

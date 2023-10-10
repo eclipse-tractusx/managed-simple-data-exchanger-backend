@@ -22,8 +22,10 @@ package org.eclipse.tractusx.sde.edc.entities.request.policies;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
+import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.accesspolicy.AccessPolicyDTO;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.usagepolicy.DurationPolicyDTO;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.usagepolicy.PurposePolicyDTO;
@@ -48,12 +50,12 @@ public class PolicyConstraintBuilderService {
 		return action;
 	}
 
-	public ActionRequest getUsagePolicyConstraints(List<UsagePolicies> usagePolicies) {
+	public ActionRequest getUsagePolicyConstraints(Map<UsagePolicyEnum, UsagePolicies> usagePolicies) {
 		List<ConstraintRequest> usageConstraintList = new ArrayList<>();
 		if (usagePolicies != null && !usagePolicies.isEmpty()) {
-			usagePolicies.stream().forEach(policy -> usagePolicy(usageConstraintList, policy));
+			usagePolicies.forEach((key, value) -> usagePolicy(usageConstraintList, key, value));
 		}
-		
+
 		if (!usageConstraintList.isEmpty()) {
 			ActionRequest action = ActionRequest.builder().build();
 			action.addProperty("@type", "LogicalConstraint");
@@ -64,18 +66,18 @@ public class PolicyConstraintBuilderService {
 
 	}
 
-	private void usagePolicy(List<ConstraintRequest> usageConstraintList, UsagePolicies policy) {
+	private void usagePolicy(List<ConstraintRequest> usageConstraintList, UsagePolicyEnum key, UsagePolicies value) {
 		ConstraintRequest request = null;
 
-		switch (policy.getType()) {
+		switch (key) {
 		case DURATION:
-			request = DurationPolicyDTO.fromUsagePolicy(policy).toConstraint();
+			request = DurationPolicyDTO.fromUsagePolicy(value).toConstraint();
 			break;
 		case PURPOSE:
-			request = PurposePolicyDTO.fromUsagePolicy(policy).toConstraint();
+			request = PurposePolicyDTO.fromUsagePolicy(value).toConstraint();
 			break;
 		case ROLE:
-			request = RolePolicyDTO.fromUsagePolicy(policy).toConstraint();
+			request = RolePolicyDTO.fromUsagePolicy(value).toConstraint();
 			break;
 		default:
 			break;
@@ -85,13 +87,10 @@ public class PolicyConstraintBuilderService {
 			usageConstraintList.add(request);
 		}
 	}
-	
+
 	public ConstraintRequest toTraceabilityConstraint() {
 		String operator = "odrl:eq";
-		return ConstraintRequest.builder()
-				.leftOperand("FrameworkAgreement.traceability")
-				.operator(Operator.builder().id(operator).build())
-				.rightOperand("active")
-				.build();
+		return ConstraintRequest.builder().leftOperand("FrameworkAgreement.traceability")
+				.operator(Operator.builder().id(operator).build()).rightOperand("active").build();
 	}
 }

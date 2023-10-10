@@ -20,32 +20,30 @@
 
 package org.eclipse.tractusx.sde.common.validators;
 
-import org.eclipse.tractusx.sde.common.entities.SubmodelPolicyRequest;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
+import org.springframework.stereotype.Service;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import lombok.SneakyThrows;
+import lombok.RequiredArgsConstructor;
 
-public class UploadFileUsagePolicyValidationService implements ConstraintValidator<UsagePolicyValidation, String> {
+@Service
+@RequiredArgsConstructor
+public class UsagePolicyValidator implements ConstraintValidator<ValidatePolicyTemplate, PolicyModel> {
 
-    private ObjectMapper objectMapper = new ObjectMapper();
-    private final ValidationService validationService;
+	private final ValidationService validationService;
 
-    public UploadFileUsagePolicyValidationService(ValidationService validationService) {
-        this.validationService = validationService;
-    }
+	@Override
+	public void initialize(ValidatePolicyTemplate constraintAnnotation) {
+		ConstraintValidator.super.initialize(constraintAnnotation);
+	}
 
-    @Override
-    public void initialize(UsagePolicyValidation constraintAnnotation) {
-        ConstraintValidator.super.initialize(constraintAnnotation);
-    }
+	public boolean isValid(PolicyModel policy, ConstraintValidatorContext constraintValidatorContext) {
+		boolean policyName = validationService.policyName(policy.getPolicyName(), constraintValidatorContext);
+		boolean accessType = validationService.checkAccessType(policy.getTypeOfAccess(), constraintValidatorContext);
+		boolean access = validationService.accessPolicyValidation(policy.getBpnNumbers(), constraintValidatorContext);
+		boolean usage = validationService.usagePolicyValidation(policy.getUsagePolicies(), constraintValidatorContext);
+		return policyName && accessType && access && usage;
+	}
 
-    @SneakyThrows
-    @Override
-    public boolean isValid(String metadata, ConstraintValidatorContext constraintValidatorContext) {
-        SubmodelPolicyRequest submodelFileRequest = objectMapper.readValue(metadata, SubmodelPolicyRequest.class);
-        return validationService.isValid(submodelFileRequest.getUsagePolicies());
-    }
 }

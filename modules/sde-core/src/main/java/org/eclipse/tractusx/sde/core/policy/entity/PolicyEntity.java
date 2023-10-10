@@ -22,8 +22,10 @@ package org.eclipse.tractusx.sde.core.policy.entity;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
+import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.core.utils.ListToStringConverter;
 
 import jakarta.persistence.Column;
@@ -53,8 +55,8 @@ public class PolicyEntity {
 	private String typeOfAccess;
 
 	@Column(name = "usage_policy", columnDefinition = "TEXT")
-	@Convert(converter = PolicyListToStringConvertor.class)
-	private List<UsagePolicies> usagePolicies;
+	@Convert(converter = PolicyMapToStringConvertor.class)
+	private Map<UsagePolicyEnum, UsagePolicies> usagePolicies;
 	
 	@Column(name = "last_updated_time")
 	private LocalDateTime lastUpdatedTime;

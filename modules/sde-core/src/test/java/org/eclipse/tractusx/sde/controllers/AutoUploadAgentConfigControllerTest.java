@@ -115,11 +115,11 @@ class AutoUploadAgentConfigControllerTest {
 		json.put("port", 22);
 		json.put("username", "foo");
 		json.put("password", "pass");
-		json.put("tobeprocessed", "/upload/sftp/tobe");
-		json.put("failed", "/upload/sftp/failed");
-		json.put("partialsucess", "/upload/sftp/partial");
-		json.put("success", "/upload/sftp/success");
-		json.put("inprogress", "/upload/sftp/inprogress");
+		json.put("toBeProcessedLocation", "/upload/sftp/tobe");
+		json.put("failedLocation", "/upload/sftp/failed");
+		json.put("partialSuccessLocation", "/upload/sftp/partial");
+		json.put("successLocation", "/upload/sftp/success");
+		json.put("inProgressLocation", "/upload/sftp/inprogress");
 		return json;
 	}
 

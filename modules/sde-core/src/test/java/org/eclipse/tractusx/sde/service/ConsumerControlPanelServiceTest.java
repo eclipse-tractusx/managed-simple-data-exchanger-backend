@@ -27,7 +27,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
@@ -132,17 +134,17 @@ class ConsumerControlPanelServiceTest {
 	@Test
 	void testSubscribeDataOffers1() {
 		ArrayList<Offer> offerRequestList = new ArrayList<>();
-		List<UsagePolicies> usagePolicies = new ArrayList<>();
-		UsagePolicies usagePolicy = UsagePolicies.builder().type(UsagePolicyEnum.CUSTOM).value("Sample")
+		EnumMap<UsagePolicyEnum, UsagePolicies> usagePolicies = new EnumMap<>(UsagePolicyEnum.class);
+		UsagePolicies usagePolicy = UsagePolicies.builder().value("Sample")
 				.typeOfAccess(PolicyAccessEnum.RESTRICTED).build();
-		usagePolicies.add(usagePolicy);
+		usagePolicies.put(UsagePolicyEnum.CUSTOM, usagePolicy);
 		ConsumerRequest consumerRequest = new ConsumerRequest("42", "https://example.org/example", offerRequestList,
 				usagePolicies, "csv");
 		String processId = UUID.randomUUID().toString();
 		consumerControlPanelService.subscribeDataOffers(consumerRequest, processId);
 		assertEquals("42", consumerRequest.getConnectorId());
 		assertEquals("https://example.org/example", consumerRequest.getProviderUrl());
-		List<UsagePolicies> policies = consumerRequest.getPolicies();
+		Map<UsagePolicyEnum, UsagePolicies> policies = consumerRequest.getPolicies();
 		ActionRequest list = ActionRequest.builder().build();
 		ConstraintRequest constraintRequest = ConstraintRequest.builder().leftOperand("A").rightOperand("A")
 				.operator(Operator.builder().id("odrl:eq").build()).build();

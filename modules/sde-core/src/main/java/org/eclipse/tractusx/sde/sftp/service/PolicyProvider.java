@@ -22,8 +22,7 @@ package org.eclipse.tractusx.sde.sftp.service;
 
 import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.tractusx.sde.common.entities.SubmodelPolicyRequest;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.core.policy.service.PolicyService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -32,6 +31,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
@@ -51,55 +51,51 @@ public class PolicyProvider {
 			        "bpn_numbers": [
 			                    "%s"
 			                ],
-			                "type_of_access": "restricted",
-			                "usage_policies": [
-			                    {
-			                        "type": "DURATION",
+			         "type_of_access": "restricted",
+			          "usage_policies": {
+			                    "DURATION":{
 			                        "typeOfAccess": "UNRESTRICTED",
 			                        "value": "",
 			                        "durationUnit": "SECOND"
 			                    },
-			                    {
-			                        "type": "ROLE",
+			                    "ROLE": {
 			                        "typeOfAccess": "UNRESTRICTED",
 			                        "value": ""
 			                    },
-			                    {
-			                        "type": "PURPOSE",
+			                    "PURPOSE":{
 			                        "typeOfAccess": "UNRESTRICTED",
 			                        "value": ""
 			                    },
-			                    {
-			                        "type": "CUSTOM",
+			                    "CUSTOM": {
 			                        "typeOfAccess": "UNRESTRICTED",
 			                        "value": ""
 			                    }
-			                ]
-			            }
+			                }
+			         }
 			""";
 
 	@SneakyThrows
 	public void saveDefaultPolicy() {
 		if (policyService.getPolicyByName("default") == null) {
-			SubmodelPolicyRequest policy = getDefaultPolicy();
+			PolicyModel policy = getDefaultPolicy();
 			policyService.savePolicy(policy);
 
 		}
 	}
 
 	@SneakyThrows
-	public SubmodelPolicyRequest getDefaultPolicy() {
+	public PolicyModel getDefaultPolicy() {
 		log.info("Applying default policy");
 		String defaultPolicyStr = String.format(defaultPolicy, bpnNumber);
-		return mapper.readValue(defaultPolicyStr, SubmodelPolicyRequest.class);
+		return mapper.readValue(defaultPolicyStr, PolicyModel.class);
 	}
 
-	public SubmodelPolicyRequest getMatchingPolicyBasedOnFileName(String fileName) {
-		List<SubmodelPolicyRequest> matchingList = policyService.findMatchingPolicyBasedOnFileName(fileName);
+	public PolicyModel getMatchingPolicyBasedOnFileName(String fileName) {
+		List<PolicyModel> matchingList = policyService.findMatchingPolicyBasedOnFileName(fileName);
 		if (matchingList.isEmpty())
 			return getDefaultPolicy();
 		else {
-			log.info("Applying policy "+matchingList.get(0).getPolicyName());
+			log.info("Applying policy " + matchingList.get(0).getPolicyName());
 			return matchingList.get(0);
 		}
 	}

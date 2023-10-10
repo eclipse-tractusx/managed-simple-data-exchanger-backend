@@ -32,8 +32,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Spliterator;
-import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -141,32 +139,16 @@ public class ProcessRemoteCsv {
 				})).peek(processId -> {
 
 					sftpReportRepository.save(sftpReportMapper.mapFrom(SftpReportModel.builder()
-							.schedulerId(schedulerId).processId(processId).fileName(retriever.getFileName(processId))
-							.policyName(retriever.getPolicyName(processId)).status(SftpReportStatusEnum.IN_PROGRESS)
+							.schedulerId(schedulerId)
+							.processId(processId)
+							.fileName(retriever.getFileName(processId))
+							.policyName(retriever.getPolicyName(processId))
+							.status(SftpReportStatusEnum.IN_PROGRESS)
 							.startDate(LocalDateTime.now()).build()));
 				}).toList();
 		if (!inProgressIdList.isEmpty()) {
 			taskScheduler.schedule(() -> checkStatusOfInprogressFilesAndNotify(taskScheduler, retriever,
 					inProgressIdList, schedulerId), Instant.now().plus(Duration.ofSeconds(5)));
-		}
-	}
-
-	public void checkStatusOfInprogressFilesAndNotify(TaskScheduler taskScheduler, RetrieverI retriever,
-			List<String> inProgressIdList, String schedulerId) {
-		if (processReportRepository.countByProcessIdInAndStatus(inProgressIdList,
-				ProgressStatusEnum.COMPLETED) != inProgressIdList.size()) {
-			taskScheduler.schedule(() -> checkStatusOfInprogressFilesAndNotify(taskScheduler, retriever,
-					inProgressIdList, schedulerId), Instant.now().plus(Duration.ofSeconds(5)));
-		} else {
-			selfFactory.getObject().createDbReport(retriever, inProgressIdList, schedulerId).forEach(Runnable::run);
-			tryRun(retriever::close, IGNORE());
-
-			if (configService.getJobMaintenanceDetails().isEmailNotification()) {
-				// EmailNotificationModel method call
-				sendNotificationForProcessedFiles(schedulerId);
-			} else {
-				log.warn("The notification is disable, so avoiding sent email notification");
-			}
 		}
 	}
 
@@ -207,6 +189,26 @@ public class ProcessRemoteCsv {
 					.info("Exception occurred while sending email for scheduler id: " + schedulerId + "\n" + se));
 		}
 	}
+	
+  public void checkStatusOfInprogressFilesAndNotify(TaskScheduler taskScheduler, RetrieverI retriever,
+			List<String> inProgressIdList, String schedulerId) {
+		if (processReportRepository.countByProcessIdInAndStatus(inProgressIdList,
+				ProgressStatusEnum.COMPLETED) != inProgressIdList.size()) {
+			taskScheduler.schedule(() -> checkStatusOfInprogressFilesAndNotify(taskScheduler, retriever,
+					inProgressIdList, schedulerId), Instant.now().plus(Duration.ofSeconds(5)));
+		} else {
+			selfFactory.getObject().createDbReport(retriever, inProgressIdList, schedulerId).forEach(Runnable::run);
+			tryRun(retriever::close, IGNORE());
+
+			if (configService.getJobMaintenanceDetails().isEmailNotification()) {
+				// EmailNotificationModel method call
+				sendNotificationForProcessedFiles(schedulerId);
+			} else {
+				log.warn("The notification is disable, so avoiding sent email notification");
+			}
+		}
+	}
+
 
 	/***
 	 * Method does not close passed retriever

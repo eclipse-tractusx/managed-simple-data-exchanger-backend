@@ -20,14 +20,21 @@
 
 package org.eclipse.tractusx.sde.sftp.service;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.agent.entity.ConfigEntity;
 import org.eclipse.tractusx.sde.agent.model.ConfigType;
 import org.eclipse.tractusx.sde.agent.model.SchedulerConfigModel;
 import org.eclipse.tractusx.sde.agent.model.SchedulerType;
 import org.eclipse.tractusx.sde.agent.repository.AutoUploadAgentConfigRepository;
+import org.eclipse.tractusx.sde.common.exception.ValidationException;
 import org.eclipse.tractusx.sde.sftp.dto.JobMaintenanceModel;
 import org.springframework.stereotype.Service;
 
@@ -46,10 +53,10 @@ public class SchedulerService {
 
 	private final ObjectMapper mapper = new ObjectMapper();
 
-	public Map<String,String> fire() {
+	public Map<String, String> fire() {
 		return Map.of("msg", retrieverScheduler.fire());
 	}
-	
+
 	@SneakyThrows
 	public void saveDefaultScheduler() {
 		Optional<ConfigEntity> config = configRepository.findAllByType(ConfigType.SCHEDULER.toString());
@@ -81,8 +88,7 @@ public class SchedulerService {
 			retrieverScheduler.stopAll();
 		}
 	}
-	
-	
+
 	private void enable() {
 		SchedulerConfigModel config = configService.getSchedulerDetails();
 		retrieverScheduler.schedule(convertScheduleToCron(config));
@@ -91,36 +97,76 @@ public class SchedulerService {
 	public String convertScheduleToCron(SchedulerConfigModel model) {
 		switch (model.getType()) {
 		case DAILY -> {
-			String time = model.getTime();
-			//21:00
-			String[] timeArr = time.split(":");
-			String hour = "00";
-			String minute = "00";
-
-			if (timeArr.length == 2) {
-				hour = timeArr[0];
-				minute = timeArr[1];
-			}
-			return "0 " + minute + " " + hour + " * * *";
+			String[] timeArr = timeValidate(model);
+			return "0 " + timeArr[1] + " " + timeArr[0] + " * * *";
 		}
+
 		case HOURLY -> {
-			 return "0 0 0/" + model.getTime() + " * * *";
+			timeHourValidation(model);
+			return "0 0 0/" + model.getTime() + " * * *";
 		}
 		case WEEKLY -> {
-			String time = model.getTime();
-			String[] timeArr = time.split(":");
-			String hour = "00";
-			String minute = "00";
-
-			if (timeArr.length == 2) {
-				hour = timeArr[0];
-				minute = timeArr[1];
-			}
-			return "0 " + minute + " " + hour + " * * " + model.getDay();
+			String[] timeArr = timeValidate(model);
+			dayValidation(model);
+			return "0 " + timeArr[1] + " " + timeArr[0] + " * * " + model.getDay();
 		}
 		default -> {
 			return "0 0 0/1 * * *";
 		}
 		}
+	}
+
+	private String[] timeValidate(SchedulerConfigModel model) {
+		// 21:00
+		String time = model.getTime();
+		if (StringUtils.isBlank(time))
+			throw new ValidationException(
+					"Time should not be null or empty, it should be like 24 hours 21:00(hour:minute) or like 03:30 AM");
+		time = time.toUpperCase();
+		if (time.contains("AM") || time.contains("PM")) {
+			try {
+				time = LocalTime.parse(time.toUpperCase(), DateTimeFormatter.ofPattern("hh:mm a", Locale.US))
+						.format(DateTimeFormatter.ofPattern("HH:mm"));
+			} catch (Exception e) {
+				throw new ValidationException(e.getMessage());
+			}
+		} else {
+			String regex24 = "([01]?[0-9]|2[0-3]):[0-5][0-9]";
+			Pattern p1 = Pattern.compile(regex24);
+			Matcher m1 = p1.matcher(time);
+			if (!m1.matches())
+				throw new ValidationException("'" + time
+						+ "' time is not in correct format, it should be like 24 hours 21:00(hour:minute) or like 03:30 AM");
+		}
+
+		return time.split(":");
+	}
+
+	private void dayValidation(SchedulerConfigModel model) {
+
+		// 1-7 number day
+		String regex = "[0-6]";
+		String day = model.getDay();
+		Pattern p = Pattern.compile(regex);
+		Matcher m = p.matcher(day);
+		if (StringUtils.isBlank(day))
+			throw new ValidationException("Day should not be null or empty, it should be number");
+
+		if (!m.matches())
+			throw new ValidationException("'" + day + "' day is not number between [0-6]");
+	}
+
+	private void timeHourValidation(SchedulerConfigModel model) {
+
+		// 1-7 number day
+		String regex = "([1]?[1-9]|2[1-4])";
+		String time = model.getTime();
+		Pattern p = Pattern.compile(regex);
+		Matcher m = p.matcher(time);
+		if (StringUtils.isBlank(time))
+			throw new ValidationException("Time should not be null or empty, it should be number");
+
+		if (!m.matches())
+			throw new ValidationException("'" + time + "' time is not number between [1-24]");
 	}
 }

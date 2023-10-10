@@ -20,40 +20,24 @@
 
 package org.eclipse.tractusx.sde.common.entities;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-import org.eclipse.tractusx.sde.common.validators.UsagePolicyValidation;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
-@AllArgsConstructor
+@SuperBuilder
 @NoArgsConstructor
+@AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SubmodelPolicyRequest {
+@EqualsAndHashCode(callSuper = true)
+public class PolicyTemplateRequest extends PolicyModel {
 
-	private String uuid;
-	
-	@JsonProperty(value = "policy_name")
-	private String policyName;
-
-	@JsonProperty(value = "type_of_access")
-	private String typeOfAccess;
-	
-	@JsonProperty(value = "bpn_numbers")
-	private List<String> bpnNumbers;
-
-
-	@JsonProperty(value = "usage_policies")
-	@UsagePolicyValidation
-	private List<UsagePolicies> usagePolicies;
-	
-	private LocalDateTime lastUpdatedTime;
+	@Builder.Default
+	private PolicyTemplateType type = PolicyTemplateType.NONE;
 
 }

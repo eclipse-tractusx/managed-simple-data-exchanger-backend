@@ -22,12 +22,14 @@ package org.eclipse.tractusx.sde.edc.facilitator;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
+import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.edc.api.ContractApi;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ActionRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
@@ -100,7 +102,7 @@ public class ContractNegotiateManagementHelper extends AbstractEDCStepsHelper {
 					getAuthHeader());
 		}
 		if (agreement != null) {
-			List<UsagePolicies> policies = new ArrayList<>();
+			EnumMap<UsagePolicyEnum, UsagePolicies> policies = new EnumMap<>(UsagePolicyEnum.class);
 			Object permissionObj = agreement.getPolicy().getPermissions();
 			
 			if (permissionObj instanceof ArrayList) {
@@ -130,7 +132,7 @@ public class ContractNegotiateManagementHelper extends AbstractEDCStepsHelper {
 		return agreementResponse;
 	}
 
-	private void formatPermissionConstraint(ObjectMapper objeMapper, List<UsagePolicies> policies,
+	private void formatPermissionConstraint(ObjectMapper objeMapper, Map<UsagePolicyEnum, UsagePolicies> policies,
 			Object permissionObj) {
 		ObjectMapper objMapper = new ObjectMapper();
 		PermissionRequest permissionRequest = objMapper.convertValue(permissionObj, PermissionRequest.class);
@@ -145,7 +147,7 @@ public class ContractNegotiateManagementHelper extends AbstractEDCStepsHelper {
 		}
 	}
 
-	private void setContraint(ObjectMapper objeMapper, List<UsagePolicies> policies, Object object) {
+	private void setContraint(ObjectMapper objeMapper, Map<UsagePolicyEnum, UsagePolicies> policies, Object object) {
 		if (object instanceof ArrayList) {
 			List<ConstraintRequest> convertValue = objeMapper.convertValue(object,
 					new TypeReference<List<ConstraintRequest>>() {

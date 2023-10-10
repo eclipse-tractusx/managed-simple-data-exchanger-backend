@@ -18,27 +18,43 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.edc.model.contractnegotiation;
+package org.eclipse.tractusx.sde.common.entities;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
-import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
-@NoArgsConstructor
+@SuperBuilder
 @AllArgsConstructor
-@Builder
-public class ContractAgreementInfo {
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class PolicyModel {
 
-	private long contractSigningDate;
-	private long contractStartDate;
-	private long contractEndDate;
-	private String assetId;
-	private Map<UsagePolicyEnum, UsagePolicies> policies;
+	private String uuid;
+
+	@JsonProperty(value = "policy_name")
+	private String policyName;
+
+	@JsonProperty(value = "type_of_access")
+	private String typeOfAccess;
+
+	@JsonProperty(value = "bpn_numbers")
+	private List<String> bpnNumbers;
+
+	@JsonProperty(value = "usage_policies")
+	private Map<UsagePolicyEnum, UsagePolicies> usagePolicies;
+
+	private LocalDateTime lastUpdatedTime;
+
 }

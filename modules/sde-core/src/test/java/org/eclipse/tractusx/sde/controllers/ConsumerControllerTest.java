@@ -27,9 +27,12 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
+import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.core.controller.ConsumerController;
 import org.eclipse.tractusx.sde.core.service.ConsumerService;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
@@ -95,7 +98,7 @@ class ConsumerControllerTest {
 		doNothing().when(consumerControlPanelService).subscribeDataOffers((ConsumerRequest) any(), anyString());
 
 		ConsumerRequest consumerRequest = ConsumerRequest.builder().connectorId("42").offers(new ArrayList<>())
-				.policies(new ArrayList<>()).providerUrl("\"https://example.org/example\"").build();
+				.policies(Map.of()).providerUrl("\"https://example.org/example\"").build();
 		String content = (new ObjectMapper()).writeValueAsString(consumerRequest);
 		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/subscribe-data-offers")
 				.contentType(MediaType.APPLICATION_JSON).content(content);
@@ -107,11 +110,12 @@ class ConsumerControllerTest {
 	void testSubscribeDataOffers() throws Exception {
 		doNothing().when(consumerControlPanelService).subscribeDataOffers((ConsumerRequest) any(), anyString());
 		List<Offer> offers = new ArrayList<>();
-		List<UsagePolicies> policies = new ArrayList<>();
+		EnumMap<UsagePolicyEnum, UsagePolicies> policies = new EnumMap<>(UsagePolicyEnum.class);
 		Offer mockOffer = Mockito.mock(Offer.class);
 		offers.add(mockOffer);
 		UsagePolicies mockPolicy = Mockito.mock(UsagePolicies.class);
-		policies.add(mockPolicy);
+		UsagePolicyEnum mockKey = Mockito.mock(UsagePolicyEnum.class);
+		policies.put(mockKey, mockPolicy);
 		ConsumerRequest consumerRequest = ConsumerRequest.builder().connectorId("42").offers(offers).policies(policies)
 				.providerUrl("\"https://example.org/example\"").build();
 		String content = (new ObjectMapper()).writeValueAsString(consumerRequest);

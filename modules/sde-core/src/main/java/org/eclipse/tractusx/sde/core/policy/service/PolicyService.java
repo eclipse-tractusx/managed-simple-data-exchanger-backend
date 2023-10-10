@@ -25,7 +25,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import org.eclipse.tractusx.sde.common.entities.SubmodelPolicyRequest;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
 import org.eclipse.tractusx.sde.common.exception.ValidationException;
 import org.eclipse.tractusx.sde.common.model.PagingResponse;
@@ -50,17 +50,17 @@ public class PolicyService {
 	private final PolicyRepository repository;
 	private final PolicyMapper policyMapper;
 
-	public SubmodelPolicyRequest savePolicy(SubmodelPolicyRequest request) {
+	public PolicyModel savePolicy(PolicyModel request) {
 		String policyId = UUID.randomUUID().toString();
 		return savePolicy(policyId, request);
 	}
 
-	public SubmodelPolicyRequest updatePolicy(String uuid, SubmodelPolicyRequest request) {
+	public PolicyModel updatePolicy(String uuid, PolicyModel request) {
 		return savePolicy(uuid, request);
 	}
 
 	@SneakyThrows
-	public SubmodelPolicyRequest savePolicy(String uuid, SubmodelPolicyRequest request) {
+	public PolicyModel savePolicy(String uuid, PolicyModel request) {
 
 		if (isPolicyNameValid(uuid, request.getPolicyName())) {
 			PolicyEntity policy = policyMapper.mapFrom(request);
@@ -69,11 +69,11 @@ public class PolicyService {
 			request.setLastUpdatedTime(LocalDateTime.now());
 			request.setUuid(uuid);
 			repository.save(policy);
-			log.info("'"+request.getPolicyName()+"' policy saved in the database successfully");
+			log.info("'" + request.getPolicyName() + "' policy saved in the database successfully");
 			return request;
 		} else
 			throw new ValidationException(
- 					String.format("'%s' such policy name already exists", request.getPolicyName()));
+					String.format("'%s' such policy name already exists", request.getPolicyName()));
 	}
 
 	public boolean isPolicyNameValid(String id, String name) {
@@ -84,17 +84,17 @@ public class PolicyService {
 		return repository.findByIdAndName(id, name).isEmpty();
 	}
 
-	public SubmodelPolicyRequest getPolicy(String uuid) {
-		return policyMapper.mapFrom(
-				repository.findByUuid(uuid).orElseThrow(() -> new NoDataFoundException("No data found uuid " + uuid)));
+	public PolicyModel getPolicy(String uuid) {
+		return policyMapper.mapFrom(repository.findByUuid(uuid)
+				.orElseThrow(() -> new NoDataFoundException("The policy does not found for uuid " + uuid)));
 
 	}
 
-	public SubmodelPolicyRequest getPolicyByName(String policyName) {
+	public PolicyModel getPolicyByName(String policyName) {
 		return policyMapper.mapFrom(repository.findByPolicyName(policyName).orElse(null));
 	}
 
-	public List<SubmodelPolicyRequest> findMatchingPolicyBasedOnFileName(String policyName) {
+	public List<PolicyModel> findMatchingPolicyBasedOnFileName(String policyName) {
 		List<PolicyEntity> findByPolicyNameLike = repository.findMatchingPolicyBasedOnFileName(policyName);
 		return findByPolicyNameLike.stream().map(policyMapper::mapFrom).toList();
 	}
@@ -102,7 +102,7 @@ public class PolicyService {
 	public PagingResponse getAllPolicies(Integer page, Integer pageSize) {
 		Page<PolicyEntity> result = repository
 				.findAll(PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "lastUpdatedTime")));
-		List<SubmodelPolicyRequest> reports = result.stream().map(policyMapper::mapFrom).toList();
+		List<PolicyModel> reports = result.stream().map(policyMapper::mapFrom).toList();
 		return PagingResponse.builder().items(reports).pageSize(result.getSize()).page(result.getNumber())
 				.totalItems(result.getTotalElements()).build();
 

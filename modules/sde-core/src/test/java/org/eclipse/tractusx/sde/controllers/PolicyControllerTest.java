@@ -3,9 +3,10 @@ package org.eclipse.tractusx.sde.controllers;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.tractusx.sde.EnableTestContainers;
-import org.eclipse.tractusx.sde.common.entities.SubmodelPolicyRequest;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.DurationEnum;
 import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
@@ -103,7 +104,7 @@ class PolicyControllerTest {
                 .content(objectMapper.writeValueAsString(getPolicy("new_policy"))))
         .andExpect(status().isOk());
     	
-    	List<SubmodelPolicyRequest> findMatchingPolicyBasedOnFileName = policyService.findMatchingPolicyBasedOnFileName(fileName);
+    	List<PolicyModel> findMatchingPolicyBasedOnFileName = policyService.findMatchingPolicyBasedOnFileName(fileName);
         Assertions.assertEquals(1, findMatchingPolicyBasedOnFileName.size());
         Assertions.assertEquals("new_policy", findMatchingPolicyBasedOnFileName.get(0).getPolicyName());
 
@@ -111,15 +112,14 @@ class PolicyControllerTest {
 
 
 
-    private SubmodelPolicyRequest getPolicy(String policyName) {
-        SubmodelPolicyRequest request = new SubmodelPolicyRequest();
+    private PolicyModel getPolicy(String policyName) {
+        PolicyModel request = new PolicyModel();
         UsagePolicies policies = new UsagePolicies();
-        policies.setType(UsagePolicyEnum.DURATION);
         policies.setValue("10");
-        policies.setDurationUnit(DurationEnum.DAY);
+        policies.setDurationUnit(DurationEnum.DAY.name());
         policies.setTypeOfAccess(PolicyAccessEnum.RESTRICTED);
         request.setPolicyName(policyName);
-        request.setUsagePolicies(List.of(policies));
+        request.setUsagePolicies(Map.of(UsagePolicyEnum.DURATION ,policies));
         request.setBpnNumbers(List.of("BPNL00000005PROV", "BPNL00000005PROW", "BPNL00000005PROB"));
         request.setTypeOfAccess("restricted");
         return request;

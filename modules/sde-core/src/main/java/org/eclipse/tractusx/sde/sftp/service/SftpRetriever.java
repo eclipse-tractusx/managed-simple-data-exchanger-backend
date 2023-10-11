@@ -96,8 +96,6 @@ public class SftpRetriever implements RetrieverI {
 			if (password != null) {
 				session.setPassword(password);
 			}
-			// 20 seconds timeout
-			session.setTimeout(20000);
 			session.setConfig("StrictHostKeyChecking", "no");
 			session.setConfig("PreferredAuthentications", "publickey,password");
 			session.connect();

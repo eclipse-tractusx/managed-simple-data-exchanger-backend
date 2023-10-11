@@ -62,13 +62,14 @@ public class ProcessReportUseCase {
 
 	@SneakyThrows
 	public void startBuildProcessReport(String processId, String type, int size, List<String> bpnNumbers,
-			String typeOfAccess, Map<UsagePolicyEnum, UsagePolicies> usagePolicies) {
+			String typeOfAccess, Map<UsagePolicyEnum, UsagePolicies> usagePolicies, String policyUuid) {
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-		String usageList = objectMapper.writeValueAsString(usagePolicies);
-		saveProcessReport(ProcessReport.builder().processId(processId).csvType(type.toUpperCase())
+		saveProcessReport(ProcessReport.builder().processId(processId)
+				.policyUuid(policyUuid)
+				.csvType(type.toUpperCase())
 				.status(ProgressStatusEnum.IN_PROGRESS).numberOfItems(size).startDate(LocalDateTime.now())
-				.bpnNumbers(bpnNumbers).typeOfAccess(typeOfAccess).usagePolicies(usageList).build());
+				.bpnNumbers(bpnNumbers).typeOfAccess(typeOfAccess).usagePolicies(usagePolicies).build());
 	}
 
 	@SneakyThrows

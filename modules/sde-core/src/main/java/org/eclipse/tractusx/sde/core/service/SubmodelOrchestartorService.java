@@ -125,7 +125,7 @@ public class SubmodelOrchestartorService {
 		Runnable runnable = () -> {
 			processReportUseCase.startBuildProcessReport(processId, submodelSchemaObject.getId(),
 					csvContent.getRows().size(), submodelPolicyRequest.getBpnNumbers(),
-					submodelPolicyRequest.getTypeOfAccess(), submodelPolicyRequest.getUsagePolicies());
+					submodelPolicyRequest.getTypeOfAccess(), submodelPolicyRequest.getUsagePolicies(), submodelPolicyRequest.getUuid());
 
 			AtomicInteger successCount = new AtomicInteger();
 			AtomicInteger failureCount = new AtomicInteger();
@@ -180,7 +180,7 @@ public class SubmodelOrchestartorService {
 			mps.put("usage_policies", policy.getUsagePolicies());
 
 			processReportUseCase.startBuildProcessReport(processId, submodelSchemaObject.getId(), rowData.size(),
-					policy.getBpnNumbers(), policy.getTypeOfAccess(), policy.getUsagePolicies());
+					policy.getBpnNumbers(), policy.getTypeOfAccess(), policy.getUsagePolicies(), policy.getUuid());
 
 			rowData.stream().forEach(obj -> {
 				int andIncrement = atInt.incrementAndGet();
@@ -277,10 +277,9 @@ public class SubmodelOrchestartorService {
 
 		case EXISTING:
 			PolicyModel localPolicy = policyService.getPolicy(policy.getUuid());
-			if (StringUtils.isNotBlank(policy.getUuid()) && 
-					((CollectionUtils.isNotEmpty(policy.getBpnNumbers())
+			if (StringUtils.isNotBlank(policy.getUuid()) && ((CollectionUtils.isNotEmpty(policy.getBpnNumbers())
 					&& !localPolicy.getBpnNumbers().equals(policy.getBpnNumbers()))
-					|| (!policy.getUsagePolicies().isEmpty()
+					|| (!org.springframework.util.CollectionUtils.isEmpty(policy.getUsagePolicies())
 							&& !localPolicy.getUsagePolicies().equals(policy.getUsagePolicies())))) {
 				if (StringUtils.isBlank(policy.getPolicyName())) {
 					policy.setPolicyName(localPolicy.getPolicyName());

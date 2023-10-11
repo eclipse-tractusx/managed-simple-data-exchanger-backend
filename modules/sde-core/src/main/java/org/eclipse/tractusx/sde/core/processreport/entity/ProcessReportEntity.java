@@ -22,11 +22,14 @@
 
 package org.eclipse.tractusx.sde.core.processreport.entity;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
+import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.ProgressStatusEnum;
+import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
+import org.eclipse.tractusx.sde.core.policy.entity.PolicyMapToStringConvertor;
 import org.eclipse.tractusx.sde.core.utils.ListToStringConverter;
 
 import jakarta.persistence.Cacheable;
@@ -43,7 +46,7 @@ import lombok.Data;
 @Entity
 @Data
 @Cacheable(value = false)
-public class ProcessReportEntity implements Serializable {
+public class ProcessReportEntity {
     @Id
     @Column(name = "process_id")
     private String processId;
@@ -65,6 +68,9 @@ public class ProcessReportEntity implements Serializable {
     @Column(name = "end_date")
     private LocalDateTime endDate;
     
+    @Column(name = "policy_uuid")
+    private String policyUuid;
+    
     @Convert(converter = ListToStringConverter.class)
     @Column(name = "bpn_numbers")
     private List<String> bpnNumbers;
@@ -72,8 +78,9 @@ public class ProcessReportEntity implements Serializable {
     @Column(name = "type_of_access")
     private String typeOfAccess;
 
-    @Column(name = "usage_policy", columnDefinition = "jsonb")
-    private String usagePolicies;
+    @Column(name = "usage_policy", columnDefinition = "TEXT")
+   	@Convert(converter = PolicyMapToStringConvertor.class)
+   	private Map<UsagePolicyEnum, UsagePolicies> usagePolicies;
     
     @Column(name = "number_of_updated_items")
     private int numberOfUpdatedItems;

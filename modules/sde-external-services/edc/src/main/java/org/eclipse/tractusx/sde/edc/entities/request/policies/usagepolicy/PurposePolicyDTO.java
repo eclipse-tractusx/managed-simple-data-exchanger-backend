@@ -22,7 +22,6 @@ package org.eclipse.tractusx.sde.edc.entities.request.policies.usagepolicy;
 
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
-import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.Operator;
 
@@ -34,7 +33,8 @@ import lombok.experimental.SuperBuilder;
 public class PurposePolicyDTO extends UsagePolicyDTO {
 
 	public static PurposePolicyDTO fromUsagePolicy(UsagePolicies usagePolicy) {
-		return PurposePolicyDTO.builder().type(UsagePolicyEnum.PURPOSE).typeOfAccess(usagePolicy.getTypeOfAccess())
+		return PurposePolicyDTO.builder()
+				.typeOfAccess(usagePolicy.getTypeOfAccess())
 				.value(usagePolicy.getValue()).build();
 
 	}

@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
+import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
 import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.contractdefinition.ContractDefinitionRequest;
@@ -52,21 +53,17 @@ public class CreateEDCAssetFacilator extends AbstractEDCStepsHelper {
 	public Map<String, String> createEDCAsset(AssetEntryRequest assetEntryRequest, List<String> bpns,
 			Map<UsagePolicyEnum, UsagePolicies> usagePolicies) {
 
-		HashMap<String, String> extensibleProperties = new HashMap<>();
-		HashMap<String, String> output = new HashMap<>();
+		Map<String, String> extensibleProperties = new HashMap<>();
+		Map<String, String> output = new HashMap<>();
 
 		edcGateway.createAsset(assetEntryRequest);
 
 		String assetId = assetEntryRequest.getAsset().getId();
 
-		
 		ActionRequest accessAction = policyConstraintBuilderService.getAccessConstraints(bpns);
 
-		UsagePolicies customValue = getCustomValue(usagePolicies);
-		if (!Optional.ofNullable(customValue).isEmpty()) {
-			extensibleProperties.put(UsagePolicyEnum.CUSTOM.name(), customValue.getValue());
-		}
-		
+		prepareExtensionalCustomValue(extensibleProperties, usagePolicies);
+
 		PolicyDefinitionRequest accessPolicyDefinitionRequest = policyFactory.getPolicy(assetId, accessAction,
 				new HashMap<>());
 		edcGateway.createPolicyDefinition(accessPolicyDefinitionRequest);
@@ -90,11 +87,15 @@ public class CreateEDCAssetFacilator extends AbstractEDCStepsHelper {
 
 	}
 
-	private UsagePolicies getCustomValue(Map<UsagePolicyEnum, UsagePolicies> usagePolicies) {
-		if (!CollectionUtils.isEmpty(usagePolicies)) {
-			return usagePolicies.getOrDefault(UsagePolicyEnum.CUSTOM, null);
+	private void prepareExtensionalCustomValue(Map<String, String> extensibleProperties,
+			Map<UsagePolicyEnum, UsagePolicies> usagePolicies) {
+		if (!CollectionUtils.isEmpty(usagePolicies) && usagePolicies.containsKey(UsagePolicyEnum.CUSTOM)) {
+			UsagePolicies customPolicy = usagePolicies.get(UsagePolicyEnum.CUSTOM);
+			if (!Optional.ofNullable(customPolicy).isEmpty()
+					&& PolicyAccessEnum.RESTRICTED.equals(customPolicy.getTypeOfAccess())) {
+				extensibleProperties.put(UsagePolicyEnum.CUSTOM.name(), customPolicy.getValue());
+			}
 		}
-		return null;
 	}
 
 }

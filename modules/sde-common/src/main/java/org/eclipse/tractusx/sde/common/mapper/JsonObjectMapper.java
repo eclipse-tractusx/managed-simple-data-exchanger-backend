@@ -26,6 +26,7 @@ import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.mapstruct.Mapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -45,6 +46,8 @@ public abstract class JsonObjectMapper {
 
 	@SneakyThrows
 	public ObjectNode submodelFileRequestToJsonNodePojo(PolicyModel submodelFileRequest) {
+		mapper.findAndRegisterModules();
+		mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 		return mapper.convertValue(submodelFileRequest, ObjectNode.class);
 	}
 

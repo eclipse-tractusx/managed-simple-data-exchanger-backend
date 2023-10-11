@@ -23,7 +23,6 @@ package org.eclipse.tractusx.sde.edc.entities.request.policies.usagepolicy;
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.DurationEnum;
 import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
-import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.Operator;
 
@@ -41,7 +40,6 @@ public class DurationPolicyDTO extends UsagePolicyDTO {
 
 	public static DurationPolicyDTO fromUsagePolicy(UsagePolicies usagePolicy) {
 		return DurationPolicyDTO.builder()
-				.type(UsagePolicyEnum.DURATION)
 				.typeOfAccess(usagePolicy.getTypeOfAccess())
 				.value(usagePolicy.getValue())
 				.durationUnit(DurationEnum.valueOf(usagePolicy.getDurationUnit()))

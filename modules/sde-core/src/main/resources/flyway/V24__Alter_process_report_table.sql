@@ -18,25 +18,6 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.edc.entities.request.policies.usagepolicy;
+ALTER TABLE process_report ADD policy_uuid varchar NULL;
 
-import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
-import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
-
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@SuperBuilder
-public abstract class UsagePolicyDTO {
-
-    private PolicyAccessEnum typeOfAccess;
-    private String value;
-
-    public abstract ConstraintRequest toConstraint();
-
-}
+ALTER TABLE process_report ALTER COLUMN usage_policy TYPE text USING usage_policy::text;

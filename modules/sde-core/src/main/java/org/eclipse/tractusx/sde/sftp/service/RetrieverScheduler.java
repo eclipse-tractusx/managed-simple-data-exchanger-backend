@@ -45,7 +45,7 @@ public class RetrieverScheduler {
 			cronFuture.cancel(false);
 		}
 
-		if (configService.getJobMaintenanceDetails().isAutomaticUpload()) {
+		if (configService.getJobMaintenanceDetails().getAutomaticUpload().booleanValue()) {
 			taskScheduler.initialize();
 			cronFuture = taskScheduler.schedule(() -> processRemoteCsv.process(taskScheduler, UUID.randomUUID().toString()),
 					new CronTrigger(cronExpression));

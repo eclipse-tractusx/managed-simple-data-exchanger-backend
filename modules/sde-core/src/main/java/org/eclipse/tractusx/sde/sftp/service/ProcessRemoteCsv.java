@@ -200,7 +200,7 @@ public class ProcessRemoteCsv {
 			selfFactory.getObject().createDbReport(retriever, inProgressIdList, schedulerId).forEach(Runnable::run);
 			tryRun(retriever::close, IGNORE());
 
-			if (configService.getJobMaintenanceDetails().isEmailNotification()) {
+			if (configService.getJobMaintenanceDetails().getEmailNotification().booleanValue()) {
 				// EmailNotificationModel method call
 				sendNotificationForProcessedFiles(schedulerId);
 			} else {

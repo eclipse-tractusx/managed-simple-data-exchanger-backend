@@ -22,8 +22,7 @@ package org.eclipse.tractusx.sde.sftp.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -34,12 +33,12 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class JobMaintenanceModel {
 
-	@NotEmpty
+	@NotNull
     @JsonProperty(value = "automatic_upload")
-    private boolean automaticUpload;
+    private Boolean automaticUpload;
 
-	@NotEmpty
+    @NotNull
     @JsonProperty(value = "email_notification")
-    private boolean emailNotification;
+    private Boolean emailNotification;
 
 }

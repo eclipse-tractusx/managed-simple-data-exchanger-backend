@@ -80,7 +80,7 @@ public class SchedulerService {
 	}
 
 	public void updateScehdulreStatus(JobMaintenanceModel config) {
-		if (config.isAutomaticUpload()) {
+		if (config.getAutomaticUpload().booleanValue()) {
 			// enable the scheduler
 			enable();
 		} else {

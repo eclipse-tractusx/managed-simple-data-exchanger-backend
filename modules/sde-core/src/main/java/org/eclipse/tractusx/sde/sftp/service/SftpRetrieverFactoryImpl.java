@@ -57,6 +57,12 @@ public class SftpRetrieverFactoryImpl implements RetrieverFactory {
 	private String partialSuccess;
 	@Value("${sftp.location.failed}")
 	private String failed;
+	@Value("${sftp.retries:5}")
+	private int numberOfRetries;
+	@Value("${sftp.retryDelay.from:500}")
+	private int retryDelayFrom;
+	@Value("${sftp.retryDelayTo:3500}")
+	private int retryDelayTo;
 
 	private final ConfigService configService;
 	private final AutoUploadAgentConfigRepository configRepository;
@@ -75,7 +81,11 @@ public class SftpRetrieverFactoryImpl implements RetrieverFactory {
 				configModel.getInProgressLocation(),
 				configModel.getSuccessLocation(),
 				configModel.getPartialSuccessLocation(),
-				configModel.getFailedLocation());
+				configModel.getFailedLocation(),
+				numberOfRetries,
+				retryDelayFrom,
+				retryDelayTo
+		);
 
 	}
 

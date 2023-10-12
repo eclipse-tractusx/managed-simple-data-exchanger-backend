@@ -20,16 +20,15 @@
 
 package org.eclipse.tractusx.sde.core.utils;
 
-import java.util.Optional;
-import java.util.concurrent.Callable;
-import java.util.function.Consumer;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Optional;
+import java.util.function.Consumer;
+
 public class TryUtils {
 	
-	private static Logger logger = LoggerFactory.getLogger(TryUtils.class);;
+	private final static Logger logger = LoggerFactory.getLogger(TryUtils.class);
 
     /***
      * A Runnable which may throw an Exception
@@ -41,27 +40,31 @@ public class TryUtils {
         void run() throws E;
     }
 
+    @FunctionalInterface
+    public interface ThrowableSupplier<R, E extends Exception> {
+        R get() throws E;
+    }
+
     /***
      * Tries to execute a Callable passed as a first parameter.
      *
-     * @param callable - function to execute which may throw an Exception
+     * @param throwableSupplier - function to execute which may throw an Exception
      * @param onErr - code to be executed if an Exception happens
      * @return Optional with result of execution or empty if Exception was thrown
-     * @param <V>
      */
-    @SuppressWarnings("CallToPrintStackTrace")
-    public static <V> Optional<V> tryExec(Callable<V> callable, Consumer<Exception> onErr) {
+    @SuppressWarnings("unchecked")
+    public static <V, E extends Exception> Optional<V>  tryExec(ThrowableSupplier<V, E> throwableSupplier, Consumer<E> onErr) {
         try {
-            V v = callable.call();
+            V v = throwableSupplier.get();
             return Optional.of(v);
         } catch (Exception e) {
-            onErr.accept(e);
+            onErr.accept((E) e);
             logger.error("context", e);
             return Optional.empty();
         }
     }
 
-    private static <E extends Exception> Callable<Boolean> voidToBooleanAdapter(ThrowableAction<E> runnable) {
+    private static <E extends Exception> ThrowableSupplier<Boolean, E> voidToBooleanAdapter(ThrowableAction<E> runnable) {
         return () -> {
             runnable.run();
             return true;
@@ -75,18 +78,31 @@ public class TryUtils {
      * @param runnable - a function to run which may throw an Exception
      * @param onErr - a Consumer to be executed if an Exception happens.Stacktrace is printed by default
      * @return true on success and false if an Exception has been thrown
-     * @param <E>
      */
-    public static <E extends Exception> boolean tryRun(ThrowableAction<E> runnable, Consumer<Exception> onErr) {
+    public static <E extends Exception> boolean tryRun(ThrowableAction<E> runnable, Consumer<E> onErr) {
         return tryExec(voidToBooleanAdapter(runnable), onErr).orElse(false);
     }
 
     /***
      *
      * @return a function which ignores any given parameter
-     * @param <ANY>
      */
     public static <ANY> Consumer<ANY> IGNORE() {
         return a -> {};
+    }
+
+    public static <V, E extends Exception> V retryAdapter(ThrowableSupplier<V, E> callable, Runnable pause, int tries) throws E{
+        Optional<V> res = Optional.empty();
+        var errHandler = new Object() {
+            E e;
+            void setErr(E e) {
+                this.e = e;
+            }
+        };
+        for (int currentTry = 0; currentTry != tries && res.isEmpty(); currentTry++) {
+            if (currentTry != 0) pause.run();
+            res = tryExec(callable, errHandler::setErr);
+        }
+        return res.orElseThrow(() -> errHandler.e);
     }
 }

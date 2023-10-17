@@ -17,28 +17,49 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-package org.eclipse.tractusx.sde.submodels.pcf.model;
 
-import java.util.List;
+package org.eclipse.tractusx.sde.edc.model.edr;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Builder
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
-public class ProductOrSectorSpecificRules {
+@Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(Include.NON_NULL)
+public class EDRCachedResponse {
+
+	@JsonProperty("@type")
+	private String type;
 	
-	@SerializedName(value = "extWBCSD_operator")
-	private String extWBCSDOperator;
+	@JsonProperty("@context")
+	private Object context;
 	
-	@SerializedName(value = "productOrSectorSpecificRules")
-	private List<ProductOrSectorSpecificRule> productOrSectorSpecificRulesObj;
-	
-	@SerializedName(value = "extWBCSD_otherOperatorName")
-	private String extWBCSDOtherOperatorName;
+	@JsonProperty("edc:agreementId")
+	private String agreementId;
+
+	@JsonProperty("edc:transferProcessId")
+	private String transferProcessId;
+
+	@JsonProperty("edc:assetId")
+	private String assetId;
+
+	@JsonProperty("edc:providerId")
+	private String providerId;
+
+	@JsonProperty("tx:edrState")
+	private String edrState;
+
+	@JsonProperty("tx:expirationDate")
+	private String expirationDate;
 
 }

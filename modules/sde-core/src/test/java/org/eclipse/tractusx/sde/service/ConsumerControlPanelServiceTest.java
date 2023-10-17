@@ -40,6 +40,7 @@ import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.Operator;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyConstraintBuilderService;
 import org.eclipse.tractusx.sde.edc.facilitator.ContractNegotiateManagementHelper;
+import org.eclipse.tractusx.sde.edc.facilitator.EDRRequestHelper;
 import org.eclipse.tractusx.sde.edc.gateways.database.ContractNegotiationInfoRepository;
 import org.eclipse.tractusx.sde.edc.model.contractoffers.ContractOfferRequestFactory;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
@@ -89,6 +90,9 @@ class ConsumerControlPanelServiceTest {
 
 	@MockBean
 	private ContractOfferRequestFactory contractOfferRequestFactory;
+	
+	@MockBean
+	private EDRRequestHelper eDRRequestHelper;
 
 	@Test
 	void testQueryOnDataOfferEmpty() throws Exception {

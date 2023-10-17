@@ -20,12 +20,10 @@
 
 package org.eclipse.tractusx.sde.digitaltwins.facilitator;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.CreateSubModelRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellDescriptorRequest;
@@ -39,6 +37,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -50,38 +49,30 @@ public class DigitalTwinsFacilitator {
 
 	private final DigitalTwinsFeignClient digitalTwinsFeignClient;
 
-	@Value(value = "${digital-twins.hostname:default}")
-	private String digitalTwinsHost;
-
-	@Value(value = "${digital-twins.api:/api/v3.0}")
-	private String dtApiUri;
-
 	@Value(value = "${manufacturerId}")
 	public String manufacturerId;
 
-	public List<String> shellLookup(ShellLookupRequest request) throws ServiceException {
-		return shellLookupFromDDTR(request, null, manufacturerId);
-	}
-
 	@SneakyThrows
-	public List<String> shellLookupFromDDTR(ShellLookupRequest request, String ddtrUrl, String edcBpn)
-			throws ServiceException {
-
-		URI dtURL = StringUtils.isAllEmpty(ddtrUrl) ? getDtURL(digitalTwinsHost) : getDtURL(ddtrUrl);
+	public List<String> shellLookup(ShellLookupRequest request) throws ServiceException {
 
 		List<String> shellIds = List.of();
-
 		try {
-			ResponseEntity<ShellLookupResponse> response = digitalTwinsFeignClient.shellLookup(dtURL,
-					request.toJsonString(), edcBpn);
+			ResponseEntity<ShellLookupResponse> response = digitalTwinsFeignClient.shellLookup(request.toJsonString(),
+					manufacturerId);
 
 			ShellLookupResponse body = response.getBody();
 			if (response.getStatusCode() == HttpStatus.OK && body != null) {
 				shellIds = body.getResult();
 			}
 
+		} catch (FeignException e) {
+			log.error("FeignException RequestBody : " + e.request());
+			String errorMsg = "Error in DT twin lookup " + e.request().url() + ", because: " + request.toJsonString()
+					+ "," + e.contentUTF8();
+			log.error("FeignException : " + errorMsg);
+			throw new ServiceException(errorMsg);
 		} catch (Exception e) {
-			String error = "Error in lookup DT lookup:" + dtURL + ", " + request.toJsonString() + ", " + e.getMessage();
+			String error = "Error in DT twin lookup " + request.toJsonString() + ", " + e.getMessage();
 			log.error(error);
 			throw new ServiceException(error);
 		}
@@ -92,14 +83,18 @@ public class DigitalTwinsFacilitator {
 	public String deleteShell(String shellId) {
 		String deleteResponse = "";
 		try {
-			ResponseEntity<Void> response = digitalTwinsFeignClient.deleteShell(getDtURL(digitalTwinsHost),
-					encodeShellIdBase64Utf8(shellId));
+			ResponseEntity<Void> response = digitalTwinsFeignClient.deleteShell(encodeShellIdBase64Utf8(shellId));
 
 			if (response.getStatusCode() == HttpStatus.NO_CONTENT) {
 				deleteResponse = "Asset identifier" + shellId + "deleted successfully";
 			}
+		} catch (FeignException e) {
+			log.error("FeignException RequestBody : " + e.request());
+			String errorMsg = "Error in deleteShell " + e.request().url() + ", because: " + e.contentUTF8();
+			log.error("FeignException : " + errorMsg);
+			throw new ServiceException(errorMsg);
 		} catch (Exception e) {
-			String error = "Error in deleteShell :" + digitalTwinsHost + ", " + shellId + "," + e.getMessage();
+			String error = "Error in deleteShell : " + shellId + "," + e.getMessage();
 			log.error(error);
 			throw new ServiceException(error);
 		}
@@ -107,29 +102,27 @@ public class DigitalTwinsFacilitator {
 	}
 
 	@SneakyThrows
-	public List<ShellDescriptorResponse> getShellDescriptorsWithSubmodelDetails(List<String> shellIds, String ddtrUrl) {
+	public List<ShellDescriptorResponse> getShellDescriptorsWithSubmodelDetails(List<String> shellIds) {
 
 		List<ShellDescriptorResponse> items = new ArrayList<>();
 		for (String shellId : shellIds) {
-			items.add(getShellDetailsById(shellId, ddtrUrl, manufacturerId));
+			items.add(getShellDetailsById(shellId));
 		}
 		return items;
 	}
 
-	public ShellDescriptorResponse getShellDetailsById(String shellId, String ddtrUrl, String edcBpn) {
-		
-		URI dtURL = StringUtils.isAllEmpty(ddtrUrl) ? getDtURL(digitalTwinsHost) : getDtURL(ddtrUrl);
+	public ShellDescriptorResponse getShellDetailsById(String shellId) {
 
 		ResponseEntity<ShellDescriptorResponse> shellDescriptorResponse = digitalTwinsFeignClient
-				.getShellDescriptorByShellId(dtURL, encodeShellIdBase64Utf8(shellId), edcBpn);
+				.getShellDescriptorByShellId(encodeShellIdBase64Utf8(shellId), manufacturerId);
 		return shellDescriptorResponse.getBody();
 	}
 
 	@SneakyThrows
 	public void deleteSubmodelfromShellById(String shellId, String subModelId) {
 		try {
-			digitalTwinsFeignClient.deleteSubmodelfromShellById(getDtURL(digitalTwinsHost),
-					encodeShellIdBase64Utf8(shellId), encodeShellIdBase64Utf8(subModelId));
+			digitalTwinsFeignClient.deleteSubmodelfromShellById(encodeShellIdBase64Utf8(shellId),
+					encodeShellIdBase64Utf8(subModelId));
 		} catch (Exception e) {
 			parseExceptionMessage(e);
 		}
@@ -138,7 +131,7 @@ public class DigitalTwinsFacilitator {
 	public ShellDescriptorResponse createShellDescriptor(ShellDescriptorRequest request) {
 		ShellDescriptorResponse responseBody;
 		ResponseEntity<ShellDescriptorResponse> registerSubmodel = digitalTwinsFeignClient
-				.createShellDescriptor(getDtURL(digitalTwinsHost), request);
+				.createShellDescriptor(request);
 		if (registerSubmodel.getStatusCode() != HttpStatus.CREATED) {
 			responseBody = null;
 		} else {
@@ -149,11 +142,10 @@ public class DigitalTwinsFacilitator {
 
 	public void updateShellSpecificAssetIdentifiers(String shellId, List<Object> specificAssetIds) {
 
-		digitalTwinsFeignClient.deleteShellSpecificAttributes(getDtURL(digitalTwinsHost),
-				encodeShellIdBase64Utf8(shellId), manufacturerId);
+		digitalTwinsFeignClient.deleteShellSpecificAttributes(encodeShellIdBase64Utf8(shellId), manufacturerId);
 
-		ResponseEntity<List<Object>> registerSubmodel = digitalTwinsFeignClient.createShellSpecificAttributes(
-				getDtURL(digitalTwinsHost), encodeShellIdBase64Utf8(shellId), manufacturerId, specificAssetIds);
+		ResponseEntity<List<Object>> registerSubmodel = digitalTwinsFeignClient
+				.createShellSpecificAttributes(encodeShellIdBase64Utf8(shellId), manufacturerId, specificAssetIds);
 		if (registerSubmodel.getStatusCode() != HttpStatus.CREATED) {
 			log.error("Error in shell SpecificAssetIdentifiers deletion: " + registerSubmodel.toString());
 		}
@@ -163,8 +155,8 @@ public class DigitalTwinsFacilitator {
 
 		request.setDescription(List.of());
 
-		ResponseEntity<String> response = digitalTwinsFeignClient.createSubModel(getDtURL(digitalTwinsHost),
-				encodeShellIdBase64Utf8(shellId), request);
+		ResponseEntity<String> response = digitalTwinsFeignClient.createSubModel(encodeShellIdBase64Utf8(shellId),
+				request);
 		if (response.getStatusCode() != HttpStatus.CREATED) {
 			log.error("Unable to create submodel descriptor");
 		}
@@ -173,8 +165,8 @@ public class DigitalTwinsFacilitator {
 
 	public SubModelListResponse getSubModels(String shellId) {
 
-		ResponseEntity<SubModelListResponse> response = digitalTwinsFeignClient.getSubModels(getDtURL(digitalTwinsHost),
-				encodeShellIdBase64Utf8(shellId));
+		ResponseEntity<SubModelListResponse> response = digitalTwinsFeignClient
+				.getSubModels(encodeShellIdBase64Utf8(shellId));
 		SubModelListResponse responseBody = null;
 		if (response.getStatusCode() == HttpStatus.OK) {
 			responseBody = response.getBody();
@@ -191,10 +183,5 @@ public class DigitalTwinsFacilitator {
 		if (!e.toString().contains("FeignException$NotFound") || !e.toString().contains("404 Not Found")) {
 			throw new ServiceException("Exception in Digital delete request process: " + e.getMessage());
 		}
-	}
-
-	@SneakyThrows
-	private URI getDtURL(String dtURL) {
-		return new URI(dtURL.concat(dtApiUri));
 	}
 }

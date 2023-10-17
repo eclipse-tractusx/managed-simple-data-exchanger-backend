@@ -1,8 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 Critical TechWorks GmbH
- * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023 T-Systems International GmbH
+ * Copyright (c) 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,9 +18,12 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.core.processreport.model;
+package org.eclipse.tractusx.sde.edc.model.edr;
 
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,13 +31,26 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class ProcessReportPageResponse {
+@AllArgsConstructor
+@Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(Include.NON_NULL)
+public class EDRCachedByIdResponse {
 
-    private int page;
-    private int pageSize;
-    private long totalItems;
-    private List<ProcessReport> items;
+	@JsonProperty("edc:type")
+	private String type;
+
+	@JsonProperty("edc:authCode")
+	private String authCode;
+
+	@JsonProperty("edc:endpoint")
+	private String endpoint;
+
+	@JsonProperty("edc:id")
+	private String id;
+
+	@JsonProperty("edc:authKey")
+	private String authKey;
+
 }

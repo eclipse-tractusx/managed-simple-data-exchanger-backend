@@ -211,8 +211,12 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 
 			if (edrToken != null) {
 				childUUID = lookUpChildTwin(shellLookupRequest, aspectRelationShip, edrToken, dtOffer);
-				if (childUUID != null)
+				if (childUUID != null) {
 					break;
+				} else {
+					log.warn(aspectRelationShip.getRowNumber() + ", EDC connector " + dtOffer.getConnectorOfferUrl()
+							+ ", No child twin found for " + shellLookupRequest.toJsonString());
+				}
 			} else {
 				msg = ", EDC connector " + dtOffer.getConnectorOfferUrl()
 						+ ", The EDR token is null to find child twin ";
@@ -227,7 +231,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 
 		if (childUUID == null) {
 			throw new CsvHandlerUseCaseException(aspectRelationShip.getRowNumber(),
-					"No child aspect found for " + shellLookupRequest.toJsonString() + " " + msg);
+					"No child aspect found for " + shellLookupRequest.toJsonString());
 		}
 
 		return digitalTwinsUtility.getCreateSubModelRequestForChild(aspectRelationShip.getShellId(),

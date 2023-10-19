@@ -59,9 +59,9 @@ public class DigitalTwinsUtility {
 	@Value(value = "${manufacturerId}")
 	public String manufacturerId;
 
-	@Value(value = "${edc.hostname}")
-	public String edcEndpoint;
-
+	@Value(value = "${edc.hostname}${edc.dsp.endpointpath:/api/v1/dsp}")
+	public String digitalTwinEdcDspEndpoint;
+	
 	ObjectMapper mapper = new ObjectMapper();
 
 	private static final Map<String, List<String>> publicReadableSpecificAssetIDs = Map.of(MANUFACTURER_PART_ID,
@@ -112,12 +112,12 @@ public class DigitalTwinsUtility {
 		List<Endpoint> endpoints = new ArrayList<>();
 		endpoints.add(Endpoint.builder().endpointInterface(CommonConstants.INTERFACE)
 				.protocolInformation(ProtocolInformation.builder()
-						.endpointAddress(edcEndpoint + CommonConstants.SUBMODEL_CONTEXT_URL)
+						.endpointAddress(digitalTwinEdcDspEndpoint + CommonConstants.SUBMODEL_CONTEXT_URL)
 						.endpointProtocol(CommonConstants.HTTP)
 						.endpointProtocolVersion(List.of(CommonConstants.ENDPOINT_PROTOCOL_VERSION))
 						.subProtocol(CommonConstants.SUB_PROTOCOL)
 						.subprotocolBody("id=" + shellId + "-" + submodelIdentification + ";dspEndpoint="
-								+ edcEndpoint)
+								+ digitalTwinEdcDspEndpoint)
 						.subprotocolBodyEncoding(CommonConstants.BODY_ENCODING)
 						.securityAttributes(List.of(new SecurityAttributes("NONE", "NONE", "NONE"))).build())
 				.build());

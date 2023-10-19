@@ -20,10 +20,16 @@
 
 package org.eclipse.tractusx.sde.sftp.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.sde.agent.entity.ConfigEntity;
 import org.eclipse.tractusx.sde.agent.mapper.AutoUploadAgentConfigMapper;
 import org.eclipse.tractusx.sde.agent.model.ConfigResponse;
 import org.eclipse.tractusx.sde.agent.model.ConfigType;
+import org.eclipse.tractusx.sde.agent.model.MinioConfigModel;
 import org.eclipse.tractusx.sde.agent.model.SchedulerConfigModel;
 import org.eclipse.tractusx.sde.agent.model.SftpConfigModel;
 import org.eclipse.tractusx.sde.agent.repository.AutoUploadAgentConfigRepository;
@@ -31,13 +37,6 @@ import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
 import org.eclipse.tractusx.sde.sftp.dto.EmailNotificationModel;
 import org.eclipse.tractusx.sde.sftp.dto.JobMaintenanceModel;
 import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
 @Service
@@ -82,6 +81,12 @@ public class ConfigService {
 	public SftpConfigModel getSFTPConfiguration() {
 		ConfigResponse configEntityOptional = getConfigurationAsObject(ConfigType.SFTP);
 		return mapper.readValue(configEntityOptional.getContent(), SftpConfigModel.class);
+	}
+
+	@SneakyThrows
+	public MinioConfigModel getMinioConfiguration() {
+		ConfigResponse configEntityOptional = getConfigurationAsObject(ConfigType.MINIO);
+		return mapper.readValue(configEntityOptional.getContent(), MinioConfigModel.class);
 	}
 
 	@SneakyThrows

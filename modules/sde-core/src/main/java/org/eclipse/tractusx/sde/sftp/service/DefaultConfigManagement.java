@@ -20,8 +20,10 @@
 
 package org.eclipse.tractusx.sde.sftp.service;
 
-import java.util.Optional;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import net.minidev.json.JSONObject;
 import org.eclipse.tractusx.sde.agent.entity.ConfigEntity;
 import org.eclipse.tractusx.sde.agent.model.ConfigType;
 import org.eclipse.tractusx.sde.agent.repository.AutoUploadAgentConfigRepository;
@@ -30,11 +32,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import net.minidev.json.JSONObject;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -44,7 +42,7 @@ public class DefaultConfigManagement {
 	private final ConfigService configService;
 	private final SchedulerService schedulerService;
 	private final PolicyProvider policyProvider;
-	private final  SftpRetrieverFactoryImpl sftpRetrieverFactoryImpl;
+	private final RetrieverFactory retrieverFactory;
 	ObjectMapper mapper = new ObjectMapper();
 
 	@Value("${mail.to.address}")
@@ -59,7 +57,7 @@ public class DefaultConfigManagement {
 		policyProvider.saveDefaultPolicy();
 		saveJobMaintanceConfiguration();
 		saveDefaultNotificationConfiguration();
-		sftpRetrieverFactoryImpl.saveDefaultConfig();
+		retrieverFactory.saveDefaultConfig();
 		schedulerService.saveDefaultScheduler();
 	}
 

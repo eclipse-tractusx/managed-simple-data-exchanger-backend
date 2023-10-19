@@ -20,9 +20,35 @@
 
 package org.eclipse.tractusx.sde.sftp.service;
 
-import static org.eclipse.tractusx.sde.core.utils.TryUtils.IGNORE;
-import static org.eclipse.tractusx.sde.core.utils.TryUtils.tryRun;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.tractusx.sde.agent.entity.SftpSchedulerReport;
+import org.eclipse.tractusx.sde.agent.enums.SftpReportStatusEnum;
+import org.eclipse.tractusx.sde.agent.mapper.SftpReportMapper;
+import org.eclipse.tractusx.sde.agent.model.SftpReportModel;
+import org.eclipse.tractusx.sde.agent.repository.SftpReportRepository;
+import org.eclipse.tractusx.sde.common.enums.ProgressStatusEnum;
+import org.eclipse.tractusx.sde.common.exception.ServiceException;
+import org.eclipse.tractusx.sde.common.utils.DateUtil;
+import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
+import org.eclipse.tractusx.sde.core.processreport.entity.ProcessReportEntity;
+import org.eclipse.tractusx.sde.core.processreport.repository.ProcessReportRepository;
+import org.eclipse.tractusx.sde.core.service.SubmodelOrchestartorService;
+import org.eclipse.tractusx.sde.core.utils.TryUtils;
+import org.eclipse.tractusx.sde.notification.manager.EmailManager;
+import org.eclipse.tractusx.sde.sftp.RetrieverI;
+import org.eclipse.tractusx.sde.sftp.dto.EmailNotificationModel;
+import org.springframework.beans.factory.ObjectFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
+import org.springframework.retry.support.RetrySynchronizationManager;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
@@ -36,33 +62,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import org.eclipse.tractusx.sde.agent.entity.SftpSchedulerReport;
-import org.eclipse.tractusx.sde.agent.enums.SftpReportStatusEnum;
-import org.eclipse.tractusx.sde.agent.mapper.SftpReportMapper;
-import org.eclipse.tractusx.sde.agent.model.SftpReportModel;
-import org.eclipse.tractusx.sde.agent.repository.SftpReportRepository;
-import org.eclipse.tractusx.sde.common.enums.ProgressStatusEnum;
-import org.eclipse.tractusx.sde.common.exception.ServiceException;
-import org.eclipse.tractusx.sde.common.utils.DateUtil;
-import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
-import org.eclipse.tractusx.sde.core.processreport.entity.ProcessReportEntity;
-import org.eclipse.tractusx.sde.core.processreport.repository.ProcessReportRepository;
-import org.eclipse.tractusx.sde.core.service.SubmodelOrchestartorService;
-import org.eclipse.tractusx.sde.notification.manager.EmailManager;
-import org.eclipse.tractusx.sde.sftp.RetrieverI;
-import org.eclipse.tractusx.sde.sftp.dto.EmailNotificationModel;
-import org.springframework.beans.factory.ObjectFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
-import org.springframework.retry.support.RetrySynchronizationManager;
-import org.springframework.scheduling.TaskScheduler;
-import org.springframework.stereotype.Service;
-
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
+import static org.eclipse.tractusx.sde.core.utils.TryUtils.IGNORE;
+import static org.eclipse.tractusx.sde.core.utils.TryUtils.tryRun;
 
 @Service
 @RequiredArgsConstructor
@@ -89,7 +90,7 @@ public class ProcessRemoteCsv {
 	private String ccEmail;
 
 	@SneakyThrows
-	@SuppressWarnings({ "CallToPrintStackTrace", "ResultOfMethodCallIgnored" })
+	@SuppressWarnings({"ResultOfMethodCallIgnored"})
 	@Retryable(retryFor = {
 			ServiceException.class }, maxAttemptsExpression = "3", backoff = @Backoff(delayExpression = "5000"))
 	public String process(TaskScheduler taskScheduler, String schedulerUuid) {
@@ -121,31 +122,35 @@ public class ProcessRemoteCsv {
 	private void retriverProcess(TaskScheduler taskScheduler, String schedulerId, RetrieverI retriever) {
 		
 		var inProgressIdList = StreamSupport.stream(retriever.spliterator(), false)
-				.filter(processId -> tryRun(() -> retriever.setProgress(processId), e -> {
-					log.info("Could not move remote file to the Progress folder {}", retriever.getFileName(processId));
-					boolean flag = Paths.get(csvHandlerService.getFilePath(processId)).toFile().delete();
-					if (flag)
-						log.info("File deleted successfully");
-				})).filter(processId -> tryRun(() -> {
-					// need original file for identify Usage policy
-					String originalFileName = retriever.getFileName(processId);
-					var submodelFileRequest = policyProvider.getMatchingPolicyBasedOnFileName(originalFileName);
-					retriever.setPolicyName(processId, submodelFileRequest.getPolicyName());
-					submodelOrchestartorService.processSubmodelAutomationCsv(submodelFileRequest, processId);
-				}, e -> {
-					log.info("Could not submit CVS file for processing. {}", csvHandlerService.getFilePath(processId));
-					tryRun(() -> retriever.setFailed(processId), e1 -> log
-							.info("Could not move file to the Failed folder {}", retriever.getFileName(processId)));
-				})).peek(processId -> {
-
+				.filter(processId -> tryRun(
+						(TryUtils.ThrowableAction<IOException>)() -> retriever.setProgress(processId),
+						e -> {
+							log.info("Could not move remote file to the Progress folder {}", retriever.getFileName(processId));
+							boolean flag = Paths.get(csvHandlerService.getFilePath(processId)).toFile().delete();
+							if (flag)
+								log.info("File deleted successfully");
+						})
+				).filter(processId -> tryRun(
+						() -> {
+							// need original file for identify Usage policy
+							String originalFileName = retriever.getFileName(processId);
+							var submodelFileRequest = policyProvider.getMatchingPolicyBasedOnFileName(originalFileName);
+							retriever.setPolicyName(processId, submodelFileRequest.getPolicyName());
+							submodelOrchestartorService.processSubmodelAutomationCsv(submodelFileRequest, processId);
+						},
+						e -> {
+							log.info("Could not submit CVS file for processing. {}", csvHandlerService.getFilePath(processId));
+							tryRun((TryUtils.ThrowableAction<IOException>)() -> retriever.setFailed(processId), e1 -> log.info("Could not move file to the Failed folder {}", retriever.getFileName(processId)));
+						})
+				).peek(processId ->
 					sftpReportRepository.save(sftpReportMapper.mapFrom(SftpReportModel.builder()
 							.schedulerId(schedulerId)
 							.processId(processId)
 							.fileName(retriever.getFileName(processId))
 							.policyName(retriever.getPolicyName(processId))
 							.status(SftpReportStatusEnum.IN_PROGRESS)
-							.startDate(LocalDateTime.now()).build()));
-				}).toList();
+							.startDate(LocalDateTime.now()).build()))
+				).toList();
 		if (!inProgressIdList.isEmpty()) {
 			taskScheduler.schedule(() -> checkStatusOfInprogressFilesAndNotify(taskScheduler, retriever,
 					inProgressIdList, schedulerId), Instant.now().plus(Duration.ofSeconds(5)));
@@ -185,8 +190,9 @@ public class ProcessRemoteCsv {
 				}
 			}
 			emailContent.put("fileTableData", tableData.toString());
-			tryRun(() -> emailManager.sendEmail(emailContent, "Scheduler status", "scheduler_status.html"), se -> log
-					.info("Exception occurred while sending email for scheduler id: " + schedulerId + "\n" + se));
+			tryRun((TryUtils.ThrowableAction<ServiceException>)() -> emailManager.sendEmail(emailContent, "Scheduler status", "scheduler_status.html"),
+					se -> log.info("Exception occurred while sending email for scheduler id: " + schedulerId + "\n" + se)
+			);
 		}
 	}
 	
@@ -232,17 +238,22 @@ public class ProcessRemoteCsv {
 						+ processReport.getNumberOfUpdatedItems();
 				if (processReport.getNumberOfItems() == numberOfSucceededItems) {
 					sftpSchedulerReport.setStatus(SftpReportStatusEnum.SUCCESS);
-					remoteActions.add(() -> tryRun(() -> retriever.setSuccess(processId), e -> log
-							.info("Could not move file {} to Success Folder", retriever.getFileName(processId))));
+					remoteActions.add(() -> tryRun(
+							(TryUtils.ThrowableAction<IOException>) () -> retriever.setSuccess(processId),
+							e -> log.info("Could not move file {} to Success Folder", retriever.getFileName(processId)))
+					);
 				} else if (numberOfSucceededItems > 0) {
 					sftpSchedulerReport.setStatus(SftpReportStatusEnum.PARTIAL_SUCCESS);
-					remoteActions.add(() -> tryRun(() -> retriever.setPartial(processId),
-							e -> log.info("Could not move file {} to Partial Success Folder",
-									retriever.getFileName(processId))));
+					remoteActions.add(() -> tryRun(
+							(TryUtils.ThrowableAction<IOException>) () -> retriever.setPartial(processId),
+							e -> log.info("Could not move file {} to Partial Success Folder", retriever.getFileName(processId)))
+					);
 				} else {
 					sftpSchedulerReport.setStatus(SftpReportStatusEnum.FAILED);
-					remoteActions.add(() -> tryRun(() -> retriever.setFailed(processId), e -> log
-							.info("Could not move file {} to Failed Folder", retriever.getFileName(processId))));
+					remoteActions.add(() -> tryRun(
+							(TryUtils.ThrowableAction<IOException>) () -> retriever.setFailed(processId),
+							e -> log.info("Could not move file {} to Failed Folder", retriever.getFileName(processId)))
+					);
 				}
 				sftpSchedulerReport.setEndDate(LocalDateTime.now());
 			}

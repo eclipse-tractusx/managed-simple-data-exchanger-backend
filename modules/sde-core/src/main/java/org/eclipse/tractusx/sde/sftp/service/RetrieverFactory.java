@@ -20,9 +20,9 @@
 
 package org.eclipse.tractusx.sde.sftp.service;
 
-import java.io.IOException;
-
 import org.eclipse.tractusx.sde.sftp.RetrieverI;
+
+import java.io.IOException;
 
 public interface RetrieverFactory {
     /***
@@ -31,4 +31,6 @@ public interface RetrieverFactory {
      * @return retriever
      */
     RetrieverI create() throws IOException;
+
+    void saveDefaultConfig();
 }

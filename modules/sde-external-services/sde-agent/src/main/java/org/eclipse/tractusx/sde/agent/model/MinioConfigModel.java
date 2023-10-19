@@ -20,7 +20,34 @@
 
 package org.eclipse.tractusx.sde.agent.model;
 
-public enum ConfigType {
+import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-    MINIO, SFTP, SCHEDULER, NOTIFICATION, JOB_MAINTENANCE
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class MinioConfigModel {
+
+	@NotBlank
+	private String endpoint;
+	@NotBlank
+	private String accessKey;
+	@NotBlank
+	private String secretKey;
+	@NotBlank
+	private String bucketName;
+	@NotBlank
+	private String toBeProcessedLocation;
+	@NotBlank
+	private String inProgressLocation;
+	@NotBlank
+	private String successLocation;
+	@NotBlank
+	private String partialSuccessLocation;
+	@NotBlank
+	private String failedLocation;
 }

@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.eclipse.tractusx.sde.agent.entity.ConfigEntity;
 import org.eclipse.tractusx.sde.agent.model.ConfigType;
-import org.eclipse.tractusx.sde.agent.model.SftpConfigModel;
+import org.eclipse.tractusx.sde.agent.model.MinioConfigModel;
 import org.eclipse.tractusx.sde.agent.repository.AutoUploadAgentConfigRepository;
 import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
 import org.eclipse.tractusx.sde.sftp.RetrieverI;
@@ -33,84 +33,69 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.OptionalInt;
 
 @Service
 @RequiredArgsConstructor
-@ConditionalOnProperty(name = "retriever.name", havingValue="sftp")
-public class SftpRetrieverFactoryImpl implements RetrieverFactory {
+@ConditionalOnProperty(name = "retriever.name", havingValue="minio")
+public class MinioRetrieverFactoryImpl implements RetrieverFactory {
 
-	@Value("${sftp.host}")
-	private String host;
-	@Value("${sftp.port:22}")
-	private int port;
-	@Value("${sftp.username}")
-	private String username;
-	@Value("${sftp.password}")
-	private String password;
-	@Value("${sftp.location.tobeprocessed}")
+	@Value("${minio.endpoint}")
+	private String endpoint;
+	@Value("${minio.access-key}")
+	private String accessKey;
+	@Value("${minio.secret-key}")
+	private String secretKey;
+	@Value("${minio.bucket-name}")
+	private String bucketName;
+	@Value("${minio.location.tobeprocessed}")
 	private String toBeProcessed;
-	@Value("${sftp.location.inprogress}")
+	@Value("${minio.location.inprogress}")
 	private String inProgress;
-	@Value("${sftp.location.success}")
+	@Value("${minio.location.success}")
 	private String success;
-	@Value("${sftp.location.partialsucess}")
+	@Value("${minio.location.partialsucess}")
 	private String partialSuccess;
-	@Value("${sftp.location.failed}")
+	@Value("${minio.location.failed}")
 	private String failed;
-	@Value("${sftp.retries:5}")
-	private int numberOfRetries;
-	@Value("${sftp.retryDelay.from:500}")
-	private int retryDelayFrom;
-	@Value("${sftp.retryDelayTo:3500}")
-	private int retryDelayTo;
 
 	private final ConfigService configService;
 	private final AutoUploadAgentConfigRepository configRepository;
 	private final CsvHandlerService csvHandlerService;
 
-	@SneakyThrows
-	public RetrieverI create(OptionalInt port) {
-		SftpConfigModel configModel = configService.getSFTPConfiguration();
-		return new SftpRetriever(csvHandlerService, 
-				configModel.getHost(),
-				port.orElse(configModel.getPort()),
-				configModel.getUsername(), 
-				configModel.getPassword(),
+
+	@Override
+	public RetrieverI create() {
+		MinioConfigModel configModel = configService.getMinioConfiguration();
+		return new MinioRetriever(csvHandlerService,
+				configModel.getEndpoint(),
 				configModel.getAccessKey(),
+				configModel.getSecretKey(),
+				configModel.getBucketName(),
 				configModel.getToBeProcessedLocation(), 
 				configModel.getInProgressLocation(),
 				configModel.getSuccessLocation(),
 				configModel.getPartialSuccessLocation(),
-				configModel.getFailedLocation(),
-				numberOfRetries,
-				retryDelayFrom,
-				retryDelayTo
+				configModel.getFailedLocation()
 		);
-
-	}
-
-	@Override
-	public RetrieverI create() {
-		return create(OptionalInt.empty());
 	}
 
 	@SneakyThrows
 	@Override
 	public void saveDefaultConfig() {
-		Optional<ConfigEntity> config = configRepository.findAllByType(ConfigType.SFTP.toString());
+		Optional<ConfigEntity> config =
+				configRepository.findAllByType(ConfigType.MINIO.toString());
 		if (config.isEmpty()) {
-		SftpConfigModel sftpConfigModel = SftpConfigModel.builder()
-				.host(host)
-				.port(port)
-				.failedLocation(failed)
-				.username(username)
-				.password(password)
-				.toBeProcessedLocation(toBeProcessed)
-				.inProgressLocation(inProgress)
-				.partialSuccessLocation(partialSuccess)
-				.successLocation(success).build();
-		configService.saveConfiguration(ConfigType.SFTP, sftpConfigModel);
+			MinioConfigModel minioConfigModel = MinioConfigModel.builder()
+					.endpoint(endpoint)
+					.accessKey(accessKey)
+					.secretKey(secretKey)
+					.bucketName(bucketName)
+					.failedLocation(failed)
+					.toBeProcessedLocation(toBeProcessed)
+					.inProgressLocation(inProgress)
+					.partialSuccessLocation(partialSuccess)
+					.successLocation(success).build();
+			configService.saveConfiguration(ConfigType.MINIO, minioConfigModel);
 		}
 	}
 }

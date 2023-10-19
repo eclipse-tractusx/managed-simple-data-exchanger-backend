@@ -20,11 +20,14 @@
 
 package org.eclipse.tractusx.sde.sftp.service;
 
-import com.jcraft.jsch.ChannelSftp;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
-import com.jcraft.jsch.SftpException;
+import io.minio.CopyObjectArgs;
+import io.minio.CopySource;
+import io.minio.GetObjectArgs;
+import io.minio.GetObjectResponse;
+import io.minio.ListObjectsArgs;
+import io.minio.MinioClient;
+import io.minio.RemoveObjectArgs;
+import io.minio.messages.Item;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
 import org.eclipse.tractusx.sde.core.utils.TryUtils;
@@ -36,16 +39,16 @@ import java.nio.file.Files;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Slf4j
-public class SftpRetriever implements RetrieverI {
-    private ChannelSftp channelSftp;
-    private Session session;
+public class MinioRetriever implements RetrieverI {
+    private final MinioClient minioClient;
     private final CsvHandlerService csvHandlerService;
     private final Map<String, String> idToPath;
     private final Map<String, String> idToPolicy;
@@ -53,84 +56,59 @@ public class SftpRetriever implements RetrieverI {
     private final String successLocation;
     private final String partialSuccessLocation;
     private final String failedLocation;
-    private final String host;
-    private final int port;
-    private final String username;
-    private final String password;
-    private final String pKey;
-    private final int numberOfRetries;
-    private final int retryDelayFrom;
-    private final int retryDelayTo;
+    private final String bucketName;
 
-    private final Random rnd = new Random();
 
-    public SftpRetriever(CsvHandlerService csvHandlerService, String host, int port, String username, String password,
-                         String pKey, String toBeProcessedLocation, String inProgressLocation, String successLocation,
-                         String partialSuccessLocation, String failedLocation, int numberOfRetries, int retryDelayFrom, int retryDelayTo) throws JSchException, SftpException {
+
+    public MinioRetriever(CsvHandlerService csvHandlerService, String endpoint, String accessKey, String secretKey, String bucketName,
+                          String toBeProcessedLocation, String inProgressLocation, String successLocation, String partialSuccessLocation, String failedLocation) {
         this.csvHandlerService = csvHandlerService;
-        this.host = host;
-        this.port = port;
-        this.username = username;
-        this.password = password;
-        this.pKey = pKey;
         this.inProgressLocation = inProgressLocation;
         this.successLocation = successLocation;
         this.partialSuccessLocation = partialSuccessLocation;
         this.failedLocation = failedLocation;
-        this.numberOfRetries = numberOfRetries;
-        this.retryDelayFrom = retryDelayFrom;
-        this.retryDelayTo = retryDelayTo;
+        this.bucketName = bucketName;
 
-        idToPath = ensureConnected().ls(toBeProcessedLocation).stream().filter(lsEntry -> !lsEntry.getAttrs().isDir())
-                .filter(lsEntry -> lsEntry.getFilename().toLowerCase().endsWith(".csv"))
-                .map(lsEntry -> toBeProcessedLocation + "/" + lsEntry.getFilename())
+        minioClient = MinioClient.builder()
+                .endpoint(endpoint)
+                .credentials(accessKey, secretKey)
+                .build();
+        idToPath = StreamSupport.stream(minioClient.listObjects(
+                ListObjectsArgs.builder()
+                        .bucket(bucketName)
+                        .prefix(toBeProcessedLocation)
+                        .recursive(false)
+                .build()).spliterator(), false
+        ).flatMap(r -> TryUtils.tryExec(r::get, TryUtils.IGNORE()).stream())
+                .filter(Predicate.not(Item::isDir))
+                .map(Item::objectName)
+                .filter(name -> name.toLowerCase().endsWith(".csv"))
+                .map(name -> toBeProcessedLocation + "/" + name)
                 .collect(Collectors.toMap(path -> UUID.randomUUID().toString(), Function.identity()));
         idToPolicy = new ConcurrentHashMap<>();
     }
 
-    private ChannelSftp ensureConnected() throws JSchException {
-        return TryUtils.retryAdapter(
-                () -> {
-                    if (session == null || !session.isConnected()) {
-                        JSch jsch = new JSch();
-                        if (pKey != null) {
-                            jsch.addIdentity(host + "-agent", pKey.getBytes(), null, null);
-                        }
-                        session = jsch.getSession(username, host, port);
-                        if (password != null) {
-                            session.setPassword(password);
-                        }
-                        session.setConfig("StrictHostKeyChecking", "no");
-                        session.setConfig("PreferredAuthentications", "publickey,password");
-                        session.connect();
-
-                        channelSftp = (ChannelSftp) session.openChannel("sftp");
-                    }
-                    if (!channelSftp.isConnected()) {
-                        channelSftp.connect();
-                    }
-                    return channelSftp;
-                },
-                () -> TryUtils.tryRun(() -> Thread.sleep(rnd.nextInt(retryDelayFrom, retryDelayTo)), TryUtils.IGNORE()),
-                numberOfRetries
-        );
-    }
-
-    private void disconnect() {
-        if (channelSftp.isConnected()) {
-            channelSftp.disconnect();
-        }
-        if (session.isConnected()) {
-            session.disconnect();
-        }
-    }
-
     private void moveTo(String id, String newLocation) throws IOException {
         try {
+            var sourceObjectKey = idToPath.get(id);
             var newPath = newLocation + "/" + getFileName(id);
-            ensureConnected().rename(idToPath.get(id), newPath);
+            // Copy the object within the same bucket
+            minioClient.copyObject(CopyObjectArgs.builder()
+                    .bucket(bucketName)
+                    .object(newPath)
+                    .source(CopySource.builder()
+                            .bucket(bucketName)
+                            .object(sourceObjectKey)
+                            .build())
+                    .build());
+
+            // Remove the source object if you want to move and not just copy
+            minioClient.removeObject(RemoveObjectArgs.builder()
+                    .bucket(bucketName)
+                    .object(sourceObjectKey)
+                    .build());
             idToPath.put(id, newPath);
-        } catch (JSchException | SftpException e) {
+        } catch (Exception e) {
             throw new IOException(e);
         }
     }
@@ -173,8 +151,7 @@ public class SftpRetriever implements RetrieverI {
 
     @Override
     public void close() {
-        disconnect();
-        log.debug("Ftps client {} disconnected", host);
+        log.debug("Minio client is closing");
     }
 
     @Override
@@ -186,11 +163,14 @@ public class SftpRetriever implements RetrieverI {
                     final File localFile = new File(csvHandlerService.getFilePath(id));
                 }).flatMap(o -> TryUtils.tryExec(
                         () -> {
-                            TryUtils.retryAdapter(
-                                    () -> Files.copy(ensureConnected().get(o.filePath), o.localFile.toPath()),
-                                    () -> {},
-                                    numberOfRetries
-                            );
+                            log.info("Fetching data from " + bucketName + " bucket, for file: " + o.filePath);
+                            GetObjectArgs args = GetObjectArgs.builder()
+                                    .bucket(bucketName)
+                                    .object(o.filePath)
+                                    .build();
+                            GetObjectResponse res = minioClient.getObject(args);
+                            log.info("file fetched: "+res.object());
+                            Files.copy(res, o.localFile.toPath());
                             return o.id;
                         }, err -> o.localFile.delete()).stream()
                 ).iterator();

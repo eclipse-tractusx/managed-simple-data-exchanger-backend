@@ -19,42 +19,14 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.submodels.pcf;
 
-import java.io.InputStream;
-
-import org.eclipse.tractusx.sde.common.extensions.SubmodelExtension;
 import org.eclipse.tractusx.sde.common.model.Submodel;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import jakarta.annotation.PostConstruct;
-
 @Component
-public class PcfSubmodel extends SubmodelExtension {
+public class PcfSubmodel {
 
 	private Submodel submodel = null;
 
-	@Autowired
-	private PcfExecutor pcfWorkflow;
-	
-	@PostConstruct
-	public void init() {
-
-		String resource = "pcf.json";
-		// this is the path within the jar file
-		InputStream input = this.getClass().getResourceAsStream("/resources/" + resource);
-		if (input == null) {
-			// this is how we load file within editor (eg eclipse)
-			input = this.getClass().getClassLoader().getResourceAsStream(resource);
-		}
-
-		submodel = loadSubmodel(input);
-		
-		submodel.setExecutor(pcfWorkflow);
-
-		submodel.addProperties("tableName", "pcf_aspect");
-	}
-
-	@Override
 	public Submodel submodel() {
 		return submodel;
 	}

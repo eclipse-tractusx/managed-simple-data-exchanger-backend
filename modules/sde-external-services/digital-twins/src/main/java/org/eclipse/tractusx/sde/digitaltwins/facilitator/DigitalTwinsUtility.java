@@ -115,7 +115,7 @@ public class DigitalTwinsUtility {
 		List<Endpoint> endpoints = new ArrayList<>();
 		endpoints.add(Endpoint.builder().endpointInterface(CommonConstants.INTERFACE)
 				.protocolInformation(ProtocolInformation.builder()
-						.endpointAddress(digitalTwinEdcDataplaneEndpoint + CommonConstants.SUBMODEL_CONTEXT_URL)
+						.endpointAddress(digitalTwinEdcDataplaneEndpoint)
 						.endpointProtocol(CommonConstants.HTTP)
 						.endpointProtocolVersion(List.of(CommonConstants.ENDPOINT_PROTOCOL_VERSION))
 						.subProtocol(CommonConstants.SUB_PROTOCOL)

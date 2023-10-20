@@ -43,14 +43,24 @@ public class AssetEntryRequestFactory {
 	
     @Value(value = "${dft.apiKeyHeader}")
     private String apiKeyHeader;
+    
     @Value(value = "${dft.apiKey}")
     private String apiKey;
+    
     @Value(value = "${dft.hostname}")
     private String dftHostname;
+    
     @Value(value = "${manufacturerId}")
     private String manufacturerId;
+    
     @Value(value = "${edc.hostname}")
     private String edcEndpoint;
+  
+    @Value(value = "${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/token")
+    private String idpIssuerTokenURL;
+    
+    @Value(value = "${digital-twins.authentication.clientId}")
+    private String clientId;
 
     
     public AssetEntryRequest getAssetRequest(String submodel, String assetName, String shellId, String subModelId, String uuid) {
@@ -99,14 +109,20 @@ public class AssetEntryRequestFactory {
         return assetProperties;
     }
 
-    private HashMap<String, String> getDataAddressProperties(String shellId, String subModelId, String endpoint) {
-        HashMap<String, String> dataAddressProperties = new HashMap<>();
-        dataAddressProperties.put("type", TYPE);
-        dataAddressProperties.put("baseUrl", String.format(endpoint, shellId, subModelId));
-        dataAddressProperties.put("name", NAME);
-        dataAddressProperties.put("authKey", apiKeyHeader);
-        dataAddressProperties.put("authCode", apiKey);
-        return dataAddressProperties;
-    }
+	private HashMap<String, String> getDataAddressProperties(String shellId, String subModelId, String endpoint) {
+		HashMap<String, String> dataAddressProperties = new HashMap<>();
+		dataAddressProperties.put("type", TYPE);
+		dataAddressProperties.put("baseUrl", String.format(endpoint, shellId, subModelId));
+		dataAddressProperties.put("name", NAME);
+		dataAddressProperties.put("oauth2:tokenUrl", idpIssuerTokenURL);
+		dataAddressProperties.put("oauth2:clientId", clientId);
+		dataAddressProperties.put("oauth2:clientSecretKey", "client-secret");
+		dataAddressProperties.put("proxyMethod", "true");
+		dataAddressProperties.put("proxyBody", "true");
+		dataAddressProperties.put("proxyPath", "true");
+		dataAddressProperties.put("proxyQueryParams", "true");
+		dataAddressProperties.put("contentType", ASSET_PROP_CONTENT_TYPE);
+		return dataAddressProperties;
+	}
 
  }

@@ -22,7 +22,7 @@ name: sdebuild
 on:
   push:
     branches:
-      - 'update_twin_lookup_3.2'
+      - 'hotfix_3.2_with_pcf'
     tags:
       - 'v*.*.*'
       - 'v*.*.*-*'

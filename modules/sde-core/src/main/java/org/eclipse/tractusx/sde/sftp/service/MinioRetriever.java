@@ -76,14 +76,13 @@ public class MinioRetriever implements RetrieverI {
         idToPath = StreamSupport.stream(minioClient.listObjects(
                 ListObjectsArgs.builder()
                         .bucket(bucketName)
-                        .prefix(toBeProcessedLocation)
+                        .prefix(toBeProcessedLocation+"/")
                         .recursive(false)
                 .build()).spliterator(), false
         ).flatMap(r -> TryUtils.tryExec(r::get, TryUtils.IGNORE()).stream())
                 .filter(Predicate.not(Item::isDir))
                 .map(Item::objectName)
                 .filter(name -> name.toLowerCase().endsWith(".csv"))
-                .map(name -> toBeProcessedLocation + "/" + name)
                 .collect(Collectors.toMap(path -> UUID.randomUUID().toString(), Function.identity()));
         idToPolicy = new ConcurrentHashMap<>();
     }

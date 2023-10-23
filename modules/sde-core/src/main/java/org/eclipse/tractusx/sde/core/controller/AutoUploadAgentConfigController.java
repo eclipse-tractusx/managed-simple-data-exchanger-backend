@@ -23,6 +23,7 @@ package org.eclipse.tractusx.sde.core.controller;
 import java.util.Map;
 
 import org.eclipse.tractusx.sde.agent.model.ConfigType;
+import org.eclipse.tractusx.sde.agent.model.MinioConfigModel;
 import org.eclipse.tractusx.sde.agent.model.SchedulerConfigModel;
 import org.eclipse.tractusx.sde.agent.model.SftpConfigModel;
 import org.eclipse.tractusx.sde.sftp.dto.EmailNotificationModel;
@@ -69,6 +70,16 @@ public class AutoUploadAgentConfigController {
 	@PutMapping("/sftp")
 	public JsonNode updateSftp(@RequestBody @Valid SftpConfigModel config) {
 		return autoUploadAgentConfigurationService.saveConfiguration(ConfigType.SFTP, config);
+	}
+
+	@PutMapping("/minio")
+	public JsonNode updateMinio(@RequestBody @Valid MinioConfigModel config) {
+		return autoUploadAgentConfigurationService.saveConfiguration(ConfigType.MINIO, config);
+	}
+
+	@GetMapping("/minio")
+	public JsonNode getMinioConfig() {
+		return autoUploadAgentConfigurationService.getConfiguration(ConfigType.MINIO);
 	}
 
 	@GetMapping("/sftp")

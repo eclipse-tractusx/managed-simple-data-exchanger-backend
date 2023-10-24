@@ -20,20 +20,17 @@
 
 package org.eclipse.tractusx.sde.service;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.OptionalInt;
-import java.util.function.Function;
-import java.util.stream.Stream;
-
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import lombok.experimental.Delegate;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.sde.EnableTestContainers;
 import org.eclipse.tractusx.sde.TestContainerInitializer;
+import org.eclipse.tractusx.sde.agent.ConfigService;
 import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
 import org.eclipse.tractusx.sde.notification.config.EmailConfiguration;
 import org.eclipse.tractusx.sde.notification.manager.EmailManager;
 import org.eclipse.tractusx.sde.sftp.RetrieverI;
-import org.eclipse.tractusx.sde.sftp.service.DefaultConfigManagement;
 import org.eclipse.tractusx.sde.sftp.service.SftpRetrieverFactoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.parallel.Execution;
@@ -46,10 +43,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import lombok.experimental.Delegate;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.OptionalInt;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 @Slf4j
 @SpringBootTest
@@ -72,14 +71,13 @@ class SftpRetrieverTest {
 	SftpRetrieverFactoryImpl sftpRetrieverFactory;
 
 	@Autowired
-	DefaultConfigManagement defaultConfigManagement;
+	ConfigService configService;
 	
 	@BeforeEach
 	public void before() {
-		defaultConfigManagement.deleteAllConfig();
+		configService.deleteAllConfig();
 		TestContainerInitializer.sftp.stop();
 		TestContainerInitializer.sftp.start();
-		defaultConfigManagement.saveDefaultConfiguration();
 	}
 
 	@FunctionalInterface

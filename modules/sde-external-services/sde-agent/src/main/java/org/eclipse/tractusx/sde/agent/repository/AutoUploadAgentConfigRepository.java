@@ -20,14 +20,14 @@
 
 package org.eclipse.tractusx.sde.agent.repository;
 
-import java.util.Optional;
-
 import org.eclipse.tractusx.sde.agent.entity.ConfigEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface AutoUploadAgentConfigRepository extends JpaRepository<ConfigEntity, String> {
 
-	Optional<ConfigEntity> findAllByType(String type);
+	Optional<ConfigEntity> findByType(String type);
 }

@@ -18,7 +18,9 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.sftp;
+package org.eclipse.tractusx.sde.common;
 
-public interface RetrieverConfiguration {
+public interface ConfigurationProvider<T> {
+    T getConfiguration();
+    void saveConfig(T config);
 }

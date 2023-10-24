@@ -20,7 +20,7 @@
 
 package org.eclipse.tractusx.sde.util;
 
-import org.eclipse.tractusx.sde.core.utils.TryUtils;
+import org.eclipse.tractusx.sde.common.utils.TryUtils;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

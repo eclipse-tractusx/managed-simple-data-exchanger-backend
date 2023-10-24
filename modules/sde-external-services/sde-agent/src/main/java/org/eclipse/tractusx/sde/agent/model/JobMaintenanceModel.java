@@ -18,19 +18,27 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.sftp.service;
+package org.eclipse.tractusx.sde.agent.model;
 
-import org.eclipse.tractusx.sde.sftp.RetrieverI;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.io.IOException;
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class JobMaintenanceModel {
 
-public interface RetrieverFactory {
-    /***
-     * Successful creation of the retriever means the RetrieverConfiguration was correct
-     * and the retriever managed to log in to the remote resource
-     * @return retriever
-     */
-    RetrieverI create() throws IOException;
+	@NotNull
+    @JsonProperty(value = "automatic_upload")
+    private Boolean automaticUpload;
 
-    void saveDefaultConfig();
+    @NotNull
+    @JsonProperty(value = "email_notification")
+    private Boolean emailNotification;
+
 }

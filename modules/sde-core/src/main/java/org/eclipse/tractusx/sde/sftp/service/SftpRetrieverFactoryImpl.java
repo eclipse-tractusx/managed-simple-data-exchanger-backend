@@ -22,23 +22,20 @@ package org.eclipse.tractusx.sde.sftp.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.eclipse.tractusx.sde.agent.entity.ConfigEntity;
-import org.eclipse.tractusx.sde.agent.model.ConfigType;
+import org.eclipse.tractusx.sde.agent.ConfigService;
 import org.eclipse.tractusx.sde.agent.model.SftpConfigModel;
 import org.eclipse.tractusx.sde.agent.repository.AutoUploadAgentConfigRepository;
+import org.eclipse.tractusx.sde.common.ConfigurableFactory;
+import org.eclipse.tractusx.sde.common.ConfigurationProvider;
 import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
-import org.eclipse.tractusx.sde.sftp.RetrieverI;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 import java.util.OptionalInt;
 
 @Service
 @RequiredArgsConstructor
-@ConditionalOnProperty(name = "retriever.name", havingValue="sftp")
-public class SftpRetrieverFactoryImpl implements RetrieverFactory {
+public class SftpRetrieverFactoryImpl implements ConfigurableFactory<SftpRetriever>, ConfigurationProvider<SftpConfigModel> {
 
 	@Value("${sftp.host}")
 	private String host;
@@ -70,8 +67,8 @@ public class SftpRetrieverFactoryImpl implements RetrieverFactory {
 	private final CsvHandlerService csvHandlerService;
 
 	@SneakyThrows
-	public RetrieverI create(OptionalInt port) {
-		SftpConfigModel configModel = configService.getSFTPConfiguration();
+	public SftpRetriever create(OptionalInt port) {
+		SftpConfigModel configModel = getConfiguration();
 		return new SftpRetriever(csvHandlerService, 
 				configModel.getHost(),
 				port.orElse(configModel.getPort()),
@@ -91,16 +88,17 @@ public class SftpRetrieverFactoryImpl implements RetrieverFactory {
 	}
 
 	@Override
-	public RetrieverI create() {
+	public SftpRetriever create() {
 		return create(OptionalInt.empty());
 	}
 
-	@SneakyThrows
 	@Override
-	public void saveDefaultConfig() {
-		Optional<ConfigEntity> config = configRepository.findAllByType(ConfigType.SFTP.toString());
-		if (config.isEmpty()) {
-		SftpConfigModel sftpConfigModel = SftpConfigModel.builder()
+	public Class<SftpRetriever> getCreatedClass() {
+		return SftpRetriever.class;
+	}
+
+	private SftpConfigModel getDefaultConfig() {
+		return SftpConfigModel.builder()
 				.host(host)
 				.port(port)
 				.failedLocation(failed)
@@ -109,8 +107,22 @@ public class SftpRetrieverFactoryImpl implements RetrieverFactory {
 				.toBeProcessedLocation(toBeProcessed)
 				.inProgressLocation(inProgress)
 				.partialSuccessLocation(partialSuccess)
-				.successLocation(success).build();
-		configService.saveConfiguration(ConfigType.SFTP, sftpConfigModel);
-		}
+				.successLocation(success)
+				.build();
+	}
+
+	@Override
+	public SftpConfigModel getConfiguration() {
+		return configService.getConfigurationAsObject(SftpConfigModel.class)
+				.orElseGet(() -> {
+					var configModel = getDefaultConfig();
+					saveConfig(configModel);
+					return configModel;
+				});
+	}
+
+	@Override
+	public void saveConfig(SftpConfigModel config) {
+		configService.saveConfiguration(config);
 	}
 }

@@ -18,27 +18,17 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.sftp.dto;
+package org.eclipse.tractusx.sde.common;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.IOException;
 
-import jakarta.validation.constraints.NotEmpty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+public interface ConfigurableFactory<T> {
+    /***
+     * Successful creation of the retriever means the RetrieverConfiguration was correct
+     * and the retriever managed to log in to the remote resource
+     * @return retriever
+     */
+    T create() throws IOException;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class EmailNotificationModel {
-	
-	@NotEmpty
-	@JsonProperty(value = "to_email")
-	private String toEmail;
-	
-	@NotEmpty
-	@JsonProperty(value = "cc_email")
-	private String ccEmail;
+    Class<T> getCreatedClass();
 }

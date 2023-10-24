@@ -24,6 +24,11 @@
 	<name>sde-agent</name>
 	<packaging>jar</packaging>
 	<dependencies>
+		<dependency>
+			<groupId>org.eclipse.tractusx</groupId>
+			<artifactId>sde-common</artifactId>
+			<version>0.0.1</version>
+		</dependency>
 	</dependencies>
 
 </project>

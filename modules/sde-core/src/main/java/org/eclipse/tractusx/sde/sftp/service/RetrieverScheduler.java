@@ -20,42 +20,48 @@
 
 package org.eclipse.tractusx.sde.sftp.service;
 
-import java.util.UUID;
-import java.util.concurrent.ScheduledFuture;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Service;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.UUID;
+import java.util.concurrent.ScheduledFuture;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class RetrieverScheduler {
 
-	private final ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
+	private ThreadPoolTaskScheduler taskScheduler;
 	private final ProcessRemoteCsv processRemoteCsv;
-	private final ConfigService configService;
+	private final JobMaintenanceModelProvider jobMaintenanceModelProvider;
 	private ScheduledFuture<?> cronFuture = null;
+
+	public void init() {
+		taskScheduler = new ThreadPoolTaskScheduler();
+		taskScheduler.initialize();
+	}
 
 	public synchronized void schedule(String cronExpression) {
 		if (cronFuture != null) {
 			cronFuture.cancel(false);
 		}
-
-		if (configService.getJobMaintenanceDetails().getAutomaticUpload().booleanValue()) {
-			taskScheduler.initialize();
-			cronFuture = taskScheduler.schedule(() -> processRemoteCsv.process(taskScheduler, UUID.randomUUID().toString()),
-					new CronTrigger(cronExpression));
-			log.info("The Cron Scheduler started successfully as corn expresion " + cronExpression);
+		if (jobMaintenanceModelProvider.getConfiguration().getAutomaticUpload()) {
+			init();
+			cronFuture = taskScheduler.schedule(
+					() -> processRemoteCsv.process(taskScheduler, UUID.randomUUID().toString()),
+					new CronTrigger(cronExpression)
+			);
+			log.info("The Cron Scheduler started successfully as cron expression " + cronExpression);
 		} else {
 			log.warn("Automatic file upload disable, no new scheduler set for run");
 		}
 	}
 
 	public String fire() {
+		init();
 		return processRemoteCsv.process(taskScheduler, UUID.randomUUID().toString());
 	}
 

@@ -20,11 +20,12 @@
 
 package org.eclipse.tractusx.sde.controllers;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.tractusx.sde.EnableTestContainers;
-import org.eclipse.tractusx.sde.agent.model.ConfigType;
-import org.eclipse.tractusx.sde.agent.repository.AutoUploadAgentConfigRepository;
+import org.eclipse.tractusx.sde.agent.model.SchedulerConfigModel;
+import org.eclipse.tractusx.sde.agent.model.SftpConfigModel;
+import org.eclipse.tractusx.sde.sftp.service.SchedulerService;
+import org.eclipse.tractusx.sde.sftp.service.SftpRetrieverFactoryImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,9 +39,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Map;
 
-import net.minidev.json.JSONObject;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -56,33 +57,41 @@ class AutoUploadAgentConfigControllerTest {
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	@Autowired
-	AutoUploadAgentConfigRepository ftpsConfigRepository;
+	SftpRetrieverFactoryImpl sftpRetrieverFactory;
+
+	@Autowired
+	SchedulerService schedulerService;
 
 
 	@Test
 	void testSaveSFTPConfig() throws Exception {
 
 		mvc.perform(MockMvcRequestBuilders.put("/sftp").contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(getJsonBody()))).andExpect(status().isOk());
+				.content(objectMapper.writeValueAsString(getBodySftp()))).andExpect(status().isOk());
 
 		mvc.perform(MockMvcRequestBuilders.get("/sftp").contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 
-		Assertions.assertEquals(ConfigType.SFTP.toString(),
-				ftpsConfigRepository.findAllByType(ConfigType.SFTP.toString()).get().getType());
+		Assertions.assertEquals(
+				objectMapper.convertValue(getBodySftp(), SftpConfigModel.class),
+				sftpRetrieverFactory.getConfiguration()
+		);
 	}
 
 	@Test
 	void testSaveSchedulerHourlyTypeConfig() throws Exception {
 
 		mvc.perform(MockMvcRequestBuilders.put("/scheduler").contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(getJsonSchedulerHourBody()))).andExpect(status().isOk());
+				.content(objectMapper.writeValueAsString(getSchedulerHourBody()))).andExpect(status().isOk());
 
 		mvc.perform(MockMvcRequestBuilders.get("/scheduler")).andExpect(status().isOk());
 
-		Assertions.assertEquals(ConfigType.SCHEDULER.toString(),
-				ftpsConfigRepository.findAllByType(ConfigType.SCHEDULER.toString()).get().getType());
+		Assertions.assertEquals(
+				objectMapper.convertValue(getSchedulerHourBody(), SchedulerConfigModel.class),
+				schedulerService.getConfiguration()
+		);
 	}
+
 
 	@Test
 	void testSaveSchedulerDailyTypeConfig() throws Exception {
@@ -92,8 +101,10 @@ class AutoUploadAgentConfigControllerTest {
 
 		mvc.perform(MockMvcRequestBuilders.get("/scheduler")).andExpect(status().isOk());
 
-		Assertions.assertEquals(ConfigType.SCHEDULER.toString(),
-				ftpsConfigRepository.findAllByType(ConfigType.SCHEDULER.toString()).get().getType());
+		Assertions.assertEquals(
+				objectMapper.convertValue(getJsonSchedulerDailyBody(), SchedulerConfigModel.class),
+				schedulerService.getConfiguration()
+		);
 	}
 
 	@Test
@@ -105,44 +116,47 @@ class AutoUploadAgentConfigControllerTest {
 		mvc.perform(MockMvcRequestBuilders.get("/scheduler").contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 
-		Assertions.assertEquals(ConfigType.SCHEDULER.toString(),
-				ftpsConfigRepository.findAllByType(ConfigType.SCHEDULER.toString()).get().getType());
+		Assertions.assertEquals(
+				objectMapper.convertValue(getJsonSchedulerWeeklyBody(), SchedulerConfigModel.class),
+				schedulerService.getConfiguration()
+		);
 	}
 
-	private JSONObject getJsonBody() {
-		JSONObject json = new JSONObject();
-		json.put("host", "127.0.0.1");
-		json.put("port", 22);
-		json.put("username", "foo");
-		json.put("password", "pass");
-		json.put("toBeProcessedLocation", "/upload/sftp/tobe");
-		json.put("failedLocation", "/upload/sftp/failed");
-		json.put("partialSuccessLocation", "/upload/sftp/partial");
-		json.put("successLocation", "/upload/sftp/success");
-		json.put("inProgressLocation", "/upload/sftp/inprogress");
-		return json;
+
+
+	private Map<String, Object> getBodySftp() {
+		return Map.of(
+			"host", "127.0.0.1",
+			"port", 2,
+			"username", "foo",
+			"password", "pass",
+			"toBeProcessedLocation", "/upload/sftp/tobe",
+			"failedLocation", "/upload/sftp/failed",
+			"partialSuccessLocation", "/upload/partial",
+			"successLocation", "/upload/sftp/success",
+			"inProgressLocation", "/upload/sftp/inprogress"
+		);
 	}
 
-	private JSONObject getJsonSchedulerHourBody() {
-		JSONObject json = new JSONObject();
-		json.put("type", "HOURLY");
-		json.put("time", "2");
-		return json;
+	private Map<String, Object> getSchedulerHourBody() {
+		return Map.of(
+				"type", "HOURLY",
+				"time", "2"
+		);
 	}
 
-	private JSONObject getJsonSchedulerDailyBody() {
-		JSONObject json = new JSONObject();
-		json.put("type", "DAILY");
-		json.put("time", "13:30");
-		return json;
+	private Map<String, Object> getJsonSchedulerDailyBody() {
+		return Map.of(
+				"type", "DAILY",
+				"time", "13:30"
+		);
 	}
 
-	private JSONObject getJsonSchedulerWeeklyBody() {
-		JSONObject json = new JSONObject();
-		json.put("type", "WEEKLY");
-		json.put("day", "1");
-		json.put("time", "13:30");
-		return json;
+	private Map<String, Object> getJsonSchedulerWeeklyBody() {
+		return  Map.of(
+			"type", "WEEKLY",
+			"day", "1",
+			"time", "13:30"
+		);
 	}
-
 }

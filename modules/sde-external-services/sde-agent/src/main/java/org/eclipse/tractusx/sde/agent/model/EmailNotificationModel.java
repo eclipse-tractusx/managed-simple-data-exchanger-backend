@@ -20,7 +20,25 @@
 
 package org.eclipse.tractusx.sde.agent.model;
 
-public enum ConfigType {
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-    MINIO, SFTP, SCHEDULER, NOTIFICATION, JOB_MAINTENANCE
+import jakarta.validation.constraints.NotEmpty;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class EmailNotificationModel {
+	
+	@NotEmpty
+	@JsonProperty(value = "to_email")
+	private String toEmail;
+	
+	@NotEmpty
+	@JsonProperty(value = "cc_email")
+	private String ccEmail;
 }

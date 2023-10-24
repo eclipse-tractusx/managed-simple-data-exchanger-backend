@@ -20,24 +20,20 @@
 
 package org.eclipse.tractusx.sde.sftp.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import org.eclipse.tractusx.sde.agent.entity.ConfigEntity;
-import org.eclipse.tractusx.sde.agent.model.ConfigType;
+import org.eclipse.tractusx.sde.agent.ConfigService;
 import org.eclipse.tractusx.sde.agent.model.MinioConfigModel;
 import org.eclipse.tractusx.sde.agent.repository.AutoUploadAgentConfigRepository;
+import org.eclipse.tractusx.sde.common.ConfigurableFactory;
+import org.eclipse.tractusx.sde.common.ConfigurationProvider;
 import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
-import org.eclipse.tractusx.sde.sftp.RetrieverI;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@ConditionalOnProperty(name = "retriever.name", havingValue="minio")
-public class MinioRetrieverFactoryImpl implements RetrieverFactory {
+public class MinioRetrieverFactoryImpl implements ConfigurableFactory<MinioRetriever>, ConfigurationProvider<MinioConfigModel> {
 
 	@Value("${minio.endpoint}")
 	private String endpoint;
@@ -61,41 +57,56 @@ public class MinioRetrieverFactoryImpl implements RetrieverFactory {
 	private final ConfigService configService;
 	private final AutoUploadAgentConfigRepository configRepository;
 	private final CsvHandlerService csvHandlerService;
+	private final ObjectMapper mapper;
 
 
 	@Override
-	public RetrieverI create() {
-		MinioConfigModel configModel = configService.getMinioConfiguration();
+	public MinioRetriever create() {
+		var configModel = getConfiguration();
 		return new MinioRetriever(csvHandlerService,
-				configModel.getEndpoint(),
-				configModel.getAccessKey(),
-				configModel.getSecretKey(),
-				configModel.getBucketName(),
-				configModel.getToBeProcessedLocation(), 
-				configModel.getInProgressLocation(),
-				configModel.getSuccessLocation(),
-				configModel.getPartialSuccessLocation(),
-				configModel.getFailedLocation()
-		);
+							configModel.getEndpoint(),
+							configModel.getAccessKey(),
+							configModel.getSecretKey(),
+							configModel.getBucketName(),
+							configModel.getToBeProcessedLocation(),
+							configModel.getInProgressLocation(),
+							configModel.getSuccessLocation(),
+							configModel.getPartialSuccessLocation(),
+							configModel.getFailedLocation()
+				);
 	}
 
-	@SneakyThrows
 	@Override
-	public void saveDefaultConfig() {
-		Optional<ConfigEntity> config =
-				configRepository.findAllByType(ConfigType.MINIO.toString());
-		if (config.isEmpty()) {
-			MinioConfigModel minioConfigModel = MinioConfigModel.builder()
-					.endpoint(endpoint)
-					.accessKey(accessKey)
-					.secretKey(secretKey)
-					.bucketName(bucketName)
-					.failedLocation(failed)
-					.toBeProcessedLocation(toBeProcessed)
-					.inProgressLocation(inProgress)
-					.partialSuccessLocation(partialSuccess)
-					.successLocation(success).build();
-			configService.saveConfiguration(ConfigType.MINIO, minioConfigModel);
-		}
+	public Class<MinioRetriever> getCreatedClass() {
+		return MinioRetriever.class;
+	}
+
+	@Override
+	public MinioConfigModel getConfiguration() {
+		return configService.getConfigurationAsObject(MinioConfigModel.class)
+				.orElseGet(() -> {
+					var minioConfigModel = getDefaultConfig();
+					saveConfig(minioConfigModel);
+					return minioConfigModel;
+				});
+	}
+
+	@Override
+	public void saveConfig(MinioConfigModel config) {
+		configService.saveConfiguration(config);
+	}
+
+	private MinioConfigModel getDefaultConfig() {
+		return MinioConfigModel.builder()
+				.endpoint(endpoint)
+				.accessKey(accessKey)
+				.secretKey(secretKey)
+				.bucketName(bucketName)
+				.failedLocation(failed)
+				.toBeProcessedLocation(toBeProcessed)
+				.inProgressLocation(inProgress)
+				.partialSuccessLocation(partialSuccess)
+				.successLocation(success)
+				.build();
 	}
 }

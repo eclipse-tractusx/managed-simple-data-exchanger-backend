@@ -18,11 +18,19 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.agent.enums;
+package org.eclipse.tractusx.sde.retrieverl;
 
-public enum SftpReportStatusEnum {
-    IN_PROGRESS,
-    PARTIAL_SUCCESS,
-    SUCCESS,
-    FAILED
+import java.io.IOException;
+
+public interface RetrieverI extends Iterable<String>, AutoCloseable {
+    void setProgress(String id) throws IOException;
+    void setSuccess(String id) throws IOException;
+    void setPartial(String id) throws IOException;
+    void setFailed(String id) throws IOException;
+    String getFileName(String id);
+	
+    void setPolicyName(String id, String policyName);
+    String getPolicyName(String id);
+    
+    public int size();
 }

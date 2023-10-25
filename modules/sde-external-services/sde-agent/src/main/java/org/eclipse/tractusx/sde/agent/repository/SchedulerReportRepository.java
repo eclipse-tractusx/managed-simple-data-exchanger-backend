@@ -20,18 +20,18 @@
 
 package org.eclipse.tractusx.sde.agent.repository;
 
-import org.eclipse.tractusx.sde.agent.entity.SftpSchedulerReport;
-import org.eclipse.tractusx.sde.agent.enums.SftpReportStatusEnum;
+import org.eclipse.tractusx.sde.agent.entity.SchedulerReport;
+import org.eclipse.tractusx.sde.agent.enums.SchedulerReportStatusEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface SftpReportRepository extends JpaRepository<SftpSchedulerReport, String> {
+public interface SchedulerReportRepository extends JpaRepository<SchedulerReport, String> {
 
-    List<SftpSchedulerReport> findByStatus(SftpReportStatusEnum inProgress);
+    List<SchedulerReport> findByStatus(SchedulerReportStatusEnum inProgress);
 
-    List<SftpSchedulerReport> findBySchedulerId(String schedulerId);
+    List<SchedulerReport> findBySchedulerId(String schedulerId);
 
-    List<SftpSchedulerReport> findByProcessIdIn(List<String> processIds);
+    List<SchedulerReport> findByProcessIdIn(List<String> processIds);
 
 }

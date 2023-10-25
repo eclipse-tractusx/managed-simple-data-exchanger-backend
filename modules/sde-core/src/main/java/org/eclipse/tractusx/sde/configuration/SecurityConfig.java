@@ -54,7 +54,7 @@ import lombok.SneakyThrows;
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
-	private static final String[] PUBLIC_URL = { "/ping", "/cache/**", "/*/public/**", "/api-docs/**", "/swagger-ui/**",
+	private static final String[] PUBLIC_URL = { "/ping", "/cache/**", "/api-docs/**", "/swagger-ui/**",
 			"*/swagger-ui/**", "/actuator/health/readiness", "/actuator/health/liveness", "/v3/api-docs/**" };
 
 	@Value("${keycloak.clientid}")

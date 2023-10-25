@@ -18,19 +18,15 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.sftp;
+package org.eclipse.tractusx.sde.agent.mapper;
 
-import java.io.IOException;
+import org.eclipse.tractusx.sde.agent.entity.SchedulerReport;
+import org.eclipse.tractusx.sde.agent.model.SchedulerReportModel;
+import org.mapstruct.Mapper;
 
-public interface RetrieverI extends Iterable<String>, AutoCloseable {
-    void setProgress(String id) throws IOException;
-    void setSuccess(String id) throws IOException;
-    void setPartial(String id) throws IOException;
-    void setFailed(String id) throws IOException;
-    String getFileName(String id);
-	
-    void setPolicyName(String id, String policyName);
-    String getPolicyName(String id);
-    
-    public int size();
+@Mapper(componentModel = "spring")
+public interface SchedulerReportMapper {
+    SchedulerReportModel mapFrom(SchedulerReport reportEntity);
+
+    SchedulerReport mapFrom(SchedulerReportModel reportModel);
 }

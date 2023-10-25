@@ -22,7 +22,11 @@ name: sdebuild
 on:
   push:
     branches:
+<<<<<<< HEAD
       - 'DST_PIP10_ITR5'
+=======
+      - 'update_twin_lookup_3.2'
+>>>>>>> hotfix_3.2_with_pcf
     tags:
       - 'v*.*.*'
       - 'v*.*.*-*'
@@ -66,7 +70,11 @@ jobs:
           images: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
+<<<<<<< HEAD
             type=semver,pattern={{version}},value=v2.3.0
+=======
+            type=semver,pattern={{version}},value=v2.1.2
+>>>>>>> hotfix_3.2_with_pcf
           flavor: |
             latest=true
               

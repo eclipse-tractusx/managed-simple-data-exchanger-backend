@@ -44,7 +44,7 @@ import org.eclipse.tractusx.sde.core.policy.entity.PolicyMapper;
 import org.eclipse.tractusx.sde.core.policy.service.PolicyService;
 import org.eclipse.tractusx.sde.core.processreport.ProcessReportUseCase;
 import org.eclipse.tractusx.sde.core.processreport.model.ProcessReport;
-import org.eclipse.tractusx.sde.sftp.service.PolicyProvider;
+import org.eclipse.tractusx.sde.retrieverl.service.PolicyProvider;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;

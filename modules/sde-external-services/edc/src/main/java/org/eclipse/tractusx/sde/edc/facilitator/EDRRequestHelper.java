@@ -68,11 +68,11 @@ public class EDRRequestHelper extends AbstractEDCStepsHelper {
 	}
 
 	@SneakyThrows
-	public Object getDataFromProvider(EDRCachedByIdResponse authorizationToken, String downloadDataAs) {
+	public Object getDataFromProvider(EDRCachedByIdResponse authorizationToken, String endpoint) {
 		Map<String, String> authHeader = new HashMap<>();
 		authHeader.put(authorizationToken.getAuthKey(), authorizationToken.getAuthCode());
-		return edrApiProxy.getActualDataFromProviderDataPlane(
-				new URI(authorizationToken.getEndpoint()), downloadDataAs, authHeader);
+		return edrApiProxy.getActualDataFromProviderDataPlane(new URI(endpoint),
+				authHeader);
 	}
 
 }

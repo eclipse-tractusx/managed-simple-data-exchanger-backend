@@ -18,18 +18,17 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.sftp.service;
+package org.eclipse.tractusx.sde.retrieverl.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
 import org.eclipse.tractusx.sde.agent.ConfigService;
 import org.eclipse.tractusx.sde.agent.model.MinioConfigModel;
-import org.eclipse.tractusx.sde.agent.repository.AutoUploadAgentConfigRepository;
 import org.eclipse.tractusx.sde.common.ConfigurableFactory;
 import org.eclipse.tractusx.sde.common.ConfigurationProvider;
 import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -55,9 +54,7 @@ public class MinioRetrieverFactoryImpl implements ConfigurableFactory<MinioRetri
 	private String failed;
 
 	private final ConfigService configService;
-	private final AutoUploadAgentConfigRepository configRepository;
 	private final CsvHandlerService csvHandlerService;
-	private final ObjectMapper mapper;
 
 
 	@Override

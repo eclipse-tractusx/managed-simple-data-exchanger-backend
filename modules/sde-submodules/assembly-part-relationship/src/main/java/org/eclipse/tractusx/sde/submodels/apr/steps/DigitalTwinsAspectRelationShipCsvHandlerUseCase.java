@@ -203,6 +203,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 		List<QueryDataOfferModel> queryDataOffers = getDDTRUrl(childManufacturerId);
 
 		String childUUID = null;
+		String msg = "";
 
 		for (QueryDataOfferModel dtOffer : queryDataOffers) {
 
@@ -210,11 +211,16 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 
 			if (edrToken != null) {
 				childUUID = lookUpChildTwin(shellLookupRequest, aspectRelationShip, edrToken, dtOffer);
-				if (childUUID != null)
+				if (childUUID != null) {
 					break;
+				} else {
+					log.warn(aspectRelationShip.getRowNumber() + ", EDC connector " + dtOffer.getConnectorOfferUrl()
+							+ ", No child twin found for " + shellLookupRequest.toJsonString());
+				}
 			} else {
-				log.warn(aspectRelationShip.getRowNumber() + ", " + dtOffer.getConnectorOfferUrl()
-						+ ", The EDR token is null to find child twin " + shellLookupRequest.toJsonString());
+				msg = ", EDC connector " + dtOffer.getConnectorOfferUrl()
+						+ ", The EDR token is null to find child twin ";
+				log.warn(aspectRelationShip.getRowNumber() + msg + shellLookupRequest.toJsonString());
 			}
 		}
 

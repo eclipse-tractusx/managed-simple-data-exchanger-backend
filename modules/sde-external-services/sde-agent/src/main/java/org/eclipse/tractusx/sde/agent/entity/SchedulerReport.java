@@ -18,26 +18,40 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.agent.model;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.eclipse.tractusx.sde.agent.enums.SftpReportStatusEnum;
+package org.eclipse.tractusx.sde.agent.entity;
 
 import java.time.LocalDateTime;
 
+import org.eclipse.tractusx.sde.agent.enums.SchedulerReportStatusEnum;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.Data;
+
+@Table(name = "scheduler_report")
+@Entity
 @Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class SftpReportModel {
-    private String processId;
-    private String schedulerId;
-    private String fileName;
-    private String policyName;
-    private SftpReportStatusEnum status;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+public class SchedulerReport {
+	@Id
+	@Column(name = "process_id")
+	private String processId;
+	@Column(name = "scheduler_id")
+	private String schedulerId;
+	@Column(name = "file_name")
+	private String fileName;
+	@Column(name = "policy_name")
+	private String policyName;
+	@Enumerated(EnumType.STRING)
+	@Column(name = "status")
+	private SchedulerReportStatusEnum status;
+	@Column(name = "start_date")
+	private LocalDateTime startDate;
+	@Column(name = "end_date")
+	private LocalDateTime endDate;
+	@Column(name = "remark", columnDefinition = "TEXT")
+	private String remark;
 }

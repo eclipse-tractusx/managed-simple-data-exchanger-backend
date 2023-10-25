@@ -69,14 +69,16 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
 	private static final String NEGOTIATED = "NEGOTIATED";
 	private static final String STATUS = "status";
+
 	private final ContractOfferCatalogApi contractOfferCatalogApiProxy;
 	private final ContractNegotiateManagementHelper contractNegotiateManagement;
-	private final EDRRequestHelper edrRequestHelper;
 
 	private final ContractNegotiationInfoRepository contractNegotiationInfoRepository;
 	private final PolicyConstraintBuilderService policyConstraintBuilderService;
 
 	private final ContractOfferRequestFactory contractOfferRequestFactory;
+
+	private final EDRRequestHelper edrRequestHelper;
 
 	private static final Integer RETRY = 5;
 
@@ -91,7 +93,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
 		JsonNode contractOfferCatalog = contractOfferCatalogApiProxy
 				.getContractOffersCatalog(contractOfferRequestFactory
-						.getContractOfferRequest(providerUrl + protocolPath, limit, offset, filterExpression));
+						.getContractOfferRequest(sproviderUrl + protocolPath, limit, offset, filterExpression));
 
 		JsonNode jOffer = contractOfferCatalog.get("dcat:dataset");
 		if (jOffer.isArray()) {
@@ -307,7 +309,8 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 		EDRCachedResponse checkContractNegotiationStatus = verifyEDRResponse(eDRCachedResponseList);
 
 		if (checkContractNegotiationStatus == null) {
-			log.info("There was no EDR process initiated " + offer.getAssetId() + ", so initiating EDR process");
+			log.info("There was no EDR process initiated or may be EDR token was expired " + offer.getAssetId()
+					+ ", so initiating EDR process");
 			edrRequestHelper.edrRequestInitiate(recipientURL, connectorId, offer.getOfferId(), offer.getAssetId(),
 					action, extensibleProperty);
 		} else {
@@ -367,16 +370,41 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 		if (eDRCachedResponseList != null && !eDRCachedResponseList.isEmpty()) {
 			for (EDRCachedResponse edrCachedResponseObj : eDRCachedResponseList) {
 				String edrState = edrCachedResponseObj.getEdrState();
-
-				if (NEGOTIATED.equalsIgnoreCase(edrState)) {
+				// For EDC connector 5.0 edrState filed not supported so checking token
+				// validation by calling direct API
+				if (NEGOTIATED.equalsIgnoreCase(edrState) || isEDRTokenValid(edrCachedResponseObj)) {
 					eDRCachedResponse = edrCachedResponseObj;
+					eDRCachedResponse.setEdrState(NEGOTIATED);
 					break;
-				} else {
-					eDRCachedResponse = edrCachedResponseObj;
 				}
 			}
 		}
 		return eDRCachedResponse;
+	}
+
+	@SneakyThrows
+	private boolean isEDRTokenValid(EDRCachedResponse edrCachedResponseObj) {
+		String assetId = edrCachedResponseObj.getAssetId();
+		try {
+			EDRCachedByIdResponse authorizationToken = getAuthorizationTokenForDataDownload(
+					edrCachedResponseObj.getTransferProcessId());
+			edrRequestHelper.getDataFromProvider(authorizationToken, authorizationToken.getEndpoint());
+		} catch (FeignException e) {
+			log.error("RequestBody: " + e.request());
+			String errorMsg = "FeignExceptionton for verifyEDR token " + assetId + "," + e.status() + "::"
+					+ e.contentUTF8();
+			log.error("Response: " + errorMsg);
+
+			if (e.status() == 403) {
+				log.error("Got 403 as token status so going to try new EDR token: " + errorMsg);
+				return false;
+			}
+		} catch (Exception e) {
+			String errorMsg = "Exception for asset in isEDRTokenValid " + assetId + "," + e.getMessage();
+			log.error(errorMsg);
+			throw new ServiceException(errorMsg);
+		}
+		return true;
 	}
 
 	@SneakyThrows
@@ -426,7 +454,8 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 			try {
 				EDRCachedByIdResponse authorizationToken = getAuthorizationTokenForDataDownload(
 						verifyEDRRequestStatus.getTransferProcessId());
-				return edrRequestHelper.getDataFromProvider(authorizationToken, downloadDataAs);
+				String endpoint = authorizationToken.getEndpoint() + "?" + downloadDataAs + "=" + downloadDataAs;
+				return edrRequestHelper.getDataFromProvider(authorizationToken, endpoint);
 			} catch (FeignException e) {
 				log.error("Download RequestBody: " + e.request());
 				String errorMsg = "Unable to download subcribe data offer because: " + e.contentUTF8();

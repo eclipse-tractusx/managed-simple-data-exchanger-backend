@@ -18,11 +18,15 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.sftp.service;
+package org.eclipse.tractusx.sde.retrieverl.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.agent.ConfigService;
 import org.eclipse.tractusx.sde.agent.model.JobMaintenanceModel;
@@ -32,12 +36,8 @@ import org.eclipse.tractusx.sde.common.ConfigurationProvider;
 import org.eclipse.tractusx.sde.common.exception.ValidationException;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -45,9 +45,6 @@ public class SchedulerService implements ConfigurationProvider<SchedulerConfigMo
 
 	private final ConfigService configService;
 	private final RetrieverScheduler retrieverScheduler;
-	private final JobMaintenanceModelProvider jobMaintenanceModelProvider;
-
-	private final ObjectMapper mapper = new ObjectMapper();
 
 	public Map<String, String> fire() {
 		return Map.of("msg", retrieverScheduler.fire());
@@ -64,7 +61,7 @@ public class SchedulerService implements ConfigurationProvider<SchedulerConfigMo
 	}
 
 	public void updateScheduleStatus(JobMaintenanceModel config) {
-		if (config.getAutomaticUpload()) {
+		if (config.getAutomaticUpload().booleanValue()) {
 			// enable the scheduler
 			enable();
 		} else {

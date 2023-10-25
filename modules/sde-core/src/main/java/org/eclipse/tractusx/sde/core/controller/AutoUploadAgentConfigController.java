@@ -20,19 +20,21 @@
 
 package org.eclipse.tractusx.sde.core.controller;
 
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.eclipse.tractusx.sde.agent.ConfigService;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.eclipse.tractusx.sde.agent.model.ActiveStorageMedia;
 import org.eclipse.tractusx.sde.agent.model.EmailNotificationModel;
 import org.eclipse.tractusx.sde.agent.model.JobMaintenanceModel;
 import org.eclipse.tractusx.sde.agent.model.MinioConfigModel;
 import org.eclipse.tractusx.sde.agent.model.SchedulerConfigModel;
 import org.eclipse.tractusx.sde.agent.model.SftpConfigModel;
 import org.eclipse.tractusx.sde.notification.manager.EmailNotificationModelProvider;
-import org.eclipse.tractusx.sde.sftp.service.JobMaintenanceModelProvider;
-import org.eclipse.tractusx.sde.sftp.service.MinioRetrieverFactoryImpl;
-import org.eclipse.tractusx.sde.sftp.service.SchedulerService;
-import org.eclipse.tractusx.sde.sftp.service.SftpRetrieverFactoryImpl;
+import org.eclipse.tractusx.sde.retrieverl.service.ActiveStorageMediaProvider;
+import org.eclipse.tractusx.sde.retrieverl.service.JobMaintenanceModelProvider;
+import org.eclipse.tractusx.sde.retrieverl.service.MinioRetrieverFactoryImpl;
+import org.eclipse.tractusx.sde.retrieverl.service.SchedulerService;
+import org.eclipse.tractusx.sde.retrieverl.service.SftpRetrieverFactoryImpl;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,20 +42,20 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @PreAuthorize("hasPermission('','auto_config_management')")
 @RequiredArgsConstructor
 public class AutoUploadAgentConfigController {
 
-	private final ConfigService configService;
 	private final SchedulerService schedulerService;
 	private final MinioRetrieverFactoryImpl minioRetrieverFactory;
 	private final SftpRetrieverFactoryImpl sftpRetrieverFactory;
 	private final EmailNotificationModelProvider emailNotificationModelProvider;
 	private final JobMaintenanceModelProvider jobMaintenanceModelProvider;
-
+	private final ActiveStorageMediaProvider activeStorageMediaProvider;
 
 	@PostMapping("/fire")
 	public Map<String, String> fire() {
@@ -71,14 +73,25 @@ public class AutoUploadAgentConfigController {
 		return schedulerService.getConfiguration();
 	}
 
+	@GetMapping("/storage-media")
+	public Map<String, Object> getStorageMedia() {
+		Map<String, Object> storageMedia = new HashMap<>();
+		storageMedia.put("sftp", sftpRetrieverFactory.getConfiguration());
+		storageMedia.put("minio", minioRetrieverFactory.getConfiguration());
+		storageMedia.put("active", activeStorageMediaProvider.getConfiguration().getName());
+		return storageMedia;
+	}
+
 	@PutMapping("/sftp")
 	public void updateSftp(@RequestBody @Valid SftpConfigModel sftpConfigModel) {
 		sftpRetrieverFactory.saveConfig(sftpConfigModel);
+		activeStorageMediaProvider.saveConfig(ActiveStorageMedia.builder().name("sftp").build());
 	}
 
 	@PutMapping("/minio")
 	public void updateMinio(@RequestBody @Valid MinioConfigModel minioConfigModel) {
 		minioRetrieverFactory.saveConfig(minioConfigModel);
+		activeStorageMediaProvider.saveConfig(ActiveStorageMedia.builder().name("minio").build());
 	}
 
 	@GetMapping("/minio")

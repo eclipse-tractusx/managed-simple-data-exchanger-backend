@@ -141,25 +141,35 @@ public abstract class PcfMapper {
 				.carbonContentBiogenic(entity.getCarbonContentBiogenic())
 				.build();
 		
-		PcfSubmodelResponse build = PcfSubmodelResponse.builder().specVersion(entity.getSpecVersion())
-				.companyIds(List.of(CompanyIds.builder().companyId(entity.getCompanyId()).build()))
-				.extWBCSDProductCodeCpc(entity.getExtWBCSDProductCodeCpc()).created(entity.getCreated())
-				.companyName(entity.getCompanyName()).extWBCSDPfStatus(entity.getExtWBCSDPfStatus())
+		
+		return new Gson().toJsonTree(PcfSubmodelResponse.builder()
+				.specVersion(entity.getSpecVersion())
+				.companyIds(List.of(CompanyIds.builder()
+						.companyId(entity.getCompanyId())
+						.build()))
+				.extWBCSDProductCodeCpc(entity.getExtWBCSDProductCodeCpc())
+				.created(entity.getCreated())
+				.companyName(entity.getCompanyName())
+				.extWBCSDPfStatus(entity.getExtWBCSDPfStatus())
 				.version(entity.getVersion())
-				.productName(entity.getProductName()).pcf(pcfResponse)
+				.productName(entity.getProductName())
+				.pcf(pcfResponse)
 				.partialFullPcf(entity.getPartialFullPcf())
-				.productIds(List.of(ProductIds.builder().productId(entity.getProductId()).build()))
-
-				.validityPeriodStart(entity.getValidityPeriodStart()).comment(entity.getComment()).id(entity.getId())
-				.validityPeriodEnd(entity.getValidityPeriodEnd()).pcfLegalStatement(entity.getPcfLegalStatement())
+				.productIds(List.of(ProductIds.builder()
+						.productId(entity.getProductId())
+						.build()))
+				
+				.validityPeriodStart(entity.getValidityPeriodStart())
+				.comment(entity.getComment())
+				.id(entity.getId())
+				.validityPeriodEnd(entity.getValidityPeriodEnd())
+				.pcfLegalStatement(entity.getPcfLegalStatement())
 				.productDescription(entity.getProductDescription())
-
-				.precedingPfIds(List.of(PrecedingPfIds.builder().id(entity.getPrecedingPfId()).build())).build();
-	
-		PcfAspect csv = mapFrom(entity);
-		
-		
-		return aspectResponseFactory.maptoReponse(csv, build);
+				
+				.precedingPfIds(List.of(PrecedingPfIds.builder()
+						.id(entity.getPrecedingPfId())
+						.build()))
+				.build()).getAsJsonObject();
 
 	}
 

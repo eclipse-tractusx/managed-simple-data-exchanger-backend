@@ -18,20 +18,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.sftp.service;
-
-import io.minio.CopyObjectArgs;
-import io.minio.CopySource;
-import io.minio.GetObjectArgs;
-import io.minio.GetObjectResponse;
-import io.minio.ListObjectsArgs;
-import io.minio.MinioClient;
-import io.minio.RemoveObjectArgs;
-import io.minio.messages.Item;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
-import org.eclipse.tractusx.sde.common.utils.TryUtils;
-import org.eclipse.tractusx.sde.sftp.RetrieverI;
+package org.eclipse.tractusx.sde.retrieverl.service;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,6 +33,20 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import org.eclipse.tractusx.sde.common.utils.TryUtils;
+import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
+import org.eclipse.tractusx.sde.retrieverl.RetrieverI;
+
+import io.minio.CopyObjectArgs;
+import io.minio.CopySource;
+import io.minio.GetObjectArgs;
+import io.minio.GetObjectResponse;
+import io.minio.ListObjectsArgs;
+import io.minio.MinioClient;
+import io.minio.RemoveObjectArgs;
+import io.minio.messages.Item;
+import lombok.extern.slf4j.Slf4j;
+
 @Slf4j
 public class MinioRetriever implements RetrieverI {
     private final MinioClient minioClient;
@@ -58,11 +59,10 @@ public class MinioRetriever implements RetrieverI {
     private final String failedLocation;
     private final String bucketName;
 
-
-
     public MinioRetriever(CsvHandlerService csvHandlerService, String endpoint, String accessKey, String secretKey, String bucketName,
                           String toBeProcessedLocation, String inProgressLocation, String successLocation, String partialSuccessLocation, String failedLocation) {
-        this.csvHandlerService = csvHandlerService;
+    	
+    	this.csvHandlerService = csvHandlerService;
         this.inProgressLocation = inProgressLocation;
         this.successLocation = successLocation;
         this.partialSuccessLocation = partialSuccessLocation;
@@ -79,7 +79,7 @@ public class MinioRetriever implements RetrieverI {
                         .prefix(toBeProcessedLocation+"/")
                         .recursive(false)
                 .build()).spliterator(), false
-        ).flatMap(r -> TryUtils.tryExec(r::get, TryUtils.IGNORE()).stream())
+		).flatMap(r -> TryUtils.tryExec(r::get, TryUtils.IGNORE()).stream())
                 .filter(Predicate.not(Item::isDir))
                 .map(Item::objectName)
                 .filter(name -> name.toLowerCase().endsWith(".csv"))

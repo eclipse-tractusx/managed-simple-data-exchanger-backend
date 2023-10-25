@@ -18,7 +18,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.sftp.service;
+package org.eclipse.tractusx.sde.retrieverl.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,7 +48,7 @@ public class RetrieverScheduler {
 		if (cronFuture != null) {
 			cronFuture.cancel(false);
 		}
-		if (jobMaintenanceModelProvider.getConfiguration().getAutomaticUpload()) {
+		if (jobMaintenanceModelProvider.getConfiguration().getAutomaticUpload().booleanValue()) {
 			init();
 			cronFuture = taskScheduler.schedule(
 					() -> processRemoteCsv.process(taskScheduler, UUID.randomUUID().toString()),

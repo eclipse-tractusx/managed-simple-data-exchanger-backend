@@ -70,6 +70,9 @@ public class DDTRUrlCacheUtility {
 						List<QueryDataOfferModel> queryDataOfferModel = consumerControlPanelService
 								.queryOnDataOffers(connector, 0, 100, filterExpression);
 						log.info("For Connector " + connector + ", found asset :" + queryDataOfferModel.size());
+
+						queryDataOfferModel.forEach(each -> each.setConnectorOfferUrl(connector));
+
 						offers.addAll(queryDataOfferModel);
 					} catch (Exception e) {
 						log.error("Error while looking EDC catalog for digitaltwin registry url, " + connector
@@ -86,16 +89,19 @@ public class DDTRUrlCacheUtility {
 				.offerId(queryDataOfferModel.getOfferId()).policyId(queryDataOfferModel.getPolicyId()).build();
 		try {
 			EDRCachedResponse eDRCachedResponse = consumerControlPanelService.verifyOrCreateContractNegotiation(
-					bpnNumber, Map.of(), queryDataOfferModel.getConnectorId(), null, offer);
+					bpnNumber, Map.of(), queryDataOfferModel.getConnectorOfferUrl(), null, offer);
 
-			if (!"NEGOTIATED".equalsIgnoreCase(eDRCachedResponse.getEdrState())) {
+			if (eDRCachedResponse == null) {
+				throw new ServiceException(
+						"Time out!! to get 'NEGOTIATED' EDC EDR status to lookup dt twin, The current status is null");
+			} else if (!"NEGOTIATED".equalsIgnoreCase(eDRCachedResponse.getEdrState())) {
 				throw new ServiceException(
 						"Time out!! to get 'NEGOTIATED' EDC EDR status to lookup dt twin, The current status is '"
 								+ eDRCachedResponse.getEdrState() + "'");
 			} else
 				return consumerControlPanelService
 						.getAuthorizationTokenForDataDownload(eDRCachedResponse.getTransferProcessId());
-			
+
 		} catch (FeignException e) {
 			String errorMsg = "Unable to look up offer because: " + e.contentUTF8();
 			log.error("FeignException : " + errorMsg);
@@ -103,7 +109,7 @@ public class DDTRUrlCacheUtility {
 			String errorMsg = "Unable to look up offer because: " + e.getMessage();
 			log.error("Exception : " + errorMsg);
 		}
-			
+
 		return null;
 	}
 

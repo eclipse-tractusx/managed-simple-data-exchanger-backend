@@ -36,17 +36,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 @FeignClient(value = "IBpndiscoveryExternalServiceApi", url = "${bpndiscovery.hostname}", configuration = BpndiscoveryExternalServiceApi.class)
 public interface IBpndiscoveryExternalServiceApi {
 
-	@PostMapping(path = "/api/administration/connectors/bpnDiscovery")
+	@PostMapping(path = "/administration/connectors/bpnDiscovery")
 	BpnDiscoveryResponse bpnDiscoveryDataByKey(@RequestBody BpnDiscoveryRequest bpnDiscoveryKey);
 
-	@PostMapping(path = "/api/administration/connectors/bpnDiscovery/batch")
+	@PostMapping(path = "/administration/connectors/bpnDiscovery/batch")
 	List<BpnDiscoveryBatchResponse> bpnDiscoveryBatchDataByList(
 			@RequestBody List<BpnDiscoveryRequest> bpnDiscoveryKeyList);
 
-	@PostMapping(path = "/api/administration/connectors/bpnDiscovery/search")
+	@PostMapping(path = "/administration/connectors/bpnDiscovery/search")
 	BpnDiscoverySearchResponse bpnDiscoverySearchData(@RequestBody BpnDiscoverySearchRequest bpnDiscoverySearchRequest);
 
-	@DeleteMapping(path = "/api/administration/connectors/bpnDiscovery/{resourceId}")
+	@DeleteMapping(path = "/administration/connectors/bpnDiscovery/{resourceId}")
 	ResponseEntity<Object> deleteBpnDiscoveryData(@PathVariable String resourceId);
 
 }

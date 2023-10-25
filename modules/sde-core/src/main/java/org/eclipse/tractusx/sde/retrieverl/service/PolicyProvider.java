@@ -18,7 +18,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.sftp.service;
+package org.eclipse.tractusx.sde.retrieverl.service;
 
 import java.util.List;
 
@@ -75,19 +75,25 @@ public class PolicyProvider {
 			""";
 
 	@SneakyThrows
-	public void saveDefaultPolicy() {
-		if (policyService.getPolicyByName("default") == null) {
-			PolicyModel policy = getDefaultPolicy();
-			policyService.savePolicy(policy);
-
-		}
+	public PolicyModel saveDefaultPolicy() {
+		String defaultPolicyStr = String.format(defaultPolicy, bpnNumber);
+		PolicyModel policy = mapper.readValue(defaultPolicyStr, PolicyModel.class);
+		return policyService.savePolicy(policy);
 	}
 
 	@SneakyThrows
 	public PolicyModel getDefaultPolicy() {
+
 		log.info("Applying default policy");
-		String defaultPolicyStr = String.format(defaultPolicy, bpnNumber);
-		return mapper.readValue(defaultPolicyStr, PolicyModel.class);
+
+		PolicyModel policyByName = policyService.getPolicyByName("default");
+
+		if (policyByName == null) {
+			policyByName = saveDefaultPolicy();
+			log.info("Saved default policy");
+		}
+
+		return policyByName;
 	}
 
 	public PolicyModel getMatchingPolicyBasedOnFileName(String fileName) {

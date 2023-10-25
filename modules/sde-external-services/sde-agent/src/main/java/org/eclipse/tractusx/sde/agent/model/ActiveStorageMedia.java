@@ -18,12 +18,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.edc.model.edr;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonProperty;
+package org.eclipse.tractusx.sde.agent.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,35 +26,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(Include.NON_NULL)
-public class EDRCachedResponse {
+@AllArgsConstructor
+@NoArgsConstructor
+public class ActiveStorageMedia {
 
-	@JsonProperty("@type")
-	private String type;
-
-	@JsonProperty("@context")
-	private Object context;
-
-	@JsonProperty("edc:agreementId")
-	private String agreementId;
-
-	@JsonProperty("edc:transferProcessId")
-	private String transferProcessId;
-
-	@JsonProperty("edc:assetId")
-	private String assetId;
-
-	@JsonProperty("edc:providerId")
-	private String providerId;
-
-	@JsonProperty("tx:edrState")
-	private String edrState;
-
-	@JsonProperty("tx:expirationDate")
-	private String expirationDate;
+	private String name;
 
 }

@@ -54,7 +54,6 @@ public interface EDRApiProxy {
 			@RequestHeader Map<String, String> requestHeader);
 
 	@GetMapping
-	Object getActualDataFromProviderDataPlane(URI url, @RequestParam("type") String type,
-			@RequestHeader Map<String, String> requestHeader);
+	Object getActualDataFromProviderDataPlane(URI url, @RequestHeader Map<String, String> requestHeader);
 
 }

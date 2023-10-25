@@ -77,9 +77,6 @@ class ConsumerControlPanelServiceTest {
 	private ConsumerService consumerService;
 
 	@MockBean
-	private EDRRequestHelper eDRRequestHelper;
-
-	@MockBean
 	private IPartnerPoolExternalServiceApi legalEntityDataApi;
 
 	@MockBean
@@ -99,6 +96,9 @@ class ConsumerControlPanelServiceTest {
 
 	@MockBean
 	private ContractOfferRequestFactory contractOfferRequestFactory;
+	
+	@MockBean
+	private EDRRequestHelper eDRRequestHelper;
 
 	@Test
 	void testQueryOnDataOfferEmpty() throws Exception {

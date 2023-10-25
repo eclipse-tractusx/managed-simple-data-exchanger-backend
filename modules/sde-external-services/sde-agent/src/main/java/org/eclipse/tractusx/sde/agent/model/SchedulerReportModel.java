@@ -18,15 +18,27 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.agent.mapper;
+package org.eclipse.tractusx.sde.agent.model;
 
-import org.eclipse.tractusx.sde.agent.entity.SftpSchedulerReport;
-import org.eclipse.tractusx.sde.agent.model.SftpReportModel;
-import org.mapstruct.Mapper;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.eclipse.tractusx.sde.agent.enums.SchedulerReportStatusEnum;
 
-@Mapper(componentModel = "spring")
-public interface SftpReportMapper {
-    SftpReportModel mapFrom(SftpSchedulerReport reportEntity);
+import java.time.LocalDateTime;
 
-    SftpSchedulerReport mapFrom(SftpReportModel reportModel);
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class SchedulerReportModel {
+    private String processId;
+    private String schedulerId;
+    private String fileName;
+    private String policyName;
+    private SchedulerReportStatusEnum status;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
+    private String remark;
 }

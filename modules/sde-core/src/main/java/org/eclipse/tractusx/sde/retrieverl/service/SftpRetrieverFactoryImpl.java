@@ -18,20 +18,20 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.sftp.service;
+package org.eclipse.tractusx.sde.retrieverl.service;
 
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
+import java.util.OptionalInt;
+
 import org.eclipse.tractusx.sde.agent.ConfigService;
 import org.eclipse.tractusx.sde.agent.model.SftpConfigModel;
-import org.eclipse.tractusx.sde.agent.repository.AutoUploadAgentConfigRepository;
 import org.eclipse.tractusx.sde.common.ConfigurableFactory;
 import org.eclipse.tractusx.sde.common.ConfigurationProvider;
 import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.OptionalInt;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 
 @Service
 @RequiredArgsConstructor
@@ -63,7 +63,6 @@ public class SftpRetrieverFactoryImpl implements ConfigurableFactory<SftpRetriev
 	private int retryDelayTo;
 
 	private final ConfigService configService;
-	private final AutoUploadAgentConfigRepository configRepository;
 	private final CsvHandlerService csvHandlerService;
 
 	@SneakyThrows

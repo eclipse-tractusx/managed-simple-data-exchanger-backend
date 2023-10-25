@@ -24,7 +24,7 @@
 <html lang="en" xml:lang="en">
 
 <head>
-	<title>edc title</title>
+	<title>Scheduler title</title>
 </head>
 
 <body>
@@ -33,24 +33,10 @@
 	</td>
 	<div>
 		<p><strong>Hello,</strong></p>
-		<p>Your file batch sent on ${schedulerTime} has been processed.</p>
+		<p>Your SDE automatic file upload scheduler executed with below details:</p>
 
-		<p>Below is the file status.</p>
-		<table border="1">
-			<caption>status table description</caption>
-			<tr>
-				<th>Process Id </th>
-				<th>File name </td>
-				<th>Policy</td>
-				<th>CSV Type </th>
-				<th>Processing start time </td>
-				<th>Processing end time </th>
-				<th>Processing Status </th>
-				<th>Successful entries count </td>
-				<th>Failed entries count</th>
-			</tr>
-			${fileTableData}
-		</table>
+		<p>Status: ${statusMsg}</p>
+		${content}
 		<br>
 		<p>Kind Regards,<br/>Catena-X</p>
 

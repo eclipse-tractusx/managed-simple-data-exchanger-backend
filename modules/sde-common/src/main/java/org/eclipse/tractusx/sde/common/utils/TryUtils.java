@@ -64,6 +64,7 @@ public class TryUtils {
         }
     }
 
+    
     private static <E extends Exception> ThrowableSupplier<Boolean, E> voidToBooleanAdapter(ThrowableAction<E> runnable) {
         return () -> {
             runnable.run();

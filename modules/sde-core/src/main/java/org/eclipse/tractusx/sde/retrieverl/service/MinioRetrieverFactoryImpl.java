@@ -58,7 +58,7 @@ public class MinioRetrieverFactoryImpl implements ConfigurableFactory<MinioRetri
 
 
 	@Override
-	public MinioRetriever create() {
+	public MinioRetriever create() throws Exception {
 		var configModel = getConfiguration();
 		return new MinioRetriever(csvHandlerService,
 							configModel.getEndpoint(),

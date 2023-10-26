@@ -24,14 +24,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.utils.TryUtils;
@@ -45,7 +42,6 @@ import io.minio.GetObjectResponse;
 import io.minio.ListObjectsArgs;
 import io.minio.MinioClient;
 import io.minio.RemoveObjectArgs;
-import io.minio.messages.Item;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -61,7 +57,7 @@ public class MinioRetriever implements RetrieverI {
     private final String bucketName;
 
     public MinioRetriever(CsvHandlerService csvHandlerService, String endpoint, String accessKey, String secretKey, String bucketName,
-                          String toBeProcessedLocation, String inProgressLocation, String successLocation, String partialSuccessLocation, String failedLocation) {
+                          String toBeProcessedLocation, String inProgressLocation, String successLocation, String partialSuccessLocation, String failedLocation) throws Exception {
     	
     	this.csvHandlerService = csvHandlerService;
         this.inProgressLocation = inProgressLocation;
@@ -78,18 +74,20 @@ public class MinioRetriever implements RetrieverI {
 		if (StringUtils.isNotBlank(toBeProcessedLocation))
 			toBeProcessedLocation = toBeProcessedLocation + "/";
 		
-        idToPath = StreamSupport.stream(minioClient.listObjects(
+		idToPath = new LinkedHashMap<>();
+		for (var r : minioClient.listObjects(
                 ListObjectsArgs.builder()
                         .bucket(bucketName)
                         .prefix(toBeProcessedLocation)
                         .recursive(false)
-                .build()).spliterator(), false
-		).flatMap(r -> TryUtils.tryExec(r::get, TryUtils.IGNORE()).stream())
-                .filter(Predicate.not(Item::isDir))
-                .map(Item::objectName)
-                .filter(name -> name.toLowerCase().endsWith(".csv"))
-                .collect(Collectors.toMap(path -> UUID.randomUUID().toString(), Function.identity()));
-        idToPolicy = new ConcurrentHashMap<>();
+                        .build())) {
+            var item = r.get();
+            if (!item.isDir() && item.objectName().toLowerCase().endsWith(".csv")) {
+                idToPath.put(UUID.randomUUID().toString(), item.objectName());
+            }
+        }
+
+		idToPolicy = new ConcurrentHashMap<>();
     }
 
     private void moveTo(String id, String newLocation) throws IOException {

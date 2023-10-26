@@ -33,6 +33,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.utils.TryUtils;
 import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
 import org.eclipse.tractusx.sde.retrieverl.RetrieverI;
@@ -73,10 +74,14 @@ public class MinioRetriever implements RetrieverI {
                 .endpoint(endpoint)
                 .credentials(accessKey, secretKey)
                 .build();
+        
+		if (StringUtils.isNotBlank(toBeProcessedLocation))
+			toBeProcessedLocation = toBeProcessedLocation + "/";
+		
         idToPath = StreamSupport.stream(minioClient.listObjects(
                 ListObjectsArgs.builder()
                         .bucket(bucketName)
-                        .prefix(toBeProcessedLocation+"/")
+                        .prefix(toBeProcessedLocation)
                         .recursive(false)
                 .build()).spliterator(), false
 		).flatMap(r -> TryUtils.tryExec(r::get, TryUtils.IGNORE()).stream())

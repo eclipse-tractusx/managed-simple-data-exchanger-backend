@@ -114,6 +114,7 @@ public class EmailManager {
             mimeMessage.setContent(data, "text/html; charset=utf-8"); // as "text/plain"
             mimeMessage.setSentDate(new Date());
             Transport.send(mimeMessage);
+            log.info("Email sent successfully");
             return "Email Sent Success";
         } catch (MessagingException | IOException | TemplateException e) {
             log.error("Error in email sending :{}", e.getMessage());

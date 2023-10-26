@@ -40,7 +40,7 @@ public class MinioConfigModel {
 	private String secretKey;
 	@NotBlank
 	private String bucketName;
-	@NotBlank
+
 	private String toBeProcessedLocation;
 	@NotBlank
 	private String inProgressLocation;

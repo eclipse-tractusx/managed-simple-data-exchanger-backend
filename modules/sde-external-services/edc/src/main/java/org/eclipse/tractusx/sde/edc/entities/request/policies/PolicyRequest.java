@@ -50,7 +50,7 @@ public class PolicyRequest {
 	private String type = "Policy";
 
 	@JsonProperty("odrl:permission")
-	private List<PermissionRequest> permissions;
+	private Object permissions;
 
 	@JsonProperty("odrl:prohibition")
 	private List<Prohibition> prohibitions;

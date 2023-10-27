@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringSubstitutor;
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.DurationEnum;
 import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
@@ -32,6 +33,8 @@ import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
 import org.eclipse.tractusx.sde.edc.enums.Type;
 import org.springframework.util.CollectionUtils;
+
+import lombok.SneakyThrows;
 
 public class UtilityFunctions {
 
@@ -160,6 +163,12 @@ public class UtilityFunctions {
 
 	public static boolean checkTypeOfConnector(String type) {
 		return StringUtils.isBlank(type) || Type.PROVIDER.name().equals(type);
+	}
+	
+	@SneakyThrows
+	public static String valueReplacer(String requestTemplatePath, Map<String, String> inputData) {
+		StringSubstitutor stringSubstitutor1 = new StringSubstitutor(inputData);
+		return stringSubstitutor1.replace(requestTemplatePath);
 	}
 
 }

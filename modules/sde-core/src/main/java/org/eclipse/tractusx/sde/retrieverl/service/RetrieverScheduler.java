@@ -52,8 +52,7 @@ public class RetrieverScheduler {
 			init();
 			cronFuture = taskScheduler.schedule(
 					() -> processRemoteCsv.process(taskScheduler, UUID.randomUUID().toString()),
-					new CronTrigger(cronExpression)
-			);
+					new CronTrigger(cronExpression));
 			log.info("The Cron Scheduler started successfully as cron expression " + cronExpression);
 		} else {
 			log.warn("Automatic file upload disable, no new scheduler set for run");
@@ -61,8 +60,14 @@ public class RetrieverScheduler {
 	}
 
 	public String fire() {
-		init();
-		return processRemoteCsv.process(taskScheduler, UUID.randomUUID().toString());
+		if (jobMaintenanceModelProvider.getConfiguration().getAutomaticUpload().booleanValue()) {
+			init();
+			return processRemoteCsv.process(taskScheduler, UUID.randomUUID().toString());
+		} else {
+			String msg = "Automatic file upload disable, please enable it to trigger job";
+			log.warn(msg);
+			return msg;
+		}
 	}
 
 	public void stopAll() {

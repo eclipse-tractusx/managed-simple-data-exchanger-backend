@@ -27,19 +27,23 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
 import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
+import org.eclipse.tractusx.sde.edc.api.ContractApi;
 import org.eclipse.tractusx.sde.edc.api.ContractOfferCatalogApi;
 import org.eclipse.tractusx.sde.edc.constants.EDCAssetConstant;
 import org.eclipse.tractusx.sde.edc.entities.database.ContractNegotiationInfoEntity;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ActionRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyConstraintBuilderService;
+import org.eclipse.tractusx.sde.edc.enums.Type;
 import org.eclipse.tractusx.sde.edc.facilitator.AbstractEDCStepsHelper;
 import org.eclipse.tractusx.sde.edc.facilitator.ContractNegotiateManagementHelper;
 import org.eclipse.tractusx.sde.edc.facilitator.EDRRequestHelper;
@@ -68,6 +72,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
 	private static final String NEGOTIATED = "NEGOTIATED";
+	private static final String REQUESTED = "REQUESTED";
 	private static final String STATUS = "status";
 
 	private final ContractOfferCatalogApi contractOfferCatalogApiProxy;
@@ -77,6 +82,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 	private final PolicyConstraintBuilderService policyConstraintBuilderService;
 
 	private final ContractOfferRequestFactory contractOfferRequestFactory;
+	private final ContractApi contractApi;
 
 	private final EDRRequestHelper edrRequestHelper;
 
@@ -273,6 +279,10 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
 				resultFields.put("edr", checkContractNegotiationStatus);
 
+				if (Optional.ofNullable(checkContractNegotiationStatus.getTransferProcessId()).isEmpty()) {
+					throw new ServiceException("The intiate data transfer process is not completed");
+				}
+
 				if (!NEGOTIATED.equalsIgnoreCase(checkContractNegotiationStatus.getEdrState())) {
 					throw new ServiceException(
 							"Time out!! to get 'NEGOTIATED' EDC EDR status to download data, The current status is '"
@@ -304,23 +314,60 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 	@SneakyThrows
 	public EDRCachedResponse verifyOrCreateContractNegotiation(String connectorId,
 			Map<String, String> extensibleProperty, String recipientURL, ActionRequest action, Offer offer) {
-		// Verify if there already EDR process initiated then skip t for again download
-		List<EDRCachedResponse> eDRCachedResponseList = edrRequestHelper.getEDRCachedByAsset(offer.getAssetId());
+		// Verify if there already EDR process initiated then skip it for again download
+		String assetId = offer.getAssetId();
+		List<EDRCachedResponse> eDRCachedResponseList = edrRequestHelper.getEDRCachedByAsset(assetId);
 		EDRCachedResponse checkContractNegotiationStatus = verifyEDRResponse(eDRCachedResponseList);
 
 		if (checkContractNegotiationStatus == null) {
-			log.info("There was no EDR process initiated or may be EDR token was expired " + offer.getAssetId()
-					+ ", so initiating EDR process");
-			edrRequestHelper.edrRequestInitiate(recipientURL, connectorId, offer.getOfferId(), offer.getAssetId(),
-					action, extensibleProperty);
+
+			String contractAgreementId = checkandGetContractAgreementId(assetId);
+
+			if (StringUtils.isBlank(contractAgreementId)) {
+
+				log.info("There was no EDR process initiated or may be EDR token was expired "
+						+ "or not valid contract agreementId for " + assetId + ", so initiating EDR process");
+				edrRequestHelper.edrRequestInitiate(recipientURL, connectorId, offer.getOfferId(), assetId, action,
+						extensibleProperty);
+				checkContractNegotiationStatus = verifyEDRRequestStatus(assetId);
+				
+				if (checkContractNegotiationStatus == null) {
+					contractAgreementId = checkandGetContractAgreementId(assetId);
+					checkContractNegotiationStatus = EDRCachedResponse.builder()
+							.agreementId(contractAgreementId)
+							.assetId(assetId).build();
+				}
+			} else {
+				log.info("There was valid contract agreemnt exist for " + assetId
+						+ ", so ignoring EDR process initiation");
+				checkContractNegotiationStatus = EDRCachedResponse.builder().agreementId(contractAgreementId)
+						.assetId(assetId).build();
+			}
 		} else {
-			log.info("There was EDR process initiated " + offer.getAssetId() + ", so ignoring EDR process initiation");
+			log.info("There was EDR process initiated " + assetId + ", so ignoring EDR process initiation");
+			if (!NEGOTIATED.equals(checkContractNegotiationStatus.getEdrState()))
+				checkContractNegotiationStatus = verifyEDRRequestStatus(assetId);
 		}
 
-		if (checkContractNegotiationStatus == null || !NEGOTIATED.equals(checkContractNegotiationStatus.getEdrState()))
-			checkContractNegotiationStatus = verifyEDRRequestStatus(offer.getAssetId());
-
 		return checkContractNegotiationStatus;
+	}
+
+	@SneakyThrows
+	private String checkandGetContractAgreementId(String assetId) {
+		List<JsonNode> contractAgreements = contractNegotiateManagement.getAllContractAgreements(assetId,
+				Type.CONSUMER.name(), 0, 10);
+		String contractAgreementId = null;
+		if (!contractAgreements.isEmpty())
+			for (JsonNode jsonNode : contractAgreements) {
+				ContractNegotiationDto checkContractAgreementNegotiationStatus = contractNegotiateManagement
+						.checkContractAgreementNegotiationStatus(getFieldFromJsonNode(jsonNode, "@id"));
+				if ("FINALIZED".equals(checkContractAgreementNegotiationStatus.getState())) {
+					contractAgreementId = checkContractAgreementNegotiationStatus.getContractAgreementId();
+					break;
+				}
+			}
+
+		return contractAgreementId;
 	}
 
 	@SneakyThrows
@@ -370,7 +417,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 		if (eDRCachedResponseList != null && !eDRCachedResponseList.isEmpty()) {
 			for (EDRCachedResponse edrCachedResponseObj : eDRCachedResponseList) {
 				String edrState = edrCachedResponseObj.getEdrState();
-				// For EDC connector 5.0 edrState filed not supported so checking token
+				// For EDC connector 5.0 edrState field not supported so checking token
 				// validation by calling direct API
 				if (NEGOTIATED.equalsIgnoreCase(edrState) || isEDRTokenValid(edrCachedResponseObj)) {
 					eDRCachedResponse = edrCachedResponseObj;

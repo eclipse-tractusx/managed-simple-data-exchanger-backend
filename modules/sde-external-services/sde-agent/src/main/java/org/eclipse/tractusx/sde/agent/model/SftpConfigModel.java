@@ -39,7 +39,6 @@ public class SftpConfigModel {
 	private String username;
 	private String password;
 	private String accessKey;
-	@NotBlank
 	private String toBeProcessedLocation;
 	@NotBlank
 	private String inProgressLocation;

@@ -37,7 +37,6 @@ import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
 import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
-import org.eclipse.tractusx.sde.edc.api.ContractApi;
 import org.eclipse.tractusx.sde.edc.api.ContractOfferCatalogApi;
 import org.eclipse.tractusx.sde.edc.constants.EDCAssetConstant;
 import org.eclipse.tractusx.sde.edc.entities.database.ContractNegotiationInfoEntity;
@@ -72,7 +71,6 @@ import lombok.extern.slf4j.Slf4j;
 public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
 	private static final String NEGOTIATED = "NEGOTIATED";
-	private static final String REQUESTED = "REQUESTED";
 	private static final String STATUS = "status";
 
 	private final ContractOfferCatalogApi contractOfferCatalogApiProxy;
@@ -82,7 +80,6 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 	private final PolicyConstraintBuilderService policyConstraintBuilderService;
 
 	private final ContractOfferRequestFactory contractOfferRequestFactory;
-	private final ContractApi contractApi;
 
 	private final EDRRequestHelper edrRequestHelper;
 

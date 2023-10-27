@@ -454,7 +454,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 			try {
 				EDRCachedByIdResponse authorizationToken = getAuthorizationTokenForDataDownload(
 						verifyEDRRequestStatus.getTransferProcessId());
-				String endpoint = authorizationToken.getEndpoint() + "?" + downloadDataAs + "=" + downloadDataAs;
+				String endpoint = authorizationToken.getEndpoint() + "?type=" + downloadDataAs;
 				return edrRequestHelper.getDataFromProvider(authorizationToken, endpoint);
 			} catch (FeignException e) {
 				log.error("Download RequestBody: " + e.request());

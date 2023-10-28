@@ -29,6 +29,7 @@ import org.eclipse.tractusx.sde.edc.facilitator.CreateEDCAssetFacilator;
 import org.eclipse.tractusx.sde.edc.gateways.external.EDCGateway;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
+@Profile("default")
 public class DigitalTwinAssetProvider {
 
 	private final AssetEntryRequestFactory assetFactory;

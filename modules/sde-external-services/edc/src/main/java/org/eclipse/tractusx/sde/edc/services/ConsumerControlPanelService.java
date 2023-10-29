@@ -312,7 +312,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 		}
 
 		String state = Optional.ofNullable(checkContractNegotiationStatus).filter(
-				verifyEDRRequestStatusLocal -> !NEGOTIATED.equalsIgnoreCase(verifyEDRRequestStatusLocal.getEdrState()))
+				verifyEDRRequestStatusLocal -> NEGOTIATED.equalsIgnoreCase(verifyEDRRequestStatusLocal.getEdrState()))
 				.map(EDRCachedResponse::getEdrState)
 				.orElseThrow(() -> new ServiceException(
 						"Time out!! to get 'NEGOTIATED' EDC EDR status to download data, the current status is '"

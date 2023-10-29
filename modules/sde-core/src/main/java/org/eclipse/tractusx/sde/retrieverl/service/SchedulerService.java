@@ -140,7 +140,7 @@ public class SchedulerService implements ConfigurationProvider<SchedulerConfigMo
 	private void timeHourValidation(SchedulerConfigModel model) {
 
 		// 1-7 number day
-		String regex = "([1]?[1-9]|2[1-4])";
+		String regex = "(0?[1-9]|1[0-9]|2[0-4])";
 		String time = model.getTime();
 		Pattern p = Pattern.compile(regex);
 		Matcher m = p.matcher(time);

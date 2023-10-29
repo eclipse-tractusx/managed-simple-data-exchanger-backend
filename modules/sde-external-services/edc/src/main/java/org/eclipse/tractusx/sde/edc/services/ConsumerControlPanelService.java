@@ -322,26 +322,26 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
 			if (StringUtils.isBlank(contractAgreementId)) {
 
-				log.info("There was no EDR process initiated or may be EDR token was expired "
-						+ "or not valid contract agreementId for " + assetId + ", so initiating EDR process");
+				log.info("The EDR process was not completed, no 'NEGOTIATED' EDR status found "
+						+ "and not valid contract agreementId for " + assetId + ", so initiating EDR process");
 				edrRequestHelper.edrRequestInitiate(recipientURL, connectorId, offer.getOfferId(), assetId, action,
 						extensibleProperty);
 				checkContractNegotiationStatus = verifyEDRRequestStatus(assetId);
-				
+
 				if (checkContractNegotiationStatus == null) {
 					contractAgreementId = checkandGetContractAgreementId(assetId);
-					checkContractNegotiationStatus = EDRCachedResponse.builder()
-							.agreementId(contractAgreementId)
+					checkContractNegotiationStatus = EDRCachedResponse.builder().agreementId(contractAgreementId)
 							.assetId(assetId).build();
 				}
 			} else {
-				log.info("There was valid contract agreemnt exist for " + assetId
+				log.info("There is valid contract agreement exist for " + assetId
 						+ ", so ignoring EDR process initiation");
 				checkContractNegotiationStatus = EDRCachedResponse.builder().agreementId(contractAgreementId)
 						.assetId(assetId).build();
 			}
 		} else {
-			log.info("There was EDR process initiated " + assetId + ", so ignoring EDR process initiation");
+			log.info("There was EDR process initiated " + assetId
+					+ ", so ignoring EDR process initiation, going to check EDR status only");
 			if (!NEGOTIATED.equals(checkContractNegotiationStatus.getEdrState()))
 				checkContractNegotiationStatus = verifyEDRRequestStatus(assetId);
 		}
@@ -388,8 +388,14 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 				counter++;
 			} while (counter <= RETRY && !NEGOTIATED.equals(edrStatus));
 
-			if (eDRCachedResponse == null)
-				throw new ServiceException("Time out!! unable to get EDR negotiated status");
+			if (eDRCachedResponse == null) {
+				String contractAgreementId = checkandGetContractAgreementId(assetId);
+				if (StringUtils.isNoneBlank(contractAgreementId)) {
+					eDRCachedResponse = EDRCachedResponse.builder().agreementId(contractAgreementId).assetId(assetId)
+							.build();
+				} else
+					throw new ServiceException("Time out!! unable to get EDR negotiated status");
+			}
 
 		} catch (FeignException e) {
 			log.error("RequestBody: " + e.request());
@@ -468,11 +474,21 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
 				downloadResultFields.put("edr", verifyEDRRequestStatus);
 
-				if (!NEGOTIATED.equalsIgnoreCase(verifyEDRRequestStatus.getEdrState())) {
-					throw new ServiceException(
-							"Time out!! to get 'NEGOTIATED' EDC EDR status to download data, The current status is '"
-									+ verifyEDRRequestStatus.getEdrState() + "'");
-				}
+				String state = Optional.ofNullable(verifyEDRRequestStatus)
+						.filter(verifyEDRRequestStatusLocal -> StringUtils
+								.isNoneBlank(verifyEDRRequestStatusLocal.getAgreementId()))
+						.map(EDRCachedResponse::getEdrState)
+						.orElseThrow(() -> new ServiceException("There was valid contract agreemnt exist for " + assetId
+								+ ", but intiate data transfer was not complted status, so download is not possible"));
+
+				state = Optional.ofNullable(verifyEDRRequestStatus)
+						.filter(verifyEDRRequestStatusLocal -> !NEGOTIATED
+								.equalsIgnoreCase(verifyEDRRequestStatusLocal.getEdrState()))
+						.map(EDRCachedResponse::getEdrState)
+						.orElseThrow(() -> new ServiceException(
+								"Time out!! to get 'NEGOTIATED' EDC EDR status to download data, The current status is '"
+										+ verifyEDRRequestStatus.getEdrState() + "'"));
+				log.info("The EDR token status :" + state);
 
 				downloadResultFields.put("data", downloadFile(verifyEDRRequestStatus, type));
 

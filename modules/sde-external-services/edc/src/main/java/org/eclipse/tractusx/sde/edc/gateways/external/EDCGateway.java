@@ -29,6 +29,8 @@ import org.eclipse.tractusx.sde.edc.exceptions.EDCGatewayException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -42,6 +44,18 @@ public class EDCGateway {
 	public boolean assetExistsLookup(String id) {
 		try {
 			edcFeignClientApi.getAsset(id);
+		} catch (FeignException e) {
+			if (e.status() == HttpStatus.NOT_FOUND.value()) {
+				return false;
+			}
+			throw e;
+		}
+		return true;
+	}
+	
+	public boolean assetExistsLookupBasedOnType(ObjectNode requestBody) {
+		try {
+			edcFeignClientApi.getAssetByType(requestBody);
 		} catch (FeignException e) {
 			if (e.status() == HttpStatus.NOT_FOUND.value()) {
 				return false;

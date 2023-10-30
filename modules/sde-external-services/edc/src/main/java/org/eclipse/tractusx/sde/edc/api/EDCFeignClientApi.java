@@ -31,6 +31,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 @FeignClient(value = "EDCFeignClientApi", url = "${edc.hostname}${edc.managementpath:/data}${edc.managementpath.apiversion:/v2}", configuration = EDCDataProviderConfiguration.class)
 public interface EDCFeignClientApi {
 
@@ -39,6 +41,9 @@ public interface EDCFeignClientApi {
 
 	@PostMapping("/assets")
 	public String createAsset(@RequestBody AssetEntryRequest requestBody);
+	
+	@PostMapping("/assets/request")
+	public String getAssetByType(@RequestBody ObjectNode requestBody);
 
 	@PostMapping("/policydefinitions")
 	public String createPolicy(@RequestBody PolicyDefinitionRequest requestBody);

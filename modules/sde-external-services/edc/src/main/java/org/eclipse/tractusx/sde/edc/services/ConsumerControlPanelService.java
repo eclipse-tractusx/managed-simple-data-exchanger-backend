@@ -443,10 +443,10 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 					edrCachedResponseObj.getTransferProcessId());
 			edrRequestHelper.getDataFromProvider(authorizationToken, authorizationToken.getEndpoint());
 		} catch (FeignException e) {
-			log.error("RequestBody: " + e.request());
+			log.error("FeignException RequestBody: " + e.request());
 			String errorMsg = "FeignExceptionton for verifyEDR token " + assetId + "," + e.status() + "::"
 					+ e.contentUTF8();
-			log.error("Response: " + errorMsg);
+			log.error("FeignException Response: " + errorMsg);
 
 			if (e.status() == 403) {
 				log.error("Got 403 as token status so going to try new EDR token: " + errorMsg);
@@ -455,7 +455,6 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 		} catch (Exception e) {
 			String errorMsg = "Exception for asset in isEDRTokenValid " + assetId + "," + e.getMessage();
 			log.error(errorMsg);
-			throw new ServiceException(errorMsg);
 		}
 		return true;
 	}
@@ -507,11 +506,11 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 				String endpoint = authorizationToken.getEndpoint() + "?type=" + downloadDataAs;
 				return edrRequestHelper.getDataFromProvider(authorizationToken, endpoint);
 			} catch (FeignException e) {
-				log.error("Download RequestBody: " + e.request());
+				log.error("FeignException Download RequestBody: " + e.request());
 				String errorMsg = "Unable to download subcribe data offer because: " + e.contentUTF8();
 				throw new ServiceException(errorMsg);
 			} catch (Exception e) {
-				log.error("DownloadFileFromEDCUsingifAlreadyTransferStatusCompleted Oops! We have -" + e.getMessage());
+				log.error("Exception DownloadFileFromEDCUsingifAlreadyTransferStatusCompleted Oops! We have -" + e.getMessage());
 				String errorMsg = "Unable to download subcribe data offer because: " + e.getMessage();
 				throw new ServiceException(errorMsg);
 			}

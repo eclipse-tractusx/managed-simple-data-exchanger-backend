@@ -32,8 +32,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -49,7 +53,28 @@ public class DigitalTwinAssetProvider {
 	@Value("${digital-twins.hostname:default}${digital-twins.api:/api/v3.0}")
 	private String digitalTwinRegistry;
 
+	private static String assetFilterRequest = """
+			{
+				    "@context": {
+				        "edc": "https://w3id.org/edc/v0.0.1/ns/"
+				    },
+				    "@type": "QuerySpec",
+				    "offset": 0,
+				    "limit": 10,
+				    "sortOrder": "DESC",
+				    "sortField": "id",
+				    "filterExpression": [
+				        {
+				            "edc:operandLeft": "https://w3id.org/edc/v0.0.1/ns/type",
+				            "edc:operator": "=",
+				            "edc:operandRight": "data.core.digitalTwinRegistry"
+				        }
+				    ]
+				}
+			""";
+
 	@PostConstruct
+	@SneakyThrows
 	public void init() {
 
 		String assetId = UUIdGenerator.getUuid();
@@ -62,7 +87,9 @@ public class DigitalTwinAssetProvider {
 		assetEntryRequest.getDataAddress().getProperties().remove("oauth2:clientId");
 		assetEntryRequest.getDataAddress().getProperties().remove("oauth2:clientSecretKey");
 
-		if (!edcGateway.assetExistsLookup(assetEntryRequest.getAsset().getId())) {
+		ObjectNode requestBody = (ObjectNode) new ObjectMapper().readTree(assetFilterRequest);
+
+		if (!edcGateway.assetExistsLookupBasedOnType(requestBody)) {
 			Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest, List.of(),
 					Map.of());
 			log.info("Digital twin asset creates :" + createEDCAsset.toString());

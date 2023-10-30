@@ -78,7 +78,7 @@ public class SchedulerService implements ConfigurationProvider<SchedulerConfigMo
 	public String convertScheduleToCron(SchedulerConfigModel model) {
 		switch (model.getType()) {
 		case DAILY -> {
-			String[] timeArr = timeValidate(model);
+			int[] timeArr = timeValidate(model);
 			return "0 " + timeArr[1] + " " + timeArr[0] + " * * *";
 		}
 
@@ -87,7 +87,7 @@ public class SchedulerService implements ConfigurationProvider<SchedulerConfigMo
 			return "0 0 0/" + model.getTime() + " * * *";
 		}
 		case WEEKLY -> {
-			String[] timeArr = timeValidate(model);
+			int[] timeArr = timeValidate(model);
 			dayValidation(model);
 			return "0 " + timeArr[1] + " " + timeArr[0] + " * * " + model.getDay();
 		}
@@ -97,7 +97,7 @@ public class SchedulerService implements ConfigurationProvider<SchedulerConfigMo
 		}
 	}
 
-	private String[] timeValidate(SchedulerConfigModel model) {
+	private int[] timeValidate(SchedulerConfigModel model) {
 		// 21:00
 		String time = model.getTime();
 		if (StringUtils.isBlank(time))
@@ -120,7 +120,13 @@ public class SchedulerService implements ConfigurationProvider<SchedulerConfigMo
 						+ "' time is not in correct format, it should be like 24 hours 21:00(hour:minute) or like 03:30 AM");
 		}
 
-		return time.split(":");
+		String[] split = time.split(":");
+		int[] intsplit = new int[2];
+		int i = 0;
+		for (String string : split) {
+			intsplit[i++] = Integer.parseInt(string);
+		}
+		return intsplit;
 	}
 
 	private void dayValidation(SchedulerConfigModel model) {
@@ -151,15 +157,13 @@ public class SchedulerService implements ConfigurationProvider<SchedulerConfigMo
 			throw new ValidationException("'" + time + "' time is not number between [1-24]");
 	}
 
-
 	@Override
 	public SchedulerConfigModel getConfiguration() {
-		return configService.getConfigurationAsObject(SchedulerConfigModel.class)
-				.orElseGet(() -> {
-					var scm = getDefaultSchedulerConfigModel();
-					saveConfig(scm);
-					return scm;
-				});
+		return configService.getConfigurationAsObject(SchedulerConfigModel.class).orElseGet(() -> {
+			var scm = getDefaultSchedulerConfigModel();
+			saveConfig(scm);
+			return scm;
+		});
 	}
 
 	@Override
@@ -168,10 +172,7 @@ public class SchedulerService implements ConfigurationProvider<SchedulerConfigMo
 	}
 
 	private SchedulerConfigModel getDefaultSchedulerConfigModel() {
-		return SchedulerConfigModel.builder()
-				.type(SchedulerType.HOURLY)
-				.time("1")
-				.build();
+		return SchedulerConfigModel.builder().type(SchedulerType.DAILY).time("01:00").build();
 	}
 
 }

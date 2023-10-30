@@ -72,15 +72,15 @@ public class SubmodelCsvService {
 
 		List<List<String>> records = new LinkedList<>();
 		Submodel schemaObj = submodelService.findSubmodelByNameAsSubmdelObject(submodel);
-
-		List<String> headerName = getCSVHeader(schemaObj);
+		Object autoPopulatefieldObj = schemaObj.getProperties().get("autoPopulatedfields");
+		List<String> headerName = getCSVHeader(schemaObj, autoPopulatefieldObj);
 		headerName.add("shell_id");
 		headerName.add("sub_model_id");
 		headerName.add("asset_id");
 		headerName.add("usage_policy_id");
 		headerName.add("access_policy_id");
 		headerName.add("contract_defination_id");
-		
+
 		records.add(headerName);
 
 		String coloumns = String.join(",", headerName);
@@ -94,9 +94,8 @@ public class SubmodelCsvService {
 		return records;
 	}
 
-	public List<String> getCSVHeader(Submodel schemaObj) {
+	public List<String> getCSVHeader(Submodel schemaObj, Object autoPopulatefieldObj) {
 		JsonObject schemaObject = schemaObj.getSchema();
-		Object autoPopulatefieldObj = schemaObj.getProperties().get("autoPopulatedfields");
 		return createCSVColumnHeader(schemaObject, autoPopulatefieldObj);
 	}
 

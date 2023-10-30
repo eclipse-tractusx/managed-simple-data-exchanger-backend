@@ -81,6 +81,8 @@ public abstract class PcfMapper {
 			return null;
 		}
 
+		PcfAspect csvObj = mapFrom(entity);
+		
 		Pcf pcfResponse = Pcf.builder()
 				.biogenicCarbonEmissionsOtherThanCO2(entity.getBiogenicCarbonEmissionsOtherThanCO2())
 				.distributionStagePcfExcludingBiogenic(entity.getDistributionStagePcfExcludingBiogenic())
@@ -141,8 +143,7 @@ public abstract class PcfMapper {
 				.carbonContentBiogenic(entity.getCarbonContentBiogenic())
 				.build();
 		
-		
-		return new Gson().toJsonTree(PcfSubmodelResponse.builder()
+		PcfSubmodelResponse build=PcfSubmodelResponse.builder()
 				.specVersion(entity.getSpecVersion())
 				.companyIds(List.of(CompanyIds.builder()
 						.companyId(entity.getCompanyId())
@@ -169,7 +170,9 @@ public abstract class PcfMapper {
 				.precedingPfIds(List.of(PrecedingPfIds.builder()
 						.id(entity.getPrecedingPfId())
 						.build()))
-				.build()).getAsJsonObject();
+				.build();
+		
+		return aspectResponseFactory.maptoReponse(csvObj, build);
 
 	}
 

@@ -89,8 +89,8 @@ public abstract class AspectRelationshipMapper {
 		
 		AspectRelationshipEntity aspectRelationshipEntity = aspectRelationships.get(0);
 		
-		JsonObject csvObj = mapFromEntity(aspectRelationshipEntity);
-
+		AspectRelationship csvObj = mapFrom(aspectRelationshipEntity);
+		
 		return aspectResponseFactory.maptoReponse(csvObj, build);
 
 	}

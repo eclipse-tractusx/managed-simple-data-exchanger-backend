@@ -245,7 +245,7 @@ public class SubmodelOrchestartorService {
 		JsonObject readCreatedTwinsDetails = executor.readCreatedTwinsDetails(uuid);
 		JsonObject jObject = new JsonObject();
 		if ("csv".equalsIgnoreCase(type)) {
-			List<String> csvHeader = submodelCsvService.getCSVHeader(submodelSchema);
+			List<String> csvHeader = submodelCsvService.getCSVHeader(submodelSchema, null);
 			JsonObject jElement = readCreatedTwinsDetails.get("csv").getAsJsonObject();
 			for (String field : csvHeader) {
 				jObject.add(field, jElement.get(field));

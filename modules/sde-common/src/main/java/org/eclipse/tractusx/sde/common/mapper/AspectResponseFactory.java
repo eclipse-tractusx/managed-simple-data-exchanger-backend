@@ -43,7 +43,7 @@ public class AspectResponseFactory {
 		
 		return jobj;
 	}
-
+	
 	private JsonObject extracted(Object csvObject) throws JsonProcessingException {
 		
 		JsonObject fromJson = new Gson().fromJson(mapper.writeValueAsString(csvObject), JsonObject.class);

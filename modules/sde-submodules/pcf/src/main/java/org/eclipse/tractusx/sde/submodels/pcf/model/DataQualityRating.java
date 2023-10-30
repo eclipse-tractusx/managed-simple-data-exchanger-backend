@@ -28,11 +28,11 @@ import lombok.Data;
 @AllArgsConstructor
 public class DataQualityRating {
 	
-	private double completenessDQR;
-	private double technologicalDQR;
-	private double geographicalDQR;
-	private double temporalDQR;
-	private double reliabilityDQR;
-	private double coveragePercent;
+	private Double completenessDQR;
+	private Double technologicalDQR;
+	private Double geographicalDQR;
+	private Double temporalDQR;
+	private Double reliabilityDQR;
+	private Double coveragePercent;
 
 }

@@ -39,25 +39,25 @@ public class Pcf {
 	
 	private List<CrossSectoralStandardsUsed> crossSectoralStandardsUsed;
 	
-	private double biogenicCarbonEmissionsOtherThanCO2; // 1.0,
-	private double distributionStagePcfExcludingBiogenic; // 1.5,
-	private double biogenicCarbonWithdrawal; // 0.0,
-	private double distributionStageBiogenicCarbonEmissionsOtherThanCO2; // 1.0,
+	private Double biogenicCarbonEmissionsOtherThanCO2; // 1.0,
+	private Double distributionStagePcfExcludingBiogenic; // 1.5,
+	private Double biogenicCarbonWithdrawal; // 0.0,
+	private Double distributionStageBiogenicCarbonEmissionsOtherThanCO2; // 1.0,
 	
 	@SerializedName("extWBCSD_allocationRulesDescription")
 	private String extWBCSDAllocationRulesDescription;//In accordance with Catena-X PCF Rulebook
 	
 	private String exemptedEmissionsDescription;//No exemption
-	private double distributionStageFossilGhgEmissions; // 0.5,
-	private double exemptedEmissionsPercent; // 0.0,
+	private Double distributionStageFossilGhgEmissions; // 0.5,
+	private Double exemptedEmissionsPercent; // 0.0,
 	private String geographyCountrySubdivision;//US-NY
 	
 	@SerializedName("extTFS_luGhgEmissions")
-	private double extTFSLuGhgEmissions; // 0.3,
-	private double distributionStageBiogenicCarbonWithdrawal; // 0.5,
-	private double pcfIncludingBiogenic; // 1.0,
-	private double aircraftGhgEmissions; // 0.0,
-	private double productMassPerDeclaredUnit; // 0.456,
+	private Double extTFSLuGhgEmissions; // 0.3,
+	private Double distributionStageBiogenicCarbonWithdrawal; // 0.5,
+	private Double pcfIncludingBiogenic; // 1.0,
+	private Double aircraftGhgEmissions; // 0.0,
+	private Double productMassPerDeclaredUnit; // 0.456,
 	
 	@SerializedName("extWBCSD_operator")
 	private String extWBCSDOperator;//PEF
@@ -69,40 +69,40 @@ public class Pcf {
 	
 	@SerializedName("extTFS_allocationWasteIncineration")
 	private String extTFSAllocationWasteIncineration;//cut-off
-	private double pcfExcludingBiogenic; // 2.0,
+	private Double pcfExcludingBiogenic; // 2.0,
 	private String referencePeriodEnd;//2022-12-31T23:59:59Z
 	
 	@SerializedName("extWBCSD_characterizationFactors")
 	private String extWBCSDCharacterizationFactors;//AR5
 	private String secondaryEmissionFactorSource;//ecoinvent 3.8
-	private double unitaryProductAmount; // 1000.0,
+	private Double unitaryProductAmount; // 1000.0,
 	private String declaredUnit;//liter
 	private String referencePeriodStart;//2022-01-01T00:00:01Z
 	private String geographyRegionOrSubregion;//Africa
-	private double fossilGhgEmissions; // 0.5,
+	private Double fossilGhgEmissions; // 0.5,
 	private String boundaryProcessesDescription;//Electricity consumption included as an input in the production phase
 	private String geographyCountry;//DE
 	
 	@SerializedName("extWBCSD_packagingGhgEmissions")
-	private double extWBCSDPackagingGhgEmissions; // 0,
-	private double dlucGhgEmissions; // 0.4,
-	private double carbonContentTotal; // 2.5,
+	private Double extWBCSDPackagingGhgEmissions; // 0,
+	private Double dlucGhgEmissions; // 0.4,
+	private Double carbonContentTotal; // 2.5,
 	
 	@SerializedName("extTFS_distributionStageLuGhgEmissions")
-	private double extTFSDistributionStageLuGhgEmissions; // 1.1,
-	private double primaryDataShare; // 56.12,
+	private Double extTFSDistributionStageLuGhgEmissions; // 1.1,
+	private Double primaryDataShare; // 56.12,
 	
 	@SerializedName("extWBCSD_packagingEmissionsIncluded")
 	private boolean extWBCSDPackagingEmissionsIncluded;//true
 	
 	@SerializedName("extWBCSD_fossilCarbonContent")
-	private double extWBCSDFossilCarbonContent; // 0.1,
+	private Double extWBCSDFossilCarbonContent; // 0.1,
 	
 	private String crossSectoralStandard;//GHG Protocol Product standard
 	
 	@SerializedName("extTFS_distributionStageDlucGhgEmissions")
-	private double extTFSDistributionStageDlucGhgEmissions; // 1.0,
-	private double distributionStagePcfIncludingBiogenic; // 0.0,
-	private double carbonContentBiogenic; // 0.0,
+	private Double extTFSDistributionStageDlucGhgEmissions; // 1.0,
+	private Double distributionStagePcfIncludingBiogenic; // 0.0,
+	private Double carbonContentBiogenic; // 0.0,
 
 }

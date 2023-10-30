@@ -227,6 +227,7 @@ public class ConsumerService {
 			} else if (!flagToDownloadImidiate && "SUCCESS".equals(status.asText())) {
 				offer.setStatus("SUCCESS");
 				successCount.getAndIncrement();
+				offer.setDownloadErrorMsg("");
 			} else {
 				offer.setStatus(FAILED.toString());
 				failedCount.getAndIncrement();

@@ -248,6 +248,7 @@ public class ConsumerService {
 			dataWithValue.put(offer.getAssetId(), jsonNode);
 			offer.setStatus(status.asText());
 			successCount.getAndIncrement();
+			offer.setDownloadErrorMsg("");
 		} else {
 			offer.setStatus(FAILED.toString());
 			offer.setDownloadErrorMsg("The json type data does not found in response");
@@ -282,6 +283,7 @@ public class ConsumerService {
 			dataWithValue.put(findSubmodel.getId(), csvValueList);
 			offer.setStatus(status.asText());
 			successCount.getAndIncrement();
+			offer.setDownloadErrorMsg("");
 		} else {
 			offer.setStatus(FAILED.toString());
 			offer.setDownloadErrorMsg("The csv type data does not found in response");

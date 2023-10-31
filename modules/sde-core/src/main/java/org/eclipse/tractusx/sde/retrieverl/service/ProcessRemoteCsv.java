@@ -60,6 +60,7 @@ import org.eclipse.tractusx.sde.notification.manager.EmailManager;
 import org.eclipse.tractusx.sde.notification.manager.EmailNotificationModelProvider;
 import org.eclipse.tractusx.sde.retrieverl.RetrieverI;
 import org.springframework.beans.factory.ObjectFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 
@@ -83,21 +84,17 @@ public class ProcessRemoteCsv {
 	private final ObjectFactory<ProcessRemoteCsv> selfFactory;
 	private final EmailManager emailManager;
 	private final EmailNotificationModelProvider emailNotificationModelProvider;
-	private final JobMaintenanceModelProvider jobMaintenanceModelProvider;
+	private final JobMaintenanceConfigService jobMaintenanceConfigService;
 	private final ActiveStorageMediaProvider activeStorageMediaProvider;
-	private final List<ConfigurableFactory<?>> factories;
+	private final ApplicationContext applicationContext;
 
 	@SneakyThrows
-	@SuppressWarnings({ "ResultOfMethodCallIgnored" })
 	public String process(TaskScheduler taskScheduler, String schedulerUuid) {
 		log.info("Scheduler started " + schedulerUuid);
 
 		String activeStorageMedia = activeStorageMediaProvider.getConfiguration().getName().toLowerCase();
 		@SuppressWarnings("unchecked")
-		var retrieverFactory = (ConfigurableFactory<RetrieverI>) factories.stream()
-				.filter(f -> f.getClass().getCanonicalName().toLowerCase().contains(activeStorageMedia)).findFirst()
-				.orElseThrow(() -> new NoDataFoundException(
-						"The automatic storage '" + activeStorageMedia + "' retriever not supported"));
+		var retrieverFactory = (ConfigurableFactory<RetrieverI>)applicationContext.getBean(activeStorageMedia);
 
 		String msg = null;
 		SchedulerReport schedulerTrigger = sftpReportRepository.save(sftpReportMapper
@@ -177,7 +174,7 @@ public class ProcessRemoteCsv {
 	}
 
 	private void sendEmailNotification(String schedulerUuid) {
-		if (jobMaintenanceModelProvider.getConfiguration().getEmailNotification().booleanValue()) {
+		if (jobMaintenanceConfigService.getConfiguration().getEmailNotification().booleanValue()) {
 			sendNotificationForProcessedFiles(schedulerUuid);
 		} else {
 			log.warn("The notification is disable, so avoiding sent email notification");
@@ -302,7 +299,7 @@ public class ProcessRemoteCsv {
 					inProgressIdList, schedulerId), Instant.now().plus(Duration.ofSeconds(5)));
 		} else {
 			selfFactory.getObject().createDbReport(retriever, inProgressIdList, schedulerId).forEach(Runnable::run);
-			tryRun(retriever::close, IGNORE());
+			tryRun(retriever::close, TryUtils::IGNORE);
 			sendEmailNotification(schedulerId);
 		}
 	}

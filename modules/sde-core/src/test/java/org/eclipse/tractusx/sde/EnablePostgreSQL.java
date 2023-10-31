@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2023 T-Systems International GmbH
- * Copyright (c) 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -18,21 +18,17 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.common;
+package org.eclipse.tractusx.sde;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.test.context.ContextConfiguration;
 
-import java.util.List;
-import java.util.Optional;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-@Component
-public class ConfigurableFactoryProvider {
-    @Autowired
-    private List<ConfigurableFactory<?>> factories;
-
-    @SuppressWarnings("unchecked")
-    public <T> Optional<ConfigurableFactory<T>> getFactory(Class<T> tClass) {
-        return factories.stream().filter(f -> tClass.isAssignableFrom(f.getCreatedClass())).map(o -> (ConfigurableFactory<T>)o).findFirst();
-    }
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@ContextConfiguration(initializers = PostgreSQLInitializer.class)
+public @interface EnablePostgreSQL {
 }

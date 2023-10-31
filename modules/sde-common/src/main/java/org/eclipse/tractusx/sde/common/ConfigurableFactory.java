@@ -20,13 +20,13 @@
 
 package org.eclipse.tractusx.sde.common;
 
+import java.io.IOException;
+
 public interface ConfigurableFactory<T> {
     /***
      * Successful creation of the retriever means the RetrieverConfiguration was correct
      * and the retriever managed to log in to the remote resource
      * @return retriever
      */
-    T create() throws Exception;
-
-    Class<T> getCreatedClass();
+    T create() throws IOException;
 }

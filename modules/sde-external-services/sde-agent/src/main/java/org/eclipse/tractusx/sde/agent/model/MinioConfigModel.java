@@ -21,6 +21,7 @@
 package org.eclipse.tractusx.sde.agent.model;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -40,14 +41,13 @@ public class MinioConfigModel {
 	private String secretKey;
 	@NotBlank
 	private String bucketName;
-
 	private String toBeProcessedLocation;
-	@NotBlank
+	@NotBlank @Pattern(regexp = "^/.*[^/]$", message = "Path shall start from '/' and not end with '/'")
 	private String inProgressLocation;
-	@NotBlank
+	@NotBlank	@Pattern(regexp = "^/.*[^/]$", message = "Path shall start from '/' and not end with '/'")
 	private String successLocation;
-	@NotBlank
+	@NotBlank 	@Pattern(regexp = "^/.*[^/]$", message = "Path shall start from '/' and not end with '/'")
 	private String partialSuccessLocation;
-	@NotBlank
+	@NotBlank 	@Pattern(regexp = "^/.*[^/]$", message = "Path shall start from '/' and not end with '/'")
 	private String failedLocation;
 }

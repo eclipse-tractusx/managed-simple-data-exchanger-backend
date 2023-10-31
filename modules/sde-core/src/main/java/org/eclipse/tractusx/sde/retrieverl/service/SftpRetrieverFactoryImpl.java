@@ -20,20 +20,20 @@
 
 package org.eclipse.tractusx.sde.retrieverl.service;
 
-import java.util.OptionalInt;
-
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.eclipse.tractusx.sde.agent.ConfigService;
 import org.eclipse.tractusx.sde.agent.model.SftpConfigModel;
 import org.eclipse.tractusx.sde.common.ConfigurableFactory;
 import org.eclipse.tractusx.sde.common.ConfigurationProvider;
+import org.eclipse.tractusx.sde.common.validators.SpringValidator;
 import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
+import java.util.OptionalInt;
 
-@Service
+@Service("sftp")
 @RequiredArgsConstructor
 public class SftpRetrieverFactoryImpl implements ConfigurableFactory<SftpRetriever>, ConfigurationProvider<SftpConfigModel> {
 
@@ -64,6 +64,8 @@ public class SftpRetrieverFactoryImpl implements ConfigurableFactory<SftpRetriev
 
 	private final ConfigService configService;
 	private final CsvHandlerService csvHandlerService;
+	private final SpringValidator validator;
+
 
 	@SneakyThrows
 	public SftpRetriever create(OptionalInt port) {
@@ -91,13 +93,8 @@ public class SftpRetrieverFactoryImpl implements ConfigurableFactory<SftpRetriev
 		return create(OptionalInt.empty());
 	}
 
-	@Override
-	public Class<SftpRetriever> getCreatedClass() {
-		return SftpRetriever.class;
-	}
-
 	private SftpConfigModel getDefaultConfig() {
-		return SftpConfigModel.builder()
+		return validator.validate(SftpConfigModel.builder()
 				.host(host)
 				.port(port)
 				.failedLocation(failed)
@@ -107,7 +104,8 @@ public class SftpRetrieverFactoryImpl implements ConfigurableFactory<SftpRetriev
 				.inProgressLocation(inProgress)
 				.partialSuccessLocation(partialSuccess)
 				.successLocation(success)
-				.build();
+				.build()
+		);
 	}
 
 	@Override
@@ -123,5 +121,10 @@ public class SftpRetrieverFactoryImpl implements ConfigurableFactory<SftpRetriev
 	@Override
 	public void saveConfig(SftpConfigModel config) {
 		configService.saveConfiguration(config);
+	}
+
+	@Override
+	public Class<SftpConfigModel> getConfigClass() {
+		return SftpConfigModel.class;
 	}
 }

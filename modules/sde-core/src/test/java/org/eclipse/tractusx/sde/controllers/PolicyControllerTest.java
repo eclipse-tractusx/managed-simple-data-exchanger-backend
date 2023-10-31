@@ -5,7 +5,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.tractusx.sde.EnableTestContainers;
+import org.eclipse.tractusx.sde.EnablePostgreSQL;
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.DurationEnum;
@@ -33,9 +33,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
-@EnableTestContainers
 @ActiveProfiles("test")
 @WithMockUser(username = "Admin", authorities = { "Admin" })
+@EnablePostgreSQL
 class PolicyControllerTest {
 
 

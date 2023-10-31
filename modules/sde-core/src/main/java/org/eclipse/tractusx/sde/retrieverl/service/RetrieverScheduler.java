@@ -22,6 +22,8 @@ package org.eclipse.tractusx.sde.retrieverl.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.eclipse.tractusx.sde.common.exception.ValidationException;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Service;
@@ -66,7 +68,7 @@ public class RetrieverScheduler {
 		} else {
 			String msg = "Automatic file upload disable, please enable it to trigger job";
 			log.warn(msg);
-			return msg;
+			throw new ValidationException(msg);
 		}
 	}
 

@@ -37,8 +37,11 @@ public class RecordProcessUtils {
 			fieldValue = "";
 
 		fieldValue = fieldValue.trim();
-
-		if (isNumberTypeField(jObject)) {
+		if(isFieldEnumDataExpectAndisNull(jObject)) {
+			//no need to add null field if enum data expected and field is not require
+			rowjObject.remove(ele);
+		}
+		else if (isNumberTypeField(jObject)) {
 			if (fieldValue.isBlank()) {
 				rowjObject.putNull(ele);
 			} else {
@@ -53,9 +56,13 @@ public class RecordProcessUtils {
 
 			rowjObject.put(ele, fieldValue);
 
-		} else
+		} else {
+			if (fieldValue.isBlank())
+				fieldValue = null;
 			rowjObject.put(ele, fieldValue);
+		}
 	}
+
 
 	private boolean isDateFormatField(JsonObject jObject) {
 		return jObject.get("format") != null && "date-time".equals(jObject.get("format").getAsString());
@@ -69,6 +76,10 @@ public class RecordProcessUtils {
 		}
 		return false;
 
+	}
+
+	private boolean isFieldEnumDataExpectAndisNull(JsonObject jObject) {
+		return jObject.get("enum") != null && jObject.get("enum").isJsonArray() && jObject.get("minLength") == null;
 	}
 
 }

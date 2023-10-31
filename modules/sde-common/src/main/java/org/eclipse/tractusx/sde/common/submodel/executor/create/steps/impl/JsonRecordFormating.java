@@ -28,7 +28,9 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
@@ -43,6 +45,8 @@ public class JsonRecordFormating extends Step {
 	public ObjectNode run(Integer rowIndex, ObjectNode rowjObject, String processId) {
 
 		JsonObject submodelProperties = getSubmodelProperties();
+		JsonArray submodelRequiredFields = getSubmodelRequiredFields();
+		JsonObject submodelDependentRequiredFields = getSubmodelDependentRequiredFields();
 		Set<String> fields = submodelProperties.keySet();
 
 		int colomnIndex = 0;
@@ -52,10 +56,14 @@ public class JsonRecordFormating extends Step {
 				JsonObject jObject = submodelProperties.get(ele).getAsJsonObject();
 
 				JsonNode jsonValuenode = rowjObject.get(ele);
-				if (!jsonValuenode.isNull())
+				if (jsonValuenode!=null && !jsonValuenode.isNull())
 					fieldValue = jsonValuenode.asText();
 
-				recordProcessUtils.setFieldValue(rowjObject, ele, jObject, fieldValue);
+				boolean isNotNeedToRemoveFromFields = recordProcessUtils.isFieldEnumDataExpect(jObject)
+						&& (submodelRequiredFields.contains(JsonParser.parseString(ele))
+								|| recordProcessUtils.isDependentField(ele, submodelDependentRequiredFields));
+
+				recordProcessUtils.setFieldValue(rowjObject, ele, jObject, fieldValue, isNotNeedToRemoveFromFields);
 
 				colomnIndex++;
 
@@ -67,5 +75,6 @@ public class JsonRecordFormating extends Step {
 
 		return rowjObject;
 	}
+	
 
 }

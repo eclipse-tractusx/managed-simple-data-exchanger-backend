@@ -23,6 +23,7 @@ package org.eclipse.tractusx.sde.submodels.batch.mapper;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.mapper.AspectResponseFactory;
 import org.eclipse.tractusx.sde.common.model.LocalIdentifier;
 import org.eclipse.tractusx.sde.common.model.ManufacturingInformation;
@@ -78,7 +79,8 @@ public abstract class BatchMapper {
 		Batch csvObj = mapFrom(entity);
 
 		Set<LocalIdentifier> localIdentifiers = new HashSet<>();
-		localIdentifiers.add(new LocalIdentifier(BatchConstants.BATCH_ID, entity.getBatchId()));
+		if (StringUtils.isNotBlank(entity.getBatchId()))
+			localIdentifiers.add(new LocalIdentifier(BatchConstants.BATCH_ID, entity.getBatchId()));
 
 		ManufacturingInformation manufacturingInformation = ManufacturingInformation.builder()
 				.date(entity.getManufacturingDate()).country(entity.getManufacturingCountry()).build();

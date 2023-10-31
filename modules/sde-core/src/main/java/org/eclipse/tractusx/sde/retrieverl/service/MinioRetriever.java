@@ -71,15 +71,18 @@ public class MinioRetriever implements RetrieverI {
                 .credentials(accessKey, secretKey)
                 .build();
         
-		if (StringUtils.isNotBlank(toBeProcessedLocation))
+		boolean recursiveflag = false;
+		if (StringUtils.isNotBlank(toBeProcessedLocation)) {
 			toBeProcessedLocation = toBeProcessedLocation + "/";
+			recursiveflag = true;
+		}
 		
 		idToPath = new LinkedHashMap<>();
 		for (var r : minioClient.listObjects(
                 ListObjectsArgs.builder()
                         .bucket(bucketName)
                         .prefix(toBeProcessedLocation)
-                        .recursive(false)
+                        .recursive(recursiveflag)
                         .build())) {
             var item = r.get();
             if (!item.isDir() && item.objectName().toLowerCase().endsWith(".csv")) {

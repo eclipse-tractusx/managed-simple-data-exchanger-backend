@@ -65,7 +65,7 @@ jobs:
           images: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=semver,pattern={{version}},value=v2.3.0
+            type=semver,pattern={{version}},value=v2.3.1
           flavor: |
             latest=true
               

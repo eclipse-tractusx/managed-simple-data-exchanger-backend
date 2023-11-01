@@ -7,7 +7,7 @@ import org.eclipse.tractusx.sde.common.ConfigurationProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-@Service
+@Service("email")
 @RequiredArgsConstructor
 public class EmailNotificationModelProvider implements ConfigurationProvider<EmailNotificationModel> {
     @Value("${mail.to.address}")
@@ -31,5 +31,10 @@ public class EmailNotificationModelProvider implements ConfigurationProvider<Ema
     @Override
     public void saveConfig(EmailNotificationModel config) {
         configService.saveConfiguration(config);
+    }
+
+    @Override
+    public Class<EmailNotificationModel> getConfigClass() {
+        return EmailNotificationModel.class;
     }
 }

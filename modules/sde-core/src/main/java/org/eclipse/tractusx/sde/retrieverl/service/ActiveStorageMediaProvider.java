@@ -58,6 +58,11 @@ public class ActiveStorageMediaProvider implements ConfigurationProvider<ActiveS
         configService.saveConfiguration(config);
     }
 
+    @Override
+    public Class<ActiveStorageMedia> getConfigClass() {
+        return ActiveStorageMedia.class;
+    }
+
     private ActiveStorageMedia getDefaultActiveStorageMedia() {
         return ActiveStorageMedia.builder().name(retriever).build();
     }

@@ -20,59 +20,30 @@
 
 package org.eclipse.tractusx.sde.retrieverl.service;
 
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.agent.ConfigService;
-import org.eclipse.tractusx.sde.agent.model.JobMaintenanceModel;
 import org.eclipse.tractusx.sde.agent.model.SchedulerConfigModel;
 import org.eclipse.tractusx.sde.agent.model.SchedulerType;
 import org.eclipse.tractusx.sde.common.ConfigurationProvider;
 import org.eclipse.tractusx.sde.common.exception.ValidationException;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-@Service
-@RequiredArgsConstructor
-public class SchedulerService implements ConfigurationProvider<SchedulerConfigModel> {
+@Service("scheduler")
+public class SchedulerConfigService implements ConfigurationProvider<SchedulerConfigModel> {
 
 	private final ConfigService configService;
 	private final RetrieverScheduler retrieverScheduler;
 
-	public Map<String, String> fire() {
-		return Map.of("msg", retrieverScheduler.fire());
-	}
-
-	@PostConstruct
-	public void init() {
-		updateSchedulerExecution(getConfiguration());
-	}
-
-	public void updateSchedulerExecution(SchedulerConfigModel model) {
-		// update the scheduler
-		retrieverScheduler.schedule(convertScheduleToCron(model));
-	}
-
-	public void updateScheduleStatus(JobMaintenanceModel config) {
-		if (config.getAutomaticUpload().booleanValue()) {
-			// enable the scheduler
-			enable();
-		} else {
-			// disable the scheduler
-			retrieverScheduler.stopAll();
-		}
-	}
-
-	private void enable() {
-		SchedulerConfigModel config = getConfiguration();
-		retrieverScheduler.schedule(convertScheduleToCron(config));
+	public SchedulerConfigService(ConfigService configService, @Lazy RetrieverScheduler retrieverScheduler) {
+		this.configService = configService;
+		this.retrieverScheduler = retrieverScheduler;
 	}
 
 	public String convertScheduleToCron(SchedulerConfigModel model) {
@@ -102,11 +73,11 @@ public class SchedulerService implements ConfigurationProvider<SchedulerConfigMo
 		String time = model.getTime();
 		if (StringUtils.isBlank(time))
 			throw new ValidationException(
-					"Time should not be null or empty, it should be like 24 hours 21:00(hour:minute) or like 03:30 AM");
+					"Time should not be null or empty, it should be like 24 hours e.g 21:00(hour:minute) or like 03:30 AM");
 		time = time.toUpperCase();
 		if (time.contains("AM") || time.contains("PM")) {
 			try {
-				time = LocalTime.parse(time.toUpperCase(), DateTimeFormatter.ofPattern("hh:mm a", Locale.US))
+				time = LocalTime.parse(time.toUpperCase(), DateTimeFormatter.ofPattern("hh:mm a", Locale.GERMANY))
 						.format(DateTimeFormatter.ofPattern("HH:mm"));
 			} catch (Exception e) {
 				throw new ValidationException(e.getMessage());
@@ -117,16 +88,15 @@ public class SchedulerService implements ConfigurationProvider<SchedulerConfigMo
 			Matcher m1 = p1.matcher(time);
 			if (!m1.matches())
 				throw new ValidationException("'" + time
-						+ "' time is not in correct format, it should be like 24 hours 21:00(hour:minute) or like 03:30 AM");
+						+ "' time is not in correct format, it should be like 24 hours e.g 21:00(hour:minute) or like 03:30 AM");
 		}
-
 		String[] split = time.split(":");
-		int[] intsplit = new int[2];
-		int i = 0;
-		for (String string : split) {
-			intsplit[i++] = Integer.parseInt(string);
-		}
-		return intsplit;
+ 		int[] intsplit = new int[2];
+ 		int i = 0;
+ 		for (String string : split) {
+ 			intsplit[i++] = Integer.parseInt(string);
+ 		}
+ 		return intsplit;
 	}
 
 	private void dayValidation(SchedulerConfigModel model) {
@@ -145,7 +115,7 @@ public class SchedulerService implements ConfigurationProvider<SchedulerConfigMo
 
 	private void timeHourValidation(SchedulerConfigModel model) {
 
-		// 1-7 number day
+		// 24 hour number time
 		String regex = "(0?[1-9]|1[0-9]|2[0-4])";
 		String time = model.getTime();
 		Pattern p = Pattern.compile(regex);
@@ -157,22 +127,33 @@ public class SchedulerService implements ConfigurationProvider<SchedulerConfigMo
 			throw new ValidationException("'" + time + "' time is not number between [1-24]");
 	}
 
+
 	@Override
 	public SchedulerConfigModel getConfiguration() {
-		return configService.getConfigurationAsObject(SchedulerConfigModel.class).orElseGet(() -> {
-			var scm = getDefaultSchedulerConfigModel();
-			saveConfig(scm);
-			return scm;
-		});
+		return configService.getConfigurationAsObject(SchedulerConfigModel.class)
+				.orElseGet(() -> {
+					var scm = getDefaultSchedulerConfigModel();
+					configService.saveConfiguration(scm);
+					return scm;
+				});
 	}
 
 	@Override
 	public void saveConfig(SchedulerConfigModel config) {
 		configService.saveConfiguration(config);
+		retrieverScheduler.reschedule();
+	}
+
+	@Override
+	public Class<SchedulerConfigModel> getConfigClass() {
+		return SchedulerConfigModel.class;
 	}
 
 	private SchedulerConfigModel getDefaultSchedulerConfigModel() {
-		return SchedulerConfigModel.builder().type(SchedulerType.DAILY).time("01:00").build();
+		return SchedulerConfigModel.builder()
+				.type(SchedulerType.DAILY)
+				.time("01:00")
+				.build();
 	}
 
 }

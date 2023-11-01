@@ -21,10 +21,10 @@
 package org.eclipse.tractusx.sde.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.eclipse.tractusx.sde.EnableTestContainers;
+import org.eclipse.tractusx.sde.EnablePostgreSQL;
 import org.eclipse.tractusx.sde.agent.model.SchedulerConfigModel;
 import org.eclipse.tractusx.sde.agent.model.SftpConfigModel;
-import org.eclipse.tractusx.sde.retrieverl.service.SchedulerService;
+import org.eclipse.tractusx.sde.retrieverl.service.SchedulerConfigService;
 import org.eclipse.tractusx.sde.retrieverl.service.SftpRetrieverFactoryImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -38,6 +38,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.Map;
 
@@ -46,9 +47,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
-@EnableTestContainers
 @ActiveProfiles("test")
 @WithMockUser(username = "Admin", authorities = { "Admin" })
+@EnablePostgreSQL
 class AutoUploadAgentConfigControllerTest {
 
 	@Autowired
@@ -60,66 +61,65 @@ class AutoUploadAgentConfigControllerTest {
 	SftpRetrieverFactoryImpl sftpRetrieverFactory;
 
 	@Autowired
-	SchedulerService schedulerService;
+	SchedulerConfigService schedulerConfigService;
 
 
 	@Test
 	void testSaveSFTPConfig() throws Exception {
-
+		var json = objectMapper.writeValueAsString(getBodySftp());
 		mvc.perform(MockMvcRequestBuilders.put("/sftp").contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(getBodySftp()))).andExpect(status().isOk());
-
-		mvc.perform(MockMvcRequestBuilders.get("/sftp").contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk());
-
+				.content(json)).andExpect(status().isOk());
 		Assertions.assertEquals(
-				objectMapper.convertValue(getBodySftp(), SftpConfigModel.class),
+				objectMapper.readValue(json, SftpConfigModel.class),
 				sftpRetrieverFactory.getConfiguration()
 		);
+		mvc.perform(MockMvcRequestBuilders.get("/sftp").accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(MockMvcResultMatchers.content().json(json));
 	}
 
 	@Test
 	void testSaveSchedulerHourlyTypeConfig() throws Exception {
-
+		var json = objectMapper.writeValueAsString(getSchedulerHourBody());
 		mvc.perform(MockMvcRequestBuilders.put("/scheduler").contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(getSchedulerHourBody()))).andExpect(status().isOk());
-
-		mvc.perform(MockMvcRequestBuilders.get("/scheduler")).andExpect(status().isOk());
+				.content(json)).andExpect(status().isOk());
 
 		Assertions.assertEquals(
-				objectMapper.convertValue(getSchedulerHourBody(), SchedulerConfigModel.class),
-				schedulerService.getConfiguration()
+				objectMapper.readValue(json, SchedulerConfigModel.class),
+				schedulerConfigService.getConfiguration()
 		);
+		mvc.perform(MockMvcRequestBuilders.get("/scheduler").accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(MockMvcResultMatchers.content().json(json));
 	}
 
 
 	@Test
 	void testSaveSchedulerDailyTypeConfig() throws Exception {
-
+		var json = objectMapper.writeValueAsString(getJsonSchedulerDailyBody());
 		mvc.perform(MockMvcRequestBuilders.put("/scheduler").contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(getJsonSchedulerDailyBody()))).andExpect(status().isOk());
-
-		mvc.perform(MockMvcRequestBuilders.get("/scheduler")).andExpect(status().isOk());
-
+				.content(json)).andExpect(status().isOk());
 		Assertions.assertEquals(
-				objectMapper.convertValue(getJsonSchedulerDailyBody(), SchedulerConfigModel.class),
-				schedulerService.getConfiguration()
+				objectMapper.readValue(json, SchedulerConfigModel.class),
+				schedulerConfigService.getConfiguration()
 		);
+		mvc.perform(MockMvcRequestBuilders.get("/scheduler").accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(MockMvcResultMatchers.content().json(json));
 	}
 
 	@Test
 	void testSaveSchedulerWeeklyTypeConfig() throws Exception {
-
+		var json = objectMapper.writeValueAsString(getJsonSchedulerWeeklyBody());
 		mvc.perform(MockMvcRequestBuilders.put("/scheduler").contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(getJsonSchedulerWeeklyBody()))).andExpect(status().isOk());
-
-		mvc.perform(MockMvcRequestBuilders.get("/scheduler").contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk());
-
+				.content(json)).andExpect(status().isOk());
 		Assertions.assertEquals(
-				objectMapper.convertValue(getJsonSchedulerWeeklyBody(), SchedulerConfigModel.class),
-				schedulerService.getConfiguration()
+				objectMapper.readValue(json, SchedulerConfigModel.class),
+				schedulerConfigService.getConfiguration()
 		);
+		mvc.perform(MockMvcRequestBuilders.get("/scheduler").accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(MockMvcResultMatchers.content().json(json));
 	}
 
 

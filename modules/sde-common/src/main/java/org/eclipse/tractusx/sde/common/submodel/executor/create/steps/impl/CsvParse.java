@@ -29,7 +29,9 @@ import org.eclipse.tractusx.sde.common.submodel.executor.Step;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
@@ -44,7 +46,8 @@ public class CsvParse extends Step {
 	public ObjectNode run(RowData rowData, ObjectNode rowjObject, String processId) {
 
 		JsonObject submodelProperties = getSubmodelProperties();
-
+		JsonArray submodelRequiredFields = getSubmodelRequiredFields();
+		JsonObject submodelDependentRequiredFields = getSubmodelDependentRequiredFields();
 		Set<String> fields = submodelProperties.keySet();
 
 		String[] rowDataFields = rowData.content().split(CommonConstants.SEPARATOR, -1);
@@ -61,7 +64,11 @@ public class CsvParse extends Step {
 
 				fieldValue = rowDataFields[colomnIndex];
 
-				recordProcessUtils.setFieldValue(rowjObject, ele, jObject, fieldValue);
+				boolean isNotNeedToRemoveFromFields = recordProcessUtils.isFieldEnumDataExpect(jObject)
+						&& (submodelRequiredFields.contains(JsonParser.parseString(ele))
+								|| recordProcessUtils.isDependentField(ele, submodelDependentRequiredFields));
+				
+				recordProcessUtils.setFieldValue(rowjObject, ele, jObject, fieldValue, isNotNeedToRemoveFromFields);
 
 				colomnIndex++;
 

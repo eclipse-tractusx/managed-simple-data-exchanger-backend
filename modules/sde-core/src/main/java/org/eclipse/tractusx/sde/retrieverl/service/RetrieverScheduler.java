@@ -25,6 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.EventListener;
+
+import org.eclipse.tractusx.sde.common.exception.ValidationException;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Service;
@@ -58,7 +60,7 @@ public class RetrieverScheduler {
 
 	@EventListener(ApplicationReadyEvent.class)
 	public synchronized void reschedule() {
-		if (jobMaintenanceConfigService.getConfiguration().getAutomaticUpload()) {
+		if (jobMaintenanceConfigService.getConfiguration().getAutomaticUpload().booleanValue()) {
 			String cronExpression = schedulerConfigService.convertScheduleToCron(schedulerConfigService.getConfiguration());
 			reset().schedule(
 					() -> processRemoteCsv.process(taskScheduler, UUID.randomUUID().toString()),
@@ -71,10 +73,15 @@ public class RetrieverScheduler {
 	}
 
 	public String fire() {
-		if (taskScheduler == null || taskScheduler.getScheduledExecutor().isShutdown()) {
-			reset();
+		if (jobMaintenanceConfigService.getConfiguration().getAutomaticUpload().booleanValue()) {
+			if (taskScheduler == null || taskScheduler.getScheduledExecutor().isShutdown())
+				reset();
+			return processRemoteCsv.process(taskScheduler, UUID.randomUUID().toString());
+		} else {
+			String msg = "Automatic file upload disable, please enable it to trigger job";
+			log.warn(msg);
+			throw new ValidationException(msg);
 		}
-		return processRemoteCsv.process(taskScheduler, UUID.randomUUID().toString());
 	}
 
 	public void stopAll() {

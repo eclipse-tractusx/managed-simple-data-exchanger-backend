@@ -55,7 +55,9 @@ public class EDCGateway {
 	
 	public boolean assetExistsLookupBasedOnType(ObjectNode requestBody) {
 		try {
-			edcFeignClientApi.getAssetByType(requestBody);
+			String result=edcFeignClientApi.getAssetByType(requestBody);
+			if("[]".equals(result))
+				return false;
 		} catch (FeignException e) {
 			if (e.status() == HttpStatus.NOT_FOUND.value()) {
 				return false;

@@ -20,7 +20,6 @@
 
 package org.eclipse.tractusx.sde.common.mapper;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -34,27 +33,20 @@ import lombok.SneakyThrows;
 public class AspectResponseFactory {
 
 	ObjectMapper mapper = new ObjectMapper();
-	
+
 	@SneakyThrows
 	public JsonObject maptoReponse(Object csvObject, Object aspectObject) {
 		JsonObject jobj = new JsonObject();
 		jobj.add("csv", extracted(csvObject));
 		jobj.add("json", new Gson().toJsonTree(aspectObject).getAsJsonObject());
-		
+
 		return jobj;
 	}
-	
+
 	private JsonObject extracted(Object csvObject) throws JsonProcessingException {
-		
-		JsonObject fromJson = new Gson().fromJson(mapper.writeValueAsString(csvObject), JsonObject.class);
-		
-		fromJson.entrySet().forEach(entry ->{
-			String value = fromJson.get(entry.getKey()).toString();
-			if(StringUtils.isNoneEmpty(value) && value.equals("null")){
-				fromJson.add(entry.getKey(), null);
-			}
-		});
-		return fromJson;
+		String writeValueAsString = mapper.writeValueAsString(csvObject);
+		writeValueAsString = writeValueAsString.replace(":null", ": \"\"");
+		return new Gson().fromJson(writeValueAsString, JsonObject.class);
 	}
 
 }

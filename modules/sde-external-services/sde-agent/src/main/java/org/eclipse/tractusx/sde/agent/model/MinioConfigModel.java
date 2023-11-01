@@ -41,13 +41,14 @@ public class MinioConfigModel {
 	private String secretKey;
 	@NotBlank
 	private String bucketName;
+	@Pattern(regexp = "/|^$|.*[^/]$", message = "Path must not end with '/'")
 	private String toBeProcessedLocation;
-	@NotBlank @Pattern(regexp = "^/.*[^/]$", message = "Path shall start from '/' and not end with '/'")
+	@NotBlank @Pattern(regexp = ".*[^/]$", message = "Path must not end with '/'")
 	private String inProgressLocation;
-	@NotBlank	@Pattern(regexp = "^/.*[^/]$", message = "Path shall start from '/' and not end with '/'")
+	@NotBlank	@Pattern(regexp = ".*[^/]$", message = "Path must not end with '/'")
 	private String successLocation;
-	@NotBlank 	@Pattern(regexp = "^/.*[^/]$", message = "Path shall start from '/' and not end with '/'")
+	@NotBlank 	@Pattern(regexp = ".*[^/]$", message = "Path must not end with '/'")
 	private String partialSuccessLocation;
-	@NotBlank 	@Pattern(regexp = "^/.*[^/]$", message = "Path shall start from '/' and not end with '/'")
+	@NotBlank 	@Pattern(regexp = ".*[^/]$", message = "Path must not end with '/'")
 	private String failedLocation;
 }

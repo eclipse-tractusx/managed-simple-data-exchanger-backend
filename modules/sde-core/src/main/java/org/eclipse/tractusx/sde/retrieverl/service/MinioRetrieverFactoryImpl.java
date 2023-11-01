@@ -61,7 +61,7 @@ public class MinioRetrieverFactoryImpl implements ConfigurableFactory<MinioRetri
 
 
 	private String removeFirstSlashForMinio(String path) {
-		return path != null && !path.isBlank() && path.charAt(0) == '/' ? path.substring(1) : "";
+		return path != null && !path.isBlank() && path.charAt(0) == '/' ? path.substring(1) : path;
 	}
 
 	@Override

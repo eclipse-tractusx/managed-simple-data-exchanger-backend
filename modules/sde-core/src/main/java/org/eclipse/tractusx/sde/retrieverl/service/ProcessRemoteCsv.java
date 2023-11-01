@@ -156,7 +156,7 @@ public class ProcessRemoteCsv {
 			}
 		} catch (Exception e) {
 			log.error("WaitOrProcessRetrivel: " + e.getMessage());
-			msg = "Unable to complete trigger job, please reached to technical team.";
+			msg = "Unable to complete trigger job, please reach to technical team.";
 			updateTrigger(schedulerTrigger, msg, SchedulerReportStatusEnum.FAILED);
 			sendEmailNotification(schedulerUuid);
 			Thread.currentThread().interrupt();

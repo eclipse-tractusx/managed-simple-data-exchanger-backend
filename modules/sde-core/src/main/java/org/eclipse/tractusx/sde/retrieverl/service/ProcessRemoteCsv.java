@@ -20,7 +20,6 @@
 
 package org.eclipse.tractusx.sde.retrieverl.service;
 
-import static org.eclipse.tractusx.sde.common.utils.TryUtils.IGNORE;
 import static org.eclipse.tractusx.sde.common.utils.TryUtils.tryRun;
 
 import java.io.IOException;
@@ -48,7 +47,6 @@ import org.eclipse.tractusx.sde.agent.model.SchedulerReportModel;
 import org.eclipse.tractusx.sde.agent.repository.SchedulerReportRepository;
 import org.eclipse.tractusx.sde.common.ConfigurableFactory;
 import org.eclipse.tractusx.sde.common.enums.ProgressStatusEnum;
-import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.common.utils.DateUtil;
 import org.eclipse.tractusx.sde.common.utils.TryUtils;
@@ -242,33 +240,11 @@ public class ProcessRemoteCsv {
 						""");
 
 			for (SchedulerReport sftpSchedulerReport : sftpReportList) {
-
 				if (schedulerId.equals(sftpSchedulerReport.getProcessId())) {
 					statusMsg = sftpSchedulerReport.getRemark();
 					startTime = sftpSchedulerReport.getStartDate().toString();
 				} else {
-					Optional<ProcessReportEntity> processReport = processReportRepository
-							.findByProcessId(sftpSchedulerReport.getProcessId());
-					if (processReport.isPresent()) {
-						final int numberOfSucceededItems = processReport.get().getNumberOfSucceededItems()
-								+ processReport.get().getNumberOfUpdatedItems();
-						tableData.append("<tr>");
-						String rowData = TD;
-						rowData += processReport.get().getProcessId() + TD_CLOSE;
-						rowData += TD + sftpSchedulerReport.getFileName() + TD_CLOSE;
-						rowData += TD + sftpSchedulerReport.getPolicyName() + TD_CLOSE;
-						rowData += TD + processReport.get().getCsvType() + TD_CLOSE;
-						rowData += TD + DateUtil.formatter.format(processReport.get().getStartDate()) + TD_CLOSE;
-						rowData += TD + DateUtil.formatter.format(processReport.get().getEndDate()) + TD_CLOSE;
-						rowData += TD + sftpSchedulerReport.getStatus() + TD_CLOSE;
-						rowData += TD + numberOfSucceededItems + TD_CLOSE;
-						rowData += TD + processReport.get().getNumberOfFailedItems() + TD_CLOSE;
-						tableData.append(rowData);
-						tableData.append("</tr>");
-					} else {
-						log.warn("No data found " + sftpSchedulerReport.getProcessId()
-								+ " inprocess report to send notification email");
-					}
+					formatEmailContent(tableData, sftpSchedulerReport);
 				}
 			}
 
@@ -288,6 +264,31 @@ public class ProcessRemoteCsv {
 							"Exception occurred while sending email for scheduler id: " + schedulerId + "\n" + se));
 		} else {
 			log.warn("No data found in automatic storage upload to send notification email");
+		}
+	}
+
+	private void formatEmailContent(StringBuilder tableData, SchedulerReport sftpSchedulerReport) {
+		Optional<ProcessReportEntity> processReport = processReportRepository
+				.findByProcessId(sftpSchedulerReport.getProcessId());
+		if (processReport.isPresent()) {
+			final int numberOfSucceededItems = processReport.get().getNumberOfSucceededItems()
+					+ processReport.get().getNumberOfUpdatedItems();
+			tableData.append("<tr>");
+			String rowData = TD;
+			rowData += processReport.get().getProcessId() + TD_CLOSE;
+			rowData += TD + sftpSchedulerReport.getFileName() + TD_CLOSE;
+			rowData += TD + sftpSchedulerReport.getPolicyName() + TD_CLOSE;
+			rowData += TD + processReport.get().getCsvType() + TD_CLOSE;
+			rowData += TD + DateUtil.formatter.format(processReport.get().getStartDate()) + TD_CLOSE;
+			rowData += TD + DateUtil.formatter.format(processReport.get().getEndDate()) + TD_CLOSE;
+			rowData += TD + sftpSchedulerReport.getStatus() + TD_CLOSE;
+			rowData += TD + numberOfSucceededItems + TD_CLOSE;
+			rowData += TD + processReport.get().getNumberOfFailedItems() + TD_CLOSE;
+			tableData.append(rowData);
+			tableData.append("</tr>");
+		} else {
+			log.warn("No data found " + sftpSchedulerReport.getProcessId()
+					+ " inprocess report to send notification email");
 		}
 	}
 

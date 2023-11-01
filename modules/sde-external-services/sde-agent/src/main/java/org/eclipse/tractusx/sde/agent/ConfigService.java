@@ -52,7 +52,7 @@ public class ConfigService {
 	public <T> Optional<T> getConfigurationAsObject(Class<T> tClass) {
 		return repository.findByType(tClass.getCanonicalName())
 				.map(ConfigEntity::getContent)
-				.flatMap(d -> TryUtils.tryExec(() -> mapper.readValue(d, tClass), TryUtils.IGNORE()));
+				.flatMap(d -> TryUtils.tryExec(() -> mapper.readValue(d, tClass), TryUtils::IGNORE));
 	}
 
 	@SneakyThrows

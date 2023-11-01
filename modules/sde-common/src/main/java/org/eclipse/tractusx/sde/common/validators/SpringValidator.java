@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2023 T-Systems International GmbH
- * Copyright (c) 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -18,10 +18,17 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.common;
+package org.eclipse.tractusx.sde.common.validators;
 
-public interface ConfigurationProvider<T> {
-    T getConfiguration();
-    void saveConfig(T config);
-    Class<T> getConfigClass();
+
+import jakarta.validation.Valid;
+import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
+
+@Validated
+@Component
+public class SpringValidator {
+    public <T> T validate(@Valid T t) {
+        return t;
+    }
 }

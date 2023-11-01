@@ -20,6 +20,18 @@
 
 package org.eclipse.tractusx.sde.retrieverl.service;
 
+import io.minio.CopyObjectArgs;
+import io.minio.CopySource;
+import io.minio.GetObjectArgs;
+import io.minio.GetObjectResponse;
+import io.minio.ListObjectsArgs;
+import io.minio.MinioClient;
+import io.minio.RemoveObjectArgs;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.tractusx.sde.common.utils.TryUtils;
+import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
+import org.eclipse.tractusx.sde.retrieverl.RetrieverI;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -30,19 +42,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.lang3.StringUtils;
-import org.eclipse.tractusx.sde.common.utils.TryUtils;
-import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
-import org.eclipse.tractusx.sde.retrieverl.RetrieverI;
-
-import io.minio.CopyObjectArgs;
-import io.minio.CopySource;
-import io.minio.GetObjectArgs;
-import io.minio.GetObjectResponse;
-import io.minio.ListObjectsArgs;
-import io.minio.MinioClient;
-import io.minio.RemoveObjectArgs;
-import lombok.extern.slf4j.Slf4j;
+import static com.google.common.base.Strings.isNullOrEmpty;
 
 @Slf4j
 public class MinioRetriever implements RetrieverI {
@@ -56,38 +56,38 @@ public class MinioRetriever implements RetrieverI {
     private final String failedLocation;
     private final String bucketName;
 
+
+
     public MinioRetriever(CsvHandlerService csvHandlerService, String endpoint, String accessKey, String secretKey, String bucketName,
-                          String toBeProcessedLocation, String inProgressLocation, String successLocation, String partialSuccessLocation, String failedLocation) throws Exception {
-    	
-    	this.csvHandlerService = csvHandlerService;
-        this.inProgressLocation = inProgressLocation;
-        this.successLocation = successLocation;
-        this.partialSuccessLocation = partialSuccessLocation;
-        this.failedLocation = failedLocation;
-        this.bucketName = bucketName;
+                          String toBeProcessedLocation, String inProgressLocation, String successLocation, String partialSuccessLocation, String failedLocation) throws IOException {
+        try {
+            this.csvHandlerService = csvHandlerService;
+            this.inProgressLocation = inProgressLocation;
+            this.successLocation = successLocation;
+            this.partialSuccessLocation = partialSuccessLocation;
+            this.failedLocation = failedLocation;
+            this.bucketName = bucketName;
 
-        minioClient = MinioClient.builder()
-                .endpoint(endpoint)
-                .credentials(accessKey, secretKey)
-                .build();
-        
-		if (StringUtils.isNotBlank(toBeProcessedLocation))
-			toBeProcessedLocation = toBeProcessedLocation + "/";
-		
-		idToPath = new LinkedHashMap<>();
-		for (var r : minioClient.listObjects(
-                ListObjectsArgs.builder()
-                        .bucket(bucketName)
-                        .prefix(toBeProcessedLocation)
-                        .recursive(false)
-                        .build())) {
-            var item = r.get();
-            if (!item.isDir() && item.objectName().toLowerCase().endsWith(".csv")) {
-                idToPath.put(UUID.randomUUID().toString(), item.objectName());
+            minioClient = MinioClient.builder()
+                    .endpoint(endpoint)
+                    .credentials(accessKey, secretKey)
+                    .build();
+            idToPath = new LinkedHashMap<>();
+            for (var r : minioClient.listObjects(
+                    ListObjectsArgs.builder()
+                            .bucket(bucketName)
+                            .prefix(isNullOrEmpty(toBeProcessedLocation) ? "" : toBeProcessedLocation + "/")
+                            .recursive(!isNullOrEmpty(toBeProcessedLocation))
+                            .build())) {
+                var item = r.get();
+                if (!item.isDir() && item.objectName().toLowerCase().endsWith(".csv")) {
+                    idToPath.put(UUID.randomUUID().toString(), item.objectName());
+                }
             }
+            idToPolicy = new ConcurrentHashMap<>();
+        } catch (Exception e) {
+            throw new IOException(e);
         }
-
-		idToPolicy = new ConcurrentHashMap<>();
     }
 
     private void moveTo(String id, String newLocation) throws IOException {

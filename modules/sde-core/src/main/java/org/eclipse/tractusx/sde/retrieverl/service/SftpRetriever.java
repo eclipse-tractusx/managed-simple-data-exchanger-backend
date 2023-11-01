@@ -27,8 +27,8 @@ import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
-import org.eclipse.tractusx.sde.retrieverl.RetrieverI;
 import org.eclipse.tractusx.sde.common.utils.TryUtils;
+import org.eclipse.tractusx.sde.retrieverl.RetrieverI;
 
 import java.io.File;
 import java.io.IOException;
@@ -61,12 +61,13 @@ public class SftpRetriever implements RetrieverI {
     private final int numberOfRetries;
     private final int retryDelayFrom;
     private final int retryDelayTo;
+
     private final Random rnd = new Random();
 
     public SftpRetriever(CsvHandlerService csvHandlerService, String host, int port, String username, String password,
                          String pKey, String toBeProcessedLocation, String inProgressLocation, String successLocation,
                          String partialSuccessLocation, String failedLocation, int numberOfRetries, int retryDelayFrom, int retryDelayTo) throws JSchException, SftpException {
-    	this.csvHandlerService = csvHandlerService;
+        this.csvHandlerService = csvHandlerService;
         this.host = host;
         this.port = port;
         this.username = username;
@@ -110,7 +111,7 @@ public class SftpRetriever implements RetrieverI {
                     }
                     return channelSftp;
                 },
-                () -> TryUtils.tryRun(() -> Thread.sleep(rnd.nextInt(retryDelayFrom, retryDelayTo)), TryUtils.IGNORE()),
+                () -> TryUtils.tryRun(() -> Thread.sleep(rnd.nextInt(retryDelayFrom, retryDelayTo)), TryUtils::IGNORE),
                 numberOfRetries
         );
     }

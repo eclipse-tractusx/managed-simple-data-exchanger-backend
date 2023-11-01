@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2023 T-Systems International GmbH
- * Copyright (c) 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -18,10 +18,19 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.common;
+package org.eclipse.tractusx.sde.service;
 
-public interface ConfigurationProvider<T> {
-    T getConfiguration();
-    void saveConfig(T config);
-    Class<T> getConfigClass();
+import org.eclipse.tractusx.sde.EnableMinio;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
+
+@SpringBootTest
+@EnableMinio
+@Execution(ExecutionMode.SAME_THREAD)
+@WithMockUser(username = "Admin", authorities = { "Admin" })
+@ActiveProfiles("miniotest-empty-tobeprocessed")
+public class MinioRetrieverEmptyTobeProcessedTest extends MinioRetrieverTest{
 }

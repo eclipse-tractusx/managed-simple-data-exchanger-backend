@@ -31,9 +31,10 @@ import org.eclipse.tractusx.sde.agent.model.SchedulerConfigModel;
 import org.eclipse.tractusx.sde.agent.model.SftpConfigModel;
 import org.eclipse.tractusx.sde.notification.manager.EmailNotificationModelProvider;
 import org.eclipse.tractusx.sde.retrieverl.service.ActiveStorageMediaProvider;
-import org.eclipse.tractusx.sde.retrieverl.service.JobMaintenanceModelProvider;
+import org.eclipse.tractusx.sde.retrieverl.service.JobMaintenanceConfigService;
 import org.eclipse.tractusx.sde.retrieverl.service.MinioRetrieverFactoryImpl;
-import org.eclipse.tractusx.sde.retrieverl.service.SchedulerService;
+import org.eclipse.tractusx.sde.retrieverl.service.RetrieverScheduler;
+import org.eclipse.tractusx.sde.retrieverl.service.SchedulerConfigService;
 import org.eclipse.tractusx.sde.retrieverl.service.SftpRetrieverFactoryImpl;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -50,22 +51,22 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AutoUploadAgentConfigController {
 
-	private final SchedulerService schedulerService;
+	private final SchedulerConfigService schedulerService;
+	private final RetrieverScheduler retrieverScheduler;
 	private final MinioRetrieverFactoryImpl minioRetrieverFactory;
 	private final SftpRetrieverFactoryImpl sftpRetrieverFactory;
 	private final EmailNotificationModelProvider emailNotificationModelProvider;
-	private final JobMaintenanceModelProvider jobMaintenanceModelProvider;
+	private final JobMaintenanceConfigService jobMaintenanceConfigService;
 	private final ActiveStorageMediaProvider activeStorageMediaProvider;
 
 	@PostMapping("/fire")
 	public Map<String, String> fire() {
-		return schedulerService.fire();
+		return Map.of("msg", retrieverScheduler.fire());
 	}
 
 	@PutMapping("/scheduler")
 	public void updateScheduler(@RequestBody @Valid SchedulerConfigModel schedulerConfigModel) {
 		schedulerService.saveConfig(schedulerConfigModel);
-		schedulerService.updateSchedulerExecution(schedulerConfigModel);
 	}
 
 	@GetMapping("/scheduler")
@@ -84,14 +85,14 @@ public class AutoUploadAgentConfigController {
 
 	@PutMapping("/sftp")
 	public void updateSftp(@RequestBody @Valid SftpConfigModel sftpConfigModel) {
-		sftpRetrieverFactory.saveConfig(sftpConfigModel);
 		activeStorageMediaProvider.saveConfig(ActiveStorageMedia.builder().name("sftp").build());
+		sftpRetrieverFactory.saveConfig(sftpConfigModel);
 	}
 
 	@PutMapping("/minio")
 	public void updateMinio(@RequestBody @Valid MinioConfigModel minioConfigModel) {
-		minioRetrieverFactory.saveConfig(minioConfigModel);
 		activeStorageMediaProvider.saveConfig(ActiveStorageMedia.builder().name("minio").build());
+		minioRetrieverFactory.saveConfig(minioConfigModel);
 	}
 
 	@GetMapping("/minio")
@@ -116,13 +117,12 @@ public class AutoUploadAgentConfigController {
 
 	@PutMapping("/job-maintenance")
 	public void updateJobMaintenance(@RequestBody @Valid JobMaintenanceModel jobMaintenanceModel) {
-		jobMaintenanceModelProvider.saveConfig(jobMaintenanceModel);
-		schedulerService.updateScheduleStatus(jobMaintenanceModel);
+		jobMaintenanceConfigService.saveConfig(jobMaintenanceModel);
 	}
 
 	@GetMapping("/job-maintenance")
 	public JobMaintenanceModel getJobMaintenanceConfig() {
-		return jobMaintenanceModelProvider.getConfiguration();
+		return jobMaintenanceConfigService.getConfiguration();
 	}
 
 }

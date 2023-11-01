@@ -29,6 +29,6 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@ContextConfiguration(initializers = TestContainerInitializer.class)
-public @interface EnableTestContainers {
+@ContextConfiguration(initializers = {PostgreSQLInitializer.class, MinioInitializer.class})
+public @interface EnableMinio {
 }

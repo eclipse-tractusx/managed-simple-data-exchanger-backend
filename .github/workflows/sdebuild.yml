@@ -22,7 +22,7 @@ name: sdebuild
 on:
   push:
     branches:
-      - 'minio_with_latest_sde'
+      - 'DST_PIP11_ITR1'
     tags:
       - 'v*.*.*'
       - 'v*.*.*-*'

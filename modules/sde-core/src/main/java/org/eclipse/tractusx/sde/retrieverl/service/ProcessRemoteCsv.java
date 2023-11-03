@@ -171,7 +171,7 @@ public class ProcessRemoteCsv {
 		sftpReportRepository.save(schedulerTrigger);
 	}
 
-	private void sendEmailNotification(String schedulerUuid) {
+	public void sendEmailNotification(String schedulerUuid) {
 		if (jobMaintenanceConfigService.getConfiguration().getEmailNotification().booleanValue()) {
 			sendNotificationForProcessedFiles(schedulerUuid);
 		} else {

@@ -383,7 +383,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 				eDRCachedResponseList = edrRequestHelper.getEDRCachedByAsset(assetId);
 				eDRCachedResponse = verifyEDRResponse(eDRCachedResponseList);
 
-				if (eDRCachedResponse != null)
+				if (eDRCachedResponse != null && eDRCachedResponse.getEdrState() != null)
 					edrStatus = eDRCachedResponse.getEdrState();
 
 				log.info("Verifying 'NEGOTIATED' EDC EDR status to download data for '" + assetId
@@ -397,7 +397,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 					eDRCachedResponse = EDRCachedResponse.builder().agreementId(contractAgreementId).assetId(assetId)
 							.build();
 				} else
-					throw new ServiceException("Time out!! unable to get EDR negotiated status");
+					throw new ServiceException("Time out!! unable to get Contract negotiation FINALIZED status");
 			}
 
 		} catch (FeignException e) {
@@ -430,6 +430,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 					eDRCachedResponse.setEdrState(NEGOTIATED);
 					break;
 				}
+				eDRCachedResponse = edrCachedResponseObj;
 			}
 		}
 		return eDRCachedResponse;

@@ -25,12 +25,14 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 
 @Data
 @NoArgsConstructor
@@ -57,4 +59,10 @@ public class ContractNegotiations {
 	private String providerId;
 
 	private Offer offer;
+	
+	@SneakyThrows
+	public String toJsonString() {
+		final ObjectMapper mapper = new ObjectMapper();
+		return mapper.writeValueAsString(this);
+	}
 }

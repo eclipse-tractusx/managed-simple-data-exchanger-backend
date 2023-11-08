@@ -21,8 +21,10 @@
 package org.eclipse.tractusx.sde.edc.mapper;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ActionRequest;
+import org.eclipse.tractusx.sde.edc.entities.request.policies.PermissionRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyRequestFactory;
 import org.mapstruct.Mapper;
@@ -31,17 +33,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Mapper(componentModel = "spring")
 public abstract class ContractPolicyMapper {
 
-    @Autowired
-    PolicyRequestFactory policyRequestFactory;
+	@Autowired
+	PolicyRequestFactory policyRequestFactory;
 
-    public PolicyRequest preparePolicy(String assetId, ActionRequest action) {
+	public PolicyRequest preparePolicy(String assetId, ActionRequest action) {
+		Object permissionObj = null;
 
-        return PolicyRequest.builder()
-        		.type("odrl:Set")
+		List<PermissionRequest> permissions = policyRequestFactory.getPermissions(assetId, action);
+		permissionObj = permissions;
+
+		if (!permissions.isEmpty())
+			permissionObj = permissions.get(0);
+		
+		return PolicyRequest.builder().type("odrl:Set")
 				.target(assetId)
-				.permissions(policyRequestFactory.getPermissions(assetId, action))
-                .prohibitions(new ArrayList<>())
-                .obligations(new ArrayList<>())
-                .build();
-    }
+				.permissions(permissionObj)
+				.prohibitions(new ArrayList<>())
+				.obligations(new ArrayList<>()).build();
+	}
 }

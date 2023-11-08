@@ -36,9 +36,11 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class EDRRequestHelper extends AbstractEDCStepsHelper {
 
 	private final EDRApiProxy edrApiProxy;
@@ -50,7 +52,9 @@ public class EDRRequestHelper extends AbstractEDCStepsHelper {
 
 		ContractNegotiations contractNegotiations = contractMapper
 				.prepareContractNegotiations(providerUrl + protocolPath, offerId, assetId, providerId, action);
-
+		
+		log.debug(contractNegotiations.toJsonString());
+		
 		AcknowledgementId acknowledgementId = edrApiProxy.edrCacheCreate(new URI(consumerHostWithDataPath),
 				contractNegotiations, getAuthHeader());
 		return acknowledgementId.getId();

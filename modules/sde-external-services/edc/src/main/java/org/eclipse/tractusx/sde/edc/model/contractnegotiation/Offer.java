@@ -25,11 +25,13 @@ import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyRequest;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 
 @Data
 @NoArgsConstructor
@@ -44,4 +46,10 @@ public class Offer {
     private String assetId;
 
     private PolicyRequest policy;
+    
+    @SneakyThrows
+	public String toJsonString() {
+		final ObjectMapper mapper = new ObjectMapper();
+		return mapper.writeValueAsString(this);
+	}
 }

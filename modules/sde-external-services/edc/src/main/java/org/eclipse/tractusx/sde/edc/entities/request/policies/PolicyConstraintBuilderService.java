@@ -21,6 +21,7 @@
 package org.eclipse.tractusx.sde.edc.entities.request.policies;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -56,6 +57,8 @@ public class PolicyConstraintBuilderService {
 			usagePolicies.forEach((key, value) -> usagePolicy(usageConstraintList, key, value));
 		}
 
+		usageConstraintList.sort(Comparator.comparing(ConstraintRequest::getLeftOperand));
+		
 		if (!usageConstraintList.isEmpty()) {
 			ActionRequest action = ActionRequest.builder().build();
 			action.addProperty("@type", "LogicalConstraint");

@@ -31,7 +31,13 @@ import org.eclipse.tractusx.sde.EnableMinio;
 import org.eclipse.tractusx.sde.agent.model.SchedulerConfigModel;
 import org.eclipse.tractusx.sde.agent.model.SchedulerType;
 import org.eclipse.tractusx.sde.bpndiscovery.handler.BPNDiscoveryUseCaseHandler;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
+import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
+import org.eclipse.tractusx.sde.common.enums.DurationEnum;
+import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
+import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
+import org.eclipse.tractusx.sde.core.policy.service.PolicyService;
 import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsFacilitator;
 import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsUtility;
 import org.eclipse.tractusx.sde.retrieverl.service.ActiveStorageMediaProvider;
@@ -59,6 +65,7 @@ import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -85,6 +92,8 @@ public class SchedulerMinioTest extends MinioBase{
 	@MockBean
 	EDCBatchHandlerUseCase EdcMock;
 	@MockBean
+	PolicyService policyService;
+	@MockBean
 	BPNDiscoveryUseCaseHandler bPNDiscoveryUseCaseHandler;
 	@Autowired
 	ApplicationContext applicationContext;
@@ -96,6 +105,8 @@ public class SchedulerMinioTest extends MinioBase{
 	@Test
 	public void testScheduler() throws ServiceException, ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
 		Mockito.when(digitalTwinsFacilitator.shellLookup(any())).thenReturn(List.of());
+
+		Mockito.when(policyService.findMatchingPolicyBasedOnFileName(any())).thenReturn(getPolicyList("samplepolicy"));
 		@SuppressWarnings("unchecked") ArgumentCaptor<Map<String, Object>> emailContentCaptor = ArgumentCaptor.forClass(Map.class);
 		var time = LocalTime.now().plus(Duration.ofMinutes(1));
 		var timeStr = time.format(DateTimeFormatter.ofPattern("HH:mm"));
@@ -124,6 +135,21 @@ public class SchedulerMinioTest extends MinioBase{
 				file2.content(),
 				getFileContent(getMinioPath(minioConfig::getFailedLocation).get() + file2.name())
 		);
+	}
+
+	private List<PolicyModel> getPolicyList(String policyName) {
+		List<PolicyModel> resList = new ArrayList<>();
+		PolicyModel request = new PolicyModel();
+		UsagePolicies policies = new UsagePolicies();
+		policies.setValue("10");
+		policies.setDurationUnit(DurationEnum.DAY.name());
+		policies.setTypeOfAccess(PolicyAccessEnum.RESTRICTED);
+		request.setPolicyName(policyName);
+		request.setUsagePolicies(Map.of(UsagePolicyEnum.DURATION ,policies));
+		request.setBpnNumbers(List.of("BPNL00000005PROV", "BPNL00000005PROW", "BPNL00000005PROB"));
+		request.setTypeOfAccess("restricted");
+		resList.add(request);
+		return resList;
 	}
 
 }

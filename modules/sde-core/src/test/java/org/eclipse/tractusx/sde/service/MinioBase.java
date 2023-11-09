@@ -56,9 +56,9 @@ import java.util.function.Supplier;
 
 @Slf4j
 public abstract class MinioBase {
-    protected final MyFile file1 = new MyFile("file1.csv", "test 1 content\n");
-    protected final MyFile file2 = new MyFile("file2.csv", "test 2 content\n");
-    protected final MyFile sampleBatch9 = new MyFile("sample-batch-9.csv", """
+    protected final MyFile file1 = new MyFile("file1_samplepolicy.csv", "test 1 content\n");
+    protected final MyFile file2 = new MyFile("file2_samplepolicy.csv", "test 2 content\n");
+    protected final MyFile sampleBatch9 = new MyFile("sample-batch-9_samplepolicy.csv", """
             uuid;batch_id;part_instance_id;manufacturing_date;manufacturing_country;manufacturer_part_id;classification;name_at_manufacturer
             urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2;NO-159040131155901488695376;PINO-34634534535;2022-02-04T14:48:54.709Z;DEU;37754B7-76;component;Sensor             
             """);

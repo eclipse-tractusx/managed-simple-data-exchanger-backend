@@ -194,6 +194,11 @@ public class ProcessRemoteCsv {
 					retriever.setPolicyName(processId, submodelFileRequest.getPolicyName());
 					submodelOrchestartorService.processSubmodelAutomationCsv(submodelFileRequest, processId);
 				}, e -> {
+					sftpReportRepository.save(sftpReportMapper.mapFrom(SchedulerReportModel.builder()
+							.schedulerId(schedulerId).processId(processId).fileName(retriever.getFileName(processId))
+							.policyName("Not found").status(SchedulerReportStatusEnum.FAILED)
+							.endDate(LocalDateTime.now()).remark(e.getMessage())
+							.startDate(LocalDateTime.now()).build()));
 					log.info("Could not submit CVS file for processing. {}", csvHandlerService.getFilePath(processId));
 					tryRun((TryUtils.ThrowableAction<IOException>) () -> retriever.setFailed(processId), e1 -> log
 							.info("Could not move file to the Failed folder {}", retriever.getFileName(processId)));
@@ -206,6 +211,9 @@ public class ProcessRemoteCsv {
 		if (!inProgressIdList.isEmpty()) {
 			taskScheduler.schedule(() -> checkStatusOfInprogressFilesAndNotify(taskScheduler, retriever,
 					inProgressIdList, schedulerId), Instant.now().plus(Duration.ofSeconds(5)));
+		} else {
+			// In case of error this will send the notification. E.g. policy not present
+			sendEmailNotification(schedulerId);
 		}
 	}
 
@@ -270,26 +278,30 @@ public class ProcessRemoteCsv {
 	private void formatEmailContent(StringBuilder tableData, SchedulerReport sftpSchedulerReport) {
 		Optional<ProcessReportEntity> processReport = processReportRepository
 				.findByProcessId(sftpSchedulerReport.getProcessId());
+		int numberOfSucceededItems = 0;
+		int numberOfFailedItems = 0;
+		String csvType = "";
 		if (processReport.isPresent()) {
-			final int numberOfSucceededItems = processReport.get().getNumberOfSucceededItems()
+			numberOfSucceededItems = processReport.get().getNumberOfSucceededItems()
 					+ processReport.get().getNumberOfUpdatedItems();
-			tableData.append("<tr>");
-			String rowData = TD;
-			rowData += processReport.get().getProcessId() + TD_CLOSE;
-			rowData += TD + sftpSchedulerReport.getFileName() + TD_CLOSE;
-			rowData += TD + sftpSchedulerReport.getPolicyName() + TD_CLOSE;
-			rowData += TD + processReport.get().getCsvType() + TD_CLOSE;
-			rowData += TD + DateUtil.formatter.format(processReport.get().getStartDate()) + TD_CLOSE;
-			rowData += TD + DateUtil.formatter.format(processReport.get().getEndDate()) + TD_CLOSE;
-			rowData += TD + sftpSchedulerReport.getStatus() + TD_CLOSE;
-			rowData += TD + numberOfSucceededItems + TD_CLOSE;
-			rowData += TD + processReport.get().getNumberOfFailedItems() + TD_CLOSE;
-			tableData.append(rowData);
-			tableData.append("</tr>");
-		} else {
-			log.warn("No data found " + sftpSchedulerReport.getProcessId()
-					+ " inprocess report to send notification email");
+			csvType = processReport.get().getCsvType();
+			numberOfFailedItems = processReport.get().getNumberOfFailedItems();
 		}
+
+		tableData.append("<tr>");
+		String rowData = TD;
+		rowData += sftpSchedulerReport.getProcessId() + TD_CLOSE;
+		rowData += TD + sftpSchedulerReport.getFileName() + TD_CLOSE;
+		rowData += TD + sftpSchedulerReport.getPolicyName() + TD_CLOSE;
+		rowData += TD + csvType + TD_CLOSE;
+		rowData += TD + DateUtil.formatter.format(sftpSchedulerReport.getStartDate()) + TD_CLOSE;
+		rowData += TD + DateUtil.formatter.format(sftpSchedulerReport.getEndDate()) + TD_CLOSE;
+		rowData += TD + sftpSchedulerReport.getStatus() + TD_CLOSE;
+		rowData += TD + numberOfSucceededItems + TD_CLOSE;
+		rowData += TD + numberOfFailedItems + TD_CLOSE;
+		tableData.append(rowData);
+		tableData.append("</tr>");
+
 	}
 
 	public void checkStatusOfInprogressFilesAndNotify(TaskScheduler taskScheduler, RetrieverI retriever,
@@ -324,26 +336,28 @@ public class ProcessRemoteCsv {
 				if (!schedulerId.equals(sftpSchedulerReport.getProcessId())) {
 					final var processId = sftpSchedulerReport.getProcessId();
 					final var processReport = processReportMap.get(processId);
-					final var numberOfSucceededItems = processReport.getNumberOfSucceededItems()
-							+ processReport.getNumberOfUpdatedItems();
-					if (processReport.getNumberOfItems() == numberOfSucceededItems) {
-						sftpSchedulerReport.setStatus(SchedulerReportStatusEnum.SUCCESS);
-						remoteActions.add(() -> tryRun(
-								(TryUtils.ThrowableAction<IOException>) () -> retriever.setSuccess(processId),
-								e -> log.info("Could not move file {} to Success Folder",
-										retriever.getFileName(processId))));
-					} else if (numberOfSucceededItems > 0) {
-						sftpSchedulerReport.setStatus(SchedulerReportStatusEnum.PARTIAL_SUCCESS);
-						remoteActions.add(() -> tryRun(
-								(TryUtils.ThrowableAction<IOException>) () -> retriever.setPartial(processId),
-								e -> log.info("Could not move file {} to Partial Success Folder",
-										retriever.getFileName(processId))));
-					} else {
-						sftpSchedulerReport.setStatus(SchedulerReportStatusEnum.FAILED);
-						remoteActions.add(() -> tryRun(
-								(TryUtils.ThrowableAction<IOException>) () -> retriever.setFailed(processId),
-								e -> log.info("Could not move file {} to Failed Folder",
-										retriever.getFileName(processId))));
+					if(processReport != null) { // If process report is null then file is not processed e.g. In case Policy not present
+						final var numberOfSucceededItems = processReport.getNumberOfSucceededItems()
+								+ processReport.getNumberOfUpdatedItems();
+						if (processReport.getNumberOfItems() == numberOfSucceededItems) {
+							sftpSchedulerReport.setStatus(SchedulerReportStatusEnum.SUCCESS);
+							remoteActions.add(() -> tryRun(
+									(TryUtils.ThrowableAction<IOException>) () -> retriever.setSuccess(processId),
+									e -> log.info("Could not move file {} to Success Folder",
+											retriever.getFileName(processId))));
+						} else if (numberOfSucceededItems > 0) {
+							sftpSchedulerReport.setStatus(SchedulerReportStatusEnum.PARTIAL_SUCCESS);
+							remoteActions.add(() -> tryRun(
+									(TryUtils.ThrowableAction<IOException>) () -> retriever.setPartial(processId),
+									e -> log.info("Could not move file {} to Partial Success Folder",
+											retriever.getFileName(processId))));
+						} else {
+							sftpSchedulerReport.setStatus(SchedulerReportStatusEnum.FAILED);
+							remoteActions.add(() -> tryRun(
+									(TryUtils.ThrowableAction<IOException>) () -> retriever.setFailed(processId),
+									e -> log.info("Could not move file {} to Failed Folder",
+											retriever.getFileName(processId))));
+						}
 					}
 					sftpSchedulerReport.setEndDate(LocalDateTime.now());
 				}

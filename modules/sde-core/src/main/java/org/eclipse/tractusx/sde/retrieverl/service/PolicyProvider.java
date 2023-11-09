@@ -23,6 +23,7 @@ package org.eclipse.tractusx.sde.retrieverl.service;
 import java.util.List;
 
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
+import org.eclipse.tractusx.sde.common.exception.ValidationException;
 import org.eclipse.tractusx.sde.core.policy.service.PolicyService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -96,10 +97,11 @@ public class PolicyProvider {
 		return policyByName;
 	}
 
+	@SneakyThrows
 	public PolicyModel getMatchingPolicyBasedOnFileName(String fileName) {
 		List<PolicyModel> matchingList = policyService.findMatchingPolicyBasedOnFileName(fileName);
 		if (matchingList.isEmpty())
-			return getDefaultPolicy();
+			throw new ValidationException("No matching policy found");
 		else {
 			log.info("Applying policy " + matchingList.get(0).getPolicyName());
 			return matchingList.get(0);

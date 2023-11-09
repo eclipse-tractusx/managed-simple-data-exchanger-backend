@@ -213,7 +213,8 @@ public class ProcessRemoteCsv {
 					inProgressIdList, schedulerId), Instant.now().plus(Duration.ofSeconds(5)));
 		} else {
 			// In case of error this will send the notification. E.g. policy not present
-			sendEmailNotification(schedulerId);
+			// Send this email after 5 seconds to finish 'update trigger' from caller method
+			taskScheduler.schedule(() -> sendEmailNotification(schedulerId), Instant.now().plus(Duration.ofSeconds(5)));
 		}
 	}
 

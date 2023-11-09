@@ -37,6 +37,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -52,12 +54,18 @@ public class DigitalTwinsFacilitator {
 	@Value(value = "${manufacturerId}")
 	public String manufacturerId;
 
+	@Value(value = "${bosch.flag}")
+	public boolean boschFlag;
+
 	@SneakyThrows
 	public List<String> shellLookup(ShellLookupRequest request) throws ServiceException {
 
 		List<String> shellIds = List.of();
 		try {
-			ResponseEntity<ShellLookupResponse> response = digitalTwinsFeignClient.shellLookup(request.toJsonString(),
+
+			String assetIds = boschFlag ? encodeAssetIdsObject(request.toJsonString()) : request.toJsonString();
+
+			ResponseEntity<ShellLookupResponse> response = digitalTwinsFeignClient.shellLookup(assetIds,
 					manufacturerId);
 
 			ShellLookupResponse body = response.getBody();
@@ -77,6 +85,11 @@ public class DigitalTwinsFacilitator {
 			throw new ServiceException(error);
 		}
 		return shellIds;
+	}
+
+	private String encodeAssetIdsObject(String assetIdsList) {
+
+		return encodeShellIdBase64Utf8(assetIdsList.replace("[", "").replace("]", ""));
 	}
 
 	@SneakyThrows
@@ -156,7 +169,7 @@ public class DigitalTwinsFacilitator {
 		request.setDescription(List.of());
 
 		ResponseEntity<String> response = digitalTwinsFeignClient.createSubModel(encodeShellIdBase64Utf8(shellId),
-				request);
+				request, manufacturerId);
 		if (response.getStatusCode() != HttpStatus.CREATED) {
 			log.error("Unable to create submodel descriptor");
 		}
@@ -166,7 +179,7 @@ public class DigitalTwinsFacilitator {
 	public SubModelListResponse getSubModels(String shellId) {
 
 		ResponseEntity<SubModelListResponse> response = digitalTwinsFeignClient
-				.getSubModels(encodeShellIdBase64Utf8(shellId));
+				.getSubModels(encodeShellIdBase64Utf8(shellId), manufacturerId);
 		SubModelListResponse responseBody = null;
 		if (response.getStatusCode() == HttpStatus.OK) {
 			responseBody = response.getBody();

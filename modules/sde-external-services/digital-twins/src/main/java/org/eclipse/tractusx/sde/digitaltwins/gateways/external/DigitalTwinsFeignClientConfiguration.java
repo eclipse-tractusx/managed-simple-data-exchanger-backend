@@ -54,6 +54,9 @@ class DigitalTwinsFeignClientConfigurationInterceptor implements RequestIntercep
 
 	@Value(value = "${digital-twins.authentication.url:default}")
 	private URI digitalAppTokenURI;
+	
+	@Value(value = "${digital-twins.authentication.scope:}")
+	private String digitalTwinsScope;
 
 	@Autowired
 	private TokenUtility tokenUtilityForDigital;
@@ -71,7 +74,7 @@ class DigitalTwinsFeignClientConfigurationInterceptor implements RequestIntercep
 		if (accessTokenForDigital != null && tokenUtilityForDigital.isTokenValid(accessTokenForDigital)) {
 			return "Bearer " + accessTokenForDigital;
 		}
-		accessTokenForDigital = tokenUtilityForDigital.getToken(digitalAppTokenURI, digitalGrantType, digitalAppClientId, digitalAppClientSecret);
+		accessTokenForDigital = tokenUtilityForDigital.getToken(digitalAppTokenURI, digitalGrantType, digitalAppClientId, digitalAppClientSecret, digitalTwinsScope);
 		return "Bearer " + accessTokenForDigital;
 	}
 

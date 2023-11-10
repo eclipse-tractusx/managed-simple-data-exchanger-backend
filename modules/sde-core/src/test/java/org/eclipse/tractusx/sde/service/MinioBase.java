@@ -40,6 +40,7 @@ import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
 import org.eclipse.tractusx.sde.notification.config.EmailConfiguration;
 import org.eclipse.tractusx.sde.notification.manager.EmailManager;
 import org.eclipse.tractusx.sde.retrieverl.service.MinioRetrieverFactoryImpl;
+import org.eclipse.tractusx.sde.retrieverl.service.PolicyProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,9 +57,9 @@ import java.util.function.Supplier;
 
 @Slf4j
 public abstract class MinioBase {
-    protected final MyFile file1 = new MyFile("file1.csv", "test 1 content\n");
+    protected final MyFile file1 = new MyFile("file1_default.csv", "test 1 content\n");
     protected final MyFile file2 = new MyFile("file2.csv", "test 2 content\n");
-    protected final MyFile sampleBatch9 = new MyFile("sample-batch-9.csv", """
+    protected final MyFile sampleBatch9 = new MyFile("sample-batch-9_default.csv", """
             uuid;batch_id;part_instance_id;manufacturing_date;manufacturing_country;manufacturer_part_id;classification;name_at_manufacturer
             urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2;NO-159040131155901488695376;PINO-34634534535;2022-02-04T14:48:54.709Z;DEU;37754B7-76;component;Sensor             
             """);
@@ -72,6 +73,11 @@ public abstract class MinioBase {
     ConfigService configService;
     @Autowired
     ApplicationContext context;
+    
+    @Autowired
+	PolicyProvider policyProvider;
+	
+    
     MinioRetrieverFactoryImpl minioRetrieverFactory;
 
     protected static Supplier<String> getMinioPath(Supplier<String> stringSupplier) {
@@ -107,7 +113,11 @@ public abstract class MinioBase {
 
     @BeforeEach
     public void createFilesInToBeProcessedLocation() throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
-        var config = minioRetrieverFactory.getConfiguration();
+    	//save defualt policy if not exist
+    	policyProvider.getDefaultPolicy();
+    	
+    	var config = minioRetrieverFactory.getConfiguration();
+        
         MinioClient minioClient = MinioClient
                 .builder()
                 .endpoint(config.getEndpoint())

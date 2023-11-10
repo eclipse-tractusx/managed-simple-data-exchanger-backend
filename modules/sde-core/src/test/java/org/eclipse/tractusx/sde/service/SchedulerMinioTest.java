@@ -20,27 +20,27 @@
 
 package org.eclipse.tractusx.sde.service;
 
-import io.minio.errors.ErrorResponseException;
-import io.minio.errors.InsufficientDataException;
-import io.minio.errors.InternalException;
-import io.minio.errors.InvalidResponseException;
-import io.minio.errors.ServerException;
-import io.minio.errors.XmlParserException;
-import lombok.extern.slf4j.Slf4j;
+import static org.mockito.ArgumentMatchers.any;
+
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.time.Duration;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+
 import org.eclipse.tractusx.sde.EnableMinio;
 import org.eclipse.tractusx.sde.agent.model.SchedulerConfigModel;
 import org.eclipse.tractusx.sde.agent.model.SchedulerType;
 import org.eclipse.tractusx.sde.bpndiscovery.handler.BPNDiscoveryUseCaseHandler;
-import org.eclipse.tractusx.sde.common.entities.PolicyModel;
-import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
-import org.eclipse.tractusx.sde.common.enums.DurationEnum;
-import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
-import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
-import org.eclipse.tractusx.sde.core.policy.service.PolicyService;
 import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsFacilitator;
 import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsUtility;
 import org.eclipse.tractusx.sde.retrieverl.service.ActiveStorageMediaProvider;
+import org.eclipse.tractusx.sde.retrieverl.service.PolicyProvider;
 import org.eclipse.tractusx.sde.retrieverl.service.ProcessRemoteCsv;
 import org.eclipse.tractusx.sde.retrieverl.service.SchedulerConfigService;
 import org.eclipse.tractusx.sde.submodels.batch.steps.DigitalTwinsBatchCsvHandlerUseCase;
@@ -59,18 +59,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.time.Duration;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
-
-import static org.mockito.ArgumentMatchers.any;
+import io.minio.errors.ErrorResponseException;
+import io.minio.errors.InsufficientDataException;
+import io.minio.errors.InternalException;
+import io.minio.errors.InvalidResponseException;
+import io.minio.errors.ServerException;
+import io.minio.errors.XmlParserException;
+import lombok.extern.slf4j.Slf4j;
 
 
 @Slf4j
@@ -91,8 +86,7 @@ public class SchedulerMinioTest extends MinioBase{
 	DigitalTwinsUtility digitalTwinsUtility;
 	@MockBean
 	EDCBatchHandlerUseCase EdcMock;
-	@MockBean
-	PolicyService policyService;
+	
 	@MockBean
 	BPNDiscoveryUseCaseHandler bPNDiscoveryUseCaseHandler;
 	@Autowired
@@ -105,8 +99,6 @@ public class SchedulerMinioTest extends MinioBase{
 	@Test
 	public void testScheduler() throws ServiceException, ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
 		Mockito.when(digitalTwinsFacilitator.shellLookup(any())).thenReturn(List.of());
-
-		Mockito.when(policyService.findMatchingPolicyBasedOnFileName(any())).thenReturn(getPolicyList("samplepolicy"));
 		@SuppressWarnings("unchecked") ArgumentCaptor<Map<String, Object>> emailContentCaptor = ArgumentCaptor.forClass(Map.class);
 		var time = LocalTime.now().plus(Duration.ofMinutes(1));
 		var timeStr = time.format(DateTimeFormatter.ofPattern("HH:mm"));
@@ -117,12 +109,19 @@ public class SchedulerMinioTest extends MinioBase{
 		schedulerConfigService.saveConfig(schedulerConfig);
 		Mockito.verify(emailManager, Mockito.timeout(80000).only()).sendEmail(emailContentCaptor.capture(), any(), any());
 		var reportStr = emailContentCaptor.getValue().get("content").toString();
+		
 		var pattern = Pattern.compile("<tr>.*?" + Pattern.quote(sampleBatch9.name()) + ".*?</tr>");
 		var matcher = pattern.matcher(reportStr);
 		Assertions.assertTrue(matcher.find());
+		
+		var notPolicyFoundpattern = Pattern.compile("<tr>.*?Not found.*?</tr>");
+		var notFoundPolicymatcher = notPolicyFoundpattern.matcher(reportStr);
+		Assertions.assertTrue(notFoundPolicymatcher.find());
+		
 		var sampleBatch9Report = matcher.group();
 		Assertions.assertTrue(sampleBatch9Report.contains("SUCCESS"));
 		var minioConfig = minioRetrieverFactory.getConfiguration();
+		
 		Assertions.assertEquals(
 				sampleBatch9.content(),
 				getFileContent(getMinioPath(minioConfig::getSuccessLocation).get() + sampleBatch9.name())
@@ -137,19 +136,5 @@ public class SchedulerMinioTest extends MinioBase{
 		);
 	}
 
-	private List<PolicyModel> getPolicyList(String policyName) {
-		List<PolicyModel> resList = new ArrayList<>();
-		PolicyModel request = new PolicyModel();
-		UsagePolicies policies = new UsagePolicies();
-		policies.setValue("10");
-		policies.setDurationUnit(DurationEnum.DAY.name());
-		policies.setTypeOfAccess(PolicyAccessEnum.RESTRICTED);
-		request.setPolicyName(policyName);
-		request.setUsagePolicies(Map.of(UsagePolicyEnum.DURATION ,policies));
-		request.setBpnNumbers(List.of("BPNL00000005PROV", "BPNL00000005PROW", "BPNL00000005PROB"));
-		request.setTypeOfAccess("restricted");
-		resList.add(request);
-		return resList;
-	}
 
 }

@@ -26,9 +26,6 @@ COPY ../pom.xml ./pom.xml
 # copy your other files
 COPY ../modules ./modules
 
-# build for release
-RUN mvn clean install 
-
 # our final base image
 
 FROM eclipse-temurin:19-jdk-jammy
@@ -52,6 +49,6 @@ WORKDIR /home/user/sdeuser/sdeapp
 COPY --from=build modules/sde-core/target/*.jar ./app.jar
 
 EXPOSE 8080
-# set the startup command to run your binary
 
+# set the startup command to run your binary
 CMD ["java", "-jar", "./app.jar","--spring.config.location=file:/app/configuration.properties"]

@@ -28,7 +28,7 @@ For more details, please refer configuration section from [README.md](README.md)
 ### RUN SDE Backend Locally
 #### Prerequisites
 - JDK18
-- Postgres 11.9.13
+- Postgres 13.2.11
 
 #### Steps
 1. Clone the GitHub Repository - https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend.

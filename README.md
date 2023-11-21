@@ -62,12 +62,15 @@ Listed below are configuration keys needed to get the `sde-backend` up and runni
 | digital-twins.authentication.clientSecret            | X         | your secrete                                | Digital twin registry secrete      |
 | digital-twins.authentication.grantType               | X         | client_credentials                          | Default value, no need to change   |
 | edc.hostname                                         | X         | https://example.provider-connector.com      | Your EDC provider connector url    |
+| edc.managementpath                                   | X         | default                                     | edc provider management path       |
 | edc.apiKeyHeader                                     | X         | x-api-key                                   | Your connector api key             |
 | edc.apiKey                                           | X         | yourpass                                    | Your connector apikey value        |
 | edc.consumer.hostname                                | X         | https://example.consumer-connector.com      | Your EDC consumer connector        |
 | edc.consumer.apikeyheader                            | X         | x-api-key                                   | Your connector api key             |
 | edc.consumer.apikey                                  | X         | yourpass                                    | Your connector apikey value        |
 | edc.consumer.datauri                                 | X         | /api/v1/ids/data                            | IDS endpoint path                  |
+| edc.consumer.protocol.path                           | X         | default                                     | edc consumer protocol path         |
+| edc.consumer.managementpath                          | X         | default                                     | edc consumer management path       |
 | dft.hostname                                         | X         | https://example.sdehost.com                 | Your SDE hostname                  |
 | dft.apiKeyHeader                                     | X         | API_KEY                                     | Your default key                   |
 | dft.apiKey                                           | X         | yourpass                                    | Your default key password          |
@@ -83,19 +86,16 @@ Listed below are configuration keys needed to get the `sde-backend` up and runni
 | discovery.clientId                                   | X         | default                                     | discovery clientId                 |
 | discovery.clientSecret                               | X         | default                                     | discovery clientSecret             |
 | discovery.grantType                                  | X         | default                                     | discovery grantType                |
-| edc.consumer.protocol.path                           | X         | default                                     |                                    |
-| edc.consumer.managementpath                          | X         | default                                     |                                    |
-| edc.managementpath                                   | X         | default                                     |                                    |
-| partner.pool.hostname                                | X         | default                                     |                                    |
-| partner.pool.authentication.url                      | X         | default                                     |                                    |
-| partner.pool.clientId                                | X         | default                                     |                                    |
-| partner.pool.clientSecret                            | X         | default                                     |                                    |
-| partner.pool.grantType                               | X         | default                                     |                                    |
-| portal.backend.hostname                              | X         | default                                     |                                    |
-| portal.backend.authentication.url                    | X         | default                                     |                                    |
-| portal.backend.clientId                              | X         | default                                     |                                    |
-| portal.backend.clientSecret                          | X         | default                                     |                                    |
-| portal.backend.grantType                             | X         | default                                     |                                    |
+| partner.pool.hostname                                | X         | default                                     | partner pool hostname              |
+| partner.pool.authentication.url                      | X         | default                                     | partner pool authentication url   |
+| partner.pool.clientId                                | X         | default                                     | partner pool clientId              |
+| partner.pool.clientSecret                            | X         | default                                     | partner pool clientSecret          |
+| partner.pool.grantType                               | X         | default                                     | partner pool grantType             |
+| portal.backend.hostname                              | X         | default                                     | portal backend hostname            |
+| portal.backend.authentication.url                    | X         | default                                     | portal authentication url          |
+| portal.backend.clientId                              | X         | default                                     | portal clientId                    |
+| portal.backend.clientSecret                          | X         | default                                     | portal clientSecret                |
+| portal.backend.grantType                             | X         | default                                     | portal grantType                   |
 
 #### Example Configuration/application.properties
 

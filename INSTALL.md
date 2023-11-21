@@ -27,7 +27,7 @@ For more details, please refer configuration section from [README.md](README.md)
  ``` 
 ### RUN SDE Backend Locally
 #### Prerequisites
-- JDK18
+- JDK17
 - Postgres 13.2.11
 
 #### Steps

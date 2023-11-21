@@ -77,7 +77,25 @@ Listed below are configuration keys needed to get the `sde-backend` up and runni
 | connector.discovery.clientId                         | X         | default                                     | client ID for connector discovery  |
 | connector.discovery.clientSecret                     | X         | default                                     | password for connector discovery   |
 | portal.backend.hostname                              | X         | default                                     | Portal backend svc URL based on BPN|
-| springdoc.api-docs.path                              | X         | /api-docs                                   | swagger API path                   |
+| springdoc.api-docs.path                              | X         | default                                     | swagger API path                   |
+| bpndiscovery.hostname                                | X         | default                                     | bpn discovery hostname             |
+| discovery.authentication.url                         | X         | default                                     | discovery authentication url       |
+| discovery.clientId                                   | X         | default                                     | discovery clientId                 |
+| discovery.clientSecret                               | X         | default                                     | discovery clientSecret             |
+| discovery.grantType                                  | X         | default                                     | discovery grantType                |
+| edc.consumer.protocol.path                           | X         | default                                     |                                    |
+| edc.consumer.managementpath                          | X         | default                                     |                                    |
+| edc.managementpath                                   | X         | default                                     |                                    |
+| partner.pool.hostname                                | X         | default                                     |                                    |
+| partner.pool.authentication.url                      | X         | default                                     |                                    |
+| partner.pool.clientId                                | X         | default                                     |                                    |
+| partner.pool.clientSecret                            | X         | default                                     |                                    |
+| partner.pool.grantType                               | X         | default                                     |                                    |
+| portal.backend.hostname                              | X         | default                                     |                                    |
+| portal.backend.authentication.url                    | X         | default                                     |                                    |
+| portal.backend.clientId                              | X         | default                                     |                                    |
+| portal.backend.clientSecret                          | X         | default                                     |                                    |
+| portal.backend.grantType                             | X         | default                                     |                                    |
 
 #### Example Configuration/application.properties
 
@@ -152,6 +170,24 @@ connector.discovery.clientId=default
 connector.discovery.clientSecret=default
 portal.backend.hostname=default
 springdoc.api-docs.path=/api-docs
+bpndiscovery.hostname=default
+discovery.authentication.url=default
+discovery.clientId=default
+discovery.clientSecret=default
+discovery.grantType=default
+edc.consumer.protocol.path=default
+edc.consumer.managementpath=default
+edc.managementpath=default
+partner.pool.hostname=default
+partner.pool.authentication.url=default
+partner.pool.clientId=default
+partner.pool.clientSecret=default
+partner.pool.grantType=default
+portal.backend.hostname=default
+portal.backend.authentication.url=default
+portal.backend.clientId=default
+portal.backend.clientSecret=default
+portal.backend.grantType=default
 bpndiscovery.hostname=default
 discovery.authentication.url=default
 discovery.clientId=default

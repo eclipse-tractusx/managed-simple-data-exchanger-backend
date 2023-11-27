@@ -20,9 +20,11 @@
 
 package org.eclipse.tractusx.sde.configuration;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.text.StringSubstitutor;
 import org.eclipse.tractusx.sde.common.utils.UUIdGenerator;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequestFactory;
@@ -50,9 +52,31 @@ public class DigitalTwinAssetProvider {
 	private final EDCGateway edcGateway;
 	private final CreateEDCAssetFacilator createEDCAssetFacilator;
 
-	@Value("${digital-twins.hostname:default}${digital-twins.api:/api/v3.0}")
+	@Value(value = "${manufacturerId}")
+	public String manufacturerId;
+	
+	@Value("${digital-twins.hostname:default}")
 	private String digitalTwinRegistry;
-
+			
+	@Value("${provider.flag:false}")
+	private boolean providerFlag;
+	
+	@Value("${digital-twins.registry.uri:/api/v3.0}")
+	private String digitalTwinRegistryURI;
+	
+	@Value("${digital-twins.authentication.url:default}")
+	private String digitalTwinTokenUrl;
+	
+	@Value("${digital-twins.authentication.clientId:default}")
+	private String digitalTwinClientId;
+	
+	@Value("${digital-twins.authentication.clientSecret:default}")
+	private String digitalTwinClientSecret;
+	
+	@Value("${digital-twins.authentication.scope:}")
+	private String digitalTwinAuthenticationScope;
+	
+	
 	private static String assetFilterRequest = """
 			{
 				    "@context": {
@@ -68,6 +92,11 @@ public class DigitalTwinAssetProvider {
 				            "edc:operandLeft": "https://w3id.org/edc/v0.0.1/ns/type",
 				            "edc:operator": "=",
 				            "edc:operandRight": "data.core.digitalTwinRegistry"
+				        },
+				        {
+				            "edc:operandLeft": "https://w3id.org/edc/v0.0.1/ns/registry",
+				            "edc:operator": "=",
+				            "edc:operandRight": "${digitalTwinRegistry}"
 				        }
 				    ]
 				}
@@ -82,12 +111,28 @@ public class DigitalTwinAssetProvider {
 				assetId, "1", "");
 
 		assetEntryRequest.getAsset().getProperties().put("type", "data.core.digitalTwinRegistry");
-		assetEntryRequest.getDataAddress().getProperties().put("baseUrl", digitalTwinRegistry);
-		assetEntryRequest.getDataAddress().getProperties().remove("oauth2:tokenUrl");
-		assetEntryRequest.getDataAddress().getProperties().remove("oauth2:clientId");
-		assetEntryRequest.getDataAddress().getProperties().remove("oauth2:clientSecretKey");
+		assetEntryRequest.getAsset().getProperties().put("registry", digitalTwinRegistry);
 
-		ObjectNode requestBody = (ObjectNode) new ObjectMapper().readTree(assetFilterRequest);
+		assetEntryRequest.getDataAddress().getProperties().put("oauth2:tokenUrl", digitalTwinTokenUrl);
+		assetEntryRequest.getDataAddress().getProperties().put("oauth2:clientId", digitalTwinClientId);
+
+		if (providerFlag) {
+			assetEntryRequest.getDataAddress().getProperties().put("baseUrl", digitalTwinRegistry + digitalTwinRegistryURI);
+			assetEntryRequest.getDataAddress().getProperties().put("oauth2:clientSecret", digitalTwinClientSecret);
+			assetEntryRequest.getDataAddress().getProperties().put("oauth2:scope", digitalTwinAuthenticationScope);
+			assetEntryRequest.getDataAddress().getProperties().remove("oauth2:clientSecretKey");
+			
+		} else {
+			assetEntryRequest.getDataAddress().getProperties().put("baseUrl",
+					digitalTwinRegistry + digitalTwinRegistryURI);
+		}
+		
+		
+		Map<String, String> inputData =new HashMap<>();
+		inputData.put("manufacturerId", manufacturerId);
+		inputData.put("digitalTwinRegistry", digitalTwinRegistry);
+		
+		ObjectNode requestBody = (ObjectNode) new ObjectMapper().readTree(valueReplacer(assetFilterRequest, inputData));
 
 		if (!edcGateway.assetExistsLookupBasedOnType(requestBody)) {
 			Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest, List.of(),
@@ -98,4 +143,10 @@ public class DigitalTwinAssetProvider {
 		}
 	}
 
+	
+	@SneakyThrows
+	private String valueReplacer(String requestTemplatePath, Map<String, String> inputData) {
+		StringSubstitutor stringSubstitutor1 = new StringSubstitutor(inputData);
+		return stringSubstitutor1.replace(requestTemplatePath);
+	}
 }

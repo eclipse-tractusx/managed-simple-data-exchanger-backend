@@ -21,7 +21,6 @@
 package org.eclipse.tractusx.sde.digitaltwins.facilitator;
 
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
@@ -36,8 +35,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
@@ -54,16 +51,18 @@ public class DigitalTwinsFacilitator {
 	@Value(value = "${manufacturerId}")
 	public String manufacturerId;
 
-	@Value(value = "${bosch.flag}")
-	public boolean boschFlag;
+	@Value(value = "${provider.flag}")
+	public boolean providerFlag;
 
+	private final DigitalTwinsUtility digitalTwinsUtility;
+	
 	@SneakyThrows
 	public List<String> shellLookup(ShellLookupRequest request) throws ServiceException {
 
 		List<String> shellIds = List.of();
 		try {
 
-			String assetIds = boschFlag ? encodeAssetIdsObject(request.toJsonString()) : request.toJsonString();
+			String assetIds = providerFlag ? digitalTwinsUtility.encodeAssetIdsObject(request.toJsonString()) : request.toJsonString();
 
 			ResponseEntity<ShellLookupResponse> response = digitalTwinsFeignClient.shellLookup(assetIds,
 					manufacturerId);
@@ -87,16 +86,12 @@ public class DigitalTwinsFacilitator {
 		return shellIds;
 	}
 
-	private String encodeAssetIdsObject(String assetIdsList) {
-
-		return encodeShellIdBase64Utf8(assetIdsList.replace("[", "").replace("]", ""));
-	}
 
 	@SneakyThrows
 	public String deleteShell(String shellId) {
 		String deleteResponse = "";
 		try {
-			ResponseEntity<Void> response = digitalTwinsFeignClient.deleteShell(encodeShellIdBase64Utf8(shellId));
+			ResponseEntity<Void> response = digitalTwinsFeignClient.deleteShell(digitalTwinsUtility.encodeShellIdBase64Utf8(shellId));
 
 			if (response.getStatusCode() == HttpStatus.NO_CONTENT) {
 				deleteResponse = "Asset identifier" + shellId + "deleted successfully";
@@ -127,15 +122,15 @@ public class DigitalTwinsFacilitator {
 	public ShellDescriptorResponse getShellDetailsById(String shellId) {
 
 		ResponseEntity<ShellDescriptorResponse> shellDescriptorResponse = digitalTwinsFeignClient
-				.getShellDescriptorByShellId(encodeShellIdBase64Utf8(shellId), manufacturerId);
+				.getShellDescriptorByShellId(digitalTwinsUtility.encodeShellIdBase64Utf8(shellId), manufacturerId);
 		return shellDescriptorResponse.getBody();
 	}
 
 	@SneakyThrows
 	public void deleteSubmodelfromShellById(String shellId, String subModelId) {
 		try {
-			digitalTwinsFeignClient.deleteSubmodelfromShellById(encodeShellIdBase64Utf8(shellId),
-					encodeShellIdBase64Utf8(subModelId));
+			digitalTwinsFeignClient.deleteSubmodelfromShellById(digitalTwinsUtility.encodeShellIdBase64Utf8(shellId),
+					digitalTwinsUtility.encodeShellIdBase64Utf8(subModelId));
 		} catch (Exception e) {
 			parseExceptionMessage(e);
 		}
@@ -155,10 +150,10 @@ public class DigitalTwinsFacilitator {
 
 	public void updateShellSpecificAssetIdentifiers(String shellId, List<Object> specificAssetIds) {
 
-		digitalTwinsFeignClient.deleteShellSpecificAttributes(encodeShellIdBase64Utf8(shellId), manufacturerId);
+		digitalTwinsFeignClient.deleteShellSpecificAttributes(digitalTwinsUtility.encodeShellIdBase64Utf8(shellId), manufacturerId);
 
 		ResponseEntity<List<Object>> registerSubmodel = digitalTwinsFeignClient
-				.createShellSpecificAttributes(encodeShellIdBase64Utf8(shellId), manufacturerId, specificAssetIds);
+				.createShellSpecificAttributes(digitalTwinsUtility.encodeShellIdBase64Utf8(shellId), manufacturerId, specificAssetIds);
 		if (registerSubmodel.getStatusCode() != HttpStatus.CREATED) {
 			log.error("Error in shell SpecificAssetIdentifiers deletion: " + registerSubmodel.toString());
 		}
@@ -168,7 +163,7 @@ public class DigitalTwinsFacilitator {
 
 		request.setDescription(List.of());
 
-		ResponseEntity<String> response = digitalTwinsFeignClient.createSubModel(encodeShellIdBase64Utf8(shellId),
+		ResponseEntity<String> response = digitalTwinsFeignClient.createSubModel(digitalTwinsUtility.encodeShellIdBase64Utf8(shellId),
 				request, manufacturerId);
 		if (response.getStatusCode() != HttpStatus.CREATED) {
 			log.error("Unable to create submodel descriptor");
@@ -179,7 +174,7 @@ public class DigitalTwinsFacilitator {
 	public SubModelListResponse getSubModels(String shellId) {
 
 		ResponseEntity<SubModelListResponse> response = digitalTwinsFeignClient
-				.getSubModels(encodeShellIdBase64Utf8(shellId), manufacturerId);
+				.getSubModels(digitalTwinsUtility.encodeShellIdBase64Utf8(shellId), manufacturerId);
 		SubModelListResponse responseBody = null;
 		if (response.getStatusCode() == HttpStatus.OK) {
 			responseBody = response.getBody();
@@ -187,9 +182,6 @@ public class DigitalTwinsFacilitator {
 		return responseBody;
 	}
 
-	private String encodeShellIdBase64Utf8(String shellId) {
-		return Base64.getUrlEncoder().encodeToString(shellId.getBytes());
-	}
 
 	public void parseExceptionMessage(Exception e) throws ServiceException {
 

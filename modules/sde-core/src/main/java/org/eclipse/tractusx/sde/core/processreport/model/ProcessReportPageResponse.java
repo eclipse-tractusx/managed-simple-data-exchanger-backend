@@ -35,7 +35,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ProcessReportPageResponse {
 
-    private int pageNumber;
+    private int page;
     private int pageSize;
     private long totalItems;
     private List<ProcessReport> items;

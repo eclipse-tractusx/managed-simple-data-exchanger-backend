@@ -19,6 +19,8 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.submodels.pcf.model;
 
+import java.util.List;
+
 import com.google.gson.annotations.SerializedName;
 
 import lombok.AllArgsConstructor;
@@ -31,7 +33,7 @@ import lombok.Data;
 public class PcfSubmodelResponse {
 
 	private String specVersion;
-	private CompanyIds companyIds;
+	private List<CompanyIds> companyIds;
 	
 	@SerializedName(value = "extWBCSD_productCodeCpc")
 	private String extWBCSDProductCodeCpc;
@@ -44,13 +46,13 @@ public class PcfSubmodelResponse {
 	private double version;
 	private Pcf pcf;
 	private String partialFullPcf;
-	private ProductIds productIds;
+	private List<ProductIds> productIds;
 	private String validityPeriodStart;
 	private String comment;
     private String id;
 	private String validityPeriodEnd;
 	private String pcfLegalStatement;
 	private String productDescription;
-	private PrecedingPfIds precedingPfIds;
+	private List<PrecedingPfIds> precedingPfIds;
 
 }

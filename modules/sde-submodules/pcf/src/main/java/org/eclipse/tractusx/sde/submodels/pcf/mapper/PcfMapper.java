@@ -95,9 +95,9 @@ public abstract class PcfMapper {
 				.productMassPerDeclaredUnit(entity.getProductMassPerDeclaredUnit())
 				.productOrSectorSpecificRules(List.of(ProductOrSectorSpecificRules.builder()
 						.extWBCSDOperator(entity.getExtWBCSDOperator())
-						.productOrSectorSpecificRulesObj(ProductOrSectorSpecificRule.builder()
+						.productOrSectorSpecificRulesObj(List.of(ProductOrSectorSpecificRule.builder()
 								.ruleName(entity.getRuleName())
-								.build())
+								.build()))
 						.extWBCSDOtherOperatorName(entity.getExtWBCSDOtherOperatorName())
 						.build()))
 				.extTFSAllocationWasteIncineration(entity.getExtTFSAllocationWasteIncineration())
@@ -140,9 +140,9 @@ public abstract class PcfMapper {
 		
 		return new Gson().toJsonTree(PcfSubmodelResponse.builder()
 				.specVersion(entity.getSpecVersion())
-				.companyIds(CompanyIds.builder()
+				.companyIds(List.of(CompanyIds.builder()
 						.companyId(entity.getCompanyId())
-						.build())
+						.build()))
 				.extWBCSDProductCodeCpc(entity.getExtWBCSDProductCodeCpc())
 				.created(entity.getCreated())
 				.companyName(entity.getCompanyName())
@@ -151,9 +151,9 @@ public abstract class PcfMapper {
 				.productName(entity.getProductName())
 				.pcf(pcfResponse)
 				.partialFullPcf(entity.getPartialFullPcf())
-				.productIds(ProductIds.builder()
+				.productIds(List.of(ProductIds.builder()
 						.productId(entity.getProductId())
-						.build())
+						.build()))
 				
 				.validityPeriodStart(entity.getValidityPeriodStart())
 				.comment(entity.getComment())
@@ -162,9 +162,9 @@ public abstract class PcfMapper {
 				.pcfLegalStatement(entity.getPcfLegalStatement())
 				.productDescription(entity.getProductDescription())
 				
-				.precedingPfIds(PrecedingPfIds.builder()
+				.precedingPfIds(List.of(PrecedingPfIds.builder()
 						.id(entity.getPrecedingPfId())
-						.build())
+						.build()))
 				.build()).getAsJsonObject();
 
 	}

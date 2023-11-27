@@ -35,7 +35,7 @@ public class PcfSubmodel extends SubmodelExtension {
 
 	@Autowired
 	private PcfExecutor pcfWorkflow;
-	
+
 	@PostConstruct
 	public void init() {
 
@@ -48,7 +48,7 @@ public class PcfSubmodel extends SubmodelExtension {
 		}
 
 		submodel = loadSubmodel(input);
-		
+
 		submodel.setExecutor(pcfWorkflow);
 
 		submodel.addProperties("tableName", "pcf_aspect");

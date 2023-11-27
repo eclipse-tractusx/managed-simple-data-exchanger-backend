@@ -38,9 +38,13 @@ public class RecordProcessUtils {
 
 		fieldValue = fieldValue.trim();
 
-		if (isNumberTypeField(jObject, fieldValue))
-			rowjObject.put(ele, Double.parseDouble(fieldValue));
-		else if (isDateFormatField(jObject)) {
+		if (isNumberTypeField(jObject)) {
+			if (fieldValue.isBlank()) {
+				rowjObject.putNull(ele);
+			} else {
+				rowjObject.put(ele, Double.parseDouble(fieldValue));
+			}
+		} else if (isDateFormatField(jObject)) {
 
 			if (fieldValue.isBlank())
 				fieldValue = null;
@@ -57,12 +61,10 @@ public class RecordProcessUtils {
 		return jObject.get("format") != null && "date-time".equals(jObject.get("format").getAsString());
 	}
 
-	private boolean isNumberTypeField(JsonObject jObject, String fieldValue) {
-
-		if (fieldValue != null && !fieldValue.isBlank() && jObject.get("type") != null
-				&& jObject.get("type").isJsonArray()) {
+	private boolean isNumberTypeField(JsonObject jObject) {
+		JsonElement jsonElement = JsonParser.parseString("number");
+		if (jObject.get("type") != null && jObject.get("type").isJsonArray()) {
 			JsonArray types = jObject.get("type").getAsJsonArray();
-			JsonElement jsonElement = JsonParser.parseString("number");
 			return types.contains(jsonElement);
 		}
 		return false;

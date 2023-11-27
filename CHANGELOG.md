@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [2.2.1] - 2023-11-27
+### Fix
+- Update PCF schema fields for SDE
+- trivy worklow fix.
+
 ## [2.2.0] - 2023-09-20
 ### Added
 - Pcf model schema and model registration.

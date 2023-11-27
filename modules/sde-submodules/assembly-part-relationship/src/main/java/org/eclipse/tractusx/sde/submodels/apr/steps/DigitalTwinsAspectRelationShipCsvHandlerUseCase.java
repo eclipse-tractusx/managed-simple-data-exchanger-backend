@@ -22,8 +22,10 @@
 
 package org.eclipse.tractusx.sde.submodels.apr.steps;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,12 +37,19 @@ import org.eclipse.tractusx.sde.common.submodel.executor.Step;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.CreateSubModelRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellLookupRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorResponse;
+import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellLookupResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelResponse;
 import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsFacilitator;
 import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsUtility;
+import org.eclipse.tractusx.sde.digitaltwins.gateways.external.EDCDigitalTwinProxyForLookUp;
+import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedByIdResponse;
+import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.eclipse.tractusx.sde.submodels.apr.model.AspectRelationship;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -53,6 +62,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 	private final DigitalTwinsFacilitator digitalTwinfacilitaor;
 	private final DigitalTwinsUtility digitalTwinsUtility;
 	private final DDTRUrlCacheUtility dDTRUrlCacheUtility;
+	private final EDCDigitalTwinProxyForLookUp eDCDigitalTwinProxyForLookUp;
 
 	private static final Map<String, LocalDateTime> map = new ConcurrentHashMap<>();
 
@@ -107,7 +117,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 	private SubModelResponse checkShellforSubmodelExistorNot(AspectRelationship aspectRelationShip,
 			ShellLookupRequest shellLookupRequest, List<String> shellIds, SubModelResponse foundSubmodel)
 			throws CsvHandlerDigitalTwinUseCaseException {
-		List<ShellDescriptorResponse> items = digitalTwinfacilitaor.getShellDescriptorsWithSubmodelDetails(shellIds, null);
+		List<ShellDescriptorResponse> items = digitalTwinfacilitaor.getShellDescriptorsWithSubmodelDetails(shellIds);
 
 		List<String> submodelExistinceCount = new ArrayList<>();
 
@@ -189,36 +199,32 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 
 		ShellLookupRequest shellLookupRequest = getShellLookupRequestforChild(aspectRelationShip);
 
-		List<String> dtURls = getDDTRUrl(aspectRelationShip.getChildManufacturerId());
+		String childManufacturerId = aspectRelationShip.getChildManufacturerId();
+		List<QueryDataOfferModel> queryDataOffers = getDDTRUrl(childManufacturerId);
 
 		String childUUID = null;
+		String msg = "";
 
-		for (String ddtUrl : dtURls) {
+		for (QueryDataOfferModel dtOffer : queryDataOffers) {
 
-			List<String> childshellIds = digitalTwinfacilitaor.shellLookupFromDDTR(shellLookupRequest, ddtUrl, aspectRelationShip.getChildManufacturerId());
+			EDRCachedByIdResponse edrToken = dDTRUrlCacheUtility.verifyAndGetToken(childManufacturerId, dtOffer);
 
-			if (childshellIds.isEmpty()) {
-				log.warn(aspectRelationShip.getRowNumber() + ", " + ddtUrl + ", No child aspect found for "
-						+ shellLookupRequest.toJsonString());
+			if (edrToken != null) {
+				childUUID = lookUpChildTwin(shellLookupRequest, aspectRelationShip, edrToken, dtOffer);
+				if (childUUID != null) {
+					break;
+				} else {
+					log.warn(aspectRelationShip.getRowNumber() + ", EDC connector " + dtOffer.getConnectorOfferUrl()
+							+ ", No child twin found for " + shellLookupRequest.toJsonString());
+				}
+			} else {
+				msg = ", EDC connector " + dtOffer.getConnectorOfferUrl()
+						+ ", The EDR token is null to find child twin ";
+				log.warn(aspectRelationShip.getRowNumber() + msg + shellLookupRequest.toJsonString());
 			}
-
-			if (childshellIds.size() > 1) {
-				log.warn(String.format("Multiple shell id's found for childAspect %s, %s", ddtUrl,
-						shellLookupRequest.toJsonString()));
-			}
-
-			if (childshellIds.size() == 1) {
-				ShellDescriptorResponse shellDescriptorResponse = digitalTwinfacilitaor
-						.getShellDetailsById(childshellIds.get(0), ddtUrl, aspectRelationShip.getChildManufacturerId());
-				childUUID = shellDescriptorResponse.getGlobalAssetId();
-				log.debug(aspectRelationShip.getRowNumber() + ", " + ddtUrl + ", Child aspect found for "
-						+ shellLookupRequest.toJsonString());
-				break;
-			}
-
 		}
 
-		if (dtURls.isEmpty()) {
+		if (queryDataOffers.isEmpty()) {
 			throw new CsvHandlerUseCaseException(aspectRelationShip.getRowNumber(),
 					"No DTR registry found for child aspect look up");
 		}
@@ -233,7 +239,66 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 
 	}
 
-	public List<String> getDDTRUrl(String bpnNumber) {
+	@SneakyThrows
+	private String lookUpChildTwin(ShellLookupRequest shellLookupRequest, AspectRelationship aspectRelationShip,
+			EDRCachedByIdResponse edrToken, QueryDataOfferModel dtOffer) {
+		String childUUID = null;
+		String endpoint = edrToken.getEndpoint();
+		String dtOfferUrl = dtOffer.getConnectorOfferUrl();
+		try {
+
+			Map<String, String> header = Map.of(edrToken.getAuthKey(), edrToken.getAuthCode());
+
+			ResponseEntity<ShellLookupResponse> shellLookup = eDCDigitalTwinProxyForLookUp
+					.shellLookup(new URI(endpoint), shellLookupRequest.toJsonString(), header);
+			ShellLookupResponse body = shellLookup.getBody();
+
+			if (shellLookup.getStatusCode() == HttpStatus.OK && body != null) {
+				childUUID = getChildSubmodelDetails(shellLookupRequest, endpoint, header, aspectRelationShip,
+						dtOfferUrl, body.getResult());
+			}
+
+		} catch (FeignException e) {
+			String errorMsg = "Unable to look up child twin " + dtOfferUrl + ", " + shellLookupRequest.toJsonString()
+					+ " because: " + e.contentUTF8();
+			log.error("FeignException : " + errorMsg);
+		} catch (Exception e) {
+			String errorMsg = "Unable to look up child twin " + dtOfferUrl + ", " + shellLookupRequest.toJsonString()
+					+ "because: " + e.getMessage();
+			log.error("Exception : " + errorMsg);
+		}
+
+		return childUUID;
+	}
+
+	@SneakyThrows
+	private String getChildSubmodelDetails(ShellLookupRequest shellLookupRequest, String endpoint,
+			Map<String, String> header, AspectRelationship aspectRelationShip, String dtOfferUrl,
+			List<String> childshellIds) {
+
+		String childUUID = null;
+		if (childshellIds == null) {
+			log.warn(aspectRelationShip.getRowNumber() + ", " + dtOfferUrl + ", No child aspect found for "
+					+ shellLookupRequest.toJsonString());
+		} else if (childshellIds.size() > 1) {
+			log.warn(String.format("Multiple shell id's found for childAspect %s, %s", dtOfferUrl,
+					shellLookupRequest.toJsonString()));
+		} else if (childshellIds.size() == 1) {
+			ResponseEntity<ShellDescriptorResponse> shellDescriptorResponse = eDCDigitalTwinProxyForLookUp
+					.getShellDescriptorByShellId(new URI(endpoint), encodeShellIdBase64Utf8(childshellIds.get(0)),
+							header);
+			ShellDescriptorResponse shellDescriptorResponseBody = shellDescriptorResponse.getBody();
+			if (shellDescriptorResponse.getStatusCode() == HttpStatus.OK && shellDescriptorResponseBody != null) {
+				childUUID = shellDescriptorResponseBody.getGlobalAssetId();
+				log.debug(aspectRelationShip.getRowNumber() + ", " + dtOfferUrl + ", Child aspect found for "
+						+ shellLookupRequest.toJsonString());
+			}
+		}
+
+		return childUUID;
+	}
+
+	public List<QueryDataOfferModel> getDDTRUrl(String bpnNumber) {
 
 		LocalDateTime cacheExpTime = map.get(bpnNumber);
 		LocalDateTime currDate = LocalDateTime.now();
@@ -253,4 +318,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 		dDTRUrlCacheUtility.cleareDDTRUrlAllCache();
 	}
 
+	private String encodeShellIdBase64Utf8(String shellId) {
+		return Base64.getUrlEncoder().encodeToString(shellId.getBytes());
+	}
 }

@@ -26,9 +26,6 @@ COPY ../pom.xml ./pom.xml
 # copy your other files
 COPY ../modules ./modules
 
-# build for release
-RUN mvn clean install 
-
 # our final base image
 
 FROM eclipse-temurin:17.0.9_9-jdk-jammy
@@ -39,7 +36,7 @@ ARG USER_GID=$USER_UID
 
 # Create the user
 
-RUN useradd -rm -d /home/sdeuser -s /bin/bash -u $USER_UID -U $USERNAME 
+RUN useradd -m -d /home/sdeuser -s /bin/bash -u $USER_UID -U $USERNAME 
 
 
 USER $USERNAME
@@ -54,6 +51,6 @@ COPY LICENSE NOTICE.md DEPENDENCIES SECURITY.md  ./
 COPY --from=build modules/sde-core/target/*.jar ./app.jar
 
 EXPOSE 8080
-# set the startup command to run your binary
 
+# set the startup command to run your binary
 CMD ["java", "-jar", "./app.jar","--spring.config.location=file:/app/configuration.properties"]

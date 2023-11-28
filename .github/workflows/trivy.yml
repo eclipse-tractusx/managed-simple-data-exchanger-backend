@@ -25,8 +25,8 @@ on:
     # Once a day
     - cron: "0 0 * * *"
   workflow_dispatch:
-   # Trigger manually
 
+ # Trigger manually
  jobs:
 
    analyze-config:

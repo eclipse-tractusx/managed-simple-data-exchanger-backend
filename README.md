@@ -348,8 +348,12 @@ Authentication for the backend is handled via an API Key. This can be set in the
 ### EDC
 GitHub repository with correct version of the Eclipse DataSpace Connector Project: [repository](https://github.com/eclipse-tractusx/tractusx-edc).
 
-### Licenses
+## Licenses
 For used licenses, please see the [NOTICE](https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/blob/main/NOTICE.md).
+
+## Eclipse Dash Tool
+
+The Eclipse Dash tool is used to analyze the dependencies used in the project and ensure all legal requirements are met. We're using the official maven plugin to resolve all project dependencies and then run the tool and update the summary in the DEPENDENCIES file.
 
 ## Notice for Docker image
 

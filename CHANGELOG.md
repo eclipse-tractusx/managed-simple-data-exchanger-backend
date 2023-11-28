@@ -1,23 +1,20 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-## [2.3.0] - 2023-11-27
-### Added
-- DT use refactor for look up twin
 
-## [2.2.2] - 2023-11-27
-### Added
-- Added oauth security for sde public api.
-- BPN url add API path.
+## [2.2.2] - 2023-11-28
+ ### Added
+ - Added oauth security for sde public api.
+ - BPN url add API path.
 
-### Fixed
-- Correct dataplane endpoint for digital twin.
-- DSP endpoint path for digital-twin edc url.
+ ### Fixed
+ - Correct dataplane endpoint for digital twin.
+ - DSP endpoint path for digital-twin edc url.
+ - Trivy workflow update. 
 
-## [2.2.1] - 2023-11-27
-### Fix
-- Update PCF schema fields for SDE
-- trivy worklow fix.
+ ## [2.2.1] - non-released
+ ### Fix
+ - Update PCF schema fields for SDE.
 
 ## [2.2.0] - 2023-09-20
 ### Added
@@ -241,8 +238,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Compliance with Catena-X Guidelines
 - Integration with Digital Twin registry service.
 
-[unreleased]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.3.0...main
-[2.3.0]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.2.0...v2.3.0
+
+[unreleased]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.2.2...main
+[2.2.2]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.2.0...v2.2.2
 [2.2.0]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.1.1...v2.2.0
 [2.1.1]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.0.11...v2.1.0

@@ -44,6 +44,8 @@ USER $USERNAME
 # set deployment directory
 WORKDIR /home/user/sdeuser/sdeapp
 
+COPY LICENSE NOTICE.md DEPENDENCIES SECURITY.md  ./
+
 # copy over the built artifact from the maven image
 
 COPY --from=build modules/sde-core/target/*.jar ./app.jar

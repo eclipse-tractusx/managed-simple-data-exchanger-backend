@@ -59,9 +59,12 @@ public class DigitalTwinsUtility {
 	@Value(value = "${manufacturerId}")
 	public String manufacturerId;
 
-	@Value(value = "${edc.hostname}")
-	public String edcEndpoint;
-
+	@Value(value = "${edc.hostname}${edc.dsp.endpointpath:/api/v1/dsp}")
+	public String digitalTwinEdcDspEndpoint;
+	
+	@Value(value = "${edc.hostname}${edc.dataplane.endpointpath:/api/public}")
+	public String digitalTwinEdcDataplaneEndpoint;
+	
 	ObjectMapper mapper = new ObjectMapper();
 
 	private static final Map<String, List<String>> publicReadableSpecificAssetIDs = Map.of(MANUFACTURER_PART_ID,
@@ -112,12 +115,12 @@ public class DigitalTwinsUtility {
 		List<Endpoint> endpoints = new ArrayList<>();
 		endpoints.add(Endpoint.builder().endpointInterface(CommonConstants.INTERFACE)
 				.protocolInformation(ProtocolInformation.builder()
-						.endpointAddress(edcEndpoint + CommonConstants.SUBMODEL_CONTEXT_URL)
+						.endpointAddress(digitalTwinEdcDataplaneEndpoint)
 						.endpointProtocol(CommonConstants.HTTP)
 						.endpointProtocolVersion(List.of(CommonConstants.ENDPOINT_PROTOCOL_VERSION))
 						.subProtocol(CommonConstants.SUB_PROTOCOL)
-						.subprotocolBody(encodedUrl("id=" + shellId + "-" + submodelIdentification) + ";dspEndpoint="
-								+ edcEndpoint)
+						.subprotocolBody("id=" + shellId + "-" + submodelIdentification + ";dspEndpoint="
+								+ digitalTwinEdcDspEndpoint)
 						.subprotocolBodyEncoding(CommonConstants.BODY_ENCODING)
 						.securityAttributes(List.of(new SecurityAttributes("NONE", "NONE", "NONE"))).build())
 				.build());
@@ -144,7 +147,7 @@ public class DigitalTwinsUtility {
 				specificIdentifiers.add(new KeyValuePair(entry.getKey(), entry.getValue(), externalSubjectId));
 			}
 			else {
-				if (keyList != null && !keyList.isEmpty()) {
+				if (keyList != null && !keyList.isEmpty() && !entry.getValue().isEmpty()) {
 					
 					externalSubjectId = ExternalSubjectId.builder()
 							.type("ExternalReference").keys(keyList)
@@ -170,10 +173,6 @@ public class DigitalTwinsUtility {
 					.toList();
 		}
 		return Collections.emptyList();
-	}
-
-	private String encodedUrl(String format) {
-		return format.replace(":", "%3A");
 	}
 
 	private String getFieldFromJsonNode(JsonNode jnode, String fieldName) {

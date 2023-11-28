@@ -27,13 +27,13 @@ For more details, please refer configuration section from [README.md](README.md)
  ``` 
 ### RUN SDE Backend Locally
 #### Prerequisites
-- JDK18
-- Postgres 11.9.13
+- JDK17
+- Postgres 12.12.10
 
 #### Steps
 1. Clone the GitHub Repository - https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend.
-2. Get your instance of postgres running (Create **dftdb** new database).
-3. Setup your project environment to JDK 18.
+2. Get your instance of postgres running (Create **sdedb** new database).
+3. Setup your project environment to JDK 17.
 4. Provide require application configuration in application.properties as specified in step configuration.properties.
 5. Start the SDE spring boot application from your IDE using main class or use spring CLI.
 

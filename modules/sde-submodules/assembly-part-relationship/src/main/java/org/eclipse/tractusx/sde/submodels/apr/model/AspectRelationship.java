@@ -52,7 +52,7 @@ public class AspectRelationship {
 	private String oldSubmodelIdforUpdateCase;
 
 	@JsonProperty(value = "row_number")
-	private int rowNumber;
+	private Integer rowNumber;
 
 	@JsonProperty(value = "process_id")
 	private String processId;

@@ -57,13 +57,13 @@ public class DigitalTwinsUtility {
 	private static final String PUBLIC_READABLE = "PUBLIC_READABLE";
 
 	@Value(value = "${manufacturerId}")
-	public String manufacturerId;
+	private String manufacturerId;
 
 	@Value(value = "${edc.hostname}${edc.dsp.endpointpath:/api/v1/dsp}")
-	public String digitalTwinEdcDspEndpoint;
+	private String digitalTwinEdcDspEndpoint;
 	
 	@Value(value = "${edc.hostname}${edc.dataplane.endpointpath:/api/public}")
-	public String digitalTwinEdcDataplaneEndpoint;
+	private String digitalTwinEdcDataplaneEndpoint;
 	
 	ObjectMapper mapper = new ObjectMapper();
 

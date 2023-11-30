@@ -6,8 +6,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 - docker cmd updated,removed r from run command.
 - fixed veracode security CVE-2023-33202(Bouncy Castle Denial of Service). 
-- 
-## [Unreleased]
 - Updated assembly-part-relationship csv and .md file
 
 ## [2.3.0] - 2023-11-29

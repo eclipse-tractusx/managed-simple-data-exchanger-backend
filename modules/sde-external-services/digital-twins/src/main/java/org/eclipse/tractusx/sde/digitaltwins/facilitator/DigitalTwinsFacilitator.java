@@ -51,8 +51,8 @@ public class DigitalTwinsFacilitator {
 	@Value(value = "${manufacturerId}")
 	public String manufacturerId;
 
-	@Value(value = "${provider.flag}")
-	public boolean providerFlag;
+	@Value(value = "${digital-twins.managed.thirdparty}")
+	public boolean managedThirdParty;
 
 	private final DigitalTwinsUtility digitalTwinsUtility;
 	
@@ -62,7 +62,7 @@ public class DigitalTwinsFacilitator {
 		List<String> shellIds = List.of();
 		try {
 
-			String assetIds = providerFlag ? digitalTwinsUtility.encodeAssetIdsObject(request.toJsonString()) : request.toJsonString();
+			String assetIds = managedThirdParty ? digitalTwinsUtility.encodeAssetIdsObject(request.toJsonString()) : request.toJsonString();
 
 			ResponseEntity<ShellLookupResponse> response = digitalTwinsFeignClient.shellLookup(assetIds,
 					manufacturerId);

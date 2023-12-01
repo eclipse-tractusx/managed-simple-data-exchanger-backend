@@ -57,6 +57,9 @@ class DigitalTwinsFeignClientConfigurationInterceptor implements RequestIntercep
 	
 	@Value(value = "${digital-twins.authentication.scope:}")
 	private String digitalTwinsScope;
+	
+	@Value(value = "${digital-twins.managed.thirdparty:}")
+	private boolean dDTRManagedThirdparty;
 
 	@Autowired
 	private TokenUtility tokenUtilityForDigital;
@@ -74,7 +77,12 @@ class DigitalTwinsFeignClientConfigurationInterceptor implements RequestIntercep
 		if (accessTokenForDigital != null && tokenUtilityForDigital.isTokenValid(accessTokenForDigital)) {
 			return "Bearer " + accessTokenForDigital;
 		}
-		accessTokenForDigital = tokenUtilityForDigital.getToken(digitalAppTokenURI, digitalGrantType, digitalAppClientId, digitalAppClientSecret, digitalTwinsScope);
+	
+		if(dDTRManagedThirdparty) {
+			accessTokenForDigital = tokenUtilityForDigital.getToken(digitalAppTokenURI, digitalGrantType, digitalAppClientId, digitalAppClientSecret, digitalTwinsScope);
+		}else {
+			accessTokenForDigital = tokenUtilityForDigital.getToken(digitalAppTokenURI, digitalGrantType, digitalAppClientId, digitalAppClientSecret);
+		}
 		return "Bearer " + accessTokenForDigital;
 	}
 

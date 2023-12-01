@@ -68,8 +68,8 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 
 	private static final Map<String, LocalDateTime> map = new ConcurrentHashMap<>();
 
-	@Value("${provider.flag:false}")
-	private boolean providerFlag;
+	@Value("${digital-twins.managed.thirdparty:false}")
+	private boolean dDTRManagedThirdparty;
 	
 	@Value("${digital-twins.registry.uri:}")
 	private String registryUri;
@@ -252,10 +252,11 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 		String dtOfferUrl = dtOffer.getConnectorOfferUrl();
 		try {
 
-			Map<String, String> header = Map.of(edrToken.getAuthKey(), edrToken.getAuthCode());
+			Map<String, String> header = new HashMap<>();
+			header.put(edrToken.getAuthKey(), edrToken.getAuthCode());
+			header.put("Edc-Bpn", aspectRelationShip.getChildManufacturerId());
 			
-			String registryLookupUriLocal = providerFlag ? registryLookupUri : "";
-			String registryUriLocal = providerFlag ? registryUri : "";
+			String registryLookupUriLocal = dDTRManagedThirdparty ? registryLookupUri : registryUri;
 
 			
 			ResponseEntity<ShellLookupResponse> shellLookup = eDCDigitalTwinProxyForLookUp
@@ -263,7 +264,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 			ShellLookupResponse body = shellLookup.getBody();
 
 			if (shellLookup.getStatusCode() == HttpStatus.OK && body != null) {
-				childUUID = getChildSubmodelDetails(shellLookupRequest, endpoint+registryUriLocal, header, aspectRelationShip,
+				childUUID = getChildSubmodelDetails(shellLookupRequest, endpoint+registryUri, header, aspectRelationShip,
 						dtOfferUrl, body.getResult());
 			}
 
@@ -299,7 +300,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 			ShellDescriptorResponse shellDescriptorResponseBody = shellDescriptorResponse.getBody();
 			if (shellDescriptorResponse.getStatusCode() == HttpStatus.OK && shellDescriptorResponseBody != null) {
 				childUUID = shellDescriptorResponseBody.getGlobalAssetId();
-				log.debug(aspectRelationShip.getRowNumber() + ", " + dtOfferUrl + ", Child aspect found for "
+				log.info(aspectRelationShip.getRowNumber() + ", " + dtOfferUrl + ", Child aspect found for "
 						+ shellLookupRequest.toJsonString());
 			}
 		}

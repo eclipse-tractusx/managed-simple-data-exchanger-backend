@@ -58,8 +58,8 @@ public class DigitalTwinAssetProvider {
 	@Value("${digital-twins.hostname:default}")
 	private String digitalTwinRegistry;
 			
-	@Value("${provider.flag:false}")
-	private boolean providerFlag;
+	@Value("${digital-twins.managed.thirdparty:false}")
+	private boolean dDTRManagedThirdparty;
 	
 	@Value("${digital-twins.registry.uri:/api/v3.0}")
 	private String digitalTwinRegistryURI;
@@ -116,12 +116,10 @@ public class DigitalTwinAssetProvider {
 		assetEntryRequest.getDataAddress().getProperties().put("oauth2:tokenUrl", digitalTwinTokenUrl);
 		assetEntryRequest.getDataAddress().getProperties().put("oauth2:clientId", digitalTwinClientId);
 
-		if (providerFlag) {
-			assetEntryRequest.getDataAddress().getProperties().put("baseUrl", digitalTwinRegistry + digitalTwinRegistryURI);
-			assetEntryRequest.getDataAddress().getProperties().put("oauth2:clientSecret", digitalTwinClientSecret);
+		if (dDTRManagedThirdparty) {
+			assetEntryRequest.getDataAddress().getProperties().put("baseUrl", digitalTwinRegistry);
 			assetEntryRequest.getDataAddress().getProperties().put("oauth2:scope", digitalTwinAuthenticationScope);
-			assetEntryRequest.getDataAddress().getProperties().remove("oauth2:clientSecretKey");
-			
+			assetEntryRequest.getDataAddress().getProperties().put("oauth2:clientSecretKey", "ddtr-client-secret");
 		} else {
 			assetEntryRequest.getDataAddress().getProperties().put("baseUrl",
 					digitalTwinRegistry + digitalTwinRegistryURI);

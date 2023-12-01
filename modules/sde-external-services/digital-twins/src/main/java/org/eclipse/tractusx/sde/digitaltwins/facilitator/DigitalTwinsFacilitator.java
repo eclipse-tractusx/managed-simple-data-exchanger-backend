@@ -51,8 +51,8 @@ public class DigitalTwinsFacilitator {
 	@Value(value = "${manufacturerId}")
 	private String manufacturerId;
 
-	@Value(value = "${digital-twins.managed.thirdparty}")
-	public boolean managedThirdParty;
+	@Value(value = "${digital-twins.managed.thirdparty:false}")
+	private boolean managedThirdParty;
 
 	private final DigitalTwinsUtility digitalTwinsUtility;
 	

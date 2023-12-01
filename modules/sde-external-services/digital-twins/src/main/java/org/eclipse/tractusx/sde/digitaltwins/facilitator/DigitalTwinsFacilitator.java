@@ -49,7 +49,7 @@ public class DigitalTwinsFacilitator {
 	private final DigitalTwinsFeignClient digitalTwinsFeignClient;
 
 	@Value(value = "${manufacturerId}")
-	public String manufacturerId;
+	private String manufacturerId;
 
 	@Value(value = "${digital-twins.managed.thirdparty}")
 	public boolean managedThirdParty;

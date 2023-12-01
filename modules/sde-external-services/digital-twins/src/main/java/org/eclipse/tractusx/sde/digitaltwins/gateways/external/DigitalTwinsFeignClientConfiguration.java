@@ -58,7 +58,7 @@ class DigitalTwinsFeignClientConfigurationInterceptor implements RequestIntercep
 	@Value(value = "${digital-twins.authentication.scope:}")
 	private String digitalTwinsScope;
 	
-	@Value(value = "${digital-twins.managed.thirdparty:}")
+	@Value(value = "${digital-twins.managed.thirdparty:false}")
 	private boolean dDTRManagedThirdparty;
 
 	@Autowired

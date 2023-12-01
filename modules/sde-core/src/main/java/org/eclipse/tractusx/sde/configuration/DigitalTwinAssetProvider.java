@@ -53,7 +53,7 @@ public class DigitalTwinAssetProvider {
 	private final CreateEDCAssetFacilator createEDCAssetFacilator;
 
 	@Value(value = "${manufacturerId}")
-	public String manufacturerId;
+	private String manufacturerId;
 	
 	@Value("${digital-twins.hostname:default}")
 	private String digitalTwinRegistry;

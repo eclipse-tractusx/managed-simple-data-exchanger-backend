@@ -22,11 +22,13 @@
 package org.eclipse.tractusx.sde.digitaltwins.entities.common;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 
 @Getter
 @Builder
@@ -37,4 +39,10 @@ public class LocalIdentifier {
 	@JsonProperty("name")
     private String key;
     private String value;
+    
+    @SneakyThrows
+    public String toJsonString() {
+		final ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(this);
+    }
 }

@@ -26,11 +26,11 @@ import java.util.Map;
 
 import org.apache.commons.text.StringSubstitutor;
 import org.eclipse.tractusx.sde.common.utils.UUIdGenerator;
+import org.eclipse.tractusx.sde.core.properties.SdeCommonProperties;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequestFactory;
 import org.eclipse.tractusx.sde.edc.facilitator.CreateEDCAssetFacilator;
 import org.eclipse.tractusx.sde.edc.gateways.external.EDCGateway;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
@@ -51,30 +51,7 @@ public class DigitalTwinAssetProvider {
 	private final AssetEntryRequestFactory assetFactory;
 	private final EDCGateway edcGateway;
 	private final CreateEDCAssetFacilator createEDCAssetFacilator;
-
-	@Value(value = "${manufacturerId}")
-	private String manufacturerId;
-	
-	@Value("${digital-twins.hostname:default}")
-	private String digitalTwinRegistry;
-			
-	@Value("${digital-twins.managed.thirdparty:false}")
-	private boolean dDTRManagedThirdparty;
-	
-	@Value("${digital-twins.registry.uri:/api/v3.0}")
-	private String digitalTwinRegistryURI;
-	
-	@Value("${digital-twins.authentication.url:default}")
-	private String digitalTwinTokenUrl;
-	
-	@Value("${digital-twins.authentication.clientId:default}")
-	private String digitalTwinClientId;
-	
-	@Value("${digital-twins.authentication.clientSecret:default}")
-	private String digitalTwinClientSecret;
-	
-	@Value("${digital-twins.authentication.scope:}")
-	private String digitalTwinAuthenticationScope;
+	private final SdeCommonProperties sdeCommonProperties;
 	
 	
 	private static String assetFilterRequest = """
@@ -96,7 +73,7 @@ public class DigitalTwinAssetProvider {
 				        {
 				            "edc:operandLeft": "https://w3id.org/edc/v0.0.1/ns/registry",
 				            "edc:operator": "=",
-				            "edc:operandRight": "${digitalTwinRegistry}"
+				            "edc:operandRight": "${commonProperties.getDigitalTwinRegistry()}"
 				        }
 				    ]
 				}
@@ -111,24 +88,23 @@ public class DigitalTwinAssetProvider {
 				assetId, "1", "");
 
 		assetEntryRequest.getAsset().getProperties().put("type", "data.core.digitalTwinRegistry");
-		assetEntryRequest.getAsset().getProperties().put("registry", digitalTwinRegistry);
+		assetEntryRequest.getAsset().getProperties().put("registry", sdeCommonProperties.getDigitalTwinRegistry());
 
-		assetEntryRequest.getDataAddress().getProperties().put("oauth2:tokenUrl", digitalTwinTokenUrl);
-		assetEntryRequest.getDataAddress().getProperties().put("oauth2:clientId", digitalTwinClientId);
+		assetEntryRequest.getDataAddress().getProperties().put("oauth2:tokenUrl", sdeCommonProperties.getDigitalTwinTokenUrl());
+		assetEntryRequest.getDataAddress().getProperties().put("oauth2:clientId", sdeCommonProperties.getDigitalTwinClientId());
 
-		if (dDTRManagedThirdparty) {
-			assetEntryRequest.getDataAddress().getProperties().put("baseUrl", digitalTwinRegistry);
-			assetEntryRequest.getDataAddress().getProperties().put("oauth2:scope", digitalTwinAuthenticationScope);
+		if (sdeCommonProperties.isDDTRManagedThirdparty()) {
+			assetEntryRequest.getDataAddress().getProperties().put("baseUrl", sdeCommonProperties.getDigitalTwinRegistry());
+			assetEntryRequest.getDataAddress().getProperties().put("oauth2:scope", sdeCommonProperties.getDigitalTwinAuthenticationScope());
 			assetEntryRequest.getDataAddress().getProperties().put("oauth2:clientSecretKey", "ddtr-client-secret");
 		} else {
 			assetEntryRequest.getDataAddress().getProperties().put("baseUrl",
-					digitalTwinRegistry + digitalTwinRegistryURI);
+					sdeCommonProperties.getDigitalTwinRegistry() + sdeCommonProperties.getDigitalTwinRegistryURI());
 		}
 		
-		
 		Map<String, String> inputData =new HashMap<>();
-		inputData.put("manufacturerId", manufacturerId);
-		inputData.put("digitalTwinRegistry", digitalTwinRegistry);
+		inputData.put("manufacturerId", sdeCommonProperties.getManufacturerId());
+		inputData.put("digitalTwinRegistry", sdeCommonProperties.getDigitalTwinRegistry());
 		
 		ObjectNode requestBody = (ObjectNode) new ObjectMapper().readTree(valueReplacer(assetFilterRequest, inputData));
 

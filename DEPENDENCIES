@@ -150,7 +150,7 @@ maven/mavencentral/org.springframework/spring-orm/6.0.9, Apache-2.0, approved, #
 maven/mavencentral/org.springframework/spring-test/6.0.9, Apache-2.0, approved, #7003
 maven/mavencentral/org.springframework/spring-tx/6.0.9, Apache-2.0, approved, #5926
 maven/mavencentral/org.springframework/spring-web/6.0.14, Apache-2.0, approved, #5942
-maven/mavencentral/org.springframework/spring-webmvc/6.0.9, Apache-2.0, approved, #5944
+maven/mavencentral/org.springframework/spring-webmvc/6.0.14, Apache-2.0, approved, #5944
 maven/mavencentral/org.webjars/swagger-ui/4.15.5, Apache-2.0 AND MIT, approved, #5921
 maven/mavencentral/org.webjars/webjars-locator-core/0.52, MIT, approved, clearlydefined
 maven/mavencentral/org.xmlunit/xmlunit-core/2.9.1, Apache-2.0, approved, #6272

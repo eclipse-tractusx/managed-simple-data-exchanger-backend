@@ -27,6 +27,7 @@ import java.util.Map;
 import org.apache.commons.text.StringSubstitutor;
 import org.eclipse.tractusx.sde.common.utils.UUIdGenerator;
 import org.eclipse.tractusx.sde.core.properties.SdeCommonProperties;
+import org.eclipse.tractusx.sde.core.utils.ValueReplacerUtility;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequestFactory;
 import org.eclipse.tractusx.sde.edc.facilitator.CreateEDCAssetFacilator;
@@ -52,32 +53,7 @@ public class DigitalTwinAssetProvider {
 	private final EDCGateway edcGateway;
 	private final CreateEDCAssetFacilator createEDCAssetFacilator;
 	private final SdeCommonProperties sdeCommonProperties;
-	
-	
-	private static String assetFilterRequest = """
-			{
-				    "@context": {
-				        "edc": "https://w3id.org/edc/v0.0.1/ns/"
-				    },
-				    "@type": "QuerySpec",
-				    "offset": 0,
-				    "limit": 10,
-				    "sortOrder": "DESC",
-				    "sortField": "id",
-				    "filterExpression": [
-				        {
-				            "edc:operandLeft": "https://w3id.org/edc/v0.0.1/ns/type",
-				            "edc:operator": "=",
-				            "edc:operandRight": "data.core.digitalTwinRegistry"
-				        },
-				        {
-				            "edc:operandLeft": "https://w3id.org/edc/v0.0.1/ns/registry",
-				            "edc:operator": "=",
-				            "edc:operandRight": "${commonProperties.getDigitalTwinRegistry()}"
-				        }
-				    ]
-				}
-			""";
+	private final ValueReplacerUtility valueReplacerUtility;
 
 	@PostConstruct
 	@SneakyThrows
@@ -90,23 +66,28 @@ public class DigitalTwinAssetProvider {
 		assetEntryRequest.getAsset().getProperties().put("type", "data.core.digitalTwinRegistry");
 		assetEntryRequest.getAsset().getProperties().put("registry", sdeCommonProperties.getDigitalTwinRegistry());
 
-		assetEntryRequest.getDataAddress().getProperties().put("oauth2:tokenUrl", sdeCommonProperties.getDigitalTwinTokenUrl());
-		assetEntryRequest.getDataAddress().getProperties().put("oauth2:clientId", sdeCommonProperties.getDigitalTwinClientId());
+		assetEntryRequest.getDataAddress().getProperties().put("oauth2:tokenUrl",
+				sdeCommonProperties.getDigitalTwinTokenUrl());
+		assetEntryRequest.getDataAddress().getProperties().put("oauth2:clientId",
+				sdeCommonProperties.getDigitalTwinClientId());
 
 		if (sdeCommonProperties.isDDTRManagedThirdparty()) {
-			assetEntryRequest.getDataAddress().getProperties().put("baseUrl", sdeCommonProperties.getDigitalTwinRegistry());
-			assetEntryRequest.getDataAddress().getProperties().put("oauth2:scope", sdeCommonProperties.getDigitalTwinAuthenticationScope());
+			assetEntryRequest.getDataAddress().getProperties().put("baseUrl",
+					sdeCommonProperties.getDigitalTwinRegistry());
+			assetEntryRequest.getDataAddress().getProperties().put("oauth2:scope",
+					sdeCommonProperties.getDigitalTwinAuthenticationScope());
 			assetEntryRequest.getDataAddress().getProperties().put("oauth2:clientSecretKey", "ddtr-client-secret");
 		} else {
 			assetEntryRequest.getDataAddress().getProperties().put("baseUrl",
 					sdeCommonProperties.getDigitalTwinRegistry() + sdeCommonProperties.getDigitalTwinRegistryURI());
 		}
-		
-		Map<String, String> inputData =new HashMap<>();
+
+		Map<String, String> inputData = new HashMap<>();
 		inputData.put("manufacturerId", sdeCommonProperties.getManufacturerId());
 		inputData.put("digitalTwinRegistry", sdeCommonProperties.getDigitalTwinRegistry());
-		
-		ObjectNode requestBody = (ObjectNode) new ObjectMapper().readTree(valueReplacer(assetFilterRequest, inputData));
+
+		ObjectNode requestBody = (ObjectNode) new ObjectMapper().readTree(valueReplacerUtility
+				.valueReplacerUsingFileTemplate("/edc_request_template/edc_asset_lookup.json", inputData));
 
 		if (!edcGateway.assetExistsLookupBasedOnType(requestBody)) {
 			Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest, List.of(),
@@ -117,7 +98,6 @@ public class DigitalTwinAssetProvider {
 		}
 	}
 
-	
 	@SneakyThrows
 	private String valueReplacer(String requestTemplatePath, Map<String, String> inputData) {
 		StringSubstitutor stringSubstitutor1 = new StringSubstitutor(inputData);

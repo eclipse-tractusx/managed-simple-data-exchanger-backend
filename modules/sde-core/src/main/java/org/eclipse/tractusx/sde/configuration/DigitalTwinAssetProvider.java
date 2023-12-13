@@ -76,7 +76,7 @@ public class DigitalTwinAssetProvider {
 					sdeCommonProperties.getDigitalTwinRegistry());
 			assetEntryRequest.getDataAddress().getProperties().put("oauth2:scope",
 					sdeCommonProperties.getDigitalTwinAuthenticationScope());
-			assetEntryRequest.getDataAddress().getProperties().put("oauth2:clientSecretKey", "ddtr-client-secret");
+			assetEntryRequest.getDataAddress().getProperties().put("oauth2:clientSecret", sdeCommonProperties.getDigitalTwinClientSecret());
 		} else {
 			assetEntryRequest.getDataAddress().getProperties().put("baseUrl",
 					sdeCommonProperties.getDigitalTwinRegistry() + sdeCommonProperties.getDigitalTwinRegistryURI());

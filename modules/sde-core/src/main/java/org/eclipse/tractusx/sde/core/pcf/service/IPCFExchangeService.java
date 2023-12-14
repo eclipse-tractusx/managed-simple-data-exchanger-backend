@@ -17,20 +17,23 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-package org.eclipse.tractusx.sde.core.pcf.entity;
+package org.eclipse.tractusx.sde.core.pcf.service;
 
 import java.util.List;
 
+import org.eclipse.tractusx.sde.common.entities.SubmodelJsonRequest;
+import org.eclipse.tractusx.sde.common.validators.ValidatePolicyTemplate;
 import org.eclipse.tractusx.sde.core.pcf.request.PcfRequestModel;
-import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "spring")
-public interface PcfRequestMapper {
-	
-	PcfRequestModel mapFrom(PcfRequestEntity entiry);
+import jakarta.validation.Valid;
 
-	PcfRequestEntity mapFrom(PcfRequestModel pojo);
+
+public interface IPCFExchangeService {
 	
-	List<PcfRequestModel> mapFrom(List<PcfRequestEntity> entiry);
+	public void findPcfData(String productId, String bpnNumber, String requestId, String message);
+	public void approveAndPushPCFData(String productId, String bpnNumber, String requestId, String message, @Valid @ValidatePolicyTemplate SubmodelJsonRequest pcfSubmodelJsonRequest);
+	public PcfRequestModel savePcfRequestData(String requestId, String productId, String bpnNumber, String message);
+	public List<PcfRequestModel> getAllPcfRequestData();
+	
 
 }

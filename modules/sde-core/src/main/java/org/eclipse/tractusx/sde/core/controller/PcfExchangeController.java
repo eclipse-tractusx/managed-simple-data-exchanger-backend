@@ -23,7 +23,7 @@ import static org.springframework.http.ResponseEntity.ok;
 
 import org.eclipse.tractusx.sde.common.entities.SubmodelJsonRequest;
 import org.eclipse.tractusx.sde.common.validators.ValidatePolicyTemplate;
-import org.eclipse.tractusx.sde.core.pcf.service.PcfExchangeService;
+import org.eclipse.tractusx.sde.core.pcf.service.impl.PcfExchangeServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,7 +44,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("pcf")
 public class PcfExchangeController {
 	
-	private final PcfExchangeService pcfExchangeService;
+	private final PcfExchangeServiceImpl pcfExchangeService;
 	
 	
 	@GetMapping(value = "/productIds/{productId}")
@@ -54,8 +54,7 @@ public class PcfExchangeController {
 			@RequestParam String message) throws Exception {
 		log.info("Request received for GET: /api/pcf/productIds");
 		
-		pcfExchangeService.findPcfData(productId, bpnNumber,requestId, message);
-		return ok().body(null);
+		return ResponseEntity.accepted().body(pcfExchangeService.savePcfRequestData(requestId, productId, bpnNumber, message).getRequestId());
 	}
 	
 	
@@ -67,28 +66,28 @@ public class PcfExchangeController {
 			@RequestBody @Valid @ValidatePolicyTemplate SubmodelJsonRequest pcfSubmodelJsonRequest) {
 		log.info("Request received for PUT: /api/pcf/productIds");
 		
-		pcfExchangeService.processPcfSubmodel(productId, bpnNumber,requestId, message, pcfSubmodelJsonRequest);
+		pcfExchangeService.approveAndPushPCFData(productId, bpnNumber,requestId, message, pcfSubmodelJsonRequest);
 		return ok().body(null);
 	}
 	
 	
-	@PostMapping(value = "/exchange/request/{productId}")
+	@GetMapping(value = "/exchange/request/{productId}")
 	public ResponseEntity<Object> savePcfRequestForProductId(@PathVariable String productId,
 			@RequestParam(value = "BPN", required = true) String bpnNumber, 
 			@RequestParam(value = "requestId", required = true) String requestId,
 			@RequestParam String message) throws Exception {
 		log.info("Request received for POST: /api/pcf/request/productIds");
 		
-		return ResponseEntity.accepted().body(pcfExchangeService.savePcfRequestData(requestId, productId, bpnNumber, message).getRequestId());
+		return ResponseEntity.accepted().body(null);
 	}
 	
-	@GetMapping(value = "/exchange/requested")
-	public ResponseEntity<Object> AllPcfRequest(@PathVariable String productId,
+	@GetMapping(value = "/all/requests")
+	public ResponseEntity<Object> allPcfRequest(@PathVariable String productId,
 			@RequestParam(value = "BPN", required = true) String bpnNumber, 
 			@RequestParam(value = "requestId", required = true) String requestId,
 			@RequestParam String message) throws Exception {
 		log.info("Request received for POST: /api/pcf/request/productIds");
 		
-		return ResponseEntity.accepted().body(pcfExchangeService.savePcfRequestData(requestId, productId, bpnNumber, message).getRequestId());
+		return ok().body(pcfExchangeService.savePcfRequestData(requestId, productId, bpnNumber, message).getRequestId());
 	}
 }

@@ -22,6 +22,9 @@ package org.eclipse.tractusx.sde.common.enums;
 
 public enum PCFRequestStatusEnum {
     REQUESTED,
+    REREQUESTED,
+    APPROVED,
 	IN_PROGRESS,
+	PUSHED,
     COMPLETED
 }

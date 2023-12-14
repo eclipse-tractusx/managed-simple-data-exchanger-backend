@@ -18,9 +18,6 @@ import lombok.Data;
 public class PcfRequestEntity {
 	
 	@Id
-	@Column(name = "process_id")
-	private String processId;
-
 	@Column(name = "request_id")
 	private String requestId;
 	

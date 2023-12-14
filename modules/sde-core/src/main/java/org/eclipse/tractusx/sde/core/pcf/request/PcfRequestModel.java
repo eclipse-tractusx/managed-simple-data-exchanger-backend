@@ -18,7 +18,6 @@ import lombok.experimental.SuperBuilder;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PcfRequestModel {
 
-	private String processId;
 	private String requestId;
 	private String productId;
 	private String bpnNumber;

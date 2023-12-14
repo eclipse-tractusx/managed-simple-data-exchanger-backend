@@ -23,6 +23,7 @@ import static org.eclipse.tractusx.sde.common.constants.CommonConstants.ASSET_LI
 import static org.eclipse.tractusx.sde.common.constants.CommonConstants.MANUFACTURER_PART_ID;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +40,7 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.common.SecurityAttributes;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.SemanticId;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.CreateSubModelRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellDescriptorRequest;
+import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellLookupRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -192,6 +194,25 @@ public class DigitalTwinsUtility {
 
 		else
 			return List.of();
+	}
+	
+	public ShellLookupRequest getShellLookupRequest(Map<String,String> specificAssetIds) {
+		
+		ShellLookupRequest shellLookupRequest = new ShellLookupRequest();
+		specificAssetIds.entrySet().stream()
+				.forEach(entry -> 
+				shellLookupRequest.addLocalIdentifier(entry.getKey(), entry.getValue()));
+
+		return shellLookupRequest;
+	}
+	
+	public String encodeAssetIdsObject(String assetIdsList) {
+
+		return encodeShellIdBase64Utf8(assetIdsList.replace("[", "").replace("]", ""));
+	}
+	
+	public String encodeShellIdBase64Utf8(String shellId) {
+		return Base64.getUrlEncoder().encodeToString(shellId.getBytes());
 	}
 
 }

@@ -63,7 +63,7 @@ public class DigitalTwinsBatchCsvHandlerUseCase extends Step {
 
 	@SneakyThrows
 	private Batch doRun(Batch batch) throws CsvHandlerDigitalTwinUseCaseException {
-		ShellLookupRequest shellLookupRequest = getShellLookupRequest(batch);
+		ShellLookupRequest shellLookupRequest = digitalTwinsUtility.getShellLookupRequest(getSpecificAssetIds(batch));
 		List<String> shellIds = digitalTwinsFacilitator.shellLookup(shellLookupRequest);
 
 		String shellId;
@@ -112,15 +112,6 @@ public class DigitalTwinsBatchCsvHandlerUseCase extends Step {
 		}
 
 		return batch;
-	}
-
-	private ShellLookupRequest getShellLookupRequest(Batch batch) {
-
-		ShellLookupRequest shellLookupRequest = new ShellLookupRequest();
-		getSpecificAssetIds(batch).entrySet().stream()
-				.forEach(entry -> shellLookupRequest.addLocalIdentifier(entry.getKey(), entry.getValue()));
-
-		return shellLookupRequest;
 	}
 
 	private Map<String, String> getSpecificAssetIds(Batch batch) {

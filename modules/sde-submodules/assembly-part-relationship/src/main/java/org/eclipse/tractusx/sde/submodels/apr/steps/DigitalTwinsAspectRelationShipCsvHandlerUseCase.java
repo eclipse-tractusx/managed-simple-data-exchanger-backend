@@ -26,6 +26,7 @@ import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -45,6 +46,7 @@ import org.eclipse.tractusx.sde.digitaltwins.gateways.external.EDCDigitalTwinPro
 import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedByIdResponse;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.eclipse.tractusx.sde.submodels.apr.model.AspectRelationship;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -66,6 +68,16 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 
 	private static final Map<String, LocalDateTime> map = new ConcurrentHashMap<>();
 
+	@Value("${digital-twins.managed.thirdparty:false}")
+	private boolean dDTRManagedThirdparty;
+	
+	@Value("${digital-twins.registry.uri:}")
+	private String registryUri;
+	
+
+	@Value("${digital-twins.registry.lookup.uri:}")
+	private String registryLookupUri;
+	
 	@SneakyThrows
 	public AspectRelationship run(AspectRelationship aspectRelationShip) throws CsvHandlerDigitalTwinUseCaseException {
 		try {
@@ -80,7 +92,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 	private AspectRelationship doRun(AspectRelationship aspectRelationShip)
 			throws CsvHandlerUseCaseException, CsvHandlerDigitalTwinUseCaseException {
 
-		ShellLookupRequest shellLookupRequest = getShellLookupRequest(aspectRelationShip);
+		ShellLookupRequest shellLookupRequest = digitalTwinsUtility.getShellLookupRequest(getSpecificAssetIds(aspectRelationShip));
 		List<String> shellIds = digitalTwinfacilitaor.shellLookup(shellLookupRequest);
 
 		String shellId = null;
@@ -161,33 +173,26 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 		aspectRelationShip.setChildUuid(createSubModelRequest.getId());
 	}
 
-	private ShellLookupRequest getShellLookupRequest(AspectRelationship aspectRelationShip) {
-		ShellLookupRequest shellLookupRequest = new ShellLookupRequest();
-		shellLookupRequest.addLocalIdentifier(CommonConstants.PART_INSTANCE_ID,
-				aspectRelationShip.getParentPartInstanceId());
-		shellLookupRequest.addLocalIdentifier(CommonConstants.MANUFACTURER_PART_ID,
-				aspectRelationShip.getParentManufacturerPartId());
-		shellLookupRequest.addLocalIdentifier(CommonConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId());
 
+	private Map<String, String> getSpecificAssetIds(AspectRelationship aspectRelationShip) {
+		Map<String, String> specificIdentifiers = new HashMap<>();
+		specificIdentifiers.put(CommonConstants.PART_INSTANCE_ID, aspectRelationShip.getParentPartInstanceId());
+		specificIdentifiers.put(CommonConstants.MANUFACTURER_PART_ID, aspectRelationShip.getParentManufacturerPartId());
+		specificIdentifiers.put(CommonConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId());
 		if (aspectRelationShip.hasOptionalParentIdentifier()) {
-			shellLookupRequest.addLocalIdentifier(aspectRelationShip.getParentOptionalIdentifierKey(),
-					aspectRelationShip.getParentOptionalIdentifierValue());
+			specificIdentifiers.put(aspectRelationShip.getParentOptionalIdentifierKey(), aspectRelationShip.getParentOptionalIdentifierValue());
 		}
 
-		return shellLookupRequest;
+		return specificIdentifiers;
 	}
-
-	private ShellLookupRequest getShellLookupRequestforChild(AspectRelationship aspectRelationShip) {
-		ShellLookupRequest shellLookupRequest = new ShellLookupRequest();
-		shellLookupRequest.addLocalIdentifier(CommonConstants.PART_INSTANCE_ID,
-				aspectRelationShip.getChildPartInstanceId());
-		shellLookupRequest.addLocalIdentifier(CommonConstants.MANUFACTURER_PART_ID,
-				aspectRelationShip.getChildManufacturerPartId());
-		shellLookupRequest.addLocalIdentifier(CommonConstants.MANUFACTURER_ID,
-				aspectRelationShip.getChildManufacturerId());
+	private Map<String, String> getShellLookupRequestforChild(AspectRelationship aspectRelationShip) {
+		Map<String, String> shellLookupRequest = new HashMap<>();
+		shellLookupRequest.put(CommonConstants.PART_INSTANCE_ID, aspectRelationShip.getChildPartInstanceId());
+		shellLookupRequest.put(CommonConstants.MANUFACTURER_PART_ID, aspectRelationShip.getChildManufacturerPartId());
+		shellLookupRequest.put(CommonConstants.MANUFACTURER_ID, aspectRelationShip.getChildManufacturerId());
 
 		if (aspectRelationShip.hasOptionalChildIdentifier()) {
-			shellLookupRequest.addLocalIdentifier(aspectRelationShip.getChildOptionalIdentifierKey(),
+			shellLookupRequest.put(aspectRelationShip.getChildOptionalIdentifierKey(),
 					aspectRelationShip.getChildOptionalIdentifierValue());
 		}
 
@@ -197,7 +202,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 	@SneakyThrows
 	private CreateSubModelRequest getCreateSubModelRequest(AspectRelationship aspectRelationShip) {
 
-		ShellLookupRequest shellLookupRequest = getShellLookupRequestforChild(aspectRelationShip);
+		ShellLookupRequest shellLookupRequest = digitalTwinsUtility.getShellLookupRequest(getShellLookupRequestforChild(aspectRelationShip));
 
 		String childManufacturerId = aspectRelationShip.getChildManufacturerId();
 		List<QueryDataOfferModel> queryDataOffers = getDDTRUrl(childManufacturerId);
@@ -247,14 +252,19 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 		String dtOfferUrl = dtOffer.getConnectorOfferUrl();
 		try {
 
-			Map<String, String> header = Map.of(edrToken.getAuthKey(), edrToken.getAuthCode());
+			Map<String, String> header = new HashMap<>();
+			header.put(edrToken.getAuthKey(), edrToken.getAuthCode());
+			header.put("Edc-Bpn", aspectRelationShip.getChildManufacturerId());
+			
+			String registryLookupUriLocal = dDTRManagedThirdparty ? registryLookupUri : registryUri;
 
+			
 			ResponseEntity<ShellLookupResponse> shellLookup = eDCDigitalTwinProxyForLookUp
-					.shellLookup(new URI(endpoint), shellLookupRequest.toJsonString(), header);
+					.shellLookup(new URI(endpoint + registryLookupUriLocal),digitalTwinsUtility.encodeAssetIdsObject(shellLookupRequest.toJsonString()) , header);
 			ShellLookupResponse body = shellLookup.getBody();
 
 			if (shellLookup.getStatusCode() == HttpStatus.OK && body != null) {
-				childUUID = getChildSubmodelDetails(shellLookupRequest, endpoint, header, aspectRelationShip,
+				childUUID = getChildSubmodelDetails(shellLookupRequest, endpoint+registryUri, header, aspectRelationShip,
 						dtOfferUrl, body.getResult());
 			}
 
@@ -290,7 +300,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 			ShellDescriptorResponse shellDescriptorResponseBody = shellDescriptorResponse.getBody();
 			if (shellDescriptorResponse.getStatusCode() == HttpStatus.OK && shellDescriptorResponseBody != null) {
 				childUUID = shellDescriptorResponseBody.getGlobalAssetId();
-				log.debug(aspectRelationShip.getRowNumber() + ", " + dtOfferUrl + ", Child aspect found for "
+				log.info(aspectRelationShip.getRowNumber() + ", " + dtOfferUrl + ", Child aspect found for "
 						+ shellLookupRequest.toJsonString());
 			}
 		}

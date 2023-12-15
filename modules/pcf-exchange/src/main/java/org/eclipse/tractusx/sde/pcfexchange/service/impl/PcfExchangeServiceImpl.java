@@ -17,7 +17,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-package org.eclipse.tractusx.sde.core.pcf.service.impl;
+package org.eclipse.tractusx.sde.pcfexchange.service.impl;
 
 import java.net.URI;
 import java.time.LocalDateTime;
@@ -31,18 +31,18 @@ import org.eclipse.tractusx.sde.common.entities.SubmodelJsonRequest;
 import org.eclipse.tractusx.sde.common.enums.PCFRequestStatusEnum;
 import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
 import org.eclipse.tractusx.sde.common.validators.ValidatePolicyTemplate;
-import org.eclipse.tractusx.sde.core.pcf.entity.PcfRequestEntity;
-import org.eclipse.tractusx.sde.core.pcf.entity.PcfRequestMapper;
-import org.eclipse.tractusx.sde.core.pcf.repository.PcfRequestRepository;
-import org.eclipse.tractusx.sde.core.pcf.request.PcfRequestModel;
-import org.eclipse.tractusx.sde.core.pcf.service.IPCFExchangeService;
-import org.eclipse.tractusx.sde.core.pcf.utils.DDTRUtils;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellLookupRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellLookupResponse;
 import org.eclipse.tractusx.sde.digitaltwins.gateways.external.EDCDigitalTwinProxyForLookUp;
 import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedByIdResponse;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
+import org.eclipse.tractusx.sde.pcfexchange.entity.PcfRequestEntity;
+import org.eclipse.tractusx.sde.pcfexchange.entity.PcfRequestMapper;
+import org.eclipse.tractusx.sde.pcfexchange.repository.PcfRequestRepository;
+import org.eclipse.tractusx.sde.pcfexchange.request.PcfRequestModel;
+import org.eclipse.tractusx.sde.pcfexchange.service.IPCFExchangeService;
+import org.eclipse.tractusx.sde.pcfexchange.utils.DDTRUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

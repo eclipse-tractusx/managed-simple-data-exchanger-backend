@@ -17,7 +17,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-package org.eclipse.tractusx.sde.core.pcf.utils;
+package org.eclipse.tractusx.sde.pcfexchange.utils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

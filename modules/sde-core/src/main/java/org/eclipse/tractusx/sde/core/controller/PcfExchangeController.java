@@ -23,11 +23,10 @@ import static org.springframework.http.ResponseEntity.ok;
 
 import org.eclipse.tractusx.sde.common.entities.SubmodelJsonRequest;
 import org.eclipse.tractusx.sde.common.validators.ValidatePolicyTemplate;
-import org.eclipse.tractusx.sde.core.pcf.service.impl.PcfExchangeServiceImpl;
+import org.eclipse.tractusx.sde.pcfexchange.service.impl.PcfExchangeServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

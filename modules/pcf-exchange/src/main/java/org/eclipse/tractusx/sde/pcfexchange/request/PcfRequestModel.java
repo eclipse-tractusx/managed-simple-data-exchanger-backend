@@ -1,4 +1,4 @@
-package org.eclipse.tractusx.sde.core.pcf.request;
+package org.eclipse.tractusx.sde.pcfexchange.request;
 
 import java.time.LocalDateTime;
 

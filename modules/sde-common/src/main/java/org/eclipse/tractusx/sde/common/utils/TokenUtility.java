@@ -33,9 +33,12 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class TokenUtility {
@@ -86,6 +89,11 @@ public class TokenUtility {
 			else
 				throw new ServiceException(
 						"Unable to get auth token because auth response resultBody is: " + resultBody);
+		} catch (FeignException e) {
+			log.error("FeignException RequestBody : " + e.request());
+			String errorMsg = "Error in DT twin lookup " + e.request().url() + ", because: " + body+ "," + e.contentUTF8();
+			log.error("FeignException : " + errorMsg);
+			throw new ServiceException(errorMsg);
 		} catch (Exception e) {
 			throw new ServiceException("Unable to process auth request: " + appTokenURI + ", " + e.getMessage());
 		}

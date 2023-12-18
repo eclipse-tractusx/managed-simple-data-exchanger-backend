@@ -30,6 +30,7 @@ import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.entities.SubmodelJsonRequest;
 import org.eclipse.tractusx.sde.common.enums.PCFRequestStatusEnum;
 import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
+import org.eclipse.tractusx.sde.common.model.PagingResponse;
 import org.eclipse.tractusx.sde.common.validators.ValidatePolicyTemplate;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellLookupRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorResponse;
@@ -43,6 +44,9 @@ import org.eclipse.tractusx.sde.pcfexchange.repository.PcfRequestRepository;
 import org.eclipse.tractusx.sde.pcfexchange.request.PcfRequestModel;
 import org.eclipse.tractusx.sde.pcfexchange.service.IPCFExchangeService;
 import org.eclipse.tractusx.sde.pcfexchange.utils.DDTRUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -185,14 +189,21 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 	}
 	
 	@Override
-	public List<PcfRequestModel> getAllPcfRequestData() {
+	public PagingResponse getAllPcfRequestData(String type, Integer page, Integer pageSize) {
 		
-		return pcfMapper.mapFrom(pcfRequestRepository.findAll());
+		
+		Page<PcfRequestEntity> result = pcfRequestRepository
+				.findAll(PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "lastUpdatedTime")));
+		List<PcfRequestModel> requestList = result.stream().map(pcfMapper::mapFrom).toList();
+		
+		return PagingResponse.builder()
+				.items(requestList)
+				.pageSize(result.getSize())
+				.page(result.getNumber())
+				.totalItems(result.getTotalElements())
+				.build();
 	}
 	
-	
-	
-
 	private ShellLookupRequest getShellLookupRequest(PcfRequestModel pcfRequest) {
 
 		ShellLookupRequest shellLookupRequest = new ShellLookupRequest();

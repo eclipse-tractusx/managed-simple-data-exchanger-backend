@@ -19,9 +19,8 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.pcfexchange.service;
 
-import java.util.List;
-
 import org.eclipse.tractusx.sde.common.entities.SubmodelJsonRequest;
+import org.eclipse.tractusx.sde.common.model.PagingResponse;
 import org.eclipse.tractusx.sde.common.validators.ValidatePolicyTemplate;
 import org.eclipse.tractusx.sde.pcfexchange.request.PcfRequestModel;
 
@@ -33,7 +32,7 @@ public interface IPCFExchangeService {
 	public void findPcfData(String productId, String bpnNumber, String requestId, String message);
 	public void approveAndPushPCFData(String productId, String bpnNumber, String requestId, String message, @Valid @ValidatePolicyTemplate SubmodelJsonRequest pcfSubmodelJsonRequest);
 	public PcfRequestModel savePcfRequestData(String requestId, String productId, String bpnNumber, String message);
-	public List<PcfRequestModel> getAllPcfRequestData();
+	public PagingResponse getAllPcfRequestData(String type, Integer page, Integer pageSize);
 	
 
 }

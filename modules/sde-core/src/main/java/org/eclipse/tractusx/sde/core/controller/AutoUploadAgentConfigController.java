@@ -78,7 +78,7 @@ public class AutoUploadAgentConfigController {
 	public Map<String, Object> getStorageMedia() {
 		Map<String, Object> storageMedia = new HashMap<>();
 		storageMedia.put("sftp", sftpRetrieverFactory.getConfiguration());
-		storageMedia.put("minio", minioRetrieverFactory.getConfiguration());
+		storageMedia.put("objectstorage", minioRetrieverFactory.getConfiguration());
 		storageMedia.put("active", activeStorageMediaProvider.getConfiguration().getName());
 		return storageMedia;
 	}
@@ -89,13 +89,13 @@ public class AutoUploadAgentConfigController {
 		sftpRetrieverFactory.saveConfig(sftpConfigModel);
 	}
 
-	@PutMapping("/minio")
+	@PutMapping("/objectstorage")
 	public void updateMinio(@RequestBody @Valid MinioConfigModel minioConfigModel) {
-		activeStorageMediaProvider.saveConfig(ActiveStorageMedia.builder().name("minio").build());
+		activeStorageMediaProvider.saveConfig(ActiveStorageMedia.builder().name("objectstorage").build());
 		minioRetrieverFactory.saveConfig(minioConfigModel);
 	}
 
-	@GetMapping("/minio")
+	@GetMapping("/objectstorage")
 	public MinioConfigModel getMinioConfig() {
 		return minioRetrieverFactory.getConfiguration();
 	}

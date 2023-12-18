@@ -32,7 +32,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
-@Service("minio")
+@Service("objectstorage")
 @RequiredArgsConstructor
 public class MinioRetrieverFactoryImpl implements ConfigurableFactory<MinioRetriever>, ConfigurationProvider<MinioConfigModel> {
 
@@ -101,7 +101,7 @@ public class MinioRetrieverFactoryImpl implements ConfigurableFactory<MinioRetri
 	}
 
 	private MinioConfigModel getDefaultConfig() {
-		return validator.validate(MinioConfigModel.builder()
+		return MinioConfigModel.builder()
 				.endpoint(endpoint)
 				.accessKey(accessKey)
 				.secretKey(secretKey)
@@ -112,6 +112,6 @@ public class MinioRetrieverFactoryImpl implements ConfigurableFactory<MinioRetri
 				.partialSuccessLocation(partialSuccess)
 				.successLocation(success)
 				.build()
-		);
+		;
 	}
 }

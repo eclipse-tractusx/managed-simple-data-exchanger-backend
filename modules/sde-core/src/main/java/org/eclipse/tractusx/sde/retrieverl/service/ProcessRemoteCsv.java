@@ -147,7 +147,7 @@ public class ProcessRemoteCsv {
 				updateTrigger(schedulerTrigger, msg, SchedulerReportStatusEnum.SUCCESS);
 			} else {
 				msg = "No files found in '" + activeStorageMedia
-						+ "' storage location for processing, scheduled job completed";
+						+ "' location for processing, scheduled job completed";
 				log.info(msg);
 				updateTrigger(schedulerTrigger, msg, SchedulerReportStatusEnum.SUCCESS);
 				sendEmailNotification(schedulerUuid);

@@ -35,7 +35,7 @@ public class ActiveStorageMediaProvider implements ConfigurationProvider<ActiveS
 
 	private final ConfigService configService;
 	
-	@Value("${retriever.active:Minio}")
+	@Value("${retriever.active:ObjectStorage}")
 	private String retriever;
 
 	@PostConstruct

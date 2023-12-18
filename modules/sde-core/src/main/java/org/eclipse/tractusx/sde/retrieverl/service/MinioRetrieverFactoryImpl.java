@@ -21,10 +21,12 @@
 package org.eclipse.tractusx.sde.retrieverl.	service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.agent.ConfigService;
 import org.eclipse.tractusx.sde.agent.model.MinioConfigModel;
 import org.eclipse.tractusx.sde.common.ConfigurableFactory;
 import org.eclipse.tractusx.sde.common.ConfigurationProvider;
+import org.eclipse.tractusx.sde.common.exception.ValidationException;
 import org.eclipse.tractusx.sde.common.validators.SpringValidator;
 import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,23 +38,23 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class MinioRetrieverFactoryImpl implements ConfigurableFactory<MinioRetriever>, ConfigurationProvider<MinioConfigModel> {
 
-	@Value("${minio.endpoint}")
+	@Value("${minio.endpoint:}")
 	private String endpoint;
-	@Value("${minio.access-key}")
+	@Value("${minio.access-key:}")
 	private String accessKey;
-	@Value("${minio.secret-key}")
+	@Value("${minio.secret-key:}")
 	private String secretKey;
-	@Value("${minio.bucket-name}")
+	@Value("${minio.bucket-name:}")
 	private String bucketName;
 	@Value("${minio.location.tobeprocessed:}")
 	private String toBeProcessed;
-	@Value("${minio.location.inprogress}")
+	@Value("${minio.location.inprogress:}")
 	private String inProgress;
-	@Value("${minio.location.success}")
+	@Value("${minio.location.success:}")
 	private String success;
-	@Value("${minio.location.partialsucess}")
+	@Value("${minio.location.partialsucess:}")
 	private String partialSuccess;
-	@Value("${minio.location.failed}")
+	@Value("${minio.location.failed:}")
 	private String failed;
 
 	private final ConfigService configService;
@@ -65,8 +67,10 @@ public class MinioRetrieverFactoryImpl implements ConfigurableFactory<MinioRetri
 	}
 
 	@Override
-	public MinioRetriever create() throws IOException {
+	public MinioRetriever create() throws IOException, ValidationException {
 		var configModel = getConfiguration();
+		if(StringUtils.isBlank(configModel.getEndpoint()))
+			throw new ValidationException("Object storage config is empty, unable to process job.");
 		return new MinioRetriever(csvHandlerService,
 							configModel.getEndpoint(),
 							configModel.getAccessKey(),

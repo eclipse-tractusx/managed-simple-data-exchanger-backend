@@ -22,6 +22,7 @@ package org.eclipse.tractusx.sde.core.controller;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.tractusx.sde.agent.model.ActiveStorageMedia;
 import org.eclipse.tractusx.sde.agent.model.EmailNotificationModel;
@@ -79,7 +80,12 @@ public class AutoUploadAgentConfigController {
 		Map<String, Object> storageMedia = new HashMap<>();
 		storageMedia.put("sftp", sftpRetrieverFactory.getConfiguration());
 		storageMedia.put("objectstorage", minioRetrieverFactory.getConfiguration());
-		storageMedia.put("active", activeStorageMediaProvider.getConfiguration().getName());
+		ActiveStorageMedia media =  activeStorageMediaProvider.getConfiguration();
+		if(Optional.ofNullable(media).isPresent())
+			storageMedia.put("active", media.getName());
+		else
+			storageMedia.put("active", "None");
+
 		return storageMedia;
 	}
 

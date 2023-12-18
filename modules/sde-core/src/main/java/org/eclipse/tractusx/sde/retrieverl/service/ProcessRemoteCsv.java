@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -43,11 +44,13 @@ import java.util.stream.StreamSupport;
 import org.eclipse.tractusx.sde.agent.entity.SchedulerReport;
 import org.eclipse.tractusx.sde.agent.enums.SchedulerReportStatusEnum;
 import org.eclipse.tractusx.sde.agent.mapper.SchedulerReportMapper;
+import org.eclipse.tractusx.sde.agent.model.ActiveStorageMedia;
 import org.eclipse.tractusx.sde.agent.model.SchedulerReportModel;
 import org.eclipse.tractusx.sde.agent.repository.SchedulerReportRepository;
 import org.eclipse.tractusx.sde.common.ConfigurableFactory;
 import org.eclipse.tractusx.sde.common.enums.ProgressStatusEnum;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
+import org.eclipse.tractusx.sde.common.exception.ValidationException;
 import org.eclipse.tractusx.sde.common.utils.DateUtil;
 import org.eclipse.tractusx.sde.common.utils.TryUtils;
 import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
@@ -60,6 +63,7 @@ import org.eclipse.tractusx.sde.retrieverl.RetrieverI;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
@@ -90,9 +94,16 @@ public class ProcessRemoteCsv {
 	public String process(TaskScheduler taskScheduler, String schedulerUuid) {
 		log.info("Scheduler started " + schedulerUuid);
 
-		String activeStorageMedia = activeStorageMediaProvider.getConfiguration().getName().toLowerCase();
+		ActiveStorageMedia media =  activeStorageMediaProvider.getConfiguration();
+		if(Optional.ofNullable(media).isEmpty())
+			throw new ValidationException("No active storage media found");
+
+		String activeStorageMedia = media.getName().toLowerCase();
 		@SuppressWarnings("unchecked")
 		var retrieverFactory = (ConfigurableFactory<RetrieverI>)applicationContext.getBean(activeStorageMedia);
+
+		if(Optional.ofNullable(retrieverFactory).isEmpty())
+			throw new ValidationException(activeStorageMedia + " not supported");
 
 		String msg = null;
 		SchedulerReport schedulerTrigger = sftpReportRepository.save(sftpReportMapper
@@ -121,11 +132,16 @@ public class ProcessRemoteCsv {
 						+ "' trigger process taking longer time to complete, you will get email notification about process result";
 				log.warn(msg);
 			}
+		} catch (ValidationException ve) {
+			log.error("Process :" + ve.getMessage());
+			updateTrigger(schedulerTrigger, msg, SchedulerReportStatusEnum.FAILED);
+			sendEmailNotification(schedulerUuid);
+			throw new ValidationException(ve.getMessage());
 		} catch (Exception e) {
 			log.error("Process :" + e.getMessage());
 			msg = "Unable to complete trigger job, please reached to technical team.";
 			updateTrigger(schedulerTrigger, msg, SchedulerReportStatusEnum.FAILED);
-			sendNotificationForProcessedFiles(schedulerUuid);
+			sendEmailNotification(schedulerUuid);
 			Thread.currentThread().interrupt();
 			throw new ServiceException(msg + "- " + e.getMessage());
 		}
@@ -152,13 +168,19 @@ public class ProcessRemoteCsv {
 				updateTrigger(schedulerTrigger, msg, SchedulerReportStatusEnum.SUCCESS);
 				sendEmailNotification(schedulerUuid);
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
+			if(e instanceof ExecutionException) {
+				e = e.getCause();
+			}
 			log.error("WaitOrProcessRetrivel: " + e.getMessage());
 			msg = "Unable to complete trigger job, please reach to technical team.";
 			updateTrigger(schedulerTrigger, msg, SchedulerReportStatusEnum.FAILED);
 			sendEmailNotification(schedulerUuid);
 			Thread.currentThread().interrupt();
-			throw new ServiceException(msg + "-" + e.getMessage());
+			if(e instanceof ValidationException)
+				throw new ValidationException(e.getMessage());
+			else
+				throw new ServiceException(msg + "-" + e.getMessage());
 		}
 
 		return msg;
@@ -171,6 +193,7 @@ public class ProcessRemoteCsv {
 		sftpReportRepository.save(schedulerTrigger);
 	}
 
+	@Async
 	public void sendEmailNotification(String schedulerUuid) {
 		if (jobMaintenanceConfigService.getConfiguration().getEmailNotification().booleanValue()) {
 			sendNotificationForProcessedFiles(schedulerUuid);

@@ -32,6 +32,6 @@ public class ServiceException extends Exception {
 
 	public ServiceException(String exceptionstr) {
 		super(exceptionstr);
-		log.debug(exceptionstr);
+		log.info(exceptionstr);
 	}
 }

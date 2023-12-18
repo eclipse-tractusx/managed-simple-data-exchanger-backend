@@ -31,25 +31,25 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class EmailConfiguration {
-    @Value("${mail.smtp.host}")
+    @Value("${mail.smtp.host:}")
     private String host;
 
-    @Value("${mail.smtp.port}")
+    @Value("${mail.smtp.port:}")
     private String port;
 
-    @Value("${mail.from.address}")
+    @Value("${mail.from.address:}")
     private String fromAddress;
 
-    @Value("${mail.smtp.starttls.enable}")
+    @Value("${mail.smtp.starttls.enable:false}")
     private Boolean startTlsEnable;
 
-    @Value("${mail.smtp.username}")
+    @Value("${mail.smtp.username:}")
     private String username;
 
-    @Value("${mail.smtp.password}")
+    @Value("${mail.smtp.password:}")
     private String password;
 
-    @Value("${mail.smtp.auth}")
+    @Value("${mail.smtp.auth:false}")
     private Boolean auth;
 
     @Bean

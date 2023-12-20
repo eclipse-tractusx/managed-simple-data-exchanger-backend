@@ -17,20 +17,10 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-package org.eclipse.tractusx.sde.pcfexchange.entity;
 
-import java.util.List;
+package org.eclipse.tractusx.sde.pcfexchange.enums;
 
-import org.eclipse.tractusx.sde.pcfexchange.request.PcfRequestModel;
-import org.mapstruct.Mapper;
-
-@Mapper(componentModel = "spring")
-public interface PcfRequestMapper {
-	
-	PcfRequestModel mapFrom(PcfRequestEntity entiry);
-
-	PcfRequestEntity mapFrom(PcfRequestModel pojo);
-	
-	List<PcfRequestModel> mapFrom(List<PcfRequestEntity> entiry);
-
+public enum PCFOptionsEnum {
+	SUBSCRIBE_DATA_OFFER,
+    REQUESTE_DATA_OFFER
 }

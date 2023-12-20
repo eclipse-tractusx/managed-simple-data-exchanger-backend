@@ -2,7 +2,7 @@ package org.eclipse.tractusx.sde.pcfexchange.request;
 
 import java.time.LocalDateTime;
 
-import org.eclipse.tractusx.sde.common.enums.PCFRequestStatusEnum;
+import org.eclipse.tractusx.sde.pcfexchange.enums.PCFRequestStatusEnum;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

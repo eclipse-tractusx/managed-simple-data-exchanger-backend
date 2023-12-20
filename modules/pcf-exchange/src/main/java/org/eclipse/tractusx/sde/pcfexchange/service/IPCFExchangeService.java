@@ -23,13 +23,14 @@ import org.eclipse.tractusx.sde.common.entities.SubmodelJsonRequest;
 import org.eclipse.tractusx.sde.common.model.PagingResponse;
 import org.eclipse.tractusx.sde.common.validators.ValidatePolicyTemplate;
 import org.eclipse.tractusx.sde.pcfexchange.request.PcfRequestModel;
+import org.eclipse.tractusx.sde.pcfexchange.response.PcfExchangeResponse;
 
 import jakarta.validation.Valid;
 
 
 public interface IPCFExchangeService {
 	
-	public void findPcfData(String productId, String bpnNumber, String requestId, String message);
+	public PcfExchangeResponse findPcfDataOffer(String productId, String bpnNumber);
 	public void approveAndPushPCFData(String productId, String bpnNumber, String requestId, String message, @Valid @ValidatePolicyTemplate SubmodelJsonRequest pcfSubmodelJsonRequest);
 	public PcfRequestModel savePcfRequestData(String requestId, String productId, String bpnNumber, String message);
 	public PagingResponse getAllPcfRequestData(String type, Integer page, Integer pageSize);

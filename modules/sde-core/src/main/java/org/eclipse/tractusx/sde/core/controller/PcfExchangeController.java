@@ -23,6 +23,7 @@ import static org.springframework.http.ResponseEntity.ok;
 
 import org.eclipse.tractusx.sde.common.entities.SubmodelJsonRequest;
 import org.eclipse.tractusx.sde.common.validators.ValidatePolicyTemplate;
+import org.eclipse.tractusx.sde.pcfexchange.response.PcfExchangeResponse;
 import org.eclipse.tractusx.sde.pcfexchange.service.impl.PcfExchangeServiceImpl;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
@@ -46,9 +47,39 @@ public class PcfExchangeController {
 	
 	private final PcfExchangeServiceImpl pcfExchangeService;
 	
+	@GetMapping(value = "/data-offer/{productId}")
+	public ResponseEntity<PcfExchangeResponse> getPcfDataOfferByProduct(@PathVariable String productId,
+			@RequestParam(value = "BPN", required = true) String bpnNumber) throws Exception {
+		log.info("Request received for GET: /api/pcf/data-offer");
+		
+		return ResponseEntity.ok().body(pcfExchangeService.findPcfDataOffer(productId, bpnNumber));
+		
+	}
 	
+	@GetMapping(value = "/exchange/request/{productId}")
+	public ResponseEntity<Object> savePcfRequestForProductId(@PathVariable String productId,
+			@RequestParam(value = "BPN", required = true) String bpnNumber, 
+			@RequestParam(value = "requestId", required = true) String requestId,
+			@RequestParam String message) throws Exception {
+		log.info("Request received for POST: /api/pcf/request/productIds");
+		
+		return ResponseEntity.accepted().body(null);
+	}
+
+	
+	@GetMapping(value = "/all/requests")
+	public ResponseEntity<Object> allPcfRequest(@RequestParam(value = "type", required = false) String type,@Param("page") Integer page, @Param("pageSize") Integer pageSize) throws Exception {
+		log.info("Request received for POST: /api/pcf/request/productIds");
+		
+		page = page == null ? 0 : page;
+		pageSize = pageSize == null ? 10 : pageSize;
+		
+		return ok().body(pcfExchangeService.getAllPcfRequestData(type, page,  pageSize));
+	}
+	
+	// PCF data exchange api's
 	@GetMapping(value = "/productIds/{productId}")
-	public ResponseEntity<Object> getPcfDataByProduct(@PathVariable String productId,
+	public ResponseEntity<Object> getPcfByProduct(@PathVariable String productId,
 			@RequestParam(value = "BPN", required = true) String bpnNumber,
 			@RequestParam(value = "requestId", required = true) String requestId,
 			@RequestParam String message) throws Exception {
@@ -68,26 +99,5 @@ public class PcfExchangeController {
 		
 		pcfExchangeService.approveAndPushPCFData(productId, bpnNumber,requestId, message, pcfSubmodelJsonRequest);
 		return ok().body(null);
-	}
-	
-	
-	@GetMapping(value = "/exchange/request/{productId}")
-	public ResponseEntity<Object> savePcfRequestForProductId(@PathVariable String productId,
-			@RequestParam(value = "BPN", required = true) String bpnNumber, 
-			@RequestParam(value = "requestId", required = true) String requestId,
-			@RequestParam String message) throws Exception {
-		log.info("Request received for POST: /api/pcf/request/productIds");
-		
-		return ResponseEntity.accepted().body(null);
-	}
-	
-	@GetMapping(value = "/all/requests")
-	public ResponseEntity<Object> allPcfRequest(@RequestParam(value = "type", required = false) String type,@Param("page") Integer page, @Param("pageSize") Integer pageSize) throws Exception {
-		log.info("Request received for POST: /api/pcf/request/productIds");
-		
-		page = page == null ? 0 : page;
-		pageSize = pageSize == null ? 10 : pageSize;
-		
-		return ok().body(pcfExchangeService.getAllPcfRequestData(type, page,  pageSize));
 	}
 }

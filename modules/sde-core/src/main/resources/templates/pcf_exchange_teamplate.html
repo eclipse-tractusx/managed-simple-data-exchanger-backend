@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>PCF Exchange Service</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+		let uuid = self.crypto.randomUUID();
+	</head>
+
+	<body>
+		<h1>PCF Data Exchange</h1>
+		<p>This is an demo page for PCF Data request and exchange</p>
+		<div>
+			<h2>Get PCF Data :</h2>
+			<p>Please provide below data to get PCF Data offer</p>
+			<form action="/">
+				<label for="requestId">Request Id:</label> <input type="text" id="requestId" name="requestId"><br><br>
+				<label for="productId">Product Id:</label> <input type="text" id="productId" name="productId"><br><br>
+				<label for="bpnNumber">BPN Number:</label><input type="text" id="bpnNumber" name="bpnNumber"><br><br>
+				<label for="message">Comments:</label> <input type="text" id="message" name="message"><br><br>
+				
+				<input type="submit" value="Submit">
+			</form>
+		</div>
+	</body>
+</html>

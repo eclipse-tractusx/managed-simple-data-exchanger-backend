@@ -17,46 +17,21 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-package org.eclipse.tractusx.sde.pcfexchange.entity;
+package org.eclipse.tractusx.sde.pcfexchange.mapper;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
-import org.eclipse.tractusx.sde.pcfexchange.enums.PCFRequestStatusEnum;
+import org.eclipse.tractusx.sde.pcfexchange.entity.PcfRequestEntity;
+import org.eclipse.tractusx.sde.pcfexchange.request.PcfRequestModel;
+import org.mapstruct.Mapper;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.Data;
+@Mapper(componentModel = "spring")
+public interface PcfExchangeMapper {
+	
+	PcfRequestModel mapFrom(PcfRequestEntity entiry);
 
-@Table(name = "pcf_requests_tbl")
-@Entity
-@Data
-public class PcfRequestEntity {
+	PcfRequestEntity mapFrom(PcfRequestModel pojo);
 	
-	@Id
-	@Column(name = "request_id")
-	private String requestId;
-	
-	@Column(name = "product_id")
-	private String productId;
-	
-	@Column(name = "bpn_number")
-	private String bpnNumber;
-
-	@Column(name = "message")
-	private String message;
-	
-	@Column(name = "status")
-	@Enumerated(EnumType.STRING)
-	private PCFRequestStatusEnum status;
-	
-	@Column(name = "requested_time")
-	private LocalDateTime requestedTime;
-	
-	@Column(name = "last_updated_time")
-	private LocalDateTime lastUpdatedTime;
+	List<PcfRequestModel> mapFrom(List<PcfRequestEntity> entiry);
 
 }

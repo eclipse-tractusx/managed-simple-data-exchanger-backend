@@ -25,23 +25,26 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.entities.SubmodelJsonRequest;
-import org.eclipse.tractusx.sde.common.enums.PCFRequestStatusEnum;
-import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
 import org.eclipse.tractusx.sde.common.model.PagingResponse;
 import org.eclipse.tractusx.sde.common.validators.ValidatePolicyTemplate;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellLookupRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellLookupResponse;
+import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelResponse;
 import org.eclipse.tractusx.sde.digitaltwins.gateways.external.EDCDigitalTwinProxyForLookUp;
 import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedByIdResponse;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.eclipse.tractusx.sde.pcfexchange.entity.PcfRequestEntity;
-import org.eclipse.tractusx.sde.pcfexchange.entity.PcfRequestMapper;
+import org.eclipse.tractusx.sde.pcfexchange.enums.PCFOptionsEnum;
+import org.eclipse.tractusx.sde.pcfexchange.enums.PCFRequestStatusEnum;
+import org.eclipse.tractusx.sde.pcfexchange.mapper.PcfExchangeMapper;
 import org.eclipse.tractusx.sde.pcfexchange.repository.PcfRequestRepository;
 import org.eclipse.tractusx.sde.pcfexchange.request.PcfRequestModel;
+import org.eclipse.tractusx.sde.pcfexchange.response.PcfExchangeResponse;
 import org.eclipse.tractusx.sde.pcfexchange.service.IPCFExchangeService;
 import org.eclipse.tractusx.sde.pcfexchange.utils.DDTRUtils;
 import org.springframework.data.domain.Page;
@@ -63,28 +66,30 @@ import lombok.extern.slf4j.Slf4j;
 public class PcfExchangeServiceImpl implements IPCFExchangeService {
 
 	private final PcfRequestRepository pcfRequestRepository;
-	private final PcfRequestMapper pcfMapper;
+	private final PcfExchangeMapper pcfMapper;
 	private final DDTRUtils dDTRUtils;
 	private final EDCDigitalTwinProxyForLookUp eDCDigitalTwinProxyForLookUp;
 
 	@Override
-	public void findPcfData(String productId, String bpnNumber, String requestId, String message) {
+	public PcfExchangeResponse findPcfDataOffer(String productId, String bpnNumber) {
+
+		PcfRequestModel pcfRequest = PcfRequestModel.builder()
+				.productId(productId)
+				.bpnNumber(bpnNumber)
+				.build();
 
 		// 1 fetch EDC connectors and DTR Assets from EDC connectors
 		List<QueryDataOfferModel> dDTRDataOffers = dDTRUtils.getDDTRUrl(bpnNumber);
-
-		PcfRequestModel pcfRequest = PcfRequestModel.builder()
-				.requestId(requestId)
-				.productId(productId)
-				.bpnNumber(bpnNumber)
-				.message(message)
-				.build();
-
+		
 		ShellLookupRequest shellLookupRequest = getShellLookupRequest(pcfRequest);
 
 		ShellDescriptorResponse shellDescriptorResponse = null;
 		String msg = "";
 
+		PcfExchangeResponse pcfExchangeResponse = PcfExchangeResponse.builder()
+				.shellDescriptorResponse(shellDescriptorResponse)
+				.build();
+		
 		// 2 lookup shell for PCF sub model
 		for (QueryDataOfferModel dtOffer : dDTRDataOffers) {
 
@@ -93,6 +98,8 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 			if (edrToken != null) {
 				shellDescriptorResponse = lookUpPCFTwin(shellLookupRequest, pcfRequest, edrToken, dtOffer);
 				if (shellDescriptorResponse != null) {
+					pcfExchangeResponse.setShellDescriptorResponse(shellDescriptorResponse);
+					pcfExchangeResponse.setStatus(PCFOptionsEnum.SUBSCRIBE_DATA_OFFER);
 					break;
 				} else {
 					log.warn("EDC connector " + dtOffer.getConnectorOfferUrl() + ", No PCF twin found for "
@@ -104,18 +111,14 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 			}
 		}
 
-		if (dDTRDataOffers.isEmpty()) {
-			throw new NoDataFoundException("No DTR registry found for PCF aspect shell to look up call");
-		}
-
 		// 3 If PCF data not found request for PCF data to provider
-		if (shellDescriptorResponse == null) {
+		if (dDTRDataOffers.isEmpty() || shellDescriptorResponse == null) {
 			log.info("No PCF aspect shell found for  for " + shellLookupRequest.toJsonString()
 					+ ", Need to request for PCF data");
-
-			// Request PCF data for provided productId here
-
+			pcfExchangeResponse.setStatus(PCFOptionsEnum.REQUESTE_DATA_OFFER);
 		}
+		
+		return pcfExchangeResponse;
 	}
 
 	@Override
@@ -130,6 +133,11 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 				.build();
 
 		updatePcfRequest(approvePCFRequest);
+		
+		//push PCF data
+		
+		// find out consumer pcf exchange asset put api call for update pushed
+		
 		
 	}
 	
@@ -150,13 +158,15 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 	@SneakyThrows
 	private PcfRequestModel savePcfRequest(PcfRequestModel request) {
 		
-		PcfRequestEntity pcfRequestEntity = pcfMapper.mapFrom(request);
+		PcfRequestEntity pcfRequestEntity = null; 
 		
 		if (isPcfAlreadyRequestedforProduct(request.getRequestId(), request.getProductId())) {
+			pcfRequestEntity = pcfMapper.mapFrom(request);
 			pcfRequestEntity.setStatus(PCFRequestStatusEnum.REQUESTED);
 			pcfRequestEntity.setRequestedTime(LocalDateTime.now());
 			pcfRequestEntity.setLastUpdatedTime(LocalDateTime.now());
 		} else {
+			pcfRequestEntity = getPCFRequestData(request);
 			pcfRequestEntity.setStatus(PCFRequestStatusEnum.REREQUESTED);
 			pcfRequestEntity.setLastUpdatedTime(LocalDateTime.now());
 		}
@@ -170,16 +180,28 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 	
 	private PcfRequestModel updatePcfRequest(PcfRequestModel request) {
 
-		PcfRequestEntity pcfRequestEntity = pcfMapper.mapFrom(request);
+		PcfRequestEntity pcfRequestEntity = null; 
 		if (!isPcfAlreadyRequestedforProduct(request.getRequestId(), request.getProductId())) {
-			pcfRequestEntity.setStatus(PCFRequestStatusEnum.APPROVED);
+			pcfRequestEntity = getPCFRequestData(request);
+			pcfRequestEntity.setStatus(PCFRequestStatusEnum.PUSHED);
+			pcfRequestEntity.setMessage("Requested PCF Data Pueshed and ready to SUBSCRIBE and DOWNLOAD");
 			pcfRequestEntity.setLastUpdatedTime(LocalDateTime.now());
 		}
 		
-		log.info("'" + request.getProductId() + "' pcf request updated in the database successfully");
+		log.info("'" + request.getProductId() + "' pcf request status updated as Pushed the database successfully");
 		pcfRequestRepository.save(pcfRequestEntity);
 
 		return request;
+	}
+
+	private PcfRequestEntity getPCFRequestData(PcfRequestModel request) {
+		
+		 Optional<PcfRequestEntity> optionalPcfRequestEntity= pcfRequestRepository.findByRequestIdAndProductId(request.getRequestId(), request.getProductId());
+
+		 if(!optionalPcfRequestEntity.isEmpty()) {
+			 return optionalPcfRequestEntity.get();
+		 }
+		 return null;
 	}
 
 
@@ -259,7 +281,7 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 	private ShellDescriptorResponse getPCFSubmodelDetails(ShellLookupRequest shellLookupRequest, String endpoint,
 			Map<String, String> header, String dtOfferUrl, List<String> shellIds) {
 
-		ShellDescriptorResponse shellDescriptorResponseBody = null;
+		ShellDescriptorResponse shellDescriptorResponseWithPcfSubmodel = new ShellDescriptorResponse();
 		if (shellIds == null) {
 			log.warn(dtOfferUrl + ", No shell found for PCF aspect : " + shellLookupRequest.toJsonString());
 		} else if (shellIds.size() > 1) {
@@ -268,18 +290,20 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 		} else if (shellIds.size() == 1) {
 			ResponseEntity<ShellDescriptorResponse> shellDescriptorResponse = eDCDigitalTwinProxyForLookUp
 					.getShellDescriptorByShellId(new URI(endpoint), encodeShellIdBase64Utf8(shellIds.get(0)), header);
-			shellDescriptorResponseBody = shellDescriptorResponse.getBody();
+			ShellDescriptorResponse shellDescriptorResponseBody = shellDescriptorResponse.getBody();
 			if (shellDescriptorResponse.getStatusCode() == HttpStatus.OK && shellDescriptorResponseBody != null) {
 
-				shellDescriptorResponseBody.getSubmodelDescriptors().forEach(submodelDescriptors -> {
-					if (!submodelDescriptors.getIdShort().isEmpty()
-							&& submodelDescriptors.getIdShort().equalsIgnoreCase("PCFExchangeEndpoint")) {
+				for (SubModelResponse subModelResponse : shellDescriptorResponseBody.getSubmodelDescriptors()) {
+					if (!subModelResponse.getIdShort().isEmpty() && subModelResponse.getIdShort().contains("pcf")) {
+						shellDescriptorResponseWithPcfSubmodel = shellDescriptorResponseBody;
+
 					}
-				});
+
+				}
 			}
 		}
 
-		return shellDescriptorResponseBody;
+		return shellDescriptorResponseWithPcfSubmodel;
 	}
 
 	private String encodeShellIdBase64Utf8(String shellId) {

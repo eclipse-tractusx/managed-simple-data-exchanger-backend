@@ -20,7 +20,6 @@
 
 package org.eclipse.tractusx.sde.common.entities;
 
-import org.eclipse.tractusx.sde.common.enums.DurationEnum;
 import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
 import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 
@@ -49,9 +48,4 @@ public class UsagePolicies {
 	PolicyAccessEnum typeOfAccess;
 	
 	String value;
-	
-	@JsonProperty("durationUnit")
-	@SerializedName(value = "duration_unit")
-	DurationEnum durationUnit;
-	
 }

@@ -54,11 +54,6 @@ public class PolicyProvider {
 			                ],
 			         "type_of_access": "restricted",
 			          "usage_policies": {
-			                    "DURATION":{
-			                        "typeOfAccess": "UNRESTRICTED",
-			                        "value": "",
-			                        "durationUnit": "SECOND"
-			                    },
 			                    "ROLE": {
 			                        "typeOfAccess": "UNRESTRICTED",
 			                        "value": ""

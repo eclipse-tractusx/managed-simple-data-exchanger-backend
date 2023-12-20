@@ -46,8 +46,4 @@ public class UsagePolicies {
 	
 	String value;
 	
-	@JsonProperty("durationUnit")
-	@SerializedName(value = "duration_unit")
-	String durationUnit;
-	
 }

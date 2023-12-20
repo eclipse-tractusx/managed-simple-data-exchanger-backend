@@ -21,7 +21,6 @@
 package org.eclipse.tractusx.sde.common.enums;
 
 public enum UsagePolicyEnum {
-    DURATION,
     PURPOSE,
     ROLE,
     CUSTOM

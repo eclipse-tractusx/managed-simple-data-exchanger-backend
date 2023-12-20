@@ -23,7 +23,7 @@ public class PcfRequestModel {
 	private String bpnNumber;
 	private String message;
 	private PCFRequestStatusEnum status;
-	private String requestedTime;
+	private LocalDateTime requestedTime;
 	private LocalDateTime lastUpdatedTime;
 
 }

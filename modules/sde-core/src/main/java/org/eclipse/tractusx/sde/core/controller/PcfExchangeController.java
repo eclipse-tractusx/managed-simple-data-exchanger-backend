@@ -21,19 +21,24 @@ package org.eclipse.tractusx.sde.core.controller;
 
 import static org.springframework.http.ResponseEntity.ok;
 
-import org.eclipse.tractusx.sde.common.entities.SubmodelJsonRequest;
-import org.eclipse.tractusx.sde.common.validators.ValidatePolicyTemplate;
-import org.eclipse.tractusx.sde.pcfexchange.response.PcfExchangeResponse;
+import java.util.List;
+import java.util.Map;
+
+import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
+import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.eclipse.tractusx.sde.pcfexchange.service.impl.PcfExchangeServiceImpl;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.google.gson.JsonObject;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -44,60 +49,71 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @RequestMapping("pcf")
 public class PcfExchangeController {
-	
+
 	private final PcfExchangeServiceImpl pcfExchangeService;
-	
-	@GetMapping(value = "/data-offer/{productId}")
-	public ResponseEntity<PcfExchangeResponse> getPcfDataOfferByProduct(@PathVariable String productId,
-			@RequestParam(value = "BPN", required = true) String bpnNumber) throws Exception {
+
+	@GetMapping(value = "/search")
+	public ResponseEntity<Object> searchPcfDataOffer(@RequestParam String manufacturerPartId,
+			@RequestParam String bpnNumber) throws Exception {
 		log.info("Request received for GET: /api/pcf/data-offer");
 		
-		return ResponseEntity.ok().body(pcfExchangeService.findPcfDataOffer(productId, bpnNumber));
-		
-	}
-	
-	@GetMapping(value = "/exchange/request/{productId}")
-	public ResponseEntity<Object> savePcfRequestForProductId(@PathVariable String productId,
-			@RequestParam(value = "BPN", required = true) String bpnNumber, 
-			@RequestParam(value = "requestId", required = true) String requestId,
-			@RequestParam String message) throws Exception {
-		log.info("Request received for POST: /api/pcf/request/productIds");
-		
-		return ResponseEntity.accepted().body(null);
+		List<QueryDataOfferModel> pcfOffer = pcfExchangeService.searchPcfDataOffer(manufacturerPartId, bpnNumber);
+		if (pcfOffer == null || pcfOffer.isEmpty())
+			return ResponseEntity.ok().body(Map.of("msg", "No PCF twin found"));
+		else
+			return ResponseEntity.ok().body(pcfOffer);
+
 	}
 
-	
-	@GetMapping(value = "/all/requests")
-	public ResponseEntity<Object> allPcfRequest(@RequestParam(value = "type", required = false) String type,@Param("page") Integer page, @Param("pageSize") Integer pageSize) throws Exception {
+	@GetMapping(value = "/request/{productId}")
+	public ResponseEntity<Object> getPcfDataOfferByProduct(@PathVariable String productId,
+			@Valid @RequestBody ConsumerRequest consumerRequest) throws Exception {
+		log.info("Request received for GET: /api/pcf/data-offer");
+		return ResponseEntity.ok().body(pcfExchangeService.requestForPcfDataOffer(productId, consumerRequest));
+	}
+
+	@PostMapping(value = "/approve/{productId}")
+	public ResponseEntity<Object> pcfApprove(@PathVariable String productId, @RequestParam String bpnNumber,
+			@RequestParam String requestId, @RequestParam String message) throws Exception {
+
+		log.info("Request received for POST: /api/pcf/approve/");
+
+		pcfExchangeService.approveAndPushPCFData(productId, bpnNumber, requestId, message);
+
+		return ResponseEntity.accepted().body(Map.of("msg", "PCF request approved and async pcf data pushed"));
+	}
+
+	@GetMapping(value = "/requests")
+	public ResponseEntity<Object> getPcfData(@RequestParam(value = "status", required = false) String status,
+			@Param("page") Integer page, @Param("pageSize") Integer pageSize) throws Exception {
 		log.info("Request received for POST: /api/pcf/request/productIds");
-		
+
 		page = page == null ? 0 : page;
 		pageSize = pageSize == null ? 10 : pageSize;
-		
-		return ok().body(pcfExchangeService.getAllPcfRequestData(type, page,  pageSize));
+		status = status == null ? "%" : status;
+
+		return ok().body(pcfExchangeService.getPcfData(status, page, pageSize));
 	}
-	
+
 	// PCF data exchange api's
 	@GetMapping(value = "/productIds/{productId}")
 	public ResponseEntity<Object> getPcfByProduct(@PathVariable String productId,
 			@RequestParam(value = "BPN", required = true) String bpnNumber,
-			@RequestParam(value = "requestId", required = true) String requestId,
-			@RequestParam String message) throws Exception {
+			@RequestParam(value = "requestId", required = true) String requestId, @RequestParam String message)
+			throws Exception {
 		log.info("Request received for GET: /api/pcf/productIds");
-		
-		return ResponseEntity.accepted().body(pcfExchangeService.savePcfRequestData(requestId, productId, bpnNumber, message).getRequestId());
+		pcfExchangeService.savePcfRequestData(requestId, productId, bpnNumber, message);
+		return ResponseEntity.accepted().body(Map.of("msg", "PCF request accepted"));
 	}
-	
-	
+
 	@PutMapping(value = "/productIds/{productId}")
 	public ResponseEntity<Object> uploadPcfSubmodel(@PathVariable String productId,
-			@RequestParam(value = "BPN", required = true) String bpnNumber, 
-			@RequestParam(value = "requestId", required = true) String requestId,
-			@RequestParam(value = "message", required = false) String message,
-			@RequestBody @Valid @ValidatePolicyTemplate SubmodelJsonRequest pcfSubmodelJsonRequest) {
+			@RequestParam(value = "BPN", required = true) String bpnNumber,
+			@RequestParam(value = "requestId", required = false) String requestId,
+			@RequestParam(value = "message", required = false) String message, @RequestBody JsonObject pcfData) {
 		log.info("Request received for PUT: /api/pcf/productIds");
-		
-		pcfExchangeService.approveAndPushPCFData(productId, bpnNumber,requestId, message, pcfSubmodelJsonRequest);
-		return ok().body(null);
+
+		pcfExchangeService.recievedPCFData(productId, bpnNumber, requestId, message, pcfData);
+		return ResponseEntity.accepted().body(Map.of("msg", "PCF response recieved"));
 	}
 }

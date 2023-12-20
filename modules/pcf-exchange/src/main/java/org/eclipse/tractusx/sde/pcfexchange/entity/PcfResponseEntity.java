@@ -21,34 +21,28 @@ package org.eclipse.tractusx.sde.pcfexchange.entity;
 
 import java.time.LocalDateTime;
 
-import org.eclipse.tractusx.sde.pcfexchange.enums.PCFRequestStatusEnum;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Builder;
 import lombok.Data;
 
 @Table(name = "pcf_response_tbl")
 @Entity
 @Data
+@Builder
 public class PcfResponseEntity {
 	
 	@Id
+	@Column(name = "response_id")
+	private String responseId;
+	
 	@Column(name = "request_id")
 	private String requestId;
 	
-	@Column(name = "product_id")
-	private String productId;
-	
-	@Column(name = "status")
-	@Enumerated(EnumType.STRING)
-	private PCFRequestStatusEnum status;
-	
-	@Column(name = "requested_time")
-	private LocalDateTime requestedTime;
+	@Column(name = "pcf_data", columnDefinition = "TEXT")
+	private String pcfData;
 	
 	@Column(name = "last_updated_time")
 	private LocalDateTime lastUpdatedTime;

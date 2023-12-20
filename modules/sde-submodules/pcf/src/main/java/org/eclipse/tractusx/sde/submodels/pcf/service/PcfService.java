@@ -93,11 +93,22 @@ public class PcfService {
 	public JsonObject readCreatedTwinsDetails(String uuid) {
 		return pcfMapper.mapToResponse(readEntity(uuid));
 	}
+	
+	public JsonObject readCreatedTwinsDetailsByProductId(String productId) {
+		return pcfMapper.mapToResponse(readEntityByProductId(productId));
+	}
 
 	public PcfEntity readEntity(String id) {
 		Optional<PcfEntity> findById = pcfRepository.findById(id);
 		if (!findById.isPresent())
 			throw new NoDataFoundException("No data found uuid " + id);
+		return findById.get();
+	}
+	
+	public PcfEntity readEntityByProductId(String productId) {
+		Optional<PcfEntity> findById = pcfRepository.findByProductId(productId);
+		if (!findById.isPresent())
+			throw new NoDataFoundException("No data found productId " + productId);
 		return findById.get();
 	}
 

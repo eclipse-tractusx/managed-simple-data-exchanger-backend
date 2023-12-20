@@ -24,8 +24,7 @@ public enum PCFRequestStatusEnum {
     REQUESTED,
     REREQUESTED,
     APPROVED,
-	IN_PROGRESS,
 	PUSHED,
-    COMPLETED,
-    UPDATED
+    UPDATED,
+    RECEIVED
 }

@@ -19,21 +19,25 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.pcfexchange.service;
 
-import org.eclipse.tractusx.sde.common.entities.SubmodelJsonRequest;
+import java.util.List;
+
 import org.eclipse.tractusx.sde.common.model.PagingResponse;
-import org.eclipse.tractusx.sde.common.validators.ValidatePolicyTemplate;
+import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.eclipse.tractusx.sde.pcfexchange.request.PcfRequestModel;
-import org.eclipse.tractusx.sde.pcfexchange.response.PcfExchangeResponse;
 
-import jakarta.validation.Valid;
-
+import com.google.gson.JsonObject;
 
 public interface IPCFExchangeService {
-	
-	public PcfExchangeResponse findPcfDataOffer(String productId, String bpnNumber);
-	public void approveAndPushPCFData(String productId, String bpnNumber, String requestId, String message, @Valid @ValidatePolicyTemplate SubmodelJsonRequest pcfSubmodelJsonRequest);
+
+	public List<QueryDataOfferModel> searchPcfDataOffer(String manufacturerPartId, String bpnNumber);
+
+	public void approveAndPushPCFData(String productId, String bpnNumber, String requestId, String message);
+
 	public PcfRequestModel savePcfRequestData(String requestId, String productId, String bpnNumber, String message);
-	public PagingResponse getAllPcfRequestData(String type, Integer page, Integer pageSize);
-	
+
+	public PagingResponse getPcfData(String type, Integer page, Integer pageSize);
+
+	public void recievedPCFData(String productId, String bpnNumber, String requestId, String message,
+			JsonObject pcfData);
 
 }

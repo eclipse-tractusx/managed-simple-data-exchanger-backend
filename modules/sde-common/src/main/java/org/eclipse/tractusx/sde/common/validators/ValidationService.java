@@ -22,13 +22,11 @@ package org.eclipse.tractusx.sde.common.validators;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.entities.PolicyTemplateRequest;
 import org.eclipse.tractusx.sde.common.entities.PolicyTemplateType;
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
-import org.eclipse.tractusx.sde.common.enums.DurationEnum;
 import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
 import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.springframework.stereotype.Service;
@@ -96,9 +94,6 @@ public class ValidationService {
 			boolean validateFlag = false;
 			for (Map.Entry<UsagePolicyEnum, UsagePolicies> entry : usagePolicies.entrySet()) {
 				validateFlag = validatePolicy(entry, constraintValidatorContext);
-				if (validateFlag && entry.getKey().equals(UsagePolicyEnum.DURATION)) {
-					validateFlag = validateDuration(entry.getValue(), constraintValidatorContext);
-				}
 				if (isValid)
 					isValid = validateFlag;
 			}
@@ -121,21 +116,6 @@ public class ValidationService {
 			isValid = false;
 			constraintValidatorContext.buildConstraintViolationWithTemplate("value must not be null or empty")
 					.addPropertyNode("usagePolicies." + entry.getKey()).addConstraintViolation()
-					.disableDefaultConstraintViolation();
-		}
-
-		return isValid;
-	}
-
-	private boolean validateDuration(UsagePolicies usagePolicy, ConstraintValidatorContext constraintValidatorContext) {
-		boolean isValid = true;
-		List<String> result = Stream.of(DurationEnum.values()).map(Enum::name).toList();
-		if (!result.contains(usagePolicy.getDurationUnit())) {
-			isValid = false;
-			constraintValidatorContext
-					.buildConstraintViolationWithTemplate("durationUnit '" + usagePolicy.getDurationUnit()
-							+ "' not one of the values accepted for Enum class " + result)
-					.addPropertyNode("usagePolicies.DURATION").addConstraintViolation()
 					.disableDefaultConstraintViolation();
 		}
 

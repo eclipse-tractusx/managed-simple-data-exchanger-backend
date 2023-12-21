@@ -90,13 +90,20 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 	public List<QueryDataOfferModel> queryOnDataOffers(String providerUrl, Integer offset, Integer limit,
 			String filterExpression) {
 
-		String sproviderUrl = UtilityFunctions.removeLastSlashOfUrl(providerUrl);
+		providerUrl = UtilityFunctions.removeLastSlashOfUrl(providerUrl);
+
+		String protocolPath = providerUrl;
+
+		if (!providerUrl.endsWith(protocolPath))
+			protocolPath = providerUrl + protocolPath;
+
+		String sproviderUrl = providerUrl;
 
 		List<QueryDataOfferModel> queryOfferResponse = new ArrayList<>();
 
 		JsonNode contractOfferCatalog = contractOfferCatalogApiProxy
 				.getContractOffersCatalog(contractOfferRequestFactory
-						.getContractOfferRequest(sproviderUrl + protocolPath, limit, offset, filterExpression));
+						.getContractOfferRequest(protocolPath, limit, offset, filterExpression));
 
 		JsonNode jOffer = contractOfferCatalog.get("dcat:dataset");
 		if (jOffer.isArray()) {
@@ -511,7 +518,8 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 				String errorMsg = "Unable to download subcribe data offer because: " + e.contentUTF8();
 				throw new ServiceException(errorMsg);
 			} catch (Exception e) {
-				log.error("Exception DownloadFileFromEDCUsingifAlreadyTransferStatusCompleted Oops! We have -" + e.getMessage());
+				log.error("Exception DownloadFileFromEDCUsingifAlreadyTransferStatusCompleted Oops! We have -"
+						+ e.getMessage());
 				String errorMsg = "Unable to download subcribe data offer because: " + e.getMessage();
 				throw new ServiceException(errorMsg);
 			}

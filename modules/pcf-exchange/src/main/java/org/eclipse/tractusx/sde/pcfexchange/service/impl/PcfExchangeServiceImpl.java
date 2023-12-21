@@ -21,6 +21,7 @@ package org.eclipse.tractusx.sde.pcfexchange.service.impl;
 
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
@@ -61,13 +62,13 @@ import org.springframework.stereotype.Service;
 import com.google.gson.JsonObject;
 
 import feign.FeignException;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class PcfExchangeServiceImpl implements IPCFExchangeService {
 
 	private final PcfRequestRepository pcfRequestRepository;
@@ -80,24 +81,20 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 
 	private final ConsumerControlPanelService consumerControlPanelService;
 
-	String filterExpressionTemplate = String.format("""
-			 "filterExpression": [{
-			    "operandLeft": "https://w3id.org/edc/v0.0.1/ns/type",
-			    "operator": "=",
-			    "operandRight": "data.core.digitalTwinRegistry"
-			},
-			{
-			    "operandLeft": "https://w3id.org/edc/v0.0.1/ns/id",
-			    "operator": "=",
-			    "operandRight": "%s"
-			}
-			]""");
-
 	@Value(value = "${manufacturerId}")
 	private String manufacturerId;
 	
+	String filterExpressionTemplate = """
+			"filterExpression": [{
+							    "operandLeft": "https://w3id.org/edc/v0.0.1/ns/id",
+							    "operator": "=",
+							    "operandRight": "%s"
+							}]""";
+	
 	public List<QueryDataOfferModel> searchPcfDataOffer(String manufacturerPartId, String bpnNumber) {
 
+		List<QueryDataOfferModel> result = new ArrayList<>();
+		
 		// 1 fetch EDC connectors and DTR Assets from EDC connectors
 		List<QueryDataOfferModel> ddTROffers = edcAssetUrlCacheService.getDDTRUrl(bpnNumber);
 
@@ -119,15 +116,15 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 
 					String filterExpression = String.format(filterExpressionTemplate, assetInfo[1]);
 
-					return consumerControlPanelService.queryOnDataOffers(connectorInfo[1], 0, 100, filterExpression);
+					result = consumerControlPanelService.queryOnDataOffers(connectorInfo[1], 0, 100, filterExpression);
 				} else
-					return List.of();
+					result = List.of();
 
 			} else {
 				log.warn("EDR token is null, unable to look Up PCF Twin");
 			}
 		}
-		return List.of();
+		return result;
 	}
 
 	@SneakyThrows
@@ -177,6 +174,7 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 
 		Optional<PcfRequestEntity> pcfRequestData = getPCFRequestData(requestId, productId, bpnNumber);
 		if (pcfRequestData.isPresent()) {
+			
 			PcfRequestEntity entity = pcfRequestData.get();
 			entity.setStatus(PCFRequestStatusEnum.APPROVED);
 			savePcfRequest(entity);

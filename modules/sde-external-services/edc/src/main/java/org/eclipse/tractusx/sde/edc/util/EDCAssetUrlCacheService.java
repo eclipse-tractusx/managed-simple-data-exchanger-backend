@@ -85,7 +85,7 @@ public class EDCAssetUrlCacheService {
 			cacheExpTime = currDate.plusHours(12);
 		}
 		dDTRmap.put(bpnNumber, cacheExpTime);
-		return dDTRUrlCacheUtility.getDDTRUrlDirect(bpnNumber);
+		return dDTRUrlCacheUtility.getDDTRUrl(bpnNumber);
 	}
 
 	public void clearDDTRUrlCache() {

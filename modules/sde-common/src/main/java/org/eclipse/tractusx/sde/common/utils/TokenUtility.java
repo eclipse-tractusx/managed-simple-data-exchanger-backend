@@ -33,9 +33,12 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class TokenUtility {
@@ -43,17 +46,42 @@ public class TokenUtility {
 	private static final String CLIENT_ID = "client_id";
 	private static final String CLIENT_SECRET = "client_secret";
 	private static final String GRANT_TYPE = "grant_type";
+	private static final String SCOPE = "scope";
 
 	private final ITokenUtilityProxy tokenUtilityProxy;
 
 	@SneakyThrows
 	public String getToken(URI appTokenURI, String grantType, String appClientId, String appClientSecret) {
-		try {
-			MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-			body.add(GRANT_TYPE, grantType);
-			body.add(CLIENT_ID, appClientId);
-			body.add(CLIENT_SECRET, appClientSecret);
 
+		MultiValueMap<String, Object> body = getMultiValueBody(grantType, appClientId, appClientSecret);
+
+		return createToken(appTokenURI, body);
+
+	}
+
+	@SneakyThrows
+	public String getToken(URI appTokenURI, String grantType, String appClientId, String appClientSecret,
+			String scope) {
+
+		MultiValueMap<String, Object> body = getMultiValueBody(grantType, appClientId, appClientSecret);
+		body.add(SCOPE, scope);
+
+		return createToken(appTokenURI, body);
+
+	}
+
+	private MultiValueMap<String, Object> getMultiValueBody(String grantType, String appClientId,
+			String appClientSecret) {
+		MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+		body.add(GRANT_TYPE, grantType);
+		body.add(CLIENT_ID, appClientId);
+		body.add(CLIENT_SECRET, appClientSecret);
+		return body;
+	}
+
+	private String createToken(URI appTokenURI, MultiValueMap<String, Object> body) {
+
+		try {
 			var resultBody = tokenUtilityProxy.getToken(appTokenURI, body);
 
 			if (resultBody != null)
@@ -61,10 +89,14 @@ public class TokenUtility {
 			else
 				throw new ServiceException(
 						"Unable to get auth token because auth response resultBody is: " + resultBody);
+		} catch (FeignException e) {
+			log.error("FeignException RequestBody : " + e.request());
+			String errorMsg = "Error in DT twin lookup " + e.request().url() + ", because: " + body+ "," + e.contentUTF8();
+			log.error("FeignException : " + errorMsg);
+			throw new ServiceException(errorMsg);
 		} catch (Exception e) {
 			throw new ServiceException("Unable to process auth request: " + appTokenURI + ", " + e.getMessage());
 		}
-
 	}
 
 	public String getOriginalRequestAuthToken() throws ServiceException {

@@ -48,10 +48,14 @@ public class ShellLookupRequest {
                 .build()
         );
     }
+    
+    public List<LocalIdentifier> getAssetIds() {
+		return assetIds;
+	}
 
     @SneakyThrows
     public String toJsonString() {
-        final ObjectMapper mapper = new ObjectMapper();
+		final ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(assetIds);
     }
 }

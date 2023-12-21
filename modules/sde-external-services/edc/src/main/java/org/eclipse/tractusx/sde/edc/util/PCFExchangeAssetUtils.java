@@ -19,13 +19,9 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.edc.util;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
-import org.eclipse.tractusx.sde.edc.services.ConsumerControlPanelService;
-import org.eclipse.tractusx.sde.portal.handler.PortalProxyService;
-import org.eclipse.tractusx.sde.portal.model.ConnectorInfo;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -38,41 +34,11 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class PCFExchangeAssetUtils {
 	
-	
-	private final PortalProxyService portalProxyService;
-	private final ConsumerControlPanelService consumerControlPanelService;
+	private final EDCAssetLookUp edcAssetLookUp;
 	
 	@Cacheable(value = "bpn-pcfexchange", key = "#bpnNumber")
 	public List<QueryDataOfferModel> getPCFExchangeUrl(String bpnNumber) {
-
-		List<ConnectorInfo> connectorInfos = portalProxyService.fetchConnectorInfo(List.of(bpnNumber));
-
-		List<QueryDataOfferModel> offers = new ArrayList<>();
-
-		String filterExpression = String.format("""
-				 "filterExpression": [{
-				    "operandLeft": "https://w3id.org/edc/v0.0.1/ns/type",
-				    "operator": "=",
-				    "operandRight": "data.pcf.exchangeEndpoint"
-				}]""");
-
-		connectorInfos.stream().forEach(
-				connectorInfo -> connectorInfo.getConnectorEndpoint().parallelStream().distinct().forEach(connector -> {
-					try {
-						List<QueryDataOfferModel> queryDataOfferModel = consumerControlPanelService
-								.queryOnDataOffers(connector, 0, 100, filterExpression);
-						log.info("For Connector " + connector + ", found pcf exchange asset :" + queryDataOfferModel.size());
-
-						queryDataOfferModel.forEach(each -> each.setConnectorOfferUrl(connector));
-
-						offers.addAll(queryDataOfferModel);
-					} catch (Exception e) {
-						log.error("Error while looking EDC catalog for pcf exchange url, " + connector
-								+ ", Exception :" + e.getMessage());
-					}
-				}));
-
-		return offers;
+		return edcAssetLookUp.getEDCAssetsByType(bpnNumber, "data.pcf.exchangeEndpoint");
 	}
 
 	@CacheEvict(value = "bpn-pcfexchange", key = "#bpnNumber")

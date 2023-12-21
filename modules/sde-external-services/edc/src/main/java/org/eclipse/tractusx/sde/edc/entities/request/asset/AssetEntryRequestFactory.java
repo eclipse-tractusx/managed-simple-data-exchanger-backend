@@ -40,12 +40,6 @@ public class AssetEntryRequestFactory {
     private static final String DATE_FORMATTER = "dd/MM/yyyy HH:mm:ss";
 	private static final String ASSET_PROP_POLICYID = "use-eu";
 	
-    @Value(value = "${dft.apiKeyHeader}")
-    private String apiKeyHeader;
-    
-    @Value(value = "${dft.apiKey}")
-    private String apiKey;
-    
     @Value(value = "${dft.hostname}")
     private String dftHostname;
     
@@ -85,8 +79,8 @@ public class AssetEntryRequestFactory {
     private String subModelPayloadUrl(String submodel, String uuid) {
     	 return UriComponentsBuilder
                  .fromHttpUrl(dftHostname)
-                 .path("/"+submodel+"/public/")
-                 .path(uuid)
+                 //.path("/"+submodel+"/public/")
+                 //.path(uuid)
                  .toUriString();
 	}
 

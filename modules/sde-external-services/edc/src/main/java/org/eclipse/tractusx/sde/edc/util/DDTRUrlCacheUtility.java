@@ -20,13 +20,9 @@
 
 package org.eclipse.tractusx.sde.edc.util;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
-import org.eclipse.tractusx.sde.edc.services.ConsumerControlPanelService;
-import org.eclipse.tractusx.sde.portal.handler.PortalProxyService;
-import org.eclipse.tractusx.sde.portal.model.ConnectorInfo;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -39,42 +35,11 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class DDTRUrlCacheUtility {
 
-	private final PortalProxyService portalProxyService;
-
-	private final ConsumerControlPanelService consumerControlPanelService;
+	private final EDCAssetLookUp edcAssetLookUp;
 
 	@Cacheable(value = "bpn-ddtr", key = "#bpnNumber")
-	public List<QueryDataOfferModel> getDDTRUrlDirect(String bpnNumber) {
-
-		List<ConnectorInfo> connectorInfos = portalProxyService.fetchConnectorInfo(List.of(bpnNumber));
-
-		List<QueryDataOfferModel> offers = new ArrayList<>();
-
-		String filterExpression = String.format("""
-				 "filterExpression": [{
-				    "operandLeft": "https://w3id.org/edc/v0.0.1/ns/type",
-				    "operator": "=",
-				    "operandRight": "data.core.digitalTwinRegistry"
-				}]""");
-
-		connectorInfos.stream().forEach(
-				connectorInfo -> connectorInfo.getConnectorEndpoint().parallelStream().distinct().forEach(connector -> {
-					try {
-						List<QueryDataOfferModel> queryDataOfferModel = consumerControlPanelService
-								.queryOnDataOffers(connector, 0, 100, filterExpression);
-						
-						log.info("For Connector " + connector + ", found asset :" + queryDataOfferModel.size());
-
-						queryDataOfferModel.forEach(each -> each.setConnectorOfferUrl(connector));
-
-						offers.addAll(queryDataOfferModel);
-					} catch (Exception e) {
-						log.error("Error while looking EDC catalog for digitaltwin registry url, " + connector
-								+ ", Exception :" + e.getMessage());
-					}
-				}));
-
-		return offers;
+	public List<QueryDataOfferModel> getDDTRUrl(String bpnNumber) {
+		return edcAssetLookUp.getEDCAssetsByType(bpnNumber, "data.core.digitalTwinRegistry");
 	}
 
 	@CacheEvict(value = "bpn-ddtr", key = "#bpnNumber")

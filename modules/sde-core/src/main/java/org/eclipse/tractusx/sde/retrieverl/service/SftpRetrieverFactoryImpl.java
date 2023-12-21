@@ -71,20 +71,20 @@ public class SftpRetrieverFactoryImpl implements ConfigurableFactory<SftpRetriev
 
 	@SneakyThrows
 	public SftpRetriever create(OptionalInt port) {
-		SftpConfigModel configModel = getConfiguration();
-		if(StringUtils.isBlank(configModel.getHost()))
+		SftpConfigModel sftpConfigModel = getConfiguration();
+		if(StringUtils.isBlank(sftpConfigModel.getHost()))
 			throw new ValidationException("Sftp config is empty, unable to process job.");
 		return new SftpRetriever(csvHandlerService, 
-				configModel.getHost(),
-				port.orElse(configModel.getPort()),
-				configModel.getUsername(), 
-				configModel.getPassword(),
-				configModel.getAccessKey(),
-				configModel.getToBeProcessedLocation(), 
-				configModel.getInProgressLocation(),
-				configModel.getSuccessLocation(),
-				configModel.getPartialSuccessLocation(),
-				configModel.getFailedLocation(),
+				sftpConfigModel.getHost(),
+				port.orElse(sftpConfigModel.getPort()),
+				sftpConfigModel.getUsername(),
+				sftpConfigModel.getPassword(),
+				sftpConfigModel.getAccessKey(),
+				sftpConfigModel.getToBeProcessedLocation(),
+				sftpConfigModel.getInProgressLocation(),
+				sftpConfigModel.getSuccessLocation(),
+				sftpConfigModel.getPartialSuccessLocation(),
+				sftpConfigModel.getFailedLocation(),
 				numberOfRetries,
 				retryDelayFrom,
 				retryDelayTo

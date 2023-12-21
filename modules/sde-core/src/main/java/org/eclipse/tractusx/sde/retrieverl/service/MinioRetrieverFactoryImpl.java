@@ -68,19 +68,19 @@ public class MinioRetrieverFactoryImpl implements ConfigurableFactory<MinioRetri
 
 	@Override
 	public MinioRetriever create() throws IOException, ValidationException {
-		var configModel = getConfiguration();
-		if(StringUtils.isBlank(configModel.getEndpoint()))
+		var objectStorageConfigModel = getConfiguration();
+		if(StringUtils.isBlank(objectStorageConfigModel.getEndpoint()))
 			throw new ValidationException("Object storage config is empty, unable to process job.");
 		return new MinioRetriever(csvHandlerService,
-							configModel.getEndpoint(),
-							configModel.getAccessKey(),
-							configModel.getSecretKey(),
-							configModel.getBucketName(),
-							removeFirstSlashForMinio(configModel.getToBeProcessedLocation()),
-							removeFirstSlashForMinio(configModel.getInProgressLocation()),
-							removeFirstSlashForMinio(configModel.getSuccessLocation()),
-							removeFirstSlashForMinio(configModel.getPartialSuccessLocation()),
-							removeFirstSlashForMinio(configModel.getFailedLocation())
+							objectStorageConfigModel.getEndpoint(),
+							objectStorageConfigModel.getAccessKey(),
+							objectStorageConfigModel.getSecretKey(),
+							objectStorageConfigModel.getBucketName(),
+							removeFirstSlashForMinio(objectStorageConfigModel.getToBeProcessedLocation()),
+							removeFirstSlashForMinio(objectStorageConfigModel.getInProgressLocation()),
+							removeFirstSlashForMinio(objectStorageConfigModel.getSuccessLocation()),
+							removeFirstSlashForMinio(objectStorageConfigModel.getPartialSuccessLocation()),
+							removeFirstSlashForMinio(objectStorageConfigModel.getFailedLocation())
 				);
 	}
 

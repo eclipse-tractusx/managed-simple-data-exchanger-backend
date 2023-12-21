@@ -1,0 +1,22 @@
+{
+	"@context": {
+		"edc": "https://w3id.org/edc/v0.0.1/ns/"
+	},
+	"@type": "QuerySpec",
+	"offset": 0,
+	"limit": 10,
+	"sortOrder": "DESC",
+	"sortField": "id",
+	"filterExpression": [
+		{
+			"edc:operandLeft": "https://w3id.org/edc/v0.0.1/ns/type",
+			"edc:operator": "=",
+			"edc:operandRight": "data.core.digitalTwinRegistry"
+		},
+		{
+			"edc:operandLeft": "https://w3id.org/edc/v0.0.1/ns/registry",
+			"edc:operator": "=",
+			"edc:operandRight": "${digitalTwinRegistry}"
+		}
+	]
+}

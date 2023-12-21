@@ -63,7 +63,7 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends Step {
 
 	@SneakyThrows
 	private Aspect doRun(Aspect aspect) throws CsvHandlerDigitalTwinUseCaseException {
-		ShellLookupRequest shellLookupRequest = getShellLookupRequest(aspect);
+		ShellLookupRequest shellLookupRequest = digitalTwinsUtility.getShellLookupRequest(getSpecificAssetIds(aspect));
 		List<String> shellIds = digitalTwinsFacilitator.shellLookup(shellLookupRequest);
 
 		String shellId;
@@ -108,16 +108,6 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends Step {
 		}
 
 		return aspect;
-	}
-
-	private ShellLookupRequest getShellLookupRequest(Aspect aspect) {
-		
-		ShellLookupRequest shellLookupRequest = new ShellLookupRequest();
-		getSpecificAssetIds(aspect).entrySet().stream()
-				.forEach(entry -> 
-				shellLookupRequest.addLocalIdentifier(entry.getKey(), entry.getValue()));
-
-		return shellLookupRequest;
 	}
 
 	private Map<String, String> getSpecificAssetIds(Aspect aspect) {

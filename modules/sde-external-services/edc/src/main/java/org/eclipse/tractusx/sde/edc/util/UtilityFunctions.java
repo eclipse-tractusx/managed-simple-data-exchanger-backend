@@ -27,7 +27,6 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
-import org.eclipse.tractusx.sde.common.enums.DurationEnum;
 import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
 import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
@@ -56,48 +55,6 @@ public class UtilityFunctions {
 		}
 	}
 
-	public static UsagePolicies getDurationPolicy(String durationValue) {
-		DurationEnum durationUnit;
-		// Sample value - P0Y0M3DT0H0M0S - Output - 3 Day(s)
-		String value = StringUtils.substringBetween(durationValue, "P", "Y");
-		if (!value.equals("0")) {
-			durationUnit = DurationEnum.YEAR;
-			return getResponse(value, durationUnit);
-		}
-		value = StringUtils.substringBetween(durationValue, "Y", "M");
-		if (!value.equals("0")) {
-			durationUnit = DurationEnum.MONTH;
-			return getResponse(value, durationUnit);
-		}
-		value = StringUtils.substringBetween(durationValue, "M", "D");
-		if (!value.equals("0")) {
-			durationUnit = DurationEnum.DAY;
-			return getResponse(value, durationUnit);
-		}
-		value = StringUtils.substringBetween(durationValue, "T", "H");
-		if (!value.equals("0")) {
-			durationUnit = DurationEnum.HOUR;
-			return getResponse(value, durationUnit);
-		}
-		value = StringUtils.substringBetween(durationValue, "H", "M");
-		if (!value.equals("0")) {
-			durationUnit = DurationEnum.MINUTE;
-			return getResponse(value, durationUnit);
-		}
-		value = durationValue.substring(durationValue.lastIndexOf("M") + 1, durationValue.indexOf("S"));
-		if (!value.equals("0")) {
-			durationUnit = DurationEnum.SECOND;
-			return getResponse(value, durationUnit);
-		}
-		return null;
-	}
-
-	private static UsagePolicies getResponse(String value, DurationEnum durationUnit) {
-		UsagePolicies policyResponse;
-		policyResponse = UsagePolicies.builder().typeOfAccess(PolicyAccessEnum.RESTRICTED).value(value)
-				.durationUnit(durationUnit.name()).build();
-		return policyResponse;
-	}
 
 	public static Map<UsagePolicyEnum, UsagePolicies> getUsagePolicies(
 			Map<UsagePolicyEnum, UsagePolicies> usagePolicies, List<ConstraintRequest> constraints) {
@@ -120,9 +77,6 @@ public class UtilityFunctions {
 		case "idsc:ROLE":
 			policyResponse = Map.of(UsagePolicyEnum.ROLE,
 					UsagePolicies.builder().typeOfAccess(PolicyAccessEnum.RESTRICTED).value(rightExpVal).build());
-			break;
-		case "idsc:ELAPSED_TIME":
-			policyResponse = Map.of(UsagePolicyEnum.DURATION, UtilityFunctions.getDurationPolicy(rightExpVal));
 			break;
 		case "idsc:PURPOSE":
 			policyResponse = Map.of(UsagePolicyEnum.PURPOSE,

@@ -126,6 +126,6 @@ public class PcfExchangeController {
 		log.info("Request received for PUT: /api/pcf/productIds");
 
 		pcfExchangeService.recievedPCFData(productId, bpnNumber, requestId, message, pcfData);
-		return ResponseEntity.accepted().body(Map.of("msg", "PCF response recieved"));
+		return ResponseEntity.ok().body(Map.of("msg", "PCF response recieved"));
 	}
 }

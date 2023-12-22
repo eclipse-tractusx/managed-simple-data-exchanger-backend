@@ -47,15 +47,15 @@ public class MinioRetrieverFactoryImpl implements ConfigurableFactory<MinioRetri
 	@Value("${minio.bucket-name:}")
 	private String bucketName;
 	@Value("${minio.location.tobeprocessed:}")
-	private String toBeProcessed;
+	private String minioToBeProcessed;
 	@Value("${minio.location.inprogress:}")
-	private String inProgress;
+	private String minioInProgress;
 	@Value("${minio.location.success:}")
-	private String success;
+	private String minioSuccess;
 	@Value("${minio.location.partialsucess:}")
-	private String partialSuccess;
+	private String minioPartialSuccess;
 	@Value("${minio.location.failed:}")
-	private String failed;
+	private String minioFailed;
 
 	private final ConfigService configService;
 	private final CsvHandlerService csvHandlerService;
@@ -110,11 +110,11 @@ public class MinioRetrieverFactoryImpl implements ConfigurableFactory<MinioRetri
 				.accessKey(accessKey)
 				.secretKey(secretKey)
 				.bucketName(bucketName)
-				.failedLocation(failed)
-				.toBeProcessedLocation(toBeProcessed)
-				.inProgressLocation(inProgress)
-				.partialSuccessLocation(partialSuccess)
-				.successLocation(success)
+				.failedLocation(minioFailed)
+				.toBeProcessedLocation(minioToBeProcessed)
+				.inProgressLocation(minioInProgress)
+				.partialSuccessLocation(minioPartialSuccess)
+				.successLocation(minioSuccess)
 				.build()
 		;
 	}

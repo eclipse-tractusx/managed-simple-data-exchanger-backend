@@ -36,6 +36,7 @@ import io.minio.errors.XmlParserException;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.sde.agent.ConfigService;
+import org.eclipse.tractusx.sde.agent.model.JobMaintenanceModel;
 import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
 import org.eclipse.tractusx.sde.notification.config.EmailConfiguration;
 import org.eclipse.tractusx.sde.notification.manager.EmailManager;
@@ -86,8 +87,9 @@ public abstract class MinioBase {
 
     @PostConstruct
     public void init() {
-        minioRetrieverFactory = (MinioRetrieverFactoryImpl) context.getBean("minio");
+        minioRetrieverFactory = (MinioRetrieverFactoryImpl) context.getBean("objectstorage");
         configService.deleteAllConfig();
+        configService.saveConfiguration(new JobMaintenanceModel(true, true));
     }
 
     @AfterEach

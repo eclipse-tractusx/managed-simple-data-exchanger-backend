@@ -3,6 +3,7 @@ package org.eclipse.tractusx.sde.pcfexchange.request;
 import java.time.LocalDateTime;
 
 import org.eclipse.tractusx.sde.pcfexchange.enums.PCFRequestStatusEnum;
+import org.eclipse.tractusx.sde.pcfexchange.enums.PCFTypeEnum;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -21,6 +22,7 @@ public class PcfRequestModel {
 	private String requestId;
 	private String productId;
 	private String bpnNumber;
+	private PCFTypeEnum type;
 	private String message;
 	private PCFRequestStatusEnum status;
 	private LocalDateTime requestedTime;

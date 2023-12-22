@@ -1,7 +1,7 @@
 package org.eclipse.tractusx.sde.pcfexchange.response;
 
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorResponse;
-import org.eclipse.tractusx.sde.pcfexchange.enums.PCFOptionsEnum;
+import org.eclipse.tractusx.sde.pcfexchange.enums.PCFTypeEnum;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -18,7 +18,7 @@ import lombok.experimental.SuperBuilder;
 public class PcfExchangeResponse {
 
 	private String message;
-	private PCFOptionsEnum status;
+	private PCFTypeEnum type;
 	private ShellDescriptorResponse shellDescriptorResponse;
 
 }

@@ -22,6 +22,7 @@ package org.eclipse.tractusx.sde.pcfexchange.entity;
 import java.time.LocalDateTime;
 
 import org.eclipse.tractusx.sde.pcfexchange.enums.PCFRequestStatusEnum;
+import org.eclipse.tractusx.sde.pcfexchange.enums.PCFTypeEnum;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -45,6 +46,10 @@ public class PcfRequestEntity {
 	
 	@Column(name = "bpn_number")
 	private String bpnNumber;
+	
+	@Column(name = "type")
+	@Enumerated(EnumType.STRING)
+	private PCFTypeEnum type;
 
 	@Column(name = "message")
 	private String message;

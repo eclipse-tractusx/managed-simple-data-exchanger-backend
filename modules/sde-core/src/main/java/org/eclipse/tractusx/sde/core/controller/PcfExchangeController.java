@@ -26,6 +26,8 @@ import java.util.Map;
 
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
+import org.eclipse.tractusx.sde.pcfexchange.enums.PCFTypeEnum;
+import org.eclipse.tractusx.sde.pcfexchange.request.PcfRequestModel;
 import org.eclipse.tractusx.sde.pcfexchange.service.impl.PcfExchangeServiceImpl;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
@@ -55,7 +57,7 @@ public class PcfExchangeController {
 	@GetMapping(value = "/search")
 	public ResponseEntity<Object> searchPcfDataOffer(@RequestParam String manufacturerPartId,
 			@RequestParam String bpnNumber) throws Exception {
-		log.info("Request received for GET: /api/pcf/data-offer");
+		log.info("Request received for GET: /api/pcf/search");
 		
 		List<QueryDataOfferModel> pcfOffer = pcfExchangeService.searchPcfDataOffer(manufacturerPartId, bpnNumber);
 		if (pcfOffer == null || pcfOffer.isEmpty())
@@ -68,7 +70,7 @@ public class PcfExchangeController {
 	@GetMapping(value = "/request/{productId}")
 	public ResponseEntity<Object> getPcfDataOfferByProduct(@PathVariable String productId,
 			@Valid @RequestBody ConsumerRequest consumerRequest) throws Exception {
-		log.info("Request received for GET: /api/pcf/data-offer");
+		log.info("Request received for GET: /api/pcf/request/");
 		return ResponseEntity.ok().body(pcfExchangeService.requestForPcfDataOffer(productId, consumerRequest));
 	}
 
@@ -83,16 +85,26 @@ public class PcfExchangeController {
 		return ResponseEntity.accepted().body(Map.of("msg", "PCF request approved and async pcf data pushed"));
 	}
 
-	@GetMapping(value = "/requests")
-	public ResponseEntity<Object> getPcfData(@RequestParam(value = "status", required = false) String status,
+	@GetMapping(value = "/provider/requests")
+	public ResponseEntity<Object> getPcfProviderData(@RequestParam(value = "status", required = false) String status,
 			@Param("page") Integer page, @Param("pageSize") Integer pageSize) throws Exception {
-		log.info("Request received for POST: /api/pcf/request/productIds");
+		log.info("Request received for POST: /api/pcf/requests/");
 
 		page = page == null ? 0 : page;
 		pageSize = pageSize == null ? 10 : pageSize;
-		status = status == null ? "%" : status;
 
-		return ok().body(pcfExchangeService.getPcfData(status, page, pageSize));
+		return ok().body(pcfExchangeService.getPcfData(status, PCFTypeEnum.PROVIDER, page, pageSize));
+	}
+	
+	@GetMapping(value = "/consumer/requests")
+	public ResponseEntity<Object> getPcfConsumerData(@RequestParam(value = "status", required = false) String status,
+			@Param("page") Integer page, @Param("pageSize") Integer pageSize) throws Exception {
+		log.info("Request received for POST: /api/pcf/requests/");
+
+		page = page == null ? 0 : page;
+		pageSize = pageSize == null ? 10 : pageSize;
+
+		return ok().body(pcfExchangeService.getPcfData(status, PCFTypeEnum.CONSUMER, page, pageSize));
 	}
 
 	// PCF data exchange api's
@@ -102,7 +114,7 @@ public class PcfExchangeController {
 			@RequestParam(value = "requestId", required = true) String requestId, @RequestParam String message)
 			throws Exception {
 		log.info("Request received for GET: /api/pcf/productIds");
-		pcfExchangeService.savePcfRequestData(requestId, productId, bpnNumber, message);
+		pcfExchangeService.savePcfRequestData(requestId, productId, bpnNumber, message, PCFTypeEnum.PROVIDER);
 		return ResponseEntity.accepted().body(Map.of("msg", "PCF request accepted"));
 	}
 

@@ -45,6 +45,7 @@ import org.eclipse.tractusx.sde.edc.util.EDCAssetUrlCacheService;
 import org.eclipse.tractusx.sde.pcfexchange.entity.PcfRequestEntity;
 import org.eclipse.tractusx.sde.pcfexchange.entity.PcfResponseEntity;
 import org.eclipse.tractusx.sde.pcfexchange.enums.PCFRequestStatusEnum;
+import org.eclipse.tractusx.sde.pcfexchange.enums.PCFTypeEnum;
 import org.eclipse.tractusx.sde.pcfexchange.mapper.PcfExchangeMapper;
 import org.eclipse.tractusx.sde.pcfexchange.proxy.PCFExchangeProxy;
 import org.eclipse.tractusx.sde.pcfexchange.repository.PcfReqsponseRepository;
@@ -85,14 +86,20 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 	private String manufacturerId;
 	
 	String filterExpressionTemplate = """
-			"filterExpression": [{
-							    "operandLeft": "https://w3id.org/edc/v0.0.1/ns/id",
-							    "operator": "=",
-							    "operandRight": "%s"
-							}]""";
+			"filterExpression": [
+				    {
+				        "operandLeft": "https://w3id.org/edc/v0.0.1/ns/id",
+				        "operator": "=",
+				        "operandRight": "%s"
+				    }
+				]
+			""";
 	
+	@Override
 	public List<QueryDataOfferModel> searchPcfDataOffer(String manufacturerPartId, String bpnNumber) {
 
+		
+		
 		List<QueryDataOfferModel> result = new ArrayList<>();
 		
 		// 1 fetch EDC connectors and DTR Assets from EDC connectors
@@ -128,6 +135,7 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 	}
 
 	@SneakyThrows
+	@Override
 	public Object requestForPcfDataOffer(String productId, ConsumerRequest consumerRequest) {
 
 		String requestId = UUID.randomUUID().toString();
@@ -158,7 +166,7 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 			pcfExchangeProxy.getPcfByProduct(pcfEnpoint, header, productId, manufacturerId, requestId,
 					message);
 			
-			savePcfRequestData( requestId,  productId,  manufacturerId,  message);
+			savePcfRequestData( requestId,  productId,  manufacturerId,  message, PCFTypeEnum.CONSUMER);
 			
 		} else {
 			log.warn("EDC connector " + queryDataOfferModel.getConnectorOfferUrl()
@@ -188,13 +196,14 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 	}
 
 	@Override
-	public PcfRequestModel savePcfRequestData(String requestId, String productId, String bpnNumber, String message) {
+	public PcfRequestModel savePcfRequestData(String requestId, String productId, String bpnNumber, String message, PCFTypeEnum type) {
 
 		PcfRequestModel pcfRequest = PcfRequestModel.builder()
 				.requestId(requestId).productId(productId)
 				.bpnNumber(bpnNumber)
 				.status(PCFRequestStatusEnum.REQUESTED)
 				.message(message)
+				.type(type)
 				.requestedTime(LocalDateTime.now())
 				.lastUpdatedTime(LocalDateTime.now())
 				.build();
@@ -228,11 +237,13 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 	}
 	
 	@Override
-	public PagingResponse getPcfData(String status, Integer page, Integer pageSize) {
+	public PagingResponse getPcfData(String status, PCFTypeEnum type, Integer page, Integer pageSize) {
 
-		Page<PcfRequestEntity> result = pcfRequestRepository
-				.findByStatusLikeOrderByLastUpdatedTimeDesc(PageRequest.of(page, pageSize), status);
-
+		 pcfRequestRepository.findByStatusLikeOrderByLastUpdatedTimeDesc(PageRequest.of(page, pageSize), status);
+		
+		 Page<PcfRequestEntity> result = pcfRequestRepository
+										.findByTypeLikeOrderByLastUpdatedTimeDesc(PageRequest.of(page, pageSize), type);
+		 
 		List<PcfRequestModel> requestList = result.stream().map(pcfMapper::mapFrom).toList();
 
 		return PagingResponse.builder().items(requestList).pageSize(result.getSize()).page(result.getNumber())
@@ -358,6 +369,4 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 	private String encodeShellIdBase64Utf8(String shellId) {
 		return Base64.getUrlEncoder().encodeToString(shellId.getBytes());
 	}
-
-
 }

@@ -20,7 +20,7 @@
 
 package org.eclipse.tractusx.sde.pcfexchange.enums;
 
-public enum PCFOptionsEnum {
-	SUBSCRIBE_DATA_OFFER,
-    REQUESTE_DATA_OFFER
+public enum PCFTypeEnum {
+	CONSUMER,
+    PROVIDER
 }

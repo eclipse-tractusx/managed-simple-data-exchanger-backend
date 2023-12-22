@@ -22,7 +22,9 @@ package org.eclipse.tractusx.sde.pcfexchange.service;
 import java.util.List;
 
 import org.eclipse.tractusx.sde.common.model.PagingResponse;
+import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
+import org.eclipse.tractusx.sde.pcfexchange.enums.PCFTypeEnum;
 import org.eclipse.tractusx.sde.pcfexchange.request.PcfRequestModel;
 
 import com.google.gson.JsonObject;
@@ -33,9 +35,12 @@ public interface IPCFExchangeService {
 
 	public void approveAndPushPCFData(String productId, String bpnNumber, String requestId, String message);
 
-	public PcfRequestModel savePcfRequestData(String requestId, String productId, String bpnNumber, String message);
+	public Object requestForPcfDataOffer(String productId, ConsumerRequest consumerRequest);
 
-	public PagingResponse getPcfData(String type, Integer page, Integer pageSize);
+	public PcfRequestModel savePcfRequestData(String requestId, String productId, String bpnNumber, String message,
+			PCFTypeEnum type);
+
+	public PagingResponse getPcfData(String status, PCFTypeEnum type, Integer page, Integer pageSize);
 
 	public void recievedPCFData(String productId, String bpnNumber, String requestId, String message,
 			JsonObject pcfData);

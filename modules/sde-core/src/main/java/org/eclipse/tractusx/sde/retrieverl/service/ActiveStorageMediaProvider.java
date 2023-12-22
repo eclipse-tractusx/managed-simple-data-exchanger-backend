@@ -20,27 +20,43 @@
 
 package org.eclipse.tractusx.sde.retrieverl.service;
 
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.agent.ConfigService;
 import org.eclipse.tractusx.sde.agent.model.ActiveStorageMedia;
+import org.eclipse.tractusx.sde.common.ConfigurableFactory;
 import org.eclipse.tractusx.sde.common.ConfigurationProvider;
+import org.eclipse.tractusx.sde.common.exception.ValidationException;
+import org.eclipse.tractusx.sde.retrieverl.RetrieverI;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ActiveStorageMediaProvider implements ConfigurationProvider<ActiveStorageMedia> {
 
 	private final ConfigService configService;
 	
-	@Value("${retriever.active:Minio}")
+	@Value("${retriever.active:}")
 	private String retriever;
+
+    private final ApplicationContext applicationContext;
 
 	@PostConstruct
 	public void init() {
-		saveConfig(getConfiguration());
+        ActiveStorageMedia media = getConfiguration();
+        if(media != null)
+            log.info("There is a active storage media present: "+media.getName());
+        else
+            log.warn("There is no default active storage media");
 	}
 	
     @Override
@@ -48,7 +64,8 @@ public class ActiveStorageMediaProvider implements ConfigurationProvider<ActiveS
         return configService.getConfigurationAsObject(ActiveStorageMedia.class)
                 .orElseGet(() -> {
                     var jmp = getDefaultActiveStorageMedia();
-                    saveConfig(jmp);
+                    if(jmp != null)
+                        saveConfig(jmp);
                     return jmp;
                 });
     }
@@ -64,6 +81,14 @@ public class ActiveStorageMediaProvider implements ConfigurationProvider<ActiveS
     }
 
     private ActiveStorageMedia getDefaultActiveStorageMedia() {
-        return ActiveStorageMedia.builder().name(retriever).build();
+        if(StringUtils.isNotBlank(retriever)) {
+            try {
+                var retrieverFactory = (ConfigurableFactory<RetrieverI>) applicationContext.getBean(retriever.toLowerCase());
+            } catch(Exception e) {
+                throw new ValidationException("To activate default storage media 'retriever.active="+ retriever +"' not supported");
+            }
+            return ActiveStorageMedia.builder().name(retriever).build();
+        } else
+            return null;
     }
 }

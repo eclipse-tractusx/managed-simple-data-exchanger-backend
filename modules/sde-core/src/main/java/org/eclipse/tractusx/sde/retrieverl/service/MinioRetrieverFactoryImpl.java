@@ -21,10 +21,12 @@
 package org.eclipse.tractusx.sde.retrieverl.	service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.agent.ConfigService;
 import org.eclipse.tractusx.sde.agent.model.MinioConfigModel;
 import org.eclipse.tractusx.sde.common.ConfigurableFactory;
 import org.eclipse.tractusx.sde.common.ConfigurationProvider;
+import org.eclipse.tractusx.sde.common.exception.ValidationException;
 import org.eclipse.tractusx.sde.common.validators.SpringValidator;
 import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,28 +34,28 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
-@Service("minio")
+@Service("objectstorage")
 @RequiredArgsConstructor
 public class MinioRetrieverFactoryImpl implements ConfigurableFactory<MinioRetriever>, ConfigurationProvider<MinioConfigModel> {
 
-	@Value("${minio.endpoint}")
+	@Value("${minio.endpoint:}")
 	private String endpoint;
-	@Value("${minio.access-key}")
+	@Value("${minio.access-key:}")
 	private String accessKey;
-	@Value("${minio.secret-key}")
+	@Value("${minio.secret-key:}")
 	private String secretKey;
-	@Value("${minio.bucket-name}")
+	@Value("${minio.bucket-name:}")
 	private String bucketName;
 	@Value("${minio.location.tobeprocessed:}")
-	private String toBeProcessed;
-	@Value("${minio.location.inprogress}")
-	private String inProgress;
-	@Value("${minio.location.success}")
-	private String success;
-	@Value("${minio.location.partialsucess}")
-	private String partialSuccess;
-	@Value("${minio.location.failed}")
-	private String failed;
+	private String minioToBeProcessed;
+	@Value("${minio.location.inprogress:}")
+	private String minioInProgress;
+	@Value("${minio.location.success:}")
+	private String minioSuccess;
+	@Value("${minio.location.partialsucess:}")
+	private String minioPartialSuccess;
+	@Value("${minio.location.failed:}")
+	private String minioFailed;
 
 	private final ConfigService configService;
 	private final CsvHandlerService csvHandlerService;
@@ -65,18 +67,20 @@ public class MinioRetrieverFactoryImpl implements ConfigurableFactory<MinioRetri
 	}
 
 	@Override
-	public MinioRetriever create() throws IOException {
-		var configModel = getConfiguration();
+	public MinioRetriever create() throws IOException, ValidationException {
+		var objectStorageConfigModel = getConfiguration();
+		if(StringUtils.isBlank(objectStorageConfigModel.getEndpoint()))
+			throw new ValidationException("Object storage config is empty, unable to process job.");
 		return new MinioRetriever(csvHandlerService,
-							configModel.getEndpoint(),
-							configModel.getAccessKey(),
-							configModel.getSecretKey(),
-							configModel.getBucketName(),
-							removeFirstSlashForMinio(configModel.getToBeProcessedLocation()),
-							removeFirstSlashForMinio(configModel.getInProgressLocation()),
-							removeFirstSlashForMinio(configModel.getSuccessLocation()),
-							removeFirstSlashForMinio(configModel.getPartialSuccessLocation()),
-							removeFirstSlashForMinio(configModel.getFailedLocation())
+							objectStorageConfigModel.getEndpoint(),
+							objectStorageConfigModel.getAccessKey(),
+							objectStorageConfigModel.getSecretKey(),
+							objectStorageConfigModel.getBucketName(),
+							removeFirstSlashForMinio(objectStorageConfigModel.getToBeProcessedLocation()),
+							removeFirstSlashForMinio(objectStorageConfigModel.getInProgressLocation()),
+							removeFirstSlashForMinio(objectStorageConfigModel.getSuccessLocation()),
+							removeFirstSlashForMinio(objectStorageConfigModel.getPartialSuccessLocation()),
+							removeFirstSlashForMinio(objectStorageConfigModel.getFailedLocation())
 				);
 	}
 
@@ -101,17 +105,17 @@ public class MinioRetrieverFactoryImpl implements ConfigurableFactory<MinioRetri
 	}
 
 	private MinioConfigModel getDefaultConfig() {
-		return validator.validate(MinioConfigModel.builder()
+		return MinioConfigModel.builder()
 				.endpoint(endpoint)
 				.accessKey(accessKey)
 				.secretKey(secretKey)
 				.bucketName(bucketName)
-				.failedLocation(failed)
-				.toBeProcessedLocation(toBeProcessed)
-				.inProgressLocation(inProgress)
-				.partialSuccessLocation(partialSuccess)
-				.successLocation(success)
+				.failedLocation(minioFailed)
+				.toBeProcessedLocation(minioToBeProcessed)
+				.inProgressLocation(minioInProgress)
+				.partialSuccessLocation(minioPartialSuccess)
+				.successLocation(minioSuccess)
 				.build()
-		);
+		;
 	}
 }

@@ -68,22 +68,27 @@ public class MinioRetriever implements RetrieverI {
             this.failedLocation = failedLocation;
             this.bucketName = bucketName;
 
-            minioClient = MinioClient.builder()
-                    .endpoint(endpoint)
-                    .credentials(accessKey, secretKey)
-                    .build();
             idToPath = new LinkedHashMap<>();
-            for (var r : minioClient.listObjects(
-                    ListObjectsArgs.builder()
-                            .bucket(bucketName)
-                            .prefix(isNullOrEmpty(toBeProcessedLocation) ? "" : toBeProcessedLocation + "/")
-                            .recursive(!isNullOrEmpty(toBeProcessedLocation))
-                            .build())) {
-                var item = r.get();
-                if (!item.isDir() && item.objectName().toLowerCase().endsWith(".csv")) {
-                    idToPath.put(UUID.randomUUID().toString(), item.objectName());
+            if(endpoint != null && !endpoint.isBlank()) {
+                minioClient = MinioClient.builder()
+                        .endpoint(endpoint)
+                        .credentials(accessKey, secretKey)
+                        .build();
+
+                for (var r : minioClient.listObjects(
+                        ListObjectsArgs.builder()
+                                .bucket(bucketName)
+                                .prefix(isNullOrEmpty(toBeProcessedLocation) ? "" : toBeProcessedLocation + "/")
+                                .recursive(!isNullOrEmpty(toBeProcessedLocation))
+                                .build())) {
+                    var item = r.get();
+                    if (!item.isDir() && item.objectName().toLowerCase().endsWith(".csv")) {
+                        idToPath.put(UUID.randomUUID().toString(), item.objectName());
+                    }
                 }
-            }
+            } else
+                minioClient = null;
+
             idToPolicy = new ConcurrentHashMap<>();
         } catch (Exception e) {
             throw new IOException(e);

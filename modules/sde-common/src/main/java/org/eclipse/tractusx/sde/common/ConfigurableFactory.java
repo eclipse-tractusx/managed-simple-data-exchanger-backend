@@ -20,6 +20,8 @@
 
 package org.eclipse.tractusx.sde.common;
 
+import org.eclipse.tractusx.sde.common.exception.ValidationException;
+
 import java.io.IOException;
 
 public interface ConfigurableFactory<T> {
@@ -28,5 +30,5 @@ public interface ConfigurableFactory<T> {
      * and the retriever managed to log in to the remote resource
      * @return retriever
      */
-    T create() throws IOException;
+    T create() throws IOException, ValidationException;
 }

@@ -41,6 +41,6 @@ public class JobMaintenanceConfigService implements ConfigurationProvider<JobMai
     }
 
     private JobMaintenanceModel getDefaultJobMaintenanceModel() {
-        return new JobMaintenanceModel(true, true);
+        return new JobMaintenanceModel(false, false);
     }
 }

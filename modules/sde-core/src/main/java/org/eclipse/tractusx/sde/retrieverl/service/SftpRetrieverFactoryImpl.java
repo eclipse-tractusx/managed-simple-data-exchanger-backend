@@ -22,10 +22,12 @@ package org.eclipse.tractusx.sde.retrieverl.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.agent.ConfigService;
 import org.eclipse.tractusx.sde.agent.model.SftpConfigModel;
 import org.eclipse.tractusx.sde.common.ConfigurableFactory;
 import org.eclipse.tractusx.sde.common.ConfigurationProvider;
+import org.eclipse.tractusx.sde.common.exception.ValidationException;
 import org.eclipse.tractusx.sde.common.validators.SpringValidator;
 import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,23 +39,23 @@ import java.util.OptionalInt;
 @RequiredArgsConstructor
 public class SftpRetrieverFactoryImpl implements ConfigurableFactory<SftpRetriever>, ConfigurationProvider<SftpConfigModel> {
 
-	@Value("${sftp.host}")
+	@Value("${sftp.host:}")
 	private String host;
 	@Value("${sftp.port:22}")
 	private int port;
-	@Value("${sftp.username}")
+	@Value("${sftp.username:}")
 	private String username;
-	@Value("${sftp.password}")
+	@Value("${sftp.password:}")
 	private String password;
-	@Value("${sftp.location.tobeprocessed}")
+	@Value("${sftp.location.tobeprocessed:}")
 	private String toBeProcessed;
-	@Value("${sftp.location.inprogress}")
+	@Value("${sftp.location.inprogress:}")
 	private String inProgress;
-	@Value("${sftp.location.success}")
+	@Value("${sftp.location.success:}")
 	private String success;
-	@Value("${sftp.location.partialsucess}")
+	@Value("${sftp.location.partialsucess:}")
 	private String partialSuccess;
-	@Value("${sftp.location.failed}")
+	@Value("${sftp.location.failed:}")
 	private String failed;
 	@Value("${sftp.retries:5}")
 	private int numberOfRetries;
@@ -69,18 +71,20 @@ public class SftpRetrieverFactoryImpl implements ConfigurableFactory<SftpRetriev
 
 	@SneakyThrows
 	public SftpRetriever create(OptionalInt port) {
-		SftpConfigModel configModel = getConfiguration();
+		SftpConfigModel sftpConfigModel = getConfiguration();
+		if(StringUtils.isBlank(sftpConfigModel.getHost()))
+			throw new ValidationException("Sftp config is empty, unable to process job.");
 		return new SftpRetriever(csvHandlerService, 
-				configModel.getHost(),
-				port.orElse(configModel.getPort()),
-				configModel.getUsername(), 
-				configModel.getPassword(),
-				configModel.getAccessKey(),
-				configModel.getToBeProcessedLocation(), 
-				configModel.getInProgressLocation(),
-				configModel.getSuccessLocation(),
-				configModel.getPartialSuccessLocation(),
-				configModel.getFailedLocation(),
+				sftpConfigModel.getHost(),
+				port.orElse(sftpConfigModel.getPort()),
+				sftpConfigModel.getUsername(),
+				sftpConfigModel.getPassword(),
+				sftpConfigModel.getAccessKey(),
+				sftpConfigModel.getToBeProcessedLocation(),
+				sftpConfigModel.getInProgressLocation(),
+				sftpConfigModel.getSuccessLocation(),
+				sftpConfigModel.getPartialSuccessLocation(),
+				sftpConfigModel.getFailedLocation(),
 				numberOfRetries,
 				retryDelayFrom,
 				retryDelayTo
@@ -94,7 +98,7 @@ public class SftpRetrieverFactoryImpl implements ConfigurableFactory<SftpRetriev
 	}
 
 	private SftpConfigModel getDefaultConfig() {
-		return validator.validate(SftpConfigModel.builder()
+		return SftpConfigModel.builder()
 				.host(host)
 				.port(port)
 				.failedLocation(failed)
@@ -104,8 +108,7 @@ public class SftpRetrieverFactoryImpl implements ConfigurableFactory<SftpRetriev
 				.inProgressLocation(inProgress)
 				.partialSuccessLocation(partialSuccess)
 				.successLocation(success)
-				.build()
-		);
+				.build();
 	}
 
 	@Override

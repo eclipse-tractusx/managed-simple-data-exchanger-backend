@@ -50,10 +50,10 @@ public class EmailManager {
     @Autowired
     private MimeMessage mimeMessage;
 
-    @Value("${mail.from.address}")
+    @Value("${mail.from.address:default}")
     private String fromEmail;
 
-    @Value("${mail.replyto.address}")
+    @Value("${mail.replyto.address:default}")
     private String replyTo;
 
     final Configuration configuration;
@@ -92,7 +92,7 @@ public class EmailManager {
                 }
                 mimeMessage.setRecipients(Message.RecipientType.TO, addressTo);
             } else {
-                throw new ValidationException("To email is null");
+                throw new ServiceException("To email is null");
             }
 
             InternetAddress[] addressCC = new InternetAddress[1];

@@ -10,10 +10,10 @@ import org.springframework.stereotype.Service;
 @Service("email")
 @RequiredArgsConstructor
 public class EmailNotificationModelProvider implements ConfigurationProvider<EmailNotificationModel> {
-    @Value("${mail.to.address}")
+    @Value("${mail.to.address:}")
     private String toEmail;
 
-    @Value("${mail.cc.address}")
+    @Value("${mail.cc.address:}")
     private String ccEmail;
 
     private final ConfigService configService;

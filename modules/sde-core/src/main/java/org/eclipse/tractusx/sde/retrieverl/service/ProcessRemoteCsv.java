@@ -78,7 +78,7 @@ public class ProcessRemoteCsv {
 	private final JobMaintenanceConfigService jobMaintenanceConfigService;
 	private final ActiveStorageMediaProvider activeStorageMediaProvider;
 
-	private final ObjectStorageNotificationTask notificationTask;
+	private final AutoUploadNotificationTask notificationTask;
 	private final ApplicationContext applicationContext;
 
 	@SneakyThrows

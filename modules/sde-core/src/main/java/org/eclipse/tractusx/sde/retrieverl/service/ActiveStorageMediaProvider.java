@@ -20,23 +20,17 @@
 
 package org.eclipse.tractusx.sde.retrieverl.service;
 
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.agent.ConfigService;
 import org.eclipse.tractusx.sde.agent.model.ActiveStorageMedia;
-import org.eclipse.tractusx.sde.common.ConfigurableFactory;
 import org.eclipse.tractusx.sde.common.ConfigurationProvider;
 import org.eclipse.tractusx.sde.common.exception.ValidationException;
-import org.eclipse.tractusx.sde.retrieverl.RetrieverI;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
-
-import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -83,7 +77,7 @@ public class ActiveStorageMediaProvider implements ConfigurationProvider<ActiveS
     private ActiveStorageMedia getDefaultActiveStorageMedia() {
         if(StringUtils.isNotBlank(retriever)) {
             try {
-                var retrieverFactory = (ConfigurableFactory<RetrieverI>) applicationContext.getBean(retriever.toLowerCase());
+                applicationContext.getBean(retriever.toLowerCase());
             } catch(Exception e) {
                 throw new ValidationException("To activate default storage media 'retriever.active="+ retriever +"' not supported");
             }

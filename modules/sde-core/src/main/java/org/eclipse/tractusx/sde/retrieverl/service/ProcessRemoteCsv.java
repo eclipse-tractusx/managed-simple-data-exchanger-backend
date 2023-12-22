@@ -20,27 +20,10 @@
 
 package org.eclipse.tractusx.sde.retrieverl.service;
 
-import static org.eclipse.tractusx.sde.common.utils.TryUtils.tryRun;
-
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tractusx.sde.agent.entity.SchedulerReport;
 import org.eclipse.tractusx.sde.agent.enums.SchedulerReportStatusEnum;
 import org.eclipse.tractusx.sde.agent.mapper.SchedulerReportMapper;
@@ -51,32 +34,40 @@ import org.eclipse.tractusx.sde.common.ConfigurableFactory;
 import org.eclipse.tractusx.sde.common.enums.ProgressStatusEnum;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.common.exception.ValidationException;
-import org.eclipse.tractusx.sde.common.utils.DateUtil;
 import org.eclipse.tractusx.sde.common.utils.TryUtils;
 import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
 import org.eclipse.tractusx.sde.core.processreport.entity.ProcessReportEntity;
 import org.eclipse.tractusx.sde.core.processreport.repository.ProcessReportRepository;
 import org.eclipse.tractusx.sde.core.service.SubmodelOrchestartorService;
-import org.eclipse.tractusx.sde.notification.manager.EmailManager;
-import org.eclipse.tractusx.sde.notification.manager.EmailNotificationModelProvider;
 import org.eclipse.tractusx.sde.retrieverl.RetrieverI;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import static org.eclipse.tractusx.sde.common.utils.TryUtils.tryRun;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class ProcessRemoteCsv {
-	private static final String TD_CLOSE = "</td>";
-	private static final String TD = "<td>";
 	private final CsvHandlerService csvHandlerService;
 	private final PolicyProvider policyProvider;
 	private final SubmodelOrchestartorService submodelOrchestartorService;
@@ -84,10 +75,10 @@ public class ProcessRemoteCsv {
 	private final ProcessReportRepository processReportRepository;
 	private final SchedulerReportMapper sftpReportMapper;
 	private final ObjectFactory<ProcessRemoteCsv> selfFactory;
-	private final EmailManager emailManager;
-	private final EmailNotificationModelProvider emailNotificationModelProvider;
 	private final JobMaintenanceConfigService jobMaintenanceConfigService;
 	private final ActiveStorageMediaProvider activeStorageMediaProvider;
+
+	private final ObjectStorageNotificationTask notificationTask;
 	private final ApplicationContext applicationContext;
 
 	@SneakyThrows
@@ -135,13 +126,13 @@ public class ProcessRemoteCsv {
 		} catch (ValidationException ve) {
 			log.error("Process :" + ve.getMessage());
 			updateTrigger(schedulerTrigger, msg, SchedulerReportStatusEnum.FAILED);
-			sendEmailNotification(schedulerUuid);
+			notificationTask.sendNotificationForProcessedFiles(schedulerUuid);
 			throw new ValidationException(ve.getMessage());
 		} catch (Exception e) {
 			log.error("Process :" + e.getMessage());
 			msg = "Unable to complete trigger job, please reached to technical team.";
 			updateTrigger(schedulerTrigger, msg, SchedulerReportStatusEnum.FAILED);
-			sendEmailNotification(schedulerUuid);
+			notificationTask.sendNotificationForProcessedFiles(schedulerUuid);
 			Thread.currentThread().interrupt();
 			throw new ServiceException(msg + "- " + e.getMessage());
 		}
@@ -166,7 +157,7 @@ public class ProcessRemoteCsv {
 						+ "' location for processing, scheduled job completed";
 				log.info(msg);
 				updateTrigger(schedulerTrigger, msg, SchedulerReportStatusEnum.SUCCESS);
-				sendEmailNotification(schedulerUuid);
+				notificationTask.sendNotificationForProcessedFiles(schedulerUuid);
 			}
 		} catch (Throwable e) {
 			if(e instanceof ExecutionException) {
@@ -175,7 +166,7 @@ public class ProcessRemoteCsv {
 			log.error("WaitOrProcessRetrivel: " + e.getMessage());
 			msg = "Unable to complete trigger job, please reach to technical team.";
 			updateTrigger(schedulerTrigger, msg, SchedulerReportStatusEnum.FAILED);
-			sendEmailNotification(schedulerUuid);
+			notificationTask.sendNotificationForProcessedFiles(schedulerUuid);
 			Thread.currentThread().interrupt();
 			if(e instanceof ValidationException)
 				throw new ValidationException(e.getMessage());
@@ -191,15 +182,6 @@ public class ProcessRemoteCsv {
 		schedulerTrigger.setStatus(status);
 		schedulerTrigger.setEndDate(LocalDateTime.now());
 		sftpReportRepository.save(schedulerTrigger);
-	}
-
-	@Async
-	public void sendEmailNotification(String schedulerUuid) {
-		if (jobMaintenanceConfigService.getConfiguration().getEmailNotification().booleanValue()) {
-			sendNotificationForProcessedFiles(schedulerUuid);
-		} else {
-			log.warn("The notification is disable, so avoiding sent email notification");
-		}
 	}
 
 	private void retriverProcess(TaskScheduler taskScheduler, String schedulerId, RetrieverI retriever) {
@@ -237,95 +219,8 @@ public class ProcessRemoteCsv {
 		} else {
 			// In case of error this will send the notification. E.g. policy not present
 			// Send this email after 5 seconds to finish 'update trigger' from caller method
-			taskScheduler.schedule(() -> sendEmailNotification(schedulerId), Instant.now().plus(Duration.ofSeconds(5)));
+			taskScheduler.schedule(() -> notificationTask.sendNotificationForProcessedFiles(schedulerId), Instant.now().plus(Duration.ofSeconds(5)));
 		}
-	}
-
-	private void sendNotificationForProcessedFiles(String schedulerId) {
-		List<SchedulerReport> sftpReportList = sftpReportRepository.findBySchedulerId(schedulerId);
-		if (!sftpReportList.isEmpty()) {
-			var emailNotification = emailNotificationModelProvider.getConfiguration();
-			Map<String, Object> emailContent = new HashMap<>();
-			emailContent.put("toemail", emailNotification.getToEmail());
-			emailContent.put("ccemail", emailNotification.getCcEmail());
-
-			String statusMsg = "";
-			String startTime = "";
-
-			log.info("Send notification for scheduler: " + schedulerId);
-			StringBuilder tableData = new StringBuilder();
-
-			if (sftpReportList.size() > 1)
-				tableData.append("""
-								<table border="1">
-								<tr>
-								<th>Process Id </th>
-								<th>File name </td>
-								<th>Policy</td>
-								<th>CSV Type </th>
-								<th>Processing start time </td>
-								<th>Processing end time </th>
-								<th>Processing Status </th>
-								<th>Successful entries count </td>
-								<th>Failed entries count</th>
-							</tr>
-						""");
-
-			for (SchedulerReport sftpSchedulerReport : sftpReportList) {
-				if (schedulerId.equals(sftpSchedulerReport.getProcessId())) {
-					statusMsg = sftpSchedulerReport.getRemark();
-					startTime = sftpSchedulerReport.getStartDate().toString();
-				} else {
-					formatEmailContent(tableData, sftpSchedulerReport);
-				}
-			}
-
-			if (!tableData.isEmpty())
-				tableData.append("</table>");
-
-			emailContent.put("statusMsg", statusMsg);
-			emailContent.put("schedulerTime", startTime);
-			emailContent.put("content", tableData.toString());
-
-			String subject = "SDE automatic file processing scheduler notification :: " + schedulerId + " :: "
-					+ startTime;
-
-			tryRun((TryUtils.ThrowableAction<ServiceException>) () -> emailManager.sendEmail(emailContent, subject,
-					"scheduler_status.html"),
-					se -> log.info(
-							"Exception occurred while sending email for scheduler id: " + schedulerId + "\n" + se));
-		} else {
-			log.warn("No data found in automatic storage upload to send notification email");
-		}
-	}
-
-	private void formatEmailContent(StringBuilder tableData, SchedulerReport sftpSchedulerReport) {
-		Optional<ProcessReportEntity> processReport = processReportRepository
-				.findByProcessId(sftpSchedulerReport.getProcessId());
-		int numberOfSucceededItems = 0;
-		int numberOfFailedItems = 0;
-		String csvType = "";
-		if (processReport.isPresent()) {
-			numberOfSucceededItems = processReport.get().getNumberOfSucceededItems()
-					+ processReport.get().getNumberOfUpdatedItems();
-			csvType = processReport.get().getCsvType();
-			numberOfFailedItems = processReport.get().getNumberOfFailedItems();
-		}
-
-		tableData.append("<tr>");
-		String rowData = TD;
-		rowData += sftpSchedulerReport.getProcessId() + TD_CLOSE;
-		rowData += TD + sftpSchedulerReport.getFileName() + TD_CLOSE;
-		rowData += TD + sftpSchedulerReport.getPolicyName() + TD_CLOSE;
-		rowData += TD + csvType + TD_CLOSE;
-		rowData += TD + DateUtil.formatter.format(sftpSchedulerReport.getStartDate()) + TD_CLOSE;
-		rowData += TD + DateUtil.formatter.format(sftpSchedulerReport.getEndDate()) + TD_CLOSE;
-		rowData += TD + sftpSchedulerReport.getStatus() + TD_CLOSE;
-		rowData += TD + numberOfSucceededItems + TD_CLOSE;
-		rowData += TD + numberOfFailedItems + TD_CLOSE;
-		tableData.append(rowData);
-		tableData.append("</tr>");
-
 	}
 
 	public void checkStatusOfInprogressFilesAndNotify(TaskScheduler taskScheduler, RetrieverI retriever,
@@ -337,7 +232,7 @@ public class ProcessRemoteCsv {
 		} else {
 			selfFactory.getObject().createDbReport(retriever, inProgressIdList, schedulerId).forEach(Runnable::run);
 			tryRun(retriever::close, TryUtils::IGNORE);
-			sendEmailNotification(schedulerId);
+			notificationTask.sendNotificationForProcessedFiles(schedulerId);
 		}
 	}
 

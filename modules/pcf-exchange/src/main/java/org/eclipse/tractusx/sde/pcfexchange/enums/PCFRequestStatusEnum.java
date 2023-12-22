@@ -22,7 +22,6 @@ package org.eclipse.tractusx.sde.pcfexchange.enums;
 
 public enum PCFRequestStatusEnum {
     REQUESTED,
-    REREQUESTED,
     APPROVED,
 	PUSHED,
     UPDATED,

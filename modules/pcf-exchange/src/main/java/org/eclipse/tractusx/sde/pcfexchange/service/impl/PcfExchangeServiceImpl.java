@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.model.PagingResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellLookupRequest;
@@ -199,7 +200,8 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 	public PcfRequestModel savePcfRequestData(String requestId, String productId, String bpnNumber, String message, PCFTypeEnum type) {
 
 		PcfRequestModel pcfRequest = PcfRequestModel.builder()
-				.requestId(requestId).productId(productId)
+				.requestId(requestId)
+				.productId(productId)
 				.bpnNumber(bpnNumber)
 				.status(PCFRequestStatusEnum.REQUESTED)
 				.message(message)
@@ -214,12 +216,12 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 	
 	@Override
 	public void recievedPCFData(String productId, String bpnNumber, String requestId, String message,
-			JsonObject pcfData) {
+			String pcfData) {
 		
 		String responseId = UUID.randomUUID().toString();
 		
 		PcfResponseEntity entity= PcfResponseEntity.builder()
-				.pcfData(pcfData.getAsJsonObject().getAsString())
+				.pcfData(pcfData)
 				.requestId(requestId)
 				.responseId(responseId)
 				.lastUpdatedTime(LocalDateTime.now())
@@ -237,13 +239,15 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 	}
 	
 	@Override
-	public PagingResponse getPcfData(String status, PCFTypeEnum type, Integer page, Integer pageSize) {
+	public PagingResponse getPcfData(PCFRequestStatusEnum status, PCFTypeEnum type, Integer page, Integer pageSize) {
 
-		 pcfRequestRepository.findByStatusLikeOrderByLastUpdatedTimeDesc(PageRequest.of(page, pageSize), status);
+		Page<PcfRequestEntity> result = null;
+		if(status == null || StringUtils.isBlank(status.toString())) {
+			result = pcfRequestRepository.findByType(PageRequest.of(page, pageSize), type);
+		}else {
+			result = pcfRequestRepository.findByTypeAndStatus(PageRequest.of(page, pageSize), type, status);
+		}
 		
-		 Page<PcfRequestEntity> result = pcfRequestRepository
-										.findByTypeLikeOrderByLastUpdatedTimeDesc(PageRequest.of(page, pageSize), type);
-		 
 		List<PcfRequestModel> requestList = result.stream().map(pcfMapper::mapFrom).toList();
 
 		return PagingResponse.builder().items(requestList).pageSize(result.getSize()).page(result.getNumber())

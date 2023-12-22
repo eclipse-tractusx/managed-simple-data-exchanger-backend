@@ -26,8 +26,8 @@ import java.util.Map;
 
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
+import org.eclipse.tractusx.sde.pcfexchange.enums.PCFRequestStatusEnum;
 import org.eclipse.tractusx.sde.pcfexchange.enums.PCFTypeEnum;
-import org.eclipse.tractusx.sde.pcfexchange.request.PcfRequestModel;
 import org.eclipse.tractusx.sde.pcfexchange.service.impl.PcfExchangeServiceImpl;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +40,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.google.gson.JsonObject;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -86,7 +86,7 @@ public class PcfExchangeController {
 	}
 
 	@GetMapping(value = "/provider/requests")
-	public ResponseEntity<Object> getPcfProviderData(@RequestParam(value = "status", required = false) String status,
+	public ResponseEntity<Object> getPcfProviderData(@RequestParam(value = "status", required = false) PCFRequestStatusEnum status,
 			@Param("page") Integer page, @Param("pageSize") Integer pageSize) throws Exception {
 		log.info("Request received for POST: /api/pcf/requests/");
 
@@ -97,7 +97,7 @@ public class PcfExchangeController {
 	}
 	
 	@GetMapping(value = "/consumer/requests")
-	public ResponseEntity<Object> getPcfConsumerData(@RequestParam(value = "status", required = false) String status,
+	public ResponseEntity<Object> getPcfConsumerData(@RequestParam(value = "status", required = false) PCFRequestStatusEnum status,
 			@Param("page") Integer page, @Param("pageSize") Integer pageSize) throws Exception {
 		log.info("Request received for POST: /api/pcf/requests/");
 
@@ -122,10 +122,11 @@ public class PcfExchangeController {
 	public ResponseEntity<Object> uploadPcfSubmodel(@PathVariable String productId,
 			@RequestParam(value = "BPN", required = true) String bpnNumber,
 			@RequestParam(value = "requestId", required = false) String requestId,
-			@RequestParam(value = "message", required = false) String message, @RequestBody JsonObject pcfData) {
+			@RequestParam(value = "message", required = false) String message,
+			@RequestBody JsonNode pcfData) {
 		log.info("Request received for PUT: /api/pcf/productIds");
 
-		pcfExchangeService.recievedPCFData(productId, bpnNumber, requestId, message, pcfData);
+		pcfExchangeService.recievedPCFData(productId, bpnNumber, requestId, message, pcfData.toPrettyString());
 		return ResponseEntity.ok().body(Map.of("msg", "PCF response recieved"));
 	}
 }

@@ -24,7 +24,7 @@ import static org.eclipse.tractusx.sde.common.utils.TryUtils.tryRun;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ObjectStorageNotificationTask {
+public class AutoUploadNotificationTask {
 
     private final SchedulerReportRepository sftpReportRepository;
 
@@ -40,21 +40,28 @@ public class ObjectStorageNotificationTask {
     @Async
     public void sendNotificationForProcessedFiles(String schedulerId) {
         if(jobMaintenanceConfigService.getConfiguration().getEmailNotification().booleanValue()) {
-            List<SchedulerReport> sftpReportList = sftpReportRepository.findBySchedulerId(schedulerId);
-            if (!sftpReportList.isEmpty()) {
-                var emailNotification = emailNotificationModelProvider.getConfiguration();
-                Map<String, Object> emailContent = new HashMap<>();
-                emailContent.put("toemail", emailNotification.getToEmail());
-                emailContent.put("ccemail", emailNotification.getCcEmail());
+            sendEmailNotification(schedulerId);
+        } else {
+            log.warn("The notification is disable, so avoiding sent email notification");
+        }
+    }
 
-                String statusMsg = "";
-                String startTime = "";
+    private void sendEmailNotification(String schedulerId) {
+        List<SchedulerReport> sftpReportList = sftpReportRepository.findBySchedulerId(schedulerId);
+        if (!sftpReportList.isEmpty()) {
+            var emailNotification = emailNotificationModelProvider.getConfiguration();
+            Map<String, Object> emailContent = new HashMap<>();
+            emailContent.put("toemail", emailNotification.getToEmail());
+            emailContent.put("ccemail", emailNotification.getCcEmail());
 
-                log.info("Send notification for scheduler: " + schedulerId);
-                StringBuilder tableData = new StringBuilder();
+            String statusMsg = "";
+            String startTime = "";
 
-                if (sftpReportList.size() > 1)
-                    tableData.append("""
+            log.info("Send notification for scheduler: " + schedulerId);
+            StringBuilder tableData = new StringBuilder();
+
+            if (sftpReportList.size() > 1)
+                tableData.append("""
                                     <table border="1">
                                     <tr>
                                     <th>Process Id </th>
@@ -69,34 +76,31 @@ public class ObjectStorageNotificationTask {
                                 </tr>
                             """);
 
-                for (SchedulerReport sftpSchedulerReport : sftpReportList) {
-                    if (schedulerId.equals(sftpSchedulerReport.getProcessId())) {
-                        statusMsg = Optional.ofNullable(sftpSchedulerReport.getRemark()).orElse("");
-                        startTime = sftpSchedulerReport.getStartDate().toString();
-                    } else {
-                        formatEmailContent(tableData, sftpSchedulerReport);
-                    }
+            for (SchedulerReport sftpSchedulerReport : sftpReportList) {
+                if (schedulerId.equals(sftpSchedulerReport.getProcessId())) {
+                    statusMsg = Optional.ofNullable(sftpSchedulerReport.getRemark()).orElse("");
+                    startTime = sftpSchedulerReport.getStartDate().toString();
+                } else {
+                    formatEmailContent(tableData, sftpSchedulerReport);
                 }
-
-                if (!tableData.isEmpty())
-                    tableData.append("</table>");
-
-                emailContent.put("statusMsg", statusMsg);
-                emailContent.put("schedulerTime", startTime);
-                emailContent.put("content", tableData.toString());
-
-                String subject = "SDE automatic file processing scheduler notification :: " + schedulerId + " :: "
-                        + startTime;
-
-                tryRun((TryUtils.ThrowableAction<ServiceException>) () -> emailManager.sendEmail(emailContent, subject,
-                                "scheduler_status.html"),
-                        se -> log.info(
-                                "Exception occurred while sending email for scheduler id: " + schedulerId + "\n" + se));
-            } else {
-                log.warn("No data found in automatic storage upload to send notification email");
             }
+
+            if (!tableData.isEmpty())
+                tableData.append("</table>");
+
+            emailContent.put("statusMsg", statusMsg);
+            emailContent.put("schedulerTime", startTime);
+            emailContent.put("content", tableData.toString());
+
+            String subject = "SDE automatic file processing scheduler notification :: " + schedulerId + " :: "
+                    + startTime;
+
+            tryRun((TryUtils.ThrowableAction<ServiceException>) () -> emailManager.sendEmail(emailContent, subject,
+                            "scheduler_status.html"),
+                    se -> log.info(
+                            "Exception occurred while sending email for scheduler id: " + schedulerId + "\n" + se));
         } else {
-            log.warn("The notification is disable, so avoiding sent email notification");
+            log.warn("No data found in automatic storage upload to send notification email");
         }
     }
 

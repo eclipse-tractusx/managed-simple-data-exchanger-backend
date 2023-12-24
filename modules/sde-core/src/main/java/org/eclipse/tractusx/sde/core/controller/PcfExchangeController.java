@@ -24,6 +24,7 @@ import static org.springframework.http.ResponseEntity.ok;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.eclipse.tractusx.sde.pcfexchange.enums.PCFRequestStatusEnum;
@@ -61,17 +62,17 @@ public class PcfExchangeController {
 		
 		List<QueryDataOfferModel> pcfOffer = pcfExchangeService.searchPcfDataOffer(manufacturerPartId, bpnNumber);
 		if (pcfOffer == null || pcfOffer.isEmpty())
-			return ResponseEntity.ok().body(Map.of("msg", "No PCF twin found"));
+			throw new NoDataFoundException("The PCF twin not found in network for "+manufacturerPartId);
 		else
-			return ResponseEntity.ok().body(pcfOffer);
+			return ok().body(pcfOffer);
 
 	}
 
-	@GetMapping(value = "/request/{productId}")
+	@PostMapping(value = "/request/{productId}")
 	public ResponseEntity<Object> getPcfDataOfferByProduct(@PathVariable String productId,
 			@Valid @RequestBody ConsumerRequest consumerRequest) throws Exception {
 		log.info("Request received for GET: /api/pcf/request/");
-		return ResponseEntity.ok().body(pcfExchangeService.requestForPcfDataOffer(productId, consumerRequest));
+		return ok().body(Map.of("msg", pcfExchangeService.requestForPcfDataOffer(productId, consumerRequest)));
 	}
 
 	@PostMapping(value = "/approve/{productId}")

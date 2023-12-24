@@ -23,7 +23,7 @@ public interface PCFExchangeProxy {
 			@RequestParam(value = "requestId", required = false) String requestId,
 			@RequestParam(value = "message", required = false) String message, @RequestBody JsonObject pcfData);
 
-	@GetMapping(value = "/productIds/{productId}")
+	@GetMapping
 	public ResponseEntity<Object> getPcfByProduct(URI url, @RequestHeader Map<String, String> requestHeader,
 			@PathVariable String productId, @RequestParam(value = "BPN", required = true) String bpnNumber,
 			@RequestParam(value = "requestId", required = true) String requestId, @RequestParam String message);

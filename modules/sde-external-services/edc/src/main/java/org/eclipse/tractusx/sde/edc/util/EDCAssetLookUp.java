@@ -54,7 +54,7 @@ public class EDCAssetLookUp {
 
 							offers.addAll(queryDataOfferModel);
 						} else {
-							log.info("The Consumer and Provider Connector are same so ignoring it for lookup "
+							log.warn("The Consumer and Provider Connector are same so ignoring it for lookup "
 									+ assetType + " in to " + connector);
 						}
 

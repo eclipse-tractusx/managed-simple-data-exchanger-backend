@@ -66,7 +66,7 @@ public class ContractNegotiateManagementHelper extends AbstractEDCStepsHelper {
 			ActionRequest action, Map<String, String> extensibleProperty) {
 
 		ContractNegotiations contractNegotiations = contractMapper
-				.prepareContractNegotiations(providerUrl + protocolPath, offerId, assetId, providerId, action);
+				.prepareContractNegotiations(providerUrl, offerId, assetId, providerId, action);
 
 		AcknowledgementId acknowledgementId = contractApi.contractnegotiations(new URI(consumerHost),
 				contractNegotiations, getAuthHeader());

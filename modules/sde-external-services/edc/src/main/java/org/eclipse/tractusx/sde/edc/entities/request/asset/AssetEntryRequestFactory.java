@@ -79,8 +79,8 @@ public class AssetEntryRequestFactory {
     private String subModelPayloadUrl(String submodel, String uuid) {
     	 return UriComponentsBuilder
                  .fromHttpUrl(dftHostname)
-                 //.path("/"+submodel+"/public/")
-                 //.path(uuid)
+                 .path("/"+submodel+"/public/")
+                 .path(uuid)
                  .toUriString();
 	}
 
@@ -95,7 +95,6 @@ public class AssetEntryRequestFactory {
         assetProperties.put(EDCAssetConstant.ASSET_PROP_CONTENTTYPE, ASSET_PROP_CONTENT_TYPE);
         assetProperties.put(EDCAssetConstant.ASSET_PROP_DESCRIPTION, assetName);
         assetProperties.put(EDCAssetConstant.ASSET_PROP_VERSION, ASSET_PROP_VERSION);
-        assetProperties.put(EDCAssetConstant.ASSET_PROP_PUBLISHER, manufacturerId+":"+edcEndpoint);
         assetProperties.put(EDCAssetConstant.ASSET_PROP_CREATED, date);
         assetProperties.put(EDCAssetConstant.ASSET_PROP_MODIFIED, date);
         return assetProperties;

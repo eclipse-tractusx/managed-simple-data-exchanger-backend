@@ -92,6 +92,11 @@ public class EDCAssetUrlCacheService {
 		dDTRmap.clear();
 		dDTRUrlCacheUtility.cleareDDTRUrlAllCache();
 	}
+	
+	public void removeDDTRUrlCache(String bpnNumber) {
+		dDTRUrlCacheUtility.removeDDTRUrlCache(bpnNumber);
+		dDTRmap.remove(bpnNumber);
+	}
 
 	public List<QueryDataOfferModel> getPCFExchangeUrlFromTwin(String bpnNumber) {
 
@@ -111,6 +116,11 @@ public class EDCAssetUrlCacheService {
 	public void clearPCFExchangeUrlCache() {
 		pcfExchangeURLMap.clear();
 		pcfExchangeAssetUtils.clearePCFExchangeAllCache();
+	}
+	
+	public void removePCFExchangeCache(String bpnNumber) {
+		pcfExchangeAssetUtils.removePCFExchangeCache(bpnNumber);
+		pcfExchangeURLMap.remove(bpnNumber);
 	}
 
 }

@@ -24,11 +24,11 @@ import static org.springframework.http.ResponseEntity.ok;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.eclipse.tractusx.sde.pcfexchange.enums.PCFRequestStatusEnum;
 import org.eclipse.tractusx.sde.pcfexchange.enums.PCFTypeEnum;
+import org.eclipse.tractusx.sde.pcfexchange.request.PcfRequestModel;
 import org.eclipse.tractusx.sde.pcfexchange.service.impl.PcfExchangeServiceImpl;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
@@ -57,55 +57,45 @@ public class PcfExchangeController {
 
 	@GetMapping(value = "/search")
 	public ResponseEntity<Object> searchPcfDataOffer(@RequestParam String manufacturerPartId,
-			@RequestParam String bpnNumber) throws Exception {
-		log.info("Request received for GET: /api/pcf/search");
-		
+			@RequestParam(value = "bpnNumber", required = false) String bpnNumber) throws Exception {
+		log.info("Request received for GET: /api/pcf/search?manufacturerPartId={}&bpnNumber={}", manufacturerPartId, bpnNumber);
+
 		List<QueryDataOfferModel> pcfOffer = pcfExchangeService.searchPcfDataOffer(manufacturerPartId, bpnNumber);
 		if (pcfOffer == null || pcfOffer.isEmpty())
-			throw new NoDataFoundException("The PCF twin not found in network for "+manufacturerPartId);
+			return ok().body(Map.of("msg", "The PCF twin not found in network for " + manufacturerPartId));
 		else
 			return ok().body(pcfOffer);
 
 	}
 
 	@PostMapping(value = "/request/{productId}")
-	public ResponseEntity<Object> getPcfDataOfferByProduct(@PathVariable String productId,
+	public ResponseEntity<Object> requestForPcfDataOffer(@PathVariable String productId,
 			@Valid @RequestBody ConsumerRequest consumerRequest) throws Exception {
-		log.info("Request received for GET: /api/pcf/request/");
+		log.info("Request received for GET: /api/pcf/request/{}", productId);
 		return ok().body(Map.of("msg", pcfExchangeService.requestForPcfDataOffer(productId, consumerRequest)));
 	}
 
-	@PostMapping(value = "/approve/{productId}")
-	public ResponseEntity<Object> pcfApprove(@PathVariable String productId, @RequestParam String bpnNumber,
-			@RequestParam String requestId, @RequestParam String message) throws Exception {
+	@PostMapping(value = "/actionsonrequest")
+	public ResponseEntity<Object> actionOnPcfRequestAndSendNotificationToConsumer(
+			@Valid @RequestBody PcfRequestModel pcfRequestModel) throws Exception {
 
-		log.info("Request received for POST: /api/pcf/approve/");
+		log.info("Request received for POST: /request/actionsonrequest");
 
-		pcfExchangeService.approveAndPushPCFData(productId, bpnNumber, requestId, message);
+		String msg = pcfExchangeService.actionOnPcfRequestAndSendNotificationToConsumer(pcfRequestModel);
 
-		return ResponseEntity.accepted().body(Map.of("msg", "PCF request approved and async pcf data pushed"));
+		return ok().body(Map.of("msg", msg));
 	}
 
-	@GetMapping(value = "/provider/requests")
-	public ResponseEntity<Object> getPcfProviderData(@RequestParam(value = "status", required = false) PCFRequestStatusEnum status,
-			@Param("page") Integer page, @Param("pageSize") Integer pageSize) throws Exception {
-		log.info("Request received for POST: /api/pcf/requests/");
+	@GetMapping(value = "/{type}/requests")
+	public ResponseEntity<Object> getPcfProviderData(@PathVariable PCFTypeEnum type,
+			@RequestParam(value = "status", required = false) PCFRequestStatusEnum status, @Param("page") Integer page,
+			@Param("pageSize") Integer pageSize) throws Exception {
+		log.info("Request received for POST: /api/pcf/{}/requests/", type.name().toLowerCase());
 
 		page = page == null ? 0 : page;
 		pageSize = pageSize == null ? 10 : pageSize;
 
-		return ok().body(pcfExchangeService.getPcfData(status, PCFTypeEnum.PROVIDER, page, pageSize));
-	}
-	
-	@GetMapping(value = "/consumer/requests")
-	public ResponseEntity<Object> getPcfConsumerData(@RequestParam(value = "status", required = false) PCFRequestStatusEnum status,
-			@Param("page") Integer page, @Param("pageSize") Integer pageSize) throws Exception {
-		log.info("Request received for POST: /api/pcf/requests/");
-
-		page = page == null ? 0 : page;
-		pageSize = pageSize == null ? 10 : pageSize;
-
-		return ok().body(pcfExchangeService.getPcfData(status, PCFTypeEnum.CONSUMER, page, pageSize));
+		return ok().body(pcfExchangeService.getPcfData(status, type, page, pageSize));
 	}
 
 	// PCF data exchange api's
@@ -114,7 +104,7 @@ public class PcfExchangeController {
 			@RequestParam(value = "BPN", required = true) String bpnNumber,
 			@RequestParam(value = "requestId", required = true) String requestId, @RequestParam String message)
 			throws Exception {
-		log.info("Request received for GET: /api/pcf/productIds");
+		log.info("Request received for GET: /api/pcf/productIds/{}", productId);
 		pcfExchangeService.savePcfRequestData(requestId, productId, bpnNumber, message, PCFTypeEnum.PROVIDER);
 		return ResponseEntity.accepted().body(Map.of("msg", "PCF request accepted"));
 	}
@@ -123,11 +113,10 @@ public class PcfExchangeController {
 	public ResponseEntity<Object> uploadPcfSubmodel(@PathVariable String productId,
 			@RequestParam(value = "BPN", required = true) String bpnNumber,
 			@RequestParam(value = "requestId", required = false) String requestId,
-			@RequestParam(value = "message", required = false) String message,
-			@RequestBody JsonNode pcfData) {
-		log.info("Request received for PUT: /api/pcf/productIds");
+			@RequestParam(value = "message", required = false) String message, @RequestBody JsonNode pcfData) {
+		log.info("Request received for PUT: /api/pcf/productIds/{}", productId);
 
-		pcfExchangeService.recievedPCFData(productId, bpnNumber, requestId, message, pcfData.toPrettyString());
+		pcfExchangeService.recievedPCFData(productId, bpnNumber, requestId, message, pcfData);
 		return ResponseEntity.ok().body(Map.of("msg", "PCF response recieved"));
 	}
 }

@@ -268,11 +268,6 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
 		var recipientURL = UtilityFunctions.removeLastSlashOfUrl(consumerRequest.getProviderUrl());
 		
-		if (!recipientURL.endsWith(protocolPath))
-			recipientURL = recipientURL + protocolPath;
-		
-		String sproviderUrl = recipientURL;
-
 		Map<UsagePolicyEnum, UsagePolicies> policies = consumerRequest.getPolicies();
 
 		UsagePolicies findFirst = policies.get(UsagePolicyEnum.CUSTOM);
@@ -286,7 +281,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 			Map<String, Object> resultFields = new ConcurrentHashMap<>();
 			try {
 				EDRCachedResponse checkContractNegotiationStatus = verifyOrCreateContractNegotiation(
-						consumerRequest.getConnectorId(), extensibleProperty, sproviderUrl, action, offer);
+						consumerRequest.getConnectorId(), extensibleProperty, recipientURL, action, offer);
 
 				resultFields.put("edr", checkContractNegotiationStatus);
 
@@ -337,6 +332,10 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 	@SneakyThrows
 	public EDRCachedResponse verifyOrCreateContractNegotiation(String connectorId,
 			Map<String, String> extensibleProperty, String recipientURL, ActionRequest action, Offer offer) {
+		
+		if (!recipientURL.endsWith(protocolPath))
+			recipientURL = recipientURL + protocolPath;
+		
 		// Verify if there already EDR process initiated then skip it for again download
 		String assetId = offer.getAssetId();
 		List<EDRCachedResponse> eDRCachedResponseList = edrRequestHelper.getEDRCachedByAsset(assetId);

@@ -28,11 +28,13 @@ import org.eclipse.tractusx.sde.pcfexchange.enums.PCFRequestStatusEnum;
 import org.eclipse.tractusx.sde.pcfexchange.enums.PCFTypeEnum;
 import org.eclipse.tractusx.sde.pcfexchange.request.PcfRequestModel;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 public interface IPCFExchangeService {
 
 	public List<QueryDataOfferModel> searchPcfDataOffer(String manufacturerPartId, String bpnNumber);
 
-	public void approveAndPushPCFData(String productId, String bpnNumber, String requestId, String message);
+	public String actionOnPcfRequestAndSendNotificationToConsumer(PcfRequestModel pcfRequestModel);
 
 	public Object requestForPcfDataOffer(String productId, ConsumerRequest consumerRequest);
 
@@ -42,6 +44,6 @@ public interface IPCFExchangeService {
 	public PagingResponse getPcfData(PCFRequestStatusEnum status, PCFTypeEnum type, Integer page, Integer pageSize);
 
 	public void recievedPCFData(String productId, String bpnNumber, String requestId, String message,
-			String pcfData);
+			JsonNode pcfData);
 
 }

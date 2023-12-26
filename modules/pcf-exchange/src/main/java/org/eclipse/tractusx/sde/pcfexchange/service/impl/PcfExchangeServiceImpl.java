@@ -20,13 +20,13 @@
 package org.eclipse.tractusx.sde.pcfexchange.service.impl;
 
 import java.net.URI;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
@@ -36,7 +36,10 @@ import org.eclipse.tractusx.sde.bpndiscovery.model.request.BpnDiscoverySearchReq
 import org.eclipse.tractusx.sde.bpndiscovery.model.response.BpnDiscoveryResponse;
 import org.eclipse.tractusx.sde.bpndiscovery.model.response.BpnDiscoverySearchResponse;
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
+import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
+import org.eclipse.tractusx.sde.common.mapper.JsonObjectMapper;
 import org.eclipse.tractusx.sde.common.model.PagingResponse;
+import org.eclipse.tractusx.sde.common.utils.TokenUtility;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellLookupRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellLookupResponse;
@@ -66,6 +69,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import feign.FeignException;
@@ -81,6 +86,7 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 	private final PcfRequestRepository pcfRequestRepository;
 	private final PcfReqsponseRepository pcfReqsponseRepository;
 	private final PcfExchangeMapper pcfMapper;
+	private final JsonObjectMapper jsonObjectMapper;
 	private final EDCAssetUrlCacheService edcAssetUrlCacheService;
 	private final EDCDigitalTwinProxyForLookUp eDCDigitalTwinProxyForLookUp;
 	private final PcfService pcfService;
@@ -88,9 +94,11 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 
 	private final ConsumerControlPanelService consumerControlPanelService;
 	private final BpnDiscoveryProxyService bpnDiscoveryProxyService;
-
+	
 	@Value(value = "${manufacturerId}")
 	private String manufacturerId;
+	
+	private Gson gson = new Gson();
 
 	String filterExpressionTemplate = """
 			"filterExpression": [
@@ -109,17 +117,13 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 		List<String> bpnList = null;
 
 		// 1 find bpn if empty using BPN discovery
-		
+
 		if (StringUtils.isBlank(searchBpnNumber)) {
 			BpnDiscoverySearchRequest bpnDiscoverySearchRequest = BpnDiscoverySearchRequest.builder()
 					.searchFilter(List
-							.of(Search.builder()
-									.type("manufacturerPartId")
-									.keys(List.of(manufacturerPartId))
-									.build()))
+							.of(Search.builder().type("manufacturerPartId").keys(List.of(manufacturerPartId)).build()))
 					.build();
 
-			
 			BpnDiscoverySearchResponse bpnDiscoverySearchData = bpnDiscoveryProxyService
 					.bpnDiscoverySearchData(bpnDiscoverySearchRequest);
 
@@ -130,33 +134,34 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 		}
 
 		for (String bpnNumber : bpnList) {
-			
+
 			// 2 fetch EDC connectors and DTR Assets from EDC connectors
 			List<QueryDataOfferModel> ddTROffers = edcAssetUrlCacheService.getDDTRUrl(bpnNumber);
-	
+
 			// 3 lookup shell for PCF sub model
 			for (QueryDataOfferModel dtOffer : ddTROffers) {
-	
+
 				EDRCachedByIdResponse edrToken = edcAssetUrlCacheService.verifyAndGetToken(bpnNumber, dtOffer);
 				if (edrToken != null) {
-	
+
 					SubModelResponse lookUpPCFTwin = lookUpPCFTwin(edrToken, dtOffer, manufacturerPartId, bpnNumber);
-	
+
 					if (lookUpPCFTwin != null) {
 						String subprotocolBody = lookUpPCFTwin.getEndpoints().get(0).getProtocolInformation()
 								.getSubprotocolBody();
-	
+
 						String[] edcInfo = subprotocolBody.split(";");
 						String[] assetInfo = edcInfo[0].split("=");
 						String[] connectorInfo = edcInfo[1].split("=");
-	
+
 						String filterExpression = String.format(filterExpressionTemplate, assetInfo[1]);
-						
-						List<QueryDataOfferModel> queryOnDataOffers = consumerControlPanelService.queryOnDataOffers(connectorInfo[1], 0, 100, filterExpression);
-						queryOnDataOffers.forEach(e-> e.setType("data.pcf.exchangeEndpoint"));	
+
+						List<QueryDataOfferModel> queryOnDataOffers = consumerControlPanelService
+								.queryOnDataOffers(connectorInfo[1], 0, 100, filterExpression);
+						queryOnDataOffers.forEach(e -> e.setType("data.pcf.exchangeEndpoint"));
 						result.addAll(queryOnDataOffers);
-					} 
-	
+					}
+
 				} else {
 					log.warn("EDR token is null, unable to look Up PCF Twin");
 				}
@@ -169,89 +174,117 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 	@Override
 	public String requestForPcfDataOffer(String productId, ConsumerRequest consumerRequest) {
 
+		String msg= "";
 		String requestId = UUID.randomUUID().toString();
 		Offer offer = consumerRequest.getOffers().get(0);
 
 		String providerBPNNumber = consumerRequest.getConnectorId();
 
-		QueryDataOfferModel queryDataOfferModel = QueryDataOfferModel.builder().assetId(offer.getAssetId())
-				.offerId(offer.getOfferId()).policyId(offer.getPolicyId()).connectorId(providerBPNNumber)
-				.connectorOfferUrl(consumerRequest.getProviderUrl()).usagePolicies(consumerRequest.getPolicies())
+		QueryDataOfferModel queryDataOfferModel = QueryDataOfferModel.builder()
+				.assetId(offer.getAssetId())
+				.offerId(offer.getOfferId())
+				.policyId(offer.getPolicyId())
+				.connectorId(providerBPNNumber)
+				.connectorOfferUrl(consumerRequest.getProviderUrl())
+				.usagePolicies(consumerRequest.getPolicies())
 				.build();
 
 		EDRCachedByIdResponse edrToken = edcAssetUrlCacheService.verifyAndGetToken(providerBPNNumber,
 				queryDataOfferModel);
 
 		if (edrToken != null) {
-
 			URI pcfEnpoint = new URI(edrToken.getEndpoint());
 			Map<String, String> header = new HashMap<>();
 			header.put(edrToken.getAuthKey(), edrToken.getAuthCode());
 
 			String message = "Please provide PCF value for " + productId;
-			
+
 			savePcfRequestData(requestId, productId, manufacturerId, message, PCFTypeEnum.CONSUMER);
-
-			//Send request to data provider for PCF value push
-			pcfExchangeProxy.getPcfByProduct(pcfEnpoint, header, productId, manufacturerId, requestId, message);
-
+			
+			// Send request to data provider for PCF value push
+			pcfExchangeProxy.getPcfByProduct(pcfEnpoint, header, manufacturerId, requestId, message);
+			
+			msg= "Requested for PCF value";
 
 		} else {
-			log.warn("EDC connector " + queryDataOfferModel.getConnectorOfferUrl()
-					+ ", The EDR token is null to find pcf exchange asset");
+			msg = "Unable to request for PCF value becasue the EDR token status is null";
+			log.warn("EDC connector " + queryDataOfferModel.getConnectorOfferUrl()+ ": {},{},{}", requestId, productId, msg);
 		}
-		return "Requested for PCF value";
+		return msg;
 	}
 
 	@Override
-	public void approveAndPushPCFData(String productId, String bpnNumber, String requestId, String message) {
+	public String actionOnPcfRequestAndSendNotificationToConsumer(PcfRequestModel pcfRequestModel) {
 
-		JsonObject calculatedPCFValue = pcfService.readCreatedTwinsDetailsByProductId(productId);
+		String msg = "";
+		try {
+			JsonObject calculatedPCFValue = pcfService
+					.readCreatedTwinsDetailsByProductId(pcfRequestModel.getProductId()).get("json").getAsJsonObject();
 
-		Optional<PcfRequestEntity> pcfRequestData = getPCFRequestData(requestId, productId, bpnNumber);
-		if (pcfRequestData.isPresent()) {
-
-			PcfRequestEntity entity = pcfRequestData.get();
-			entity.setStatus(PCFRequestStatusEnum.APPROVED);
-			savePcfRequest(entity);
+			savePcfRequest(pcfRequestModel.getRequestId(), pcfRequestModel.getStatus());
 
 			// push api call
-			pushPCFDataToConsumer(calculatedPCFValue, productId, bpnNumber, requestId, message);
+			Runnable runnable = () -> sendNotificationToConsumer(pcfRequestModel.getStatus(), calculatedPCFValue,
+					pcfRequestModel.getProductId(), pcfRequestModel.getBpnNumber(), pcfRequestModel.getRequestId());
 
-			entity.setStatus(PCFRequestStatusEnum.PUSHED);
-			savePcfRequest(entity);
+			new Thread(runnable).start();
+
+			msg = "PCF request '" + pcfRequestModel.getStatus() + "' and sending notification to consumer";
+
+		} catch (NoDataFoundException e) {
+			savePcfRequest(pcfRequestModel.getRequestId(), PCFRequestStatusEnum.ERROR);
+			JsonObject jobject = gson.fromJson("{}", JsonObject.class);
+			sendNotificationToConsumer(PCFRequestStatusEnum.ERROR, jobject, pcfRequestModel.getProductId(),
+					pcfRequestModel.getBpnNumber(), pcfRequestModel.getRequestId());
+			msg = "Unable to take action on PCF request becasue pcf calculated value does not exist, sending ERROR notification to consumer";
+			throw new NoDataFoundException(msg);
 		}
+		
+		return msg;
 	}
 
 	@Override
 	public PcfRequestModel savePcfRequestData(String requestId, String productId, String bpnNumber, String message,
 			PCFTypeEnum type) {
 
-		PcfRequestModel pcfRequest = PcfRequestModel.builder().requestId(requestId).productId(productId)
-				.bpnNumber(bpnNumber).status(PCFRequestStatusEnum.REQUESTED).message(message).type(type)
-				.requestedTime(LocalDateTime.now()).lastUpdatedTime(LocalDateTime.now()).build();
+		PcfRequestModel pcfRequest = PcfRequestModel.builder()
+				.requestId(requestId).productId(productId)
+				.bpnNumber(bpnNumber).status(PCFRequestStatusEnum.REQUESTED)
+				.message(message).type(type)
+				.requestedTime(Instant.now().getEpochSecond())
+				.lastUpdatedTime(Instant.now().getEpochSecond())
+				.build();
 
 		PcfRequestEntity pcfRequestEntity = pcfMapper.mapFrom(pcfRequest);
-		return pcfMapper.mapFrom(savePcfRequest(pcfRequestEntity));
+		return pcfMapper.mapFrom(pcfRequestRepository.save(pcfRequestEntity));
 	}
 
 	@Override
-	public void recievedPCFData(String productId, String bpnNumber, String requestId, String message, String pcfData) {
+	public void recievedPCFData(String productId, String bpnNumber, String requestId, String message,
+			JsonNode pcfData) {
 
+		PCFRequestStatusEnum status = PCFRequestStatusEnum.ERROR;
+		try {
+			status = PCFRequestStatusEnum.valueOf(message);
+		} catch (Exception e) {
+			log.error("Unable to find PCF value status " + e.getMessage());
+		}
+
+		String pcfDataStr = "{}";
 		String responseId = UUID.randomUUID().toString();
+		if (pcfData != null) {
+			pcfDataStr = pcfData.toPrettyString();
+		}
 
-		PcfResponseEntity entity = PcfResponseEntity.builder().pcfData(pcfData).requestId(requestId)
-				.responseId(responseId).lastUpdatedTime(LocalDateTime.now()).build();
+		PcfResponseEntity entity = PcfResponseEntity.builder()
+				.pcfData(pcfDataStr).requestId(requestId)
+				.responseId(responseId)
+				.lastUpdatedTime(LocalDateTime.now())
+				.build();
 
 		pcfReqsponseRepository.save(entity);
+		savePcfRequest(requestId, status);
 
-		Optional<PcfRequestEntity> pcfRequestData = getPCFRequestData(requestId, productId, bpnNumber);
-
-		if (pcfRequestData.isPresent()) {
-			PcfRequestEntity entity1 = pcfRequestData.get();
-			entity1.setStatus(PCFRequestStatusEnum.RECEIVED);
-			savePcfRequest(entity1);
-		}
 	}
 
 	@Override
@@ -271,11 +304,21 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 	}
 
 	@SneakyThrows
-	private void pushPCFDataToConsumer(JsonObject calculatedPCFValue, String productId, String bpnNumber,
-			String requestId, String message) {
+	private void sendNotificationToConsumer(PCFRequestStatusEnum status, JsonObject calculatedPCFValue,
+			String productId, String bpnNumber, String requestId) {
 
 		// 1 fetch EDC connectors and DTR Assets from EDC connectors
 		List<QueryDataOfferModel> pcfExchangeUrlOffers = edcAssetUrlCacheService.getPCFExchangeUrlFromTwin(bpnNumber);
+
+		String message = status.name();
+		String pushStatus= "";
+
+		if (PCFRequestStatusEnum.APPROVED.equals(status)) {
+			savePcfRequest(requestId, PCFRequestStatusEnum.PUSHING_DATA);
+		} else if (PCFRequestStatusEnum.REJECTED.equals(status)) {
+			calculatedPCFValue = gson.fromJson("{}", JsonObject.class);
+			savePcfRequest(requestId, PCFRequestStatusEnum.SENDING_REJECTING_NOTIFICATION);
+		}
 
 		// 2 lookup shell for PCF sub model
 		for (QueryDataOfferModel dtOffer : pcfExchangeUrlOffers) {
@@ -286,8 +329,12 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 				URI pcfpushEnpoint = new URI(edrToken.getEndpoint());
 				Map<String, String> header = new HashMap<>();
 				header.put(edrToken.getAuthKey(), edrToken.getAuthCode());
+				
+				String json = gson.toJson(calculatedPCFValue);
 				pcfExchangeProxy.uploadPcfSubmodel(pcfpushEnpoint, header, productId, bpnNumber, requestId, message,
-						calculatedPCFValue);
+						json);
+				
+				pushStatus = "SUCCESS";
 			} else {
 				log.warn("EDC connector " + dtOffer.getConnectorOfferUrl()
 						+ ", The EDR token is null to find pcf exchange asset");
@@ -295,19 +342,24 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 
 		}
 
+		if (PCFRequestStatusEnum.APPROVED.equals(status) && StringUtils.isNotBlank(pushStatus)) {
+			savePcfRequest(requestId, PCFRequestStatusEnum.PUSHED);
+		} else if (PCFRequestStatusEnum.REJECTED.equals(status)) {
+			savePcfRequest(requestId, PCFRequestStatusEnum.REJECTED);
+		} else {
+			savePcfRequest(requestId, PCFRequestStatusEnum.ERROR);
+		}
 	}
 
 	@SneakyThrows
-	private PcfRequestEntity savePcfRequest(PcfRequestEntity pcfRequestEntity) {
-		pcfRequestEntity.setLastUpdatedTime(LocalDateTime.now());
-		log.info("'" + pcfRequestEntity.getProductId() + "' pcf request saved in the database successfully");
+	private PcfRequestEntity savePcfRequest(String requestId, PCFRequestStatusEnum status) {
+		PcfRequestEntity pcfRequestEntity = pcfRequestRepository.getReferenceById(requestId);
+		pcfRequestEntity.setLastUpdatedTime(Instant.now().getEpochSecond());
+		pcfRequestEntity.setStatus(status);
+		log.info("'" + pcfRequestEntity.getProductId() + "' pcf request saved in the database successfully as {}",
+				status);
 		pcfRequestRepository.save(pcfRequestEntity);
 		return pcfRequestEntity;
-	}
-
-	private Optional<PcfRequestEntity> getPCFRequestData(String requestedId, String productId, String bpnNumber) {
-		return pcfRequestRepository.findByRequestIdAndProductIdAndBpnNumber(requestedId, productId, bpnNumber);
-
 	}
 
 	private ShellLookupRequest getShellLookupRequest(String manufacturerPartId, String bpnNumber) {

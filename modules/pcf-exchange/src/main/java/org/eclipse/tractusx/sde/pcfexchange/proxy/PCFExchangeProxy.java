@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.google.gson.JsonObject;
-
 @FeignClient(name = "PCFExchangeProxy", url = "placeholder")
 public interface PCFExchangeProxy {
 
@@ -21,11 +19,10 @@ public interface PCFExchangeProxy {
 	public ResponseEntity<Object> uploadPcfSubmodel(URI url, @RequestHeader Map<String, String> requestHeader,
 			@PathVariable("productId") String productId, @RequestParam(value = "BPN", required = true) String bpnNumber,
 			@RequestParam(value = "requestId", required = false) String requestId,
-			@RequestParam(value = "message", required = false) String message, @RequestBody JsonObject pcfData);
+			@RequestParam(value = "message", required = false) String message, @RequestBody String pcfData);
 
 	@GetMapping
-	public ResponseEntity<Object> getPcfByProduct(URI url, @RequestHeader Map<String, String> requestHeader,
-			@PathVariable String productId, @RequestParam(value = "BPN", required = true) String bpnNumber,
+	public ResponseEntity<Object> getPcfByProduct(URI url, @RequestHeader Map<String, String> requestHeader, @RequestParam(value = "BPN", required = true) String bpnNumber,
 			@RequestParam(value = "requestId", required = true) String requestId, @RequestParam String message);
 
 }

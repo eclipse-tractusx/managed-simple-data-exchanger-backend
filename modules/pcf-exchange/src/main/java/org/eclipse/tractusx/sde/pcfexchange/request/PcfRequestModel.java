@@ -1,7 +1,5 @@
 package org.eclipse.tractusx.sde.pcfexchange.request;
 
-import java.time.LocalDateTime;
-
 import org.eclipse.tractusx.sde.pcfexchange.enums.PCFRequestStatusEnum;
 import org.eclipse.tractusx.sde.pcfexchange.enums.PCFTypeEnum;
 
@@ -25,7 +23,7 @@ public class PcfRequestModel {
 	private PCFTypeEnum type;
 	private String message;
 	private PCFRequestStatusEnum status;
-	private LocalDateTime requestedTime;
-	private LocalDateTime lastUpdatedTime;
+	private Long requestedTime;
+	private Long lastUpdatedTime;
 
 }

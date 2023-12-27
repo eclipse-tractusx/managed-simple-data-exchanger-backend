@@ -23,13 +23,11 @@
 package org.eclipse.tractusx.sde.submodels.apr.steps;
 
 import java.net.URI;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseException;
@@ -45,6 +43,7 @@ import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsUtility;
 import org.eclipse.tractusx.sde.digitaltwins.gateways.external.EDCDigitalTwinProxyForLookUp;
 import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedByIdResponse;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
+import org.eclipse.tractusx.sde.edc.util.EDCAssetUrlCacheService;
 import org.eclipse.tractusx.sde.submodels.apr.model.AspectRelationship;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -63,10 +62,8 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 
 	private final DigitalTwinsFacilitator digitalTwinfacilitaor;
 	private final DigitalTwinsUtility digitalTwinsUtility;
-	private final DDTRUrlCacheUtility dDTRUrlCacheUtility;
+	private final EDCAssetUrlCacheService edcAssetUrlCacheService;
 	private final EDCDigitalTwinProxyForLookUp eDCDigitalTwinProxyForLookUp;
-
-	private static final Map<String, LocalDateTime> map = new ConcurrentHashMap<>();
 
 	@Value("${digital-twins.managed.thirdparty:false}")
 	private boolean dDTRManagedThirdparty;
@@ -74,7 +71,6 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 	@Value("${digital-twins.registry.uri:}")
 	private String registryUri;
 	
-
 	@Value("${digital-twins.registry.lookup.uri:}")
 	private String registryLookupUri;
 	
@@ -205,14 +201,14 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 		ShellLookupRequest shellLookupRequest = digitalTwinsUtility.getShellLookupRequest(getShellLookupRequestforChild(aspectRelationShip));
 
 		String childManufacturerId = aspectRelationShip.getChildManufacturerId();
-		List<QueryDataOfferModel> queryDataOffers = getDDTRUrl(childManufacturerId);
+		List<QueryDataOfferModel> queryDataOffers = edcAssetUrlCacheService.getDDTRUrl(childManufacturerId);
 
 		String childUUID = null;
 		String msg = "";
 
 		for (QueryDataOfferModel dtOffer : queryDataOffers) {
 
-			EDRCachedByIdResponse edrToken = dDTRUrlCacheUtility.verifyAndGetToken(childManufacturerId, dtOffer);
+			EDRCachedByIdResponse edrToken = edcAssetUrlCacheService.verifyAndGetToken(childManufacturerId, dtOffer);
 
 			if (edrToken != null) {
 				childUUID = lookUpChildTwin(shellLookupRequest, aspectRelationShip, edrToken, dtOffer);
@@ -306,26 +302,6 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 		}
 
 		return childUUID;
-	}
-
-	public List<QueryDataOfferModel> getDDTRUrl(String bpnNumber) {
-
-		LocalDateTime cacheExpTime = map.get(bpnNumber);
-		LocalDateTime currDate = LocalDateTime.now();
-
-		if (cacheExpTime == null)
-			cacheExpTime = currDate.plusHours(12);
-		else if (currDate.isAfter(cacheExpTime)) {
-			dDTRUrlCacheUtility.removeDDTRUrlCache(bpnNumber);
-			cacheExpTime = currDate.plusHours(12);
-		}
-		map.put(bpnNumber, cacheExpTime);
-		return dDTRUrlCacheUtility.getDDTRUrl(bpnNumber);
-	}
-
-	public void clearDDTRUrlCache() {
-		map.clear();
-		dDTRUrlCacheUtility.cleareDDTRUrlAllCache();
 	}
 
 	private String encodeShellIdBase64Utf8(String shellId) {

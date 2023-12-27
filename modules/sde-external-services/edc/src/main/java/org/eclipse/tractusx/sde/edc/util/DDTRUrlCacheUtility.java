@@ -17,43 +17,39 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-package org.eclipse.tractusx.sde.bpndiscovery.handler;
 
-import java.util.ArrayList;
+package org.eclipse.tractusx.sde.edc.util;
+
 import java.util.List;
-import java.util.Map;
 
-import org.eclipse.tractusx.sde.bpndiscovery.model.request.BpnDiscoveryRequest;
-import org.eclipse.tractusx.sde.common.exception.ServiceException;
-import org.eclipse.tractusx.sde.common.submodel.executor.Step;
+import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-public class BPNDiscoveryUseCaseHandler extends Step {
+public class DDTRUrlCacheUtility {
 
-	private final BpnDiscoveryProxyService bpnDiscoveryProxyService;
+	private final EDCAssetLookUp edcAssetLookUp;
 
-	public void run(Map<String, String> input) throws ServiceException {
-		try {
-			BpnDiscoveryRequest bpnDiscoveryRequest = new BpnDiscoveryRequest();
-			List<BpnDiscoveryRequest> bpnDiscoveryKeyList = new ArrayList<>();
-
-			input.entrySet().stream().forEach(e -> {
-				bpnDiscoveryRequest.setType(e.getKey());
-				bpnDiscoveryRequest.setKey(e.getValue());
-				bpnDiscoveryKeyList.add(bpnDiscoveryRequest);
-			});
-
-			bpnDiscoveryProxyService.bpnDiscoveryBatchData(bpnDiscoveryKeyList);
-		} catch (Exception e) {
-			throw new ServiceException("Exception in BPN Discovery creation : " + e.getMessage());
-		}
-
+	@Cacheable(value = "bpn-ddtr", key = "#bpnNumber")
+	public List<QueryDataOfferModel> getDDTRUrl(String bpnNumber) {
+		return edcAssetLookUp.getEDCAssetsByType(bpnNumber, "data.core.digitalTwinRegistry");
 	}
-	
-	
+
+	@CacheEvict(value = "bpn-ddtr", key = "#bpnNumber")
+	public void removeDDTRUrlCache(String bpnNumber) {
+		log.info("Cleared '" + bpnNumber + "' bpn-ddtr cache");
+	}
+
+	@CacheEvict(value = "bpn-ddtr", allEntries = true)
+	public void cleareDDTRUrlAllCache() {
+		log.info("Cleared All bpn-ddtr cache");
+	}
 
 }

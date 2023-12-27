@@ -40,12 +40,6 @@ public class AssetEntryRequestFactory {
     private static final String DATE_FORMATTER = "dd/MM/yyyy HH:mm:ss";
 	private static final String ASSET_PROP_POLICYID = "use-eu";
 	
-    @Value(value = "${dft.apiKeyHeader}")
-    private String apiKeyHeader;
-    
-    @Value(value = "${dft.apiKey}")
-    private String apiKey;
-    
     @Value(value = "${dft.hostname}")
     private String dftHostname;
     
@@ -101,7 +95,6 @@ public class AssetEntryRequestFactory {
         assetProperties.put(EDCAssetConstant.ASSET_PROP_CONTENTTYPE, ASSET_PROP_CONTENT_TYPE);
         assetProperties.put(EDCAssetConstant.ASSET_PROP_DESCRIPTION, assetName);
         assetProperties.put(EDCAssetConstant.ASSET_PROP_VERSION, ASSET_PROP_VERSION);
-        assetProperties.put(EDCAssetConstant.ASSET_PROP_PUBLISHER, manufacturerId+":"+edcEndpoint);
         assetProperties.put(EDCAssetConstant.ASSET_PROP_CREATED, date);
         assetProperties.put(EDCAssetConstant.ASSET_PROP_MODIFIED, date);
         return assetProperties;

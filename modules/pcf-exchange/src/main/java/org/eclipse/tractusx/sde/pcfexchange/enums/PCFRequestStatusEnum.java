@@ -18,24 +18,15 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.submodels.pcf.repository;
+package org.eclipse.tractusx.sde.pcfexchange.enums;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.eclipse.tractusx.sde.submodels.pcf.entity.PcfEntity;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-
-public interface PcfRepository extends CrudRepository<PcfEntity, String> {
-
-	List<PcfEntity> findByProcessIdforPcf(String processIdforPcf);
-
-	@Query("select count(ae) from PcfEntity ae where ae.updatedforPcf = ?1 and ae.processIdforPcf = ?2")
-	long countByUpdatedAndProcessId(String updated, String processId);
-
-	Optional<PcfEntity> findByProductId(String productId);
-	
-	
-
+public enum PCFRequestStatusEnum {
+    REQUESTED,
+    APPROVED,
+    PUSHING_DATA,
+    REJECTED,
+    SENDING_REJECTING_NOTIFICATION,
+	PUSHED,
+    UPDATED,
+    ERROR
 }

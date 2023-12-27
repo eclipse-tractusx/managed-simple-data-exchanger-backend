@@ -33,7 +33,9 @@ import org.eclipse.tractusx.sde.edc.gateways.external.EDCGateway;
 import org.eclipse.tractusx.sde.submodels.pcf.entity.PcfEntity;
 import org.eclipse.tractusx.sde.submodels.pcf.model.PcfAspect;
 import org.eclipse.tractusx.sde.submodels.pcf.service.PcfService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -46,6 +48,9 @@ public class EDCPcfHandlerUseCase extends Step {
 	private final EDCGateway edcGateway;
 	private final CreateEDCAssetFacilator createEDCAssetFacilator;
 	private final PcfService aspectService;
+	
+	@Value(value = "${dft.hostname}")
+    private String dftHostname;
 
 	@SneakyThrows
 	public PcfAspect run(String submodel, PcfAspect input, String processId) {
@@ -56,6 +61,15 @@ public class EDCPcfHandlerUseCase extends Step {
 
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
 					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getId());
+			
+			String baseURL=UriComponentsBuilder
+			                 .fromHttpUrl(dftHostname)
+			                 .path("/pcf/productIds/")
+			                 .path(input.getProductId())
+			                 .toUriString();
+			
+			assetEntryRequest.getDataAddress().getProperties().put("baseUrl", baseURL.replace("public", "productIds"));
+			
 			if (!edcGateway.assetExistsLookup(
 					assetEntryRequest.getAsset().getId())) {
 

@@ -51,7 +51,7 @@ public class EDRRequestHelper extends AbstractEDCStepsHelper {
 			ActionRequest action, Map<String, String> extensibleProperty) {
 
 		ContractNegotiations contractNegotiations = contractMapper
-				.prepareContractNegotiations(providerUrl + protocolPath, offerId, assetId, providerId, action);
+				.prepareContractNegotiations(providerUrl, offerId, assetId, providerId, action);
 		
 		log.debug(contractNegotiations.toJsonString());
 		

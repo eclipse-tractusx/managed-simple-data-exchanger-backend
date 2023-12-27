@@ -17,25 +17,38 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
+package org.eclipse.tractusx.sde.pcfexchange.entity;
 
-package org.eclipse.tractusx.sde.submodels.pcf.repository;
+import java.time.LocalDateTime;
 
-import java.util.List;
-import java.util.Optional;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import org.eclipse.tractusx.sde.submodels.pcf.entity.PcfEntity;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-
-public interface PcfRepository extends CrudRepository<PcfEntity, String> {
-
-	List<PcfEntity> findByProcessIdforPcf(String processIdforPcf);
-
-	@Query("select count(ae) from PcfEntity ae where ae.updatedforPcf = ?1 and ae.processIdforPcf = ?2")
-	long countByUpdatedAndProcessId(String updated, String processId);
-
-	Optional<PcfEntity> findByProductId(String productId);
+@Table(name = "pcf_response_tbl")
+@Entity
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class PcfResponseEntity {
 	
+	@Id
+	@Column(name = "response_id")
+	private String responseId;
 	
+	@Column(name = "request_id")
+	private String requestId;
+	
+	@Column(name = "pcf_data", columnDefinition = "TEXT")
+	private String pcfData;
+	
+	@Column(name = "last_updated_time")
+	private LocalDateTime lastUpdatedTime;
 
 }

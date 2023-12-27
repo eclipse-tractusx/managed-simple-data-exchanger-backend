@@ -28,7 +28,6 @@ import org.mapstruct.Mapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import lombok.SneakyThrows;
@@ -36,14 +35,8 @@ import lombok.SneakyThrows;
 @Mapper(componentModel = "spring")
 public abstract class JsonObjectMapper {
 
-	Gson gson = new Gson();
 	ObjectMapper mapper = new ObjectMapper();
-
-	@SneakyThrows
-	public JsonObject submodelFileRequestToJsonPojo(PolicyModel submodelFileRequest) {
-		return gson.toJsonTree(submodelFileRequest).getAsJsonObject();
-	}
-
+	
 	@SneakyThrows
 	public ObjectNode submodelFileRequestToJsonNodePojo(PolicyModel submodelFileRequest) {
 		mapper.findAndRegisterModules();

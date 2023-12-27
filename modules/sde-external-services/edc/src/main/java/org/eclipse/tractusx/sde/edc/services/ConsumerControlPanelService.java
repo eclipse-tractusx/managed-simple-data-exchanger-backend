@@ -20,7 +20,6 @@
 
 package org.eclipse.tractusx.sde.edc.services;
 
-import java.io.File;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -90,13 +89,18 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 	public List<QueryDataOfferModel> queryOnDataOffers(String providerUrl, Integer offset, Integer limit,
 			String filterExpression) {
 
-		String sproviderUrl = UtilityFunctions.removeLastSlashOfUrl(providerUrl);
+		providerUrl = UtilityFunctions.removeLastSlashOfUrl(providerUrl);
+
+		if (!providerUrl.endsWith(protocolPath))
+			providerUrl = providerUrl + protocolPath;
+		
+		String sproviderUrl = providerUrl;
 
 		List<QueryDataOfferModel> queryOfferResponse = new ArrayList<>();
 
 		JsonNode contractOfferCatalog = contractOfferCatalogApiProxy
 				.getContractOffersCatalog(contractOfferRequestFactory
-						.getContractOfferRequest(sproviderUrl + protocolPath, limit, offset, filterExpression));
+						.getContractOfferRequest(sproviderUrl, limit, offset, filterExpression));
 
 		JsonNode jOffer = contractOfferCatalog.get("dcat:dataset");
 		if (jOffer.isArray()) {
@@ -119,14 +123,14 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
 		QueryDataOfferModel build = QueryDataOfferModel.builder()
 				.assetId(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_ID))
-				.connectorOfferUrl(sproviderUrl + File.separator + getFieldFromJsonNode(offer, "@id"))
+				.connectorOfferUrl(sproviderUrl)
 				.offerId(getFieldFromJsonNode(policy, "@id"))
 				.title(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_NAME))
 				.type(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_TYPE))
 				.description(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_DESCRIPTION))
 				.created(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_CREATED))
 				.modified(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_MODIFIED))
-				.publisher(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_PUBLISHER))
+				.publisher(getFieldFromJsonNode(contractOfferCatalog, edcstr + "participantId"))
 				.version(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_VERSION))
 				.fileName(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_FILENAME))
 				.fileContentType(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_CONTENTTYPE))
@@ -203,6 +207,11 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 		AtomicReference<ContractNegotiationDto> checkContractNegotiationStatus = new AtomicReference<>();
 
 		var recipientURL = UtilityFunctions.removeLastSlashOfUrl(consumerRequest.getProviderUrl());
+		
+		if (!recipientURL.endsWith(protocolPath))
+			recipientURL = recipientURL + protocolPath;
+		
+		String sproviderUrl = recipientURL;
 
 		Map<UsagePolicyEnum, UsagePolicies> policies = consumerRequest.getPolicies();
 
@@ -217,7 +226,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 			try {
 
 				negotiateContractId.set(
-						contractNegotiateManagement.negotiateContract(recipientURL, consumerRequest.getConnectorId(),
+						contractNegotiateManagement.negotiateContract(sproviderUrl, consumerRequest.getConnectorId(),
 								offer.getOfferId(), offer.getAssetId(), action, extensibleProperty));
 				int retry = 3;
 				int counter = 1;
@@ -258,7 +267,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 		Map<String, Object> response = new ConcurrentHashMap<>();
 
 		var recipientURL = UtilityFunctions.removeLastSlashOfUrl(consumerRequest.getProviderUrl());
-
+		
 		Map<UsagePolicyEnum, UsagePolicies> policies = consumerRequest.getPolicies();
 
 		UsagePolicies findFirst = policies.get(UsagePolicyEnum.CUSTOM);
@@ -323,6 +332,10 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 	@SneakyThrows
 	public EDRCachedResponse verifyOrCreateContractNegotiation(String connectorId,
 			Map<String, String> extensibleProperty, String recipientURL, ActionRequest action, Offer offer) {
+		
+		if (!recipientURL.endsWith(protocolPath))
+			recipientURL = recipientURL + protocolPath;
+		
 		// Verify if there already EDR process initiated then skip it for again download
 		String assetId = offer.getAssetId();
 		List<EDRCachedResponse> eDRCachedResponseList = edrRequestHelper.getEDRCachedByAsset(assetId);
@@ -511,7 +524,8 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 				String errorMsg = "Unable to download subcribe data offer because: " + e.contentUTF8();
 				throw new ServiceException(errorMsg);
 			} catch (Exception e) {
-				log.error("Exception DownloadFileFromEDCUsingifAlreadyTransferStatusCompleted Oops! We have -" + e.getMessage());
+				log.error("Exception DownloadFileFromEDCUsingifAlreadyTransferStatusCompleted Oops! We have -"
+						+ e.getMessage());
 				String errorMsg = "Unable to download subcribe data offer because: " + e.getMessage();
 				throw new ServiceException(errorMsg);
 			}

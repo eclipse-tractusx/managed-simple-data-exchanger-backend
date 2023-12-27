@@ -17,43 +17,38 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-package org.eclipse.tractusx.sde.bpndiscovery.handler;
+package org.eclipse.tractusx.sde.edc.util;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import org.eclipse.tractusx.sde.bpndiscovery.model.request.BpnDiscoveryRequest;
-import org.eclipse.tractusx.sde.common.exception.ServiceException;
-import org.eclipse.tractusx.sde.common.submodel.executor.Step;
+import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-public class BPNDiscoveryUseCaseHandler extends Step {
-
-	private final BpnDiscoveryProxyService bpnDiscoveryProxyService;
-
-	public void run(Map<String, String> input) throws ServiceException {
-		try {
-			BpnDiscoveryRequest bpnDiscoveryRequest = new BpnDiscoveryRequest();
-			List<BpnDiscoveryRequest> bpnDiscoveryKeyList = new ArrayList<>();
-
-			input.entrySet().stream().forEach(e -> {
-				bpnDiscoveryRequest.setType(e.getKey());
-				bpnDiscoveryRequest.setKey(e.getValue());
-				bpnDiscoveryKeyList.add(bpnDiscoveryRequest);
-			});
-
-			bpnDiscoveryProxyService.bpnDiscoveryBatchData(bpnDiscoveryKeyList);
-		} catch (Exception e) {
-			throw new ServiceException("Exception in BPN Discovery creation : " + e.getMessage());
-		}
-
+public class PCFExchangeAssetUtils {
+	
+	private final EDCAssetLookUp edcAssetLookUp;
+	
+	@Cacheable(value = "bpn-pcfexchange", key = "#bpnNumber")
+	public List<QueryDataOfferModel> getPCFExchangeUrl(String bpnNumber) {
+		return edcAssetLookUp.getEDCAssetsByType(bpnNumber, "data.pcf.exchangeEndpoint");
 	}
-	
-	
+
+	@CacheEvict(value = "bpn-pcfexchange", key = "#bpnNumber")
+	public void removePCFExchangeCache(String bpnNumber) {
+		log.info("Cleared '" + bpnNumber + "' bpn-pcfexchange cache");
+	}
+
+	@CacheEvict(value = "bpn-pcfexchange", allEntries = true)
+	public void clearePCFExchangeAllCache() {
+		log.info("Cleared All bpn-pcfexchange cache");
+	}
 
 }

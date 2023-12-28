@@ -19,6 +19,8 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.pcfexchange.service.impl;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
+
 import java.net.URI;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -37,13 +39,12 @@ import org.eclipse.tractusx.sde.bpndiscovery.model.response.BpnDiscoveryResponse
 import org.eclipse.tractusx.sde.bpndiscovery.model.response.BpnDiscoverySearchResponse;
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
-import org.eclipse.tractusx.sde.common.mapper.JsonObjectMapper;
 import org.eclipse.tractusx.sde.common.model.PagingResponse;
-import org.eclipse.tractusx.sde.common.utils.TokenUtility;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellLookupRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellLookupResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelResponse;
+import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsUtility;
 import org.eclipse.tractusx.sde.digitaltwins.gateways.external.EDCDigitalTwinProxyForLookUp;
 import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedByIdResponse;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
@@ -86,17 +87,20 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 	private final PcfRequestRepository pcfRequestRepository;
 	private final PcfReqsponseRepository pcfReqsponseRepository;
 	private final PcfExchangeMapper pcfMapper;
-	private final JsonObjectMapper jsonObjectMapper;
 	private final EDCAssetUrlCacheService edcAssetUrlCacheService;
 	private final EDCDigitalTwinProxyForLookUp eDCDigitalTwinProxyForLookUp;
 	private final PcfService pcfService;
 	private final PCFExchangeProxy pcfExchangeProxy;
+	private final DigitalTwinsUtility digitalTwinsUtility;
 
 	private final ConsumerControlPanelService consumerControlPanelService;
 	private final BpnDiscoveryProxyService bpnDiscoveryProxyService;
 	
 	@Value(value = "${manufacturerId}")
 	private String manufacturerId;
+	
+	@Value(value = "${digital-twins.managed.thirdparty:false}")
+	private boolean managedThirdParty;
 	
 	private Gson gson = new Gson();
 
@@ -283,6 +287,11 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 				.build();
 
 		pcfReqsponseRepository.save(entity);
+		
+		if (PCFRequestStatusEnum.APPROVED.equals(status)) {
+			status = PCFRequestStatusEnum.RECEIVED;
+		}
+		
 		savePcfRequest(requestId, status);
 
 	}
@@ -353,6 +362,7 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 
 	@SneakyThrows
 	private PcfRequestEntity savePcfRequest(String requestId, PCFRequestStatusEnum status) {
+		
 		PcfRequestEntity pcfRequestEntity = pcfRequestRepository.getReferenceById(requestId);
 		pcfRequestEntity.setLastUpdatedTime(Instant.now().getEpochSecond());
 		pcfRequestEntity.setStatus(status);
@@ -360,6 +370,7 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 				status);
 		pcfRequestRepository.save(pcfRequestEntity);
 		return pcfRequestEntity;
+		
 	}
 
 	private ShellLookupRequest getShellLookupRequest(String manufacturerPartId, String bpnNumber) {
@@ -389,8 +400,13 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 		ShellLookupRequest shellLookupRequest = getShellLookupRequest(manufacturerPartId, bpnNumber);
 		try {
 			Map<String, String> header = Map.of(edrToken.getAuthKey(), edrToken.getAuthCode());
+			
+			String assetIds = managedThirdParty
+					? digitalTwinsUtility.encodeAssetIdsObject(shellLookupRequest.toJsonString())
+					: shellLookupRequest.toJsonString();
+
 			ResponseEntity<ShellLookupResponse> shellLookup = eDCDigitalTwinProxyForLookUp
-					.shellLookup(new URI(endpoint), shellLookupRequest.toJsonString(), header);
+					.shellLookup(new URI(endpoint), assetIds, header);
 			ShellLookupResponse body = shellLookup.getBody();
 
 			if (shellLookup.getStatusCode() == HttpStatus.OK && body != null) {
@@ -422,7 +438,7 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 					shellLookupRequest.toJsonString()));
 		} else if (shellIds.size() == 1) {
 			ResponseEntity<ShellDescriptorResponse> shellDescriptorResponse = eDCDigitalTwinProxyForLookUp
-					.getShellDescriptorByShellId(new URI(endpoint), encodeShellIdBase64Utf8(shellIds.get(0)), header);
+					.getShellDescriptorByShellId(new URI(endpoint), digitalTwinsUtility.encodeShellIdBase64Utf8(shellIds.get(0)), header);
 			ShellDescriptorResponse shellDescriptorResponseBody = shellDescriptorResponse.getBody();
 			if (shellDescriptorResponse.getStatusCode() == HttpStatus.OK && shellDescriptorResponseBody != null) {
 				for (SubModelResponse subModelResponse : shellDescriptorResponseBody.getSubmodelDescriptors()) {
@@ -433,9 +449,5 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 			}
 		}
 		return subModelResponseRes;
-	}
-
-	private String encodeShellIdBase64Utf8(String shellId) {
-		return Base64.getUrlEncoder().encodeToString(shellId.getBytes());
 	}
 }

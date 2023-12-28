@@ -27,6 +27,7 @@ public enum PCFRequestStatusEnum {
     REJECTED,
     SENDING_REJECTING_NOTIFICATION,
 	PUSHED,
+	RECEIVED,
     UPDATED,
     ERROR
 }

@@ -310,12 +310,12 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 
 
 			if (PCFRequestStatusEnum.APPROVED.equals(status)
-					|| PCFRequestStatusEnum.PUSHING_DATA_FAILED.equals(status)) {
+					|| PCFRequestStatusEnum.FAILED_TO_PUSH_DATA.equals(status)) {
 				savePcfStatus(requestId, PCFRequestStatusEnum.PUSHING_DATA);
 			} else if (PCFRequestStatusEnum.REJECTED.equals(status)
-					|| PCFRequestStatusEnum.SENDING_REJECTING_NOTIFICATION_FAILED.equals(status)) {
+					|| PCFRequestStatusEnum.FAILED_TO_SEND_REJECT_NOTIFICATION.equals(status)) {
 				calculatedPCFValue = null;
-				savePcfStatus(requestId, PCFRequestStatusEnum.SENDING_REJECTING_NOTIFICATION);
+				savePcfStatus(requestId, PCFRequestStatusEnum.SENDING_REJECT_NOTIFICATION);
 			}
 			
 			// 1 fetch EDC connectors and DTR Assets from EDC connectors
@@ -370,11 +370,11 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 		} else if (PCFRequestStatusEnum.REJECTED.equals(status) && StringUtils.isNotBlank(sendNotificationStatus)) {
 			savePcfStatus(requestId, PCFRequestStatusEnum.REJECTED);
 		} else if (PCFRequestStatusEnum.APPROVED.equals(status)
-				|| PCFRequestStatusEnum.PUSHING_DATA_FAILED.equals(status)) {
-			savePcfStatus(requestId, PCFRequestStatusEnum.PUSHING_DATA_FAILED);
+				|| PCFRequestStatusEnum.FAILED_TO_PUSH_DATA.equals(status)) {
+			savePcfStatus(requestId, PCFRequestStatusEnum.FAILED_TO_PUSH_DATA);
 		} else if (PCFRequestStatusEnum.REJECTED.equals(status)
-				|| PCFRequestStatusEnum.SENDING_REJECTING_NOTIFICATION_FAILED.equals(status))
-			savePcfStatus(requestId, PCFRequestStatusEnum.SENDING_REJECTING_NOTIFICATION_FAILED);
+				|| PCFRequestStatusEnum.FAILED_TO_SEND_REJECT_NOTIFICATION.equals(status))
+			savePcfStatus(requestId, PCFRequestStatusEnum.FAILED_TO_SEND_REJECT_NOTIFICATION);
 		else {
 			savePcfStatus(requestId, PCFRequestStatusEnum.FAILED);
 		}

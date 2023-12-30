@@ -195,7 +195,7 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 
 			String message = "Please provide PCF value for " + productId;
 
-			savePcfRequestData(requestId, productId, manufacturerId, message, PCFTypeEnum.CONSUMER);
+			savePcfRequestData(requestId, productId, providerBPNNumber, message, PCFTypeEnum.CONSUMER);
 
 			// Send request to data provider for PCF value push
 			pcfExchangeProxy.getPcfByProduct(pcfEnpoint, header, manufacturerId, requestId, message);
@@ -242,9 +242,15 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 	public PcfRequestModel savePcfRequestData(String requestId, String productId, String bpnNumber, String message,
 			PCFTypeEnum type) {
 
-		PcfRequestModel pcfRequest = PcfRequestModel.builder().requestId(requestId).productId(productId)
-				.bpnNumber(bpnNumber).status(PCFRequestStatusEnum.REQUESTED).message(message).type(type)
-				.requestedTime(Instant.now().getEpochSecond()).lastUpdatedTime(Instant.now().getEpochSecond()).build();
+		PcfRequestModel pcfRequest = PcfRequestModel.builder()
+				.requestId(requestId)
+				.productId(productId)
+				.bpnNumber(bpnNumber)
+				.status(PCFRequestStatusEnum.REQUESTED)
+				.message(message).type(type)
+				.requestedTime(Instant.now().getEpochSecond())
+				.lastUpdatedTime(Instant.now().getEpochSecond())
+				.build();
 
 		PcfRequestEntity pcfRequestEntity = pcfMapper.mapFrom(pcfRequest);
 		return pcfMapper.mapFrom(pcfRequestRepository.save(pcfRequestEntity));
@@ -301,11 +307,6 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 		String sendNotificationStatus = "";
 		try {
 
-			// 1 fetch EDC connectors and DTR Assets from EDC connectors
-			List<QueryDataOfferModel> pcfExchangeUrlOffers = edcAssetUrlCacheService
-					.getPCFExchangeUrlFromTwin(bpnNumber);
-
-			String message = status.name();
 
 			if (PCFRequestStatusEnum.APPROVED.equals(status)) {
 				savePcfStatus(requestId, PCFRequestStatusEnum.PUSHING_DATA);
@@ -313,6 +314,12 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 				calculatedPCFValue = null;
 				savePcfStatus(requestId, PCFRequestStatusEnum.SENDING_REJECTING_NOTIFICATION);
 			}
+			
+			// 1 fetch EDC connectors and DTR Assets from EDC connectors
+			List<QueryDataOfferModel> pcfExchangeUrlOffers = edcAssetUrlCacheService
+					.getPCFExchangeUrlFromTwin(bpnNumber);
+
+			String message = status.name();
 
 			// 2 lookup shell for PCF sub model
 			for (QueryDataOfferModel dtOffer : pcfExchangeUrlOffers) {

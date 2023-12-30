@@ -308,9 +308,11 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 		try {
 
 
-			if (PCFRequestStatusEnum.APPROVED.equals(status)) {
+			if (PCFRequestStatusEnum.APPROVED.equals(status)
+					|| PCFRequestStatusEnum.PUSHING_DATA_FAILED.equals(status)) {
 				savePcfStatus(requestId, PCFRequestStatusEnum.PUSHING_DATA);
-			} else if (PCFRequestStatusEnum.REJECTED.equals(status)) {
+			} else if (PCFRequestStatusEnum.REJECTED.equals(status)
+					|| PCFRequestStatusEnum.SENDING_REJECTING_NOTIFICATION_FAILED.equals(status)) {
 				calculatedPCFValue = null;
 				savePcfStatus(requestId, PCFRequestStatusEnum.SENDING_REJECTING_NOTIFICATION);
 			}

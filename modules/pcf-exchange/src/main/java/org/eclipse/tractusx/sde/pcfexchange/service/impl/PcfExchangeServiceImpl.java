@@ -20,6 +20,7 @@
 package org.eclipse.tractusx.sde.pcfexchange.service.impl;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -323,33 +324,44 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 
 			String message = status.name();
 
-			// 2 lookup shell for PCF sub model
+			// 2 lookup shell for PCF sub model and send notification to call consumer request
 			for (QueryDataOfferModel dtOffer : pcfExchangeUrlOffers) {
-
-				EDRCachedByIdResponse edrToken = edcAssetUrlCacheService.verifyAndGetToken(bpnNumber, dtOffer);
-
-				if (edrToken != null) {
-					URI pcfpushEnpoint = new URI(edrToken.getEndpoint());
-					Map<String, String> header = new HashMap<>();
-					header.put(edrToken.getAuthKey(), edrToken.getAuthCode());
-
-					pcfExchangeProxy.uploadPcfSubmodel(pcfpushEnpoint, header, productId, bpnNumber, requestId, message,
-							jsonObjectMapper.gsonObjectToJsonNode(calculatedPCFValue));
-
-					sendNotificationStatus = "SUCCESS";
-				} else {
-					log.warn("EDC connector " + dtOffer.getConnectorOfferUrl()
-							+ ", The EDR token is null to find pcf exchange asset");
-				}
+				sendNotificationStatus = sendNotification(calculatedPCFValue, productId, bpnNumber, requestId,
+						sendNotificationStatus, message, dtOffer);
 			}
 		} catch (FeignException e) {
-			log.error("FeignRequest:" +e.request());
+			log.error("FeignRequest sendNotificationToConsumer:" +e.request());
 			String errorMsg = "Unable to send notification to consumer because: " + e.contentUTF8();
-			log.error("FeignException : " + errorMsg);
+			log.error("FeignException sendNotificationToConsumer: " + errorMsg);
 		} finally {
-			
 			updatePCFPushStatus(status, requestId, sendNotificationStatus);
 		}
+	}
+
+	private String sendNotification(JsonObject calculatedPCFValue, String productId, String bpnNumber, String requestId,
+			String sendNotificationStatus, String message, QueryDataOfferModel dtOffer) throws URISyntaxException {
+		try {
+			EDRCachedByIdResponse edrToken = edcAssetUrlCacheService.verifyAndGetToken(bpnNumber, dtOffer);
+
+			if (edrToken != null) {
+				URI pcfpushEnpoint = new URI(edrToken.getEndpoint());
+				Map<String, String> header = new HashMap<>();
+				header.put(edrToken.getAuthKey(), edrToken.getAuthCode());
+
+				pcfExchangeProxy.uploadPcfSubmodel(pcfpushEnpoint, header, productId, bpnNumber, requestId,
+						message, jsonObjectMapper.gsonObjectToJsonNode(calculatedPCFValue));
+
+				sendNotificationStatus = "SUCCESS";
+			} else {
+				log.warn("EDC connector " + dtOffer.getConnectorOfferUrl()
+						+ ", The EDR token is null to find pcf exchange asset");
+			}
+		} catch (FeignException e) {
+			log.error("FeignRequest:" + e.request());
+			String errorMsg = "Unable to send notification to consumer because: " + e.contentUTF8();
+			log.error("FeignException : " + errorMsg);
+		}
+		return sendNotificationStatus;
 	}
 
 	private void updatePCFPushStatus(PCFRequestStatusEnum status, String requestId, String sendNotificationStatus) {

@@ -19,9 +19,10 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.pcfexchange.entity;
 
-import java.time.LocalDateTime;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -46,9 +47,10 @@ public class PcfResponseEntity {
 	private String requestId;
 	
 	@Column(name = "pcf_data", columnDefinition = "TEXT")
-	private String pcfData;
+	@Convert(converter = PcfJsonToStringConvertor.class)
+	private JsonNode pcfData;
 	
 	@Column(name = "last_updated_time")
-	private LocalDateTime lastUpdatedTime;
+	private Long lastUpdatedTime;
 
 }

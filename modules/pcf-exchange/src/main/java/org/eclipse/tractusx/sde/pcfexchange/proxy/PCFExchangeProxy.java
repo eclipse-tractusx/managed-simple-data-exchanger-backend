@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 @FeignClient(name = "PCFExchangeProxy", url = "placeholder")
 public interface PCFExchangeProxy {
 
@@ -19,7 +21,7 @@ public interface PCFExchangeProxy {
 	public ResponseEntity<Object> uploadPcfSubmodel(URI url, @RequestHeader Map<String, String> requestHeader,
 			@PathVariable("productId") String productId, @RequestParam(value = "BPN", required = true) String bpnNumber,
 			@RequestParam(value = "requestId", required = false) String requestId,
-			@RequestParam(value = "message", required = false) String message, @RequestBody String pcfData);
+			@RequestParam(value = "message", required = false) String message, @RequestBody JsonNode pcfData);
 
 	@GetMapping
 	public ResponseEntity<Object> getPcfByProduct(URI url, @RequestHeader Map<String, String> requestHeader, @RequestParam(value = "BPN", required = true) String bpnNumber,

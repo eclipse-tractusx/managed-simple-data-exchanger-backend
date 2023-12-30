@@ -25,9 +25,11 @@ import java.util.Map;
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.mapstruct.Mapper;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import lombok.SneakyThrows;
@@ -36,6 +38,16 @@ import lombok.SneakyThrows;
 public abstract class JsonObjectMapper {
 
 	ObjectMapper mapper = new ObjectMapper();
+	Gson gson=new Gson();
+	
+	@SneakyThrows
+	public JsonNode gsonObjectToJsonNode(JsonObject json) {
+		String jsonStr = "{}";
+		if(json != null) {
+			jsonStr = gson.toJson(json);
+		}
+		return mapper.readTree(jsonStr);
+	}
 	
 	@SneakyThrows
 	public ObjectNode submodelFileRequestToJsonNodePojo(PolicyModel submodelFileRequest) {

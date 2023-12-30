@@ -35,7 +35,7 @@ public interface IPCFExchangeService {
 	public List<QueryDataOfferModel> searchPcfDataOffer(String manufacturerPartId, String bpnNumber);
 
 	public String actionOnPcfRequestAndSendNotificationToConsumer(PcfRequestModel pcfRequestModel);
-
+	
 	public Object requestForPcfDataOffer(String productId, ConsumerRequest consumerRequest);
 
 	public PcfRequestModel savePcfRequestData(String requestId, String productId, String bpnNumber, String message,
@@ -45,5 +45,7 @@ public interface IPCFExchangeService {
 
 	public void recievedPCFData(String productId, String bpnNumber, String requestId, String message,
 			JsonNode pcfData);
+
+	public Object viewForPcfDataOffer(String requestId);
 
 }

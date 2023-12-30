@@ -29,9 +29,10 @@ import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.eclipse.tractusx.sde.pcfexchange.enums.PCFRequestStatusEnum;
 import org.eclipse.tractusx.sde.pcfexchange.enums.PCFTypeEnum;
 import org.eclipse.tractusx.sde.pcfexchange.request.PcfRequestModel;
-import org.eclipse.tractusx.sde.pcfexchange.service.impl.PcfExchangeServiceImpl;
+import org.eclipse.tractusx.sde.pcfexchange.service.IPCFExchangeService;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -53,9 +54,10 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("pcf")
 public class PcfExchangeController {
 
-	private final PcfExchangeServiceImpl pcfExchangeService;
+	private final IPCFExchangeService pcfExchangeService;
 
 	@GetMapping(value = "/search")
+	@PreAuthorize("hasPermission('','search_pcf')")
 	public ResponseEntity<Object> searchPcfDataOffer(@RequestParam String manufacturerPartId,
 			@RequestParam(value = "bpnNumber", required = false) String bpnNumber) throws Exception {
 		log.info("Request received for GET: /api/pcf/search?manufacturerPartId={}&bpnNumber={}", manufacturerPartId, bpnNumber);
@@ -69,13 +71,22 @@ public class PcfExchangeController {
 	}
 
 	@PostMapping(value = "/request/{productId}")
+	@PreAuthorize("hasPermission('','request_for_pcf_value')")
 	public ResponseEntity<Object> requestForPcfDataOffer(@PathVariable String productId,
 			@Valid @RequestBody ConsumerRequest consumerRequest) throws Exception {
-		log.info("Request received for GET: /api/pcf/request/{}", productId);
+		log.info("Request received for POST: /api/pcf/request/{}", productId);
 		return ok().body(Map.of("msg", pcfExchangeService.requestForPcfDataOffer(productId, consumerRequest)));
+	}
+	
+	@GetMapping(value = "/request/{requestId}")
+	@PreAuthorize("hasPermission('','request_for_pcf_value')")
+	public ResponseEntity<Object> viewForPcfDataOffer(@PathVariable String requestId) throws Exception {
+		log.info("Request received for GET: /request/{}", requestId);
+		return ok().body(pcfExchangeService.viewForPcfDataOffer(requestId));
 	}
 
 	@PostMapping(value = "/actionsonrequest")
+	@PreAuthorize("hasPermission('','action_on_pcf_request')")
 	public ResponseEntity<Object> actionOnPcfRequestAndSendNotificationToConsumer(
 			@Valid @RequestBody PcfRequestModel pcfRequestModel) throws Exception {
 
@@ -85,12 +96,13 @@ public class PcfExchangeController {
 
 		return ok().body(Map.of("msg", msg));
 	}
-
+	
 	@GetMapping(value = "/{type}/requests")
+	@PreAuthorize("hasPermission('','view_pcf_history')")
 	public ResponseEntity<Object> getPcfProviderData(@PathVariable PCFTypeEnum type,
 			@RequestParam(value = "status", required = false) PCFRequestStatusEnum status, @Param("page") Integer page,
 			@Param("pageSize") Integer pageSize) throws Exception {
-		log.info("Request received for POST: /api/pcf/{}/requests/", type.name().toLowerCase());
+		log.info("Request received for GET: /api/pcf/{}/requests/", type.name().toLowerCase());
 
 		page = page == null ? 0 : page;
 		pageSize = pageSize == null ? 10 : pageSize;

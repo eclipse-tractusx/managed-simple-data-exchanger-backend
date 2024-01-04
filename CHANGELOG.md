@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [2.3.4] - 2023-12-21
+
+### Fixed
+- Removed time duration from policy.
+
 ## [2.3.3] - 2023-12-06
 ### Fixed
 - fixed veracode security in app CVE-2023-46589 and CVE-2023-34053 .
@@ -257,7 +262,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Compliance with Catena-X Guidelines
 - Integration with Digital Twin registry service.
 
-[unreleased]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.3.3...main
+[unreleased]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.3.4...main
+[2.3.4]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.3.3...v2.3.4
 [2.3.3]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.3.2...v2.3.3
 [2.3.2]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.3.1...v2.3.2
 [2.3.1]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.3.0...v2.3.1

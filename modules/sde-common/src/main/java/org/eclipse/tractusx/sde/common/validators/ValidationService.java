@@ -25,7 +25,6 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
-import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -36,11 +35,7 @@ public class ValidationService {
 		if (usagePolicies != null && !CollectionUtils.isEmpty(usagePolicies)) {
 			boolean validateFlag = false;
 			for (UsagePolicies usagePolicy : usagePolicies) {
-				if (usagePolicy.getType().equals(UsagePolicyEnum.DURATION)) {
-					validateFlag = validateDuration(usagePolicy);
-				} else {
-					validateFlag = validatePolicy(usagePolicy);
-				}
+				validateFlag = validatePolicy(usagePolicy);
 				if (!validateFlag) {
 					break;
 				}
@@ -60,17 +55,6 @@ public class ValidationService {
 			isValid = true;
 		}
 
-		return isValid;
-	}
-
-	private boolean validateDuration(UsagePolicies usagePolicy) {
-
-		boolean isValid = false;
-		if (usagePolicy.getTypeOfAccess().equals(PolicyAccessEnum.UNRESTRICTED)
-				|| usagePolicy.getTypeOfAccess().equals(PolicyAccessEnum.RESTRICTED)
-						&& StringUtils.isNotBlank(usagePolicy.getValue()) && usagePolicy.getDurationUnit() != null) {
-			isValid = true;
-		}
 		return isValid;
 	}
 }

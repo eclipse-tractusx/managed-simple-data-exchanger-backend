@@ -25,7 +25,6 @@ import java.util.List;
 
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.accesspolicy.AccessPolicyDTO;
-import org.eclipse.tractusx.sde.edc.entities.request.policies.usagepolicy.DurationPolicyDTO;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.usagepolicy.PurposePolicyDTO;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.usagepolicy.RolePolicyDTO;
 import org.springframework.stereotype.Service;
@@ -68,9 +67,6 @@ public class PolicyConstraintBuilderService {
 		ConstraintRequest request = null;
 
 		switch (policy.getType()) {
-		case DURATION:
-			request = DurationPolicyDTO.fromUsagePolicy(policy).toConstraint();
-			break;
 		case PURPOSE:
 			request = PurposePolicyDTO.fromUsagePolicy(policy).toConstraint();
 			break;

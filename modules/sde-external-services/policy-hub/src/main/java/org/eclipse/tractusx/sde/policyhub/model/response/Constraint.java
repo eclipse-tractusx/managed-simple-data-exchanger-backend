@@ -19,9 +19,12 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.policyhub.model.response;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,6 +39,12 @@ import lombok.NoArgsConstructor;
 @JsonInclude(Include.NON_NULL)
 public class Constraint {
 
+	@JsonProperty("odrl:and")
+	private List<String> odrlAnd;
+	
+	@JsonProperty("odrl:or")
+	private List<String> odrlOr;
+	
     private String leftOperand;
     private String operator;
     private String rightOperand;

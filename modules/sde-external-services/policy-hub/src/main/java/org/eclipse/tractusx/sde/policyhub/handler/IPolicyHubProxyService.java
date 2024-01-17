@@ -17,28 +17,18 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-package org.eclipse.tractusx.sde.policyhub.model.request;
+package org.eclipse.tractusx.sde.policyhub.handler;
 
-import org.eclipse.tractusx.sde.policyhub.enums.ConstraintOperandIdEnum;
-import org.eclipse.tractusx.sde.policyhub.enums.PolicyTypeIdEnum;
+import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import org.eclipse.tractusx.sde.policyhub.model.request.PolicyContentRequest;
+import org.eclipse.tractusx.sde.policyhub.model.response.PolicyResponse;
+import org.eclipse.tractusx.sde.policyhub.model.response.PolicyTypeResponse;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+public interface IPolicyHubProxyService {
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@JsonInclude(Include.NON_NULL)
-public class PolicyContentRequest {
-	
-	private PolicyTypeIdEnum policyType;
-	private ConstraintOperandIdEnum constraintOperand;
-	private Constraints constraints;
-
+	public List<String> getPolicyAttributes();
+	public List<PolicyTypeResponse> getPolicyTypes(String type, String useCase);
+	public PolicyResponse getPolicyContent(String useCase, String type, String credential, String operatorId, String value);
+	public PolicyResponse getPolicyContent(PolicyContentRequest policyContentRequest);
 }

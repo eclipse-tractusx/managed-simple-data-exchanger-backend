@@ -24,12 +24,9 @@ package org.eclipse.tractusx.sde.core.processreport.entity;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
-import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
+import org.eclipse.tractusx.sde.common.entities.Policies;
 import org.eclipse.tractusx.sde.common.enums.ProgressStatusEnum;
-import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
-import org.eclipse.tractusx.sde.core.policy.entity.PolicyMapToStringConvertor;
 import org.eclipse.tractusx.sde.core.utils.ListToStringConverter;
 
 import jakarta.persistence.Cacheable;
@@ -71,16 +68,13 @@ public class ProcessReportEntity {
     @Column(name = "policy_uuid")
     private String policyUuid;
     
+    @Column(name = "access_policy")
     @Convert(converter = ListToStringConverter.class)
-    @Column(name = "bpn_numbers")
-    private List<String> bpnNumbers;
-
-    @Column(name = "type_of_access")
-    private String typeOfAccess;
+    private List<Policies> bpnNumbers;
 
     @Column(name = "usage_policy", columnDefinition = "TEXT")
-   	@Convert(converter = PolicyMapToStringConvertor.class)
-   	private Map<UsagePolicyEnum, UsagePolicies> usagePolicies;
+    @Convert(converter = ListToStringConverter.class)
+   	private List<Policies> usagePolicies;
     
     @Column(name = "number_of_updated_items")
     private int numberOfUpdatedItems;

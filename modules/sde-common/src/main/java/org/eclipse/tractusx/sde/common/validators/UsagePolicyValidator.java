@@ -40,10 +40,9 @@ public class UsagePolicyValidator implements ConstraintValidator<ValidatePolicyT
 
 	public boolean isValid(PolicyModel policy, ConstraintValidatorContext constraintValidatorContext) {
 		boolean policyName = validationService.policyName(policy.getPolicyName(), constraintValidatorContext);
-		boolean accessType = validationService.checkAccessType(policy.getTypeOfAccess(), constraintValidatorContext);
-		boolean access = validationService.accessPolicyValidation(policy.getBpnNumbers(), constraintValidatorContext);
-		boolean usage = validationService.usagePolicyValidation(policy.getUsagePolicies(), constraintValidatorContext);
-		return policyName && accessType && access && usage;
+		boolean access = validationService.accessPoliciesValidation(policy.getAccessPolicies(), constraintValidatorContext);
+		boolean usage = validationService.usagePoliciesValidation(policy.getUsagePolicies(), constraintValidatorContext);
+		return policyName && access && usage;
 	}
 
 }

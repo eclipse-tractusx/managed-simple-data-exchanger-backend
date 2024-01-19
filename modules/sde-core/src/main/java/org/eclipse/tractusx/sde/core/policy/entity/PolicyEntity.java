@@ -24,9 +24,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.tractusx.sde.common.entities.Policies;
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.core.utils.ListToStringConverter;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -46,17 +49,16 @@ public class PolicyEntity {
 
 	@Column(name = "policy_name")
 	private String policyName;
-
+	
 	@Convert(converter = ListToStringConverter.class)
-	@Column(name = "bpn_numbers", columnDefinition = "TEXT")
-	private List<String> bpnNumbers;
-
-	@Column(name = "type_of_access")
-	private String typeOfAccess;
-
-	@Column(name = "usage_policy", columnDefinition = "TEXT")
-	@Convert(converter = PolicyMapToStringConvertor.class)
-	private Map<UsagePolicyEnum, UsagePolicies> usagePolicies;
+	@Column(name = "access_policies", columnDefinition = "TEXT")
+	@JsonProperty(value = "access_policies")
+	private List<Policies> accessPolicies;
+	
+	@Convert(converter = ListToStringConverter.class)
+	@Column(name = "usage_policies", columnDefinition = "TEXT")
+	@JsonProperty(value = "usage_policies")
+	private List<Policies> usagePolicies;
 	
 	@Column(name = "last_updated_time")
 	private LocalDateTime lastUpdatedTime;

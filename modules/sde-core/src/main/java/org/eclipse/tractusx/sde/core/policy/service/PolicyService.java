@@ -65,11 +65,6 @@ public class PolicyService {
 
 		if (isPolicyNameValid(uuid, request.getPolicyName())) {
 			PolicyEntity policy = policyMapper.mapFrom(request);
-			policy.getUsagePolicies().forEach((key,value)->{
-	 			 if(value.getTypeOfAccess().equals(PolicyAccessEnum.UNRESTRICTED)) {
-	 				 value.setValue(null);
-	 			 }
-	 		});
 			policy.setUuid(uuid);
 			policy.setLastUpdatedTime(LocalDateTime.now());
 			request.setLastUpdatedTime(LocalDateTime.now());

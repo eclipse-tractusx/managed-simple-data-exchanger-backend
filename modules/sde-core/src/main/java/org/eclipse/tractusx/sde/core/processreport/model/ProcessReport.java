@@ -26,6 +26,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.tractusx.sde.common.entities.Policies;
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.ProgressStatusEnum;
 import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
@@ -50,11 +51,8 @@ public class ProcessReport {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private String policyUuid;
-    private List<String> bpnNumbers;
-    private String typeOfAccess;
-
-	private Map<UsagePolicyEnum, UsagePolicies> usagePolicies;
-	
+    private List<Policies> accessPolicies;
+	private List<Policies> usagePolicies;
     private int numberOfUpdatedItems;
 	private int numberOfDeletedItems;
 	private String referenceProcessId;

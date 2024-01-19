@@ -124,8 +124,8 @@ public class SubmodelOrchestartorService {
 
 		Runnable runnable = () -> {
 			processReportUseCase.startBuildProcessReport(processId, submodelSchemaObject.getId(),
-					csvContent.getRows().size(), submodelPolicyRequest.getBpnNumbers(),
-					submodelPolicyRequest.getTypeOfAccess(), submodelPolicyRequest.getUsagePolicies(), submodelPolicyRequest.getUuid());
+					csvContent.getRows().size(), submodelPolicyRequest.getAccessPolicies(),
+					submodelPolicyRequest.getUsagePolicies(), submodelPolicyRequest.getUuid());
 
 			AtomicInteger successCount = new AtomicInteger();
 			AtomicInteger failureCount = new AtomicInteger();
@@ -175,12 +175,11 @@ public class SubmodelOrchestartorService {
 			executor.init(submodelSchema);
 
 			Map<String, Object> mps = new HashMap<>();
-			mps.put("type_of_access", policy.getTypeOfAccess());
-			mps.put("bpn_numbers", policy.getBpnNumbers());
+			mps.put("access_policies", policy.getAccessPolicies());
 			mps.put("usage_policies", policy.getUsagePolicies());
 
 			processReportUseCase.startBuildProcessReport(processId, submodelSchemaObject.getId(), rowData.size(),
-					policy.getBpnNumbers(), policy.getTypeOfAccess(), policy.getUsagePolicies(), policy.getUuid());
+					policy.getAccessPolicies(), policy.getUsagePolicies(), policy.getUuid());
 
 			rowData.stream().forEach(obj -> {
 				int andIncrement = atInt.incrementAndGet();
@@ -277,15 +276,22 @@ public class SubmodelOrchestartorService {
 
 		case EXISTING:
 			PolicyModel localPolicy = policyService.getPolicy(policy.getUuid());
-			if (StringUtils.isNotBlank(policy.getUuid()) && ((CollectionUtils.isNotEmpty(policy.getBpnNumbers())
-					&& !localPolicy.getBpnNumbers().equals(policy.getBpnNumbers()))
-					|| (!org.springframework.util.CollectionUtils.isEmpty(policy.getUsagePolicies())
-							&& !localPolicy.getUsagePolicies().equals(policy.getUsagePolicies())))) {
+			
+			if (StringUtils.isNotBlank(policy.getUuid())
+					&& ((CollectionUtils.isNotEmpty(policy.getUsagePolicies())
+							&& !localPolicy.getUsagePolicies().equals(policy.getUsagePolicies()))
+					|| (CollectionUtils.isNotEmpty(policy.getAccessPolicies())
+							&& !localPolicy.getAccessPolicies().equals(policy.getAccessPolicies())))) {
+				
+				
 				if (StringUtils.isBlank(policy.getPolicyName())) {
 					policy.setPolicyName(localPolicy.getPolicyName());
 				}
-				if (StringUtils.isBlank(policy.getTypeOfAccess())) {
-					policy.setTypeOfAccess(localPolicy.getTypeOfAccess());
+				if (CollectionUtils.isEmpty(policy.getAccessPolicies())) {
+					policy.setAccessPolicies(localPolicy.getAccessPolicies());
+				}
+				if (CollectionUtils.isEmpty(policy.getUsagePolicies())) {
+					policy.setAccessPolicies(localPolicy.getUsagePolicies());
 				}
 
 				policy = policyService.updatePolicy(policy.getUuid(), policy);

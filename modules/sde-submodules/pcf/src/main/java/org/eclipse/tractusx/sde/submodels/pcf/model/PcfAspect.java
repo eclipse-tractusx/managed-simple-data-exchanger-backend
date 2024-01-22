@@ -23,6 +23,7 @@ package org.eclipse.tractusx.sde.submodels.pcf.model;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.tractusx.sde.common.entities.Policies;
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 
@@ -50,14 +51,11 @@ public class PcfAspect {
 	@JsonProperty(value = "row_number")
 	private Integer rowNumberforPcf;
 
-	@JsonProperty(value = "bpn_numbers")
-	private List<String> bpnNumbersforPcf;
-
-	@JsonProperty(value = "type_of_access")
-	private String typeOfAccessforPcf;
+	@JsonProperty(value = "access_policies")
+	private List<Policies> accessPoliciesforPcf;
 
 	@JsonProperty(value = "usage_policies")
-	private Map<UsagePolicyEnum, UsagePolicies> usagePoliciesforPcf;
+	private List<Policies> usagePoliciesforPcf;
 
 	@JsonProperty(value = "process_id")
 	private String processIdforPcf;

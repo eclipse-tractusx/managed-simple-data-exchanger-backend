@@ -25,6 +25,7 @@ package org.eclipse.tractusx.sde.submodels.apr.model;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.tractusx.sde.common.entities.Policies;
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 
@@ -59,14 +60,11 @@ public class AspectRelationship {
 	@JsonProperty(value = "process_id")
 	private String processId;
 
-	@JsonProperty(value = "bpn_numbers")
-	private List<String> bpnNumbers;
-
-	@JsonProperty(value = "type_of_access")
-	private String typeOfAccess;
+	@JsonProperty(value = "access_policies")
+	private List<Policies> accessPolicies;
 
 	@JsonProperty(value = "usage_policies")
-	private Map<UsagePolicyEnum, UsagePolicies> usagePolicies;
+	private List<Policies> usagePolicies;
 
 	@JsonProperty(value = "uuid")
 	private String childUuid;

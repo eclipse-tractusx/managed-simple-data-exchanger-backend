@@ -23,8 +23,8 @@ package org.eclipse.tractusx.sde.edc.entities.request.policies;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
+import org.eclipse.tractusx.sde.common.entities.Policies;
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.accesspolicy.AccessPolicyDTO;
@@ -35,7 +35,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class PolicyConstraintBuilderService {
 
-	public ActionRequest getAccessConstraints(List<String> bpnNumbers) {
+	public ActionRequest getAccessPoliciesConstraints(List<Policies> accessPolicies) {
 		List<ConstraintRequest> constraints = new ArrayList<>();
 		if (bpnNumbers != null && !bpnNumbers.isEmpty()) {
 			AccessPolicyDTO accessPolicy = null;
@@ -50,7 +50,7 @@ public class PolicyConstraintBuilderService {
 		return action;
 	}
 
-	public ActionRequest getUsagePolicyConstraints(Map<UsagePolicyEnum, UsagePolicies> usagePolicies) {
+	public ActionRequest getUsagePoliciesConstraints(List<Policies> usagePolicies) {
 		List<ConstraintRequest> usageConstraintList = new ArrayList<>();
 		if (usagePolicies != null && !usagePolicies.isEmpty()) {
 			usagePolicies.forEach((key, value) -> usagePolicy(usageConstraintList, key, value));

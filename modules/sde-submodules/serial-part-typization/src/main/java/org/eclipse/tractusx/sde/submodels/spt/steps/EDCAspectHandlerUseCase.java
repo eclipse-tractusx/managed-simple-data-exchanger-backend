@@ -92,7 +92,7 @@ public class EDCAspectHandlerUseCase extends Step {
 	private void edcProcessingforAspect(AssetEntryRequest assetEntryRequest, Aspect input) {
 
 		Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest,
-				input.getBpnNumbers(), input.getUsagePolicies());
+				input.getAccessPolicies(), input.getUsagePolicies());
 
 		// EDC transaction information for DB
 		input.setAssetId(assetEntryRequest.getAsset().getId());

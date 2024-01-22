@@ -20,11 +20,13 @@
 
 package org.eclipse.tractusx.sde.edc.facilitator;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.eclipse.tractusx.sde.common.entities.Policies;
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
 import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
@@ -50,17 +52,25 @@ public class CreateEDCAssetFacilator extends AbstractEDCStepsHelper {
 	private final ContractDefinitionRequestFactory contractFactory;
 	private final PolicyConstraintBuilderService policyConstraintBuilderService;
 
-	public Map<String, String> createEDCAsset(AssetEntryRequest assetEntryRequest, List<String> bpns,
-			Map<UsagePolicyEnum, UsagePolicies> usagePolicies) {
+	public Map<String, String> createEDCAsset(AssetEntryRequest assetEntryRequest, List<Policies> acessPolicies,
+			List<Policies> usagePolicies) {
 
 		Map<String, String> extensibleProperties = new HashMap<>();
 		Map<String, String> output = new HashMap<>();
+		
+	List<String> bpnNumbers = new ArrayList<>();
+		
+		acessPolicies.forEach(accessPolicy->{
+			if(accessPolicy.getTechnicalKey().equals("BusinessPartnerNumber")) {
+				bpnNumbers.addAll(accessPolicy.getValue());
+			}
+		});
 
 		edcGateway.createAsset(assetEntryRequest);
 
 		String assetId = assetEntryRequest.getAsset().getId();
 
-		ActionRequest accessAction = policyConstraintBuilderService.getAccessConstraints(bpns);
+		ActionRequest accessAction = policyConstraintBuilderService.getAccessPoliciesConstraints(bpnNumbers);
 
 		prepareExtensionalCustomValue(extensibleProperties, usagePolicies);
 
@@ -88,7 +98,7 @@ public class CreateEDCAssetFacilator extends AbstractEDCStepsHelper {
 	}
 
 	private void prepareExtensionalCustomValue(Map<String, String> extensibleProperties,
-			Map<UsagePolicyEnum, UsagePolicies> usagePolicies) {
+			List<Policies> usagePolicies) {
 		if (!CollectionUtils.isEmpty(usagePolicies) && usagePolicies.containsKey(UsagePolicyEnum.CUSTOM)) {
 			UsagePolicies customPolicy = usagePolicies.get(UsagePolicyEnum.CUSTOM);
 			if (!Optional.ofNullable(customPolicy).isEmpty()

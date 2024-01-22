@@ -23,10 +23,8 @@
 package org.eclipse.tractusx.sde.submodels.spt.model;
 
 import java.util.List;
-import java.util.Map;
 
-import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
-import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
+import org.eclipse.tractusx.sde.common.entities.Policies;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -50,15 +48,12 @@ public class Aspect {
     
     @JsonProperty(value ="row_number")
     private Integer rowNumber;
-
-    @JsonProperty(value ="bpn_numbers")
-    private List<String> bpnNumbers;
     
-    @JsonProperty(value ="type_of_access")
-    private String typeOfAccess;
+    @JsonProperty(value ="access_policies")
+    private List<Policies> accessPolicies;
     
     @JsonProperty(value ="usage_policies")
-    private Map<UsagePolicyEnum, UsagePolicies> usagePolicies;
+    private List<Policies> usagePolicies;
     
     @JsonProperty(value ="uuid")
     private String uuid;

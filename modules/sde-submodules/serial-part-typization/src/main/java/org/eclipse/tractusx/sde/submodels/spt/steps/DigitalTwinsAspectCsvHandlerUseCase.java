@@ -22,6 +22,7 @@
 
 package org.eclipse.tractusx.sde.submodels.spt.steps;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,7 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelResponse;
 import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsFacilitator;
 import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsUtility;
 import org.eclipse.tractusx.sde.submodels.spt.model.Aspect;
+import org.junit.jupiter.api.DynamicTest;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -78,8 +80,15 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends Step {
 		} else if (shellIds.size() == 1) {
 			logDebug(String.format("Shell id found for '%s'", shellLookupRequest.toJsonString()));
 			shellId = shellIds.stream().findFirst().orElse(null);
+			List<String> bpnNumbers = new ArrayList<>();
+					
+			aspect.getAccessPolicies().forEach(accessPolicy->{
+				if(accessPolicy.getTechnicalKey().equals("BusinessPartnerNumber")) {
+					bpnNumbers.addAll(accessPolicy.getValue());
+				}
+			});
 			digitalTwinsFacilitator.updateShellSpecificAssetIdentifiers(shellId,
-					digitalTwinsUtility.getSpecificAssetIds(getSpecificAssetIds(aspect), aspect.getBpnNumbers()));
+					digitalTwinsUtility.getSpecificAssetIds(getSpecificAssetIds(aspect), bpnNumbers));
 			logDebug(String.format("Shell id '%s'", shellId));
 		} else {
 			throw new CsvHandlerDigitalTwinUseCaseException(

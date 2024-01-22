@@ -87,7 +87,7 @@ public class PCFExchangeAssetProvider {
 
 		if (!edcGateway.assetExistsLookupBasedOnType(requestBody)) {
 			Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest, List.of(),
-					Map.of());
+					List.of());
 			log.info("PCF Exchange asset creates :" + createEDCAsset.toString());
 		} else {
 			log.info("PCF Exchange asset exists in edc connector, so ignoring asset creation");

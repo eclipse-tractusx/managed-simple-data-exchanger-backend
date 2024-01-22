@@ -22,6 +22,7 @@ package org.eclipse.tractusx.sde.submodels.psiap.model;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.tractusx.sde.common.entities.Policies;
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 
@@ -69,14 +70,11 @@ public class PartSiteInformationAsPlanned {
 		@JsonProperty(value = "deleted")
 		private String deleted;
 
-		@JsonProperty(value ="bpn_numbers")
-		private List<String> bpnNumbers;
-		
-		@JsonProperty(value ="type_of_access")
-		private String typeOfAccess;
-		
-		@JsonProperty(value ="usage_policies")
-		private Map<UsagePolicyEnum, UsagePolicies> usagePolicies;
+		@JsonProperty(value = "access_policies")
+		private List<Policies> accessPolicies;
+
+		@JsonProperty(value = "usage_policies")
+		private List<Policies> usagePolicies;
 
 		@JsonProperty(value ="manufacturer_part_id")
 		private String manufacturerPartId;

@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
-import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ActionRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyConstraintBuilderService;
@@ -38,14 +36,12 @@ public class EDCAssetUrlCacheService {
 
 	@SneakyThrows
 	public EDRCachedByIdResponse verifyAndGetToken(String bpnNumber, QueryDataOfferModel queryDataOfferModel) {
-		
-		Map<UsagePolicyEnum, UsagePolicies> policies = queryDataOfferModel.getUsagePolicies();
-		ActionRequest action = policyConstraintBuilderService.getUsagePolicyConstraints(policies);
-		
+
+		ActionRequest action = policyConstraintBuilderService
+				.getUsagePoliciesConstraints(queryDataOfferModel.getPolicy().getUsagePolicies());
+
 		Offer offer = Offer.builder().assetId(queryDataOfferModel.getAssetId())
-				.offerId(queryDataOfferModel.getOfferId())
-				.policyId(queryDataOfferModel.getPolicyId())
-				.build();
+				.offerId(queryDataOfferModel.getOfferId()).policyId(queryDataOfferModel.getPolicyId()).build();
 		try {
 			EDRCachedResponse eDRCachedResponse = consumerControlPanelService.verifyOrCreateContractNegotiation(
 					bpnNumber, Map.of(), queryDataOfferModel.getConnectorOfferUrl(), action, offer);
@@ -92,7 +88,7 @@ public class EDCAssetUrlCacheService {
 		dDTRmap.clear();
 		dDTRUrlCacheUtility.cleareDDTRUrlAllCache();
 	}
-	
+
 	public void removeDDTRUrlCache(String bpnNumber) {
 		dDTRUrlCacheUtility.removeDDTRUrlCache(bpnNumber);
 		dDTRmap.remove(bpnNumber);
@@ -117,7 +113,7 @@ public class EDCAssetUrlCacheService {
 		pcfExchangeURLMap.clear();
 		pcfExchangeAssetUtils.clearePCFExchangeAllCache();
 	}
-	
+
 	public void removePCFExchangeCache(String bpnNumber) {
 		pcfExchangeAssetUtils.removePCFExchangeCache(bpnNumber);
 		pcfExchangeURLMap.remove(bpnNumber);

@@ -68,7 +68,7 @@ public class ProcessReportEntity {
     @Column(name = "policy_uuid")
     private String policyUuid;
     
-    @Column(name = "access_policies")
+    @Column(name = "access_policies" , columnDefinition = "TEXT")
     @Convert(converter = PoliciesListToStringConverter.class)
     private List<Policies> accessPolicies;
 

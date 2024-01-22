@@ -22,7 +22,6 @@ package org.eclipse.tractusx.sde.edc.services;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,9 +31,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
-import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
-import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
+import org.eclipse.tractusx.sde.common.entities.Policies;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.edc.api.ContractOfferCatalogApi;
 import org.eclipse.tractusx.sde.edc.constants.EDCAssetConstant;
@@ -93,14 +91,13 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
 		if (!providerUrl.endsWith(protocolPath))
 			providerUrl = providerUrl + protocolPath;
-		
+
 		String sproviderUrl = providerUrl;
 
 		List<QueryDataOfferModel> queryOfferResponse = new ArrayList<>();
 
-		JsonNode contractOfferCatalog = contractOfferCatalogApiProxy
-				.getContractOffersCatalog(contractOfferRequestFactory
-						.getContractOfferRequest(sproviderUrl, limit, offset, filterExpression));
+		JsonNode contractOfferCatalog = contractOfferCatalogApiProxy.getContractOffersCatalog(
+				contractOfferRequestFactory.getContractOfferRequest(sproviderUrl, limit, offset, filterExpression));
 
 		JsonNode jOffer = contractOfferCatalog.get("dcat:dataset");
 		if (jOffer.isArray()) {
@@ -123,8 +120,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
 		QueryDataOfferModel build = QueryDataOfferModel.builder()
 				.assetId(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_ID))
-				.connectorOfferUrl(sproviderUrl)
-				.offerId(getFieldFromJsonNode(policy, "@id"))
+				.connectorOfferUrl(sproviderUrl).offerId(getFieldFromJsonNode(policy, "@id"))
 				.title(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_NAME))
 				.type(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_TYPE))
 				.description(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_DESCRIPTION))
@@ -158,38 +154,35 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
 		JsonNode constraints = permission.get("odrl:constraint");
 
-		EnumMap<UsagePolicyEnum, UsagePolicies> usagePolicies = new EnumMap<>(UsagePolicyEnum.class);
-
-		List<String> bpnNumbers = new ArrayList<>();
+		List<Policies> usagePolicies = new ArrayList<>();
 
 		if (constraints != null) {
 			JsonNode jsonNode = constraints.get("odrl:and");
 
 			if (jsonNode != null && jsonNode.isArray()) {
-				jsonNode.forEach(constraint -> setConstraint(usagePolicies, bpnNumbers, constraint));
+				jsonNode.forEach(constraint -> setConstraint(usagePolicies, constraint));
 			} else if (jsonNode != null) {
-				setConstraint(usagePolicies, bpnNumbers, jsonNode);
+				setConstraint(usagePolicies, jsonNode);
 			}
 		}
-		build.setTypeOfAccess(!bpnNumbers.isEmpty() ? PolicyAccessEnum.RESTRICTED : PolicyAccessEnum.UNRESTRICTED);
-		build.setBpnNumbers(bpnNumbers);
-		build.setUsagePolicies(usagePolicies);
+
+		build.setPolicy(PolicyModel.builder()
+				.accessPolicies(null)
+				.usagePolicies(usagePolicies)
+				.build());
 	}
 
-	private void setConstraint(Map<UsagePolicyEnum, UsagePolicies> usagePolicies, List<String> bpnNumbers,
-			JsonNode jsonNode) {
-
+	private void setConstraint(List<Policies> usagePolicies, JsonNode jsonNode) {
+		
+		//All policy recieved in catalog are usage policy , 
+		// accespoliocy already applied for access control, 
+		// in this constrain all are usage policy
+		
 		String leftOperand = getFieldFromJsonNode(jsonNode, "odrl:leftOperand");
 		String rightOperand = getFieldFromJsonNode(jsonNode, "odrl:rightOperand");
-
-		if (leftOperand.equals("BusinessPartnerNumber")) {
-			bpnNumbers.add(rightOperand);
-		} else {
-			Map<UsagePolicyEnum, UsagePolicies> policyResponse = UtilityFunctions.identyAndGetUsagePolicy(leftOperand,
-					rightOperand);
-			if (policyResponse != null)
-				usagePolicies.putAll(policyResponse);
-		}
+		Policies policyResponse = UtilityFunctions.identyAndGetUsagePolicy(leftOperand, rightOperand);
+		if (policyResponse != null)
+			usagePolicies.add(policyResponse);
 	}
 
 	private String getFieldFromJsonNode(JsonNode jnode, String fieldName) {
@@ -207,21 +200,15 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 		AtomicReference<ContractNegotiationDto> checkContractNegotiationStatus = new AtomicReference<>();
 
 		var recipientURL = UtilityFunctions.removeLastSlashOfUrl(consumerRequest.getProviderUrl());
-		
+
 		if (!recipientURL.endsWith(protocolPath))
 			recipientURL = recipientURL + protocolPath;
-		
+
 		String sproviderUrl = recipientURL;
 
-		Map<UsagePolicyEnum, UsagePolicies> policies = consumerRequest.getPolicies();
+		ActionRequest action = policyConstraintBuilderService
+				.getUsagePoliciesConstraints(consumerRequest.getUsagePolicies());
 
-		UsagePolicies findFirst = policies.get(UsagePolicyEnum.CUSTOM);
-
-		if (findFirst != null) {
-			extensibleProperty.put(UsagePolicyEnum.CUSTOM.name(), findFirst.getValue());
-		}
-
-		ActionRequest action = policyConstraintBuilderService.getUsagePolicyConstraints(policies);
 		consumerRequest.getOffers().parallelStream().forEach(offer -> {
 			try {
 
@@ -267,16 +254,9 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 		Map<String, Object> response = new ConcurrentHashMap<>();
 
 		var recipientURL = UtilityFunctions.removeLastSlashOfUrl(consumerRequest.getProviderUrl());
-		
-		Map<UsagePolicyEnum, UsagePolicies> policies = consumerRequest.getPolicies();
 
-		UsagePolicies findFirst = policies.get(UsagePolicyEnum.CUSTOM);
-
-		if (findFirst != null) {
-			extensibleProperty.put(UsagePolicyEnum.CUSTOM.name(), findFirst.getValue());
-		}
-
-		ActionRequest action = policyConstraintBuilderService.getUsagePolicyConstraints(policies);
+		ActionRequest action = policyConstraintBuilderService
+				.getUsagePoliciesConstraints(consumerRequest.getUsagePolicies());
 		consumerRequest.getOffers().parallelStream().forEach(offer -> {
 			Map<String, Object> resultFields = new ConcurrentHashMap<>();
 			try {
@@ -332,10 +312,10 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 	@SneakyThrows
 	public EDRCachedResponse verifyOrCreateContractNegotiation(String connectorId,
 			Map<String, String> extensibleProperty, String recipientURL, ActionRequest action, Offer offer) {
-		
+
 		if (!recipientURL.endsWith(protocolPath))
 			recipientURL = recipientURL + protocolPath;
-		
+
 		// Verify if there already EDR process initiated then skip it for again download
 		String assetId = offer.getAssetId();
 		List<EDRCachedResponse> eDRCachedResponseList = edrRequestHelper.getEDRCachedByAsset(assetId);

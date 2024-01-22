@@ -20,12 +20,7 @@
 
 package org.eclipse.tractusx.sde.edc.model.response;
 
-import java.util.List;
-import java.util.Map;
-
-import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
-import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
-import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -39,19 +34,18 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class
-QueryDataOfferModel {
+public class QueryDataOfferModel {
 
 	private String connectorId;
 
 	private String assetId;
 
 	private String offerId;
-	
+
 	private String connectorOfferUrl;
-	
+
 	private String title;
-	
+
 	private String type;
 
 	private String version;
@@ -65,15 +59,11 @@ QueryDataOfferModel {
 	private String created;
 
 	private String modified;
-	
+
 	private String publisher;
-
-	private PolicyAccessEnum typeOfAccess;
-
-	private List<String> bpnNumbers;
 
 	private String policyId;
 	
-	private Map<UsagePolicyEnum, UsagePolicies> usagePolicies;
+	private PolicyModel policy;
 
 }

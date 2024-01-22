@@ -27,10 +27,9 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.List;
-import java.util.Map;
 
+import org.eclipse.tractusx.sde.common.entities.Policies;
 import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.core.controller.ConsumerController;
@@ -90,15 +89,17 @@ class ConsumerControllerTest {
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
 				.andExpect(MockMvcResultMatchers.content().string(
-						"[{\"connectorId\":null,\"assetId\":null,\"offerId\":null,\"connectorOfferUrl\":null,\"title\":null,\"type\":null,\"version\":null,\"description\":null,\"fileName\":null,\"fileContentType\":null,\"created\":null,\"modified\":null,\"publisher\":null,\"typeOfAccess\":null,\"bpnNumbers\":null,\"policyId\":null,\"usagePolicies\":null}]"));
+						"[{\"connectorId\":null,\"assetId\":null,\"offerId\":null,\"connectorOfferUrl\":null,\"title\":null,\"type\":null,\"version\":null,\"description\":null,\"fileName\":null,\"fileContentType\":null,\"created\":null,\"modified\":null,\"publisher\":null,\"typeOfAccess\":null,\"policyId\":null,\"policy\":null}]"));
 	}
 
 	@Test
 	void testSubscribeDataOffersBadRequest() throws Exception {
 		doNothing().when(consumerControlPanelService).subscribeDataOffers((ConsumerRequest) any(), anyString());
 
-		ConsumerRequest consumerRequest = ConsumerRequest.builder().connectorId("42").offers(new ArrayList<>())
-				.policies(Map.of()).providerUrl("\"https://example.org/example\"").build();
+		ConsumerRequest consumerRequest = ConsumerRequest.builder().connectorId("42")
+				.offers(new ArrayList<>())
+				.usagePolicies(List.of())
+				.providerUrl("\"https://example.org/example\"").build();
 		String content = (new ObjectMapper()).writeValueAsString(consumerRequest);
 		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/subscribe-data-offers")
 				.contentType(MediaType.APPLICATION_JSON).content(content);
@@ -110,13 +111,12 @@ class ConsumerControllerTest {
 	void testSubscribeDataOffers() throws Exception {
 		doNothing().when(consumerControlPanelService).subscribeDataOffers((ConsumerRequest) any(), anyString());
 		List<Offer> offers = new ArrayList<>();
-		EnumMap<UsagePolicyEnum, UsagePolicies> policies = new EnumMap<>(UsagePolicyEnum.class);
+		List<Policies> policies = new ArrayList<>();
 		Offer mockOffer = Mockito.mock(Offer.class);
 		offers.add(mockOffer);
-		UsagePolicies mockPolicy = Mockito.mock(UsagePolicies.class);
-		UsagePolicyEnum mockKey = Mockito.mock(UsagePolicyEnum.class);
-		policies.put(mockKey, mockPolicy);
-		ConsumerRequest consumerRequest = ConsumerRequest.builder().connectorId("42").offers(offers).policies(policies)
+		Policies mockPolicy = Mockito.mock(Policies.class);
+		policies.add(mockPolicy);
+		ConsumerRequest consumerRequest = ConsumerRequest.builder().connectorId("42").offers(offers).usagePolicies(policies)
 				.providerUrl("\"https://example.org/example\"").build();
 		String content = (new ObjectMapper()).writeValueAsString(consumerRequest);
 		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/subscribe-data-offers")

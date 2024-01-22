@@ -17,27 +17,48 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-package org.eclipse.tractusx.sde.policyhub.model.response;
+
+package org.eclipse.tractusx.sde.common.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import jakarta.persistence.MappedSuperclass;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@MappedSuperclass
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(Include.NON_NULL)
-public class PolicyResponse {
+public class CommonPropEntity {
 	
-	 
-	 private PolicyFileContent content;
-	 private AdditionalAttributes attributes;
+	@JsonProperty(value = "row_number")
+	private Integer rowNumber;
+
+	@JsonProperty(value = "process_id")
+	private String processId;
+	
+	@JsonProperty(value = "shell_id")
+	private String shellId;
+	
+	@JsonProperty(value = "sub_model_id")
+	private String subModelId;
+	
+	@JsonProperty(value = "usage_policy_id")
+	private String usagePolicyId;
+	
+	@JsonProperty(value = "asset_id")
+	private String assetId;
+	
+	@JsonProperty(value = "access_policy_id")
+	private String accessPolicyId;
+	
+	@JsonProperty(value = "contract_defination_id")
+	private String contractDefinationId;
+	
+	@JsonProperty(value = "deleted")
+	private String deleted;
+	
+	@JsonProperty(value = "updated")
+	private String updated;
 
 }

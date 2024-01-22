@@ -25,7 +25,6 @@ import java.util.List;
 
 import org.eclipse.tractusx.sde.policyhub.handler.IPolicyHubProxyService;
 import org.eclipse.tractusx.sde.policyhub.model.request.PolicyContentRequest;
-import org.eclipse.tractusx.sde.policyhub.model.response.PolicyResponse;
 import org.eclipse.tractusx.sde.policyhub.model.response.PolicyTypeResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +34,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.extern.slf4j.Slf4j;
@@ -70,23 +71,23 @@ public class PolicyHubController {
 	
 	@GetMapping(value = "/policy-content")
 	@PreAuthorize("hasPermission('','policyhub_view_policy_content')")
-	public ResponseEntity<PolicyResponse> policyContent(@RequestParam(value = "useCase", required = false) String useCase,
+	public ResponseEntity<JsonNode> policyContent(@RequestParam(value = "useCase", required = false) String useCase,
 			@RequestParam(value = "type", required = true) String type,
 			@RequestParam(value = "credential", required = true) String credential,
 			@RequestParam(value = "operatorId", required = true) String operatorId,
 			@RequestParam(value = "value", required = false) String value) throws Exception {
 		
 		log.info("Request received : /policy-hub/policy-content");
-		PolicyResponse policyResponse = policyHubProxyService.getPolicyContent(useCase, type, credential, operatorId, value);
+		JsonNode policyResponse = policyHubProxyService.getPolicyContent(useCase, type, credential, operatorId, value);
 		return ok().body(policyResponse);
 	}
 	
 	@PostMapping(value = "/policy-content")
 	@PreAuthorize("hasPermission('','policyhub_policy_content')")
-	public ResponseEntity<PolicyResponse> policyContent(@RequestBody PolicyContentRequest policyContentRequest) throws Exception {
+	public ResponseEntity<JsonNode> policyContent(@RequestBody PolicyContentRequest policyContentRequest) throws Exception {
 		
 		log.info("Request received : /policy-hub/policy-content");
-		PolicyResponse policyResponse = policyHubProxyService.getPolicyContent(policyContentRequest);
+		JsonNode policyResponse = policyHubProxyService.getPolicyContent(policyContentRequest);
 		return ok().body(policyResponse);
 	}
 	

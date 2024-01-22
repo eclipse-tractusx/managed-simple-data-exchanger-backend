@@ -17,19 +17,31 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-package org.eclipse.tractusx.sde.policyhub.handler;
+package org.eclipse.tractusx.sde.common.utils;
 
 import java.util.List;
 
-import org.eclipse.tractusx.sde.policyhub.model.request.PolicyContentRequest;
-import org.eclipse.tractusx.sde.policyhub.model.response.PolicyTypeResponse;
+import org.eclipse.tractusx.sde.common.entities.Policies;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 
-import com.fasterxml.jackson.databind.JsonNode;
+public class PolicyOperationUtil {
+	
+	private PolicyOperationUtil() {}
 
-public interface IPolicyHubProxyService {
+	private static List<String> getBPNList(List<Policies> policies) {
+		return policies
+				.stream()
+				.filter(e -> e.getTechnicalKey().equals("BusinessPartnerNumber"))
+				.flatMap(e -> e.getValue().stream())
+				.toList();
+	}
+	
+	public static List<String> getAccessBPNList(PolicyModel policy) {
+		return getBPNList(policy.getAccessPolicies());
+	}
 
-	public List<String> getPolicyAttributes();
-	public List<PolicyTypeResponse> getPolicyTypes(String type, String useCase);
-	public JsonNode getPolicyContent(String useCase, String type, String credential, String operatorId, String value);
-	public JsonNode getPolicyContent(PolicyContentRequest policyContentRequest);
+	public static List<String> getUsageBPNList(PolicyModel policy) {
+		return getBPNList(policy.getUsagePolicies());
+	}
+
 }

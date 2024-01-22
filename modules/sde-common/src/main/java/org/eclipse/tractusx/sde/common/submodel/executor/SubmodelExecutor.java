@@ -22,6 +22,7 @@ package org.eclipse.tractusx.sde.common.submodel.executor;
 
 import java.util.List;
 
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.entities.csv.RowData;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -46,9 +47,9 @@ public abstract class SubmodelExecutor {
 		return submodelSchema.get("items").getAsJsonObject();
 	}
 
-	public abstract void executeCsvRecord(RowData rowData, ObjectNode jsonObject, String processId);
+	public abstract void executeCsvRecord(RowData rowData, ObjectNode jsonObject, String processId, PolicyModel policy);
 
-	public abstract void executeJsonRecord(Integer rowIndex, ObjectNode jsonObject, String processId);
+	public abstract void executeJsonRecord(Integer rowIndex, ObjectNode jsonObject, String processId, PolicyModel policy);
 
 	public abstract List<JsonObject> readCreatedTwinsforDelete(String refProcessId);
 

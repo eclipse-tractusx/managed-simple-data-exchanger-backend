@@ -26,6 +26,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.bpndiscovery.handler.BPNDiscoveryUseCaseHandler;
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.entities.csv.RowData;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseException;
 import org.eclipse.tractusx.sde.common.submodel.executor.SubmodelExecutor;
@@ -54,64 +55,64 @@ public class SingleLevelBoMAsPlannedExecutor extends SubmodelExecutor {
 
 	@Autowired
 	private final CsvParse csvParseStep;
-	
+
 	private final JsonRecordValidate jsonRecordValidate;
-	
+
 	private final JsonRecordFormating jsonRecordformater;
 
 	private final SingleLevelBoMASPlannedUUIDUrnUUID generateUrnUUID;
-	
+
 	private final DigitalTwinsSingleLevelBoMAsPlannedHandlerStep digitalTwinsHandlerStep;
 
 	private final EDCSingleLevelBoMAsPlannedHandlerStep eDCHandlerStep;
 
 	private final StoreSingleLevelBoMAsPlannedStep storeSingleLevelBoMAsPlannedStep;
-	
+
 	private final SingleLevelBoMAsPlannedMapper singleLevelBoMAsPlannedMapper;
 
 	private final SingleLevelBoMAsPlannedService singleLevelBoMAsPlannedService;
-	
+
 	private final BPNDiscoveryUseCaseHandler bPNDiscoveryUseCaseHandler;
 
-	
 	@SneakyThrows
-	public void executeCsvRecord(RowData rowData, ObjectNode jsonObject, String processId) {
-		
+	public void executeCsvRecord(RowData rowData, ObjectNode jsonObject, String processId, PolicyModel policy) {
+
 		csvParseStep.init(getSubmodelSchema());
 		csvParseStep.run(rowData, jsonObject, processId);
 
-		nextSteps(rowData.position(), jsonObject, processId);
+		nextSteps(rowData.position(), jsonObject, processId, policy);
 	}
 
 	@SneakyThrows
-	public void executeJsonRecord(Integer rowIndex, ObjectNode jsonObject, String processId) {
+	public void executeJsonRecord(Integer rowIndex, ObjectNode jsonObject, String processId, PolicyModel policy) {
 
 		jsonRecordformater.init(getSubmodelSchema());
 		jsonRecordformater.run(rowIndex, jsonObject, processId);
-		
-		nextSteps(rowIndex, jsonObject, processId);
+
+		nextSteps(rowIndex, jsonObject, processId, policy);
 
 	}
-	
+
 	@SneakyThrows
-	private void nextSteps(Integer rowIndex, ObjectNode jsonObject, String processId) throws CsvHandlerDigitalTwinUseCaseException {
+	private void nextSteps(Integer rowIndex, ObjectNode jsonObject, String processId, PolicyModel policy)
+			throws CsvHandlerDigitalTwinUseCaseException {
 
 		SingleLevelBoMAsPlanned singleLevelBoMAsPlanned = singleLevelBoMAsPlannedMapper.mapFrom(jsonObject);
 
 		generateUrnUUID.run(singleLevelBoMAsPlanned, processId);
-		
-		jsonObject.put("uuid",singleLevelBoMAsPlanned.getChildUuid());
-		jsonObject.put("parent_uuid",singleLevelBoMAsPlanned.getParentUuid());
-		
+
+		jsonObject.put("uuid", singleLevelBoMAsPlanned.getChildUuid());
+		jsonObject.put("parent_uuid", singleLevelBoMAsPlanned.getParentUuid());
+
 		jsonRecordValidate.init(getSubmodelSchema());
 		jsonRecordValidate.run(rowIndex, jsonObject);
 
 		digitalTwinsHandlerStep.init(getSubmodelSchema());
-		digitalTwinsHandlerStep.run(singleLevelBoMAsPlanned);
+		digitalTwinsHandlerStep.run(singleLevelBoMAsPlanned, policy);
 
 		eDCHandlerStep.init(getSubmodelSchema());
-		eDCHandlerStep.run(getNameOfModel(), singleLevelBoMAsPlanned, processId);
-		
+		eDCHandlerStep.run(getNameOfModel(), singleLevelBoMAsPlanned, processId, policy);
+
 		if (StringUtils.isBlank(singleLevelBoMAsPlanned.getUpdated())) {
 			Map<String, String> bpnKeyMap = new HashMap<>();
 			bpnKeyMap.put(CommonConstants.MANUFACTURER_PART_ID, singleLevelBoMAsPlanned.getChildManufacturerPartId());

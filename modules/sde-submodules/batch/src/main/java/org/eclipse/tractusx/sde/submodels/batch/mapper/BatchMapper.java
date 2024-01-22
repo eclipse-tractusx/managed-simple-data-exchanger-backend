@@ -52,7 +52,7 @@ public abstract class BatchMapper {
 	@Autowired
 	private AspectResponseFactory aspectResponseFactory;
 
-	@Mapping(target = "rowNumber", ignore = true)
+	@Mapping(target = "batch.rowNumber", ignore = true)
 	public abstract Batch mapFrom(BatchEntity batch);
 
 	public abstract BatchEntity mapFrom(Batch batch);

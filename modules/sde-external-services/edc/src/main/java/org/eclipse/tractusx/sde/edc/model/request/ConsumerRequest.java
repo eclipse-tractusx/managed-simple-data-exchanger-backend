@@ -21,10 +21,8 @@
 package org.eclipse.tractusx.sde.edc.model.request;
 
 import java.util.List;
-import java.util.Map;
 
-import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
-import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
+import org.eclipse.tractusx.sde.common.entities.Policies;
 import org.springframework.lang.NonNull;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -51,7 +49,7 @@ public class ConsumerRequest {
 	@NotEmpty
 	private List<Offer> offers;
 	@NonNull
-	private Map<UsagePolicyEnum, UsagePolicies> policies;
+	private List<Policies> usagePolicies;
 
 	@Builder.Default
 	private String downloadDataAs = "csv";

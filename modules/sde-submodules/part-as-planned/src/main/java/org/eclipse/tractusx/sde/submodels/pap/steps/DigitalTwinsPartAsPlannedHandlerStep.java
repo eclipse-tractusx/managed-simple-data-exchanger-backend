@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseException;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
@@ -51,9 +52,9 @@ public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 	private final DigitalTwinsUtility digitalTwinsUtility;
 
 	@SneakyThrows
-	public PartAsPlanned run(PartAsPlanned partAsPlannedAspect) throws CsvHandlerDigitalTwinUseCaseException {
+	public PartAsPlanned run(PartAsPlanned partAsPlannedAspect, PolicyModel policy) throws CsvHandlerDigitalTwinUseCaseException {
 		try {
-			return doRun(partAsPlannedAspect);
+			return doRun(partAsPlannedAspect, policy);
 		} catch (Exception e) {
 			throw new CsvHandlerUseCaseException(partAsPlannedAspect.getRowNumber(),
 					": DigitalTwins: " + e.getMessage());
@@ -61,7 +62,7 @@ public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 	}
 
 	@SneakyThrows
-	private PartAsPlanned doRun(PartAsPlanned partAsPlannedAspect) throws CsvHandlerDigitalTwinUseCaseException {
+	private PartAsPlanned doRun(PartAsPlanned partAsPlannedAspect, PolicyModel policy) throws CsvHandlerDigitalTwinUseCaseException {
 		ShellLookupRequest shellLookupRequest = getShellLookupRequest(partAsPlannedAspect);
 		List<String> shellIds = digitalTwinsFacilitator.shellLookup(shellLookupRequest);
 
@@ -70,7 +71,7 @@ public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 		if (shellIds.isEmpty()) {
 			logDebug(String.format("No shell id for '%s'", shellLookupRequest.toJsonString()));
 			ShellDescriptorRequest aasDescriptorRequest = digitalTwinsUtility
-					.getShellDescriptorRequest(getSpecificAssetIds(partAsPlannedAspect), partAsPlannedAspect);
+					.getShellDescriptorRequest(getSpecificAssetIds(partAsPlannedAspect), partAsPlannedAspect, policy);
 			ShellDescriptorResponse result = digitalTwinsFacilitator.createShellDescriptor(aasDescriptorRequest);
 			shellId = result.getIdentification();
 			logDebug(String.format("Shell created with id '%s'", shellId));
@@ -79,7 +80,7 @@ public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 			shellId = shellIds.stream().findFirst().orElse(null);
 			
 			digitalTwinsFacilitator.updateShellSpecificAssetIdentifiers(shellId,
-					digitalTwinsUtility.getSpecificAssetIds(getSpecificAssetIds(partAsPlannedAspect), partAsPlannedAspect.getBpnNumbers()));
+					digitalTwinsUtility.getSpecificAssetIds(getSpecificAssetIds(partAsPlannedAspect), policy));
 			
 			logDebug(String.format("Shell id '%s'", shellId));
 		} else {

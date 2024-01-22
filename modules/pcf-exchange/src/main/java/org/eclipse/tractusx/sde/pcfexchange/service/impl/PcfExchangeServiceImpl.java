@@ -36,6 +36,7 @@ import org.eclipse.tractusx.sde.bpndiscovery.model.request.BpnDiscoverySearchReq
 import org.eclipse.tractusx.sde.bpndiscovery.model.response.BpnDiscoveryResponse;
 import org.eclipse.tractusx.sde.bpndiscovery.model.response.BpnDiscoverySearchResponse;
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
 import org.eclipse.tractusx.sde.common.mapper.JsonObjectMapper;
 import org.eclipse.tractusx.sde.common.model.PagingResponse;
@@ -181,9 +182,15 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 
 		String providerBPNNumber = consumerRequest.getConnectorId();
 
-		QueryDataOfferModel queryDataOfferModel = QueryDataOfferModel.builder().assetId(offer.getAssetId())
-				.offerId(offer.getOfferId()).policyId(offer.getPolicyId()).connectorId(providerBPNNumber)
-				.connectorOfferUrl(consumerRequest.getProviderUrl()).usagePolicies(consumerRequest.getPolicies())
+		QueryDataOfferModel queryDataOfferModel = QueryDataOfferModel.builder()
+				.assetId(offer.getAssetId())
+				.offerId(offer.getOfferId())
+				.policyId(offer.getPolicyId())
+				.connectorId(providerBPNNumber)
+				.connectorOfferUrl(consumerRequest.getProviderUrl())
+				.policy(PolicyModel.builder()
+						.usagePolicies(consumerRequest.getUsagePolicies())
+						.build())
 				.build();
 
 		EDRCachedByIdResponse edrToken = edcAssetUrlCacheService.verifyAndGetToken(providerBPNNumber,

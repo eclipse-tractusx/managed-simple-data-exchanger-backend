@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseException;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
@@ -56,19 +57,19 @@ public class DigitalTwinsSingleLevelUsageAsBuiltCsvHandlerUseCase extends Step {
 	private final DigitalTwinsUtility digitalTwinsUtility;
 
 	@SneakyThrows
-	public SingleLevelUsageAsBuilt run(SingleLevelUsageAsBuilt aspectSingleLevelUsageAsBuilt)
+	public SingleLevelUsageAsBuilt run(SingleLevelUsageAsBuilt aspectSingleLevelUsageAsBuilt, PolicyModel policy)
 			throws CsvHandlerDigitalTwinUseCaseException {
 		try {
-			return doRun(aspectSingleLevelUsageAsBuilt);
+			return doRun(aspectSingleLevelUsageAsBuilt, policy);
 		} catch (Exception e) {
-    
+
 			throw new ServiceException(
 					aspectSingleLevelUsageAsBuilt.getRowNumber() + ": DigitalTwins: " + e.getMessage());
 		}
 	}
 
 	@SneakyThrows
-	private SingleLevelUsageAsBuilt doRun(SingleLevelUsageAsBuilt aspectSingleLevelUsageAsBuilt)
+	private SingleLevelUsageAsBuilt doRun(SingleLevelUsageAsBuilt aspectSingleLevelUsageAsBuilt, PolicyModel policy)
 			throws CsvHandlerUseCaseException, CsvHandlerDigitalTwinUseCaseException {
 		ShellLookupRequest shellLookupRequest = getShellLookupRequest(aspectSingleLevelUsageAsBuilt);
 		List<String> shellIds = digitalTwinsFacilitator.shellLookup(shellLookupRequest);
@@ -76,16 +77,14 @@ public class DigitalTwinsSingleLevelUsageAsBuiltCsvHandlerUseCase extends Step {
 		String shellId;
 
 		if (shellIds.isEmpty()) {
-			shellId = createShellDescriptor(aspectSingleLevelUsageAsBuilt, shellLookupRequest);
+			shellId = createShellDescriptor(aspectSingleLevelUsageAsBuilt, shellLookupRequest, policy);
 		} else if (shellIds.size() == 1) {
 			logDebug(String.format("Shell id found for '%s'", shellLookupRequest.toJsonString()));
 			shellId = shellIds.stream().findFirst().orElse(null);
-			
-			digitalTwinsFacilitator.updateShellSpecificAssetIdentifiers(shellId,
-					digitalTwinsUtility.getSpecificAssetIds(
-							getSpecificAssetIdsForSingleLevel(aspectSingleLevelUsageAsBuilt),
-							aspectSingleLevelUsageAsBuilt.getBpnNumbers()));
-			
+
+			digitalTwinsFacilitator.updateShellSpecificAssetIdentifiers(shellId, digitalTwinsUtility
+					.getSpecificAssetIds(getSpecificAssetIdsForSingleLevel(aspectSingleLevelUsageAsBuilt), policy));
+
 			logDebug(String.format("Shell id '%s'", shellId));
 		} else {
 			throw new CsvHandlerDigitalTwinUseCaseException(
@@ -96,8 +95,8 @@ public class DigitalTwinsSingleLevelUsageAsBuiltCsvHandlerUseCase extends Step {
 		SubModelListResponse subModelResponse = digitalTwinsFacilitator.getSubModels(shellId);
 		SubModelResponse foundSubmodel = null;
 		if (subModelResponse != null) {
-			foundSubmodel = subModelResponse.getResult().stream().filter(x -> getIdShortOfModel().equals(x.getIdShort()))
-					.findFirst().orElse(null);
+			foundSubmodel = subModelResponse.getResult().stream()
+					.filter(x -> getIdShortOfModel().equals(x.getIdShort())).findFirst().orElse(null);
 			if (foundSubmodel != null)
 				aspectSingleLevelUsageAsBuilt.setSubModelId(foundSubmodel.getId());
 		}
@@ -118,7 +117,7 @@ public class DigitalTwinsSingleLevelUsageAsBuiltCsvHandlerUseCase extends Step {
 	}
 
 	private String createShellDescriptor(SingleLevelUsageAsBuilt aspectSingleLevelUsageAsBuilt,
-			ShellLookupRequest shellLookupRequest) throws CsvHandlerUseCaseException {
+			ShellLookupRequest shellLookupRequest, PolicyModel policy) throws CsvHandlerUseCaseException {
 		String shellId;
 		logDebug(String.format("No shell id for '%s'", shellLookupRequest.toJsonString()));
 		AspectEntity aspectEntity = null;
@@ -136,10 +135,11 @@ public class DigitalTwinsSingleLevelUsageAsBuiltCsvHandlerUseCase extends Step {
 			throw new CsvHandlerUseCaseException(aspectSingleLevelUsageAsBuilt.getRowNumber(),
 					"No parent aspect found");
 		}
-		
+
 		Aspect mapFrom = aspectMapper.mapFrom(aspectEntity);
-		ShellDescriptorRequest aasDescriptorRequest = digitalTwinsUtility.getShellDescriptorRequest(getSpecificAssetIds(mapFrom), mapFrom);
-		
+		ShellDescriptorRequest aasDescriptorRequest = digitalTwinsUtility
+				.getShellDescriptorRequest(getSpecificAssetIds(mapFrom), mapFrom, policy);
+
 		ShellDescriptorResponse result = digitalTwinsFacilitator.createShellDescriptor(aasDescriptorRequest);
 		shellId = result.getIdentification();
 		logDebug(String.format("Shell created with id '%s'", shellId));
@@ -173,7 +173,7 @@ public class DigitalTwinsSingleLevelUsageAsBuiltCsvHandlerUseCase extends Step {
 		}
 		return specificIdentifiers;
 	}
-	
+
 	private Map<String, String> getSpecificAssetIds(Aspect aspect) {
 		Map<String, String> specificIdentifiers = new HashMap<>();
 		specificIdentifiers.put(CommonConstants.PART_INSTANCE_ID, aspect.getPartInstanceId());

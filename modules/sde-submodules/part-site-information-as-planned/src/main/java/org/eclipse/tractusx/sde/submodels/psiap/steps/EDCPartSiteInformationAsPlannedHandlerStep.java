@@ -22,6 +22,7 @@ package org.eclipse.tractusx.sde.submodels.psiap.steps;
 import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
@@ -47,7 +48,8 @@ public class EDCPartSiteInformationAsPlannedHandlerStep extends Step {
 	private final PartSiteInformationAsPlannedService partSiteInformationAsPlannedService;
 
 	@SneakyThrows
-	public PartSiteInformationAsPlanned run(String submodel, PartSiteInformationAsPlanned input, String processId) {
+	public PartSiteInformationAsPlanned run(String submodel, PartSiteInformationAsPlanned input, String processId,
+			PolicyModel policy) {
 		String shellId = input.getShellId();
 		String subModelId = input.getSubModelId();
 
@@ -55,13 +57,12 @@ public class EDCPartSiteInformationAsPlannedHandlerStep extends Step {
 
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
 					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getUuid());
-			if (!edcGateway.assetExistsLookup(
-					assetEntryRequest.getAsset().getId())) {
-				edcProcessingforPartAsPlanned(assetEntryRequest, input);
+			if (!edcGateway.assetExistsLookup(assetEntryRequest.getAsset().getId())) {
+				edcProcessingforPartAsPlanned(assetEntryRequest, input, policy);
 			} else {
 
 				deleteEDCFirstForUpdate(submodel, input, processId);
-				edcProcessingforPartAsPlanned(assetEntryRequest, input);
+				edcProcessingforPartAsPlanned(assetEntryRequest, input, policy);
 				input.setUpdated(CommonConstants.UPDATED_Y);
 			}
 
@@ -86,11 +87,10 @@ public class EDCPartSiteInformationAsPlannedHandlerStep extends Step {
 	}
 
 	@SneakyThrows
-	private void edcProcessingforPartAsPlanned(AssetEntryRequest assetEntryRequest,
-			PartSiteInformationAsPlanned input) {
+	private void edcProcessingforPartAsPlanned(AssetEntryRequest assetEntryRequest, PartSiteInformationAsPlanned input,
+			PolicyModel policy) {
 
-		Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest,
-				input.getBpnNumbers(), input.getUsagePolicies());
+		Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest, policy);
 
 		// EDC transaction information for DB
 		input.setAssetId(assetEntryRequest.getAsset().getId());

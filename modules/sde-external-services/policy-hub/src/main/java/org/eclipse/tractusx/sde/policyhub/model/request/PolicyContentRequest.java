@@ -19,6 +19,8 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.policyhub.model.request;
 
+import java.util.List;
+
 import org.eclipse.tractusx.sde.policyhub.enums.ConstraintOperandIdEnum;
 import org.eclipse.tractusx.sde.policyhub.enums.PolicyTypeIdEnum;
 
@@ -39,6 +41,6 @@ public class PolicyContentRequest {
 	
 	private PolicyTypeIdEnum policyType;
 	private ConstraintOperandIdEnum constraintOperand;
-	private Constraints constraints;
+	private List<Constraint> constraints;
 
 }

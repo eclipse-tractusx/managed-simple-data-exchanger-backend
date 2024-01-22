@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseException;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
@@ -56,10 +57,10 @@ public class DigitalTwinsSingleLevelBoMAsPlannedHandlerStep extends Step {
 	private final DigitalTwinsUtility digitalTwinsUtility;
 
 	@SneakyThrows
-	public SingleLevelBoMAsPlanned run(SingleLevelBoMAsPlanned singleLevelBoMAsPlannedAspect)
+	public SingleLevelBoMAsPlanned run(SingleLevelBoMAsPlanned singleLevelBoMAsPlannedAspect, PolicyModel policy)
 			throws CsvHandlerDigitalTwinUseCaseException {
 		try {
-			return doRun(singleLevelBoMAsPlannedAspect);
+			return doRun(singleLevelBoMAsPlannedAspect, policy);
 		} catch (Exception e) {
 			throw new ServiceException(
 					singleLevelBoMAsPlannedAspect.getRowNumber() + ": DigitalTwins: " + e.getMessage());
@@ -67,7 +68,7 @@ public class DigitalTwinsSingleLevelBoMAsPlannedHandlerStep extends Step {
 	}
 
 	@SneakyThrows
-	private SingleLevelBoMAsPlanned doRun(SingleLevelBoMAsPlanned singleLevelBoMAsPlannedAspect)
+	private SingleLevelBoMAsPlanned doRun(SingleLevelBoMAsPlanned singleLevelBoMAsPlannedAspect, PolicyModel policy)
 			throws CsvHandlerUseCaseException, CsvHandlerDigitalTwinUseCaseException {
 
 		ShellLookupRequest shellLookupRequest = getShellLookupRequest(singleLevelBoMAsPlannedAspect);
@@ -76,16 +77,14 @@ public class DigitalTwinsSingleLevelBoMAsPlannedHandlerStep extends Step {
 		String shellId;
 
 		if (shellIds.isEmpty()) {
-			shellId = createShellDescriptor(singleLevelBoMAsPlannedAspect, shellLookupRequest);
+			shellId = createShellDescriptor(singleLevelBoMAsPlannedAspect, shellLookupRequest, policy);
 		} else if (shellIds.size() == 1) {
 			logDebug(String.format("Shell id found for '%s'", shellLookupRequest.toJsonString()));
 			shellId = shellIds.stream().findFirst().orElse(null);
-			
-			digitalTwinsFacilitator.updateShellSpecificAssetIdentifiers(shellId,
-					digitalTwinsUtility.getSpecificAssetIds(
-							getSpecificAssetIdsForSingleLevel(singleLevelBoMAsPlannedAspect),
-							singleLevelBoMAsPlannedAspect.getBpnNumbers()));
-			
+
+			digitalTwinsFacilitator.updateShellSpecificAssetIdentifiers(shellId, digitalTwinsUtility
+					.getSpecificAssetIds(getSpecificAssetIdsForSingleLevel(singleLevelBoMAsPlannedAspect), policy));
+
 			logDebug(String.format("Shell id '%s'", shellId));
 		} else {
 			throw new CsvHandlerDigitalTwinUseCaseException(
@@ -96,8 +95,8 @@ public class DigitalTwinsSingleLevelBoMAsPlannedHandlerStep extends Step {
 		SubModelListResponse subModelResponse = digitalTwinsFacilitator.getSubModels(shellId);
 		SubModelResponse foundSubmodel = null;
 		if (subModelResponse != null) {
-			foundSubmodel = subModelResponse.getResult().stream().filter(x -> getIdShortOfModel().equals(x.getIdShort()))
-					.findFirst().orElse(null);
+			foundSubmodel = subModelResponse.getResult().stream()
+					.filter(x -> getIdShortOfModel().equals(x.getIdShort())).findFirst().orElse(null);
 			if (foundSubmodel != null)
 				singleLevelBoMAsPlannedAspect.setSubModelId(foundSubmodel.getId());
 		}
@@ -118,7 +117,7 @@ public class DigitalTwinsSingleLevelBoMAsPlannedHandlerStep extends Step {
 	}
 
 	private String createShellDescriptor(SingleLevelBoMAsPlanned singleLevelBoMAsPlannedAspect,
-			ShellLookupRequest shellLookupRequest) throws CsvHandlerUseCaseException {
+			ShellLookupRequest shellLookupRequest, PolicyModel policy) throws CsvHandlerUseCaseException {
 
 		String shellId;
 		logDebug(String.format("No shell id for '%s'", shellLookupRequest.toJsonString()));
@@ -133,7 +132,7 @@ public class DigitalTwinsSingleLevelBoMAsPlannedHandlerStep extends Step {
 		}
 
 		ShellDescriptorRequest aasDescriptorRequest = getShellDescriptorRequest(
-				partAsPlannedMapper.mapFrom(partAsPlannedEntity));
+				partAsPlannedMapper.mapFrom(partAsPlannedEntity), policy);
 		ShellDescriptorResponse result = digitalTwinsFacilitator.createShellDescriptor(aasDescriptorRequest);
 		shellId = result.getIdentification();
 		logDebug(String.format("Shell created with id '%s'", shellId));
@@ -149,7 +148,7 @@ public class DigitalTwinsSingleLevelBoMAsPlannedHandlerStep extends Step {
 
 		return specificIdentifiers;
 	}
-	
+
 	private ShellLookupRequest getShellLookupRequest(SingleLevelBoMAsPlanned singleLevelBoMAsPlannedAspect) {
 
 		ShellLookupRequest shellLookupRequest = new ShellLookupRequest();
@@ -158,8 +157,9 @@ public class DigitalTwinsSingleLevelBoMAsPlannedHandlerStep extends Step {
 
 		return shellLookupRequest;
 	}
-	
-	private Map<String, String> getSpecificAssetIdsForSingleLevel(SingleLevelBoMAsPlanned singleLevelBoMAsPlannedAspect) {
+
+	private Map<String, String> getSpecificAssetIdsForSingleLevel(
+			SingleLevelBoMAsPlanned singleLevelBoMAsPlannedAspect) {
 		Map<String, String> specificIdentifiers = new HashMap<>();
 		specificIdentifiers.put(CommonConstants.ASSET_LIFECYCLE_PHASE, CommonConstants.AS_PLANNED);
 		specificIdentifiers.put(CommonConstants.MANUFACTURER_PART_ID,
@@ -168,8 +168,9 @@ public class DigitalTwinsSingleLevelBoMAsPlannedHandlerStep extends Step {
 		return specificIdentifiers;
 	}
 
-	private ShellDescriptorRequest getShellDescriptorRequest(PartAsPlanned partAsPlannedAspect) {
+	private ShellDescriptorRequest getShellDescriptorRequest(PartAsPlanned partAsPlannedAspect, PolicyModel policy) {
 
-		return digitalTwinsUtility.getShellDescriptorRequest(getSpecificAssetIds(partAsPlannedAspect), partAsPlannedAspect);
+		return digitalTwinsUtility.getShellDescriptorRequest(getSpecificAssetIds(partAsPlannedAspect),
+				partAsPlannedAspect, policy);
 	}
 }

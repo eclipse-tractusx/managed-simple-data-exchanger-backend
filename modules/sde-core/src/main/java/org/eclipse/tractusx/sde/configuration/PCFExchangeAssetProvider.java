@@ -20,7 +20,6 @@
 
 package org.eclipse.tractusx.sde.configuration;
 
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.utils.UUIdGenerator;
@@ -86,8 +85,7 @@ public class PCFExchangeAssetProvider {
 		ObjectNode requestBody = (ObjectNode) new ObjectMapper().readTree(assetFilterRequest);
 
 		if (!edcGateway.assetExistsLookupBasedOnType(requestBody)) {
-			Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest, List.of(),
-					List.of());
+			Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest, null);
 			log.info("PCF Exchange asset creates :" + createEDCAsset.toString());
 		} else {
 			log.info("PCF Exchange asset exists in edc connector, so ignoring asset creation");

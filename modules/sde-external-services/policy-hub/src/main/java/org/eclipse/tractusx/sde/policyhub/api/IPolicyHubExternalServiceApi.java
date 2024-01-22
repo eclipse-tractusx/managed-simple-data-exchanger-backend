@@ -22,13 +22,14 @@ package org.eclipse.tractusx.sde.policyhub.api;
 import java.util.List;
 
 import org.eclipse.tractusx.sde.policyhub.model.request.PolicyContentRequest;
-import org.eclipse.tractusx.sde.policyhub.model.response.PolicyResponse;
 import org.eclipse.tractusx.sde.policyhub.model.response.PolicyTypeResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 @FeignClient(value = "IPolicyHubExternalServiceApi", url = "${policy.hub.hostname}", configuration = PolicyHubExternalServiceApi.class)
 public interface IPolicyHubExternalServiceApi {
@@ -40,9 +41,9 @@ public interface IPolicyHubExternalServiceApi {
 	List<PolicyTypeResponse> getPolicyTypes(@RequestParam("type") String type, @RequestParam("useCase") String useCase);
 	
 	@GetMapping(path = "/policy-hub/policy-content")
-	PolicyResponse getPolicyContent(@RequestParam("useCase") String useCase, @RequestParam("type") String type, @RequestParam("credential") String credential, @RequestParam("operatorId") String operatorId, @RequestParam("value") String value);
+	JsonNode getPolicyContent(@RequestParam("useCase") String useCase, @RequestParam("type") String type, @RequestParam("credential") String credential, @RequestParam("operatorId") String operatorId, @RequestParam("value") String value);
 
 	@PostMapping(path = "/policy-hub/policy-content")
-	PolicyResponse getPolicyContent(@RequestBody PolicyContentRequest policyContentRequest);
+	JsonNode getPolicyContent(@RequestBody PolicyContentRequest policyContentRequest);
 
 }

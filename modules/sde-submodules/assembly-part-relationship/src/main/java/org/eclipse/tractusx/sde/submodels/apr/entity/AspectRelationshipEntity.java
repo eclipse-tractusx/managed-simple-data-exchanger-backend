@@ -21,7 +21,7 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.submodels.apr.entity;
 
-import java.io.Serializable;
+import org.eclipse.tractusx.sde.common.entities.CommonPropEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,64 +29,48 @@ import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Entity
 @Table(name = "aspect_relationship")
 @Data
 @IdClass(AspectRelationshipPrimaryKey.class)
-public class AspectRelationshipEntity implements Serializable {
+@EqualsAndHashCode(callSuper = false)
+public class AspectRelationshipEntity extends CommonPropEntity {
 
-    @Column(name = "process_id")
-    private String processId;
-    @Id
-    @Column(name = "parent_uuid")
-    private String parentCatenaXId;
-    @Column(name = "parent_part_instance_id")
+	@Id
+	@Column(name = "parent_uuid")
+	private String parentCatenaXId;
+	@Column(name = "parent_part_instance_id")
 	private String parentPartInstanceId;
-    @Column(name = "parent_manufacturer_part_id")
+	@Column(name = "parent_manufacturer_part_id")
 	private String parentManufacturerPartId;
-    @Column(name = "parent_optional_identifier_key")
+	@Column(name = "parent_optional_identifier_key")
 	private String parentOptionalIdentifierKey;
-    @Column(name = "parent_optional_identifier_value")
+	@Column(name = "parent_optional_identifier_value")
 	private String parentOptionalIdentifierValue;
-    @Id
-    @Column(name = "uuid")
-    private String childCatenaXId;
-    @Column(name = "part_instance_id")
+	@Id
+	@Column(name = "uuid")
+	private String childCatenaXId;
+	@Column(name = "part_instance_id")
 	private String childPartInstanceId;
-    @Column(name = "manufacturer_part_id")
+	@Column(name = "manufacturer_part_id")
 	private String childManufacturerPartId;
-    @Column(name = "manufacturer_id")
+	@Column(name = "manufacturer_id")
 	private String childManufacturerId;
-    @Column(name = "optional_identifier_key")
+	@Column(name = "optional_identifier_key")
 	private String childOptionalIdentifierKey;
-    @Column(name = "optional_identifier_value")
+	@Column(name = "optional_identifier_value")
 	private String childOptionalIdentifierValue;
-    @Column(name = "lifecycle_context")
-    private String lifecycleContext;
-    @Column(name = "created_on")
-    private String createdOn;
-    @Column(name = "last_modified_on")
-    private String lastModifiedOn;
-    @Column(name = "quantity_number")
-    private Double quantityNumber;
-    @Column(name = "measurement_unit")
-    private String measurementUnit;
-    @Column(name = "shell_id")
-    private String shellId;
-    @Column(name = "sub_model_id")
-    private String subModelId;
-    @Column(name = "usage_policy_id")
-    private String usagePolicyId;
-    @Column(name = "contract_defination_id")
-    private String contractDefinationId;
-    @Column(name = "asset_id")
-    private String assetId;
-    @Column(name = "access_policy_id")
-    private String accessPolicyId;
-    @Column(name = "deleted")
-    private String deleted;
-    @Column(name = "updated")
-    private String updated;
+	@Column(name = "lifecycle_context")
+	private String lifecycleContext;
+	@Column(name = "created_on")
+	private String createdOn;
+	@Column(name = "last_modified_on")
+	private String lastModifiedOn;
+	@Column(name = "quantity_number")
+	private Double quantityNumber;
+	@Column(name = "measurement_unit")
+	private String measurementUnit;
 
 }

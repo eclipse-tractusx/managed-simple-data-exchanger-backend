@@ -17,14 +17,9 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-package org.eclipse.tractusx.sde.policyhub.model.response;
+package org.eclipse.tractusx.sde.policyhub.model.request;
 
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.eclipse.tractusx.sde.policyhub.enums.OperatorIdEnum;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,24 +27,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(Include.NON_NULL)
-public class PolicyFileContent {
+@Builder
+public class Constraint {
 	
-	@JsonProperty("@context")
-	private List<String> context;
-	
-	@JsonProperty("@type")
-	private String type;
-	
-	@JsonProperty("@id")
-	private String id;
-	
-	private Permission permission;
-	
-	
+	private String key;
+	private OperatorIdEnum operator;
+	private String value;
 
 }

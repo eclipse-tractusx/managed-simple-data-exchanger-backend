@@ -23,6 +23,7 @@ package org.eclipse.tractusx.sde.submodels.pcf.steps;
 import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
@@ -48,43 +49,39 @@ public class EDCPcfHandlerUseCase extends Step {
 	private final EDCGateway edcGateway;
 	private final CreateEDCAssetFacilator createEDCAssetFacilator;
 	private final PcfService aspectService;
-	
+
 	@Value(value = "${dft.hostname}")
-    private String dftHostname;
+	private String dftHostname;
 
 	@SneakyThrows
-	public PcfAspect run(String submodel, PcfAspect input, String processId) {
-		String shellId = input.getShellIdforPcf();
-		String subModelId = input.getSubModelIdforPcf();
+	public PcfAspect run(String submodel, PcfAspect input, String processId, PolicyModel policy) {
+		String shellId = input.getShellId();
+		String subModelId = input.getSubModelId();
 
 		try {
 
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
 					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getId());
-			
-			String baseURL=UriComponentsBuilder
-			                 .fromHttpUrl(dftHostname)
-			                 .path("/pcf/productIds/")
-			                 .path(input.getProductId())
-			                 .toUriString();
-			
-			assetEntryRequest.getDataAddress().getProperties().put("baseUrl", baseURL.replace("public", "productIds"));
-			
-			if (!edcGateway.assetExistsLookup(
-					assetEntryRequest.getAsset().getId())) {
 
-				edcProcessingforAspect(assetEntryRequest, input);
+			String baseURL = UriComponentsBuilder.fromHttpUrl(dftHostname).path("/pcf/productIds/")
+					.path(input.getProductId()).toUriString();
+
+			assetEntryRequest.getDataAddress().getProperties().put("baseUrl", baseURL.replace("public", "productIds"));
+
+			if (!edcGateway.assetExistsLookup(assetEntryRequest.getAsset().getId())) {
+
+				edcProcessingforAspect(assetEntryRequest, input, policy);
 
 			} else {
 
 				deleteEDCFirstForUpdate(submodel, input, processId);
-				edcProcessingforAspect(assetEntryRequest, input);
-				input.setUpdatedforPcf(CommonConstants.UPDATED_Y);
+				edcProcessingforAspect(assetEntryRequest, input, policy);
+				input.setUpdated(CommonConstants.UPDATED_Y);
 			}
 
 			return input;
 		} catch (Exception e) {
-			throw new CsvHandlerUseCaseException(input.getRowNumberforPcf(), "EDC: " + e.getMessage());
+			throw new CsvHandlerUseCaseException(input.getRowNumber(), "EDC: " + e.getMessage());
 		}
 	}
 
@@ -101,16 +98,15 @@ public class EDCPcfHandlerUseCase extends Step {
 	}
 
 	@SneakyThrows
-	private void edcProcessingforAspect(AssetEntryRequest assetEntryRequest, PcfAspect input) {
+	private void edcProcessingforAspect(AssetEntryRequest assetEntryRequest, PcfAspect input, PolicyModel policy) {
 
-		Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest,
-				input.getBpnNumbersforPcf(), input.getUsagePoliciesforPcf());
+		Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest, policy);
 
 		// EDC transaction information for DB
-		input.setAssetIdforPcf(assetEntryRequest.getAsset().getId());
-		input.setAccessPolicyIdforPcf(createEDCAsset.get("accessPolicyId"));
-		input.setUsagePolicyIdforPcf(createEDCAsset.get("usagePolicyId"));
-		input.setContractDefinationIdforPcf(createEDCAsset.get("contractDefinitionId"));
+		input.setAssetId(assetEntryRequest.getAsset().getId());
+		input.setAccessPolicyId(createEDCAsset.get("accessPolicyId"));
+		input.setUsagePolicyId(createEDCAsset.get("usagePolicyId"));
+		input.setContractDefinationId(createEDCAsset.get("contractDefinitionId"));
 	}
 
 }

@@ -138,7 +138,7 @@ public class SubmodelOrchestartorService {
 					ObjectNode newjObject = jsonObjectMapper.submodelFileRequestToJsonNodePojo(submodelPolicyRequest);
 					newjObject.put(ROW_NUMBER, rowjObj.position());
 					newjObject.put(PROCESS_ID, processId);
-					executor.executeCsvRecord(rowjObj, newjObject, processId);
+					executor.executeCsvRecord(rowjObj, newjObject, processId, submodelPolicyRequest);
 					// fetch by ID and check it if it is success then its updated.
 					successCount.incrementAndGet();
 
@@ -174,10 +174,6 @@ public class SubmodelOrchestartorService {
 			SubmodelExecutor executor = submodelSchemaObject.getExecutor();
 			executor.init(submodelSchema);
 
-			Map<String, Object> mps = new HashMap<>();
-			mps.put("access_policies", policy.getAccessPolicies());
-			mps.put("usage_policies", policy.getUsagePolicies());
-
 			processReportUseCase.startBuildProcessReport(processId, submodelSchemaObject.getId(), rowData.size(),
 					policy.getAccessPolicies(), policy.getUsagePolicies(), policy.getUuid());
 
@@ -189,8 +185,7 @@ public class SubmodelOrchestartorService {
 
 			rowData.parallelStream().forEachOrdered(rowjObj -> {
 				try {
-					ObjectNode submodelJsonPojo = jsonObjectMapper.submodelJsonRequestToJsonPojo(rowjObj, mps);
-					executor.executeJsonRecord(submodelJsonPojo.get(ROW_NUMBER).asInt(), submodelJsonPojo, processId);
+					executor.executeJsonRecord(rowjObj.get(ROW_NUMBER).asInt(), rowjObj, processId, policy);
 					successCount.incrementAndGet();
 				} catch (Exception e) {
 					failureLogs.saveLog(processId, e.getMessage());

@@ -22,14 +22,12 @@ package org.eclipse.tractusx.sde.edc.facilitator;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
-import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
+import org.eclipse.tractusx.sde.common.entities.Policies;
 import org.eclipse.tractusx.sde.edc.api.ContractApi;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ActionRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
@@ -65,8 +63,8 @@ public class ContractNegotiateManagementHelper extends AbstractEDCStepsHelper {
 	public String negotiateContract(String providerUrl, String providerId, String offerId, String assetId,
 			ActionRequest action, Map<String, String> extensibleProperty) {
 
-		ContractNegotiations contractNegotiations = contractMapper
-				.prepareContractNegotiations(providerUrl, offerId, assetId, providerId, action);
+		ContractNegotiations contractNegotiations = contractMapper.prepareContractNegotiations(providerUrl, offerId,
+				assetId, providerId, action);
 
 		AcknowledgementId acknowledgementId = contractApi.contractnegotiations(new URI(consumerHost),
 				contractNegotiations, getAuthHeader());
@@ -92,13 +90,13 @@ public class ContractNegotiateManagementHelper extends AbstractEDCStepsHelper {
 
 	@SneakyThrows
 	public List<JsonNode> getAllContractAgreements(String assetId, String type, Integer offset, Integer limit) {
-		
+
 		Map<String, String> inputMap = new HashMap<>();
 		inputMap.put("operandLeft", "assetId");
 		inputMap.put("operandRight", assetId);
 		inputMap.put("offset", offset + "");
 		inputMap.put("limit", limit + "");
-		
+
 		JsonNode body = getQurySpec(inputMap);
 
 		if (UtilityFunctions.checkTypeOfConnector(type)) {
@@ -106,7 +104,7 @@ public class ContractNegotiateManagementHelper extends AbstractEDCStepsHelper {
 		} else
 			return contractApi.getAllContractAgreements(new URI(consumerHost), getAuthHeader(), body);
 	}
- 
+
 	@SneakyThrows
 	public ContractNegotiationDto checkContractAgreementNegotiationStatus(String contractAgreement) {
 		return contractApi.getContractAgreementsNegotiation(new URI(consumerHost), contractAgreement, getAuthHeader());
@@ -119,7 +117,7 @@ public class ContractNegotiateManagementHelper extends AbstractEDCStepsHelper {
 		inputMap.put("operandRight", assetId);
 		inputMap.put("offset", offset + "");
 		inputMap.put("limit", limit + "");
-		
+
 		JsonNode body = getQurySpec(inputMap);
 
 		if (UtilityFunctions.checkTypeOfConnector(type)) {
@@ -127,10 +125,10 @@ public class ContractNegotiateManagementHelper extends AbstractEDCStepsHelper {
 		} else
 			return contractApi.getAllTransfer(new URI(consumerHost), getAuthHeader(), body);
 	}
-	
+
 	@SneakyThrows
 	private JsonNode getQurySpec(Map<String, String> inputMap) {
-		
+
 		String querySpec = """
 						{
 						    "@context": {
@@ -149,7 +147,7 @@ public class ContractNegotiateManagementHelper extends AbstractEDCStepsHelper {
 						    ]
 						}
 				""";
-		return  mapper.readTree(UtilityFunctions.valueReplacer(querySpec, inputMap));
+		return mapper.readTree(UtilityFunctions.valueReplacer(querySpec, inputMap));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -167,7 +165,7 @@ public class ContractNegotiateManagementHelper extends AbstractEDCStepsHelper {
 					getAuthHeader());
 		}
 		if (agreement != null) {
-			EnumMap<UsagePolicyEnum, UsagePolicies> policies = new EnumMap<>(UsagePolicyEnum.class);
+			List<Policies> policies = new ArrayList<>();
 			Object permissionObj = agreement.getPolicy().getPermissions();
 
 			if (permissionObj instanceof ArrayList) {
@@ -179,8 +177,6 @@ public class ContractNegotiateManagementHelper extends AbstractEDCStepsHelper {
 
 			if (policies.isEmpty())
 				UtilityFunctions.getUsagePolicies(policies, List.of());
-
-			UtilityFunctions.addCustomUsagePolicy(agreement.getPolicy().getExtensibleProperties(), policies);
 
 			ContractAgreementInfo agreementInfo = ContractAgreementInfo.builder()
 					.contractEndDate(agreement.getContractEndDate())
@@ -197,8 +193,7 @@ public class ContractNegotiateManagementHelper extends AbstractEDCStepsHelper {
 		return agreementResponse;
 	}
 
-	private void formatPermissionConstraint(ObjectMapper objeMapper, Map<UsagePolicyEnum, UsagePolicies> policies,
-			Object permissionObj) {
+	private void formatPermissionConstraint(ObjectMapper objeMapper, List<Policies> policies, Object permissionObj) {
 		ObjectMapper objMapper = new ObjectMapper();
 		PermissionRequest permissionRequest = objMapper.convertValue(permissionObj, PermissionRequest.class);
 
@@ -212,7 +207,7 @@ public class ContractNegotiateManagementHelper extends AbstractEDCStepsHelper {
 		}
 	}
 
-	private void setContraint(ObjectMapper objeMapper, Map<UsagePolicyEnum, UsagePolicies> policies, Object object) {
+	private void setContraint(ObjectMapper objeMapper, List<Policies> policies, Object object) {
 		if (object instanceof ArrayList) {
 			List<ConstraintRequest> convertValue = objeMapper.convertValue(object,
 					new TypeReference<List<ConstraintRequest>>() {

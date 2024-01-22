@@ -23,9 +23,10 @@ import java.util.List;
 
 import org.eclipse.tractusx.sde.policyhub.api.IPolicyHubExternalServiceApi;
 import org.eclipse.tractusx.sde.policyhub.model.request.PolicyContentRequest;
-import org.eclipse.tractusx.sde.policyhub.model.response.PolicyResponse;
 import org.eclipse.tractusx.sde.policyhub.model.response.PolicyTypeResponse;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -50,14 +51,14 @@ public class PolicyHubProxyService implements IPolicyHubProxyService {
 
 	@Override
 	@SneakyThrows
-	public PolicyResponse getPolicyContent(String useCase, String type, String credential, String operatorId,
+	public JsonNode getPolicyContent(String useCase, String type, String credential, String operatorId,
 			String value) {
 		return policyHubExternalServiceApi.getPolicyContent(useCase, type, credential, operatorId, value);
 	}
 
 	@Override
 	@SneakyThrows
-	public PolicyResponse getPolicyContent(PolicyContentRequest policyContentRequest) {
+	public JsonNode getPolicyContent(PolicyContentRequest policyContentRequest) {
 		return policyHubExternalServiceApi.getPolicyContent(policyContentRequest);
 	}
 

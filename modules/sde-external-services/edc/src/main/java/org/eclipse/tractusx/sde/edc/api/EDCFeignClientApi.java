@@ -22,7 +22,6 @@ package org.eclipse.tractusx.sde.edc.api;
 
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.contractdefinition.ContractDefinitionRequest;
-import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyDefinitionRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,6 +30,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @FeignClient(value = "EDCFeignClientApi", url = "${edc.hostname}${edc.managementpath:/data}${edc.managementpath.apiversion:/v2}", configuration = EDCDataProviderConfiguration.class)
@@ -46,7 +46,7 @@ public interface EDCFeignClientApi {
 	public String getAssetByType(@RequestBody ObjectNode requestBody);
 
 	@PostMapping("/policydefinitions")
-	public String createPolicy(@RequestBody PolicyDefinitionRequest requestBody);
+	public JsonNode createPolicy(@RequestBody JsonNode requestBody);
 
 	@PostMapping("/contractdefinitions")
 	public String createContractDefination(@RequestBody ContractDefinitionRequest requestBody);

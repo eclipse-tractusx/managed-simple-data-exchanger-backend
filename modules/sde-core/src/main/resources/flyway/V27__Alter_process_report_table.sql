@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2024 T-Systems International GmbH
- * Copyright (c) 2024 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,23 +17,6 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-package org.eclipse.tractusx.sde.policyhub.model.request;
 
-import org.eclipse.tractusx.sde.policyhub.enums.OperatorIdEnum;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class Constraints {
-	
-	private String key;
-	private OperatorIdEnum operator;
-	private String value;
-
-}
+ALTER TABLE process_report RENAME COLUMN bpn_numbers TO access_policies;
+ALTER TABLE process_report RENAME COLUMN usage_policy TO usage_policies;

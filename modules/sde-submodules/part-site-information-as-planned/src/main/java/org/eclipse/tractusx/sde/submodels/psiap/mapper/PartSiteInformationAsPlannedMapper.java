@@ -47,8 +47,8 @@ public abstract class PartSiteInformationAsPlannedMapper {
 	@Autowired
 	private AspectResponseFactory aspectResponseFactory;
 	
-	@Mapping(target = "rowNumber", ignore = true)
-	public abstract PartSiteInformationAsPlanned mapFrom( PartSiteInformationAsPlannedEntity partSiteInformationAsPlannedEntity);
+	@Mapping(target = "partSiteInformationAsPlannedEntity.rowNumber", ignore = true)
+	public abstract PartSiteInformationAsPlanned mapFrom(PartSiteInformationAsPlannedEntity partSiteInformationAsPlannedEntity);
 
 	public abstract PartSiteInformationAsPlannedEntity mapFrom(PartSiteInformationAsPlanned partSiteInformationAsPlanned);
 

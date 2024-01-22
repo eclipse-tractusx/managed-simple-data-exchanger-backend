@@ -27,7 +27,7 @@ import java.util.List;
 
 import org.eclipse.tractusx.sde.common.entities.Policies;
 import org.eclipse.tractusx.sde.common.enums.ProgressStatusEnum;
-import org.eclipse.tractusx.sde.core.utils.ListToStringConverter;
+import org.eclipse.tractusx.sde.core.policy.entity.PoliciesListToStringConverter;
 
 import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;
@@ -68,12 +68,12 @@ public class ProcessReportEntity {
     @Column(name = "policy_uuid")
     private String policyUuid;
     
-    @Column(name = "access_policy")
-    @Convert(converter = ListToStringConverter.class)
-    private List<Policies> bpnNumbers;
+    @Column(name = "access_policies")
+    @Convert(converter = PoliciesListToStringConverter.class)
+    private List<Policies> accessPolicies;
 
-    @Column(name = "usage_policy", columnDefinition = "TEXT")
-    @Convert(converter = ListToStringConverter.class)
+    @Column(name = "usage_policies", columnDefinition = "TEXT")
+    @Convert(converter = PoliciesListToStringConverter.class)
    	private List<Policies> usagePolicies;
     
     @Column(name = "number_of_updated_items")

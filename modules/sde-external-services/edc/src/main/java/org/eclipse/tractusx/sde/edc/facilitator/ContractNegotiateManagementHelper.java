@@ -63,7 +63,11 @@ public class ContractNegotiateManagementHelper extends AbstractEDCStepsHelper {
 	public String negotiateContract(String providerUrl, String providerId, String offerId, String assetId,
 			ActionRequest action, Map<String, String> extensibleProperty) {
 
-		ContractNegotiations contractNegotiations = contractMapper.prepareContractNegotiations(providerUrl, offerId,
+		var recipientURL = UtilityFunctions.removeLastSlashOfUrl(providerUrl);
+		if (!recipientURL.endsWith(protocolPath))
+			recipientURL = recipientURL + protocolPath;
+
+		ContractNegotiations contractNegotiations = contractMapper.prepareContractNegotiations(recipientURL, offerId,
 				assetId, providerId, action);
 
 		AcknowledgementId acknowledgementId = contractApi.contractnegotiations(new URI(consumerHost),

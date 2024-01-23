@@ -12,7 +12,7 @@ import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedByIdResponse;
 import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedResponse;
 import org.eclipse.tractusx.sde.edc.model.request.Offer;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
-import org.eclipse.tractusx.sde.edc.services.ConsumerControlPanelService;
+import org.eclipse.tractusx.sde.edc.services.ContractNegotiationService;
 import org.springframework.stereotype.Service;
 
 import feign.FeignException;
@@ -28,7 +28,7 @@ public class EDCAssetUrlCacheService {
 	private static final Map<String, LocalDateTime> dDTRmap = new ConcurrentHashMap<>();
 	private static final Map<String, LocalDateTime> pcfExchangeURLMap = new ConcurrentHashMap<>();
 
-	private final ConsumerControlPanelService consumerControlPanelService;
+	private final ContractNegotiationService contractNegotiationService;
 	private final PolicyConstraintBuilderService policyConstraintBuilderService;
 
 	private final DDTRUrlCacheUtility dDTRUrlCacheUtility;
@@ -43,7 +43,7 @@ public class EDCAssetUrlCacheService {
 		Offer offer = Offer.builder().assetId(queryDataOfferModel.getAssetId())
 				.offerId(queryDataOfferModel.getOfferId()).policyId(queryDataOfferModel.getPolicyId()).build();
 		try {
-			EDRCachedResponse eDRCachedResponse = consumerControlPanelService.verifyOrCreateContractNegotiation(
+			EDRCachedResponse eDRCachedResponse = contractNegotiationService.verifyOrCreateContractNegotiation(
 					bpnNumber, Map.of(), queryDataOfferModel.getConnectorOfferUrl(), action, offer);
 
 			if (eDRCachedResponse == null) {
@@ -54,7 +54,7 @@ public class EDCAssetUrlCacheService {
 						"Time out!! to get 'NEGOTIATED' EDC EDR status to lookup  '" + queryDataOfferModel.getAssetId()
 								+ "', The current status is '" + eDRCachedResponse.getEdrState() + "'");
 			} else
-				return consumerControlPanelService
+				return contractNegotiationService
 						.getAuthorizationTokenForDataDownload(eDRCachedResponse.getTransferProcessId());
 
 		} catch (FeignException e) {

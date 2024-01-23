@@ -105,8 +105,8 @@ public class SerialPartTypizationExecutor extends SubmodelExecutor {
 
 		Aspect aspect = aspectMapper.mapFrom(jsonObject);
 
-		//digitalTwinsAspectCsvHandlerUseCase.init(getSubmodelSchema());
-		//digitalTwinsAspectCsvHandlerUseCase.run(aspect, policy);
+		digitalTwinsAspectCsvHandlerUseCase.init(getSubmodelSchema());
+		digitalTwinsAspectCsvHandlerUseCase.run(aspect, policy);
 
 		eDCAspectHandlerUseCase.init(getSubmodelSchema());
 		eDCAspectHandlerUseCase.run(getNameOfModel(), aspect, processId, policy);

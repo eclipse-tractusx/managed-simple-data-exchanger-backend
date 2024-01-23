@@ -21,11 +21,9 @@ package org.eclipse.tractusx.sde.core.controller;
 
 import static org.springframework.http.ResponseEntity.ok;
 
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
-import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.eclipse.tractusx.sde.pcfexchange.enums.PCFRequestStatusEnum;
 import org.eclipse.tractusx.sde.pcfexchange.enums.PCFTypeEnum;
 import org.eclipse.tractusx.sde.pcfexchange.request.PcfRequestModel;
@@ -55,20 +53,6 @@ import lombok.extern.slf4j.Slf4j;
 public class PcfExchangeController {
 
 	private final IPCFExchangeService pcfExchangeService;
-
-	@GetMapping(value = "/search")
-	@PreAuthorize("hasPermission('','search_pcf')")
-	public ResponseEntity<Object> searchPcfDataOffer(@RequestParam String manufacturerPartId,
-			@RequestParam(value = "bpnNumber", required = false) String bpnNumber) throws Exception {
-		log.info("Request received for GET: /api/pcf/search?manufacturerPartId={}&bpnNumber={}", manufacturerPartId, bpnNumber);
-
-		List<QueryDataOfferModel> pcfOffer = pcfExchangeService.searchPcfDataOffer(manufacturerPartId, bpnNumber);
-		if (pcfOffer == null || pcfOffer.isEmpty())
-			return ok().body(Map.of("msg", "The PCF twin not found in network for " + manufacturerPartId));
-		else
-			return ok().body(pcfOffer);
-
-	}
 
 	@PostMapping(value = "/request/{productId}")
 	@PreAuthorize("hasPermission('','request_for_pcf_value')")

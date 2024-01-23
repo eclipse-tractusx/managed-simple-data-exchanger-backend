@@ -79,13 +79,11 @@ public class DigitalTwinsUtility {
 
 		JsonNode jsonNode = mapper.convertValue(object, ObjectNode.class);
 
-		List<String> bpns = getFieldFromJsonNodeArray(jsonNode, "bpn_numbers");
-
 		return ShellDescriptorRequest.builder()
 				.idShort(String.format("%s_%s_%s", getFieldFromJsonNode(jsonNode, "name_at_manufacturer"),
 						manufacturerId, getFieldFromJsonNode(jsonNode, "manufacturer_part_id")))
 				.globalAssetId(getFieldFromJsonNode(jsonNode, "uuid"))
-				.specificAssetIds(getSpecificAssetIds(specificIdentifiers, null)).description(List.of())
+				.specificAssetIds(getSpecificAssetIds(specificIdentifiers, policy)).description(List.of())
 				.id(UUIdGenerator.getUrnUuid()).build();
 	}
 

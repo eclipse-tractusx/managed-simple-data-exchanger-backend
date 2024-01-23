@@ -19,11 +19,8 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.pcfexchange.service;
 
-import java.util.List;
-
 import org.eclipse.tractusx.sde.common.model.PagingResponse;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
-import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.eclipse.tractusx.sde.pcfexchange.enums.PCFRequestStatusEnum;
 import org.eclipse.tractusx.sde.pcfexchange.enums.PCFTypeEnum;
 import org.eclipse.tractusx.sde.pcfexchange.request.PcfRequestModel;
@@ -31,8 +28,6 @@ import org.eclipse.tractusx.sde.pcfexchange.request.PcfRequestModel;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public interface IPCFExchangeService {
-
-	public List<QueryDataOfferModel> searchPcfDataOffer(String manufacturerPartId, String bpnNumber);
 
 	public String actionOnPcfRequestAndSendNotificationToConsumer(PcfRequestModel pcfRequestModel);
 	

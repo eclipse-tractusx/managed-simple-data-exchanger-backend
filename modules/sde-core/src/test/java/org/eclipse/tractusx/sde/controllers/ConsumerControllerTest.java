@@ -30,8 +30,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.tractusx.sde.common.entities.Policies;
-import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
-import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.core.controller.ConsumerController;
 import org.eclipse.tractusx.sde.core.service.ConsumerService;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
@@ -60,15 +58,15 @@ class ConsumerControllerTest {
 	private ConsumerControlPanelService consumerControlPanelService;
 
 	@MockBean
-    private ConsumerService consumerService;
-    
+	private ConsumerService consumerService;
+
 	@Autowired
 	private ConsumerController consumerController;
 
 	@Test
 	void testQueryOnDataOfferWithoutOfferModel() throws Exception {
-		when(consumerControlPanelService.queryOnDataOffers((String) any(), anyInt(), anyInt(), any()))
-				.thenReturn(new ArrayList<>());
+		when(consumerControlPanelService.queryOnDataOffers((String) any(), (String) any(), (String) any(), anyInt(),
+				anyInt())).thenReturn(new ArrayList<>());
 		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/query-data-offers")
 				.param("providerUrl", "foo");
 		MockMvcBuilders.standaloneSetup(consumerController).build().perform(requestBuilder)
@@ -81,8 +79,8 @@ class ConsumerControllerTest {
 	void testQueryOnDataOffersWithOfferModel() throws Exception {
 		ArrayList<QueryDataOfferModel> queryDataOfferModelList = new ArrayList<>();
 		queryDataOfferModelList.add(new QueryDataOfferModel());
-		when(consumerControlPanelService.queryOnDataOffers((String) any(), anyInt(), anyInt(), any()))
-				.thenReturn(queryDataOfferModelList);
+		when(consumerControlPanelService.queryOnDataOffers((String) any(), (String) any(), (String) any(), anyInt(),
+				anyInt())).thenReturn(queryDataOfferModelList);
 		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/query-data-offers")
 				.param("providerUrl", "foo");
 		MockMvcBuilders.standaloneSetup(consumerController).build().perform(requestBuilder)
@@ -96,10 +94,8 @@ class ConsumerControllerTest {
 	void testSubscribeDataOffersBadRequest() throws Exception {
 		doNothing().when(consumerControlPanelService).subscribeDataOffers((ConsumerRequest) any(), anyString());
 
-		ConsumerRequest consumerRequest = ConsumerRequest.builder().connectorId("42")
-				.offers(new ArrayList<>())
-				.usagePolicies(List.of())
-				.providerUrl("\"https://example.org/example\"").build();
+		ConsumerRequest consumerRequest = ConsumerRequest.builder().connectorId("42").offers(new ArrayList<>())
+				.usagePolicies(List.of()).providerUrl("\"https://example.org/example\"").build();
 		String content = (new ObjectMapper()).writeValueAsString(consumerRequest);
 		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/subscribe-data-offers")
 				.contentType(MediaType.APPLICATION_JSON).content(content);
@@ -116,8 +112,8 @@ class ConsumerControllerTest {
 		offers.add(mockOffer);
 		Policies mockPolicy = Mockito.mock(Policies.class);
 		policies.add(mockPolicy);
-		ConsumerRequest consumerRequest = ConsumerRequest.builder().connectorId("42").offers(offers).usagePolicies(policies)
-				.providerUrl("\"https://example.org/example\"").build();
+		ConsumerRequest consumerRequest = ConsumerRequest.builder().connectorId("42").offers(offers)
+				.usagePolicies(policies).providerUrl("\"https://example.org/example\"").build();
 		String content = (new ObjectMapper()).writeValueAsString(consumerRequest);
 		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/subscribe-data-offers")
 				.contentType(MediaType.APPLICATION_JSON).content(content);

@@ -62,8 +62,8 @@ public class DigitalTwinAssetProvider {
 		AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest("", "Digital twin registry information",
 				assetId, "1", "");
 
-		assetEntryRequest.getAsset().getProperties().put("type", "data.core.digitalTwinRegistry");
-		assetEntryRequest.getAsset().getProperties().put("registry", sdeCommonProperties.getDigitalTwinRegistry());
+		assetEntryRequest.getProperties().put("type", "data.core.digitalTwinRegistry");
+		assetEntryRequest.getProperties().put("registry", sdeCommonProperties.getDigitalTwinRegistry());
 
 		assetEntryRequest.getDataAddress().getProperties().put("oauth2:tokenUrl",
 				sdeCommonProperties.getDigitalTwinTokenUrl());

@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.entities.Policies;
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.accesspolicy.AccessPolicyDTO;
@@ -67,10 +68,16 @@ public class PolicyConstraintBuilderService {
 			} 
 			
 			for (String value : valueList) {
-				constraintsList.add(Constraint.builder()
-						.key(policy.getTechnicalKey())
-						.operator(operator)
-						.value(value).build());
+
+				if (StringUtils.isNotBlank(value)) {
+					constraintsList.add(
+							Constraint.builder()
+							.key(policy.getTechnicalKey())
+							.operator(operator)
+							.value(value)
+							.build());
+				}
+
 			}
 		});
 		

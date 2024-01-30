@@ -80,7 +80,7 @@ public class PCFExchangeAssetProvider {
 		AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest("", "PCF Exchange endpoint information",
 				assetId, "1", "");
 
-		assetEntryRequest.getAsset().getProperties().put("type", "data.pcf.exchangeEndpoint");
+		assetEntryRequest.getProperties().put("type", "data.pcf.exchangeEndpoint");
 		assetEntryRequest.getDataAddress().getProperties().put("baseUrl", sdeHostname+"/pcf");
 		ObjectNode requestBody = (ObjectNode) new ObjectMapper().readTree(assetFilterRequest);
 

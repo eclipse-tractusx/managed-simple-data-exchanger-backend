@@ -68,7 +68,7 @@ public class EDCPcfHandlerUseCase extends Step {
 
 			assetEntryRequest.getDataAddress().getProperties().put("baseUrl", baseURL.replace("public", "productIds"));
 
-			if (!edcGateway.assetExistsLookup(assetEntryRequest.getAsset().getId())) {
+			if (!edcGateway.assetExistsLookup(assetEntryRequest.getId())) {
 
 				edcProcessingforAspect(assetEntryRequest, input, policy);
 
@@ -103,7 +103,7 @@ public class EDCPcfHandlerUseCase extends Step {
 		Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest, policy);
 
 		// EDC transaction information for DB
-		input.setAssetId(assetEntryRequest.getAsset().getId());
+		input.setAssetId(assetEntryRequest.getId());
 		input.setAccessPolicyId(createEDCAsset.get("accessPolicyId"));
 		input.setUsagePolicyId(createEDCAsset.get("usagePolicyId"));
 		input.setContractDefinationId(createEDCAsset.get("contractDefinitionId"));

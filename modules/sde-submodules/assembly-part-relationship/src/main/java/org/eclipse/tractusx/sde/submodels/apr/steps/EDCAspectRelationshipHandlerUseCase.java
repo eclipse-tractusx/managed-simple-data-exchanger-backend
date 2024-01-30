@@ -60,7 +60,7 @@ public class EDCAspectRelationshipHandlerUseCase extends Step {
 
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
 					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getParentUuid());
-			if (!edcGateway.assetExistsLookup(assetEntryRequest.getAsset().getId())) {
+			if (!edcGateway.assetExistsLookup(assetEntryRequest.getId())) {
 
 				if (CommonConstants.UPDATED_Y.equals(input.getUpdated())
 						&& input.getOldSubmodelIdforUpdateCase() != null) {
@@ -117,7 +117,7 @@ public class EDCAspectRelationshipHandlerUseCase extends Step {
 		Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest, null);
 
 		// EDC transaction information for DB
-		input.setAssetId(assetEntryRequest.getAsset().getId());
+		input.setAssetId(assetEntryRequest.getId());
 		input.setAccessPolicyId(createEDCAsset.get("accessPolicyId"));
 		input.setUsagePolicyId(createEDCAsset.get("usagePolicyId"));
 		input.setContractDefinationId(createEDCAsset.get("contractDefinitionId"));

@@ -57,7 +57,7 @@ public class EDCSingleLevelBoMAsPlannedHandlerStep extends Step {
 		try {
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
 					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getParentUuid());
-			if (!edcGateway.assetExistsLookup(assetEntryRequest.getAsset().getId())) {
+			if (!edcGateway.assetExistsLookup(assetEntryRequest.getId())) {
 				edcProcessingforSingleLevelBoMAsPlanned(assetEntryRequest, input, policy);
 			} else {
 				deleteEDCFirstForUpdate(submodel, input, processId);
@@ -92,7 +92,7 @@ public class EDCSingleLevelBoMAsPlannedHandlerStep extends Step {
 		Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest, policy);
 
 		// EDC transaction information for DB
-		input.setAssetId(assetEntryRequest.getAsset().getId());
+		input.setAssetId(assetEntryRequest.getId());
 		input.setAccessPolicyId(createEDCAsset.get("accessPolicyId"));
 		input.setUsagePolicyId(createEDCAsset.get("usagePolicyId"));
 		input.setContractDefinationId(createEDCAsset.get("contractDefinitionId"));

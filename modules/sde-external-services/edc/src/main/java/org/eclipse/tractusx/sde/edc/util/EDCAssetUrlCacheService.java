@@ -81,7 +81,13 @@ public class EDCAssetUrlCacheService {
 			cacheExpTime = currDate.plusHours(12);
 		}
 		dDTRmap.put(bpnNumber, cacheExpTime);
-		return dDTRUrlCacheUtility.getDDTRUrl(bpnNumber);
+		List<QueryDataOfferModel> ddtrUrl = dDTRUrlCacheUtility.getDDTRUrl(bpnNumber);
+		if (ddtrUrl.isEmpty()) {
+			log.info("Found connector list empty so removing existing cache and retry to fetch");
+			removeDDTRUrlCache(bpnNumber);
+			ddtrUrl = dDTRUrlCacheUtility.getDDTRUrl(bpnNumber);
+		}
+		return ddtrUrl;
 	}
 
 	public void clearDDTRUrlCache() {
@@ -106,7 +112,13 @@ public class EDCAssetUrlCacheService {
 			cacheExpTime = currDate.plusHours(12);
 		}
 		pcfExchangeURLMap.put(bpnNumber, cacheExpTime);
-		return pcfExchangeAssetUtils.getPCFExchangeUrl(bpnNumber);
+		List<QueryDataOfferModel> pcfExchangeurls = pcfExchangeAssetUtils.getPCFExchangeUrl(bpnNumber);
+		if (pcfExchangeurls.isEmpty()) {
+			log.info("Found connector list empty so removing existing cache and retry to fetch");
+			removePCFExchangeCache(bpnNumber);
+			pcfExchangeurls = pcfExchangeAssetUtils.getPCFExchangeUrl(bpnNumber);
+		}
+		return pcfExchangeurls;
 	}
 
 	public void clearPCFExchangeUrlCache() {

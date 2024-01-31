@@ -21,6 +21,8 @@
 package org.eclipse.tractusx.sde.edc.services;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +30,7 @@ import java.util.Map;
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellLookupRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorResponse;
+import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorResponseList;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellLookupResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelResponse;
 import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsUtility;
@@ -35,8 +38,6 @@ import org.eclipse.tractusx.sde.digitaltwins.gateways.external.EDCDigitalTwinPro
 import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedByIdResponse;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import feign.FeignException;
@@ -61,68 +62,96 @@ public class LookUpDTTwin {
 	private boolean managedThirdParty;
 
 	@SneakyThrows
-	public SubModelResponse lookUpTwin(EDRCachedByIdResponse edrToken, QueryDataOfferModel dtOffer,
+	public List<SubModelResponse> lookUpTwin(EDRCachedByIdResponse edrToken, QueryDataOfferModel dtOffer,
 			String manufacturerPartId, String bpnNumber, String submodel) {
 
 		String endpoint = edrToken.getEndpoint();
 		String dtOfferUrl = dtOffer.getConnectorOfferUrl();
-
+		Map<String, String> header = new HashMap<>();
+		header.put(edrToken.getAuthKey(), edrToken.getAuthCode());
 		submodel = StringUtils.isBlank(submodel) ? "" : submodel;
 
+		if (StringUtils.isNotBlank(bpnNumber))
+			header.put("Edc-Bpn", bpnNumber);
+		if (StringUtils.isBlank(manufacturerPartId)) {
+			return lookUpAllShellForBPN(submodel, endpoint, dtOfferUrl, header);
+		} else {
+			return lookUpTwinBasedOnBPNAndManufacturerPartId(manufacturerPartId, bpnNumber, submodel, endpoint,
+					dtOfferUrl, header);
+		}
+	}
+
+	private List<SubModelResponse> lookUpTwinBasedOnBPNAndManufacturerPartId(String manufacturerPartId,
+			String bpnNumber, String submodel, String endpoint, String dtOfferUrl, Map<String, String> header) {
 		ShellLookupRequest shellLookupRequest = getShellLookupRequest(manufacturerPartId, bpnNumber, submodel);
 		try {
-			Map<String, String> header = Map.of(edrToken.getAuthKey(), edrToken.getAuthCode());
 
 			String assetIds = managedThirdParty
 					? digitalTwinsUtility.encodeAssetIdsObject(shellLookupRequest.toJsonString())
 					: shellLookupRequest.toJsonString();
 
-			ResponseEntity<ShellLookupResponse> shellLookup = eDCDigitalTwinProxyForLookUp
-					.shellLookup(new URI(endpoint), assetIds, header);
-			ShellLookupResponse body = shellLookup.getBody();
+			ShellLookupResponse shellLookup = eDCDigitalTwinProxyForLookUp.shellLookup(new URI(endpoint), assetIds,
+					header);
 
-			if (shellLookup.getStatusCode() == HttpStatus.OK && body != null) {
-				return getSubmodelDetails(shellLookupRequest, endpoint, header, dtOfferUrl, body.getResult(), submodel);
-			}
+			return getSubmodelDetails(shellLookupRequest, endpoint, header, dtOfferUrl, shellLookup.getResult(),
+					submodel);
 
 		} catch (FeignException e) {
-			String errorMsg = "Unable to look up DT twin " + dtOfferUrl + ", " + shellLookupRequest.toJsonString()
-					+ " because: " + e.contentUTF8();
+			String errorMsg = "Unable to lookUpTwinBasedOnManufacturerPartId " + dtOfferUrl + ", "
+					+ shellLookupRequest.toJsonString() + " because: " + e.contentUTF8();
 			log.error("FeignException : " + errorMsg);
 		} catch (Exception e) {
-			String errorMsg = "Unable to look up DT twin " + dtOfferUrl + ", " + shellLookupRequest.toJsonString()
-					+ "because: " + e.getMessage();
+			String errorMsg = "Unable to lookUpTwinBasedOnManufacturerPartId " + dtOfferUrl + ", "
+					+ shellLookupRequest.toJsonString() + "because: " + e.getMessage();
 			log.error("Exception : " + errorMsg);
 		}
+		return Collections.emptyList();
+	}
 
-		return null;
+	private List<SubModelResponse> lookUpAllShellForBPN(String submodel, String endpoint, String dtOfferUrl,
+			Map<String, String> header) {
+
+		List<SubModelResponse> ls = new ArrayList<>();
+		try {
+			ShellDescriptorResponseList allShell = eDCDigitalTwinProxyForLookUp.getAllShell(new URI(endpoint), 0, 10000,
+					header);
+			for (ShellDescriptorResponse shellDescriptorResponse : allShell.getResult())
+				preapreSubmodelResult(submodel, ls, shellDescriptorResponse.getSubmodelDescriptors());
+
+		} catch (FeignException e) {
+			String errorMsg = "Unable to lookUpAllShellForBPN " + dtOfferUrl + ", " + endpoint + "," + " because: "
+					+ e.contentUTF8();
+			log.error("FeignException : " + errorMsg);
+		} catch (Exception e) {
+			String errorMsg = "Unable to lookUpAllShellForBPN " + dtOfferUrl + ", " + endpoint + "because: "
+					+ e.getMessage();
+			log.error("Exception : " + errorMsg);
+		}
+		return ls;
 	}
 
 	@SneakyThrows
-	private SubModelResponse getSubmodelDetails(ShellLookupRequest shellLookupRequest, String endpoint,
+	private List<SubModelResponse> getSubmodelDetails(ShellLookupRequest shellLookupRequest, String endpoint,
 			Map<String, String> header, String dtOfferUrl, List<String> shellIds, String submodel) {
+		List<SubModelResponse> ls = new ArrayList<>();
 
-		SubModelResponse subModelResponseRes = null;
-		if (shellIds == null) {
-			log.warn(dtOfferUrl + ", No DT twin found for " + shellLookupRequest.toJsonString());
-		} else if (shellIds.size() > 1) {
-			log.warn(String.format("Multiple shell id's found for aspect %s, %s", dtOfferUrl,
-					shellLookupRequest.toJsonString()));
-		} else if (shellIds.size() == 1) {
-			ResponseEntity<ShellDescriptorResponse> shellDescriptorResponse = eDCDigitalTwinProxyForLookUp
-					.getShellDescriptorByShellId(new URI(endpoint),
-							digitalTwinsUtility.encodeShellIdBase64Utf8(shellIds.get(0)), header);
-			ShellDescriptorResponse shellDescriptorResponseBody = shellDescriptorResponse.getBody();
+		for (String shellId : shellIds) {
+			ShellDescriptorResponse shellDescriptorResponse = eDCDigitalTwinProxyForLookUp.getShellDescriptorByShellId(
+					new URI(endpoint), digitalTwinsUtility.encodeShellIdBase64Utf8(shellId), header);
+			preapreSubmodelResult(submodel, ls, shellDescriptorResponse.getSubmodelDescriptors());
+		}
+		return ls;
+	}
 
-			if (shellDescriptorResponse.getStatusCode() == HttpStatus.OK && shellDescriptorResponseBody != null) {
-				for (SubModelResponse subModelResponse : shellDescriptorResponseBody.getSubmodelDescriptors()) {
-					if (!subModelResponse.getIdShort().isEmpty() && subModelResponse.getIdShort().contains(submodel)) {
-						subModelResponseRes = subModelResponse;
-					}
-				}
+	private void preapreSubmodelResult(String submodel, List<SubModelResponse> ls,
+			List<SubModelResponse> shellDescriptorResponseList) {
+
+		for (SubModelResponse subModelResponse : shellDescriptorResponseList) {
+			if (!subModelResponse.getIdShort().isEmpty()
+					&& subModelResponse.getIdShort().toLowerCase().contains(submodel.toLowerCase())) {
+				ls.add(subModelResponse);
 			}
 		}
-		return subModelResponseRes;
 	}
 
 	private ShellLookupRequest getShellLookupRequest(String manufacturerPartId, String bpnNumber, String submodel) {

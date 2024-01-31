@@ -62,6 +62,8 @@ public class EDCPcfHandlerUseCase extends Step {
 
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
 					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getId());
+			
+			assetEntryRequest.getProperties().put("type", "data.pcf.exchangeEndpoint");
 
 			String baseURL = UriComponentsBuilder.fromHttpUrl(dftHostname).path("/pcf/productIds/")
 					.path(input.getProductId()).toUriString();

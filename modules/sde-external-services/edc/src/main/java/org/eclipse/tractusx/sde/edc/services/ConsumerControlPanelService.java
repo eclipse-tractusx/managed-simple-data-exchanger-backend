@@ -122,22 +122,25 @@ public class ConsumerControlPanelService {
 				EDRCachedByIdResponse edrToken = edcAssetUrlCacheService.verifyAndGetToken(bpnNumber, dtOffer);
 				if (edrToken != null) {
 
-					SubModelResponse lookUpTwin = lookUpDTTwin.lookUpTwin(edrToken, dtOffer, manufacturerPartId,
+					List<SubModelResponse> lookUpTwin = lookUpDTTwin.lookUpTwin(edrToken, dtOffer, manufacturerPartId,
 							bpnNumber, submodel);
 
-					if (lookUpTwin != null) {
-						String subprotocolBody = lookUpTwin.getEndpoints().get(0).getProtocolInformation()
-								.getSubprotocolBody();
+					for (SubModelResponse subModelResponse : lookUpTwin) {
+						if (subModelResponse.getEndpoints() != null) {
+							
+							String subprotocolBody = subModelResponse.getEndpoints().get(0).getProtocolInformation()
+									.getSubprotocolBody();
 
-						String[] edcInfo = subprotocolBody.split(";");
-						String[] assetInfo = edcInfo[0].split("=");
-						String[] connectorInfo = edcInfo[1].split("=");
+							String[] edcInfo = subprotocolBody.split(";");
+							String[] assetInfo = edcInfo[0].split("=");
+							String[] connectorInfo = edcInfo[1].split("=");
 
-						String filterExpression = String.format(filterExpressionTemplate, assetInfo[1]);
+							String filterExpression = String.format(filterExpressionTemplate, assetInfo[1]);
 
-						List<QueryDataOfferModel> queryOnDataOffers = catalogResponseBuilder
-								.queryOnDataOffers(connectorInfo[1], offset, limit, filterExpression);
-						result.addAll(queryOnDataOffers);
+							List<QueryDataOfferModel> queryOnDataOffers = catalogResponseBuilder
+									.queryOnDataOffers(connectorInfo[1], offset, limit, filterExpression);
+							result.addAll(queryOnDataOffers);
+						}
 					}
 				} else {
 					log.warn("EDR token is null, unable to look Up PCF Twin");

@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.entities.Policies;
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.mapper.JsonObjectMapper;
@@ -42,6 +41,40 @@ public class PolicyConstraintBuilderService {
 	private final PolicyRequestFactory policyRequestFactory;
 
 	private final JsonObjectMapper jsonobjectMapper;
+
+	// private final IPolicyHubProxyService policyHubProxyService;
+
+//	public JsonNode getAccessPoliciesConstraints(PolicyModel policy) {
+//		return policyHubProxyService.getPolicyContent(
+//				mapPolicy(PolicyTypeIdEnum.ACCESS, ConstraintOperandIdEnum.OR, policy.getAccessPolicies()));
+//	}
+//
+//	public JsonNode getUsagePoliciesConstraints(PolicyModel policy) {
+//		return policyHubProxyService.getPolicyContent(
+//				mapPolicy(PolicyTypeIdEnum.USAGE, ConstraintOperandIdEnum.AND, policy.getUsagePolicies()));
+//	}
+
+//	private PolicyContentRequest mapPolicy(PolicyTypeIdEnum policyType, ConstraintOperandIdEnum constraintOperandId,
+//			List<Policies> policies) {
+//
+//		List<Constraint> constraintsList = new ArrayList<>();
+//		policies.forEach(policy -> {
+//			List<String> valueList = policy.getValue();
+//			OperatorIdEnum operator = OperatorIdEnum.EQUALS;
+//
+//			if (valueList.size() > 1) {
+//				operator = OperatorIdEnum.IN;
+//			}
+//
+//			for (String value : valueList) {
+//				constraintsList.add(
+//						Constraint.builder().key(policy.getTechnicalKey()).operator(operator).value(value).build());
+//			}
+//		});
+//
+//		return PolicyContentRequest.builder().policyType(policyType).constraintOperand(constraintOperandId)
+//				.constraints(constraintsList).build();
+//	}
 
 	public JsonNode getAccessPolicy(String assetId, PolicyModel policy) {
 		return jsonobjectMapper.objectToJsonNode(policyRequestFactory.getPolicy(assetId,
@@ -79,12 +112,12 @@ public class PolicyConstraintBuilderService {
 	private void preparePolicyConstraint(List<ConstraintRequest> policies, Policies policy) {
 
 		String operator = "odrl:eq";
-		for (String value : policy.getValue()) {
-			if (StringUtils.isNotBlank(value)) {
-				ConstraintRequest request = ConstraintRequest.builder().leftOperand(policy.getTechnicalKey())
-						.operator(Operator.builder().id(operator).build()).rightOperand(value).build();
-				policies.add(request);
-			}
+
+		ConstraintRequest request = ConstraintRequest.builder().leftOperand(policy.getTechnicalKey())
+				.operator(Operator.builder().id(operator).build()).rightOperand(policy.getValue()).build();
+
+		if (request != null) {
+			policies.add(request);
 		}
 	}
 

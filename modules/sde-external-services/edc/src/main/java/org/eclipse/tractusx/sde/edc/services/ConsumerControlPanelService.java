@@ -137,7 +137,6 @@ public class ConsumerControlPanelService {
 
 						List<QueryDataOfferModel> queryOnDataOffers = catalogResponseBuilder
 								.queryOnDataOffers(connectorInfo[1], offset, limit, filterExpression);
-						queryOnDataOffers.forEach(e -> e.setType("data.pcf.exchangeEndpoint"));
 						result.addAll(queryOnDataOffers);
 					}
 				} else {

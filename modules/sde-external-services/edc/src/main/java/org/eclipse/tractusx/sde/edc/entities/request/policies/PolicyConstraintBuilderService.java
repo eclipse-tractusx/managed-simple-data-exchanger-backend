@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.entities.Policies;
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.mapper.JsonObjectMapper;
@@ -112,12 +113,15 @@ public class PolicyConstraintBuilderService {
 	private void preparePolicyConstraint(List<ConstraintRequest> policies, Policies policy) {
 
 		String operator = "odrl:eq";
-
-		ConstraintRequest request = ConstraintRequest.builder().leftOperand(policy.getTechnicalKey())
-				.operator(Operator.builder().id(operator).build()).rightOperand(policy.getValue()).build();
-
-		if (request != null) {
-			policies.add(request);
+		for (String value : policy.getValue()) {
+			if (StringUtils.isNotBlank(value)) {
+				ConstraintRequest request = ConstraintRequest.builder()
+						.leftOperand(policy.getTechnicalKey())
+						.operator(Operator.builder().id(operator).build())
+						.rightOperand(value)
+						.build();
+				policies.add(request);
+			}
 		}
 	}
 

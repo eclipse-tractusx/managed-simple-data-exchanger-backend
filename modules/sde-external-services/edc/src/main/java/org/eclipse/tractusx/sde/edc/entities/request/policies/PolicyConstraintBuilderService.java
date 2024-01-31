@@ -21,19 +21,13 @@
 package org.eclipse.tractusx.sde.edc.entities.request.policies;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.entities.Policies;
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
-import org.eclipse.tractusx.sde.edc.entities.request.policies.accesspolicy.AccessPolicyDTO;
-import org.eclipse.tractusx.sde.policyhub.enums.ConstraintOperandIdEnum;
-import org.eclipse.tractusx.sde.policyhub.enums.OperatorIdEnum;
-import org.eclipse.tractusx.sde.policyhub.enums.PolicyTypeIdEnum;
-import org.eclipse.tractusx.sde.policyhub.handler.IPolicyHubProxyService;
-import org.eclipse.tractusx.sde.policyhub.model.request.Constraint;
-import org.eclipse.tractusx.sde.policyhub.model.request.PolicyContentRequest;
+import org.eclipse.tractusx.sde.common.mapper.JsonObjectMapper;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -44,96 +38,50 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PolicyConstraintBuilderService {
 
-	private final IPolicyHubProxyService policyHubProxyService;
+	private final PolicyRequestFactory policyRequestFactory;
 
-	public JsonNode getAccessPoliciesConstraints(PolicyModel policy) {
-		return policyHubProxyService.getPolicyContent(
-				mapPolicy(PolicyTypeIdEnum.ACCESS, ConstraintOperandIdEnum.OR, policy.getAccessPolicies()));
+	private final JsonObjectMapper jsonobjectMapper;
+
+	public JsonNode getAccessPolicy(String assetId, PolicyModel policy) {
+		return jsonobjectMapper.objectToJsonNode(policyRequestFactory.getPolicy(assetId,
+				getPoliciesConstraints(policy.getAccessPolicies(), "odrl:or"), Collections.emptyMap()));
 	}
 
-	public JsonNode getUsagePoliciesConstraints(PolicyModel policy) {
-		return policyHubProxyService.getPolicyContent(
-				mapPolicy(PolicyTypeIdEnum.USAGE, ConstraintOperandIdEnum.AND, policy.getUsagePolicies()));
+	public JsonNode getUsagePolicy(String assetId, PolicyModel policy) {
+		return jsonobjectMapper.objectToJsonNode(policyRequestFactory.getPolicy(assetId,
+				getPoliciesConstraints(policy.getUsagePolicies(), "odrl:and"), Collections.emptyMap()));
+	}
+	
+	public ActionRequest getUsagePoliciesConstraints(List<Policies> policies) {
+		return getPoliciesConstraints(policies, "odrl:and");
 	}
 
-	private PolicyContentRequest mapPolicy(PolicyTypeIdEnum policyType, ConstraintOperandIdEnum constraintOperandId, List<Policies> policies) {
-		
-		List<Constraint> constraintsList= new ArrayList<>();
-		policies.forEach(policy->{
-			List<String> valueList = policy.getValue();
-			OperatorIdEnum operator = OperatorIdEnum.EQUALS;
-			
-			if (valueList.size() > 1) {
-				operator = OperatorIdEnum.IN;
-			} 
-			
-			for (String value : valueList) {
+	public ActionRequest getPoliciesConstraints(List<Policies> usagePolicies, String operator) {
+		List<ConstraintRequest> constraintList = new ArrayList<>();
 
-				if (StringUtils.isNotBlank(value)) {
-					constraintsList.add(
-							Constraint.builder()
-							.key(policy.getTechnicalKey())
-							.operator(operator)
-							.value(value)
-							.build());
-				}
-
-			}
-		});
-		
-		return PolicyContentRequest.builder()
-				.policyType(policyType)
-				.constraintOperand(constraintOperandId)
-				.constraints(constraintsList)
-				.build();
-	}
-
-	public ActionRequest getAccessPoliciesConstraints(List<String> bpnNumbers) {
-		
-		List<ConstraintRequest> constraints = new ArrayList<>();
-		if (bpnNumbers != null && !bpnNumbers.isEmpty()) {
-			AccessPolicyDTO accessPolicy = null;
-			for (String bpnNumber : bpnNumbers) {
-				accessPolicy = AccessPolicyDTO.builder().bpnNumber(bpnNumber).build();
-				constraints.add(accessPolicy.toConstraint());
-			}
-		}
-		
-		ActionRequest action = ActionRequest.builder().build();
-		action.addProperty("@type", "LogicalConstraint");
-		action.addProperty("odrl:or", constraints);
-		return action;
-	}
-
-	public ActionRequest getUsagePoliciesConstraints(List<Policies> usagePolicies) {
-		List<ConstraintRequest> usageConstraintList = new ArrayList<>();
-		
 		if (usagePolicies != null && !usagePolicies.isEmpty()) {
-			usagePolicies.forEach(policy -> usagePolicy(usageConstraintList, policy));
+			usagePolicies.forEach(policy -> preparePolicyConstraint(constraintList, policy));
 		}
 
-		usageConstraintList.sort(Comparator.comparing(ConstraintRequest::getLeftOperand));
+		constraintList.sort(Comparator.comparing(ConstraintRequest::getLeftOperand));
 
-		if (!usageConstraintList.isEmpty()) {
+		if (!constraintList.isEmpty()) {
 			ActionRequest action = ActionRequest.builder().build();
 			action.addProperty("@type", "LogicalConstraint");
-			action.addProperty("odrl:and", usageConstraintList);
+			action.addProperty(operator, constraintList);
 			return action;
 		}
 		return null;
 
 	}
 
-	private void usagePolicy(List<ConstraintRequest> policies, Policies policy) {
-		
+	private void preparePolicyConstraint(List<ConstraintRequest> policies, Policies policy) {
+
 		String operator = "odrl:eq";
-		
-		ConstraintRequest request = ConstraintRequest.builder()
-				.leftOperand(policy.getTechnicalKey())
-				.operator(Operator.builder().id(operator).build())
-				.rightOperand(policy.getValue())
-				.build();
-		
+
+		ConstraintRequest request = ConstraintRequest.builder().leftOperand(policy.getTechnicalKey())
+				.operator(Operator.builder().id(operator).build()).rightOperand(policy.getValue()).build();
+
 		if (request != null) {
 			policies.add(request);
 		}

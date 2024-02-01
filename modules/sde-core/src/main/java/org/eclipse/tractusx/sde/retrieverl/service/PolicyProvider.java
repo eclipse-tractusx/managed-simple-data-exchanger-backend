@@ -47,28 +47,47 @@ public class PolicyProvider {
 	ObjectMapper mapper = new ObjectMapper();
 
 	private String defaultPolicy = """
-					{
-					"policy_name": "default",
-			        "bpn_numbers": [
-			                    "%s"
-			                ],
-			         "type_of_access": "restricted",
-			          "usage_policies": {
-			                    "ROLE": {
-			                        "typeOfAccess": "UNRESTRICTED",
-			                        "value": ""
-			                    },
-			                    "PURPOSE":{
-			                        "typeOfAccess": "UNRESTRICTED",
-			                        "value": ""
-			                    },
-			                    "CUSTOM": {
-			                        "typeOfAccess": "UNRESTRICTED",
-			                        "value": ""
-			                    }
-			                }
-			         }
-			""";
+				{
+				"policy_name" : "default",
+				"access_policies": [
+			      {
+			          "technicalKey": "BusinessPartnerNumber",
+			          "value": [
+			              "BPNL001000TS0100"
+			          ]
+			      },
+			      {
+			          "technicalKey": "Membership",
+			          "value": [
+			              "active"
+			          ]
+			      },
+			      {
+			          "technicalKey": "companyRole.dismantler",
+			          "value": [
+			              "active"
+			          ]
+			      }
+			  ],
+				"usage_policies": [
+				{
+						"technicalKey": "FrameworkAgreement.pcf",
+						"value": [ "active:v1.0.0"]
+						},
+						{
+						"technicalKey": "FrameworkAgreement.sustainability",
+				 		"value": ["active:v1.0.0"]
+						},
+						{
+						"technicalKey": "Membership",
+						"value": ["active"]
+						},
+						{
+						"technicalKey": "companyRole.dismantler",
+						"value": ["active"]
+				}
+			]
+			}""";
 
 	@SneakyThrows
 	public PolicyModel saveDefaultPolicy() {

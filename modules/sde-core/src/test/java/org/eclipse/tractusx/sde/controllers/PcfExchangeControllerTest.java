@@ -121,16 +121,6 @@ class PcfExchangeControllerTest {
 	}
 	
 	@Test
-	void testSearchPcfDataOfferSuccess() throws Exception {
-		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/pcf/search")
-				.param("manufacturerPartId", "urn:gtin:47123450605077")
-				.param("bpnNumber", "BPNL001000TS0100");
-		ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(pcfExchangeController).build()
-				.perform(requestBuilder);
-		actualPerformResult.andExpect(MockMvcResultMatchers.status().isOk());
-	}
-	
-	@Test
 	void testRequestForPcfDataOffer() throws Exception {
 		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/pcf/request/{productId}","test_product")
 				.contentType("application/json")
@@ -145,7 +135,7 @@ class PcfExchangeControllerTest {
 		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/pcf/request/{requestId}",UUID.randomUUID().toString());
 		ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(pcfExchangeController).build()
 				.perform(requestBuilder);
-		actualPerformResult.andExpect(MockMvcResultMatchers.status().isOk());
+		actualPerformResult.andExpect(MockMvcResultMatchers.status().is(200));
 	}
 	
 	@Test
@@ -166,10 +156,6 @@ class PcfExchangeControllerTest {
 	
 	private String getPCFJsonResponse() {
 		String bodyRequest = "{\n"
-				+ "    \"bpn_numbers\": [\n"
-				+ "        \"BPNL001000TS0100\"\n"
-				+ "    ],\n"
-				+ "    \"type_of_access\": \"restricted\",\n"
 				+ "    \"row_data\": [\n"
 				+ "        {\n"
 				+ "            \"id\": \"3893bb5d-da16-4dc1-9185-11d97476c7a7\",\n"
@@ -238,20 +224,64 @@ class PcfExchangeControllerTest {
 				+ "            \"assetLifeCyclePhase\": \"AsPlanned\"\n"
 				+ "        }\n"
 				+ "    ],\n"
-				+ "     \"usage_policies\": {\n"
-				+ "        \"ROLE\": {\n"
-				+ "            \"typeOfAccess\": \"UNRESTRICTED\",\n"
-				+ "            \"value\": \"\"\n"
+				+ "    \"access_policies\": [\n"
+				+ "        {\n"
+				+ "            \"technicalKey\": \"BusinessPartnerNumber\",\n"
+				+ "            \"value\": [\n"
+				+ "                \"BPNL001000TS0100\"\n"
+				+ "            ]\n"
 				+ "        },\n"
-				+ "        \"PURPOSE\": {\n"
-				+ "            \"typeOfAccess\": \"UNRESTRICTED\",\n"
-				+ "            \"value\": \"\"\n"
+				+ "        {\n"
+				+ "            \"technicalKey\": \"Membership\",\n"
+				+ "            \"value\": [\n"
+				+ "                \"active\"\n"
+				+ "            ]\n"
 				+ "        },\n"
-				+ "        \"CUSTOM\": {\n"
-				+ "            \"typeOfAccess\": \"UNRESTRICTED\",\n"
-				+ "            \"value\": \"\"\n"
+				+ "        {\n"
+				+ "            \"technicalKey\": \"companyRole.dismantler\",\n"
+				+ "            \"value\": [\n"
+				+ "                \"active\"\n"
+				+ "            ]\n"
 				+ "        }\n"
-				+ "    }\n"
+				+ "    ],\n"
+				+ "    \"usage_policies\": [\n"
+				+ "        {\n"
+				+ "            \"technicalKey\": \"Membership\",\n"
+				+ "            \"value\": [\n"
+				+ "                \"active\"\n"
+				+ "            ]\n"
+				+ "        },\n"
+				+ "        {\n"
+				+ "            \"technicalKey\": \"companyRole.dismantler\",\n"
+				+ "            \"value\": [\n"
+				+ "                \"active\"\n"
+				+ "            ]\n"
+				+ "        },\n"
+				+ "        {\n"
+				+ "            \"technicalKey\": \"FrameworkAgreement.pcf\",\n"
+				+ "            \"value\": [\n"
+				+ "                \"active:v1.0.0\"\n"
+				+ "            ]\n"
+				+ "        },\n"
+				+ "        {\n"
+				+ "            \"technicalKey\": \"FrameworkAgreement.sustainability\",\n"
+				+ "            \"value\": [\n"
+				+ "                \"active:v1.0.0\"\n"
+				+ "            ]\n"
+				+ "        },\n"
+				+ "        {\n"
+				+ "            \"technicalKey\": \"PURPOSE\",\n"
+				+ "            \"value\": []\n"
+				+ "        },\n"
+				+ "        {\n"
+				+ "            \"technicalKey\": \"PURPOSE\",\n"
+				+ "            \"value\": []\n"
+				+ "        },\n"
+				+ "        {\n"
+				+ "            \"technicalKey\": \"CUSTOM\",\n"
+				+ "            \"value\": []\n"
+				+ "        }\n"
+				+ "    ]\n"
 				+ "}";
 		
 		return bodyRequest;

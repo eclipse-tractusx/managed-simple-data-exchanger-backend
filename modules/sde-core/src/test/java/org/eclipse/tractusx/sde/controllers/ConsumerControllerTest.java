@@ -69,6 +69,7 @@ class ConsumerControllerTest {
 				anyInt())).thenReturn(new ArrayList<>());
 		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/query-data-offers")
 				.param("bpnNumber", "foo");
+
 		MockMvcBuilders.standaloneSetup(consumerController).build().perform(requestBuilder)
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
@@ -87,11 +88,13 @@ class ConsumerControllerTest {
 				anyInt())).thenReturn(queryDataOfferModelList);
 		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/query-data-offers")
 				.param("bpnNumber", "foo");
+
 		MockMvcBuilders.standaloneSetup(consumerController).build().perform(requestBuilder)
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
 				.andExpect(MockMvcResultMatchers.content().string(
 						"[{\"connectorId\":\"test\",\"assetId\":\"foo\",\"offerId\":\"offer\"}]"));
+
 	}
 
 	@Test

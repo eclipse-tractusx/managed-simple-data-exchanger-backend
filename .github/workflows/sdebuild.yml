@@ -22,7 +22,7 @@ name: sdebuild
 on:
   push:
     branches:
-      - 'DST_PIP11_ITR5'
+      - 'DST_PIP12_ITR1'
     tags:
       - 'v*.*.*'
       - 'v*.*.*-*'
@@ -65,7 +65,7 @@ jobs:
           images: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=semver,pattern={{version}},value=v2.3.6
+            type=semver,pattern={{version}},value=v2.3.7
           flavor: |
             latest=true
               

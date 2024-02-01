@@ -71,6 +71,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @ContextConfiguration(classes = { ConsumerControlPanelService.class, String.class })
 @ExtendWith(SpringExtension.class)
 class ConsumerControlPanelServiceTest {
+	
 	@MockBean
 	private IPortalExternalServiceApi connectorDiscoveryApi;
 
@@ -138,7 +139,7 @@ class ConsumerControlPanelServiceTest {
 		when(eDCAssetUrlCacheService.verifyAndGetToken(any(),any())).thenReturn(any());
 	}
 
-	@Test
+  @Test
 	void testQueryOnDataOfferEmpty() throws Exception {
 
 

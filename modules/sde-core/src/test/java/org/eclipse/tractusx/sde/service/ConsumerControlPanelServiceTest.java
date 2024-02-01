@@ -30,6 +30,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.eclipse.tractusx.sde.bpndiscovery.handler.BpnDiscoveryProxyService;
+import org.eclipse.tractusx.sde.bpndiscovery.model.response.BpnDiscoveryResponse;
+import org.eclipse.tractusx.sde.bpndiscovery.model.response.BpnDiscoverySearchResponse;
 import org.eclipse.tractusx.sde.common.entities.Policies;
 import org.eclipse.tractusx.sde.common.utils.TokenUtility;
 import org.eclipse.tractusx.sde.core.service.ConsumerService;
@@ -45,9 +48,14 @@ import org.eclipse.tractusx.sde.edc.model.contractoffers.ContractOfferRequestFac
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
 import org.eclipse.tractusx.sde.edc.model.request.Offer;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
+import org.eclipse.tractusx.sde.edc.services.CatalogResponseBuilder;
 import org.eclipse.tractusx.sde.edc.services.ConsumerControlPanelService;
+import org.eclipse.tractusx.sde.edc.services.ContractNegotiationService;
+import org.eclipse.tractusx.sde.edc.services.LookUpDTTwin;
+import org.eclipse.tractusx.sde.edc.util.EDCAssetUrlCacheService;
 import org.eclipse.tractusx.sde.portal.api.IPartnerPoolExternalServiceApi;
 import org.eclipse.tractusx.sde.portal.api.IPortalExternalServiceApi;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,18 +105,47 @@ class ConsumerControlPanelServiceTest {
 	@MockBean
 	private EDRRequestHelper eDRRequestHelper;
 	
+	@MockBean
+	private BpnDiscoveryProxyService bpnDiscoveryProxyService;
+	
+	@MockBean
+	private EDCAssetUrlCacheService eDCAssetUrlCacheService;
+	
+	@MockBean
+	private CatalogResponseBuilder catalogResponseBuilder;
 
-	//@Test
+	@MockBean
+	private ContractNegotiationService contractNegotiationService;
+
+	@MockBean
+	private LookUpDTTwin lookUpDTTwin;
+	
+	
+	@BeforeEach
+	public void setup() {
+		when(bpnDiscoveryProxyService.bpnDiscoverySearchData(any()))
+		.thenReturn(BpnDiscoverySearchResponse.builder()
+				.bpns(List.of(BpnDiscoveryResponse.builder()
+						.value("fooo")
+						.build()))
+				.build());
+		
+		when(eDCAssetUrlCacheService.getDDTRUrl(any()))
+		.thenReturn(List.of(QueryDataOfferModel.builder()
+						.assetId("foo")
+						.connectorId("test")
+						.offerId("offer")
+						.build()));
+		when(eDCAssetUrlCacheService.verifyAndGetToken(any(),any())).thenReturn(any());
+	}
+
+  @Test
 	void testQueryOnDataOfferEmpty() throws Exception {
 
-		JsonNode json = getCatalogEmptyResponse();
-
-		when(contractOfferCatalogApi.getContractOffersCatalog((JsonNode) any())).thenReturn(json);
 
 		List<QueryDataOfferModel> queryOnDataOffers = consumerControlPanelService.queryOnDataOffers("example", "", "",
 				0, 0);
 		assertTrue(queryOnDataOffers.isEmpty());
-		verify(contractOfferCatalogApi).getContractOffersCatalog((JsonNode) any());
 	}
 
 	//@Test

@@ -68,7 +68,8 @@ class ConsumerControllerTest {
 		when(consumerControlPanelService.queryOnDataOffers((String) any(), (String) any(), (String) any(), anyInt(),
 				anyInt())).thenReturn(new ArrayList<>());
 		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/query-data-offers")
-				.param("bpnNumber", "BPNL001000TS0100");
+				.param("bpnNumber", "foo");
+
 		MockMvcBuilders.standaloneSetup(consumerController).build().perform(requestBuilder)
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
@@ -78,16 +79,22 @@ class ConsumerControllerTest {
 	@Test
 	void testQueryOnDataOffersWithOfferModel() throws Exception {
 		ArrayList<QueryDataOfferModel> queryDataOfferModelList = new ArrayList<>();
-		queryDataOfferModelList.add(new QueryDataOfferModel());
+		queryDataOfferModelList.add(QueryDataOfferModel.builder()
+				.assetId("foo")
+				.connectorId("test")
+				.offerId("offer")
+				.build());
 		when(consumerControlPanelService.queryOnDataOffers((String) any(), (String) any(), (String) any(), anyInt(),
 				anyInt())).thenReturn(queryDataOfferModelList);
 		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/query-data-offers")
-				.param("bpnNumber", "BPNL001000TS0100");
+				.param("bpnNumber", "foo");
+
 		MockMvcBuilders.standaloneSetup(consumerController).build().perform(requestBuilder)
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
 				.andExpect(MockMvcResultMatchers.content().string(
-						"[{}]"));
+						"[{\"connectorId\":\"test\",\"assetId\":\"foo\",\"offerId\":\"offer\"}]"));
+
 	}
 
 	@Test

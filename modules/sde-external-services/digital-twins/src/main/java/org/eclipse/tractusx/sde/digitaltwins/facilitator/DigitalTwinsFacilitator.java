@@ -62,8 +62,7 @@ public class DigitalTwinsFacilitator {
 		List<String> shellIds = List.of();
 		try {
 
-			String assetIds = managedThirdParty ? digitalTwinsUtility.encodeAssetIdsObject(request.toJsonString())
-					: request.toJsonString();
+			String assetIds =  digitalTwinsUtility.encodeAssetIdsObject(request.toJsonString());
 
 			ResponseEntity<ShellLookupResponse> response = digitalTwinsFeignClient.shellLookup(assetIds,
 					manufacturerId);

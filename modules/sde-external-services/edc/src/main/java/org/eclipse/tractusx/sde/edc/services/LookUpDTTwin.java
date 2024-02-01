@@ -86,9 +86,7 @@ public class LookUpDTTwin {
 		ShellLookupRequest shellLookupRequest = getShellLookupRequest(manufacturerPartId, bpnNumber, submodel);
 		try {
 
-			String assetIds = managedThirdParty
-					? digitalTwinsUtility.encodeAssetIdsObject(shellLookupRequest.toJsonString())
-					: shellLookupRequest.toJsonString();
+			String assetIds = digitalTwinsUtility.encodeAssetIdsObject(shellLookupRequest.toJsonString());
 
 			ShellLookupResponse shellLookup = eDCDigitalTwinProxyForLookUp.shellLookup(new URI(endpoint), assetIds,
 					header);

@@ -48,27 +48,13 @@ public class PolicyProvider {
 
 	private String defaultPolicy = """
 					{
-					"policy_name": "default",
-			        "bpn_numbers": [
-			                    "%s"
-			                ],
-			         "type_of_access": "restricted",
-			          "usage_policies": {
-			                    "ROLE": {
-			                        "typeOfAccess": "UNRESTRICTED",
-			                        "value": ""
-			                    },
-			                    "PURPOSE":{
-			                        "typeOfAccess": "UNRESTRICTED",
-			                        "value": ""
-			                    },
-			                    "CUSTOM": {
-			                        "typeOfAccess": "UNRESTRICTED",
-			                        "value": ""
-			                    }
-			                }
-			         }
-			""";
+	 				"policy_name" : "default",
+	 				"access_policies": [
+	 			  	],
+	 				"usage_policies": [
+	 				]
+ 				}
+				""";
 
 	@SneakyThrows
 	public PolicyModel saveDefaultPolicy() {

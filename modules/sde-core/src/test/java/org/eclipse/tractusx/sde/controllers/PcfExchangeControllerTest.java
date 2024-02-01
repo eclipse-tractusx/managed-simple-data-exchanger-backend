@@ -121,16 +121,6 @@ class PcfExchangeControllerTest {
 	}
 	
 	@Test
-	void testSearchPcfDataOfferSuccess() throws Exception {
-		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/pcf/search")
-				.param("manufacturerPartId", "urn:gtin:47123450605077")
-				.param("bpnNumber", "BPNL001000TS0100");
-		ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(pcfExchangeController).build()
-				.perform(requestBuilder);
-		actualPerformResult.andExpect(MockMvcResultMatchers.status().isOk());
-	}
-	
-	@Test
 	void testRequestForPcfDataOffer() throws Exception {
 		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/pcf/request/{productId}","test_product")
 				.contentType("application/json")

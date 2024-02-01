@@ -68,7 +68,7 @@ class ConsumerControllerTest {
 		when(consumerControlPanelService.queryOnDataOffers((String) any(), (String) any(), (String) any(), anyInt(),
 				anyInt())).thenReturn(new ArrayList<>());
 		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/query-data-offers")
-				.param("providerUrl", "foo");
+				.param("bpnNumber", "foo");
 		MockMvcBuilders.standaloneSetup(consumerController).build().perform(requestBuilder)
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
@@ -78,16 +78,20 @@ class ConsumerControllerTest {
 	@Test
 	void testQueryOnDataOffersWithOfferModel() throws Exception {
 		ArrayList<QueryDataOfferModel> queryDataOfferModelList = new ArrayList<>();
-		queryDataOfferModelList.add(new QueryDataOfferModel());
+		queryDataOfferModelList.add(QueryDataOfferModel.builder()
+				.assetId("foo")
+				.connectorId("test")
+				.offerId("offer")
+				.build());
 		when(consumerControlPanelService.queryOnDataOffers((String) any(), (String) any(), (String) any(), anyInt(),
 				anyInt())).thenReturn(queryDataOfferModelList);
 		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/query-data-offers")
-				.param("providerUrl", "foo");
+				.param("bpnNumber", "foo");
 		MockMvcBuilders.standaloneSetup(consumerController).build().perform(requestBuilder)
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
 				.andExpect(MockMvcResultMatchers.content().string(
-						"[{\"connectorId\":null,\"assetId\":null,\"offerId\":null,\"connectorOfferUrl\":null,\"title\":null,\"type\":null,\"version\":null,\"description\":null,\"fileName\":null,\"fileContentType\":null,\"created\":null,\"modified\":null,\"publisher\":null,\"typeOfAccess\":null,\"policyId\":null,\"policy\":null}]"));
+						"[{\"connectorId\":\"test\",\"assetId\":\"foo\",\"offerId\":\"offer\"}]"));
 	}
 
 	@Test

@@ -63,7 +63,6 @@ public class AssetEntryRequestFactory {
         String assetId = shellId + "-" + subModelId;
         
         HashMap<String, String> assetProperties = getAssetProperties(assetId, assetName);
-        AssetRequest assetRequest = AssetRequest.builder().id(assetId).properties(assetProperties).build();
 
         String uriString = subModelPayloadUrl(submodel, uuid);
 
@@ -71,7 +70,8 @@ public class AssetEntryRequestFactory {
         DataAddressRequest dataAddressRequest = DataAddressRequest.builder().properties(dataAddressProperties).build();
 
         return AssetEntryRequest.builder()
-                .asset(assetRequest)
+                .id(assetId)
+                .properties(assetProperties)
                 .dataAddress(dataAddressRequest)
                 .build();
     }

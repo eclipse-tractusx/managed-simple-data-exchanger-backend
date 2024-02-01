@@ -126,7 +126,7 @@ public class ConsumerService {
 
 		entity.setEndDate(LocalDateTime.now());
 		entity.setOffers(mapper.writeValueAsString(consumerRequest.getOffers()));
-		entity.setPolicies(mapper.writeValueAsString(consumerRequest.getPolicies()));
+		entity.setPolicies(mapper.writeValueAsString(consumerRequest.getUsagePolicies()));
 		entity.setDownloadSuccessed(successCount.get());
 		entity.setDownloadFailed(failedCount.get());
 

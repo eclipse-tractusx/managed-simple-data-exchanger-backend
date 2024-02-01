@@ -20,12 +20,12 @@
 
 package org.eclipse.tractusx.sde.submodels.pcf.steps;
 
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseException;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
@@ -52,16 +52,16 @@ public class DigitalTwinsPcfCsvHandlerUseCase extends Step {
 	private final DigitalTwinsUtility digitalTwinsUtility;
 
 	@SneakyThrows
-	public PcfAspect run(PcfAspect pcfAspect) throws CsvHandlerDigitalTwinUseCaseException {
+	public PcfAspect run(PcfAspect pcfAspect, PolicyModel policy) throws CsvHandlerDigitalTwinUseCaseException {
 		try {
-			return doRun(pcfAspect);
+			return doRun(pcfAspect, policy);
 		} catch (Exception e) {
-			throw new CsvHandlerUseCaseException(pcfAspect.getRowNumberforPcf(), ": DigitalTwins: " + e.getMessage());
+			throw new CsvHandlerUseCaseException(pcfAspect.getRowNumber(), ": DigitalTwins: " + e.getMessage());
 		}
 	}
 
 	@SneakyThrows
-	private PcfAspect doRun(PcfAspect pcfAspect) throws CsvHandlerDigitalTwinUseCaseException {
+	private PcfAspect doRun(PcfAspect pcfAspect, PolicyModel policy) throws CsvHandlerDigitalTwinUseCaseException {
 		ShellLookupRequest shellLookupRequest = getShellLookupRequest(pcfAspect);
 		List<String> shellIds = digitalTwinsFacilitator.shellLookup(shellLookupRequest);
 
@@ -70,7 +70,7 @@ public class DigitalTwinsPcfCsvHandlerUseCase extends Step {
 		if (shellIds.isEmpty()) {
 			logDebug(String.format("No shell id for '%s'", shellLookupRequest.toJsonString()));
 			ShellDescriptorRequest aasDescriptorRequest = digitalTwinsUtility
-					.getShellDescriptorRequest(getSpecificAssetIds(pcfAspect), pcfAspect);
+					.getShellDescriptorRequest(getSpecificAssetIds(pcfAspect), pcfAspect, policy);
 			ShellDescriptorResponse result = digitalTwinsFacilitator.createShellDescriptor(aasDescriptorRequest);
 			shellId = result.getIdentification();
 			logDebug(String.format("Shell created with id '%s'", shellId));
@@ -83,24 +83,24 @@ public class DigitalTwinsPcfCsvHandlerUseCase extends Step {
 					String.format("Multiple ids found on aspect %s", shellLookupRequest.toJsonString()));
 		}
 
-		pcfAspect.setShellIdforPcf(shellId);
+		pcfAspect.setShellId(shellId);
 		SubModelListResponse subModelResponse = digitalTwinsFacilitator.getSubModels(shellId);
 		SubModelResponse foundSubmodel = null;
 		if (subModelResponse != null) {
-			foundSubmodel = subModelResponse.getResult().stream().filter(x -> getIdShortOfModel().equals(x.getIdShort()))
-					.findFirst().orElse(null);
+			foundSubmodel = subModelResponse.getResult().stream()
+					.filter(x -> getIdShortOfModel().equals(x.getIdShort())).findFirst().orElse(null);
 			if (foundSubmodel != null)
-				pcfAspect.setSubModelIdforPcf(foundSubmodel.getId());
+				pcfAspect.setSubModelId(foundSubmodel.getId());
 		}
 
 		if (subModelResponse == null || foundSubmodel == null) {
 			logDebug(String.format("No submodels for '%s'", shellId));
 			CreateSubModelRequest createSubModelRequest = digitalTwinsUtility
-					.getCreateSubModelRequest(pcfAspect.getShellIdforPcf(), getsemanticIdOfModel(), getIdShortOfModel());
+					.getCreateSubModelRequest(pcfAspect.getShellId(), getsemanticIdOfModel(), getIdShortOfModel());
 			digitalTwinsFacilitator.createSubModel(shellId, createSubModelRequest);
-			pcfAspect.setSubModelIdforPcf(createSubModelRequest.getId());
+			pcfAspect.setSubModelId(createSubModelRequest.getId());
 		} else {
-			pcfAspect.setUpdatedforPcf(CommonConstants.UPDATED_Y);
+			pcfAspect.setUpdated(CommonConstants.UPDATED_Y);
 			logDebug("Complete Digital Twins Update Update Digital Twins");
 		}
 
@@ -108,11 +108,10 @@ public class DigitalTwinsPcfCsvHandlerUseCase extends Step {
 	}
 
 	private ShellLookupRequest getShellLookupRequest(PcfAspect pcfAspect) {
-		
+
 		ShellLookupRequest shellLookupRequest = new ShellLookupRequest();
 		getSpecificAssetIds(pcfAspect).entrySet().stream()
-				.forEach(entry -> 
-				shellLookupRequest.addLocalIdentifier(entry.getKey(), entry.getValue()));
+				.forEach(entry -> shellLookupRequest.addLocalIdentifier(entry.getKey(), entry.getValue()));
 
 		return shellLookupRequest;
 	}

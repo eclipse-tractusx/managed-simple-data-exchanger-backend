@@ -22,7 +22,6 @@ package org.eclipse.tractusx.sde.pcfexchange.service.impl;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,26 +29,14 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.tractusx.sde.bpndiscovery.handler.BpnDiscoveryProxyService;
-import org.eclipse.tractusx.sde.bpndiscovery.model.request.BpnDiscoverySearchRequest;
-import org.eclipse.tractusx.sde.bpndiscovery.model.request.BpnDiscoverySearchRequest.Search;
-import org.eclipse.tractusx.sde.bpndiscovery.model.response.BpnDiscoveryResponse;
-import org.eclipse.tractusx.sde.bpndiscovery.model.response.BpnDiscoverySearchResponse;
-import org.eclipse.tractusx.sde.common.constants.CommonConstants;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
 import org.eclipse.tractusx.sde.common.mapper.JsonObjectMapper;
 import org.eclipse.tractusx.sde.common.model.PagingResponse;
-import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellLookupRequest;
-import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorResponse;
-import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellLookupResponse;
-import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelResponse;
-import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsUtility;
-import org.eclipse.tractusx.sde.digitaltwins.gateways.external.EDCDigitalTwinProxyForLookUp;
 import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedByIdResponse;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
 import org.eclipse.tractusx.sde.edc.model.request.Offer;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
-import org.eclipse.tractusx.sde.edc.services.ConsumerControlPanelService;
 import org.eclipse.tractusx.sde.edc.util.EDCAssetUrlCacheService;
 import org.eclipse.tractusx.sde.pcfexchange.entity.PcfRequestEntity;
 import org.eclipse.tractusx.sde.pcfexchange.entity.PcfResponseEntity;
@@ -65,8 +52,6 @@ import org.eclipse.tractusx.sde.submodels.pcf.service.PcfService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -86,13 +71,9 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 	private final PcfReqsponseRepository pcfReqsponseRepository;
 	private final PcfExchangeMapper pcfMapper;
 	private final EDCAssetUrlCacheService edcAssetUrlCacheService;
-	private final EDCDigitalTwinProxyForLookUp eDCDigitalTwinProxyForLookUp;
 	private final PcfService pcfService;
 	private final PCFExchangeProxy pcfExchangeProxy;
-	private final DigitalTwinsUtility digitalTwinsUtility;
 
-	private final ConsumerControlPanelService consumerControlPanelService;
-	private final BpnDiscoveryProxyService bpnDiscoveryProxyService;
 	private final JsonObjectMapper jsonObjectMapper;
 
 	@Value(value = "${manufacturerId}")
@@ -100,76 +81,6 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 
 	@Value(value = "${digital-twins.managed.thirdparty:false}")
 	private boolean managedThirdParty;
-
-	String filterExpressionTemplate = """
-			"filterExpression": [
-				    {
-				        "operandLeft": "https://w3id.org/edc/v0.0.1/ns/id",
-				        "operator": "=",
-				        "operandRight": "%s"
-				    }
-				]
-			""";
-
-	@Override
-	public List<QueryDataOfferModel> searchPcfDataOffer(String manufacturerPartId, String searchBpnNumber) {
-
-		List<QueryDataOfferModel> result = new ArrayList<>();
-		List<String> bpnList = null;
-
-		// 1 find bpn if empty using BPN discovery
-
-		if (StringUtils.isBlank(searchBpnNumber)) {
-			BpnDiscoverySearchRequest bpnDiscoverySearchRequest = BpnDiscoverySearchRequest.builder()
-					.searchFilter(List
-							.of(Search.builder().type("manufacturerPartId").keys(List.of(manufacturerPartId)).build()))
-					.build();
-
-			BpnDiscoverySearchResponse bpnDiscoverySearchData = bpnDiscoveryProxyService
-					.bpnDiscoverySearchData(bpnDiscoverySearchRequest);
-
-			bpnList = bpnDiscoverySearchData.getBpns().stream().map(BpnDiscoveryResponse::getValue).toList();
-
-		} else {
-			bpnList = List.of(searchBpnNumber);
-		}
-
-		for (String bpnNumber : bpnList) {
-
-			// 2 fetch EDC connectors and DTR Assets from EDC connectors
-			List<QueryDataOfferModel> ddTROffers = edcAssetUrlCacheService.getDDTRUrl(bpnNumber);
-
-			// 3 lookup shell for PCF sub model
-			for (QueryDataOfferModel dtOffer : ddTROffers) {
-
-				EDRCachedByIdResponse edrToken = edcAssetUrlCacheService.verifyAndGetToken(bpnNumber, dtOffer);
-				if (edrToken != null) {
-
-					SubModelResponse lookUpPCFTwin = lookUpPCFTwin(edrToken, dtOffer, manufacturerPartId, bpnNumber);
-
-					if (lookUpPCFTwin != null) {
-						String subprotocolBody = lookUpPCFTwin.getEndpoints().get(0).getProtocolInformation()
-								.getSubprotocolBody();
-
-						String[] edcInfo = subprotocolBody.split(";");
-						String[] assetInfo = edcInfo[0].split("=");
-						String[] connectorInfo = edcInfo[1].split("=");
-
-						String filterExpression = String.format(filterExpressionTemplate, assetInfo[1]);
-
-						List<QueryDataOfferModel> queryOnDataOffers = consumerControlPanelService
-								.queryOnDataOffers(connectorInfo[1], 0, 100, filterExpression);
-						queryOnDataOffers.forEach(e -> e.setType("data.pcf.exchangeEndpoint"));
-						result.addAll(queryOnDataOffers);
-					}
-
-				} else {
-					log.warn("EDR token is null, unable to look Up PCF Twin");
-				}
-			}
-		}
-		return result;
-	}
 
 	@SneakyThrows
 	@Override
@@ -181,9 +92,15 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 
 		String providerBPNNumber = consumerRequest.getConnectorId();
 
-		QueryDataOfferModel queryDataOfferModel = QueryDataOfferModel.builder().assetId(offer.getAssetId())
-				.offerId(offer.getOfferId()).policyId(offer.getPolicyId()).connectorId(providerBPNNumber)
-				.connectorOfferUrl(consumerRequest.getProviderUrl()).usagePolicies(consumerRequest.getPolicies())
+		QueryDataOfferModel queryDataOfferModel = QueryDataOfferModel.builder()
+				.assetId(offer.getAssetId())
+				.offerId(offer.getOfferId())
+				.policyId(offer.getPolicyId())
+				.connectorId(providerBPNNumber)
+				.connectorOfferUrl(consumerRequest.getProviderUrl())
+				.policy(PolicyModel.builder()
+						.usagePolicies(consumerRequest.getUsagePolicies())
+						.build())
 				.build();
 
 		EDRCachedByIdResponse edrToken = edcAssetUrlCacheService.verifyAndGetToken(providerBPNNumber,
@@ -393,84 +310,6 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 
 	}
 
-	private ShellLookupRequest getShellLookupRequest(String manufacturerPartId, String bpnNumber) {
-
-		ShellLookupRequest shellLookupRequest = new ShellLookupRequest();
-		getSpecificAssetIds(manufacturerPartId, bpnNumber).entrySet().stream()
-				.forEach(entry -> shellLookupRequest.addLocalIdentifier(entry.getKey(), entry.getValue()));
-
-		return shellLookupRequest;
-	}
-
-	private Map<String, String> getSpecificAssetIds(String manufacturerPartId, String bpnNumber) {
-		Map<String, String> specificIdentifiers = new HashMap<>();
-		specificIdentifiers.put(CommonConstants.MANUFACTURER_PART_ID, manufacturerPartId);
-		specificIdentifiers.put(CommonConstants.MANUFACTURER_ID, bpnNumber);
-		specificIdentifiers.put(CommonConstants.ASSET_LIFECYCLE_PHASE, CommonConstants.AS_PLANNED);
-
-		return specificIdentifiers;
-	}
-
-	@SneakyThrows
-	private SubModelResponse lookUpPCFTwin(EDRCachedByIdResponse edrToken, QueryDataOfferModel dtOffer,
-			String manufacturerPartId, String bpnNumber) {
-
-		String endpoint = edrToken.getEndpoint();
-		String dtOfferUrl = dtOffer.getConnectorOfferUrl();
-		ShellLookupRequest shellLookupRequest = getShellLookupRequest(manufacturerPartId, bpnNumber);
-		try {
-			Map<String, String> header = Map.of(edrToken.getAuthKey(), edrToken.getAuthCode());
-
-			String assetIds = managedThirdParty
-					? digitalTwinsUtility.encodeAssetIdsObject(shellLookupRequest.toJsonString())
-					: shellLookupRequest.toJsonString();
-
-			ResponseEntity<ShellLookupResponse> shellLookup = eDCDigitalTwinProxyForLookUp
-					.shellLookup(new URI(endpoint), assetIds, header);
-			ShellLookupResponse body = shellLookup.getBody();
-
-			if (shellLookup.getStatusCode() == HttpStatus.OK && body != null) {
-				return getPCFSubmodelDetails(shellLookupRequest, endpoint, header, dtOfferUrl, body.getResult());
-			}
-
-		} catch (FeignException e) {
-			String errorMsg = "Unable to look up PCF twin " + dtOfferUrl + ", " + shellLookupRequest.toJsonString()
-					+ " because: " + e.contentUTF8();
-			log.error("FeignException : " + errorMsg);
-		} catch (Exception e) {
-			String errorMsg = "Unable to look up PCF twin " + dtOfferUrl + ", " + shellLookupRequest.toJsonString()
-					+ "because: " + e.getMessage();
-			log.error("Exception : " + errorMsg);
-		}
-
-		return null;
-	}
-
-	@SneakyThrows
-	private SubModelResponse getPCFSubmodelDetails(ShellLookupRequest shellLookupRequest, String endpoint,
-			Map<String, String> header, String dtOfferUrl, List<String> shellIds) {
-
-		SubModelResponse subModelResponseRes = null;
-		if (shellIds == null) {
-			log.warn(dtOfferUrl + ", No pcf aspect found for " + shellLookupRequest.toJsonString());
-		} else if (shellIds.size() > 1) {
-			log.warn(String.format("Multiple shell id's found for pcfAspect %s, %s", dtOfferUrl,
-					shellLookupRequest.toJsonString()));
-		} else if (shellIds.size() == 1) {
-			ResponseEntity<ShellDescriptorResponse> shellDescriptorResponse = eDCDigitalTwinProxyForLookUp
-					.getShellDescriptorByShellId(new URI(endpoint),
-							digitalTwinsUtility.encodeShellIdBase64Utf8(shellIds.get(0)), header);
-			ShellDescriptorResponse shellDescriptorResponseBody = shellDescriptorResponse.getBody();
-			if (shellDescriptorResponse.getStatusCode() == HttpStatus.OK && shellDescriptorResponseBody != null) {
-				for (SubModelResponse subModelResponse : shellDescriptorResponseBody.getSubmodelDescriptors()) {
-					if (!subModelResponse.getIdShort().isEmpty() && subModelResponse.getIdShort().contains("pcf")) {
-						subModelResponseRes = subModelResponse;
-					}
-				}
-			}
-		}
-		return subModelResponseRes;
-	}
 
 	@Override
 	public PcfResponseEntity viewForPcfDataOffer(String requestId) {

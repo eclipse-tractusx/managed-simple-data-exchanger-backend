@@ -45,9 +45,13 @@ public class PolicyTemplateValidationAsPojo
 	@Override
 	public boolean isValid(SubmodelJsonRequest obj, ConstraintValidatorContext constraintValidatorContext) {
 
-		PolicyTemplateRequest policyTemplateRequest = PolicyTemplateRequest.builder().type(obj.getType())
-				.policyName(obj.getPolicyName()).bpnNumbers(obj.getBpnNumbers()).typeOfAccess(obj.getTypeOfAccess())
-				.usagePolicies(obj.getUsagePolicies()).uuid(obj.getUuid()).build();
+		PolicyTemplateRequest policyTemplateRequest = PolicyTemplateRequest.builder()
+				.type(obj.getType())
+				.policyName(obj.getPolicyName())
+				.accessPolicies(obj.getAccessPolicies())
+				.usagePolicies(obj.getUsagePolicies())
+				.uuid(obj.getUuid())
+				.build();
 
 		return validationService.isPolicyTemplateRequestValid(policyTemplateRequest, constraintValidatorContext);
 	}

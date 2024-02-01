@@ -26,6 +26,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.bpndiscovery.handler.BPNDiscoveryUseCaseHandler;
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.entities.csv.RowData;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseException;
 import org.eclipse.tractusx.sde.common.submodel.executor.SubmodelExecutor;
@@ -50,11 +51,11 @@ import lombok.SneakyThrows;
 @Service
 @RequiredArgsConstructor
 public class PartSiteInformationAsPlannedExecutor extends SubmodelExecutor {
-	
+
 	private final PartSiteInformationAsPlannedMapper partSiteInformationAsPlannedMapper;
 
 	private final CsvParse csvParseStep;
-	
+
 	private final JsonRecordFormating jsonRecordformater;
 
 	private final GenerateUrnUUID generateUrnUUID;
@@ -68,31 +69,31 @@ public class PartSiteInformationAsPlannedExecutor extends SubmodelExecutor {
 	private final StorePartSiteInformationAsPlannedHandlerStep storePartSiteInformationAsPlannedCsvHandlerUseCase;
 
 	private final PartSiteInformationAsPlannedService partSiteInformationAsPlannedService;
-	
-	private final BPNDiscoveryUseCaseHandler bPNDiscoveryUseCaseHandler; 
+
+	private final BPNDiscoveryUseCaseHandler bPNDiscoveryUseCaseHandler;
 
 	@SneakyThrows
-	public void executeCsvRecord(RowData rowData, ObjectNode jsonObject, String processId) {
+	public void executeCsvRecord(RowData rowData, ObjectNode jsonObject, String processId, PolicyModel policy) {
 
 		csvParseStep.init(getSubmodelSchema());
 		csvParseStep.run(rowData, jsonObject, processId);
 
-		nextSteps(rowData.position(), jsonObject, processId);
+		nextSteps(rowData.position(), jsonObject, processId, policy);
 
 	}
 
 	@SneakyThrows
-	public void executeJsonRecord(Integer rowIndex, ObjectNode jsonObject, String processId) {
+	public void executeJsonRecord(Integer rowIndex, ObjectNode jsonObject, String processId, PolicyModel policy) {
 
 		jsonRecordformater.init(getSubmodelSchema());
 		jsonRecordformater.run(rowIndex, jsonObject, processId);
-		
-		nextSteps(rowIndex, jsonObject, processId);
+
+		nextSteps(rowIndex, jsonObject, processId, policy);
 
 	}
 
 	@SneakyThrows
-	private void nextSteps(Integer rowIndex, ObjectNode jsonObject, String processId)
+	private void nextSteps(Integer rowIndex, ObjectNode jsonObject, String processId, PolicyModel policy)
 			throws CsvHandlerDigitalTwinUseCaseException {
 
 		generateUrnUUID.run(jsonObject, processId);
@@ -103,11 +104,11 @@ public class PartSiteInformationAsPlannedExecutor extends SubmodelExecutor {
 		PartSiteInformationAsPlanned partAsPlannedAspect = partSiteInformationAsPlannedMapper.mapFrom(jsonObject);
 
 		digitalTwinsPartSiteInformationAsPlannedHandlerStep.init(getSubmodelSchema());
-		digitalTwinsPartSiteInformationAsPlannedHandlerStep.run(partAsPlannedAspect);
+		digitalTwinsPartSiteInformationAsPlannedHandlerStep.run(partAsPlannedAspect, policy);
 
 		eDCPartSiteInformationAsPlannedHandlerUseCase.init(getSubmodelSchema());
-		eDCPartSiteInformationAsPlannedHandlerUseCase.run(getNameOfModel(), partAsPlannedAspect, processId);
-		
+		eDCPartSiteInformationAsPlannedHandlerUseCase.run(getNameOfModel(), partAsPlannedAspect, processId, policy);
+
 		if (StringUtils.isBlank(partAsPlannedAspect.getUpdated())) {
 			Map<String, String> bpnKeyMap = new HashMap<>();
 			bpnKeyMap.put(CommonConstants.MANUFACTURER_PART_ID, partAsPlannedAspect.getManufacturerPartId());
@@ -136,6 +137,5 @@ public class PartSiteInformationAsPlannedExecutor extends SubmodelExecutor {
 	public int getUpdatedRecordCount(String processId) {
 		return partSiteInformationAsPlannedService.getUpdatedData(processId);
 	}
-
 
 }

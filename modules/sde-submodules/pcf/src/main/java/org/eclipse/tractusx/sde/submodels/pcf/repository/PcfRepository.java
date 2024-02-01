@@ -29,13 +29,11 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface PcfRepository extends CrudRepository<PcfEntity, String> {
 
-	List<PcfEntity> findByProcessIdforPcf(String processIdforPcf);
+	List<PcfEntity> findByProcessId(String processId);
 
-	@Query("select count(ae) from PcfEntity ae where ae.updatedforPcf = ?1 and ae.processIdforPcf = ?2")
+	@Query("select count(ae) from PcfEntity ae where ae.updated = ?1 and ae.processId = ?2")
 	long countByUpdatedAndProcessId(String updated, String processId);
 
 	Optional<PcfEntity> findByProductId(String productId);
-	
-	
 
 }

@@ -62,5 +62,11 @@ public abstract class JsonObjectMapper {
 		jobj.putAll(mapper.convertValue(mps, ObjectNode.class));
 		return jobj;
 	}
+	
+	@SneakyThrows
+	public JsonNode objectToJsonNode(Object jobj) {
+		return mapper.convertValue(jobj, JsonNode.class);
+	}
+
 
 }

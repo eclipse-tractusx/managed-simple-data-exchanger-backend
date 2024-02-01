@@ -22,11 +22,10 @@ package org.eclipse.tractusx.sde.common.entities;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
-
-import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -39,6 +38,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(Include.NON_NULL)
 public class PolicyModel {
 
 	private String uuid;
@@ -46,14 +46,11 @@ public class PolicyModel {
 	@JsonProperty(value = "policy_name")
 	private String policyName;
 
-	@JsonProperty(value = "type_of_access")
-	private String typeOfAccess;
-
-	@JsonProperty(value = "bpn_numbers")
-	private List<String> bpnNumbers;
-
+	@JsonProperty(value = "access_policies")
+	private List<Policies> accessPolicies;
+	
 	@JsonProperty(value = "usage_policies")
-	private Map<UsagePolicyEnum, UsagePolicies> usagePolicies;
+	private List<Policies> usagePolicies;
 
 	private LocalDateTime lastUpdatedTime;
 

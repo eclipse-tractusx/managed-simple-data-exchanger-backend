@@ -22,6 +22,7 @@ package org.eclipse.tractusx.sde.submodels.slbap.steps;
 import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
@@ -47,7 +48,8 @@ public class EDCSingleLevelBoMAsPlannedHandlerStep extends Step {
 	private final SingleLevelBoMAsPlannedService singleLevelBoMAsPlannedService;
 
 	@SneakyThrows
-	public SingleLevelBoMAsPlanned run(String submodel, SingleLevelBoMAsPlanned input, String processId) {
+	public SingleLevelBoMAsPlanned run(String submodel, SingleLevelBoMAsPlanned input, String processId,
+			PolicyModel policy) {
 
 		String shellId = input.getShellId();
 		String subModelId = input.getSubModelId();
@@ -55,11 +57,11 @@ public class EDCSingleLevelBoMAsPlannedHandlerStep extends Step {
 		try {
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
 					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getParentUuid());
-			if (!edcGateway.assetExistsLookup(assetEntryRequest.getAsset().getId())) {
-				edcProcessingforSingleLevelBoMAsPlanned(assetEntryRequest, input);
+			if (!edcGateway.assetExistsLookup(assetEntryRequest.getId())) {
+				edcProcessingforSingleLevelBoMAsPlanned(assetEntryRequest, input, policy);
 			} else {
 				deleteEDCFirstForUpdate(submodel, input, processId);
-				edcProcessingforSingleLevelBoMAsPlanned(assetEntryRequest, input);
+				edcProcessingforSingleLevelBoMAsPlanned(assetEntryRequest, input, policy);
 				input.setUpdated(CommonConstants.UPDATED_Y);
 			}
 
@@ -85,13 +87,12 @@ public class EDCSingleLevelBoMAsPlannedHandlerStep extends Step {
 
 	@SneakyThrows
 	private void edcProcessingforSingleLevelBoMAsPlanned(AssetEntryRequest assetEntryRequest,
-			SingleLevelBoMAsPlanned input) {
+			SingleLevelBoMAsPlanned input, PolicyModel policy) {
 
-		Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest,
-				input.getBpnNumbers(), input.getUsagePolicies());
+		Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest, policy);
 
 		// EDC transaction information for DB
-		input.setAssetId(assetEntryRequest.getAsset().getId());
+		input.setAssetId(assetEntryRequest.getId());
 		input.setAccessPolicyId(createEDCAsset.get("accessPolicyId"));
 		input.setUsagePolicyId(createEDCAsset.get("usagePolicyId"));
 		input.setContractDefinationId(createEDCAsset.get("contractDefinitionId"));

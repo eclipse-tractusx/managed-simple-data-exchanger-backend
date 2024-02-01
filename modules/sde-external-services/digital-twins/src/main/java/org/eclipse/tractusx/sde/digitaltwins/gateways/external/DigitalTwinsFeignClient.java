@@ -76,7 +76,7 @@ public interface DigitalTwinsFeignClient {
 			@RequestHeader("Edc-Bpn") String edcBpn, @RequestBody List<Object> specificAssetIds);
 
 	@DeleteMapping(path = "${digital-twins.registry.lookup.uri:/api/v3.0}/lookup/shells/{assetIds}")
-	ResponseEntity<Void> deleteShellSpecificAttributes(@PathVariable("assetIds") String shellId,
+	ResponseEntity<Object> deleteShellSpecificAttributes(@PathVariable("assetIds") String shellId,
 			@RequestHeader("Edc-Bpn") String edcBpn);
 
 }

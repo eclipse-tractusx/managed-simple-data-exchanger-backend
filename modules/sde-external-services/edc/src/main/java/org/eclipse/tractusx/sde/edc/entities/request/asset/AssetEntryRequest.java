@@ -21,6 +21,7 @@
 
 package org.eclipse.tractusx.sde.edc.entities.request.asset;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -45,8 +46,11 @@ public class AssetEntryRequest {
 	        "dcat", "https://www.w3.org/ns/dcat/",
 	        "rdfs", "http://www.w3.org/2000/01/rdf-schema#");
 
-	private AssetRequest asset;
+	@JsonProperty("@id")
+	private String id;
+	private HashMap<String, String> properties;
 	private DataAddressRequest dataAddress;
+	
 
 	@SneakyThrows
 	public String toJsonString() {

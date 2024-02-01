@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
-import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ActionRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyConstraintBuilderService;
@@ -14,7 +12,7 @@ import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedByIdResponse;
 import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedResponse;
 import org.eclipse.tractusx.sde.edc.model.request.Offer;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
-import org.eclipse.tractusx.sde.edc.services.ConsumerControlPanelService;
+import org.eclipse.tractusx.sde.edc.services.ContractNegotiationService;
 import org.springframework.stereotype.Service;
 
 import feign.FeignException;
@@ -30,7 +28,7 @@ public class EDCAssetUrlCacheService {
 	private static final Map<String, LocalDateTime> dDTRmap = new ConcurrentHashMap<>();
 	private static final Map<String, LocalDateTime> pcfExchangeURLMap = new ConcurrentHashMap<>();
 
-	private final ConsumerControlPanelService consumerControlPanelService;
+	private final ContractNegotiationService contractNegotiationService;
 	private final PolicyConstraintBuilderService policyConstraintBuilderService;
 
 	private final DDTRUrlCacheUtility dDTRUrlCacheUtility;
@@ -38,16 +36,14 @@ public class EDCAssetUrlCacheService {
 
 	@SneakyThrows
 	public EDRCachedByIdResponse verifyAndGetToken(String bpnNumber, QueryDataOfferModel queryDataOfferModel) {
-		
-		Map<UsagePolicyEnum, UsagePolicies> policies = queryDataOfferModel.getUsagePolicies();
-		ActionRequest action = policyConstraintBuilderService.getUsagePolicyConstraints(policies);
-		
+
+		ActionRequest action = policyConstraintBuilderService
+				.getUsagePoliciesConstraints(queryDataOfferModel.getPolicy().getUsagePolicies());
+
 		Offer offer = Offer.builder().assetId(queryDataOfferModel.getAssetId())
-				.offerId(queryDataOfferModel.getOfferId())
-				.policyId(queryDataOfferModel.getPolicyId())
-				.build();
+				.offerId(queryDataOfferModel.getOfferId()).policyId(queryDataOfferModel.getPolicyId()).build();
 		try {
-			EDRCachedResponse eDRCachedResponse = consumerControlPanelService.verifyOrCreateContractNegotiation(
+			EDRCachedResponse eDRCachedResponse = contractNegotiationService.verifyOrCreateContractNegotiation(
 					bpnNumber, Map.of(), queryDataOfferModel.getConnectorOfferUrl(), action, offer);
 
 			if (eDRCachedResponse == null) {
@@ -58,7 +54,7 @@ public class EDCAssetUrlCacheService {
 						"Time out!! to get 'NEGOTIATED' EDC EDR status to lookup  '" + queryDataOfferModel.getAssetId()
 								+ "', The current status is '" + eDRCachedResponse.getEdrState() + "'");
 			} else
-				return consumerControlPanelService
+				return contractNegotiationService
 						.getAuthorizationTokenForDataDownload(eDRCachedResponse.getTransferProcessId());
 
 		} catch (FeignException e) {
@@ -85,14 +81,20 @@ public class EDCAssetUrlCacheService {
 			cacheExpTime = currDate.plusHours(12);
 		}
 		dDTRmap.put(bpnNumber, cacheExpTime);
-		return dDTRUrlCacheUtility.getDDTRUrl(bpnNumber);
+		List<QueryDataOfferModel> ddtrUrl = dDTRUrlCacheUtility.getDDTRUrl(bpnNumber);
+		if (ddtrUrl.isEmpty()) {
+			log.info("Found connector list empty so removing existing cache and retry to fetch");
+			removeDDTRUrlCache(bpnNumber);
+			ddtrUrl = dDTRUrlCacheUtility.getDDTRUrl(bpnNumber);
+		}
+		return ddtrUrl;
 	}
 
 	public void clearDDTRUrlCache() {
 		dDTRmap.clear();
 		dDTRUrlCacheUtility.cleareDDTRUrlAllCache();
 	}
-	
+
 	public void removeDDTRUrlCache(String bpnNumber) {
 		dDTRUrlCacheUtility.removeDDTRUrlCache(bpnNumber);
 		dDTRmap.remove(bpnNumber);
@@ -110,14 +112,20 @@ public class EDCAssetUrlCacheService {
 			cacheExpTime = currDate.plusHours(12);
 		}
 		pcfExchangeURLMap.put(bpnNumber, cacheExpTime);
-		return pcfExchangeAssetUtils.getPCFExchangeUrl(bpnNumber);
+		List<QueryDataOfferModel> pcfExchangeurls = pcfExchangeAssetUtils.getPCFExchangeUrl(bpnNumber);
+		if (pcfExchangeurls.isEmpty()) {
+			log.info("Found connector list empty so removing existing cache and retry to fetch");
+			removePCFExchangeCache(bpnNumber);
+			pcfExchangeurls = pcfExchangeAssetUtils.getPCFExchangeUrl(bpnNumber);
+		}
+		return pcfExchangeurls;
 	}
 
 	public void clearPCFExchangeUrlCache() {
 		pcfExchangeURLMap.clear();
 		pcfExchangeAssetUtils.clearePCFExchangeAllCache();
 	}
-	
+
 	public void removePCFExchangeCache(String bpnNumber) {
 		pcfExchangeAssetUtils.removePCFExchangeCache(bpnNumber);
 		pcfExchangeURLMap.remove(bpnNumber);

@@ -22,6 +22,7 @@ package org.eclipse.tractusx.sde.submodels.sluab.steps;
 import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
@@ -47,7 +48,8 @@ public class EDCSingleLevelUsageAsBuiltHandlerUseCase extends Step {
 	private final SingleLevelUsageAsBuiltService singleLevelUsageAsBuiltService;
 
 	@SneakyThrows
-	public SingleLevelUsageAsBuilt run(String submodel, SingleLevelUsageAsBuilt input, String processId) {
+	public SingleLevelUsageAsBuilt run(String submodel, SingleLevelUsageAsBuilt input, String processId,
+			PolicyModel policy) {
 		String shellId = input.getShellId();
 		String subModelId = input.getSubModelId();
 
@@ -55,15 +57,14 @@ public class EDCSingleLevelUsageAsBuiltHandlerUseCase extends Step {
 
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
 					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getParentUuid());
-			if (!edcGateway.assetExistsLookup(
-					assetEntryRequest.getAsset().getId())) {
+			if (!edcGateway.assetExistsLookup(assetEntryRequest.getId())) {
 
-				edcProcessingforAspectRelationship(assetEntryRequest, input);
+				edcProcessingforAspectRelationship(assetEntryRequest, input, policy);
 
 			} else {
 
 				deleteEDCFirstForUpdate(submodel, input, processId);
-				edcProcessingforAspectRelationship(assetEntryRequest, input);
+				edcProcessingforAspectRelationship(assetEntryRequest, input, policy);
 				input.setUpdated(CommonConstants.UPDATED_Y);
 			}
 
@@ -87,14 +88,13 @@ public class EDCSingleLevelUsageAsBuiltHandlerUseCase extends Step {
 	}
 
 	@SneakyThrows
-	private void edcProcessingforAspectRelationship(AssetEntryRequest assetEntryRequest,
-			SingleLevelUsageAsBuilt input) {
+	private void edcProcessingforAspectRelationship(AssetEntryRequest assetEntryRequest, SingleLevelUsageAsBuilt input,
+			PolicyModel policy) {
 
-		Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest,
-				input.getBpnNumbers(), input.getUsagePolicies());
+		Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest, policy);
 
 		// EDC transaction information for DB
-		input.setAssetId(assetEntryRequest.getAsset().getId());
+		input.setAssetId(assetEntryRequest.getId());
 		input.setAccessPolicyId(createEDCAsset.get("accessPolicyId"));
 		input.setUsagePolicyId(createEDCAsset.get("usagePolicyId"));
 		input.setContractDefinationId(createEDCAsset.get("contractDefinitionId"));

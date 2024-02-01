@@ -57,6 +57,7 @@
 		<module>modules/sde-external-services/bpn-discovery</module>
 		<module>modules/sde-external-services/sde-agent</module>
 		<module>modules/sde-external-services/sde-notification</module>
+		<module>modules/sde-external-services/policy-hub</module>
 
 		<module>modules/sde-common</module>
 		<module>modules/sde-core</module>
@@ -70,6 +71,7 @@
 		<module>modules/sde-submodules/part-site-information-as-planned</module>
 		<module>modules/sde-submodules/single-level-usage-as-built</module>
 		<module>modules/sde-submodules/pcf</module>
+		
 	</modules>
 
 	<dependencies>

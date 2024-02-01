@@ -22,7 +22,6 @@ package org.eclipse.tractusx.sde.edc.api;
 
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.contractdefinition.ContractDefinitionRequest;
-import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyDefinitionRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,33 +30,39 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-@FeignClient(value = "EDCFeignClientApi", url = "${edc.hostname}${edc.managementpath:/data}${edc.managementpath.apiversion:/v2}", configuration = EDCDataProviderConfiguration.class)
+@FeignClient(value = "EDCFeignClientApi", url = "${edc.hostname}${edc.managementpath:/data}", configuration = EDCDataProviderConfiguration.class)
 public interface EDCFeignClientApi {
 
-	@GetMapping(path = "/assets/{id}")
+	//Assets
+	@GetMapping(path = "${edc.managementpath.apiversion.asset:/v3}/assets/{id}")
 	public ResponseEntity<Object> getAsset(@PathVariable("id") String assetId);
 
-	@PostMapping("/assets")
+	@PostMapping("${edc.managementpath.apiversion.asset:/v3}/assets")
 	public String createAsset(@RequestBody AssetEntryRequest requestBody);
 	
-	@PostMapping("/assets/request")
+	@PostMapping("${edc.managementpath.apiversion.asset:/v3}/assets/request")
 	public String getAssetByType(@RequestBody ObjectNode requestBody);
+	
+	@DeleteMapping(path = "${edc.managementpath.apiversion.asset:/v3}/assets/{id}")
+	public ResponseEntity<Object> deleteAssets(@PathVariable("id") String assetsId);
+	
+	
+	//Policy & Contract
+	@PostMapping("${edc.managementpath.apiversion:/v2}/policydefinitions")
+	public JsonNode createPolicy(@RequestBody JsonNode requestBody);
 
-	@PostMapping("/policydefinitions")
-	public String createPolicy(@RequestBody PolicyDefinitionRequest requestBody);
-
-	@PostMapping("/contractdefinitions")
+	@PostMapping("${edc.managementpath.apiversion:/v2}/contractdefinitions")
 	public String createContractDefination(@RequestBody ContractDefinitionRequest requestBody);
 
-	@DeleteMapping(path = "/contractdefinitions/{id}")
+	@DeleteMapping(path = "${edc.managementpath.apiversion:/v2}/contractdefinitions/{id}")
 	public ResponseEntity<Object> deleteContractDefinition(@PathVariable("id") String contractdefinitionsId);
 
-	@DeleteMapping(path = "/policydefinitions/{id}")
+	@DeleteMapping(path = "${edc.managementpath.apiversion:/v2}/policydefinitions/{id}")
 	public ResponseEntity<Object> deletePolicyDefinitions(@PathVariable("id") String policydefinitionsId);
 
-	@DeleteMapping(path = "/assets/{id}")
-	public ResponseEntity<Object> deleteAssets(@PathVariable("id") String assetsId);
+	
 
 }

@@ -21,7 +21,6 @@
 package org.eclipse.tractusx.sde.configuration;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.text.StringSubstitutor;
@@ -63,8 +62,8 @@ public class DigitalTwinAssetProvider {
 		AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest("", "Digital twin registry information",
 				assetId, "1", "");
 
-		assetEntryRequest.getAsset().getProperties().put("type", "data.core.digitalTwinRegistry");
-		assetEntryRequest.getAsset().getProperties().put("registry", sdeCommonProperties.getDigitalTwinRegistry());
+		assetEntryRequest.getProperties().put("type", "data.core.digitalTwinRegistry");
+		assetEntryRequest.getProperties().put("registry", sdeCommonProperties.getDigitalTwinRegistry());
 
 		assetEntryRequest.getDataAddress().getProperties().put("oauth2:tokenUrl",
 				sdeCommonProperties.getDigitalTwinTokenUrl());
@@ -91,8 +90,7 @@ public class DigitalTwinAssetProvider {
 				.valueReplacerUsingFileTemplate("/edc_request_template/edc_asset_lookup.json", inputData));
 
 		if (!edcGateway.assetExistsLookupBasedOnType(requestBody)) {
-			Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest, List.of(),
-					Map.of());
+			Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest, null);
 			log.info("Digital twin asset creates :" + createEDCAsset.toString());
 		} else {
 			log.info("Digital twin asset exists in edc connector, so ignoring asset creation");

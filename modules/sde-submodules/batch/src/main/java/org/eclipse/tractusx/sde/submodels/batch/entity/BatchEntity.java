@@ -56,16 +56,17 @@ public class BatchEntity implements Serializable {
     private String shellId;
     @Column(name = "sub_model_id")
     private String subModelId;
-    @Column(name = "asset_id")
-    private String assetId;
+    @Column(name = "contract_defination_id")
+    private String contractDefinationId;
     @Column(name = "usage_policy_id")
     private String usagePolicyId;
     @Column(name = "access_policy_id")
     private String accessPolicyId;
-    @Column(name = "contract_defination_id")
-    private String contractDefinationId;
+    @Column(name = "asset_id")
+    private String assetId;
     @Column(name = "deleted")
     private String deleted;
     @Column(name = "updated")
     private String updated;
+    
 }

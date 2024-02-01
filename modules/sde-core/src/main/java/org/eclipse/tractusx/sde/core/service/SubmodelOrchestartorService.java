@@ -20,7 +20,6 @@
 
 package org.eclipse.tractusx.sde.core.service;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -124,8 +123,8 @@ public class SubmodelOrchestartorService {
 
 		Runnable runnable = () -> {
 			processReportUseCase.startBuildProcessReport(processId, submodelSchemaObject.getId(),
-					csvContent.getRows().size(), submodelPolicyRequest.getBpnNumbers(),
-					submodelPolicyRequest.getTypeOfAccess(), submodelPolicyRequest.getUsagePolicies(), submodelPolicyRequest.getUuid());
+					csvContent.getRows().size(), submodelPolicyRequest.getAccessPolicies(),
+					submodelPolicyRequest.getUsagePolicies(), submodelPolicyRequest.getUuid());
 
 			AtomicInteger successCount = new AtomicInteger();
 			AtomicInteger failureCount = new AtomicInteger();
@@ -138,7 +137,7 @@ public class SubmodelOrchestartorService {
 					ObjectNode newjObject = jsonObjectMapper.submodelFileRequestToJsonNodePojo(submodelPolicyRequest);
 					newjObject.put(ROW_NUMBER, rowjObj.position());
 					newjObject.put(PROCESS_ID, processId);
-					executor.executeCsvRecord(rowjObj, newjObject, processId);
+					executor.executeCsvRecord(rowjObj, newjObject, processId, submodelPolicyRequest);
 					// fetch by ID and check it if it is success then its updated.
 					successCount.incrementAndGet();
 
@@ -174,13 +173,8 @@ public class SubmodelOrchestartorService {
 			SubmodelExecutor executor = submodelSchemaObject.getExecutor();
 			executor.init(submodelSchema);
 
-			Map<String, Object> mps = new HashMap<>();
-			mps.put("type_of_access", policy.getTypeOfAccess());
-			mps.put("bpn_numbers", policy.getBpnNumbers());
-			mps.put("usage_policies", policy.getUsagePolicies());
-
 			processReportUseCase.startBuildProcessReport(processId, submodelSchemaObject.getId(), rowData.size(),
-					policy.getBpnNumbers(), policy.getTypeOfAccess(), policy.getUsagePolicies(), policy.getUuid());
+					policy.getAccessPolicies(), policy.getUsagePolicies(), policy.getUuid());
 
 			rowData.stream().forEach(obj -> {
 				int andIncrement = atInt.incrementAndGet();
@@ -190,8 +184,7 @@ public class SubmodelOrchestartorService {
 
 			rowData.parallelStream().forEachOrdered(rowjObj -> {
 				try {
-					ObjectNode submodelJsonPojo = jsonObjectMapper.submodelJsonRequestToJsonPojo(rowjObj, mps);
-					executor.executeJsonRecord(submodelJsonPojo.get(ROW_NUMBER).asInt(), submodelJsonPojo, processId);
+					executor.executeJsonRecord(rowjObj.get(ROW_NUMBER).asInt(), rowjObj, processId, policy);
 					successCount.incrementAndGet();
 				} catch (Exception e) {
 					failureLogs.saveLog(processId, e.getMessage());
@@ -277,15 +270,22 @@ public class SubmodelOrchestartorService {
 
 		case EXISTING:
 			PolicyModel localPolicy = policyService.getPolicy(policy.getUuid());
-			if (StringUtils.isNotBlank(policy.getUuid()) && ((CollectionUtils.isNotEmpty(policy.getBpnNumbers())
-					&& !localPolicy.getBpnNumbers().equals(policy.getBpnNumbers()))
-					|| (!org.springframework.util.CollectionUtils.isEmpty(policy.getUsagePolicies())
-							&& !localPolicy.getUsagePolicies().equals(policy.getUsagePolicies())))) {
+			
+			if (StringUtils.isNotBlank(policy.getUuid())
+					&& ((CollectionUtils.isNotEmpty(policy.getUsagePolicies())
+							&& !localPolicy.getUsagePolicies().equals(policy.getUsagePolicies()))
+					|| (CollectionUtils.isNotEmpty(policy.getAccessPolicies())
+							&& !localPolicy.getAccessPolicies().equals(policy.getAccessPolicies())))) {
+				
+				
 				if (StringUtils.isBlank(policy.getPolicyName())) {
 					policy.setPolicyName(localPolicy.getPolicyName());
 				}
-				if (StringUtils.isBlank(policy.getTypeOfAccess())) {
-					policy.setTypeOfAccess(localPolicy.getTypeOfAccess());
+				if (CollectionUtils.isEmpty(policy.getAccessPolicies())) {
+					policy.setAccessPolicies(localPolicy.getAccessPolicies());
+				}
+				if (CollectionUtils.isEmpty(policy.getUsagePolicies())) {
+					policy.setAccessPolicies(localPolicy.getUsagePolicies());
 				}
 
 				policy = policyService.updatePolicy(policy.getUuid(), policy);

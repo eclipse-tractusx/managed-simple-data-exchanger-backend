@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
-import org.eclipse.tractusx.sde.edc.services.ConsumerControlPanelService;
+import org.eclipse.tractusx.sde.edc.services.CatalogResponseBuilder;
 import org.eclipse.tractusx.sde.portal.handler.PortalProxyService;
 import org.eclipse.tractusx.sde.portal.model.ConnectorInfo;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,8 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 public class EDCAssetLookUp {
 
 	private final PortalProxyService portalProxyService;
-
-	private final ConsumerControlPanelService consumerControlPanelService;
+	private final CatalogResponseBuilder catalogResponseBuilder;
 
 	@Value("${edc.consumer.hostname}")
 	private String consumerHost;
@@ -44,7 +43,8 @@ public class EDCAssetLookUp {
 				connectorInfo -> connectorInfo.getConnectorEndpoint().parallelStream().distinct().forEach(connector -> {
 					try {
 						if (!connector.contains(consumerHost)) {
-							List<QueryDataOfferModel> queryDataOfferModel = consumerControlPanelService
+							
+							List<QueryDataOfferModel> queryDataOfferModel = catalogResponseBuilder
 									.queryOnDataOffers(connector, 0, 100, filterExpression);
 
 							log.info("For Connector " + connector + ", found " + assetType + " assets :"
@@ -53,6 +53,7 @@ public class EDCAssetLookUp {
 							queryDataOfferModel.forEach(each -> each.setConnectorOfferUrl(connector));
 
 							offers.addAll(queryDataOfferModel);
+						
 						} else {
 							log.warn("The Consumer and Provider Connector are same so ignoring it for lookup "
 									+ assetType + " in to " + connector);

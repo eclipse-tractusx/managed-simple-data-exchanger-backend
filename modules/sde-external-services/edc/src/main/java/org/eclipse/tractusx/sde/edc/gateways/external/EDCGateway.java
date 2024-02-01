@@ -24,11 +24,11 @@ package org.eclipse.tractusx.sde.edc.gateways.external;
 import org.eclipse.tractusx.sde.edc.api.EDCFeignClientApi;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.contractdefinition.ContractDefinitionRequest;
-import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyDefinitionRequest;
 import org.eclipse.tractusx.sde.edc.exceptions.EDCGatewayException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import feign.FeignException;
@@ -79,7 +79,7 @@ public class EDCGateway {
 	}
 
 	@SneakyThrows
-	public String createPolicyDefinition(PolicyDefinitionRequest request) {
+	public JsonNode createPolicyDefinition(JsonNode request) {
 		try {
 			return edcFeignClientApi.createPolicy(request);
 		} catch (FeignException e) {

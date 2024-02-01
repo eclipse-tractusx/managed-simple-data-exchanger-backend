@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
-import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
 import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
 import org.eclipse.tractusx.sde.common.exception.ValidationException;
 import org.eclipse.tractusx.sde.common.model.PagingResponse;
@@ -65,11 +64,6 @@ public class PolicyService {
 
 		if (isPolicyNameValid(uuid, request.getPolicyName())) {
 			PolicyEntity policy = policyMapper.mapFrom(request);
-			policy.getUsagePolicies().forEach((key,value)->{
-	 			 if(value.getTypeOfAccess().equals(PolicyAccessEnum.UNRESTRICTED)) {
-	 				 value.setValue(null);
-	 			 }
-	 		});
 			policy.setUuid(uuid);
 			policy.setLastUpdatedTime(LocalDateTime.now());
 			request.setLastUpdatedTime(LocalDateTime.now());

@@ -44,7 +44,7 @@ public abstract class PartAsPlannedMapper {
 	@Autowired
 	private AspectResponseFactory aspectResponseFactory;
 
-	@Mapping(target = "rowNumber", ignore = true)
+	@Mapping(target = "partAsPlannedEntity.rowNumber", ignore = true)
 	public abstract PartAsPlanned mapFrom(PartAsPlannedEntity partAsPlannedEntity);
 
 	public abstract PartAsPlannedEntity mapFrom(PartAsPlanned partAsPlanned);

@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
+import org.eclipse.tractusx.sde.common.utils.PolicyOperationUtil;
 import org.eclipse.tractusx.sde.common.utils.UUIdGenerator;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.Endpoint;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.ExternalSubjectId;
@@ -73,17 +75,15 @@ public class DigitalTwinsUtility {
 			List.of("*"), ASSET_LIFECYCLE_PHASE, List.of("AsBuilt", "AsPlanned"));
 
 	@SneakyThrows
-	public ShellDescriptorRequest getShellDescriptorRequest(Map<String, String> specificIdentifiers, Object object) {
+	public ShellDescriptorRequest getShellDescriptorRequest(Map<String, String> specificIdentifiers, Object object, PolicyModel policy) {
 
 		JsonNode jsonNode = mapper.convertValue(object, ObjectNode.class);
-
-		List<String> bpns = getFieldFromJsonNodeArray(jsonNode, "bpn_numbers");
 
 		return ShellDescriptorRequest.builder()
 				.idShort(String.format("%s_%s_%s", getFieldFromJsonNode(jsonNode, "name_at_manufacturer"),
 						manufacturerId, getFieldFromJsonNode(jsonNode, "manufacturer_part_id")))
 				.globalAssetId(getFieldFromJsonNode(jsonNode, "uuid"))
-				.specificAssetIds(getSpecificAssetIds(specificIdentifiers, bpns)).description(List.of())
+				.specificAssetIds(getSpecificAssetIds(specificIdentifiers, policy)).description(List.of())
 				.id(UUIdGenerator.getUrnUuid()).build();
 	}
 
@@ -130,11 +130,11 @@ public class DigitalTwinsUtility {
 	}
 
 	@SneakyThrows
-	public List<Object> getSpecificAssetIds(Map<String, String> specificAssetIds, List<String> bpns) {
+	public List<Object> getSpecificAssetIds(Map<String, String> specificAssetIds, PolicyModel policy) {
 
 		List<Object> specificIdentifiers = new ArrayList<>();
 		
-		List<Keys> keyList = bpnKeyRefrence(bpns);
+		List<Keys> keyList = bpnKeyRefrence(PolicyOperationUtil.getAccessBPNList(policy));
 		
 		specificAssetIds.entrySet().stream().forEach(entry -> {
 
@@ -167,6 +167,7 @@ public class DigitalTwinsUtility {
 
 		return specificIdentifiers;
 	}
+
 
 	private List<Keys> bpnKeyRefrence(List<String> bpns) {
 		if (bpns != null && !(bpns.size() == 1 && bpns.contains(manufacturerId))) {

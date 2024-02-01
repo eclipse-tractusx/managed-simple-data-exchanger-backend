@@ -24,12 +24,10 @@ package org.eclipse.tractusx.sde.core.processreport;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
-import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
+import org.eclipse.tractusx.sde.common.entities.Policies;
 import org.eclipse.tractusx.sde.common.enums.ProgressStatusEnum;
-import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.core.failurelog.mapper.FailureLogMapper;
 import org.eclipse.tractusx.sde.core.failurelog.repository.FailureLogRepository;
 import org.eclipse.tractusx.sde.core.processreport.entity.ProcessReportEntity;
@@ -59,17 +57,19 @@ public class ProcessReportUseCase {
 	private final ProcessReportMapper mapper;
 	private final FailureLogMapper logMapper;
 
-
+	
 	@SneakyThrows
-	public void startBuildProcessReport(String processId, String type, int size, List<String> bpnNumbers,
-			String typeOfAccess, Map<UsagePolicyEnum, UsagePolicies> usagePolicies, String policyUuid) {
+	public void startBuildProcessReport(String processId, String type, int size, List<Policies> accessPolicies,
+			List<Policies> usagePolicies, String policyUuid) {
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 		saveProcessReport(ProcessReport.builder().processId(processId)
 				.policyUuid(policyUuid)
 				.csvType(type.toUpperCase())
 				.status(ProgressStatusEnum.IN_PROGRESS).numberOfItems(size).startDate(LocalDateTime.now())
-				.bpnNumbers(bpnNumbers).typeOfAccess(typeOfAccess).usagePolicies(usagePolicies).build());
+				.accessPolicies(accessPolicies)
+				.usagePolicies(usagePolicies)
+				.build());
 	}
 
 	@SneakyThrows

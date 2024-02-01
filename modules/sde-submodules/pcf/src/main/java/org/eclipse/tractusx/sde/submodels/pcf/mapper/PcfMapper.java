@@ -57,7 +57,7 @@ public abstract class PcfMapper {
 	
 	ObjectMapper mapper = new ObjectMapper();
 
-	@Mapping(target = "rowNumberforPcf", ignore = true)
+	@Mapping(target = "aspect.rowNumber", ignore = true)
 	public abstract PcfAspect mapFrom(PcfEntity aspect);
 
 	public abstract PcfEntity mapFrom(PcfAspect aspect);

@@ -58,7 +58,7 @@ public abstract class AspectMapper {
 	@Autowired
 	private AspectResponseFactory aspectResponseFactory;
 
-	@Mapping(target = "rowNumber", ignore = true)
+	@Mapping(target = "aspect.rowNumber", ignore = true)
 	public abstract Aspect mapFrom(AspectEntity aspect);
 
 	@Mapping(source = "optionalIdentifierKey", target = "optionalIdentifierKey", qualifiedByName = "prettyName")

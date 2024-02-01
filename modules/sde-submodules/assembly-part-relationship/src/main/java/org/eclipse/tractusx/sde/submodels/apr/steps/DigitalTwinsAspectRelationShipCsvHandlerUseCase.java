@@ -46,8 +46,6 @@ import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.eclipse.tractusx.sde.edc.util.EDCAssetUrlCacheService;
 import org.eclipse.tractusx.sde.submodels.apr.model.AspectRelationship;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import feign.FeignException;
@@ -67,13 +65,13 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 
 	@Value("${digital-twins.managed.thirdparty:false}")
 	private boolean dDTRManagedThirdparty;
-	
+
 	@Value("${digital-twins.registry.uri:}")
 	private String registryUri;
-	
+
 	@Value("${digital-twins.registry.lookup.uri:}")
 	private String registryLookupUri;
-	
+
 	@SneakyThrows
 	public AspectRelationship run(AspectRelationship aspectRelationShip) throws CsvHandlerDigitalTwinUseCaseException {
 		try {
@@ -88,7 +86,8 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 	private AspectRelationship doRun(AspectRelationship aspectRelationShip)
 			throws CsvHandlerUseCaseException, CsvHandlerDigitalTwinUseCaseException {
 
-		ShellLookupRequest shellLookupRequest = digitalTwinsUtility.getShellLookupRequest(getSpecificAssetIds(aspectRelationShip));
+		ShellLookupRequest shellLookupRequest = digitalTwinsUtility
+				.getShellLookupRequest(getSpecificAssetIds(aspectRelationShip));
 		List<String> shellIds = digitalTwinfacilitaor.shellLookup(shellLookupRequest);
 
 		String shellId = null;
@@ -169,18 +168,19 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 		aspectRelationShip.setChildUuid(createSubModelRequest.getId());
 	}
 
-
 	private Map<String, String> getSpecificAssetIds(AspectRelationship aspectRelationShip) {
 		Map<String, String> specificIdentifiers = new HashMap<>();
 		specificIdentifiers.put(CommonConstants.PART_INSTANCE_ID, aspectRelationShip.getParentPartInstanceId());
 		specificIdentifiers.put(CommonConstants.MANUFACTURER_PART_ID, aspectRelationShip.getParentManufacturerPartId());
 		specificIdentifiers.put(CommonConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId());
 		if (aspectRelationShip.hasOptionalParentIdentifier()) {
-			specificIdentifiers.put(aspectRelationShip.getParentOptionalIdentifierKey(), aspectRelationShip.getParentOptionalIdentifierValue());
+			specificIdentifiers.put(aspectRelationShip.getParentOptionalIdentifierKey(),
+					aspectRelationShip.getParentOptionalIdentifierValue());
 		}
 
 		return specificIdentifiers;
 	}
+
 	private Map<String, String> getShellLookupRequestforChild(AspectRelationship aspectRelationShip) {
 		Map<String, String> shellLookupRequest = new HashMap<>();
 		shellLookupRequest.put(CommonConstants.PART_INSTANCE_ID, aspectRelationShip.getChildPartInstanceId());
@@ -198,7 +198,8 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 	@SneakyThrows
 	private CreateSubModelRequest getCreateSubModelRequest(AspectRelationship aspectRelationShip) {
 
-		ShellLookupRequest shellLookupRequest = digitalTwinsUtility.getShellLookupRequest(getShellLookupRequestforChild(aspectRelationShip));
+		ShellLookupRequest shellLookupRequest = digitalTwinsUtility
+				.getShellLookupRequest(getShellLookupRequestforChild(aspectRelationShip));
 
 		String childManufacturerId = aspectRelationShip.getChildManufacturerId();
 		List<QueryDataOfferModel> queryDataOffers = edcAssetUrlCacheService.getDDTRUrl(childManufacturerId);
@@ -251,18 +252,14 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 			Map<String, String> header = new HashMap<>();
 			header.put(edrToken.getAuthKey(), edrToken.getAuthCode());
 			header.put("Edc-Bpn", aspectRelationShip.getChildManufacturerId());
-			
+
 			String registryLookupUriLocal = dDTRManagedThirdparty ? registryLookupUri : registryUri;
 
-			
-			ResponseEntity<ShellLookupResponse> shellLookup = eDCDigitalTwinProxyForLookUp
-					.shellLookup(new URI(endpoint + registryLookupUriLocal),digitalTwinsUtility.encodeAssetIdsObject(shellLookupRequest.toJsonString()) , header);
-			ShellLookupResponse body = shellLookup.getBody();
-
-			if (shellLookup.getStatusCode() == HttpStatus.OK && body != null) {
-				childUUID = getChildSubmodelDetails(shellLookupRequest, endpoint+registryUri, header, aspectRelationShip,
-						dtOfferUrl, body.getResult());
-			}
+			ShellLookupResponse shellLookup = eDCDigitalTwinProxyForLookUp.shellLookup(
+					new URI(endpoint + registryLookupUriLocal),
+					digitalTwinsUtility.encodeAssetIdsObject(shellLookupRequest.toJsonString()), header);
+			childUUID = getChildSubmodelDetails(shellLookupRequest, endpoint + registryUri, header, aspectRelationShip,
+					dtOfferUrl, shellLookup.getResult());
 
 		} catch (FeignException e) {
 			String errorMsg = "Unable to look up child twin " + dtOfferUrl + ", " + shellLookupRequest.toJsonString()
@@ -290,15 +287,13 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 			log.warn(String.format("Multiple shell id's found for childAspect %s, %s", dtOfferUrl,
 					shellLookupRequest.toJsonString()));
 		} else if (childshellIds.size() == 1) {
-			ResponseEntity<ShellDescriptorResponse> shellDescriptorResponse = eDCDigitalTwinProxyForLookUp
-					.getShellDescriptorByShellId(new URI(endpoint), encodeShellIdBase64Utf8(childshellIds.get(0)),
-							header);
-			ShellDescriptorResponse shellDescriptorResponseBody = shellDescriptorResponse.getBody();
-			if (shellDescriptorResponse.getStatusCode() == HttpStatus.OK && shellDescriptorResponseBody != null) {
-				childUUID = shellDescriptorResponseBody.getGlobalAssetId();
-				log.info(aspectRelationShip.getRowNumber() + ", " + dtOfferUrl + ", Child aspect found for "
-						+ shellLookupRequest.toJsonString());
-			}
+			
+			ShellDescriptorResponse shellDescriptorResponse = eDCDigitalTwinProxyForLookUp.getShellDescriptorByShellId(
+					new URI(endpoint), encodeShellIdBase64Utf8(childshellIds.get(0)), header);
+			childUUID = shellDescriptorResponse.getGlobalAssetId();
+			
+			log.info(aspectRelationShip.getRowNumber() + ", " + dtOfferUrl + ", Child aspect found for "
+					+ shellLookupRequest.toJsonString());
 		}
 
 		return childUUID;

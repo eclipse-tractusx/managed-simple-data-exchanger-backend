@@ -3,13 +3,10 @@ package org.eclipse.tractusx.sde.controllers;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.tractusx.sde.EnablePostgreSQL;
+import org.eclipse.tractusx.sde.common.entities.Policies;
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
-import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
-import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
-import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.core.policy.entity.PolicyEntity;
 import org.eclipse.tractusx.sde.core.policy.repository.PolicyRepository;
 import org.eclipse.tractusx.sde.core.policy.service.PolicyService;
@@ -110,16 +107,25 @@ class PolicyControllerTest {
     }
 
 
-
     private PolicyModel getPolicy(String policyName) {
-        PolicyModel request = new PolicyModel();
-        UsagePolicies policies = new UsagePolicies();
-        policies.setValue("Test");
-        policies.setTypeOfAccess(PolicyAccessEnum.RESTRICTED);
-        request.setPolicyName(policyName);
-        request.setUsagePolicies(Map.of(UsagePolicyEnum.PURPOSE ,policies));
-        request.setBpnNumbers(List.of("BPNL00000005PROV", "BPNL00000005PROW", "BPNL00000005PROB"));
-        request.setTypeOfAccess("restricted");
-        return request;
+       
+    	List<Policies> accessPolicies = List.of(Policies.builder()
+        		.technicalKey("BusinessPartnerNumber")
+        		.value(List.of("BPNL00000005PROV", "BPNL00000005PROW", "BPNL00000005PROB"))
+        		.build(),Policies.builder()
+        		.technicalKey("Membership")
+        		.value(List.of("active"))
+        		.build());
+        
+        Policies usagePolicies = Policies.builder()
+        		.technicalKey("Membership")
+        		.value(List.of("active"))
+        		.build();
+              
+        return PolicyModel.builder()
+        		.policyName(policyName)
+        		.accessPolicies(accessPolicies)
+        		.usagePolicies(List.of(usagePolicies))
+        		.build();
     }
 }

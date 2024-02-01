@@ -28,6 +28,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.bpndiscovery.handler.BPNDiscoveryUseCaseHandler;
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.entities.csv.RowData;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseException;
 import org.eclipse.tractusx.sde.common.submodel.executor.SubmodelExecutor;
@@ -74,27 +75,27 @@ public class SerialPartTypizationExecutor extends SubmodelExecutor {
 	private final AspectService aspectService;
 
 	@SneakyThrows
-	public void executeCsvRecord(RowData rowData, ObjectNode jsonObject, String processId) {
+	public void executeCsvRecord(RowData rowData, ObjectNode jsonObject, String processId, PolicyModel policy) {
 
 		csvParseStep.init(getSubmodelSchema());
 		csvParseStep.run(rowData, jsonObject, processId);
 
-		nextSteps(rowData.position(), jsonObject, processId);
+		nextSteps(rowData.position(), jsonObject, processId, policy);
 
 	}
 
 	@SneakyThrows
-	public void executeJsonRecord(Integer rowIndex, ObjectNode jsonObject, String processId) {
+	public void executeJsonRecord(Integer rowIndex, ObjectNode jsonObject, String processId, PolicyModel policy) {
 
 		jsonRecordformater.init(getSubmodelSchema());
 		jsonRecordformater.run(rowIndex, jsonObject, processId);
 
-		nextSteps(rowIndex, jsonObject, processId);
+		nextSteps(rowIndex, jsonObject, processId, policy);
 
 	}
 
 	@SneakyThrows
-	private void nextSteps(Integer rowIndex, ObjectNode jsonObject, String processId)
+	private void nextSteps(Integer rowIndex, ObjectNode jsonObject, String processId, PolicyModel policy)
 			throws CsvHandlerDigitalTwinUseCaseException {
 
 		generateUrnUUID.run(jsonObject, processId);
@@ -105,10 +106,10 @@ public class SerialPartTypizationExecutor extends SubmodelExecutor {
 		Aspect aspect = aspectMapper.mapFrom(jsonObject);
 
 		digitalTwinsAspectCsvHandlerUseCase.init(getSubmodelSchema());
-		digitalTwinsAspectCsvHandlerUseCase.run(aspect);
+		digitalTwinsAspectCsvHandlerUseCase.run(aspect, policy);
 
 		eDCAspectHandlerUseCase.init(getSubmodelSchema());
-		eDCAspectHandlerUseCase.run(getNameOfModel(), aspect, processId);
+		eDCAspectHandlerUseCase.run(getNameOfModel(), aspect, processId, policy);
 		
 		if (StringUtils.isBlank(aspect.getUpdated())) {
 			Map<String, String> bpnKeyMap = new HashMap<>();

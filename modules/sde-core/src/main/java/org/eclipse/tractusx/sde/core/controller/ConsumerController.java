@@ -24,6 +24,7 @@ import static org.springframework.http.ResponseEntity.ok;
 
 import java.util.UUID;
 
+import org.eclipse.tractusx.sde.common.exception.ValidationException;
 import org.eclipse.tractusx.sde.core.service.ConsumerService;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
 import org.eclipse.tractusx.sde.edc.services.ConsumerControlPanelService;
@@ -37,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -53,17 +55,27 @@ public class ConsumerController {
 
 	@GetMapping(value = "/query-data-offers")
 	@PreAuthorize("hasPermission('','consumer_view_contract_offers')")
-	public ResponseEntity<Object> queryOnDataOffers(@RequestParam String providerUrl,
+	public ResponseEntity<Object> queryOnDataOffers(
+			@RequestParam(value = "manufacturerPartId", required = false) String manufacturerPartId,
+			@RequestParam(value = "bpnNumber", required = false) String bpnNumber,
+			@RequestParam(value = "submodel", required = false) String submodel,
 			@RequestParam(value = "maxLimit", required = false) Integer limit,
 			@RequestParam(value = "offset", required = false) Integer offset) throws Exception {
 		log.info("Request received : /api/query-data-Offers");
+
+		if (StringUtils.isBlank(manufacturerPartId) && StringUtils.isBlank(bpnNumber))
+			throw new ValidationException(
+					"At least one request attribute between 'manufacturerPartId' or company 'bpnNumber' needs to provide for search");
+
 		if (limit == null) {
 			limit = 10;
 		}
 		if (offset == null) {
 			offset = 0;
 		}
-		return ok().body(consumerControlPanelService.queryOnDataOffers(providerUrl, offset, limit, null));
+		
+		return ok().body(
+				consumerControlPanelService.queryOnDataOffers(manufacturerPartId, bpnNumber, submodel, offset, limit));
 	}
 
 	@PostMapping(value = "/subscribe-data-offers")
@@ -95,8 +107,8 @@ public class ConsumerController {
 	@PreAuthorize("hasPermission('','consumer_download_data_offer')")
 	public void downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(
 			@RequestParam("processId") String referenceProcessId,
-			@RequestParam(value = "type", defaultValue = "csv", required = false) String type, HttpServletResponse response)
-			throws Exception {
+			@RequestParam(value = "type", defaultValue = "csv", required = false) String type,
+			HttpServletResponse response) throws Exception {
 		log.info("Request received : /api/download-data-offers");
 		consumerService.downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(referenceProcessId, type, response);
 	}

@@ -59,7 +59,6 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
 
 		List<String> list = auth.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
 
-		return true;
-		//return !roleManagementService.findAll(list, List.of(permissionLs)).isEmpty();
+		return !roleManagementService.findAll(list, List.of(permissionLs)).isEmpty();
 	}
 }

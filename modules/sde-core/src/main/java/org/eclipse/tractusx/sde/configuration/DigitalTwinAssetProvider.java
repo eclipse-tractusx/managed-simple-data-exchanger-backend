@@ -21,9 +21,11 @@
 package org.eclipse.tractusx.sde.configuration;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.text.StringSubstitutor;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.utils.UUIdGenerator;
 import org.eclipse.tractusx.sde.core.properties.SdeCommonProperties;
 import org.eclipse.tractusx.sde.core.utils.ValueReplacerUtility;
@@ -90,7 +92,13 @@ public class DigitalTwinAssetProvider {
 				.valueReplacerUsingFileTemplate("/edc_request_template/edc_asset_lookup.json", inputData));
 
 		if (!edcGateway.assetExistsLookupBasedOnType(requestBody)) {
-			Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest, null);
+			
+			PolicyModel policy= PolicyModel.builder()
+					.accessPolicies(List.of())
+					.usagePolicies(List.of())
+					.build();
+			
+			Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest, policy);
 			log.info("Digital twin asset creates :" + createEDCAsset.toString());
 		} else {
 			log.info("Digital twin asset exists in edc connector, so ignoring asset creation");

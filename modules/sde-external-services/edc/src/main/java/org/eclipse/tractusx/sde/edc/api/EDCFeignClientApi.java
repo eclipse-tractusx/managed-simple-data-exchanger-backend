@@ -44,7 +44,7 @@ public interface EDCFeignClientApi {
 	public String createAsset(@RequestBody AssetEntryRequest requestBody);
 	
 	@PostMapping("${edc.managementpath.apiversion.asset:/v3}/assets/request")
-	public String getAssetByType(@RequestBody ObjectNode requestBody);
+	public JsonNode getAssetByType(@RequestBody ObjectNode requestBody);
 	
 	@DeleteMapping(path = "${edc.managementpath.apiversion.asset:/v3}/assets/{id}")
 	public ResponseEntity<Object> deleteAssets(@PathVariable("id") String assetsId);

@@ -101,8 +101,8 @@ class ConsumerControllerTest {
 	void testSubscribeDataOffersBadRequest() throws Exception {
 		doNothing().when(consumerControlPanelService).subscribeDataOffers((ConsumerRequest) any(), anyString());
 
-		ConsumerRequest consumerRequest = ConsumerRequest.builder().connectorId("42").offers(new ArrayList<>())
-				.usagePolicies(List.of()).providerUrl("\"https://example.org/example\"").build();
+		ConsumerRequest consumerRequest = ConsumerRequest.builder().offers(new ArrayList<>())
+				.usagePolicies(List.of()).build();
 		String content = (new ObjectMapper()).writeValueAsString(consumerRequest);
 		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/subscribe-data-offers")
 				.contentType(MediaType.APPLICATION_JSON).content(content);
@@ -119,8 +119,8 @@ class ConsumerControllerTest {
 		offers.add(mockOffer);
 		Policies mockPolicy = Mockito.mock(Policies.class);
 		policies.add(mockPolicy);
-		ConsumerRequest consumerRequest = ConsumerRequest.builder().connectorId("42").offers(offers)
-				.usagePolicies(policies).providerUrl("\"https://example.org/example\"").build();
+		ConsumerRequest consumerRequest = ConsumerRequest.builder().offers(offers)
+				.usagePolicies(policies).build();
 		String content = (new ObjectMapper()).writeValueAsString(consumerRequest);
 		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/subscribe-data-offers")
 				.contentType(MediaType.APPLICATION_JSON).content(content);

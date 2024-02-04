@@ -21,10 +21,8 @@
 package org.eclipse.tractusx.sde.core.processreport.mapper;
 
 import java.util.List;
-import java.util.Map;
 
-import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
-import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.core.processreport.entity.ConsumerDownloadHistoryEntity;
 import org.eclipse.tractusx.sde.core.processreport.model.ConsumerDownloadHistory;
 import org.eclipse.tractusx.sde.edc.model.request.Offer;
@@ -50,7 +48,7 @@ public interface ConsumerDownloadHistoryMapper {
 			mapFrom.setOffers(mapper.readValue(entity.getOffers(), new TypeReference<List<Offer>>() {
 			}));
 		if (entity.getPolicies() != null)
-			mapFrom.setPolicies(mapper.readValue(entity.getPolicies(), new TypeReference<Map<UsagePolicyEnum, UsagePolicies>>() {
+			mapFrom.setPolicies(mapper.readValue(entity.getPolicies(), new TypeReference<List<PolicyModel>>() {
 			}));
 			
 		return mapFrom;

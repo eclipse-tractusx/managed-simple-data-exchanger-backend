@@ -42,12 +42,9 @@ import lombok.NoArgsConstructor;
 public class ConsumerRequest {
 
 	@NonNull
-	private String connectorId;
-	@NonNull
-	private String providerUrl;
-	@NonNull
 	@NotEmpty
 	private List<Offer> offers;
+	
 	@NonNull
 	private List<Policies> usagePolicies;
 

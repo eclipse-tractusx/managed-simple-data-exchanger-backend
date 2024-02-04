@@ -37,7 +37,6 @@ import org.eclipse.tractusx.sde.bpndiscovery.model.request.BpnDiscoverySearchReq
 import org.eclipse.tractusx.sde.bpndiscovery.model.response.BpnDiscoveryResponse;
 import org.eclipse.tractusx.sde.bpndiscovery.model.response.BpnDiscoverySearchResponse;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
-import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelResponse;
 import org.eclipse.tractusx.sde.edc.entities.database.ContractNegotiationInfoEntity;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ActionRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyConstraintBuilderService;
@@ -48,6 +47,7 @@ import org.eclipse.tractusx.sde.edc.model.contractnegotiation.ContractNegotiatio
 import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedByIdResponse;
 import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedResponse;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
+import org.eclipse.tractusx.sde.edc.model.request.QueryDataOfferRequest;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.eclipse.tractusx.sde.edc.util.EDCAssetUrlCacheService;
 import org.eclipse.tractusx.sde.edc.util.UtilityFunctions;
@@ -75,24 +75,13 @@ public class ConsumerControlPanelService {
 	private final EDRRequestHelper edrRequestHelper;
 	private final BpnDiscoveryProxyService bpnDiscoveryProxyService;
 	private final EDCAssetUrlCacheService edcAssetUrlCacheService;
-	private final CatalogResponseBuilder catalogResponseBuilder;
 	private final ContractNegotiationService contractNegotiationService;
 	private final LookUpDTTwin lookUpDTTwin;
-
-	String filterExpressionTemplate = """
-			"filterExpression": [
-				    {
-				        "operandLeft": "https://w3id.org/edc/v0.0.1/ns/id",
-				        "operator": "=",
-				        "operandRight": "%s"
-				    }
-				]
-			""";
 
 	public List<QueryDataOfferModel> queryOnDataOffers(String manufacturerPartId, String searchBpnNumber,
 			String submodel, Integer offset, Integer limit) {
 
-		List<QueryDataOfferModel> result = new ArrayList<>();
+		List<QueryDataOfferModel> queryOnDataOffers =new ArrayList<>();
 		List<String> bpnList = null;
 
 		// 1 find bpn if empty using BPN discovery
@@ -111,6 +100,7 @@ public class ConsumerControlPanelService {
 			bpnList = List.of(searchBpnNumber);
 		}
 
+
 		for (String bpnNumber : bpnList) {
 
 			// 2 fetch EDC connectors and DTR Assets from EDC connectors
@@ -122,32 +112,15 @@ public class ConsumerControlPanelService {
 				EDRCachedByIdResponse edrToken = edcAssetUrlCacheService.verifyAndGetToken(bpnNumber, dtOffer);
 				if (edrToken != null) {
 
-					List<SubModelResponse> lookUpTwin = lookUpDTTwin.lookUpTwin(edrToken, dtOffer, manufacturerPartId,
-							bpnNumber, submodel);
-
-					for (SubModelResponse subModelResponse : lookUpTwin) {
-						if (subModelResponse.getEndpoints() != null) {
-							
-							String subprotocolBody = subModelResponse.getEndpoints().get(0).getProtocolInformation()
-									.getSubprotocolBody();
-
-							String[] edcInfo = subprotocolBody.split(";");
-							String[] assetInfo = edcInfo[0].split("=");
-							String[] connectorInfo = edcInfo[1].split("=");
-
-							String filterExpression = String.format(filterExpressionTemplate, assetInfo[1]);
-
-							List<QueryDataOfferModel> queryOnDataOffers = catalogResponseBuilder
-									.queryOnDataOffers(connectorInfo[1], offset, limit, filterExpression);
-							result.addAll(queryOnDataOffers);
-						}
-					}
+					queryOnDataOffers.addAll(lookUpDTTwin.lookUpTwin(edrToken, dtOffer, manufacturerPartId,
+							bpnNumber, submodel, offset, limit));
+					
 				} else {
 					log.warn("EDR token is null, unable to look Up PCF Twin");
 				}
 			}
 		}
-		return result;
+		return queryOnDataOffers;
 
 	}
 
@@ -163,8 +136,8 @@ public class ConsumerControlPanelService {
 
 		consumerRequest.getOffers().parallelStream().forEach(offer -> {
 			try {
-				negotiateContractId.set(contractNegotiateManagement.negotiateContract(consumerRequest.getProviderUrl(),
-						consumerRequest.getConnectorId(), offer.getOfferId(), offer.getAssetId(), action,
+				negotiateContractId.set(contractNegotiateManagement.negotiateContract(offer.getConnectorOfferUrl(),
+						offer.getConnectorId(), offer.getOfferId(), offer.getAssetId(), action,
 						extensibleProperty));
 				int retry = 3;
 				int counter = 1;
@@ -186,7 +159,7 @@ public class ConsumerControlPanelService {
 			} finally {
 				ContractNegotiationInfoEntity contractNegotiationInfoEntity = ContractNegotiationInfoEntity.builder()
 						.id(UUID.randomUUID().toString()).processId(processId)
-						.connectorId(consumerRequest.getConnectorId()).offerId(offer.getOfferId())
+						.connectorId(offer.getConnectorId()).offerId(offer.getOfferId())
 						.contractNegotiationId(negotiateContractId != null ? negotiateContractId.get() : null)
 						.status(checkContractNegotiationStatus.get() != null
 								? checkContractNegotiationStatus.get().getState()
@@ -204,15 +177,14 @@ public class ConsumerControlPanelService {
 		HashMap<String, String> extensibleProperty = new HashMap<>();
 		Map<String, Object> response = new ConcurrentHashMap<>();
 
-		var recipientURL = UtilityFunctions.removeLastSlashOfUrl(consumerRequest.getProviderUrl());
-
 		ActionRequest action = policyConstraintBuilderService
 				.getUsagePoliciesConstraints(consumerRequest.getUsagePolicies());
 		consumerRequest.getOffers().parallelStream().forEach(offer -> {
 			Map<String, Object> resultFields = new ConcurrentHashMap<>();
 			try {
+				var recipientURL = UtilityFunctions.removeLastSlashOfUrl(offer.getConnectorOfferUrl());
 				EDRCachedResponse checkContractNegotiationStatus = contractNegotiationService
-						.verifyOrCreateContractNegotiation(consumerRequest.getConnectorId(), extensibleProperty,
+						.verifyOrCreateContractNegotiation(offer.getConnectorId(), extensibleProperty,
 								recipientURL, action, offer);
 
 				resultFields.put("edr", checkContractNegotiationStatus);
@@ -315,4 +287,14 @@ public class ConsumerControlPanelService {
 		}
 		return null;
 	}
+
+	public List<QueryDataOfferRequest> getEDCPolicy(List<QueryDataOfferRequest> queryDataOfferModel) {
+		queryDataOfferModel.stream().forEach(queryDataOffer -> queryDataOffer.setPolicy(lookUpDTTwin
+				.getEDCOffer(queryDataOffer.getAssetId(), queryDataOffer.getConnectorOfferUrl()).getPolicy()));
+		return queryDataOfferModel;
+
+	}
+
+	
+	
 }

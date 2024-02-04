@@ -59,7 +59,7 @@ public class ContractNegotiationService  extends AbstractEDCStepsHelper {
 	public EDRCachedResponse verifyOrCreateContractNegotiation(String connectorId,
 			Map<String, String> extensibleProperty, String recipientURL, ActionRequest action, Offer offer) {
 
-		if (!recipientURL.endsWith(protocolPath))
+		if (!offer.getConnectorOfferUrl().endsWith(protocolPath))
 			recipientURL = recipientURL + protocolPath;
 
 		// Verify if there already EDR process initiated then skip it for again download

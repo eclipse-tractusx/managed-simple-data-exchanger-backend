@@ -107,7 +107,7 @@ public class ConsumerService {
 		AtomicInteger successCount = new AtomicInteger();
 
 		ConsumerDownloadHistoryEntity entity = ConsumerDownloadHistoryEntity.builder().startDate(LocalDateTime.now())
-				.connectorId(consumerRequest.getConnectorId()).providerUrl(consumerRequest.getProviderUrl())
+				//.connectorId(consumerRequest.getConnectorId()).providerUrl(consumerRequest.getProviderUrl())
 				.numberOfItems(consumerRequest.getOffers().size()).downloadSuccessed(successCount.get())
 				.downloadFailed(failedCount.get()).processId(processId)
 				.status(ProgressStatusEnum.IN_PROGRESS.toString()).build();

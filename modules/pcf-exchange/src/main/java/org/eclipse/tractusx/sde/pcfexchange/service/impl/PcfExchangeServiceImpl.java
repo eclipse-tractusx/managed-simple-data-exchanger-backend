@@ -90,14 +90,14 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 		String requestId = UUID.randomUUID().toString();
 		Offer offer = consumerRequest.getOffers().get(0);
 
-		String providerBPNNumber = consumerRequest.getConnectorId();
+		String providerBPNNumber = offer.getConnectorId();
 
 		QueryDataOfferModel queryDataOfferModel = QueryDataOfferModel.builder()
 				.assetId(offer.getAssetId())
 				.offerId(offer.getOfferId())
 				.policyId(offer.getPolicyId())
 				.connectorId(providerBPNNumber)
-				.connectorOfferUrl(consumerRequest.getProviderUrl())
+				.connectorOfferUrl(offer.getConnectorOfferUrl())
 				.policy(PolicyModel.builder()
 						.usagePolicies(consumerRequest.getUsagePolicies())
 						.build())

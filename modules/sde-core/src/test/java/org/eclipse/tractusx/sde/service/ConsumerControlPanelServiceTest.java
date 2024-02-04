@@ -165,12 +165,10 @@ class ConsumerControlPanelServiceTest {
 		Policies usagePolicy = Policies.builder().technicalKey("BusinessPartnerNumber").value(List.of("BPN123456789"))
 				.build();
 		usagePolicies.add(usagePolicy);
-		ConsumerRequest consumerRequest = new ConsumerRequest("42", "https://example.org/example", offerRequestList,
+		ConsumerRequest consumerRequest = new ConsumerRequest(offerRequestList,
 				usagePolicies, "csv");
 		String processId = UUID.randomUUID().toString();
 		consumerControlPanelService.subscribeDataOffers(consumerRequest, processId);
-		assertEquals("42", consumerRequest.getConnectorId());
-		assertEquals("https://example.org/example", consumerRequest.getProviderUrl());
 		List<Policies> policies = consumerRequest.getUsagePolicies();
 		ActionRequest list = ActionRequest.builder().build();
 		ConstraintRequest constraintRequest = ConstraintRequest.builder().leftOperand("A").rightOperand("A")

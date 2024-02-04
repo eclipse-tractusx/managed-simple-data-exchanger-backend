@@ -24,12 +24,9 @@ package org.eclipse.tractusx.sde.core.processreport.model;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.entities.Policies;
-import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
 import org.eclipse.tractusx.sde.common.enums.ProgressStatusEnum;
-import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

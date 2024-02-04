@@ -42,6 +42,8 @@ public class QueryDataOfferModel {
 	private String connectorId;
 
 	private String assetId;
+	
+	private String manufacturerPartId;
 
 	private String offerId;
 

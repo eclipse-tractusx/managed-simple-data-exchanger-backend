@@ -187,6 +187,7 @@ public class LookUpDTTwin {
 							.publisher(manufacturerId)
 							.manufacturerPartId(manufacturerPartId)
 							.connectorOfferUrl(connectorInfo[1])
+							.offerId(edcOffer.getOfferId())
 							.assetId(assetInfo[1])
 							.type(edcOffer.getType())
 							.title(idShort+"_"+shellDescriptorResponse.getIdShort())

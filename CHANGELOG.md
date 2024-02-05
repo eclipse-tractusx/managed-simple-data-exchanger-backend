@@ -4,7 +4,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased] - 2023-02-05
 
-### Added
+### Fixed
 
 - Fix new dDTR support changes.
 - Fixed Vulnerability logback issue of CVE-2023-6481.

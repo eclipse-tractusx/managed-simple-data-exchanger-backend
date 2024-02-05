@@ -2,8 +2,14 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
-## [2.3.4] - 2023-12-21
+## [Unreleased] - 2023-02-05
 
+### Added
+
+- New changes for dDTR support.
+- Fixed Vulnerability logback issue of CVE-2023-6481.
+
+## [2.3.4] - 2023-12-21
 ### Fixed
 - Removed time duration from policy.
 

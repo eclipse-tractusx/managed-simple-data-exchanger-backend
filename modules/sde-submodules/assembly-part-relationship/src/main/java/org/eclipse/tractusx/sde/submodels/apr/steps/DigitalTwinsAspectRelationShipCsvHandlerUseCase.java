@@ -250,7 +250,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 			Map<String, String> header = Map.of(edrToken.getAuthKey(), edrToken.getAuthCode());
 
 			ResponseEntity<ShellLookupResponse> shellLookup = eDCDigitalTwinProxyForLookUp
-					.shellLookup(new URI(endpoint), shellLookupRequest.toJsonString(), header);
+					.shellLookup(new URI(endpoint),encodeShellIdBase64Utf8(shellLookupRequest.toJsonString()), header);
 			ShellLookupResponse body = shellLookup.getBody();
 
 			if (shellLookup.getStatusCode() == HttpStatus.OK && body != null) {

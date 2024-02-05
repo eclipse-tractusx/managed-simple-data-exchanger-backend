@@ -161,8 +161,11 @@ public class LookUpDTTwin {
 		String manufacturerId = getSpecificKeyFromList(shellDescriptorResponse, "manufacturerId");
 
 		for (SubModelResponse subModelResponse : shellDescriptorResponse.getSubmodelDescriptors()) {
+			
+			String sematicId = subModelResponse.getSemanticId().getKeys().get(0).getValue();
+			
 			if (!subModelResponse.getIdShort().isEmpty()
-					&& subModelResponse.getIdShort().toLowerCase().contains(submodel.toLowerCase())
+					&& sematicId.toLowerCase().contains(submodel.toLowerCase())
 					&& subModelResponse.getEndpoints() != null) {
 
 					String subprotocolBody = subModelResponse.getEndpoints().get(0).getProtocolInformation()
@@ -180,7 +183,11 @@ public class LookUpDTTwin {
 					String idShort = subModelResponse.getIdShort();
 					
 					String description = descriptionOptional.isPresent() ? descriptionOptional.get() : edcOffer.getDescription();
-				
+					
+					String type = edcOffer.getType();
+					
+					if(sematicId.equalsIgnoreCase("pcf"))
+					 type = "data.pcf.exchangeEndpoint";
 					
 					QueryDataOfferModel qdm = QueryDataOfferModel.builder()
 							.connectorId(edcOffer.getConnectorId())
@@ -189,7 +196,7 @@ public class LookUpDTTwin {
 							.connectorOfferUrl(connectorInfo[1])
 							.offerId(edcOffer.getOfferId())
 							.assetId(assetInfo[1])
-							.type(edcOffer.getType())
+							.type(type)
 							.title(idShort+"_"+shellDescriptorResponse.getIdShort())
 							.created(edcOffer.getCreated())
 							.description(description)

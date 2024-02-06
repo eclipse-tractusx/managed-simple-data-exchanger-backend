@@ -129,11 +129,11 @@ public class LookUpDTTwin {
 				preapreSubmodelResult(submodel, queryOnDataOffers, shellDescriptorResponse);
 
 		} catch (FeignException e) {
-			String errorMsg = "Unable to lookUpAllShellForBPN " + dtOfferUrl + ", " + endpoint + "," + " because: "
+			String errorMsg = "Unable to lookUpAllShellForBPN " + dtOfferUrl + ", " + endpoint + ", because: "
 					+ e.contentUTF8();
 			log.error("FeignException : " + errorMsg);
 		} catch (Exception e) {
-			String errorMsg = "Unable to lookUpAllShellForBPN " + dtOfferUrl + ", " + endpoint + "because: "
+			String errorMsg = "Unable to lookUpAllShellForBPN " + dtOfferUrl + ", " + endpoint + ", because: "
 					+ e.getMessage();
 			log.error("Exception : " + errorMsg);
 		}
@@ -175,35 +175,36 @@ public class LookUpDTTwin {
 					String[] assetInfo = edcInfo[0].split("=");
 					String[] connectorInfo = edcInfo[1].split("=");
 
-					QueryDataOfferModel edcOffer=getEDCOffer(assetInfo[1], connectorInfo[1]);
+					QueryDataOfferModel edcOffer= getEDCOffer(assetInfo[1], connectorInfo[1]);
 					
-					Optional<String> descriptionOptional = subModelResponse.getDescription().stream()
-							.filter(e -> e.getLanguage().contains("en")).map(MultiLanguage::getText).findFirst();
+					if (edcOffer != null) {
+						Optional<String> descriptionOptional = subModelResponse.getDescription().stream()
+								.filter(e -> e.getLanguage().contains("en")).map(MultiLanguage::getText).findFirst();
 
-					String idShort = subModelResponse.getIdShort();
-					
-					String description = descriptionOptional.isPresent() ? descriptionOptional.get() : edcOffer.getDescription();
-					
-					String type = edcOffer.getType();
-					
-					if(sematicId !=null && sematicId.toLowerCase().contains("pcf"))
-					 type = "data.pcf.exchangeEndpoint";
-					
-					QueryDataOfferModel qdm = QueryDataOfferModel.builder()
-							.connectorId(edcOffer.getConnectorId())
-							.publisher(manufacturerId)
-							.manufacturerPartId(manufacturerPartId)
-							.connectorOfferUrl(connectorInfo[1])
-							.offerId(edcOffer.getOfferId())
-							.assetId(assetInfo[1])
-							.type(type)
-							.title(idShort+"_"+shellDescriptorResponse.getIdShort())
-							.created(edcOffer.getCreated())
-							.description(description)
-							.policy(edcOffer.getPolicy())
-							.build();
+						String idShort = subModelResponse.getIdShort();
 
-					queryOnDataOffers.add(qdm);
+						String description = descriptionOptional.isPresent() ? descriptionOptional.get()
+								: edcOffer.getDescription();
+
+						String type = edcOffer.getType();
+
+						if (sematicId != null && sematicId.toLowerCase().contains("pcf"))
+							type = "data.pcf.exchangeEndpoint";
+
+						QueryDataOfferModel qdm = QueryDataOfferModel.builder()
+								.connectorId(edcOffer.getConnectorId())
+								.publisher(manufacturerId)
+								.manufacturerPartId(manufacturerPartId)
+								.connectorOfferUrl(connectorInfo[1])
+								.offerId(edcOffer.getOfferId())
+								.assetId(assetInfo[1]).type(type)
+								.title(idShort + "_" + shellDescriptorResponse.getIdShort())
+								.created(edcOffer.getCreated()).description(description)
+								.policy(edcOffer.getPolicy())
+								.build();
+
+						queryOnDataOffers.add(qdm);
+					}
 				}
 		}
 	}

@@ -57,7 +57,7 @@ public class DigitalTwinsFacilitator {
 
 		List<String> shellIds = List.of();
 		try {
-			ResponseEntity<ShellLookupResponse> response = digitalTwinsFeignClient.shellLookup(request.toJsonString(),
+			ResponseEntity<ShellLookupResponse> response = digitalTwinsFeignClient.shellLookup(encodeShellIdBase64Utf8(request.toJsonString()),
 					manufacturerId);
 
 			ShellLookupResponse body = response.getBody();

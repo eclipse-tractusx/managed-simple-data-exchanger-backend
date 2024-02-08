@@ -75,15 +75,19 @@ public class DigitalTwinsSingleLevelBoMAsPlannedHandlerStep extends Step {
 		List<String> shellIds = digitalTwinsFacilitator.shellLookup(shellLookupRequest);
 
 		String shellId;
+		ShellDescriptorRequest aasDescriptorRequest = lookUpParentEntityLocaly(singleLevelBoMAsPlannedAspect, policy);
 
 		if (shellIds.isEmpty()) {
-			shellId = createShellDescriptor(singleLevelBoMAsPlannedAspect, shellLookupRequest, policy);
+
+			logDebug(String.format("No shell id for '%s'", shellLookupRequest.toJsonString()));
+			ShellDescriptorResponse result = digitalTwinsFacilitator.createShellDescriptor(aasDescriptorRequest);
+			shellId = result.getIdentification();
+			logDebug(String.format("Shell created with id '%s'", shellId));
+
 		} else if (shellIds.size() == 1) {
+
 			logDebug(String.format("Shell id found for '%s'", shellLookupRequest.toJsonString()));
 			shellId = shellIds.stream().findFirst().orElse(null);
-
-			digitalTwinsFacilitator.updateShellSpecificAssetIdentifiers(shellId, digitalTwinsUtility
-					.getSpecificAssetIds(getSpecificAssetIdsForSingleLevel(singleLevelBoMAsPlannedAspect), policy));
 
 			logDebug(String.format("Shell id '%s'", shellId));
 		} else {
@@ -107,20 +111,19 @@ public class DigitalTwinsSingleLevelBoMAsPlannedHandlerStep extends Step {
 			CreateSubModelRequest createSubModelRequest = digitalTwinsUtility.getCreateSubModelRequest(
 					singleLevelBoMAsPlannedAspect.getShellId(), getsemanticIdOfModel(), getIdShortOfModel());
 
-			digitalTwinsFacilitator.createSubModel(shellId, createSubModelRequest);
+			digitalTwinsFacilitator.updateShellDetails(shellId, aasDescriptorRequest, createSubModelRequest);
 			singleLevelBoMAsPlannedAspect.setSubModelId(createSubModelRequest.getId());
 		} else {
+			// There is no need to send submodel because of nothing to change in it so sending null of it
+			digitalTwinsFacilitator.updateShellDetails(shellId, aasDescriptorRequest, null);
 			singleLevelBoMAsPlannedAspect.setUpdated(CommonConstants.UPDATED_Y);
 			logDebug("Complete Digital Twins Update Update Digital Twins");
 		}
 		return singleLevelBoMAsPlannedAspect;
 	}
 
-	private String createShellDescriptor(SingleLevelBoMAsPlanned singleLevelBoMAsPlannedAspect,
-			ShellLookupRequest shellLookupRequest, PolicyModel policy) throws CsvHandlerUseCaseException {
-
-		String shellId;
-		logDebug(String.format("No shell id for '%s'", shellLookupRequest.toJsonString()));
+	private ShellDescriptorRequest lookUpParentEntityLocaly(SingleLevelBoMAsPlanned singleLevelBoMAsPlannedAspect,
+			PolicyModel policy) throws CsvHandlerUseCaseException {
 
 		PartAsPlannedEntity partAsPlannedEntity = null;
 		partAsPlannedEntity = partAsPlannedRepository
@@ -131,13 +134,9 @@ public class DigitalTwinsSingleLevelBoMAsPlannedHandlerStep extends Step {
 					"No parent aspect found");
 		}
 
-		ShellDescriptorRequest aasDescriptorRequest = getShellDescriptorRequest(
-				partAsPlannedMapper.mapFrom(partAsPlannedEntity), policy);
-		ShellDescriptorResponse result = digitalTwinsFacilitator.createShellDescriptor(aasDescriptorRequest);
-		shellId = result.getIdentification();
-		logDebug(String.format("Shell created with id '%s'", shellId));
-
-		return shellId;
+		return digitalTwinsUtility.getShellDescriptorRequest(partAsPlannedEntity.getNameAtManufacturer(),
+				partAsPlannedEntity.getManufacturerPartId(), partAsPlannedEntity.getUuid(),
+				getSpecificAssetIds(partAsPlannedMapper.mapFrom(partAsPlannedEntity)), policy);
 	}
 
 	private Map<String, String> getSpecificAssetIds(PartAsPlanned partAsPlannedAspect) {
@@ -168,9 +167,4 @@ public class DigitalTwinsSingleLevelBoMAsPlannedHandlerStep extends Step {
 		return specificIdentifiers;
 	}
 
-	private ShellDescriptorRequest getShellDescriptorRequest(PartAsPlanned partAsPlannedAspect, PolicyModel policy) {
-
-		return digitalTwinsUtility.getShellDescriptorRequest(getSpecificAssetIds(partAsPlannedAspect),
-				partAsPlannedAspect, policy);
-	}
 }

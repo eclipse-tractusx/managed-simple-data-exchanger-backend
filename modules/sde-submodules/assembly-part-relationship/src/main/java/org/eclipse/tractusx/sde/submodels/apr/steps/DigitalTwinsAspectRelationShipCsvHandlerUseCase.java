@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseException;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
@@ -49,6 +50,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import feign.FeignException;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -73,9 +75,10 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 	private String registryLookupUri;
 
 	@SneakyThrows
-	public AspectRelationship run(AspectRelationship aspectRelationShip) throws CsvHandlerDigitalTwinUseCaseException {
+	public AspectRelationship run(AspectRelationship aspectRelationShip, PolicyModel policy)
+			throws CsvHandlerDigitalTwinUseCaseException {
 		try {
-			return doRun(aspectRelationShip);
+			return doRun(aspectRelationShip, policy);
 		} catch (Exception e) {
 			throw new CsvHandlerUseCaseException(aspectRelationShip.getRowNumber(),
 					": DigitalTwins: " + e.getMessage());
@@ -83,7 +86,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 	}
 
 	@SneakyThrows
-	private AspectRelationship doRun(AspectRelationship aspectRelationShip)
+	private AspectRelationship doRun(AspectRelationship aspectRelationShip, PolicyModel policy)
 			throws CsvHandlerUseCaseException, CsvHandlerDigitalTwinUseCaseException {
 
 		ShellLookupRequest shellLookupRequest = digitalTwinsUtility
@@ -92,14 +95,16 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 
 		String shellId = null;
 		SubModelResponse foundSubmodel = null;
-
+		ReturnDataClass checkShellforSubmodelExistorNot = null;
+		
 		if (shellIds.isEmpty()) {
 			// We don't need to create parent shell from aspect relationship
 			throw new CsvHandlerUseCaseException(aspectRelationShip.getRowNumber(),
 					"No parent aspect found in DT: " + shellLookupRequest.toJsonString());
 		} else {
-			foundSubmodel = checkShellforSubmodelExistorNot(aspectRelationShip, shellLookupRequest, shellIds,
-					foundSubmodel);
+			checkShellforSubmodelExistorNot = checkShellforSubmodelExistorNot(aspectRelationShip, shellLookupRequest,
+					shellIds);
+			foundSubmodel = checkShellforSubmodelExistorNot.getFoundSubmodel();
 		}
 
 		shellId = aspectRelationShip.getShellId();
@@ -115,37 +120,39 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 				aspectRelationShip.setOldSubmodelIdforUpdateCase(foundSubmodel.getId());
 			}
 			aspectRelationShip.setUpdated(CommonConstants.UPDATED_Y);
-			logDebug("Complete Digital Twins Update Update Digital Twins");
+			logDebug(String.format("Complete Digital Twins Update for '%s'", shellId));
 		}
 
 		return aspectRelationShip;
 	}
 
-	private SubModelResponse checkShellforSubmodelExistorNot(AspectRelationship aspectRelationShip,
-			ShellLookupRequest shellLookupRequest, List<String> shellIds, SubModelResponse foundSubmodel)
-			throws CsvHandlerDigitalTwinUseCaseException {
+	private ReturnDataClass checkShellforSubmodelExistorNot(AspectRelationship aspectRelationShip,
+			ShellLookupRequest shellLookupRequest, List<String> shellIds) throws CsvHandlerDigitalTwinUseCaseException {
+
 		List<ShellDescriptorResponse> items = digitalTwinfacilitaor.getShellDescriptorsWithSubmodelDetails(shellIds);
 
 		List<String> submodelExistinceCount = new ArrayList<>();
 
-		for (ShellDescriptorResponse shellDescriptorResponse : items) {
+		ReturnDataClass returnDataClass = new ReturnDataClass();
 
-			foundSubmodel = findMatchingSubmodel(aspectRelationShip, foundSubmodel, submodelExistinceCount,
-					shellDescriptorResponse);
+		for (ShellDescriptorResponse shellDescriptorResponse : items) {
+			findMatchingSubmodel(aspectRelationShip, submodelExistinceCount, shellDescriptorResponse, returnDataClass);
 		}
 
-		if (foundSubmodel == null && shellIds.size() > 1)
-			throw new CsvHandlerDigitalTwinUseCaseException(
-					String.format("Multiple shell id's found for parent in DT %s", shellLookupRequest.toJsonString()));
+		if (returnDataClass.getFoundSubmodel() == null && shellIds.size() > 1)
+			throw new CsvHandlerDigitalTwinUseCaseException(String
+					.format("Multiple shell id's found for parent twin in DT %s", shellLookupRequest.toJsonString()));
 
 		if (submodelExistinceCount.size() > 1)
 			throw new CsvHandlerDigitalTwinUseCaseException(String.format(
 					"%s submodel found multiple times in shells %s", getIdShortOfModel(), submodelExistinceCount));
-		return foundSubmodel;
+
+		return returnDataClass;
 	}
 
-	private SubModelResponse findMatchingSubmodel(AspectRelationship aspectRelationShip, SubModelResponse foundSubmodel,
-			List<String> submodelExistinceCount, ShellDescriptorResponse shellDescriptorResponse) {
+	private void findMatchingSubmodel(AspectRelationship aspectRelationShip, List<String> submodelExistinceCount,
+			ShellDescriptorResponse shellDescriptorResponse, ReturnDataClass returnDataClass) {
+
 		aspectRelationShip.setShellId(shellDescriptorResponse.getIdentification());
 		aspectRelationShip.setParentUuid(shellDescriptorResponse.getGlobalAssetId());
 
@@ -154,11 +161,11 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 			if (subModelResponse != null && getIdShortOfModel().equals(subModelResponse.getIdShort())) {
 				aspectRelationShip.setSubModelId(subModelResponse.getId());
 				aspectRelationShip.setChildUuid(subModelResponse.getId());
-				foundSubmodel = subModelResponse;
-				submodelExistinceCount.add(aspectRelationShip.getShellId());
+				submodelExistinceCount.add(subModelResponse.getId());
+				returnDataClass.setFoundShellDescriptorResponse(shellDescriptorResponse);
+				returnDataClass.setFoundSubmodel(subModelResponse);
 			}
 		}
-		return foundSubmodel;
 	}
 
 	private void createSubModelSteps(AspectRelationship aspectRelationShip, String shellId,
@@ -258,7 +265,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 			ShellLookupResponse shellLookup = eDCDigitalTwinProxyForLookUp.shellLookup(
 					new URI(endpoint + registryLookupUriLocal),
 					digitalTwinsUtility.encodeAssetIdsObject(shellLookupRequest.toJsonString()), header);
-			
+
 			childUUID = getChildSubmodelDetails(shellLookupRequest, endpoint + registryUri, header, aspectRelationShip,
 					dtOfferUrl, shellLookup.getResult());
 
@@ -288,11 +295,11 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 			log.warn(String.format("Multiple shell id's found for childAspect %s, %s", dtOfferUrl,
 					shellLookupRequest.toJsonString()));
 		} else if (childshellIds.size() == 1) {
-			
+
 			ShellDescriptorResponse shellDescriptorResponse = eDCDigitalTwinProxyForLookUp.getShellDescriptorByShellId(
 					new URI(endpoint), encodeShellIdBase64Utf8(childshellIds.get(0)), header);
 			childUUID = shellDescriptorResponse.getGlobalAssetId();
-			
+
 			log.info(aspectRelationShip.getRowNumber() + ", " + dtOfferUrl + ", Child aspect found for "
 					+ shellLookupRequest.toJsonString());
 		}
@@ -302,5 +309,11 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 
 	private String encodeShellIdBase64Utf8(String shellId) {
 		return Base64.getUrlEncoder().encodeToString(shellId.getBytes());
+	}
+
+	@Data
+	private class ReturnDataClass {
+		private SubModelResponse foundSubmodel;
+		private ShellDescriptorResponse foundShellDescriptorResponse;
 	}
 }

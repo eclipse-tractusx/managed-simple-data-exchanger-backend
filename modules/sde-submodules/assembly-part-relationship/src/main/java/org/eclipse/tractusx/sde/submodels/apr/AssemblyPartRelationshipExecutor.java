@@ -78,7 +78,7 @@ public class AssemblyPartRelationshipExecutor extends SubmodelExecutor {
 		csvParseStep.init(getSubmodelSchema());
 		csvParseStep.run(rowData, jsonObject, processId);
 
-		nextSteps(rowData.position(), jsonObject, processId);
+		nextSteps(rowData.position(), jsonObject, processId, policy);
 
 	}
 
@@ -88,12 +88,12 @@ public class AssemblyPartRelationshipExecutor extends SubmodelExecutor {
 		jsonRecordformater.init(getSubmodelSchema());
 		jsonRecordformater.run(rowIndex, jsonObject, processId);
 		
-		nextSteps(rowIndex, jsonObject, processId);
+		nextSteps(rowIndex, jsonObject, processId, policy);
 
 	}
 
 	@SneakyThrows
-	private void nextSteps(Integer rowIndex, ObjectNode jsonObject, String processId)
+	private void nextSteps(Integer rowIndex, ObjectNode jsonObject, String processId, PolicyModel policy)
 			throws CsvHandlerDigitalTwinUseCaseException {
 
 		AspectRelationship aspectRelationship = aspectRelationshipMapper.mapFrom(jsonObject);
@@ -102,10 +102,10 @@ public class AssemblyPartRelationshipExecutor extends SubmodelExecutor {
 		jsonRecordValidate.run(rowIndex, jsonObject);
 
 		digitalTwinsAspectRelationShipCsvHandlerUseCase.init(getSubmodelSchema());
-		digitalTwinsAspectRelationShipCsvHandlerUseCase.run(aspectRelationship);
+		digitalTwinsAspectRelationShipCsvHandlerUseCase.run(aspectRelationship, policy);
 
 		eDCAspectRelationshipHandlerUseCase.init(getSubmodelSchema());
-		eDCAspectRelationshipHandlerUseCase.run(getNameOfModel(), aspectRelationship, processId);
+		eDCAspectRelationshipHandlerUseCase.run(getNameOfModel(), aspectRelationship, processId, policy);
 		
 		if (StringUtils.isBlank(aspectRelationship.getUpdated())) {
 			Map<String, String> bpnKeyMap = new HashMap<>();

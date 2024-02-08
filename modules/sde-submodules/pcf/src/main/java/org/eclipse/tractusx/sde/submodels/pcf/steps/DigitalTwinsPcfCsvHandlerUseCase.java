@@ -66,17 +66,19 @@ public class DigitalTwinsPcfCsvHandlerUseCase extends Step {
 		List<String> shellIds = digitalTwinsFacilitator.shellLookup(shellLookupRequest);
 
 		String shellId;
+		ShellDescriptorRequest aasDescriptorRequest = digitalTwinsUtility.getShellDescriptorRequest(
+				pcfAspect.getNameAtManufacturer(), pcfAspect.getManufacturerPartId(), pcfAspect.getUuid(),
+				getSpecificAssetIds(pcfAspect), policy);
 
 		if (shellIds.isEmpty()) {
 			logDebug(String.format("No shell id for '%s'", shellLookupRequest.toJsonString()));
-			ShellDescriptorRequest aasDescriptorRequest = digitalTwinsUtility
-					.getShellDescriptorRequest(getSpecificAssetIds(pcfAspect), pcfAspect, policy);
 			ShellDescriptorResponse result = digitalTwinsFacilitator.createShellDescriptor(aasDescriptorRequest);
 			shellId = result.getIdentification();
 			logDebug(String.format("Shell created with id '%s'", shellId));
 		} else if (shellIds.size() == 1) {
 			logDebug(String.format("Shell id found for '%s'", shellLookupRequest.toJsonString()));
 			shellId = shellIds.stream().findFirst().orElse(null);
+			
 			logDebug(String.format("Shell id '%s'", shellId));
 		} else {
 			throw new CsvHandlerDigitalTwinUseCaseException(
@@ -97,9 +99,11 @@ public class DigitalTwinsPcfCsvHandlerUseCase extends Step {
 			logDebug(String.format("No submodels for '%s'", shellId));
 			CreateSubModelRequest createSubModelRequest = digitalTwinsUtility
 					.getCreateSubModelRequest(pcfAspect.getShellId(), getsemanticIdOfModel(), getIdShortOfModel());
-			digitalTwinsFacilitator.createSubModel(shellId, createSubModelRequest);
+			digitalTwinsFacilitator.updateShellDetails(shellId, aasDescriptorRequest, createSubModelRequest);
 			pcfAspect.setSubModelId(createSubModelRequest.getId());
 		} else {
+			//There is no need to send submodel because of nothing to change in it so sending null of it
+			digitalTwinsFacilitator.updateShellDetails(shellId, aasDescriptorRequest, null);
 			pcfAspect.setUpdated(CommonConstants.UPDATED_Y);
 			logDebug("Complete Digital Twins Update Update Digital Twins");
 		}

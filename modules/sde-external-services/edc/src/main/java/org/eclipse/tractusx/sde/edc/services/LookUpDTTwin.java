@@ -162,51 +162,59 @@ public class LookUpDTTwin {
 
 		String manufacturerPartId = getSpecificKeyFromList(shellDescriptorResponse, "manufacturerPartId");
 
-		String manufacturerId = getSpecificKeyFromList(shellDescriptorResponse, "manufacturerId");
+		String manufacturerBPNId = getSpecificKeyFromList(shellDescriptorResponse, "manufacturerId");
 
 		if (StringUtils.isNotBlank(shellDescriptorResponse.getIdShort()))
 			for (SubModelResponse subModelResponse : shellDescriptorResponse.getSubmodelDescriptors()) {
 
 				String sematicId = subModelResponse.getSemanticId().getKeys().get(0).getValue();
 
-				if (!subModelResponse.getIdShort().isEmpty() && sematicId.toLowerCase().contains(submodel.toLowerCase())
-						&& subModelResponse.getEndpoints() != null) {
-
-					String subprotocolBody = subModelResponse.getEndpoints().get(0).getProtocolInformation()
-							.getSubprotocolBody();
-
-					String[] edcInfo = subprotocolBody.split(";");
-					String[] assetInfo = edcInfo[0].split("=");
-					String[] connectorInfo = edcInfo[1].split("=");
-
-					QueryDataOfferModel edcOffer = getEDCOffer(assetInfo[1], connectorInfo[1]);
-
-					if (edcOffer != null) {
-						Optional<String> descriptionOptional = subModelResponse.getDescription().stream()
-								.filter(e -> e.getLanguage().contains("en")).map(MultiLanguage::getText).findFirst();
-
-						String idShort = subModelResponse.getIdShort();
-
-						String description = descriptionOptional.isPresent() ? descriptionOptional.get()
-								: edcOffer.getDescription();
-
-						String type = edcOffer.getType();
-
-						if (sematicId != null && sematicId.toLowerCase().contains("pcf"))
-							type = "data.pcf.exchangeEndpoint";
-
-						QueryDataOfferModel qdm = QueryDataOfferModel.builder().connectorId(edcOffer.getConnectorId())
-								.publisher(manufacturerId).manufacturerPartId(manufacturerPartId)
-								.connectorOfferUrl(connectorInfo[1]).offerId(edcOffer.getOfferId())
-								.assetId(assetInfo[1]).type(type)
-								.title(idShort + "_" + shellDescriptorResponse.getIdShort())
-								.created(edcOffer.getCreated()).description(description).policy(edcOffer.getPolicy())
-								.build();
-
-						queryOnDataOffers.add(qdm);
-					}
-				}
+				buildQdmOffer(submodel, queryOnDataOffers, shellDescriptorResponse, manufacturerPartId,
+						manufacturerBPNId, subModelResponse, sematicId);
 			}
+	}
+
+	private void buildQdmOffer(String submodel, List<QueryDataOfferModel> queryOnDataOffers,
+			ShellDescriptorResponse shellDescriptorResponse, String manufacturerPartId, String manufacturerBPNId,
+			SubModelResponse subModelResponse, String sematicId) {
+		
+		if (!subModelResponse.getIdShort().isEmpty() && sematicId.toLowerCase().contains(submodel.toLowerCase())
+				&& subModelResponse.getEndpoints() != null) {
+
+			String subprotocolBody = subModelResponse.getEndpoints().get(0).getProtocolInformation()
+					.getSubprotocolBody();
+
+			String[] edcInfo = subprotocolBody.split(";");
+			String[] assetInfo = edcInfo[0].split("=");
+			String[] connectorInfo = edcInfo[1].split("=");
+
+			QueryDataOfferModel edcOffer = getEDCOffer(assetInfo[1], connectorInfo[1]);
+
+			if (edcOffer != null) {
+				Optional<String> descriptionOptional = subModelResponse.getDescription().stream()
+						.filter(e -> e.getLanguage().contains("en")).map(MultiLanguage::getText).findFirst();
+
+				String idShort = subModelResponse.getIdShort();
+
+				String description = descriptionOptional.isPresent() ? descriptionOptional.get()
+						: edcOffer.getDescription();
+
+				String type = edcOffer.getType();
+
+				if (sematicId != null && sematicId.toLowerCase().contains("pcf"))
+					type = "data.pcf.exchangeEndpoint";
+
+				QueryDataOfferModel qdm = QueryDataOfferModel.builder().connectorId(edcOffer.getConnectorId())
+						.publisher(manufacturerBPNId).manufacturerPartId(manufacturerPartId)
+						.connectorOfferUrl(connectorInfo[1]).offerId(edcOffer.getOfferId())
+						.assetId(assetInfo[1]).type(type)
+						.title(idShort + "_" + shellDescriptorResponse.getIdShort())
+						.created(edcOffer.getCreated()).description(description).policy(edcOffer.getPolicy())
+						.build();
+
+				queryOnDataOffers.add(qdm);
+			}
+		}
 	}
 
 	public QueryDataOfferModel getEDCOffer(String assetId, String connectorOfferUrl) {

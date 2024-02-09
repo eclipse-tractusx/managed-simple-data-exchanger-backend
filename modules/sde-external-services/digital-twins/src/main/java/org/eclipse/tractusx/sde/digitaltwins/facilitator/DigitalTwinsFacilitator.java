@@ -148,6 +148,53 @@ public class DigitalTwinsFacilitator {
 		return responseBody;
 	}
 
+	public void updateShellDetails(String shellId, ShellDescriptorRequest aasDescriptorRequest,
+			CreateSubModelRequest createSubModelRequest) {
+
+		ResponseEntity<ShellDescriptorResponse> shellDescriptorByShellId = digitalTwinsFeignClient
+				.getShellDescriptorByShellId(digitalTwinsUtility.encodeShellIdBase64Utf8(shellId), manufacturerId);
+		
+		if(shellDescriptorByShellId.getStatusCode().is2xxSuccessful()) {
+			ShellDescriptorResponse shellDescriptorResponse = shellDescriptorByShellId.getBody();
+			
+			if (aasDescriptorRequest.getSubmodelDescriptors() == null) {
+				List<CreateSubModelRequest> arrayList = new ArrayList<>();
+				
+				if (createSubModelRequest != null)
+					arrayList.add(createSubModelRequest);
+				
+				aasDescriptorRequest.setSubmodelDescriptors(arrayList);
+			}
+			
+			if (shellDescriptorResponse != null) {
+				
+				shellDescriptorResponse.getSubmodelDescriptors().forEach(e -> 
+					aasDescriptorRequest.getSubmodelDescriptors().add(CreateSubModelRequest.builder()
+							.id(e.getId())
+							.idShort(e.getIdShort())
+							.semanticId(e.getSemanticId())
+							.endpoints(e.getEndpoints())
+							.build())
+				);
+				
+			}
+			
+			aasDescriptorRequest.setId(shellId);
+			
+			ResponseEntity<Void> updateShellDescriptorByShellId = digitalTwinsFeignClient
+					.updateShellDescriptorByShellId(digitalTwinsUtility.encodeShellIdBase64Utf8(shellId),
+							manufacturerId, aasDescriptorRequest);
+			if (updateShellDescriptorByShellId.getStatusCode().is2xxSuccessful()) {
+				log.debug("Shell update successfully : " + aasDescriptorRequest.toJsonString());
+			} else {
+				log.error("Uanble to update Shell  : " + aasDescriptorRequest.toJsonString());
+			}
+			
+		}else {
+			log.error("Shell not found in DT for shell : " + shellId);
+		}
+	}
+	
 	public void updateShellSpecificAssetIdentifiers(String shellId, List<Object> specificAssetIds) {
 
 		ResponseEntity<Object> deleteShellSpecificAttributes = digitalTwinsFeignClient

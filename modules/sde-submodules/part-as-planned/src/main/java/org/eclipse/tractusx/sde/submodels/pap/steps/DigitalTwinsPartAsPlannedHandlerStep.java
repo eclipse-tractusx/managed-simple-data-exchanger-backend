@@ -67,21 +67,18 @@ public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 		List<String> shellIds = digitalTwinsFacilitator.shellLookup(shellLookupRequest);
 
 		String shellId;
+		ShellDescriptorRequest aasDescriptorRequest = digitalTwinsUtility.getShellDescriptorRequest(
+				partAsPlannedAspect.getNameAtManufacturer(), partAsPlannedAspect.getManufacturerPartId(),
+				partAsPlannedAspect.getUuid(), getSpecificAssetIds(partAsPlannedAspect), policy);
 
 		if (shellIds.isEmpty()) {
 			logDebug(String.format("No shell id for '%s'", shellLookupRequest.toJsonString()));
-			ShellDescriptorRequest aasDescriptorRequest = digitalTwinsUtility
-					.getShellDescriptorRequest(getSpecificAssetIds(partAsPlannedAspect), partAsPlannedAspect, policy);
 			ShellDescriptorResponse result = digitalTwinsFacilitator.createShellDescriptor(aasDescriptorRequest);
 			shellId = result.getIdentification();
 			logDebug(String.format("Shell created with id '%s'", shellId));
 		} else if (shellIds.size() == 1) {
 			logDebug(String.format("Shell id found for '%s'", shellLookupRequest.toJsonString()));
 			shellId = shellIds.stream().findFirst().orElse(null);
-			
-			digitalTwinsFacilitator.updateShellSpecificAssetIdentifiers(shellId,
-					digitalTwinsUtility.getSpecificAssetIds(getSpecificAssetIds(partAsPlannedAspect), policy));
-			
 			logDebug(String.format("Shell id '%s'", shellId));
 		} else {
 			throw new CsvHandlerDigitalTwinUseCaseException(
@@ -102,9 +99,11 @@ public class DigitalTwinsPartAsPlannedHandlerStep extends Step {
 			logDebug(String.format("No submodels for '%s'", shellId));
 			CreateSubModelRequest createSubModelRequest = digitalTwinsUtility.getCreateSubModelRequest(
 					partAsPlannedAspect.getShellId(), getsemanticIdOfModel(), getIdShortOfModel());
-			digitalTwinsFacilitator.createSubModel(shellId, createSubModelRequest);
+			digitalTwinsFacilitator.updateShellDetails(shellId, aasDescriptorRequest, createSubModelRequest);
 			partAsPlannedAspect.setSubModelId(createSubModelRequest.getId());
 		} else {
+			//There is no need to send submodel because of nothing to change in it so sending null of it
+			digitalTwinsFacilitator.updateShellDetails(shellId, aasDescriptorRequest, null);
 			partAsPlannedAspect.setUpdated(CommonConstants.UPDATED_Y);
 			logDebug("Complete Digital Twins Update Update Digital Twins");
 		}

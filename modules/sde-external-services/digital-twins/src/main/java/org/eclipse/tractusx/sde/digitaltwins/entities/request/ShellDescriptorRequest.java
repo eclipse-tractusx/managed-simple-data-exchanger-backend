@@ -32,14 +32,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
+@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(Include.NON_NULL)
 public class ShellDescriptorRequest {
@@ -49,6 +49,7 @@ public class ShellDescriptorRequest {
     private List<MultiLanguage> description;
     private String globalAssetId;
     private List<Object> specificAssetIds;
+    private List<CreateSubModelRequest> submodelDescriptors;
 
     @SneakyThrows
     public String toJsonString() {

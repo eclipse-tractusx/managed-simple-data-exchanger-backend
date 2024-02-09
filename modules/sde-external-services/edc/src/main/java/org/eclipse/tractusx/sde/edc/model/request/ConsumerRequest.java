@@ -27,6 +27,7 @@ import org.springframework.lang.NonNull;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
@@ -46,6 +47,7 @@ public class ConsumerRequest {
 	private List<Offer> offers;
 	
 	@NonNull
+	@JsonProperty("usage_policies")
 	private List<Policies> usagePolicies;
 
 	@Builder.Default

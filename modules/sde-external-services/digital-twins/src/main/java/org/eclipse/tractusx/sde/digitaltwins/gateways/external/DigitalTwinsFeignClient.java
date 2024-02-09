@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -53,6 +54,10 @@ public interface DigitalTwinsFeignClient {
 	ResponseEntity<ShellDescriptorResponse> getShellDescriptorByShellId(@PathVariable("aasIdentifier") String shellId,
 			@RequestHeader("Edc-Bpn") String edcBpn);
 
+	@PutMapping(path = "${digital-twins.registry.uri:/api/v3.0}/shell-descriptors/{aasIdentifier}")
+	ResponseEntity<Void> updateShellDescriptorByShellId(@PathVariable("aasIdentifier") String shellId,
+			@RequestHeader("Edc-Bpn") String edcBpn, @RequestBody ShellDescriptorRequest request);
+
 	@DeleteMapping(path = "${digital-twins.registry.uri:/api/v3.0}/shell-descriptors/{aasIdentifier}")
 	ResponseEntity<Void> deleteShell(@PathVariable("assetIds") String shellId);
 
@@ -61,7 +66,8 @@ public interface DigitalTwinsFeignClient {
 			@RequestBody CreateSubModelRequest request, @RequestHeader("Edc-Bpn") String edcBpn);
 
 	@GetMapping(path = "${digital-twins.registry.uri:/api/v3.0}/shell-descriptors/{aasIdentifier}/submodel-descriptors")
-	ResponseEntity<SubModelListResponse> getSubModels(@PathVariable("aasIdentifier") String shellId, @RequestHeader("Edc-Bpn") String edcBpn);
+	ResponseEntity<SubModelListResponse> getSubModels(@PathVariable("aasIdentifier") String shellId,
+			@RequestHeader("Edc-Bpn") String edcBpn);
 
 	@DeleteMapping(path = "${digital-twins.registry.uri:/api/v3.0}/shell-descriptors/{aasIdentifier}/submodel-descriptors/{submodelIdentifier}")
 	ResponseEntity<Object> deleteSubmodelfromShellById(@PathVariable("aasIdentifier") String shellId,

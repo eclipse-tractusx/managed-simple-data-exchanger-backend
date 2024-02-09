@@ -70,12 +70,14 @@ public class DigitalTwinsPartSiteInformationAsPlannedHandlerStep extends Step {
 
 		String shellId;
 
+		ShellDescriptorRequest aasDescriptorRequest = digitalTwinsUtility.getShellDescriptorRequest(
+				partSiteInformationAsPlannedAspect.getNameAtManufacturer(),
+				partSiteInformationAsPlannedAspect.getManufacturerPartId(),
+				partSiteInformationAsPlannedAspect.getUuid(), getSpecificAssetIds(partSiteInformationAsPlannedAspect),
+				policy);
+
 		if (shellIds.isEmpty()) {
 			logDebug(String.format("No shell id for '%s'", shellLookupRequest.toJsonString()));
-
-			ShellDescriptorRequest aasDescriptorRequest = digitalTwinsUtility.getShellDescriptorRequest(
-					getSpecificAssetIds(partSiteInformationAsPlannedAspect), partSiteInformationAsPlannedAspect,
-					policy);
 
 			ShellDescriptorResponse result = digitalTwinsFacilitator.createShellDescriptor(aasDescriptorRequest);
 			shellId = result.getIdentification();
@@ -83,9 +85,6 @@ public class DigitalTwinsPartSiteInformationAsPlannedHandlerStep extends Step {
 		} else if (shellIds.size() == 1) {
 			logDebug(String.format("Shell id found for '%s'", shellLookupRequest.toJsonString()));
 			shellId = shellIds.stream().findFirst().orElse(null);
-
-			digitalTwinsFacilitator.updateShellSpecificAssetIdentifiers(shellId, digitalTwinsUtility
-					.getSpecificAssetIds(getSpecificAssetIds(partSiteInformationAsPlannedAspect), policy));
 
 			logDebug(String.format("Shell id '%s'", shellId));
 		} else {
@@ -107,9 +106,11 @@ public class DigitalTwinsPartSiteInformationAsPlannedHandlerStep extends Step {
 			logDebug(String.format("No submodels for '%s'", shellId));
 			CreateSubModelRequest createSubModelRequest = digitalTwinsUtility.getCreateSubModelRequest(
 					partSiteInformationAsPlannedAspect.getShellId(), getsemanticIdOfModel(), getIdShortOfModel());
-			digitalTwinsFacilitator.createSubModel(shellId, createSubModelRequest);
+			digitalTwinsFacilitator.updateShellDetails(shellId, aasDescriptorRequest, createSubModelRequest);
 			partSiteInformationAsPlannedAspect.setSubModelId(createSubModelRequest.getId());
 		} else {
+			//There is no need to send submodel because of nothing to change in it so sending null of it
+			digitalTwinsFacilitator.updateShellDetails(shellId, aasDescriptorRequest, null);
 			partSiteInformationAsPlannedAspect.setUpdated(CommonConstants.UPDATED_Y);
 			logDebug("Complete Digital Twins Update Update Digital Twins");
 		}

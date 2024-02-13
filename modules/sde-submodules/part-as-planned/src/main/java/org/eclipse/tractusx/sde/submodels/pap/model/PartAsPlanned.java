@@ -21,7 +21,7 @@ package org.eclipse.tractusx.sde.submodels.pap.model;
 
 import java.util.List;
 
-import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
+import org.eclipse.tractusx.sde.common.entities.Policies;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -74,7 +74,7 @@ public class PartAsPlanned {
 	private String typeOfAccess;
 	
 	@JsonProperty(value ="usage_policies")
-	private List<UsagePolicies> usagePolicies;
+	private List<Policies> usagePolicies;
 
 	@JsonProperty(value ="manufacturer_part_id")
 	private String manufacturerPartId;

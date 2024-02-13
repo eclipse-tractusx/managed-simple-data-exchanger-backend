@@ -24,19 +24,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
-import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
+import org.eclipse.tractusx.sde.common.entities.Policies;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.contractdefinition.ContractDefinitionRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.contractdefinition.ContractDefinitionRequestFactory;
-import org.eclipse.tractusx.sde.edc.entities.request.policies.ActionRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyConstraintBuilderService;
-import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyDefinitionRequest;
-import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyRequestFactory;
 import org.eclipse.tractusx.sde.edc.gateways.external.EDCGateway;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 import lombok.RequiredArgsConstructor;
 
@@ -45,57 +41,36 @@ import lombok.RequiredArgsConstructor;
 public class CreateEDCAssetFacilator extends AbstractEDCStepsHelper {
 
 	private final EDCGateway edcGateway;
-	private final PolicyRequestFactory policyFactory;
 	private final ContractDefinitionRequestFactory contractFactory;
 	private final PolicyConstraintBuilderService policyConstraintBuilderService;
 
 	public Map<String, String> createEDCAsset(AssetEntryRequest assetEntryRequest, List<String> bpns,
-			List<UsagePolicies> usagePolicies) {
+			List<Policies> usagePolicies) {
 
-		HashMap<String, String> extensibleProperties = new HashMap<>();
-		HashMap<String, String> output = new HashMap<>();
+		Map<String, String> output = new HashMap<>();
 
 		edcGateway.createAsset(assetEntryRequest);
 
-		String assetId = assetEntryRequest.getAsset().getId();
+		String assetId = "";
 
-		
-		ActionRequest accessAction = policyConstraintBuilderService.getAccessConstraints(bpns);
+		JsonNode accessPolicyDefinitionRequest = policyConstraintBuilderService.getAccessPolicy(assetId, null);
+		String accessPolicyUUId = accessPolicyDefinitionRequest.get("@id").asText();
+		//edcGateway.createPolicyDefinition(accessPolicyDefinitionRequest);
 
-		String customValue = getCustomValue(usagePolicies);
-		if (StringUtils.isNotBlank(getCustomValue(usagePolicies))) {
-			extensibleProperties.put(UsagePolicyEnum.CUSTOM.name(), customValue);
-		}
-		
-		PolicyDefinitionRequest accessPolicyDefinitionRequest = policyFactory.getPolicy(assetId, accessAction,
-				new HashMap<>());
-		edcGateway.createPolicyDefinition(accessPolicyDefinitionRequest);
-		String accessPolicyId = accessPolicyDefinitionRequest.getId();
-
-		ActionRequest usageAction = policyConstraintBuilderService.getUsagePolicyConstraints(usagePolicies);
-		PolicyDefinitionRequest usagePolicyDefinitionRequest = policyFactory.getPolicy(assetId, usageAction,
-				extensibleProperties);
-		edcGateway.createPolicyDefinition(usagePolicyDefinitionRequest);
-		String usagePolicyId = usagePolicyDefinitionRequest.getId();
+		JsonNode usagePolicyDefinitionRequest = policyConstraintBuilderService.getUsagePolicy(assetId, null);
+		String usagePolicyUUId = usagePolicyDefinitionRequest.get("@id").asText();
+		//edcGateway.createPolicyDefinition(usagePolicyDefinitionRequest);
 
 		ContractDefinitionRequest contractDefinitionRequest = contractFactory.getContractDefinitionRequest(assetId,
-				accessPolicyId, usagePolicyId);
+				accessPolicyUUId, usagePolicyUUId);
 
 		edcGateway.createContractDefinition(contractDefinitionRequest);
 
-		output.put("accessPolicyId", accessPolicyId);
-		output.put("usagePolicyId", usagePolicyId);
+		output.put("accessPolicyId", accessPolicyUUId);
+		output.put("usagePolicyId", usagePolicyUUId);
 		output.put("contractDefinitionId", contractDefinitionRequest.getId());
 		return output;
 
-	}
-
-	private String getCustomValue(List<UsagePolicies> usagePolicies) {
-		if (!CollectionUtils.isEmpty(usagePolicies)) {
-			return usagePolicies.stream().filter(policy -> policy.getType().equals(UsagePolicyEnum.CUSTOM))
-					.map(UsagePolicies::getValue).findFirst().orElse(null);
-		}
-		return null;
 	}
 
 }

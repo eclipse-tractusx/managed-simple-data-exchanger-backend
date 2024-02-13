@@ -26,13 +26,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
+import org.eclipse.tractusx.sde.common.entities.Policies;
 import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
-import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.edc.api.ContractOfferCatalogApi;
 import org.eclipse.tractusx.sde.edc.constants.EDCAssetConstant;
@@ -149,7 +147,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
 		JsonNode constraints = permission.get("odrl:constraint");
 
-		List<UsagePolicies> usagePolicies = new ArrayList<>();
+		List<Policies> usagePolicies = new ArrayList<>();
 
 		List<String> bpnNumbers = new ArrayList<>();
 
@@ -167,7 +165,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 		build.setUsagePolicies(usagePolicies);
 	}
 
-	private void setConstraint(List<UsagePolicies> usagePolicies, List<String> bpnNumbers, JsonNode jsonNode) {
+	private void setConstraint(List<Policies> usagePolicies, List<String> bpnNumbers, JsonNode jsonNode) {
 
 		String leftOperand = getFieldFromJsonNode(jsonNode, "odrl:leftOperand");
 		String rightOperand = getFieldFromJsonNode(jsonNode, "odrl:rightOperand");
@@ -175,7 +173,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 		if (leftOperand.equals("BusinessPartnerNumber")) {
 			bpnNumbers.add(rightOperand);
 		} else {
-			UsagePolicies policyResponse = UtilityFunctions.identyAndGetUsagePolicy(leftOperand, rightOperand);
+			Policies policyResponse = UtilityFunctions.identyAndGetUsagePolicy(leftOperand, rightOperand);
 			if (policyResponse != null)
 				usagePolicies.add(policyResponse);
 		}
@@ -197,16 +195,12 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
 		var recipientURL = UtilityFunctions.removeLastSlashOfUrl(consumerRequest.getProviderUrl());
 
-		List<UsagePolicies> policies = consumerRequest.getPolicies();
+		List<Policies> policies = consumerRequest.getPolicies();
 
-		Optional<UsagePolicies> findFirst = policies.stream()
-				.filter(type -> type.getType().equals(UsagePolicyEnum.CUSTOM)).findFirst();
+		
 
-		if (findFirst.isPresent()) {
-			extensibleProperty.put(findFirst.get().getType().name(), findFirst.get().getValue());
-		}
-
-		ActionRequest action = policyConstraintBuilderService.getUsagePolicyConstraints(policies);
+		
+		ActionRequest action = policyConstraintBuilderService.getUsagePoliciesConstraints(policies);
 		consumerRequest.getOffers().parallelStream().forEach(offer -> {
 			try {
 

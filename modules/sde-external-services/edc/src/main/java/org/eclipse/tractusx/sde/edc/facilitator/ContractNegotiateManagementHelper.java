@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
+import org.eclipse.tractusx.sde.common.entities.Policies;
 import org.eclipse.tractusx.sde.edc.api.ContractApi;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ActionRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
@@ -100,7 +100,7 @@ public class ContractNegotiateManagementHelper extends AbstractEDCStepsHelper {
 					getAuthHeader());
 		}
 		if (agreement != null) {
-			List<UsagePolicies> policies = new ArrayList<>();
+			List<Policies> policies = new ArrayList<>();
 			Object permissionObj = agreement.getPolicy().getPermissions();
 			
 			if (permissionObj instanceof ArrayList) {
@@ -111,9 +111,9 @@ public class ContractNegotiateManagementHelper extends AbstractEDCStepsHelper {
 			}
 			
 			if (policies.isEmpty())
+			
 				UtilityFunctions.getUsagePolicies(policies, List.of());
 			
-			UtilityFunctions.addCustomUsagePolicy(agreement.getPolicy().getExtensibleProperties(), policies);
 			
 			ContractAgreementInfo agreementInfo = ContractAgreementInfo.builder()
 					.contractEndDate(agreement.getContractEndDate())
@@ -130,7 +130,7 @@ public class ContractNegotiateManagementHelper extends AbstractEDCStepsHelper {
 		return agreementResponse;
 	}
 
-	private void formatPermissionConstraint(ObjectMapper objeMapper, List<UsagePolicies> policies,
+	private void formatPermissionConstraint(ObjectMapper objeMapper, List<Policies> policies,
 			Object permissionObj) {
 		ObjectMapper objMapper = new ObjectMapper();
 		PermissionRequest permissionRequest = objMapper.convertValue(permissionObj, PermissionRequest.class);
@@ -145,7 +145,7 @@ public class ContractNegotiateManagementHelper extends AbstractEDCStepsHelper {
 		}
 	}
 
-	private void setContraint(ObjectMapper objeMapper, List<UsagePolicies> policies, Object object) {
+	private void setContraint(ObjectMapper objeMapper, List<Policies> policies, Object object) {
 		if (object instanceof ArrayList) {
 			List<ConstraintRequest> convertValue = objeMapper.convertValue(object,
 					new TypeReference<List<ConstraintRequest>>() {

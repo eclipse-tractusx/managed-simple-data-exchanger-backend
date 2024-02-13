@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2023, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -26,31 +26,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.entities.Policies;
 import org.eclipse.tractusx.sde.common.entities.PolicyTemplateRequest;
 import org.eclipse.tractusx.sde.common.entities.PolicyTemplateType;
-import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
-import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import jakarta.validation.ConstraintValidatorContext;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class ValidationService {
 
-	public boolean isValid(List<UsagePolicies> usagePolicies) {
-		if (usagePolicies != null && !CollectionUtils.isEmpty(usagePolicies)) {
-			boolean validateFlag = false;
-			for (UsagePolicies usagePolicy : usagePolicies) {
-				validateFlag = validatePolicy(usagePolicy);
-				if (!validateFlag) {
-					break;
-				}
-			}
-			return validateFlag;
-		} else {
-			return false;
-		}
-	}
-	
 	public boolean isPolicyTemplateRequestValid(PolicyTemplateRequest policy,
 			ConstraintValidatorContext constraintValidatorContext) {
 
@@ -68,23 +53,11 @@ public class ValidationService {
 
 		return true;
 	}
-	
+
 	private boolean extracted(PolicyTemplateRequest policy, ConstraintValidatorContext constraintValidatorContext) {
 		boolean access = accessPoliciesValidation(policy.getAccessPolicies(), constraintValidatorContext);
 		boolean usage = usagePoliciesValidation(policy.getUsagePolicies(), constraintValidatorContext);
 		return access && usage;
-	}
-
-	private boolean validatePolicy(UsagePolicies usagePolicy) {
-
-		boolean isValid = false;
-		if (usagePolicy.getTypeOfAccess().equals(PolicyAccessEnum.UNRESTRICTED)
-				|| (usagePolicy.getTypeOfAccess().equals(PolicyAccessEnum.RESTRICTED)
-						&& StringUtils.isNotBlank(usagePolicy.getValue()))) {
-			isValid = true;
-		}
-
-		return isValid;
 	}
 
 	public boolean policyName(String name, ConstraintValidatorContext constraintValidatorContext) {
@@ -109,7 +82,6 @@ public class ValidationService {
 
 		return isValid;
 	}
-
 
 	public boolean usagePoliciesValidation(List<Policies> usagePolicies,
 			ConstraintValidatorContext constraintValidatorContext) {

@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2023, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -21,7 +21,7 @@
 package org.eclipse.tractusx.sde.common.validators;
 
 import org.eclipse.tractusx.sde.common.entities.PolicyTemplateRequest;
-import org.eclipse.tractusx.sde.common.entities.SubmodelJsonReq;
+import org.eclipse.tractusx.sde.common.entities.SubmodelJsonRequest;
 import org.springframework.stereotype.Service;
 
 import jakarta.validation.ConstraintValidator;
@@ -29,7 +29,7 @@ import jakarta.validation.ConstraintValidatorContext;
 
 @Service
 public class PolicyTemplateValidationAsPojo
-		implements ConstraintValidator<ValidatePolicyTemplate, SubmodelJsonReq> {
+		implements ConstraintValidator<ValidatePolicyTemplate, SubmodelJsonRequest> {
 
 	private final ValidationService validationService;
 
@@ -43,7 +43,7 @@ public class PolicyTemplateValidationAsPojo
 	}
 
 	@Override
-	public boolean isValid(SubmodelJsonReq obj, ConstraintValidatorContext constraintValidatorContext) {
+	public boolean isValid(SubmodelJsonRequest obj, ConstraintValidatorContext constraintValidatorContext) {
 
 		PolicyTemplateRequest policyTemplateRequest = PolicyTemplateRequest.builder()
 				.type(obj.getType())

@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2023, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -72,11 +72,14 @@ public class SubmodelCsvService {
 
 		List<List<String>> records = new LinkedList<>();
 		Submodel schemaObj = submodelService.findSubmodelByNameAsSubmdelObject(submodel);
-		JsonObject schemaObject = schemaObj.getSchema();
-
-		Object autoPopulatefieldObj=  schemaObj.getProperties().get("autoPopulatedfields");
-		
-		List<String> headerName = createCSVColumnHeader(schemaObject, autoPopulatefieldObj);
+		Object autoPopulatefieldObj = schemaObj.getProperties().get("autoPopulatedfields");
+		List<String> headerName = getCSVHeader(schemaObj, autoPopulatefieldObj);
+		headerName.add("shell_id");
+		headerName.add("sub_model_id");
+		headerName.add("asset_id");
+		headerName.add("usage_policy_id");
+		headerName.add("access_policy_id");
+		headerName.add("contract_defination_id");
 
 		records.add(headerName);
 
@@ -89,6 +92,11 @@ public class SubmodelCsvService {
 		records.addAll(submodelCustomHistoryGenerator.findAllSubmodelCsvHistory(coloumns, tableName, processId));
 
 		return records;
+	}
+
+	public List<String> getCSVHeader(Submodel schemaObj, Object autoPopulatefieldObj) {
+		JsonObject schemaObject = schemaObj.getSchema();
+		return createCSVColumnHeader(schemaObject, autoPopulatefieldObj);
 	}
 
 	private List<String> createCSVColumnHeader(JsonObject schemaObject, Object autoPopulatefieldObj) {
@@ -104,13 +112,6 @@ public class SubmodelCsvService {
 			List<String> autoPopulatefield = (List<String>) autoPopulatefieldObj;
 			headerName.addAll(autoPopulatefield);
 		}
-
-		headerName.add("shell_id");
-		headerName.add("sub_model_id");
-		headerName.add("asset_id");
-		headerName.add("usage_policy_id");
-		headerName.add("access_policy_id");
-		headerName.add("contract_defination_id");
 		return headerName;
 	}
 

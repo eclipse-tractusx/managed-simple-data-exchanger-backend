@@ -24,7 +24,7 @@ package org.eclipse.tractusx.sde.submodels.spt.model;
 
 import java.util.List;
 
-import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
+import org.eclipse.tractusx.sde.common.entities.Policies;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -56,7 +56,7 @@ public class Aspect {
     private String typeOfAccess;
     
     @JsonProperty(value ="usage_policies")
-    private List<UsagePolicies> usagePolicies;
+    private List<Policies> usagePolicies;
     
     @JsonProperty(value ="uuid")
     private String uuid;

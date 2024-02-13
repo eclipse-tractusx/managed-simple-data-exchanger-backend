@@ -21,7 +21,7 @@ package org.eclipse.tractusx.sde.submodels.slbap.model;
 
 import java.util.List;
 
-import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
+import org.eclipse.tractusx.sde.common.entities.Policies;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -72,7 +72,7 @@ public class SingleLevelBoMAsPlanned {
 	private String typeOfAccess;
 
 	@JsonProperty(value = "usage_policies")
-	private List<UsagePolicies> usagePolicies;
+	private List<Policies> usagePolicies;
 	
 	@JsonProperty(value = "parent_uuid")
 	private String parentUuid;

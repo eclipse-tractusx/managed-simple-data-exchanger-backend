@@ -25,6 +25,7 @@ package org.eclipse.tractusx.sde.core.processreport.model;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.eclipse.tractusx.sde.common.entities.Policies;
 import org.eclipse.tractusx.sde.common.enums.ProgressStatusEnum;
 
 import lombok.AllArgsConstructor;
@@ -46,9 +47,9 @@ public class ProcessReport {
     private ProgressStatusEnum status;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-    private List<String> bpnNumbers;
-    private String typeOfAccess;
-    private String usagePolicies;
+    private String policyUuid;
+    private List<Policies> accessPolicies;
+	private List<Policies> usagePolicies;
     private int numberOfUpdatedItems;
 	private int numberOfDeletedItems;
 	private String referenceProcessId;

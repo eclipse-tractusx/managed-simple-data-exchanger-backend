@@ -1,6 +1,6 @@
 #################################################################################
 # Copyright (c) 2022,2023 T-Systems International GmbH
-# Copyright (c) 2022,2023 Contributors to the Eclipse Foundation
+# Copyright (c) 2022,2023,2024 Contributors to the Eclipse Foundation
 #
 # See the NOTICE file(s) distributed with this work for additional
 # information regarding copyright ownership.
@@ -31,7 +31,7 @@ RUN mvn clean install
 
 # our final base image
 
-FROM eclipse-temurin:17.0.9_9-jdk-jammy
+FROM eclipse-temurin:17.0.10_7-jdk-focal
 
 ARG USERNAME=sdeuser
 ARG USER_UID=1001

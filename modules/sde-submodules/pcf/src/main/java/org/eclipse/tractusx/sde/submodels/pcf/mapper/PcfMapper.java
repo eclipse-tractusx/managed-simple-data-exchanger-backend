@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2023 T-Systems International GmbH
- * Copyright (c) 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023, 2024 T-Systems International GmbH
+ * Copyright (c) 2023, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -21,6 +21,7 @@ package org.eclipse.tractusx.sde.submodels.pcf.mapper;
 
 import java.util.List;
 
+import org.eclipse.tractusx.sde.common.mapper.AspectResponseFactory;
 import org.eclipse.tractusx.sde.submodels.pcf.entity.PcfEntity;
 import org.eclipse.tractusx.sde.submodels.pcf.model.CompanyIds;
 import org.eclipse.tractusx.sde.submodels.pcf.model.CrossSectoralStandardsUsed;
@@ -35,6 +36,7 @@ import org.eclipse.tractusx.sde.submodels.pcf.model.ProductOrSectorSpecificRules
 import org.eclipse.tractusx.sde.submodels.pcf.model.SecondaryEmissionFactorSources;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,11 +51,13 @@ public abstract class PcfMapper {
 	
 	@Value(value = "${manufacturerId}")
 	private String manufacturerId;
-
+	
+	@Autowired
+	private AspectResponseFactory aspectResponseFactory;
+	
 	ObjectMapper mapper = new ObjectMapper();
 
-	@Mapping(target = "rowNumberforPcf", ignore = true)
-	@Mapping(target = "subModelIdforPcf", ignore = true)
+	//@Mapping(target = "aspect.rowNumber", ignore = true)
 	public abstract PcfAspect mapFrom(PcfEntity aspect);
 
 	public abstract PcfEntity mapFrom(PcfAspect aspect);
@@ -77,6 +81,8 @@ public abstract class PcfMapper {
 			return null;
 		}
 
+		PcfAspect csvObj = mapFrom(entity);
+		
 		Pcf pcfResponse = Pcf.builder()
 				.biogenicCarbonEmissionsOtherThanCO2(entity.getBiogenicCarbonEmissionsOtherThanCO2())
 				.distributionStagePcfExcludingBiogenic(entity.getDistributionStagePcfExcludingBiogenic())
@@ -137,8 +143,7 @@ public abstract class PcfMapper {
 				.carbonContentBiogenic(entity.getCarbonContentBiogenic())
 				.build();
 		
-		
-		return new Gson().toJsonTree(PcfSubmodelResponse.builder()
+		PcfSubmodelResponse build=PcfSubmodelResponse.builder()
 				.specVersion(entity.getSpecVersion())
 				.companyIds(List.of(CompanyIds.builder()
 						.companyId(entity.getCompanyId())
@@ -165,7 +170,9 @@ public abstract class PcfMapper {
 				.precedingPfIds(List.of(PrecedingPfIds.builder()
 						.id(entity.getPrecedingPfId())
 						.build()))
-				.build()).getAsJsonObject();
+				.build();
+		
+		return aspectResponseFactory.maptoReponse(csvObj, build);
 
 	}
 

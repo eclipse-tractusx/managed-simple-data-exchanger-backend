@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseException;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
@@ -50,10 +51,10 @@ public class DigitalTwinsPartSiteInformationAsPlannedHandlerStep extends Step {
 	private final DigitalTwinsUtility digitalTwinsUtility;
 
 	@SneakyThrows
-	public PartSiteInformationAsPlanned run(PartSiteInformationAsPlanned partSiteInformationAsPlannedAspect)
-			throws CsvHandlerDigitalTwinUseCaseException {
+	public PartSiteInformationAsPlanned run(PartSiteInformationAsPlanned partSiteInformationAsPlannedAspect,
+			PolicyModel policy) throws CsvHandlerDigitalTwinUseCaseException {
 		try {
-			return doRun(partSiteInformationAsPlannedAspect);
+			return doRun(partSiteInformationAsPlannedAspect, policy);
 		} catch (Exception e) {
 			throw new CsvHandlerUseCaseException(partSiteInformationAsPlannedAspect.getRowNumber(),
 					": DigitalTwins: " + e.getMessage());
@@ -61,29 +62,29 @@ public class DigitalTwinsPartSiteInformationAsPlannedHandlerStep extends Step {
 	}
 
 	@SneakyThrows
-	private PartSiteInformationAsPlanned doRun(PartSiteInformationAsPlanned partSiteInformationAsPlannedAspect)
-			throws CsvHandlerDigitalTwinUseCaseException {
+	private PartSiteInformationAsPlanned doRun(PartSiteInformationAsPlanned partSiteInformationAsPlannedAspect,
+			PolicyModel policy) throws CsvHandlerDigitalTwinUseCaseException {
+
 		ShellLookupRequest shellLookupRequest = getShellLookupRequest(partSiteInformationAsPlannedAspect);
 		List<String> shellIds = digitalTwinsFacilitator.shellLookup(shellLookupRequest);
 
 		String shellId;
 
+		ShellDescriptorRequest aasDescriptorRequest = digitalTwinsUtility.getShellDescriptorRequest(
+				partSiteInformationAsPlannedAspect.getNameAtManufacturer(),
+				partSiteInformationAsPlannedAspect.getManufacturerPartId(),
+				partSiteInformationAsPlannedAspect.getUuid(), getSpecificAssetIds(partSiteInformationAsPlannedAspect),
+				policy);
+
 		if (shellIds.isEmpty()) {
 			logDebug(String.format("No shell id for '%s'", shellLookupRequest.toJsonString()));
-			
-			ShellDescriptorRequest aasDescriptorRequest = digitalTwinsUtility.getShellDescriptorRequest(
-					getSpecificAssetIds(partSiteInformationAsPlannedAspect), partSiteInformationAsPlannedAspect);
-			
+
 			ShellDescriptorResponse result = digitalTwinsFacilitator.createShellDescriptor(aasDescriptorRequest);
 			shellId = result.getIdentification();
 			logDebug(String.format("Shell created with id '%s'", shellId));
 		} else if (shellIds.size() == 1) {
 			logDebug(String.format("Shell id found for '%s'", shellLookupRequest.toJsonString()));
 			shellId = shellIds.stream().findFirst().orElse(null);
-			
-			digitalTwinsFacilitator.updateShellSpecificAssetIdentifiers(shellId,
-					digitalTwinsUtility.getSpecificAssetIds(getSpecificAssetIds(partSiteInformationAsPlannedAspect),
-							partSiteInformationAsPlannedAspect.getBpnNumbers()));
 
 			logDebug(String.format("Shell id '%s'", shellId));
 		} else {
@@ -95,8 +96,8 @@ public class DigitalTwinsPartSiteInformationAsPlannedHandlerStep extends Step {
 		SubModelListResponse subModelResponse = digitalTwinsFacilitator.getSubModels(shellId);
 		SubModelResponse foundSubmodel = null;
 		if (subModelResponse != null) {
-			foundSubmodel = subModelResponse.getResult().stream().filter(x -> getIdShortOfModel().equals(x.getIdShort()))
-					.findFirst().orElse(null);
+			foundSubmodel = subModelResponse.getResult().stream()
+					.filter(x -> getIdShortOfModel().equals(x.getIdShort())).findFirst().orElse(null);
 			if (foundSubmodel != null)
 				partSiteInformationAsPlannedAspect.setSubModelId(foundSubmodel.getId());
 		}
@@ -105,16 +106,18 @@ public class DigitalTwinsPartSiteInformationAsPlannedHandlerStep extends Step {
 			logDebug(String.format("No submodels for '%s'", shellId));
 			CreateSubModelRequest createSubModelRequest = digitalTwinsUtility.getCreateSubModelRequest(
 					partSiteInformationAsPlannedAspect.getShellId(), getsemanticIdOfModel(), getIdShortOfModel());
-			digitalTwinsFacilitator.createSubModel(shellId, createSubModelRequest);
+			digitalTwinsFacilitator.updateShellDetails(shellId, aasDescriptorRequest, createSubModelRequest);
 			partSiteInformationAsPlannedAspect.setSubModelId(createSubModelRequest.getId());
 		} else {
+			//There is no need to send submodel because of nothing to change in it so sending null of it
+			digitalTwinsFacilitator.updateShellDetails(shellId, aasDescriptorRequest, null);
 			partSiteInformationAsPlannedAspect.setUpdated(CommonConstants.UPDATED_Y);
 			logDebug("Complete Digital Twins Update Update Digital Twins");
 		}
 
 		return partSiteInformationAsPlannedAspect;
 	}
-	
+
 	private ShellLookupRequest getShellLookupRequest(PartSiteInformationAsPlanned partSiteInformationAsPlannedAspect) {
 
 		ShellLookupRequest shellLookupRequest = new ShellLookupRequest();
@@ -126,7 +129,8 @@ public class DigitalTwinsPartSiteInformationAsPlannedHandlerStep extends Step {
 
 	private Map<String, String> getSpecificAssetIds(PartSiteInformationAsPlanned partSiteInformationAsPlannedAspect) {
 		Map<String, String> specificIdentifiers = new HashMap<>();
-		specificIdentifiers.put(CommonConstants.MANUFACTURER_PART_ID, partSiteInformationAsPlannedAspect.getManufacturerPartId());
+		specificIdentifiers.put(CommonConstants.MANUFACTURER_PART_ID,
+				partSiteInformationAsPlannedAspect.getManufacturerPartId());
 		specificIdentifiers.put(CommonConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId());
 		specificIdentifiers.put(CommonConstants.ASSET_LIFECYCLE_PHASE, CommonConstants.AS_PLANNED);
 

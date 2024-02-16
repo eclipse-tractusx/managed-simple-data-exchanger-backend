@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2023 T-Systems International GmbH
- * Copyright (c) 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023, 2024 T-Systems International GmbH
+ * Copyright (c) 2023, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -36,9 +36,11 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class EDRRequestHelper extends AbstractEDCStepsHelper {
 
 	private final EDRApiProxy edrApiProxy;
@@ -49,10 +51,12 @@ public class EDRRequestHelper extends AbstractEDCStepsHelper {
 			ActionRequest action, Map<String, String> extensibleProperty) {
 
 		ContractNegotiations contractNegotiations = contractMapper
-				.prepareContractNegotiations(providerUrl + protocolPath, offerId, assetId, providerId, action);
-
-		AcknowledgementId acknowledgementId = edrApiProxy.edrCacheCreate(new URI(consumerHostWithDataPath), contractNegotiations,
-				getAuthHeader());
+				.prepareContractNegotiations(providerUrl, offerId, assetId, providerId, action);
+		
+		log.info(contractNegotiations.toJsonString());
+		
+		AcknowledgementId acknowledgementId = edrApiProxy.edrCacheCreate(new URI(consumerHostWithDataPath),
+				contractNegotiations, getAuthHeader());
 		return acknowledgementId.getId();
 	}
 
@@ -63,14 +67,16 @@ public class EDRRequestHelper extends AbstractEDCStepsHelper {
 
 	@SneakyThrows
 	public EDRCachedByIdResponse getEDRCachedByTransferProcessId(String transferProcessId) {
-		return edrApiProxy.getEDRCachedByTransferProcessId(new URI(consumerHostWithDataPath), transferProcessId, getAuthHeader());
+		return edrApiProxy.getEDRCachedByTransferProcessId(new URI(consumerHostWithDataPath), transferProcessId,
+				getAuthHeader());
 	}
 
 	@SneakyThrows
-	public Object getDataFromProvider(EDRCachedByIdResponse authorizationToken) {
+	public Object getDataFromProvider(EDRCachedByIdResponse authorizationToken, String endpoint) {
 		Map<String, String> authHeader = new HashMap<>();
 		authHeader.put(authorizationToken.getAuthKey(), authorizationToken.getAuthCode());
-		return edrApiProxy.getActualDataFromProviderDataPlane(new URI(authorizationToken.getEndpoint()), authHeader);
+		return edrApiProxy.getActualDataFromProviderDataPlane(new URI(endpoint),
+				authHeader);
 	}
 
 }

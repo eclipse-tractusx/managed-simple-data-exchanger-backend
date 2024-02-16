@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -27,13 +27,13 @@ import org.springframework.lang.NonNull;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 
 @Data
 @Builder
@@ -42,14 +42,15 @@ import lombok.NoArgsConstructor;
 @JsonInclude(Include.NON_NULL)
 public class ConsumerRequest {
 
-    @NonNull
-    private String connectorId;
-    @NonNull
-    private String providerUrl;
-    @NonNull
-    @NotEmpty
-    private List<OfferRequest> offers;
-    @NonNull
-    private List<Policies> policies;
+	@NonNull
+	@NotEmpty
+	private List<Offer> offers;
+	
+	@NonNull
+	@JsonProperty("usage_policies")
+	private List<Policies> usagePolicies;
+
+	@Builder.Default
+	private String downloadDataAs = "csv";
 
 }

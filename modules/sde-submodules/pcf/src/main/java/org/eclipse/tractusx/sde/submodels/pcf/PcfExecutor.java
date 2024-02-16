@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2023 T-Systems International GmbH
- * Copyright (c) 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023, 2024 T-Systems International GmbH
+ * Copyright (c) 2023, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -26,6 +26,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.bpndiscovery.handler.BPNDiscoveryUseCaseHandler;
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.entities.csv.RowData;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseException;
 import org.eclipse.tractusx.sde.common.submodel.executor.SubmodelExecutor;
@@ -50,7 +51,7 @@ import lombok.SneakyThrows;
 @Component
 @AllArgsConstructor
 public class PcfExecutor extends SubmodelExecutor {
-	
+
 	private final PcfMapper pcfMapperforPcf;
 
 	private final CsvParse csvParseStepforPcf;
@@ -66,41 +67,41 @@ public class PcfExecutor extends SubmodelExecutor {
 	private final EDCPcfHandlerUseCase eDCAspectHandlerUseCaseforPcf;
 
 	private final StorePcfCsvHandlerUseCase storeAspectCsvHandlerUseCaseforPcf;
-	
-	private final BPNDiscoveryUseCaseHandler bPNDiscoveryUseCaseHandlerforPcf; 
+
+	private final BPNDiscoveryUseCaseHandler bPNDiscoveryUseCaseHandlerforPcf;
 
 	private final PcfService aspectServiceforPcf;
 
 	@SneakyThrows
-	public void executeCsvRecord(RowData rowData, ObjectNode jsonObject, String processId) {
+	public void executeCsvRecord(RowData rowData, ObjectNode jsonObject, String processId, PolicyModel policy) {
 
 		csvParseStepforPcf.init(getSubmodelSchema());
 		csvParseStepforPcf.run(rowData, jsonObject, processId);
 
-		nextStepsforPcf(rowData.position(), jsonObject, processId);
+		nextStepsforPcf(rowData.position(), jsonObject, processId, policy);
 
 	}
 
 	@SneakyThrows
-	public void executeJsonRecord(Integer rowIndex, ObjectNode jsonObject, String processId) {
+	public void executeJsonRecord(Integer rowIndex, ObjectNode jsonObject, String processId, PolicyModel policy) {
 
 		jsonRecordformaterforPcf.init(getSubmodelSchema());
 		jsonRecordformaterforPcf.run(rowIndex, jsonObject, processId);
 
-		nextStepsforPcf(rowIndex, jsonObject, processId);
+		nextStepsforPcf(rowIndex, jsonObject, processId, policy);
 
 	}
 
 	@SneakyThrows
-	private void nextStepsforPcf(Integer rowIndex, ObjectNode jsonObject, String processId)
+	private void nextStepsforPcf(Integer rowIndex, ObjectNode jsonObject, String processId, PolicyModel policy)
 			throws CsvHandlerDigitalTwinUseCaseException {
 
-		//Setting uuid for global asset id use
+		// Setting uuid for global asset id use
 		jsonObject.put("uuid", jsonObject.get("id").asText());
-		//setting this fields for digital twin shell short id generation
+		// setting this fields for digital twin shell short id generation
 		jsonObject.put("manufacturer_part_id", jsonObject.get("productId").asText());
 		jsonObject.put("name_at_manufacturer", jsonObject.get("companyName").asText());
-		
+
 		generateUrnUUIDforPcf.run(jsonObject, processId);
 
 		jsonRecordValidateforPcf.init(getSubmodelSchema());
@@ -108,15 +109,13 @@ public class PcfExecutor extends SubmodelExecutor {
 
 		PcfAspect pcfAspect = pcfMapperforPcf.mapFrom(jsonObject);
 
-		
-		
 		digitalTwinsAspectCsvHandlerUseCaseforPcf.init(getSubmodelSchema());
-		digitalTwinsAspectCsvHandlerUseCaseforPcf.run(pcfAspect);
+		digitalTwinsAspectCsvHandlerUseCaseforPcf.run(pcfAspect, policy);
 
 		eDCAspectHandlerUseCaseforPcf.init(getSubmodelSchema());
-		eDCAspectHandlerUseCaseforPcf.run(getNameOfModel(), pcfAspect, processId);
-		
-		if (StringUtils.isBlank(pcfAspect.getUpdatedforPcf())) {
+		eDCAspectHandlerUseCaseforPcf.run(getNameOfModel(), pcfAspect, processId, policy);
+
+		if (StringUtils.isBlank(pcfAspect.getUpdated())) {
 			Map<String, String> bpnKeyMap = new HashMap<>();
 			bpnKeyMap.put(CommonConstants.MANUFACTURER_PART_ID, pcfAspect.getProductId());
 			bPNDiscoveryUseCaseHandlerforPcf.run(bpnKeyMap);
@@ -144,6 +143,5 @@ public class PcfExecutor extends SubmodelExecutor {
 	public int getUpdatedRecordCount(String processId) {
 		return aspectServiceforPcf.getUpdatedData(processId);
 	}
-
 
 }

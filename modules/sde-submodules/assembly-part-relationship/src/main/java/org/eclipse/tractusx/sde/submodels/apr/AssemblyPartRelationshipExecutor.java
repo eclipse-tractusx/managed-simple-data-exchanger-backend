@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -27,6 +27,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.bpndiscovery.handler.BPNDiscoveryUseCaseHandler;
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.entities.csv.RowData;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseException;
 import org.eclipse.tractusx.sde.common.submodel.executor.SubmodelExecutor;
@@ -72,27 +73,27 @@ public class AssemblyPartRelationshipExecutor extends SubmodelExecutor {
 	private final AspectRelationshipService aspectRelationshipService;
 
 	@SneakyThrows
-	public void executeCsvRecord(RowData rowData, ObjectNode jsonObject, String processId) {
+	public void executeCsvRecord(RowData rowData, ObjectNode jsonObject, String processId, PolicyModel policy) {
 
 		csvParseStep.init(getSubmodelSchema());
 		csvParseStep.run(rowData, jsonObject, processId);
 
-		nextSteps(rowData.position(), jsonObject, processId);
+		nextSteps(rowData.position(), jsonObject, processId, policy);
 
 	}
 
 	@SneakyThrows
-	public void executeJsonRecord(Integer rowIndex, ObjectNode jsonObject, String processId) {
+	public void executeJsonRecord(Integer rowIndex, ObjectNode jsonObject, String processId, PolicyModel policy) {
 
 		jsonRecordformater.init(getSubmodelSchema());
 		jsonRecordformater.run(rowIndex, jsonObject, processId);
 		
-		nextSteps(rowIndex, jsonObject, processId);
+		nextSteps(rowIndex, jsonObject, processId, policy);
 
 	}
 
 	@SneakyThrows
-	private void nextSteps(Integer rowIndex, ObjectNode jsonObject, String processId)
+	private void nextSteps(Integer rowIndex, ObjectNode jsonObject, String processId, PolicyModel policy)
 			throws CsvHandlerDigitalTwinUseCaseException {
 
 		AspectRelationship aspectRelationship = aspectRelationshipMapper.mapFrom(jsonObject);
@@ -101,10 +102,10 @@ public class AssemblyPartRelationshipExecutor extends SubmodelExecutor {
 		jsonRecordValidate.run(rowIndex, jsonObject);
 
 		digitalTwinsAspectRelationShipCsvHandlerUseCase.init(getSubmodelSchema());
-		digitalTwinsAspectRelationShipCsvHandlerUseCase.run(aspectRelationship);
+		digitalTwinsAspectRelationShipCsvHandlerUseCase.run(aspectRelationship, policy);
 
 		eDCAspectRelationshipHandlerUseCase.init(getSubmodelSchema());
-		eDCAspectRelationshipHandlerUseCase.run(getNameOfModel(), aspectRelationship, processId);
+		eDCAspectRelationshipHandlerUseCase.run(getNameOfModel(), aspectRelationship, processId, policy);
 		
 		if (StringUtils.isBlank(aspectRelationship.getUpdated())) {
 			Map<String, String> bpnKeyMap = new HashMap<>();

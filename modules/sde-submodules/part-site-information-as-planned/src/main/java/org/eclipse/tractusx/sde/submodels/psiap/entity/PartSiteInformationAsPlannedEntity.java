@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,66 +19,44 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.submodels.psiap.entity;
 
-import java.io.Serializable;
+import org.eclipse.tractusx.sde.common.entities.CommonPropEntity;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Table(name = "Part_site_information_as_planned")
 @Entity
 @Data
-public class PartSiteInformationAsPlannedEntity implements Serializable {
+@JsonIgnoreProperties(ignoreUnknown = true)
+@EqualsAndHashCode(callSuper = false)
+public class PartSiteInformationAsPlannedEntity extends CommonPropEntity {
 
-	    @Id
-	    @Column(name = "uuid")
-	    private String uuid;
-	    
-	    @Column(name = "process_id")
-	    private String processId;
-	    
-	    @Column(name = "manufacturer_part_id")
-	    private String manufacturerPartId;
-	    
-	    @Column(name = "name_at_manufacturer")
-	    private String nameAtManufacturer;
-	    
-	    @Column(name = "catenax_site_id")
-	    private String catenaXSiteId;
-	    
-	    @Column(name = "function")
-	    private String function;
-	    
-	    @Column(name = "function_valid_from")
-	    private String functionValidFrom;
-	    
-	    @Column(name = "function_valid_until")
-	    private String functionValidUntil;
+	@Id
+	@Column(name = "uuid")
+	private String uuid;
 
-	    @Column(name = "shell_id")
-	    private String shellId;
-	    
-	    @Column(name = "sub_model_id")
-	    private String subModelId;
-	    
-	    @Column(name = "contract_defination_id")
-	    private String contractDefinationId;
-	    
-	    @Column(name = "usage_policy_id")
-	    private String usagePolicyId;
-	    
-	    @Column(name = "access_policy_id")
-	    private String accessPolicyId;
-	    
-	    @Column(name = "asset_id")
-	    private String assetId;
-	    
-	    @Column(name = "deleted")
-	    private String deleted;
-	    
-	    @Column(name = "updated")
-	    private String updated;
+	@Column(name = "manufacturer_part_id")
+	private String manufacturerPartId;
+
+	@Column(name = "name_at_manufacturer")
+	private String nameAtManufacturer;
+
+	@Column(name = "catenax_site_id")
+	private String catenaXSiteId;
+
+	@Column(name = "function")
+	private String function;
+
+	@Column(name = "function_valid_from")
+	private String functionValidFrom;
+
+	@Column(name = "function_valid_until")
+	private String functionValidUntil;
 
 }

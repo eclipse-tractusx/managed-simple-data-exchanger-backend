@@ -1,0 +1,124 @@
+/********************************************************************************
+ * Copyright (c) 2024 T-Systems International GmbH
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ ********************************************************************************/
+package org.eclipse.tractusx.sde.edc.util;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.eclipse.tractusx.sde.common.exception.ServiceException;
+import org.eclipse.tractusx.sde.edc.entities.request.policies.ActionRequest;
+import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyConstraintBuilderService;
+import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedByIdResponse;
+import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedResponse;
+import org.eclipse.tractusx.sde.edc.model.request.Offer;
+import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
+import org.eclipse.tractusx.sde.edc.services.ContractNegotiationService;
+import org.springframework.stereotype.Service;
+
+import feign.FeignException;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class EDCAssetUrlCacheService {
+
+	private static final Map<String, LocalDateTime> dDTRmap = new ConcurrentHashMap<>();
+
+	private final ContractNegotiationService contractNegotiationService;
+	private final PolicyConstraintBuilderService policyConstraintBuilderService;
+
+	private final DDTRUrlCacheUtility dDTRUrlCacheUtility;
+
+	@SneakyThrows
+	public EDRCachedByIdResponse verifyAndGetToken(String bpnNumber, QueryDataOfferModel queryDataOfferModel) {
+
+		ActionRequest action = policyConstraintBuilderService
+				.getUsagePoliciesConstraints(queryDataOfferModel.getPolicy().getUsagePolicies());
+
+		Offer offer = Offer.builder().assetId(queryDataOfferModel.getAssetId())
+				.offerId(queryDataOfferModel.getOfferId())
+				.policyId(queryDataOfferModel.getPolicyId())
+				.connectorId(queryDataOfferModel.getConnectorId())
+				.connectorOfferUrl(queryDataOfferModel.getConnectorOfferUrl())
+				.build();
+		try {
+			EDRCachedResponse eDRCachedResponse = contractNegotiationService.verifyOrCreateContractNegotiation(
+					bpnNumber, Map.of(), queryDataOfferModel.getConnectorOfferUrl(), action, offer);
+
+			if (eDRCachedResponse == null) {
+				throw new ServiceException("Time out!! to get 'NEGOTIATED' EDC EDR status to lookup '"
+						+ queryDataOfferModel.getAssetId() + "', The current status is null");
+			} else if (!"NEGOTIATED".equalsIgnoreCase(eDRCachedResponse.getEdrState())) {
+				throw new ServiceException(
+						"Time out!! to get 'NEGOTIATED' EDC EDR status to lookup  '" + queryDataOfferModel.getAssetId()
+								+ "', The current status is '" + eDRCachedResponse.getEdrState() + "'");
+			} else
+				return contractNegotiationService
+						.getAuthorizationTokenForDataDownload(eDRCachedResponse.getTransferProcessId());
+
+		} catch (FeignException e) {
+			log.error("FeignException Request : " + e.request());
+			String errorMsg = "Unable to look up offer because: " + e.contentUTF8();
+			log.error("FeignException : " + errorMsg);
+		} catch (Exception e) {
+			String errorMsg = "Unable to look up offer because: " + e.getMessage();
+			log.error("Exception : " + errorMsg);
+		}
+
+		return null;
+	}
+
+	public List<QueryDataOfferModel> getDDTRUrl(String bpnNumber) {
+
+		LocalDateTime cacheExpTime = dDTRmap.get(bpnNumber);
+		LocalDateTime currDate = LocalDateTime.now();
+
+		if (cacheExpTime == null)
+			cacheExpTime = currDate.plusHours(12);
+		else if (currDate.isAfter(cacheExpTime)) {
+			dDTRUrlCacheUtility.removeDDTRUrlCache(bpnNumber);
+			cacheExpTime = currDate.plusHours(12);
+		}
+		dDTRmap.put(bpnNumber, cacheExpTime);
+		List<QueryDataOfferModel> ddtrUrl = dDTRUrlCacheUtility.getDDTRUrl(bpnNumber);
+		if (ddtrUrl.isEmpty()) {
+			log.info("Found connector list empty so removing existing cache and retry to fetch");
+			removeDDTRUrlCache(bpnNumber);
+			ddtrUrl = dDTRUrlCacheUtility.getDDTRUrl(bpnNumber);
+		}
+		return ddtrUrl;
+	}
+
+	public void clearDDTRUrlCache() {
+		dDTRmap.clear();
+		dDTRUrlCacheUtility.cleareDDTRUrlAllCache();
+	}
+
+	public void removeDDTRUrlCache(String bpnNumber) {
+		dDTRUrlCacheUtility.removeDDTRUrlCache(bpnNumber);
+		dDTRmap.remove(bpnNumber);
+	}
+
+}

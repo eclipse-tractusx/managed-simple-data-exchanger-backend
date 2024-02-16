@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -36,17 +36,10 @@ public class AssetEntryRequestFactory {
     private static final String ASSET_PROP_CONTENT_TYPE = "application/json";
     private static final String ASSET_PROP_TYPE = "data.core.digitalTwin.submodel";
     private static final String ASSET_PROP_VERSION = "1.0.0";
-    private static final String NAME = "Backend Data Service - AAS Server";
     private static final String TYPE = "HttpData";
     private static final String DATE_FORMATTER = "dd/MM/yyyy HH:mm:ss";
 	private static final String ASSET_PROP_POLICYID = "use-eu";
 	
-    @Value(value = "${dft.apiKeyHeader}")
-    private String apiKeyHeader;
-    
-    @Value(value = "${dft.apiKey}")
-    private String apiKey;
-    
     @Value(value = "${dft.hostname}")
     private String dftHostname;
     
@@ -62,7 +55,6 @@ public class AssetEntryRequestFactory {
     @Value(value = "${digital-twins.authentication.clientId}")
     private String clientId;
 
-    
     public AssetEntryRequest getAssetRequest(String submodel, String assetName, String shellId, String subModelId, String uuid) {
         return buildAsset(submodel, shellId, subModelId, assetName, uuid);
     }
@@ -71,7 +63,6 @@ public class AssetEntryRequestFactory {
         String assetId = shellId + "-" + subModelId;
         
         HashMap<String, String> assetProperties = getAssetProperties(assetId, assetName);
-        AssetRequest assetRequest = AssetRequest.builder().id(assetId).properties(assetProperties).build();
 
         String uriString = subModelPayloadUrl(submodel, uuid);
 
@@ -79,7 +70,8 @@ public class AssetEntryRequestFactory {
         DataAddressRequest dataAddressRequest = DataAddressRequest.builder().properties(dataAddressProperties).build();
 
         return AssetEntryRequest.builder()
-                .asset(assetRequest)
+                .id(assetId)
+                .properties(assetProperties)
                 .dataAddress(dataAddressRequest)
                 .build();
     }
@@ -103,7 +95,6 @@ public class AssetEntryRequestFactory {
         assetProperties.put(EDCAssetConstant.ASSET_PROP_CONTENTTYPE, ASSET_PROP_CONTENT_TYPE);
         assetProperties.put(EDCAssetConstant.ASSET_PROP_DESCRIPTION, assetName);
         assetProperties.put(EDCAssetConstant.ASSET_PROP_VERSION, ASSET_PROP_VERSION);
-        assetProperties.put(EDCAssetConstant.ASSET_PROP_PUBLISHER, manufacturerId+":"+edcEndpoint);
         assetProperties.put(EDCAssetConstant.ASSET_PROP_CREATED, date);
         assetProperties.put(EDCAssetConstant.ASSET_PROP_MODIFIED, date);
         return assetProperties;
@@ -113,7 +104,6 @@ public class AssetEntryRequestFactory {
 		HashMap<String, String> dataAddressProperties = new HashMap<>();
 		dataAddressProperties.put("type", TYPE);
 		dataAddressProperties.put("baseUrl", String.format(endpoint, shellId, subModelId));
-		dataAddressProperties.put("name", NAME);
 		dataAddressProperties.put("oauth2:tokenUrl", idpIssuerTokenURL);
 		dataAddressProperties.put("oauth2:clientId", clientId);
 		dataAddressProperties.put("oauth2:clientSecretKey", "client-secret");

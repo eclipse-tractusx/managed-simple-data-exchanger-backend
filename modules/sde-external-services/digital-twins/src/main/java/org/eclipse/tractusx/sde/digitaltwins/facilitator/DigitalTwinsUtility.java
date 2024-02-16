@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -23,12 +23,15 @@ import static org.eclipse.tractusx.sde.common.constants.CommonConstants.ASSET_LI
 import static org.eclipse.tractusx.sde.common.constants.CommonConstants.MANUFACTURER_PART_ID;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
+import org.eclipse.tractusx.sde.common.utils.PolicyOperationUtil;
 import org.eclipse.tractusx.sde.common.utils.UUIdGenerator;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.Endpoint;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.ExternalSubjectId;
@@ -39,6 +42,7 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.common.SecurityAttributes;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.SemanticId;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.CreateSubModelRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellDescriptorRequest;
+import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellLookupRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -57,32 +61,30 @@ public class DigitalTwinsUtility {
 	private static final String PUBLIC_READABLE = "PUBLIC_READABLE";
 
 	@Value(value = "${manufacturerId}")
-	private String manufacturerId;
+	public String manufacturerId;
 
 	@Value(value = "${edc.hostname}${edc.dsp.endpointpath:/api/v1/dsp}")
-	private String digitalTwinEdcDspEndpoint;
-	
+	public String digitalTwinEdcDspEndpoint;
+
 	@Value(value = "${edc.hostname}${edc.dataplane.endpointpath:/api/public}")
-	private String digitalTwinEdcDataplaneEndpoint;
-	
+	public String digitalTwinEdcDataplaneEndpoint;
+
 	ObjectMapper mapper = new ObjectMapper();
 
 	private static final Map<String, List<String>> publicReadableSpecificAssetIDs = Map.of(MANUFACTURER_PART_ID,
 			List.of("*"), ASSET_LIFECYCLE_PHASE, List.of("AsBuilt", "AsPlanned"));
 
 	@SneakyThrows
-	public ShellDescriptorRequest getShellDescriptorRequest(Map<String, String> specificIdentifiers, Object object) {
-
-		JsonNode jsonNode = mapper.convertValue(object, ObjectNode.class);
-
-		List<String> bpns = getFieldFromJsonNodeArray(jsonNode, "bpn_numbers");
+	public ShellDescriptorRequest getShellDescriptorRequest(String nameAtManufacturer, String manufacturerPartId,
+			String uuid, Map<String, String> specificIdentifiers, PolicyModel policy) {
 
 		return ShellDescriptorRequest.builder()
-				.idShort(String.format("%s_%s_%s", getFieldFromJsonNode(jsonNode, "name_at_manufacturer"),
-						manufacturerId, getFieldFromJsonNode(jsonNode, "manufacturer_part_id")))
-				.globalAssetId(getFieldFromJsonNode(jsonNode, "uuid"))
-				.specificAssetIds(getSpecificAssetIds(specificIdentifiers, bpns)).description(List.of())
-				.id(UUIdGenerator.getUrnUuid()).build();
+				.idShort(String.format("%s_%s_%s", nameAtManufacturer, manufacturerId, manufacturerPartId))
+				.globalAssetId(uuid)
+				.specificAssetIds(getSpecificAssetIds(specificIdentifiers, policy))
+				.description(List.of())
+				.id(UUIdGenerator.getUrnUuid())
+				.build();
 	}
 
 	@SneakyThrows
@@ -114,8 +116,7 @@ public class DigitalTwinsUtility {
 	public List<Endpoint> prepareDtEndpoint(String shellId, String submodelIdentification) {
 		List<Endpoint> endpoints = new ArrayList<>();
 		endpoints.add(Endpoint.builder().endpointInterface(CommonConstants.INTERFACE)
-				.protocolInformation(ProtocolInformation.builder()
-						.endpointAddress(digitalTwinEdcDataplaneEndpoint)
+				.protocolInformation(ProtocolInformation.builder().endpointAddress(digitalTwinEdcDataplaneEndpoint)
 						.endpointProtocol(CommonConstants.HTTP)
 						.endpointProtocolVersion(List.of(CommonConstants.ENDPOINT_PROTOCOL_VERSION))
 						.subProtocol(CommonConstants.SUB_PROTOCOL)
@@ -128,30 +129,25 @@ public class DigitalTwinsUtility {
 	}
 
 	@SneakyThrows
-	public List<Object> getSpecificAssetIds(Map<String, String> specificAssetIds, List<String> bpns) {
+	public List<Object> getSpecificAssetIds(Map<String, String> specificAssetIds, PolicyModel policy) {
 
 		List<Object> specificIdentifiers = new ArrayList<>();
-		
-		List<Keys> keyList = bpnKeyRefrence(bpns);
-		
+
+		List<Keys> keyList = bpnKeyRefrence(PolicyOperationUtil.getAccessBPNList(policy));
+
 		specificAssetIds.entrySet().stream().forEach(entry -> {
 
 			List<String> list = publicReadableSpecificAssetIDs.get(entry.getKey());
 			ExternalSubjectId externalSubjectId = null;
 
 			if (list != null && (list.contains("*") || list.contains(entry.getValue()))) {
-				externalSubjectId = ExternalSubjectId.builder()
-						.type("ExternalReference")
-						.keys(List.of(Keys.builder().type("GlobalReference").value(PUBLIC_READABLE).build()))
-						.build();
+				externalSubjectId = ExternalSubjectId.builder().type("ExternalReference")
+						.keys(List.of(Keys.builder().type("GlobalReference").value(PUBLIC_READABLE).build())).build();
 				specificIdentifiers.add(new KeyValuePair(entry.getKey(), entry.getValue(), externalSubjectId));
-			}
-			else {
+			} else {
 				if (keyList != null && !keyList.isEmpty() && !entry.getValue().isEmpty()) {
-					
-					externalSubjectId = ExternalSubjectId.builder()
-							.type("ExternalReference").keys(keyList)
-							.build();
+
+					externalSubjectId = ExternalSubjectId.builder().type("ExternalReference").keys(keyList).build();
 					specificIdentifiers.add(new KeyValuePair(entry.getKey(), entry.getValue(), externalSubjectId));
 
 				} else {
@@ -168,9 +164,7 @@ public class DigitalTwinsUtility {
 
 	private List<Keys> bpnKeyRefrence(List<String> bpns) {
 		if (bpns != null && !(bpns.size() == 1 && bpns.contains(manufacturerId))) {
-			return bpns.stream()
-					.map(bpn -> Keys.builder().type("GlobalReference").value(bpn).build())
-					.toList();
+			return bpns.stream().map(bpn -> Keys.builder().type("GlobalReference").value(bpn).build()).toList();
 		}
 		return Collections.emptyList();
 	}
@@ -192,6 +186,24 @@ public class DigitalTwinsUtility {
 
 		else
 			return List.of();
+	}
+
+	public ShellLookupRequest getShellLookupRequest(Map<String, String> specificAssetIds) {
+
+		ShellLookupRequest shellLookupRequest = new ShellLookupRequest();
+		specificAssetIds.entrySet().stream()
+				.forEach(entry -> shellLookupRequest.addLocalIdentifier(entry.getKey(), entry.getValue()));
+
+		return shellLookupRequest;
+	}
+
+	public String encodeAssetIdsObject(String assetIdsList) {
+
+		return encodeShellIdBase64Utf8(assetIdsList.replace("[", "").replace("]", ""));
+	}
+
+	public String encodeShellIdBase64Utf8(String shellId) {
+		return Base64.getUrlEncoder().encodeToString(shellId.getBytes());
 	}
 
 }

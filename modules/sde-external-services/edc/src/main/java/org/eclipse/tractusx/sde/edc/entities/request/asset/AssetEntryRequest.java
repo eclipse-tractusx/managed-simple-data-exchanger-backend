@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -21,6 +21,7 @@
 
 package org.eclipse.tractusx.sde.edc.entities.request.asset;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -40,10 +41,16 @@ public class AssetEntryRequest {
 
 	@JsonProperty("@context")
 	@Builder.Default
-	private Map<String,String> context = Map.of();
+	private Map<String,String> context = Map.of("edc", "https://w3id.org/edc/v0.0.1/ns/",
+	        "oauth2", "https://datatracker.ietf.org/doc/html/rfc6749",
+	        "dcat", "https://www.w3.org/ns/dcat/",
+	        "rdfs", "http://www.w3.org/2000/01/rdf-schema#");
 
-	private AssetRequest asset;
+	@JsonProperty("@id")
+	private String id;
+	private HashMap<String, String> properties;
 	private DataAddressRequest dataAddress;
+	
 
 	@SneakyThrows
 	public String toJsonString() {

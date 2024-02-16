@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -37,6 +37,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 @FeignClient(name = "ContractApi", url = "placeholder")
 public interface ContractApi {
 
@@ -66,5 +68,18 @@ public interface ContractApi {
 	ResponseEntity<Object> cancelContract(URI url,
 			@PathVariable("contractnegotiationsId") String contractnegotiationsId,
 			@RequestHeader Map<String, String> requestHeader);
+
+	@PostMapping(path = "/contractagreements/request", consumes = MediaType.APPLICATION_JSON_VALUE)
+	List<JsonNode> getAllContractAgreements(URI url, @RequestHeader Map<String, String> requestHeader,
+			@RequestBody JsonNode rquestBody);
+	
+	@GetMapping(path = "/contractagreements/{contractAgreement}/negotiation")
+	ContractNegotiationDto getContractAgreementsNegotiation(URI url, @PathVariable("contractAgreement") String contractAgreement,
+			@RequestHeader Map<String, String> requestHeader);
+
+	
+	@PostMapping(path = "/transferprocesses/request", consumes = MediaType.APPLICATION_JSON_VALUE)
+	List<JsonNode> getAllTransfer(URI uri, @RequestHeader Map<String, String> providerAuthHeader,
+			@RequestBody JsonNode body);
 
 }

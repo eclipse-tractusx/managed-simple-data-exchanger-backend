@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2023 T-Systems International GmbH
- * Copyright (c) 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023, 2024 T-Systems International GmbH
+ * Copyright (c) 2023, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -52,11 +52,12 @@ public class PcfService {
 	public List<JsonObject> readCreatedTwinsforDelete(String refProcessId) {
 
 		return Optional
-				.ofNullable(Optional.ofNullable(pcfRepository.findByProcessIdforPcf(refProcessId)).filter(a -> !a.isEmpty())
-						.orElseThrow(() -> new NoDataFoundException(
-								String.format("No data found for processid %s ", refProcessId)))
-						.stream().filter(e -> !DELETED_Y.equals(e.getDeletedforPcf())).map(pcfMapper::mapFromEntity)
-						.toList())
+				.ofNullable(
+						Optional.ofNullable(pcfRepository.findByProcessId(refProcessId)).filter(a -> !a.isEmpty())
+								.orElseThrow(() -> new NoDataFoundException(
+										String.format("No data found for processid %s ", refProcessId)))
+								.stream().filter(e -> !DELETED_Y.equals(e.getDeleted())).map(pcfMapper::mapFromEntity)
+								.toList())
 				.filter(a -> !a.isEmpty()).orElseThrow(
 						() -> new NoDataFoundException("No data founds for deletion, All records are already deleted"));
 
@@ -68,25 +69,24 @@ public class PcfService {
 
 		deleteEDCAsset(pcfEntity);
 
-		deleteDigitalTwinsFacilitator.deleteSubmodelfromShellById(pcfEntity.getShellIdforPcf(),
-				pcfEntity.getSubModelIdforPcf());
+		deleteDigitalTwinsFacilitator.deleteSubmodelfromShellById(pcfEntity.getShellId(), pcfEntity.getSubModelId());
 
 		saveAspectWithDeleted(pcfEntity);
 	}
 
 	public void deleteEDCAsset(PcfEntity pcfEntity) {
 
-		deleteEDCFacilitator.deleteContractDefination(pcfEntity.getContractDefinationIdforPcf());
+		deleteEDCFacilitator.deleteContractDefination(pcfEntity.getContractDefinationId());
 
-		deleteEDCFacilitator.deleteAccessPolicy(pcfEntity.getAccessPolicyIdforPcf());
+		deleteEDCFacilitator.deleteAccessPolicy(pcfEntity.getAccessPolicyId());
 
-		deleteEDCFacilitator.deleteUsagePolicy(pcfEntity.getUsagePolicyIdforPcf());
+		deleteEDCFacilitator.deleteUsagePolicy(pcfEntity.getUsagePolicyId());
 
-		deleteEDCFacilitator.deleteAssets(pcfEntity.getAssetIdforPcf());
+		deleteEDCFacilitator.deleteAssets(pcfEntity.getAssetId());
 	}
 
 	private void saveAspectWithDeleted(PcfEntity pcfEntity) {
-		pcfEntity.setDeletedforPcf(DELETED_Y);
+		pcfEntity.setDeleted(DELETED_Y);
 		pcfRepository.save(pcfEntity);
 	}
 
@@ -94,10 +94,21 @@ public class PcfService {
 		return pcfMapper.mapToResponse(readEntity(uuid));
 	}
 
+	public JsonObject readCreatedTwinsDetailsByProductId(String productId) {
+		return pcfMapper.mapToResponse(readEntityByProductId(productId));
+	}
+
 	public PcfEntity readEntity(String id) {
 		Optional<PcfEntity> findById = pcfRepository.findById(id);
 		if (!findById.isPresent())
 			throw new NoDataFoundException("No data found uuid " + id);
+		return findById.get();
+	}
+
+	public PcfEntity readEntityByProductId(String productId) {
+		Optional<PcfEntity> findById = pcfRepository.findByProductId(productId);
+		if (!findById.isPresent())
+			throw new NoDataFoundException("No data found productId " + productId);
 		return findById.get();
 	}
 

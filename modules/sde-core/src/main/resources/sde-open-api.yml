@@ -1,6 +1,6 @@
 #********************************************************************************
-# Copyright (c) 2023 T-Systems International GmbH
-# Copyright (c) 2023 Contributors to the Eclipse Foundation
+# Copyright (c) 2024 T-Systems International GmbH
+# Copyright (c) 2024 Contributors to the Eclipse Foundation
 #
 # See the NOTICE file(s) distributed with this work for additional
 # information regarding copyright ownership.
@@ -24,7 +24,7 @@ info:
   description: This Service handles all DFT data provider and consumer operations
   version: '1.0'
 servers:
-  - url: https://dft-api.int.demo.catena-x.net/api
+  - url: http://localhost:8080/api
     description: Generated server url
 security:
   - bearerAuth: []
@@ -33,7 +33,7 @@ paths:
     post:
       tags:
         - submodel-process-controller
-      operationId: fileUpload
+      operationId: upload
       parameters:
         - name: submodel
           in: path
@@ -67,7 +67,7 @@ paths:
     post:
       tags:
         - submodel-process-controller
-      operationId: createSubmodelAssets
+      operationId: manualentry
       parameters:
         - name: submodel
           in: path
@@ -78,7 +78,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SubmodelJsonRequestObjectNode'
+              $ref: '#/components/schemas/SubmodelJsonRequest'
         required: true
       responses:
         '200':
@@ -87,6 +87,38 @@ paths:
             '*/*':
               schema:
                 type: string
+  /subscribe-download-data-offers:
+    post:
+      tags:
+        - consumer-controller
+      operationId: subscribeAndDownloadDataOffersSynchronous
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConsumerRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+  /subscribe-download-data-offers-async:
+    post:
+      tags:
+        - consumer-controller
+      operationId: subscribeAndDownloadDataOffersAsync
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConsumerRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
   /subscribe-data-offers:
     post:
       tags:
@@ -141,7 +173,6 @@ paths:
             '*/*':
               schema:
                 type: array
-                maxItems: 3
                 items:
                   type: string
     post:
@@ -159,7 +190,6 @@ paths:
           application/json:
             schema:
               type: array
-              maxItems: 3
               items:
                 type: string
         required: true
@@ -170,6 +200,60 @@ paths:
             '*/*':
               schema:
                 type: string
+  /policy-hub/policy-content:
+    get:
+      tags:
+        - policy-hub-controller
+      operationId: policyContent_1
+      parameters:
+        - name: useCase
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: type
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: credential
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: operatorId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: value
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/JsonNode'
+    post:
+      tags:
+        - policy-hub-controller
+      operationId: policyContent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PolicyContentRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/JsonNode'
   /contract-agreements/{negotiationId}/provider/decline:
     post:
       tags:
@@ -234,7 +318,6 @@ paths:
           application/json:
             schema:
               type: array
-              maxItems: 3
               items:
                 type: string
         required: true
@@ -245,7 +328,6 @@ paths:
             '*/*':
               schema:
                 type: array
-                maxItems: 3
                 items:
                   $ref: '#/components/schemas/ConnectorInfo'
   /{submodel}/public/{uuid}:
@@ -264,6 +346,12 @@ paths:
           required: true
           schema:
             type: string
+        - name: type
+          in: query
+          required: false
+          schema:
+            type: string
+            default: json
       responses:
         '200':
           description: OK
@@ -273,6 +361,49 @@ paths:
                 type: object
                 additionalProperties:
                   type: object
+  /view-download-history:
+    get:
+      tags:
+        - consumer-controller
+      operationId: viewConsumerDownloadHistory
+      parameters:
+        - name: page
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /view-download-history/{processId}:
+    get:
+      tags:
+        - consumer-controller
+      operationId: viewConsumerDownloadHistoryDetails
+      parameters:
+        - name: processId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
   /user/role/permissions:
     get:
       tags:
@@ -285,7 +416,6 @@ paths:
             '*/*':
               schema:
                 type: array
-                maxItems: 3
                 items:
                   type: string
   /usecases:
@@ -300,7 +430,6 @@ paths:
             '*/*':
               schema:
                 type: array
-                maxItems: 3
                 items:
                   type: object
                   additionalProperties:
@@ -334,7 +463,6 @@ paths:
           required: false
           schema:
             type: array
-            maxItems: 3
             items:
               type: string
       responses:
@@ -344,7 +472,6 @@ paths:
             '*/*':
               schema:
                 type: array
-                maxItems: 3
                 items:
                   type: object
                   additionalProperties:
@@ -380,7 +507,6 @@ paths:
           required: false
           schema:
             type: array
-            maxItems: 3
             items:
               type: string
       responses:
@@ -390,7 +516,6 @@ paths:
             '*/*':
               schema:
                 type: array
-                maxItems: 3
                 items:
                   type: object
                   additionalProperties:
@@ -401,9 +526,19 @@ paths:
         - consumer-controller
       operationId: queryOnDataOffers
       parameters:
-        - name: providerUrl
+        - name: manufacturerPartId
           in: query
-          required: true
+          required: false
+          schema:
+            type: string
+        - name: bpnNumber
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: submodel
+          in: query
+          required: false
           schema:
             type: string
         - name: maxLimit
@@ -473,10 +608,8 @@ paths:
             application/json:
               schema:
                 type: array
-                maxItems: 3
                 items:
                   type: array
-                  maxItems: 3
                   items:
                     type: string
   /processing-report/{id}:
@@ -515,9 +648,47 @@ paths:
             application/json:
               schema:
                 type: array
-                maxItems: 3
                 items:
                   $ref: '#/components/schemas/ProcessFailureDetails'
+  /policy-hub/policy-types:
+    get:
+      tags:
+        - policy-hub-controller
+      operationId: policyTypes
+      parameters:
+        - name: type
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: useCase
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PolicyTypeResponse'
+  /policy-hub/policy-attributes:
+    get:
+      tags:
+        - policy-hub-controller
+      operationId: policyAttributes
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  type: string
   /ping:
     get:
       tags:
@@ -560,9 +731,48 @@ paths:
             '*/*':
               schema:
                 type: array
-                maxItems: 3
                 items:
                   $ref: '#/components/schemas/LegalEntityResponse'
+  /getEDCPolicy:
+    get:
+      tags:
+        - consumer-controller
+      operationId: getEDCPolicy
+      parameters:
+        - name: queryDataOfferRequest
+          in: query
+          required: true
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/QueryDataOfferRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /download-data-offers:
+    get:
+      tags:
+        - consumer-controller
+      operationId: downloadFileFromEDCUsingifAlreadyTransferStatusCompleted
+      parameters:
+        - name: processId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: type
+          in: query
+          required: false
+          schema:
+            type: string
+            default: csv
+      responses:
+        '200':
+          description: OK
   /contract-agreements/{negotiationId}/consumer/decline:
     get:
       tags:
@@ -696,85 +906,88 @@ paths:
           description: OK
 components:
   schemas:
-    SubmodelJsonRequestObjectNode:
+    Policies:
       type: object
       properties:
-        row_data:
-          type: array
-          maxItems: 3
-          items:
-            type: object
-        type_of_access:
+        technicalKey:
           type: string
-        bpn_numbers:
+        value:
           type: array
-          maxItems: 3
           items:
             type: string
-        usage_policies:
-          type: array
-          maxItems: 3
-          items:
-            $ref: '#/components/schemas/UsagePolicies'
-    UsagePolicies:
+    SubmodelJsonRequest:
+      required:
+        - row_data
       type: object
       properties:
+        uuid:
+          type: string
+        lastUpdatedTime:
+          type: string
+          format: date-time
         type:
           type: string
           enum:
-            - DURATION
-            - PURPOSE
-            - ROLE
-            - CUSTOM
-        value:
+            - NONE
+            - EXISTING
+            - NEW
+        policy_name:
           type: string
-        typeOfAccess:
-          type: string
-          enum:
-            - RESTRICTED
-            - UNRESTRICTED
-        durationUnit:
-          type: string
-          enum:
-            - YEAR
-            - MONTH
-            - DAY
-            - HOUR
-            - MINUTE
-            - SECOND
+        access_policies:
+          type: array
+          items:
+            $ref: '#/components/schemas/Policies'
+        usage_policies:
+          type: array
+          items:
+            $ref: '#/components/schemas/Policies'
+        row_data:
+          type: array
+          items:
+            type: object
     ConsumerRequest:
       required:
-        - connectorId
         - offers
-        - policies
-        - providerUrl
+        - usage_policies
+      type: object
+      properties:
+        offers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Offer'
+        downloadDataAs:
+          type: string
+        usage_policies:
+          type: array
+          items:
+            $ref: '#/components/schemas/Policies'
+    Offer:
+      required:
+        - assetId
+        - connectorId
+        - connectorOfferUrl
+        - offerId
       type: object
       properties:
         connectorId:
           type: string
-        providerUrl:
+        connectorOfferUrl:
           type: string
-        offers:
-          type: array
-          maxItems: 3
-          items:
-            $ref: '#/components/schemas/OfferRequest'
-        policies:
-          type: array
-          maxItems: 3
-          items:
-            $ref: '#/components/schemas/UsagePolicies'
-    OfferRequest:
-      required:
-        - assetId
-        - offerId
-      type: object
-      properties:
         offerId:
           type: string
         assetId:
           type: string
         policyId:
+          type: string
+        agreementId:
+          type: string
+        expirationDate:
+          type: string
+        transferProcessId:
+          type: string
+        status:
+          type: string
+        downloadErrorMsg:
           type: string
     RolePojo:
       type: object
@@ -783,6 +996,38 @@ components:
           type: string
         description:
           type: string
+    Constraint:
+      type: object
+      properties:
+        key:
+          type: string
+        operator:
+          type: string
+          enum:
+            - EQUALS
+            - IN
+        value:
+          type: string
+    PolicyContentRequest:
+      type: object
+      properties:
+        policyType:
+          type: string
+          enum:
+            - ACCESS
+            - USAGE
+            - PURPOSE
+        constraintOperand:
+          type: string
+          enum:
+            - AND
+            - OR
+        constraints:
+          type: array
+          items:
+            $ref: '#/components/schemas/Constraint'
+    JsonNode:
+      type: object
     ConnectorInfo:
       type: object
       properties:
@@ -790,7 +1035,6 @@ components:
           type: string
         connectorEndpoint:
           type: array
-          maxItems: 3
           items:
             type: string
     UnifiedBpnValidationResponse:
@@ -826,21 +1070,23 @@ components:
             - IN_PROGRESS
             - COMPLETED
             - FAILED
+            - PARTIALLY_FAILED
         startDate:
           type: string
           format: date-time
         endDate:
           type: string
           format: date-time
-        bpnNumbers:
+        policyUuid:
+          type: string
+        accessPolicies:
           type: array
-          maxItems: 3
           items:
-            type: string
-        typeOfAccess:
-          type: string
+            $ref: '#/components/schemas/Policies'
         usagePolicies:
-          type: string
+          type: array
+          items:
+            $ref: '#/components/schemas/Policies'
         numberOfUpdatedItems:
           type: integer
           format: int32
@@ -852,7 +1098,7 @@ components:
     ProcessReportPageResponse:
       type: object
       properties:
-        pageNumber:
+        page:
           type: integer
           format: int32
         pageSize:
@@ -863,7 +1109,6 @@ components:
           format: int64
         items:
           type: array
-          maxItems: 3
           items:
             $ref: '#/components/schemas/ProcessReport'
     ProcessFailureDetails:
@@ -878,6 +1123,34 @@ components:
         dateTime:
           type: string
           format: date-time
+    PolicyAttributeResponse:
+      type: object
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+    PolicyTypeResponse:
+      type: object
+      properties:
+        technicalKey:
+          type: string
+        type:
+          type: array
+          items:
+            type: string
+        description:
+          type: string
+        useCase:
+          type: array
+          items:
+            type: string
+        attribute:
+          type: array
+          items:
+            $ref: '#/components/schemas/PolicyAttributeResponse'
+        technicalEnforced:
+          type: boolean
     LegalEntityResponse:
       type: object
       properties:
@@ -885,6 +1158,33 @@ components:
           type: string
         bpn:
           type: string
+    PolicyModel:
+      type: object
+      properties:
+        uuid:
+          type: string
+        lastUpdatedTime:
+          type: string
+          format: date-time
+        policy_name:
+          type: string
+        access_policies:
+          type: array
+          items:
+            $ref: '#/components/schemas/Policies'
+        usage_policies:
+          type: array
+          items:
+            $ref: '#/components/schemas/Policies'
+    QueryDataOfferRequest:
+      type: object
+      properties:
+        assetId:
+          type: string
+        connectorOfferUrl:
+          type: string
+        policy:
+          $ref: '#/components/schemas/PolicyModel'
   securitySchemes:
     bearerAuth:
       type: http

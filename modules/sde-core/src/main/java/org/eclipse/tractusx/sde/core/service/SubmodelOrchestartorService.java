@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023, 2024 T-Systems International GmbH
- * Copyright (c) 2022, 2023, 2024 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -116,7 +116,7 @@ public class SubmodelOrchestartorService {
 					ObjectNode newjObject = jsonObjectMapper.submodelFileRequestToJsonNodePojo(submodelPolicyRequest);
 					newjObject.put(ROW_NUMBER, rowjObj.position());
 					newjObject.put(PROCESS_ID, processId);
-					executor.executeCsvRecord(rowjObj, newjObject, processId);
+					executor.executeCsvRecord(rowjObj, newjObject, processId, submodelPolicyRequest);
 					// fetch by ID and check it if it is success then its updated.
 					successCount.incrementAndGet();
 
@@ -167,7 +167,7 @@ public class SubmodelOrchestartorService {
 
 			rowData.parallelStream().forEachOrdered(rowjObj -> {
 				try {
-					executor.executeJsonRecord(rowjObj.get(ROW_NUMBER).asInt(), rowjObj, processId);
+					executor.executeJsonRecord(rowjObj.get(ROW_NUMBER).asInt(), rowjObj, processId, policy);
 					successCount.incrementAndGet();
 				} catch (Exception e) {
 					failureLogs.saveLog(processId, e.getMessage());

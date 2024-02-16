@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2024 T-Systems International GmbH
- * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
+ * Copyright (c) 2024 T-Systems International GmbH
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,21 +17,31 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
+package org.eclipse.tractusx.sde.common.utils;
 
-package org.eclipse.tractusx.sde.common.exception;
+import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
+import org.eclipse.tractusx.sde.common.entities.Policies;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 
-@Slf4j
-public class ServiceException extends Exception {
+public class PolicyOperationUtil {
+	
+	private PolicyOperationUtil() {}
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	public ServiceException(String exceptionstr) {
-		super(exceptionstr);
-		log.info(exceptionstr);
+	private static List<String> getBPNList(List<Policies> policies) {
+		return policies
+				.stream()
+				.filter(e -> e.getTechnicalKey().equals("BusinessPartnerNumber"))
+				.flatMap(e -> e.getValue().stream())
+				.toList();
 	}
+	
+	public static List<String> getAccessBPNList(PolicyModel policy) {
+		return getBPNList(policy.getAccessPolicies());
+	}
+
+	public static List<String> getUsageBPNList(PolicyModel policy) {
+		return getBPNList(policy.getUsagePolicies());
+	}
+
 }

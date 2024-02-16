@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2024 T-Systems International GmbH
- * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
+ * Copyright (c) 2024 T-Systems International GmbH
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,21 +17,28 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
+package org.eclipse.tractusx.sde.common.entities;
 
-package org.eclipse.tractusx.sde.common.exception;
+import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-@Slf4j
-public class ServiceException extends Exception {
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+@Data
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(Include.NON_NULL)
+public class Policies {
+	
+	private String technicalKey;
+	private List<String> value;
 
-	public ServiceException(String exceptionstr) {
-		super(exceptionstr);
-		log.info(exceptionstr);
-	}
 }

@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2024 T-Systems International GmbH
- * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
+ * Copyright (c) 2024 T-Systems International GmbH
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -18,20 +18,17 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.common.exception;
+package org.eclipse.tractusx.sde.common.validators;
 
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
-public class ServiceException extends Exception {
+import jakarta.validation.Valid;
+import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	public ServiceException(String exceptionstr) {
-		super(exceptionstr);
-		log.info(exceptionstr);
-	}
+@Validated
+@Component
+public class SpringValidator {
+    public <T> T validate(@Valid T t) {
+        return t;
+    }
 }

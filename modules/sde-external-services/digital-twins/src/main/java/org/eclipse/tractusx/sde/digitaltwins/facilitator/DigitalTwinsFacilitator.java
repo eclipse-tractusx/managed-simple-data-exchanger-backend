@@ -149,9 +149,67 @@ public class DigitalTwinsFacilitator {
 	}
 
 	public void updateShellDetails(String shellId, ShellDescriptorRequest aasDescriptorRequest,
-			CreateSubModelRequest createSubModelRequest) {}
+			CreateSubModelRequest createSubModelRequest) {
+
+		ResponseEntity<ShellDescriptorResponse> shellDescriptorByShellId = digitalTwinsFeignClient
+				.getShellDescriptorByShellId(digitalTwinsUtility.encodeShellIdBase64Utf8(shellId), manufacturerId);
+		
+		if(shellDescriptorByShellId.getStatusCode().is2xxSuccessful()) {
+			ShellDescriptorResponse shellDescriptorResponse = shellDescriptorByShellId.getBody();
+			
+			if (aasDescriptorRequest.getSubmodelDescriptors() == null) {
+				List<CreateSubModelRequest> arrayList = new ArrayList<>();
+				
+				if (createSubModelRequest != null)
+					arrayList.add(createSubModelRequest);
+				
+				aasDescriptorRequest.setSubmodelDescriptors(arrayList);
+			}
+			
+			if (shellDescriptorResponse != null) {
+				
+				shellDescriptorResponse.getSubmodelDescriptors().forEach(e -> 
+					aasDescriptorRequest.getSubmodelDescriptors().add(CreateSubModelRequest.builder()
+							.id(e.getId())
+							.idShort(e.getIdShort())
+							.semanticId(e.getSemanticId())
+							.endpoints(e.getEndpoints())
+							.build())
+				);
+				
+			}
+			
+			aasDescriptorRequest.setId(shellId);
+			
+			ResponseEntity<Void> updateShellDescriptorByShellId = digitalTwinsFeignClient
+					.updateShellDescriptorByShellId(digitalTwinsUtility.encodeShellIdBase64Utf8(shellId),
+							manufacturerId, aasDescriptorRequest);
+			if (updateShellDescriptorByShellId.getStatusCode().is2xxSuccessful()) {
+				log.debug("Shell update successfully : " + aasDescriptorRequest.toJsonString());
+			} else {
+				log.error("Uanble to update Shell  : " + aasDescriptorRequest.toJsonString());
+			}
+			
+		}else {
+			log.error("Shell not found in DT for shell : " + shellId);
+		}
+	}
 	
-	public void updateShellSpecificAssetIdentifiers(String shellId, List<Object> specificAssetIds) {}
+	public void updateShellSpecificAssetIdentifiers(String shellId, List<Object> specificAssetIds) {
+
+		ResponseEntity<Object> deleteShellSpecificAttributes = digitalTwinsFeignClient
+				.deleteShellSpecificAttributes(digitalTwinsUtility.encodeShellIdBase64Utf8(shellId), manufacturerId);
+
+		if (!deleteShellSpecificAttributes.getStatusCode().is2xxSuccessful()) {
+			log.error("Error in shell SpecificAssetIdentifiers deletion: " + specificAssetIds.toString());
+		}
+
+		ResponseEntity<List<Object>> registerSubmodel = digitalTwinsFeignClient.createShellSpecificAttributes(
+				digitalTwinsUtility.encodeShellIdBase64Utf8(shellId), manufacturerId, specificAssetIds);
+		if (registerSubmodel.getStatusCode() != HttpStatus.CREATED) {
+			log.error("Error in shell SpecificAssetIdentifiers deletion: " + registerSubmodel.toString());
+		}
+	}
 
 	public void createSubModel(String shellId, CreateSubModelRequest request) {
 

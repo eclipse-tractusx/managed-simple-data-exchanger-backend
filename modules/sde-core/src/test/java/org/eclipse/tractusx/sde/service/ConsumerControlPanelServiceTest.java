@@ -35,7 +35,7 @@ import org.eclipse.tractusx.sde.bpndiscovery.model.response.BpnDiscoveryResponse
 import org.eclipse.tractusx.sde.bpndiscovery.model.response.BpnDiscoverySearchResponse;
 import org.eclipse.tractusx.sde.common.entities.Policies;
 import org.eclipse.tractusx.sde.common.utils.TokenUtility;
-import org.eclipse.tractusx.sde.core.service.ConsumerService;
+//import org.eclipse.tractusx.sde.core.service.ConsumerService;
 import org.eclipse.tractusx.sde.edc.api.ContractOfferCatalogApi;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ActionRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
@@ -78,8 +78,8 @@ class ConsumerControlPanelServiceTest {
 	@MockBean
 	private TokenUtility keycloakUtil;
 
-	@MockBean
-	private ConsumerService consumerService;
+//	@MockBean
+//	private ConsumerService consumerService;
 
 	@MockBean
 	private IPartnerPoolExternalServiceApi legalEntityDataApi;

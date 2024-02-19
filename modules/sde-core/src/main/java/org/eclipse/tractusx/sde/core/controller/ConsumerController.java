@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.eclipse.tractusx.sde.common.exception.ValidationException;
-import org.eclipse.tractusx.sde.core.service.ConsumerService;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
 import org.eclipse.tractusx.sde.edc.model.request.QueryDataOfferRequest;
 import org.eclipse.tractusx.sde.edc.services.ConsumerControlPanelService;
@@ -53,7 +52,7 @@ public class ConsumerController {
 
 	private final ConsumerControlPanelService consumerControlPanelService;
 
-	private final ConsumerService consumerService;
+//	private final ConsumerService consumerService;
 
 	@GetMapping(value = "/query-data-offers")
 	@PreAuthorize("hasPermission('','consumer_view_contract_offers')")
@@ -102,7 +101,7 @@ public class ConsumerController {
 	public ResponseEntity<Object> subscribeAndDownloadDataOffersAsync(
 			@Valid @RequestBody ConsumerRequest consumerRequest) {
 		log.info("Request recevied : /api/subscribe-download-data-offers-async");
-		return ResponseEntity.ok().body(consumerService.subscribeAndDownloadDataOffersAsync(consumerRequest));
+		return ResponseEntity.ok().body(null);
 	}
 
 	@PostMapping(value = "/subscribe-download-data-offers")
@@ -110,7 +109,7 @@ public class ConsumerController {
 	public void subscribeAndDownloadDataOffersSynchronous(@Valid @RequestBody ConsumerRequest consumerRequest,
 			HttpServletResponse response) {
 		log.info("Request recevied : /api/subscribe-download-data-offers");
-		consumerService.subscribeAndDownloadDataOffersSynchronous(consumerRequest, response);
+//		consumerService.subscribeAndDownloadDataOffersSynchronous(consumerRequest, response);
 	}
 
 	@GetMapping(value = "/download-data-offers")
@@ -120,7 +119,7 @@ public class ConsumerController {
 			@RequestParam(value = "type", defaultValue = "csv", required = false) String type,
 			HttpServletResponse response) throws Exception {
 		log.info("Request received : /api/download-data-offers");
-		consumerService.downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(referenceProcessId, type, response);
+//		consumerService.downloadFileFromEDCUsingifAlreadyTransferStatusCompleted(referenceProcessId, type, response);
 	}
 
 	@GetMapping(value = "/view-download-history")
@@ -130,7 +129,7 @@ public class ConsumerController {
 		page = page == null ? 0 : page;
 		pageSize = pageSize == null ? 10 : pageSize;
 		log.info("Request received : /api/view-download-history");
-		return ok().body(consumerService.viewDownloadHistory(page, pageSize));
+		return ok().body(null);
 	}
 
 	@GetMapping(value = "/view-download-history/{processId}")
@@ -138,7 +137,7 @@ public class ConsumerController {
 	public ResponseEntity<Object> viewConsumerDownloadHistoryDetails(@PathVariable("processId") String processId)
 			throws Exception {
 		log.info("Request received : /api/view-download-history-details");
-		return ok().body(consumerService.viewConsumerDownloadHistoryDetails(processId));
+		return ok().body(null);
 
 	}
 

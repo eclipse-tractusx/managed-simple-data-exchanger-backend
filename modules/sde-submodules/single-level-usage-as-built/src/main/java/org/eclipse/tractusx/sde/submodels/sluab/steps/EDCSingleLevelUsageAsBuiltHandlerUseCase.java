@@ -19,6 +19,7 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.submodels.sluab.steps;
 
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
@@ -91,7 +92,7 @@ public class EDCSingleLevelUsageAsBuiltHandlerUseCase extends Step {
 			SingleLevelUsageAsBuilt input) {
 
 		Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest,
-				input.getBpnNumbers(), input.getUsagePolicies());
+				List.of(), List.of());
 
 		// EDC transaction information for DB
 		input.setAssetId(assetEntryRequest.getId());

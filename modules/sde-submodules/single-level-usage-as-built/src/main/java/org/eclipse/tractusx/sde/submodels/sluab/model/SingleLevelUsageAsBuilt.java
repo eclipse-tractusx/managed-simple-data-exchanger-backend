@@ -19,9 +19,7 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.submodels.sluab.model;
 
-import java.util.List;
-
-import org.eclipse.tractusx.sde.common.entities.Policies;
+import org.eclipse.tractusx.sde.common.entities.CommonPropEntity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -29,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Builder
@@ -36,31 +35,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SingleLevelUsageAsBuilt {
-	
-	private String shellId;
-	private String subModelId;
-	private String usagePolicyId;
-	private String assetId;
-	private String accessPolicyId;
-	private String contractDefinationId;
-	private String deleted;
-	private String updated;
-
-	@JsonProperty(value = "row_number")
-	private Integer rowNumber;
-
-	@JsonProperty(value = "process_id")
-	private String processId;
-
-	@JsonProperty(value = "bpn_numbers")
-	private List<String> bpnNumbers;
-
-	@JsonProperty(value = "type_of_access")
-	private String typeOfAccess;
-
-	@JsonProperty(value = "usage_policies")
-	private List<Policies> usagePolicies;
+@EqualsAndHashCode(callSuper = false)
+public class SingleLevelUsageAsBuilt extends CommonPropEntity {
 	
 	@JsonProperty(value = "uuid")
 	private String childUuid;

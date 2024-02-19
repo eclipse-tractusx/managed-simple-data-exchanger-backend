@@ -19,9 +19,7 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.submodels.slbap.model;
 
-import java.util.List;
-
-import org.eclipse.tractusx.sde.common.entities.Policies;
+import org.eclipse.tractusx.sde.common.entities.CommonPropEntity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -29,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
@@ -36,44 +35,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NoArgsConstructor
-public class SingleLevelBoMAsPlanned {
+@EqualsAndHashCode(callSuper = false)
+public class SingleLevelBoMAsPlanned  extends CommonPropEntity{
 
-	@JsonProperty(value = "shell_id")
-	private String shellId;
-
-	private String subModelId;
-
-	@JsonProperty(value = "row_number")
-	private int rowNumber;
-
-
-	@JsonProperty(value = "process_id")
-	private String processId;
-
-	@JsonProperty(value = "contract_defination_id")
-	private String contractDefinationId;
-
-	@JsonProperty(value = "usage_policy_id")
-	private String usagePolicyId;
-
-	@JsonProperty(value = "asset_id")
-	private String assetId;
-
-	@JsonProperty(value = "access_policy_id")
-	private String accessPolicyId;
-
-	@JsonProperty(value = "deleted")
-	private String deleted;
-
-	@JsonProperty(value = "bpn_numbers")
-	private List<String> bpnNumbers;
-
-	@JsonProperty(value = "type_of_access")
-	private String typeOfAccess;
-
-	@JsonProperty(value = "usage_policies")
-	private List<Policies> usagePolicies;
-	
 	@JsonProperty(value = "parent_uuid")
 	private String parentUuid;
 	
@@ -103,8 +67,5 @@ public class SingleLevelBoMAsPlanned {
 
 	@JsonProperty(value = "last_modified_on")
 	private String lastModifiedOn;
-	
-	@JsonProperty(value = "updated")
-	private String updated;
 	
 }

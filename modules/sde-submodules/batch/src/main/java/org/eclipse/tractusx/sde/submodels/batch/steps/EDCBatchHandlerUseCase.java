@@ -20,6 +20,7 @@
 
 package org.eclipse.tractusx.sde.submodels.batch.steps;
 
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
@@ -88,7 +89,7 @@ public class EDCBatchHandlerUseCase extends Step {
 	private void edcProcessingforBatch(AssetEntryRequest assetEntryRequest, Batch input) {
 
 		Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest,
-				input.getBpnNumbers(), input.getUsagePolicies());
+				List.of(),List.of());
 
 		// EDC transaction information for DB
 		input.setAssetId(assetEntryRequest.getId());

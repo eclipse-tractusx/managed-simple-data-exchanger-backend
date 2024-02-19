@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2023 T-Systems International GmbH
- * Copyright (c) 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023, 2024 T-Systems International GmbH
+ * Copyright (c) 2023, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -43,7 +43,7 @@ public class PcfSubmodelResponse {
 	@SerializedName(value = "extWBCSD_pfStatus")
 	private String extWBCSDPfStatus;
 	private String productName;
-	private double version;
+	private Double version;
 	private Pcf pcf;
 	private String partialFullPcf;
 	private List<ProductIds> productIds;

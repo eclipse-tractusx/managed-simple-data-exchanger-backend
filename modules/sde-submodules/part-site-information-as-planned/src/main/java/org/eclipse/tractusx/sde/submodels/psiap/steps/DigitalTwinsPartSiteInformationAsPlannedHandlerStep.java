@@ -83,7 +83,7 @@ public class DigitalTwinsPartSiteInformationAsPlannedHandlerStep extends Step {
 			
 			digitalTwinsFacilitator.updateShellSpecificAssetIdentifiers(shellId,
 					digitalTwinsUtility.getSpecificAssetIds(getSpecificAssetIds(partSiteInformationAsPlannedAspect),
-							partSiteInformationAsPlannedAspect.getBpnNumbers()));
+							List.of()));
 
 			logDebug(String.format("Shell id '%s'", shellId));
 		} else {

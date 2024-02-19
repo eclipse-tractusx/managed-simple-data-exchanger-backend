@@ -84,7 +84,7 @@ public class DigitalTwinsSingleLevelBoMAsPlannedHandlerStep extends Step {
 			digitalTwinsFacilitator.updateShellSpecificAssetIdentifiers(shellId,
 					digitalTwinsUtility.getSpecificAssetIds(
 							getSpecificAssetIdsForSingleLevel(singleLevelBoMAsPlannedAspect),
-							singleLevelBoMAsPlannedAspect.getBpnNumbers()));
+							List.of()));
 			
 			logDebug(String.format("Shell id '%s'", shellId));
 		} else {

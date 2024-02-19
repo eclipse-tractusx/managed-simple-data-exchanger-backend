@@ -84,7 +84,7 @@ public class DigitalTwinsSingleLevelUsageAsBuiltCsvHandlerUseCase extends Step {
 			digitalTwinsFacilitator.updateShellSpecificAssetIdentifiers(shellId,
 					digitalTwinsUtility.getSpecificAssetIds(
 							getSpecificAssetIdsForSingleLevel(aspectSingleLevelUsageAsBuilt),
-							aspectSingleLevelUsageAsBuilt.getBpnNumbers()));
+							List.of()));
 			
 			logDebug(String.format("Shell id '%s'", shellId));
 		} else {

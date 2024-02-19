@@ -20,6 +20,7 @@
 
 package org.eclipse.tractusx.sde.submodels.pcf.steps;
 
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
@@ -49,8 +50,8 @@ public class EDCPcfHandlerUseCase extends Step {
 
 	@SneakyThrows
 	public PcfAspect run(String submodel, PcfAspect input, String processId) {
-		String shellId = input.getShellIdforPcf();
-		String subModelId = input.getSubModelIdforPcf();
+		String shellId = input.getShellId();
+		String subModelId = input.getSubModelId();
 
 		try {
 
@@ -65,12 +66,12 @@ public class EDCPcfHandlerUseCase extends Step {
 
 				deleteEDCFirstForUpdate(submodel, input, processId);
 				edcProcessingforAspect(assetEntryRequest, input);
-				input.setUpdatedforPcf(CommonConstants.UPDATED_Y);
+				input.setUpdated(CommonConstants.UPDATED_Y);
 			}
 
 			return input;
 		} catch (Exception e) {
-			throw new CsvHandlerUseCaseException(input.getRowNumberforPcf(), "EDC: " + e.getMessage());
+			throw new CsvHandlerUseCaseException(input.getRowNumber(), "EDC: " + e.getMessage());
 		}
 	}
 
@@ -90,13 +91,13 @@ public class EDCPcfHandlerUseCase extends Step {
 	private void edcProcessingforAspect(AssetEntryRequest assetEntryRequest, PcfAspect input) {
 
 		Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest,
-				input.getBpnNumbersforPcf(), input.getUsagePoliciesforPcf());
+				List.of(), List.of());
 
 		// EDC transaction information for DB
-		input.setAssetIdforPcf(assetEntryRequest.getId());
-		input.setAccessPolicyIdforPcf(createEDCAsset.get("accessPolicyId"));
-		input.setUsagePolicyIdforPcf(createEDCAsset.get("usagePolicyId"));
-		input.setContractDefinationIdforPcf(createEDCAsset.get("contractDefinitionId"));
+		input.setAssetId(assetEntryRequest.getId());
+		input.setAccessPolicyId(createEDCAsset.get("accessPolicyId"));
+		input.setUsagePolicyId(createEDCAsset.get("usagePolicyId"));
+		input.setContractDefinationId(createEDCAsset.get("contractDefinitionId"));
 	}
 
 }

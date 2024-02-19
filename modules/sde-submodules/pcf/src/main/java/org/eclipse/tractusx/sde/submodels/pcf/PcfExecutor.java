@@ -116,7 +116,7 @@ public class PcfExecutor extends SubmodelExecutor {
 		eDCAspectHandlerUseCaseforPcf.init(getSubmodelSchema());
 		eDCAspectHandlerUseCaseforPcf.run(getNameOfModel(), pcfAspect, processId);
 		
-		if (StringUtils.isBlank(pcfAspect.getUpdatedforPcf())) {
+		if (StringUtils.isBlank(pcfAspect.getUpdated())) {
 			Map<String, String> bpnKeyMap = new HashMap<>();
 			bpnKeyMap.put(CommonConstants.MANUFACTURER_PART_ID, pcfAspect.getProductId());
 			bPNDiscoveryUseCaseHandlerforPcf.run(bpnKeyMap);

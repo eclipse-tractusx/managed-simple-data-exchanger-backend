@@ -82,7 +82,7 @@ public class DigitalTwinsBatchCsvHandlerUseCase extends Step {
 			shellId = shellIds.stream().findFirst().orElse(null);
 			
 			digitalTwinsFacilitator.updateShellSpecificAssetIdentifiers(shellId,
-					digitalTwinsUtility.getSpecificAssetIds(getSpecificAssetIds(batch), batch.getBpnNumbers()));
+					digitalTwinsUtility.getSpecificAssetIds(getSpecificAssetIds(batch), List.of()));
 			
 			logDebug(String.format("Shell id '%s'", shellId));
 		} else {

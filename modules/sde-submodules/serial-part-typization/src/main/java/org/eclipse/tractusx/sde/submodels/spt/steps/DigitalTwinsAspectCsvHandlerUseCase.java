@@ -79,7 +79,7 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends Step {
 			logDebug(String.format("Shell id found for '%s'", shellLookupRequest.toJsonString()));
 			shellId = shellIds.stream().findFirst().orElse(null);
 			digitalTwinsFacilitator.updateShellSpecificAssetIdentifiers(shellId,
-					digitalTwinsUtility.getSpecificAssetIds(getSpecificAssetIds(aspect), aspect.getBpnNumbers()));
+					digitalTwinsUtility.getSpecificAssetIds(getSpecificAssetIds(aspect), List.of()));
 			logDebug(String.format("Shell id '%s'", shellId));
 		} else {
 			throw new CsvHandlerDigitalTwinUseCaseException(

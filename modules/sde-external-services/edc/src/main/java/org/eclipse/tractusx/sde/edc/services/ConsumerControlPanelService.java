@@ -328,7 +328,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 		String assetId = edrCachedResponseObj.getAssetId();
 		try {
 			edrRequestHelper.getDataFromProvider(
-					getAuthorizationTokenForDataDownload(edrCachedResponseObj.getTransferProcessId()));
+					getAuthorizationTokenForDataDownload(edrCachedResponseObj.getTransferProcessId()),"");
 		} catch (FeignException e) {
 			log.error("RequestBody: " + e.request());
 			String errorMsg = "FeignExceptionton for verifyEDR token " + assetId + "," + e.status() + "::"

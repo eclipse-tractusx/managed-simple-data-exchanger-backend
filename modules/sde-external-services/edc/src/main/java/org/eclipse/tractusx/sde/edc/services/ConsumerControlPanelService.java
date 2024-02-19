@@ -46,7 +46,7 @@ import org.eclipse.tractusx.sde.edc.model.contractoffers.ContractOfferRequestFac
 import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedByIdResponse;
 import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedResponse;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
-import org.eclipse.tractusx.sde.edc.model.request.OfferRequest;
+import org.eclipse.tractusx.sde.edc.model.request.Offer;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.eclipse.tractusx.sde.edc.util.UtilityFunctions;
 import org.springframework.scheduling.annotation.Async;
@@ -244,7 +244,7 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 
 	@SneakyThrows
 	public EDRCachedResponse verifyOrCreateContractNegotiation(String connectorId,
-			Map<String, String> extensibleProperty, String recipientURL, ActionRequest action, OfferRequest offer) {
+			Map<String, String> extensibleProperty, String recipientURL, ActionRequest action, Offer offer) {
 		// Verify if there already EDR process initiated then skip t for again download
 		List<EDRCachedResponse> eDRCachedResponseList = edrRequestHelper.getEDRCachedByAsset(offer.getAssetId());
 		EDRCachedResponse checkContractNegotiationStatus = verifyEDRResponse(eDRCachedResponseList);

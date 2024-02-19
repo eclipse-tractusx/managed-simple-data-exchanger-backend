@@ -32,7 +32,7 @@ import java.util.List;
 import org.eclipse.tractusx.sde.common.entities.Policies;
 import org.eclipse.tractusx.sde.core.controller.ConsumerController;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
-import org.eclipse.tractusx.sde.edc.model.request.OfferRequest;
+import org.eclipse.tractusx.sde.edc.model.request.Offer;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.eclipse.tractusx.sde.edc.services.ConsumerControlPanelService;
 import org.junit.jupiter.api.Test;
@@ -102,9 +102,9 @@ class ConsumerControllerTest {
 	// @Test
 	void testSubscribeDataOffers() throws Exception {
 		doNothing().when(consumerControlPanelService).subscribeDataOffers((ConsumerRequest) any(), anyString());
-		List<OfferRequest> offers = new ArrayList<>();
+		List<Offer> offers = new ArrayList<>();
 		List<Policies> policies = new ArrayList<>();
-		OfferRequest mockOffer = Mockito.mock(OfferRequest.class);
+		Offer mockOffer = Mockito.mock(Offer.class);
 		offers.add(mockOffer);
 		Policies mockPolicy = Mockito.mock(Policies.class);
 		policies.add(mockPolicy);

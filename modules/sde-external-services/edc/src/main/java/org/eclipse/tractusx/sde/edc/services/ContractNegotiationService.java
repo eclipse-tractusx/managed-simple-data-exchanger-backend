@@ -31,9 +31,9 @@ import org.eclipse.tractusx.sde.edc.facilitator.AbstractEDCStepsHelper;
 import org.eclipse.tractusx.sde.edc.facilitator.ContractNegotiateManagementHelper;
 import org.eclipse.tractusx.sde.edc.facilitator.EDRRequestHelper;
 import org.eclipse.tractusx.sde.edc.model.contractnegotiation.ContractNegotiationDto;
-import org.eclipse.tractusx.sde.edc.model.contractnegotiation.Offer;
 import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedByIdResponse;
 import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedResponse;
+import org.eclipse.tractusx.sde.edc.model.request.Offer;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -59,8 +59,8 @@ public class ContractNegotiationService  extends AbstractEDCStepsHelper {
 	public EDRCachedResponse verifyOrCreateContractNegotiation(String connectorId,
 			Map<String, String> extensibleProperty, String recipientURL, ActionRequest action, Offer offer) {
 
-//		if (!offer.getConnectorOfferUrl().endsWith(protocolPath))
-//			recipientURL = recipientURL + protocolPath;
+		if (!offer.getConnectorOfferUrl().endsWith(protocolPath))
+			recipientURL = recipientURL + protocolPath;
 
 		// Verify if there already EDR process initiated then skip it for again download
 		String assetId = offer.getAssetId();
@@ -99,12 +99,12 @@ public class ContractNegotiationService  extends AbstractEDCStepsHelper {
 		String contractAgreementId = null;
 		if (!contractAgreements.isEmpty())
 			for (JsonNode jsonNode : contractAgreements) {
-//				ContractNegotiationDto checkContractAgreementNegotiationStatus = contractNegotiateManagement
-//						.checkContractAgreementNegotiationStatus(getFieldFromJsonNode(jsonNode, "@id"));
-//				if ("FINALIZED".equals(checkContractAgreementNegotiationStatus.getState())) {
-//					contractAgreementId = checkContractAgreementNegotiationStatus.getContractAgreementId();
-//					break;
-//				}
+				ContractNegotiationDto checkContractAgreementNegotiationStatus = contractNegotiateManagement
+						.checkContractAgreementNegotiationStatus(getFieldFromJsonNode(jsonNode, "@id"));
+				if ("FINALIZED".equals(checkContractAgreementNegotiationStatus.getState())) {
+					contractAgreementId = checkContractAgreementNegotiationStatus.getContractAgreementId();
+					break;
+				}
 			}
 
 		return contractAgreementId;

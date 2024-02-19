@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2024 T-Systems International GmbH
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,6 +20,8 @@
 
 package org.eclipse.tractusx.sde.edc.model.request;
 
+import org.springframework.lang.NonNull;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import jakarta.validation.constraints.NotNull;
@@ -33,11 +35,20 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class OfferRequest {
-    @NotNull
-    private String offerId;
-    @NotNull
-    private String assetId;
-    private String policyId;
-}
+public class Offer {
 
+	@NonNull
+	private String connectorId;
+	@NonNull
+	private String connectorOfferUrl;
+	@NotNull
+	private String offerId;
+	@NotNull
+	private String assetId;
+	private String policyId;
+	private String agreementId;
+	private String expirationDate;
+	private String transferProcessId;
+	private String status;
+	private String downloadErrorMsg;
+}

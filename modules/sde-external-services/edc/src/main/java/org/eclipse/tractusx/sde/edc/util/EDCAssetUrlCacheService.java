@@ -27,9 +27,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ActionRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyConstraintBuilderService;
-import org.eclipse.tractusx.sde.edc.model.contractnegotiation.Offer;
 import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedByIdResponse;
 import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedResponse;
+import org.eclipse.tractusx.sde.edc.model.request.Offer;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.eclipse.tractusx.sde.edc.services.ContractNegotiationService;
 import org.springframework.stereotype.Service;
@@ -55,15 +55,14 @@ public class EDCAssetUrlCacheService {
 	public EDRCachedByIdResponse verifyAndGetToken(String bpnNumber, QueryDataOfferModel queryDataOfferModel) {
 
 		ActionRequest action = policyConstraintBuilderService
-				.getUsagePoliciesConstraints(null);
+				.getUsagePoliciesConstraints(queryDataOfferModel.getPolicy().getUsagePolicies());
 
-		Offer offer = null;
-//		Offer.builder().assetId(queryDataOfferModel.getAssetId())
-//				.offerId(queryDataOfferModel.getOfferId())
-//				.policyId(queryDataOfferModel.getPolicyId())
-//				.connectorId(queryDataOfferModel.getConnectorId())
-//				.connectorOfferUrl(queryDataOfferModel.getConnectorOfferUrl())
-//				.build();
+		Offer offer = Offer.builder().assetId(queryDataOfferModel.getAssetId())
+				.offerId(queryDataOfferModel.getOfferId())
+				.policyId(queryDataOfferModel.getPolicyId())
+				.connectorId(queryDataOfferModel.getConnectorId())
+				.connectorOfferUrl(queryDataOfferModel.getConnectorOfferUrl())
+				.build();
 		try {
 			EDRCachedResponse eDRCachedResponse = contractNegotiationService.verifyOrCreateContractNegotiation(
 					bpnNumber, Map.of(), queryDataOfferModel.getConnectorOfferUrl(), action, offer);

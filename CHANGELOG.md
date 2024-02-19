@@ -2,13 +2,14 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
-## [Unreleased] - 2023-02-13
+## [Unreleased]
 
 ### Added
 
 - Policy-Hub service api integration.
 - Added New Policy Entities and pojo classes.
 - Draft code of Policies changes.
+- Added new classes for file download history
 
 ### Fixed
 

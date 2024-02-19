@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -29,7 +29,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
+import org.eclipse.tractusx.sde.common.entities.Policies;
 import org.eclipse.tractusx.sde.core.controller.ConsumerController;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
 import org.eclipse.tractusx.sde.edc.model.request.OfferRequest;
@@ -103,10 +103,10 @@ class ConsumerControllerTest {
 	void testSubscribeDataOffers() throws Exception {
 		doNothing().when(consumerControlPanelService).subscribeDataOffers((ConsumerRequest) any(), anyString());
 		List<OfferRequest> offers = new ArrayList<>();
-		List<UsagePolicies> policies = new ArrayList<>();
+		List<Policies> policies = new ArrayList<>();
 		OfferRequest mockOffer = Mockito.mock(OfferRequest.class);
 		offers.add(mockOffer);
-		UsagePolicies mockPolicy = Mockito.mock(UsagePolicies.class);
+		Policies mockPolicy = Mockito.mock(Policies.class);
 		policies.add(mockPolicy);
 		ConsumerRequest consumerRequest = ConsumerRequest.builder().connectorId("42").offers(offers).policies(policies)
 				.providerUrl("\"https://example.org/example\"").build();

@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -22,7 +22,7 @@ package org.eclipse.tractusx.sde.edc.model.request;
 
 import java.util.List;
 
-import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
+import org.eclipse.tractusx.sde.common.entities.Policies;
 import org.springframework.lang.NonNull;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -50,6 +50,6 @@ public class ConsumerRequest {
     @NotEmpty
     private List<OfferRequest> offers;
     @NonNull
-    private List<UsagePolicies> policies;
+    private List<Policies> policies;
 
 }

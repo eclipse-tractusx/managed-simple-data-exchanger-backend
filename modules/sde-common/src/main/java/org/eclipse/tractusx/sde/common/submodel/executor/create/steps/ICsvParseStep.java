@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,12 +20,12 @@
 
 package org.eclipse.tractusx.sde.common.submodel.executor.create.steps;
 
-import org.eclipse.tractusx.sde.common.entities.SubmodelFileRequest;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.entities.csv.RowData;
 
 import com.google.gson.JsonObject;
 
 public interface ICsvParseStep {
 
-	JsonObject execute(RowData rowData, String processId, SubmodelFileRequest submodelFileRequest);
+	JsonObject execute(RowData rowData, String processId, PolicyModel submodelFileRequest);
 }

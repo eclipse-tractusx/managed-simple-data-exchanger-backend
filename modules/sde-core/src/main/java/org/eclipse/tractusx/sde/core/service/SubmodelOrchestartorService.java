@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,12 +20,12 @@
 
 package org.eclipse.tractusx.sde.core.service;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.eclipse.tractusx.sde.common.entities.SubmodelFileRequest;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
+import org.eclipse.tractusx.sde.common.entities.PolicyTemplateRequest;
 import org.eclipse.tractusx.sde.common.entities.SubmodelJsonRequest;
 import org.eclipse.tractusx.sde.common.entities.csv.CsvContent;
 import org.eclipse.tractusx.sde.common.exception.ValidationException;
@@ -45,7 +45,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.JsonObject;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SubmodelOrchestartorService {
@@ -68,29 +71,39 @@ public class SubmodelOrchestartorService {
 
 	private final CsvHandlerService csvHandlerService;
 
+	private final SubmodelCsvService submodelCsvService;
+
 	ObjectMapper mapper = new ObjectMapper();
 
-	public void processSubmodelCsv(SubmodelFileRequest submodelFileRequest, String processId, String submodel) {
+	public void processSubmodelCsv(PolicyTemplateRequest policyTemplateRequest, String processId, String submodel) {
 
 		Submodel submodelSchemaObject = submodelService.findSubmodelByNameAsSubmdelObject(submodel);
 
 		CsvContent csvContent = csvHandlerService.processFile(processId);
 		List<String> columns = csvContent.getColumns();
-		
-		if(!sumodelcsvValidator.validate(submodelSchemaObject, columns)) {
+
+		if (!sumodelcsvValidator.validate(submodelSchemaObject, columns)) {
 			throw new ValidationException(String.format("Csv column header is not matching %s submodel", submodel));
 		}
 
-		processCsv(submodelFileRequest, processId, submodelSchemaObject, csvContent);
+		PolicyModel submodelPolicyRequest = PolicyModel.builder()
+				.accessPolicies(policyTemplateRequest.getAccessPolicies())
+				.usagePolicies(policyTemplateRequest.getUsagePolicies())
+				.uuid("")
+				.build();
+
+		processCsv(submodelPolicyRequest, processId, submodelSchemaObject, csvContent);
 
 	}
 
-	private void processCsv(SubmodelFileRequest submodelFileRequest, String processId, Submodel submodelSchemaObject, CsvContent csvContent) {
-		
+
+	private void processCsv(PolicyModel submodelPolicyRequest, String processId, Submodel submodelSchemaObject,
+			CsvContent csvContent) {
+
 		Runnable runnable = () -> {
 			processReportUseCase.startBuildProcessReport(processId, submodelSchemaObject.getId(),
-					csvContent.getRows().size(), submodelFileRequest.getBpnNumbers(),
-					submodelFileRequest.getTypeOfAccess(), submodelFileRequest.getUsagePolicies());
+					csvContent.getRows().size(), submodelPolicyRequest.getAccessPolicies(),
+					submodelPolicyRequest.getUsagePolicies(), submodelPolicyRequest.getUuid());
 
 			AtomicInteger successCount = new AtomicInteger();
 			AtomicInteger failureCount = new AtomicInteger();
@@ -100,7 +113,7 @@ public class SubmodelOrchestartorService {
 
 			csvContent.getRows().parallelStream().forEach(rowjObj -> {
 				try {
-					ObjectNode newjObject = jsonObjectMapper.submodelFileRequestToJsonNodePojo(submodelFileRequest);
+					ObjectNode newjObject = jsonObjectMapper.submodelFileRequestToJsonNodePojo(submodelPolicyRequest);
 					newjObject.put(ROW_NUMBER, rowjObj.position());
 					newjObject.put(PROCESS_ID, processId);
 					executor.executeCsvRecord(rowjObj, newjObject, processId);
@@ -122,12 +135,18 @@ public class SubmodelOrchestartorService {
 		new Thread(runnable).start();
 	}
 
-	public void processSubmodel(SubmodelJsonRequest<ObjectNode> submodelJsonRequest, String processId,
-			String submodel) {
+	@SneakyThrows
+	public void processSubmodel(SubmodelJsonRequest submodelJsonRequest, String processId, String submodel) {
 		Submodel submodelSchemaObject = submodelService.findSubmodelByNameAsSubmdelObject(submodel);
 		JsonObject submodelSchema = submodelSchemaObject.getSchema();
 
 		List<ObjectNode> rowData = submodelJsonRequest.getRowData();
+
+		PolicyModel policy = PolicyModel.builder()
+				.accessPolicies(submodelJsonRequest.getAccessPolicies())
+				.usagePolicies(submodelJsonRequest.getUsagePolicies())
+				.uuid("")
+				.build();
 
 		Runnable runnable = () -> {
 
@@ -137,14 +156,8 @@ public class SubmodelOrchestartorService {
 			SubmodelExecutor executor = submodelSchemaObject.getExecutor();
 			executor.init(submodelSchema);
 
-			Map<String, Object> mps = new HashMap<>();
-			mps.put("type_of_access", submodelJsonRequest.getTypeOfAccess());
-			mps.put("bpn_numbers", submodelJsonRequest.getBpnNumbers());
-			mps.put("usage_policies", submodelJsonRequest.getUsagePolicies());
-
 			processReportUseCase.startBuildProcessReport(processId, submodelSchemaObject.getId(), rowData.size(),
-					submodelJsonRequest.getBpnNumbers(), submodelJsonRequest.getTypeOfAccess(),
-					submodelJsonRequest.getUsagePolicies());
+					policy.getAccessPolicies(), policy.getUsagePolicies(), policy.getUuid());
 
 			rowData.stream().forEach(obj -> {
 				int andIncrement = atInt.incrementAndGet();
@@ -154,8 +167,7 @@ public class SubmodelOrchestartorService {
 
 			rowData.parallelStream().forEachOrdered(rowjObj -> {
 				try {
-					ObjectNode submodelJsonPojo = jsonObjectMapper.submodelJsonRequestToJsonPojo(rowjObj, mps);
-					executor.executeJsonRecord(submodelJsonPojo.get(ROW_NUMBER).asInt(), submodelJsonPojo, processId);
+					executor.executeJsonRecord(rowjObj.get(ROW_NUMBER).asInt(), rowjObj, processId);
 					successCount.incrementAndGet();
 				} catch (Exception e) {
 					failureLogs.saveLog(processId, e.getMessage());
@@ -203,34 +215,49 @@ public class SubmodelOrchestartorService {
 
 	}
 
-	public Map<Object, Object> readCreatedTwinsDetails(String submodel, String uuid) {
+	public Map<Object, Object> readCreatedTwinsDetails(String submodel, String uuid, String type) {
 		Submodel submodelSchema = submodelService.findSubmodelByNameAsSubmdelObject(submodel);
 		SubmodelExecutor executor = submodelSchema.getExecutor();
-		return submodelMapper.jsonPojoToMap(executor.readCreatedTwinsDetails(uuid));
+		JsonObject readCreatedTwinsDetails = executor.readCreatedTwinsDetails(uuid);
+		JsonObject jObject = new JsonObject();
+		if ("csv".equalsIgnoreCase(type)) {
+			List<String> csvHeader = submodelCsvService.getCSVHeader(submodelSchema, null);
+			JsonObject jElement = readCreatedTwinsDetails.get("csv").getAsJsonObject();
+			for (String field : csvHeader) {
+				jObject.add(field, jElement.get(field));
+			}
+		} else {
+			jObject = readCreatedTwinsDetails.get("json").getAsJsonObject();
+		}
+
+		return submodelMapper.jsonPojoToMap(jObject);
 	}
-	
-	//New method of CSV process for Automation
-	public void processSubmodelAutomationCsv(SubmodelFileRequest submodelFileRequest, String processId) {
-		
-		List<Submodel> submodelDetails = submodelService.getAllSubmodels();
+
+	public void processSubmodelAutomationCsv(PolicyModel submodelFileRequest, String processId) {
+
 		CsvContent csvContent = csvHandlerService.processFile(processId);
 		List<String> columns = csvContent.getColumns();
+		Submodel foundSubmodelSchemaObject = findSubmodel(columns);
+
+		processCsv(submodelFileRequest, processId, foundSubmodelSchemaObject, csvContent);
+	}
+
+	public Submodel findSubmodel(List<String> columns) {
+
 		Submodel foundSubmodelSchemaObject = null;
-		
+		List<Submodel> submodelDetails = submodelService.getAllSubmodels();
 		for (Submodel submodel : submodelDetails) {
-			
-			if(sumodelcsvValidator.validate(submodel, columns)){
+
+			if (sumodelcsvValidator.validate(submodel, columns)) {
 				foundSubmodelSchemaObject = submodel;
 				break;
 			}
 		}
 
-		if(foundSubmodelSchemaObject == null) {
+		if (foundSubmodelSchemaObject == null) {
 			throw new ValidationException("Csv column header is not matching with any supported submodels");
 		}
-		
-		processCsv(submodelFileRequest, processId, foundSubmodelSchemaObject, csvContent);
+		return foundSubmodelSchemaObject;
 	}
-	
-}
 
+}

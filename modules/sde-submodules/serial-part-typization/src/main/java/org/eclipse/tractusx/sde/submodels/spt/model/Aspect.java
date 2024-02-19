@@ -1,8 +1,8 @@
 /********************************************************************************
  * Copyright (c) 2022 Critical TechWorks GmbH
  * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -24,7 +24,7 @@ package org.eclipse.tractusx.sde.submodels.spt.model;
 
 import java.util.List;
 
-import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
+import org.eclipse.tractusx.sde.common.entities.Policies;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -56,7 +56,7 @@ public class Aspect {
     private String typeOfAccess;
     
     @JsonProperty(value ="usage_policies")
-    private List<UsagePolicies> usagePolicies;
+    private List<Policies> usagePolicies;
     
     @JsonProperty(value ="uuid")
     private String uuid;

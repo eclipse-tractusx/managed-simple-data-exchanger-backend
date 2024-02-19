@@ -1,8 +1,8 @@
 /********************************************************************************
  * Copyright (c) 2022 Critical TechWorks GmbH
  * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -22,10 +22,10 @@
 
 package org.eclipse.tractusx.sde.core.processreport.entity;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.eclipse.tractusx.sde.common.entities.Policies;
 import org.eclipse.tractusx.sde.common.enums.ProgressStatusEnum;
 
 import jakarta.persistence.Cacheable;
@@ -42,7 +42,7 @@ import lombok.Data;
 @Entity
 @Data
 @Cacheable(value = false)
-public class ProcessReportEntity implements Serializable {
+public class ProcessReportEntity {
     @Id
     @Column(name = "process_id")
     private String processId;
@@ -64,15 +64,16 @@ public class ProcessReportEntity implements Serializable {
     @Column(name = "end_date")
     private LocalDateTime endDate;
     
-    @Convert(converter = ListToStringConverter.class)
-    @Column(name = "bpn_numbers")
-    private List<String> bpnNumbers;
+    @Column(name = "policy_uuid")
+    private String policyUuid;
+    
+    @Column(name = "access_policies" , columnDefinition = "TEXT")
+    @Convert(converter = PoliciesListToStringConverter.class)
+    private List<Policies> accessPolicies;
 
-    @Column(name = "type_of_access")
-    private String typeOfAccess;
-
-    @Column(name = "usage_policy", columnDefinition = "jsonb")
-    private String usagePolicies;
+    @Column(name = "usage_policies", columnDefinition = "TEXT")
+    @Convert(converter = PoliciesListToStringConverter.class)
+   	private List<Policies> usagePolicies;
     
     @Column(name = "number_of_updated_items")
     private int numberOfUpdatedItems;

@@ -1,8 +1,8 @@
 /********************************************************************************
  * Copyright (c) 2022 Critical TechWorks GmbH
  * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -26,7 +26,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
+import org.eclipse.tractusx.sde.common.entities.Policies;
 import org.eclipse.tractusx.sde.common.enums.ProgressStatusEnum;
 import org.eclipse.tractusx.sde.core.failurelog.mapper.FailureLogMapper;
 import org.eclipse.tractusx.sde.core.failurelog.repository.FailureLogRepository;
@@ -57,16 +57,19 @@ public class ProcessReportUseCase {
 	private final ProcessReportMapper mapper;
 	private final FailureLogMapper logMapper;
 
-
+	
 	@SneakyThrows
-	public void startBuildProcessReport(String processId, String type, int size, List<String> bpnNumbers,
-			String typeOfAccess, List<UsagePolicies> usagePolicies) {
+	public void startBuildProcessReport(String processId, String type, int size, List<Policies> accessPolicies,
+			List<Policies> usagePolicies, String policyUuid) {
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-		String usageList = objectMapper.writeValueAsString(usagePolicies);
-		saveProcessReport(ProcessReport.builder().processId(processId).csvType(type.toUpperCase())
+		saveProcessReport(ProcessReport.builder().processId(processId)
+				.policyUuid(policyUuid)
+				.csvType(type.toUpperCase())
 				.status(ProgressStatusEnum.IN_PROGRESS).numberOfItems(size).startDate(LocalDateTime.now())
-				.bpnNumbers(bpnNumbers).typeOfAccess(typeOfAccess).usagePolicies(usageList).build());
+				.accessPolicies(accessPolicies)
+				.usagePolicies(usagePolicies)
+				.build());
 	}
 
 	@SneakyThrows

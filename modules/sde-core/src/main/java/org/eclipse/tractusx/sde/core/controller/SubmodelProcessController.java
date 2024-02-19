@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -27,9 +27,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.eclipse.tractusx.sde.common.entities.SubmodelFileRequest;
+import org.eclipse.tractusx.sde.common.entities.PolicyTemplateRequest;
 import org.eclipse.tractusx.sde.common.entities.SubmodelJsonRequest;
-import org.eclipse.tractusx.sde.common.validators.UsagePolicyValidation;
+import org.eclipse.tractusx.sde.common.mapper.PolicyTemplateObjectMapper;
+import org.eclipse.tractusx.sde.common.validators.ValidatePolicyTemplate;
 import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
 import org.eclipse.tractusx.sde.core.service.SubmodelOrchestartorService;
 import org.springframework.http.ResponseEntity;
@@ -44,10 +45,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -60,39 +57,40 @@ public class SubmodelProcessController {
 
 	private final CsvHandlerService csvHandlerService;
 	
-	private ObjectMapper objectMapper = new ObjectMapper();
+	private final PolicyTemplateObjectMapper mapper;
 
 	@PostMapping(value = "/{submodel}/upload")
 	@PreAuthorize("hasPermission(#submodel,'provider_create_contract_offer@provider_update_contract_offer')")
-	public ResponseEntity<String> fileUpload(@PathVariable("submodel") String submodel,
-			@RequestParam("file") MultipartFile file, @UsagePolicyValidation @RequestParam("meta_data") String metaData)
-			throws JsonProcessingException {
+	public ResponseEntity<String> upload(@PathVariable("submodel") String submodel,
+			@RequestParam("file") MultipartFile file,
+			@RequestParam("meta_data") @Valid @ValidatePolicyTemplate String metaData) {
 
 		String processId = csvHandlerService.storeFile(file);
 
-		SubmodelFileRequest submodelFileRequest = objectMapper.readValue(metaData, SubmodelFileRequest.class);
+		PolicyTemplateRequest policyTemplateRequest = mapper.strToObject(metaData);
 
-		submodelOrchestartorService.processSubmodelCsv(submodelFileRequest, processId, submodel);
+		submodelOrchestartorService.processSubmodelCsv(policyTemplateRequest, processId, submodel);
 
 		return ok().body(processId);
 	}
 
 	@PostMapping(value = "/{submodel}/manualentry", consumes = APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasPermission(#submodel,'provider_create_contract_offer@provider_update_contract_offer')")
-	public ResponseEntity<String> createSubmodelAssets(@PathVariable("submodel") String submodel,
-			@RequestBody @Valid SubmodelJsonRequest<ObjectNode> submodelJsonRequest) {
+	public ResponseEntity<String> manualentry(@PathVariable("submodel") String submodel,
+			@RequestBody @Valid @ValidatePolicyTemplate SubmodelJsonRequest body) {
 
 		String processId = UUID.randomUUID().toString();
 
-		submodelOrchestartorService.processSubmodel(submodelJsonRequest, processId, submodel);
+		submodelOrchestartorService.processSubmodel(body, processId, submodel);
 
 		return ok().body(processId);
 	}
 
 	@GetMapping(value = "/{submodel}/public/{uuid}")
 	public ResponseEntity<Map<Object, Object>> readCreatedTwinsDetails(@PathVariable("submodel") String submodel,
-			@PathVariable("uuid") String uuid) {
-		return ok().body(submodelOrchestartorService.readCreatedTwinsDetails(submodel, uuid));
+			@PathVariable("uuid") String uuid,
+			@RequestParam(value = "type", defaultValue = "json", required = false) String type) {
+		return ok().body(submodelOrchestartorService.readCreatedTwinsDetails(submodel, uuid, type));
 	}
 
 	@DeleteMapping(value = "/{submodel}/delete/{processId}", produces = APPLICATION_JSON_VALUE)

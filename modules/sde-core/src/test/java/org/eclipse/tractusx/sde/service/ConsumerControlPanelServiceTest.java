@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -30,9 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
-import org.eclipse.tractusx.sde.common.enums.PolicyAccessEnum;
-import org.eclipse.tractusx.sde.common.enums.UsagePolicyEnum;
+import org.eclipse.tractusx.sde.common.entities.Policies;
 import org.eclipse.tractusx.sde.common.utils.TokenUtility;
 import org.eclipse.tractusx.sde.edc.api.ContractOfferCatalogApi;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ActionRequest;
@@ -131,9 +129,9 @@ class ConsumerControlPanelServiceTest {
 	@Test
 	void testSubscribeDataOffers1() {
 		ArrayList<OfferRequest> offerRequestList = new ArrayList<>();
-		List<UsagePolicies> usagePolicies = new ArrayList<>();
-		UsagePolicies usagePolicy = UsagePolicies.builder().type(UsagePolicyEnum.CUSTOM).value("Sample")
-				.typeOfAccess(PolicyAccessEnum.RESTRICTED).build();
+		List<Policies> usagePolicies = new ArrayList<>();
+		Policies usagePolicy = Policies.builder().technicalKey("PURPOSE").value(List.of("Sample"))
+				.build();
 		usagePolicies.add(usagePolicy);
 		ConsumerRequest consumerRequest = new ConsumerRequest("42", "https://example.org/example", offerRequestList,
 				usagePolicies);
@@ -141,14 +139,14 @@ class ConsumerControlPanelServiceTest {
 		consumerControlPanelService.subscribeDataOffers(consumerRequest, processId);
 		assertEquals("42", consumerRequest.getConnectorId());
 		assertEquals("https://example.org/example", consumerRequest.getProviderUrl());
-		List<UsagePolicies> policies = consumerRequest.getPolicies();
+		List<Policies> policies = consumerRequest.getPolicies();
 		ActionRequest list = ActionRequest.builder().build();
 		ConstraintRequest constraintRequest = ConstraintRequest.builder().leftOperand("A")
 				.rightOperand("A")
 				.operator(Operator.builder().id("odrl:eq").build())
 				.build();
 		list.addProperty("odrl:and", constraintRequest);
-		when(policyConstraintBuilderService.getUsagePolicyConstraints(any())).thenReturn(list);
+		when(policyConstraintBuilderService.getUsagePoliciesConstraints(any())).thenReturn(list);
 		assertEquals(usagePolicies, policies);
 		assertEquals(1, consumerControlPanelService.getAuthHeader().size());
 	}

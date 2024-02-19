@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -22,10 +22,12 @@ package org.eclipse.tractusx.sde.common.mapper;
 
 import java.util.Map;
 
-import org.eclipse.tractusx.sde.common.entities.SubmodelFileRequest;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.mapstruct.Mapper;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -35,16 +37,22 @@ import lombok.SneakyThrows;
 @Mapper(componentModel = "spring")
 public abstract class JsonObjectMapper {
 
-	Gson gson = new Gson();
 	ObjectMapper mapper = new ObjectMapper();
-
+	Gson gson=new Gson();
+	
 	@SneakyThrows
-	public JsonObject submodelFileRequestToJsonPojo(SubmodelFileRequest submodelFileRequest) {
-		return gson.toJsonTree(submodelFileRequest).getAsJsonObject();
+	public JsonNode gsonObjectToJsonNode(JsonObject json) {
+		String jsonStr = "{}";
+		if(json != null) {
+			jsonStr = gson.toJson(json);
+		}
+		return mapper.readTree(jsonStr);
 	}
-
+	
 	@SneakyThrows
-	public ObjectNode submodelFileRequestToJsonNodePojo(SubmodelFileRequest submodelFileRequest) {
+	public ObjectNode submodelFileRequestToJsonNodePojo(PolicyModel submodelFileRequest) {
+		mapper.findAndRegisterModules();
+		mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 		return mapper.convertValue(submodelFileRequest, ObjectNode.class);
 	}
 
@@ -54,5 +62,11 @@ public abstract class JsonObjectMapper {
 		jobj.putAll(mapper.convertValue(mps, ObjectNode.class));
 		return jobj;
 	}
+	
+	@SneakyThrows
+	public JsonNode objectToJsonNode(Object jobj) {
+		return mapper.convertValue(jobj, JsonNode.class);
+	}
+
 
 }

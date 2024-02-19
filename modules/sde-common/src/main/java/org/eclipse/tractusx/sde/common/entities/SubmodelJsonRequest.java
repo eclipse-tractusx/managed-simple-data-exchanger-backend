@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -22,30 +22,27 @@ package org.eclipse.tractusx.sde.common.entities;
 
 import java.util.List;
 
-import org.eclipse.tractusx.sde.common.validators.UsagePolicyValidation;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
+@SuperBuilder
+@NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SubmodelJsonRequest<T> {
-	
+@EqualsAndHashCode(callSuper = true)
+public class SubmodelJsonRequest extends PolicyTemplateRequest {
+
+	@NotEmpty
 	@JsonProperty(value = "row_data")
-	private List<T> rowData;
+	private List<ObjectNode> rowData;
 	
-	@JsonProperty(value = "type_of_access")
-	private String typeOfAccess;
-	
-	@JsonProperty(value = "bpn_numbers")
-	private List<String> bpnNumbers;
-
-	@JsonProperty(value = "usage_policies")
-	@UsagePolicyValidation
-	private List<UsagePolicies> usagePolicies;
-
 }

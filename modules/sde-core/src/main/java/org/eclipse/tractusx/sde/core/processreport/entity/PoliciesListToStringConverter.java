@@ -17,32 +17,37 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
+package org.eclipse.tractusx.sde.core.processreport.entity;
 
-package org.eclipse.tractusx.sde.common.entities;
-
+import java.util.Collections;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.eclipse.tractusx.sde.common.entities.Policies;
 
-import jakarta.validation.constraints.NotEmpty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-@Data
-@SuperBuilder
-@NoArgsConstructor
-@AllArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
-@EqualsAndHashCode(callSuper = true)
-public class SubmodelJsonReq extends PolicyTemplateRequest {
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
+import lombok.SneakyThrows;
 
-	@NotEmpty
-	@JsonProperty(value = "row_data")
-	private List<ObjectNode> rowData;
-	
+@Converter
+public class PoliciesListToStringConverter implements AttributeConverter<List<Policies>, String> {
+
+	ObjectMapper objectMapper = new ObjectMapper();
+
+	@Override
+	@SneakyThrows
+	public String convertToDatabaseColumn(List<Policies> attribute) {
+		String policiesList = objectMapper.writeValueAsString(attribute);
+		return attribute == null ? null : policiesList;
+	}
+
+	@Override
+	@SneakyThrows
+	public List<Policies> convertToEntityAttribute(String dbData) {
+		return dbData == null ? Collections.emptyList()
+				: objectMapper.readValue(dbData, new TypeReference<List<Policies>>() {
+				});
+	}
 }

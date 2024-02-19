@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -22,7 +22,7 @@ package org.eclipse.tractusx.sde.edc.model.contractnegotiation;
 
 import java.util.List;
 
-import org.eclipse.tractusx.sde.common.entities.UsagePolicies;
+import org.eclipse.tractusx.sde.common.entities.Policies;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,5 +39,5 @@ public class ContractAgreementInfo {
     private long contractStartDate;
     private long contractEndDate;
     private String assetId;
-    private List<UsagePolicies> policies;
+    private List<Policies> policies;
 }

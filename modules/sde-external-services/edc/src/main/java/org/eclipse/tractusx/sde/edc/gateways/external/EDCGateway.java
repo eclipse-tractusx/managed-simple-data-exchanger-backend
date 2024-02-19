@@ -1,7 +1,7 @@
 /********************************************************************************
    * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -24,10 +24,12 @@ package org.eclipse.tractusx.sde.edc.gateways.external;
 import org.eclipse.tractusx.sde.edc.api.EDCFeignClientApi;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.contractdefinition.ContractDefinitionRequest;
-import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyDefinitionRequest;
 import org.eclipse.tractusx.sde.edc.exceptions.EDCGatewayException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
@@ -50,6 +52,20 @@ public class EDCGateway {
 		}
 		return true;
 	}
+	
+	public boolean assetExistsLookupBasedOnType(ObjectNode requestBody) {
+		try {
+			JsonNode result = edcFeignClientApi.getAssetByType(requestBody);
+			if (result.isArray() && result.isEmpty())
+				return false;
+		} catch (FeignException e) {
+			if (e.status() == HttpStatus.NOT_FOUND.value()) {
+				return false;
+			}
+			throw e;
+		}
+		return true;
+	}
 
 	public String createAsset(AssetEntryRequest request) {
 		try {
@@ -63,7 +79,7 @@ public class EDCGateway {
 	}
 
 	@SneakyThrows
-	public String createPolicyDefinition(PolicyDefinitionRequest request) {
+	public JsonNode createPolicyDefinition(JsonNode request) {
 		try {
 			return edcFeignClientApi.createPolicy(request);
 		} catch (FeignException e) {

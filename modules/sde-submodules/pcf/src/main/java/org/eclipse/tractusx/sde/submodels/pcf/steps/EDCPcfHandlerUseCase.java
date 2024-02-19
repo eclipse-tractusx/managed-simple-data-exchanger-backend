@@ -57,7 +57,7 @@ public class EDCPcfHandlerUseCase extends Step {
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
 					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getId());
 			if (!edcGateway.assetExistsLookup(
-					assetEntryRequest.getAsset().getId())) {
+					assetEntryRequest.getId())) {
 
 				edcProcessingforAspect(assetEntryRequest, input);
 
@@ -93,7 +93,7 @@ public class EDCPcfHandlerUseCase extends Step {
 				input.getBpnNumbersforPcf(), input.getUsagePoliciesforPcf());
 
 		// EDC transaction information for DB
-		input.setAssetIdforPcf(assetEntryRequest.getAsset().getId());
+		input.setAssetIdforPcf(assetEntryRequest.getId());
 		input.setAccessPolicyIdforPcf(createEDCAsset.get("accessPolicyId"));
 		input.setUsagePolicyIdforPcf(createEDCAsset.get("usagePolicyId"));
 		input.setContractDefinationIdforPcf(createEDCAsset.get("contractDefinitionId"));

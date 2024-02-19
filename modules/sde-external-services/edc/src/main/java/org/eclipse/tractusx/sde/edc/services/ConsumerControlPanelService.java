@@ -160,9 +160,9 @@ public class ConsumerControlPanelService extends AbstractEDCStepsHelper {
 				setConstraint(usagePolicies, bpnNumbers, jsonNode);
 			}
 		}
-		build.setTypeOfAccess(!bpnNumbers.isEmpty() ? PolicyAccessEnum.RESTRICTED : PolicyAccessEnum.UNRESTRICTED);
-		build.setBpnNumbers(bpnNumbers);
-		build.setUsagePolicies(usagePolicies);
+//		build.setTypeOfAccess(!bpnNumbers.isEmpty() ? PolicyAccessEnum.RESTRICTED : PolicyAccessEnum.UNRESTRICTED);
+//		build.setBpnNumbers(bpnNumbers);
+//		build.setUsagePolicies(usagePolicies);
 	}
 
 	private void setConstraint(List<Policies> usagePolicies, List<String> bpnNumbers, JsonNode jsonNode) {

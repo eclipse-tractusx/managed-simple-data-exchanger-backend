@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2024 T-Systems International GmbH
- * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
+ * Copyright (c) 2024 T-Systems International GmbH
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -18,7 +18,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.edc.model.response;
+package org.eclipse.tractusx.sde.edc.model.request;
 
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 
@@ -37,38 +37,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(Include.NON_NULL)
-public class QueryDataOfferModel {
 
-	private String connectorId;
+public class QueryDataOfferRequest {
 
 	private String assetId;
-	
-	private String manufacturerPartId;
-
-	private String offerId;
 
 	private String connectorOfferUrl;
-
-	private String title;
-
-	private String type;
-
-	private String version;
-
-	private String description;
-
-	private String fileName;
-
-	private String fileContentType;
-
-	private String created;
-
-	private String modified;
-
-	private String publisher;
-
-	private String policyId;
-
+	
 	private PolicyModel policy;
 
 }

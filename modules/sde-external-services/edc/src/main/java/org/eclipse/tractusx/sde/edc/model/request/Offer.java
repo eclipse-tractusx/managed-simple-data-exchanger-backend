@@ -36,16 +36,16 @@ import lombok.NoArgsConstructor;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Offer {
-	
+
 	@NonNull
 	private String connectorId;
 	@NonNull
 	private String connectorOfferUrl;
-    @NotNull
-    private String offerId;
-    @NotNull
-    private String assetId;
-    private String policyId;
+	@NotNull
+	private String offerId;
+	@NotNull
+	private String assetId;
+	private String policyId;
 	private String agreementId;
 	private String expirationDate;
 	private String transferProcessId;

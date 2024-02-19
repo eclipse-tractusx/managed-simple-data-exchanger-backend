@@ -31,7 +31,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ConsumerDownloadHistory {
-	
 
 	private String processId;
 	private String providerUrl;
@@ -44,6 +43,6 @@ public class ConsumerDownloadHistory {
 	private LocalDateTime endDate;
 	private Object offers;
 	private Object policies;
-    private String referenceProcessId;
+	private String referenceProcessId;
 
 }

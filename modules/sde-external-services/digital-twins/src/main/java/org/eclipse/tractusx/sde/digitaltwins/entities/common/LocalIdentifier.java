@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -22,11 +22,13 @@
 package org.eclipse.tractusx.sde.digitaltwins.entities.common;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 
 @Getter
 @Builder
@@ -35,6 +37,12 @@ import lombok.NoArgsConstructor;
 public class LocalIdentifier {
 
 	@JsonProperty("name")
-    private String key;
-    private String value;
+	private String key;
+	private String value;
+
+	@SneakyThrows
+	public String toJsonString() {
+		final ObjectMapper mapper = new ObjectMapper();
+		return mapper.writeValueAsString(this);
+	}
 }

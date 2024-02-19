@@ -49,7 +49,6 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -75,12 +74,13 @@ public class DigitalTwinsUtility {
 			List.of("*"), ASSET_LIFECYCLE_PHASE, List.of("AsBuilt", "AsPlanned"));
 
 	@SneakyThrows
-	public ShellDescriptorRequest getShellDescriptorRequest( Map<String, String> specificIdentifiers, Object object) {
+	public ShellDescriptorRequest getShellDescriptorRequest(String nameAtManufacturer, String manufacturerPartId,
+			String uuid, Map<String, String> specificIdentifiers, PolicyModel policy) {
 
 		return ShellDescriptorRequest.builder()
-				//.idShort(String.format("%s_%s_%s", nameAtManufacturer, manufacturerId, manufacturerPartId))
-				//.globalAssetId(uuid)
-				//.specificAssetIds(getSpecificAssetIds(specificIdentifiers, policy))
+				.idShort(String.format("%s_%s_%s", nameAtManufacturer, manufacturerId, manufacturerPartId))
+				.globalAssetId(uuid)
+				.specificAssetIds(getSpecificAssetIds(specificIdentifiers, policy))
 				.description(List.of())
 				.id(UUIdGenerator.getUrnUuid())
 				.build();
@@ -128,11 +128,11 @@ public class DigitalTwinsUtility {
 	}
 
 	@SneakyThrows
-	public List<Object> getSpecificAssetIds(Map<String, String> specificAssetIds, List<String> bpns) {
+	public List<Object> getSpecificAssetIds(Map<String, String> specificAssetIds, PolicyModel policy) {
 
 		List<Object> specificIdentifiers = new ArrayList<>();
 
-		List<Keys> keyList = null; //bpnKeyRefrence(PolicyOperationUtil.getAccessBPNList(policy));
+		List<Keys> keyList = bpnKeyRefrence(PolicyOperationUtil.getAccessBPNList(policy));
 
 		specificAssetIds.entrySet().stream().forEach(entry -> {
 
@@ -168,12 +168,6 @@ public class DigitalTwinsUtility {
 		return Collections.emptyList();
 	}
 
-	private String getFieldFromJsonNode(JsonNode jnode, String fieldName) {
-		if (jnode.get(fieldName) != null)
-			return jnode.get(fieldName).asText();
-		else
-			return "";
-	}
 
 	@SneakyThrows
 	private List<String> getFieldFromJsonNodeArray(JsonNode jsonNode, String fieldName) {

@@ -22,8 +22,6 @@
 
 package org.eclipse.tractusx.sde.submodels.spt.entity;
 
-import java.io.Serializable;
-
 import org.eclipse.tractusx.sde.common.entities.CommonPropEntity;
 
 import jakarta.persistence.Column;

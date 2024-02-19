@@ -27,13 +27,13 @@ import org.springframework.lang.NonNull;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 
 @Data
 @Builder
@@ -42,14 +42,15 @@ import lombok.NoArgsConstructor;
 @JsonInclude(Include.NON_NULL)
 public class ConsumerRequest {
 
-    @NonNull
-    private String connectorId;
-    @NonNull
-    private String providerUrl;
-    @NonNull
-    @NotEmpty
-    private List<Offer> offers;
-    @NonNull
-    private List<Policies> policies;
+	@NonNull
+	@NotEmpty
+	private List<Offer> offers;
+	
+	@NonNull
+	@JsonProperty("usage_policies")
+	private List<Policies> usagePolicies;
+
+	@Builder.Default
+	private String downloadDataAs = "csv";
 
 }

@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -96,8 +96,9 @@ public class AspectRelationshipService {
 	public JsonObject readCreatedTwinsDetails(String uuid) {
 		List<AspectRelationshipEntity> entities = Optional
 				.ofNullable(aspectRelationshipRepository.findByParentCatenaXId(uuid))
-				.orElseThrow(() -> new NoDataFoundException("No data found uuid " + uuid));
-
+				.orElseThrow(() -> new NoDataFoundException("No data found Parent Catena XId " + uuid));
+		if (entities.isEmpty())
+			throw new NoDataFoundException("No data found uuid " + uuid);
 		return aspectRelationshipMapper.mapToResponse(uuid, entities);
 	}
 

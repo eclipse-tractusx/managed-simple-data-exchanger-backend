@@ -25,7 +25,7 @@ import java.util.List;
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.core.processreport.entity.ConsumerDownloadHistoryEntity;
 import org.eclipse.tractusx.sde.core.processreport.model.ConsumerDownloadHistory;
-import org.eclipse.tractusx.sde.edc.model.contractnegotiation.Offer;
+import org.eclipse.tractusx.sde.edc.model.request.Offer;
 import org.mapstruct.Mapper;
 
 import com.fasterxml.jackson.core.type.TypeReference;

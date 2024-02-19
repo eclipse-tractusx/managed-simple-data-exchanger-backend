@@ -41,7 +41,6 @@ import org.eclipse.tractusx.sde.digitaltwins.gateways.external.EDCDigitalTwinPro
 import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedByIdResponse;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import feign.FeignException;
@@ -105,10 +104,10 @@ public class LookUpDTTwin {
 
 			String assetIds = digitalTwinsUtility.encodeAssetIdsObject(shellLookupRequest.toJsonString());
 
-			ResponseEntity<ShellLookupResponse> shellLookup = eDCDigitalTwinProxyForLookUp.shellLookup(new URI(endpoint), assetIds,
+			ShellLookupResponse shellLookup = eDCDigitalTwinProxyForLookUp.shellLookup(new URI(endpoint), assetIds,
 					header);
 
-			return getSubmodelDetails(shellLookupRequest, endpoint, header, dtOfferUrl, shellLookup.getBody().getResult(),
+			return getSubmodelDetails(shellLookupRequest, endpoint, header, dtOfferUrl, shellLookup.getResult(),
 					submodel);
 
 		} catch (FeignException e) {
@@ -128,9 +127,9 @@ public class LookUpDTTwin {
 		List<QueryDataOfferModel> queryOnDataOffers = new ArrayList<>();
 		try {
 
-			ResponseEntity<ShellDescriptorResponseList> allShell = eDCDigitalTwinProxyForLookUp.getAllShell(new URI(endpoint), offset,
+			ShellDescriptorResponseList allShell = eDCDigitalTwinProxyForLookUp.getAllShell(new URI(endpoint), offset,
 					limit, header);
-			for (ShellDescriptorResponse shellDescriptorResponse : allShell.getBody().getResult())
+			for (ShellDescriptorResponse shellDescriptorResponse : allShell.getResult())
 				preapreSubmodelResult(submodel, queryOnDataOffers, shellDescriptorResponse);
 
 		} catch (FeignException e) {
@@ -151,9 +150,9 @@ public class LookUpDTTwin {
 		List<QueryDataOfferModel> queryOnDataOffers = new ArrayList<>();
 
 		for (String shellId : shellIds) {
-			ResponseEntity<ShellDescriptorResponse> shellDescriptorResponse = eDCDigitalTwinProxyForLookUp.getShellDescriptorByShellId(
+			ShellDescriptorResponse shellDescriptorResponse = eDCDigitalTwinProxyForLookUp.getShellDescriptorByShellId(
 					new URI(endpoint), digitalTwinsUtility.encodeShellIdBase64Utf8(shellId), header);
-			preapreSubmodelResult(submodel, queryOnDataOffers, shellDescriptorResponse.getBody());
+			preapreSubmodelResult(submodel, queryOnDataOffers, shellDescriptorResponse);
 		}
 		return queryOnDataOffers;
 	}

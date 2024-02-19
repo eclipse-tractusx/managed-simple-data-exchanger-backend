@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,10 +20,10 @@
 
 package org.eclipse.tractusx.sde.submodels.batch.steps;
 
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
@@ -49,7 +49,7 @@ public class EDCBatchHandlerUseCase extends Step {
 	private final BatchService batchDeleteService;
 
 	@SneakyThrows
-	public Batch run(String submodel, Batch input, String processId) {
+	public Batch run(String submodel, Batch input, String processId, PolicyModel policy) {
 		String shellId = input.getShellId();
 		String subModelId = input.getSubModelId();
 
@@ -57,13 +57,12 @@ public class EDCBatchHandlerUseCase extends Step {
 
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
 					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getUuid());
-			if (!edcGateway.assetExistsLookup(
-					assetEntryRequest.getId())) {
-				edcProcessingforBatch(assetEntryRequest, input);
+			if (!edcGateway.assetExistsLookup(assetEntryRequest.getId())) {
+				edcProcessingforBatch(assetEntryRequest, input, policy);
 
 			} else {
 				deleteEDCFirstForUpdate(submodel, input, processId);
-				edcProcessingforBatch(assetEntryRequest, input);
+				edcProcessingforBatch(assetEntryRequest, input, policy);
 				input.setUpdated(CommonConstants.UPDATED_Y);
 			}
 
@@ -86,10 +85,9 @@ public class EDCBatchHandlerUseCase extends Step {
 	}
 
 	@SneakyThrows
-	private void edcProcessingforBatch(AssetEntryRequest assetEntryRequest, Batch input) {
+	private void edcProcessingforBatch(AssetEntryRequest assetEntryRequest, Batch input, PolicyModel policy) {
 
-		Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest,
-				List.of(),List.of());
+		Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest, policy);
 
 		// EDC transaction information for DB
 		input.setAssetId(assetEntryRequest.getId());

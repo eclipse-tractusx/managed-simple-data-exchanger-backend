@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,10 +19,10 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.submodels.psiap.steps;
 
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
@@ -48,7 +48,8 @@ public class EDCPartSiteInformationAsPlannedHandlerStep extends Step {
 	private final PartSiteInformationAsPlannedService partSiteInformationAsPlannedService;
 
 	@SneakyThrows
-	public PartSiteInformationAsPlanned run(String submodel, PartSiteInformationAsPlanned input, String processId) {
+	public PartSiteInformationAsPlanned run(String submodel, PartSiteInformationAsPlanned input, String processId,
+			PolicyModel policy) {
 		String shellId = input.getShellId();
 		String subModelId = input.getSubModelId();
 
@@ -56,13 +57,12 @@ public class EDCPartSiteInformationAsPlannedHandlerStep extends Step {
 
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
 					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getUuid());
-			if (!edcGateway.assetExistsLookup(
-					assetEntryRequest.getId())) {
-				edcProcessingforPartAsPlanned(assetEntryRequest, input);
+			if (!edcGateway.assetExistsLookup(assetEntryRequest.getId())) {
+				edcProcessingforPartAsPlanned(assetEntryRequest, input, policy);
 			} else {
 
 				deleteEDCFirstForUpdate(submodel, input, processId);
-				edcProcessingforPartAsPlanned(assetEntryRequest, input);
+				edcProcessingforPartAsPlanned(assetEntryRequest, input, policy);
 				input.setUpdated(CommonConstants.UPDATED_Y);
 			}
 
@@ -87,11 +87,10 @@ public class EDCPartSiteInformationAsPlannedHandlerStep extends Step {
 	}
 
 	@SneakyThrows
-	private void edcProcessingforPartAsPlanned(AssetEntryRequest assetEntryRequest,
-			PartSiteInformationAsPlanned input) {
+	private void edcProcessingforPartAsPlanned(AssetEntryRequest assetEntryRequest, PartSiteInformationAsPlanned input,
+			PolicyModel policy) {
 
-		Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest,
-				List.of(), List.of());
+		Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest, policy);
 
 		// EDC transaction information for DB
 		input.setAssetId(assetEntryRequest.getId());

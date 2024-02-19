@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -32,14 +32,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
+@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(Include.NON_NULL)
 public class ShellDescriptorRequest {
@@ -49,6 +49,7 @@ public class ShellDescriptorRequest {
     private List<MultiLanguage> description;
     private String globalAssetId;
     private List<Object> specificAssetIds;
+    private List<CreateSubModelRequest> submodelDescriptors;
 
     @SneakyThrows
     public String toJsonString() {

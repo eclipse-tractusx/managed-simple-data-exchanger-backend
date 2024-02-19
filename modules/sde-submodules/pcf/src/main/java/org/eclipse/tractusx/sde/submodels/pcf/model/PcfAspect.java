@@ -20,6 +20,7 @@
 
 package org.eclipse.tractusx.sde.submodels.pcf.model;
 
+
 import org.eclipse.tractusx.sde.common.entities.CommonPropEntity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

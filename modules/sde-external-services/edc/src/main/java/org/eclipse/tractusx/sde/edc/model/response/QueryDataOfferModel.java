@@ -68,7 +68,7 @@ public class QueryDataOfferModel {
 	private String publisher;
 
 	private String policyId;
-	
+
 	private PolicyModel policy;
 
 }

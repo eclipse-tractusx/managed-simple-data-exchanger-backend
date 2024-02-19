@@ -180,8 +180,8 @@ public class ContractNegotiateManagementHelper extends AbstractEDCStepsHelper {
 			}
 
 			if (policies.isEmpty())
-				UtilityFunctions.getUsagePolicies(policies, List.of());
-
+			
+			UtilityFunctions.getUsagePolicies(policies, List.of());
 			ContractAgreementInfo agreementInfo = ContractAgreementInfo.builder()
 					.contractEndDate(agreement.getContractEndDate())
 					.contractSigningDate(agreement.getContractSigningDate())

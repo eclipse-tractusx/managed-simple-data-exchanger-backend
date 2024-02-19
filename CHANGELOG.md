@@ -9,8 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Policy-Hub service api integration.
 - Added New Policy Entities and pojo classes.
 - Draft code of Policies changes.
-- Added new classes for file download history
-- Added new classes for files for cache ddtr and bpndiscovery twin search 
+- Added new classes for file download history.
+- Added new classes for files for cache ddtr and bpndiscovery twin search. 
 
 ### Fixed
 

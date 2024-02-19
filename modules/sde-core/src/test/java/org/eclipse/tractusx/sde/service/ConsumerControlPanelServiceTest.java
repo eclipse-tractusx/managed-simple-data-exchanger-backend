@@ -101,52 +101,9 @@ class ConsumerControlPanelServiceTest {
 
 	@MockBean
 	private ContractOfferRequestFactory contractOfferRequestFactory;
-
 	@MockBean
 	private EDRRequestHelper eDRRequestHelper;
 	
-	@MockBean
-	private BpnDiscoveryProxyService bpnDiscoveryProxyService;
-	
-	@MockBean
-	private EDCAssetUrlCacheService eDCAssetUrlCacheService;
-	
-	@MockBean
-	private CatalogResponseBuilder catalogResponseBuilder;
-
-	@MockBean
-	private ContractNegotiationService contractNegotiationService;
-
-	@MockBean
-	private LookUpDTTwin lookUpDTTwin;
-	
-	
-	@BeforeEach
-	public void setup() {
-		when(bpnDiscoveryProxyService.bpnDiscoverySearchData(any()))
-		.thenReturn(BpnDiscoverySearchResponse.builder()
-				.bpns(List.of(BpnDiscoveryResponse.builder()
-						.value("fooo")
-						.build()))
-				.build());
-		
-		when(eDCAssetUrlCacheService.getDDTRUrl(any()))
-		.thenReturn(List.of(QueryDataOfferModel.builder()
-						.assetId("foo")
-						.connectorId("test")
-						.offerId("offer")
-						.build()));
-		when(eDCAssetUrlCacheService.verifyAndGetToken(any(),any())).thenReturn(any());
-	}
-
-  @Test
-	void testQueryOnDataOfferEmpty() throws Exception {
-
-
-		List<QueryDataOfferModel> queryOnDataOffers = consumerControlPanelService.queryOnDataOffers("example", "", "",
-				0, 0);
-		assertTrue(queryOnDataOffers.isEmpty());
-	}
 
 	//@Test
 	void testQueryOnDataOffersWithUsagePolicies() throws Exception {

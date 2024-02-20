@@ -31,7 +31,7 @@ import java.util.List;
 
 import org.eclipse.tractusx.sde.common.entities.Policies;
 import org.eclipse.tractusx.sde.core.controller.ConsumerController;
-//import org.eclipse.tractusx.sde.core.service.ConsumerService;
+import org.eclipse.tractusx.sde.core.service.ConsumerService;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
 import org.eclipse.tractusx.sde.edc.model.request.Offer;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
@@ -57,13 +57,13 @@ class ConsumerControllerTest {
 	@MockBean
 	private ConsumerControlPanelService consumerControlPanelService;
 
-//	@MockBean
-//	private ConsumerService consumerService;
+	@MockBean
+	private ConsumerService consumerService;
 
 	@Autowired
 	private ConsumerController consumerController;
 
-	//@Test
+	@Test
 	void testQueryOnDataOfferWithoutOfferModel() throws Exception {
 		when(consumerControlPanelService.queryOnDataOffers((String) any(), (String) any(), (String) any(), anyInt(),
 				anyInt())).thenReturn(new ArrayList<>());
@@ -76,7 +76,7 @@ class ConsumerControllerTest {
 				.andExpect(MockMvcResultMatchers.content().string("[]"));
 	}
 
-	//@Test
+	@Test
 	void testQueryOnDataOffersWithOfferModel() throws Exception {
 		ArrayList<QueryDataOfferModel> queryDataOfferModelList = new ArrayList<>();
 		queryDataOfferModelList.add(QueryDataOfferModel.builder()
@@ -97,7 +97,7 @@ class ConsumerControllerTest {
 
 	}
 
-	//@Test
+	@Test
 	void testSubscribeDataOffersBadRequest() throws Exception {
 		doNothing().when(consumerControlPanelService).subscribeDataOffers((ConsumerRequest) any(), anyString());
 

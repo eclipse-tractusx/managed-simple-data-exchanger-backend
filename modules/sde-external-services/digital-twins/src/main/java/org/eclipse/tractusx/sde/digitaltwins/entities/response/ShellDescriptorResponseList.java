@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2024 T-Systems International GmbH
- * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
+ * Copyright (c) 2024 T-Systems International GmbH
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -18,38 +18,19 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.edc.model.request;
+package org.eclipse.tractusx.sde.digitaltwins.entities.response;
 
 import java.util.List;
 
-import org.eclipse.tractusx.sde.common.entities.Policies;
-import org.springframework.lang.NonNull;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-
-import jakarta.validation.constraints.NotEmpty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-
 
 @Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-@JsonInclude(Include.NON_NULL)
-public class ConsumerRequest {
-
-    @NonNull
-    private String connectorId;
-    @NonNull
-    private String providerUrl;
-    @NonNull
-    @NotEmpty
-    private List<Offer> offers;
-    @NonNull
-    private List<Policies> policies;
-
+public class ShellDescriptorResponseList {
+	
+	@JsonProperty("paging_metadata")
+	private Paging pagingMetadata;
+	
+	private List<ShellDescriptorResponse> result;
 }

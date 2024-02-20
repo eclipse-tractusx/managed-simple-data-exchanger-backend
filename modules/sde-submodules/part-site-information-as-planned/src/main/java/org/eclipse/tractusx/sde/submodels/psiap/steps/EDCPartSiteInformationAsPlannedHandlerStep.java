@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -56,7 +56,7 @@ public class EDCPartSiteInformationAsPlannedHandlerStep extends Step {
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
 					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getUuid());
 			if (!edcGateway.assetExistsLookup(
-					assetEntryRequest.getAsset().getId())) {
+					assetEntryRequest.getId())) {
 				edcProcessingforPartAsPlanned(assetEntryRequest, input);
 			} else {
 
@@ -93,7 +93,7 @@ public class EDCPartSiteInformationAsPlannedHandlerStep extends Step {
 				input.getBpnNumbers(), input.getUsagePolicies());
 
 		// EDC transaction information for DB
-		input.setAssetId(assetEntryRequest.getAsset().getId());
+		input.setAssetId(assetEntryRequest.getId());
 		input.setAccessPolicyId(createEDCAsset.get("accessPolicyId"));
 		input.setUsagePolicyId(createEDCAsset.get("usagePolicyId"));
 		input.setContractDefinationId(createEDCAsset.get("contractDefinitionId"));

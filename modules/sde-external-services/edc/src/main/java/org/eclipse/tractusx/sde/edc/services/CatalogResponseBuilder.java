@@ -126,7 +126,7 @@ public class CatalogResponseBuilder extends AbstractEDCStepsHelper {
 			}
 		}
 
-		//build.setPolicy(PolicyModel.builder().accessPolicies(null).usagePolicies(usagePolicies).build());
+		build.setPolicy(PolicyModel.builder().accessPolicies(null).usagePolicies(usagePolicies).build());
 	}
 
 	private void setConstraint(List<Policies> usagePolicies, JsonNode jsonNode) {

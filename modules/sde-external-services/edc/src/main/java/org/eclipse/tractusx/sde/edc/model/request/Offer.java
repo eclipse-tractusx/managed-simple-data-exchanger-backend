@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2024 T-Systems International GmbH
- * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
+ * Copyright (c) 2024 T-Systems International GmbH
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -18,57 +18,37 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.edc.model.response;
+package org.eclipse.tractusx.sde.edc.model.request;
 
-import org.eclipse.tractusx.sde.common.entities.PolicyModel;
+import org.springframework.lang.NonNull;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(Include.NON_NULL)
-public class QueryDataOfferModel {
+@AllArgsConstructor
+@Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class Offer {
 
+	@NonNull
 	private String connectorId;
-
-	private String assetId;
-	
-	private String manufacturerPartId;
-
-	private String offerId;
-
+	@NonNull
 	private String connectorOfferUrl;
-
-	private String title;
-
-	private String type;
-
-	private String version;
-
-	private String description;
-
-	private String fileName;
-
-	private String fileContentType;
-
-	private String created;
-
-	private String modified;
-
-	private String publisher;
-
+	@NotNull
+	private String offerId;
+	@NotNull
+	private String assetId;
 	private String policyId;
-
-	private PolicyModel policy;
-
+	private String agreementId;
+	private String expirationDate;
+	private String transferProcessId;
+	private String status;
+	private String downloadErrorMsg;
 }

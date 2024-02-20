@@ -63,9 +63,8 @@ public class EDCAssetLookUp {
 					try {
 						if (!connector.contains(consumerHost)) {
 							
-							List<QueryDataOfferModel> queryDataOfferModel = new ArrayList<>();
-//							catalogResponseBuilder
-//									.queryOnDataOffers(connector, 0, 100, filterExpression);
+							List<QueryDataOfferModel> queryDataOfferModel = catalogResponseBuilder
+									.queryOnDataOffers(connector, 0, 100, filterExpression);
 
 							log.info("For Connector " + connector + ", found " + assetType + " assets :"
 									+ queryDataOfferModel.size());

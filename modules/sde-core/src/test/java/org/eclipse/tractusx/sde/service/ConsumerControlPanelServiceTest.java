@@ -42,7 +42,7 @@ import org.eclipse.tractusx.sde.edc.facilitator.EDRRequestHelper;
 import org.eclipse.tractusx.sde.edc.gateways.database.ContractNegotiationInfoRepository;
 import org.eclipse.tractusx.sde.edc.model.contractoffers.ContractOfferRequestFactory;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
-import org.eclipse.tractusx.sde.edc.model.request.OfferRequest;
+import org.eclipse.tractusx.sde.edc.model.request.Offer;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.eclipse.tractusx.sde.edc.services.ConsumerControlPanelService;
 import org.eclipse.tractusx.sde.portal.api.IPartnerPoolExternalServiceApi;
@@ -128,7 +128,7 @@ class ConsumerControlPanelServiceTest {
 
 	@Test
 	void testSubscribeDataOffers1() {
-		ArrayList<OfferRequest> offerRequestList = new ArrayList<>();
+		ArrayList<Offer> offerRequestList = new ArrayList<>();
 		List<Policies> usagePolicies = new ArrayList<>();
 		Policies usagePolicy = Policies.builder().technicalKey("PURPOSE").value(List.of("Sample"))
 				.build();

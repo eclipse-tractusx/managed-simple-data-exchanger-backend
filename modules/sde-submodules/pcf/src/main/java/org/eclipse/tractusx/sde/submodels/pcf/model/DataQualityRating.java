@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2023 T-Systems International GmbH
- * Copyright (c) 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023, 2024 T-Systems International GmbH
+ * Copyright (c) 2023, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -28,11 +28,11 @@ import lombok.Data;
 @AllArgsConstructor
 public class DataQualityRating {
 	
-	private double completenessDQR;
-	private double technologicalDQR;
-	private double geographicalDQR;
-	private double temporalDQR;
-	private double reliabilityDQR;
-	private double coveragePercent;
+	private Double completenessDQR;
+	private Double technologicalDQR;
+	private Double geographicalDQR;
+	private Double temporalDQR;
+	private Double reliabilityDQR;
+	private Double coveragePercent;
 
 }

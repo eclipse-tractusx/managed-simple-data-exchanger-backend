@@ -1,8 +1,8 @@
 /********************************************************************************
  * Copyright (c) 2022 Critical TechWorks GmbH
  * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -22,7 +22,6 @@
 
 package org.eclipse.tractusx.sde.submodels.apr.steps;
 
-import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -31,6 +30,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseException;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
@@ -61,13 +61,13 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 
 	private final DigitalTwinsFacilitator digitalTwinfacilitaor;
 	private final DigitalTwinsUtility digitalTwinsUtility;
-	private final DDTRUrlCacheUtility dDTRUrlCacheUtility;
+	//private final DDTRUrlCacheUtility dDTRUrlCacheUtility;
 	private final EDCDigitalTwinProxyForLookUp eDCDigitalTwinProxyForLookUp;
 
 	private static final Map<String, LocalDateTime> map = new ConcurrentHashMap<>();
 
 	@SneakyThrows
-	public AspectRelationship run(AspectRelationship aspectRelationShip) throws CsvHandlerDigitalTwinUseCaseException {
+	public AspectRelationship run(AspectRelationship aspectRelationShip, PolicyModel policy) throws CsvHandlerDigitalTwinUseCaseException {
 		try {
 			return doRun(aspectRelationShip);
 		} catch (Exception e) {
@@ -207,7 +207,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 
 		for (QueryDataOfferModel dtOffer : queryDataOffers) {
 
-			EDRCachedByIdResponse edrToken = dDTRUrlCacheUtility.verifyAndGetToken(childManufacturerId, dtOffer);
+			EDRCachedByIdResponse edrToken = null;//dDTRUrlCacheUtility.verifyAndGetToken(childManufacturerId, dtOffer);
 
 			if (edrToken != null) {
 				childUUID = lookUpChildTwin(shellLookupRequest, aspectRelationShip, edrToken, dtOffer);
@@ -249,8 +249,8 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 
 			Map<String, String> header = Map.of(edrToken.getAuthKey(), edrToken.getAuthCode());
 
-			ResponseEntity<ShellLookupResponse> shellLookup = eDCDigitalTwinProxyForLookUp
-					.shellLookup(new URI(endpoint),encodeShellIdBase64Utf8(shellLookupRequest.toJsonString()), header);
+			ResponseEntity<ShellLookupResponse> shellLookup = null;// eDCDigitalTwinProxyForLookUp
+					//.shellLookup(new URI(endpoint),encodeShellIdBase64Utf8(shellLookupRequest.toJsonString()), header);
 			ShellLookupResponse body = shellLookup.getBody();
 
 			if (shellLookup.getStatusCode() == HttpStatus.OK && body != null) {
@@ -284,9 +284,9 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 			log.warn(String.format("Multiple shell id's found for childAspect %s, %s", dtOfferUrl,
 					shellLookupRequest.toJsonString()));
 		} else if (childshellIds.size() == 1) {
-			ResponseEntity<ShellDescriptorResponse> shellDescriptorResponse = eDCDigitalTwinProxyForLookUp
-					.getShellDescriptorByShellId(new URI(endpoint), encodeShellIdBase64Utf8(childshellIds.get(0)),
-							header);
+			ResponseEntity<ShellDescriptorResponse> shellDescriptorResponse = null;//eDCDigitalTwinProxyForLookUp
+					//.getShellDescriptorByShellId(new URI(endpoint), encodeShellIdBase64Utf8(childshellIds.get(0)),
+					//		header);
 			ShellDescriptorResponse shellDescriptorResponseBody = shellDescriptorResponse.getBody();
 			if (shellDescriptorResponse.getStatusCode() == HttpStatus.OK && shellDescriptorResponseBody != null) {
 				childUUID = shellDescriptorResponseBody.getGlobalAssetId();
@@ -306,16 +306,16 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 		if (cacheExpTime == null)
 			cacheExpTime = currDate.plusHours(12);
 		else if (currDate.isAfter(cacheExpTime)) {
-			dDTRUrlCacheUtility.removeDDTRUrlCache(bpnNumber);
+			//dDTRUrlCacheUtility.removeDDTRUrlCache(bpnNumber);
 			cacheExpTime = currDate.plusHours(12);
 		}
 		map.put(bpnNumber, cacheExpTime);
-		return dDTRUrlCacheUtility.getDDTRUrl(bpnNumber);
+		return null;//dDTRUrlCacheUtility.getDDTRUrl(bpnNumber);
 	}
 
 	public void clearDDTRUrlCache() {
 		map.clear();
-		dDTRUrlCacheUtility.cleareDDTRUrlAllCache();
+		//dDTRUrlCacheUtility.cleareDDTRUrlAllCache();
 	}
 
 	private String encodeShellIdBase64Utf8(String shellId) {

@@ -27,7 +27,6 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorRe
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorResponseList;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellLookupResponse;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -37,14 +36,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface EDCDigitalTwinProxyForLookUp {
 
 	@GetMapping(path = "/shell-descriptors")
-	ResponseEntity<ShellDescriptorResponseList> getAllShell(URI url, @RequestParam("page") Integer page,
+	ShellDescriptorResponseList getAllShell(URI url, @RequestParam("page") Integer page,
 			@RequestParam("pageSize") Integer pageSize, @RequestHeader Map<String, String> header);
 
 	@GetMapping(path = "/shell-descriptors/{aasIdentifier}")
-	ResponseEntity<ShellDescriptorResponse> getShellDescriptorByShellId(URI url, @PathVariable("aasIdentifier") String shellId,
+	ShellDescriptorResponse getShellDescriptorByShellId(URI url, @PathVariable("aasIdentifier") String shellId,
 			@RequestHeader Map<String, String> header);
 
 	@GetMapping(path = "/lookup/shells")
-	ResponseEntity<ShellLookupResponse> shellLookup(URI url, @RequestParam String assetIds, @RequestHeader Map<String, String> header);
+	ShellLookupResponse shellLookup(URI url, @RequestParam String assetIds, @RequestHeader Map<String, String> header);
 
 }

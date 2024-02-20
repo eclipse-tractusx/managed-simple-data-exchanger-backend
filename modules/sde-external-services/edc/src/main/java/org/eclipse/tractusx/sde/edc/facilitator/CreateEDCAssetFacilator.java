@@ -21,10 +21,9 @@
 package org.eclipse.tractusx.sde.edc.facilitator;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import org.eclipse.tractusx.sde.common.entities.Policies;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.contractdefinition.ContractDefinitionRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.contractdefinition.ContractDefinitionRequestFactory;
@@ -44,22 +43,21 @@ public class CreateEDCAssetFacilator extends AbstractEDCStepsHelper {
 	private final ContractDefinitionRequestFactory contractFactory;
 	private final PolicyConstraintBuilderService policyConstraintBuilderService;
 
-	public Map<String, String> createEDCAsset(AssetEntryRequest assetEntryRequest, List<String> bpns,
-			List<Policies> usagePolicies) {
+	public Map<String, String> createEDCAsset(AssetEntryRequest assetEntryRequest, PolicyModel policy) {
 
 		Map<String, String> output = new HashMap<>();
 
 		edcGateway.createAsset(assetEntryRequest);
 
-		String assetId = "";
+		String assetId = assetEntryRequest.getId();
 
-		JsonNode accessPolicyDefinitionRequest = policyConstraintBuilderService.getAccessPolicy(assetId, null);
+		JsonNode accessPolicyDefinitionRequest = policyConstraintBuilderService.getAccessPolicy(assetId, policy);
 		String accessPolicyUUId = accessPolicyDefinitionRequest.get("@id").asText();
-		//edcGateway.createPolicyDefinition(accessPolicyDefinitionRequest);
+		edcGateway.createPolicyDefinition(accessPolicyDefinitionRequest);
 
-		JsonNode usagePolicyDefinitionRequest = policyConstraintBuilderService.getUsagePolicy(assetId, null);
+		JsonNode usagePolicyDefinitionRequest = policyConstraintBuilderService.getUsagePolicy(assetId, policy);
 		String usagePolicyUUId = usagePolicyDefinitionRequest.get("@id").asText();
-		//edcGateway.createPolicyDefinition(usagePolicyDefinitionRequest);
+		edcGateway.createPolicyDefinition(usagePolicyDefinitionRequest);
 
 		ContractDefinitionRequest contractDefinitionRequest = contractFactory.getContractDefinitionRequest(assetId,
 				accessPolicyUUId, usagePolicyUUId);

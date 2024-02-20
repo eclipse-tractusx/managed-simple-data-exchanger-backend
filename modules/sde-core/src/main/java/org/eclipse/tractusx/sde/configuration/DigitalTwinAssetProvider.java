@@ -98,7 +98,7 @@ public class DigitalTwinAssetProvider {
 					.usagePolicies(List.of())
 					.build();
 			
-			Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest, null, null);
+			Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest, policy);
 			log.info("Digital twin asset creates :" + createEDCAsset.toString());
 		} else {
 			log.info("Digital twin asset exists in edc connector, so ignoring asset creation");

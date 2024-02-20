@@ -25,6 +25,7 @@ package org.eclipse.tractusx.sde.submodels.apr.steps;
 import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
@@ -52,7 +53,7 @@ public class EDCAspectRelationshipHandlerUseCase extends Step {
 	private final AspectRelationshipService aspectRelationshipService;
 
 	@SneakyThrows
-	public AspectRelationship run(String submodel, AspectRelationship input, String processId) {
+	public AspectRelationship run(String submodel, AspectRelationship input, String processId, PolicyModel policy) {
 		String shellId = input.getShellId();
 		String subModelId = input.getSubModelId();
 
@@ -67,12 +68,12 @@ public class EDCAspectRelationshipHandlerUseCase extends Step {
 					deleteIfAnyReferenceExist(input.getOldSubmodelIdforUpdateCase());
 				}
 
-				edcProcessingforAspectRelationship(assetEntryRequest, input);
+				edcProcessingforAspectRelationship(assetEntryRequest, input, policy);
 
 			} else {
 
 				deleteEDCFirstForUpdate(submodel, input, processId);
-				edcProcessingforAspectRelationship(assetEntryRequest, input);
+				edcProcessingforAspectRelationship(assetEntryRequest, input, policy);
 				input.setUpdated(CommonConstants.UPDATED_Y);
 			}
 
@@ -112,10 +113,9 @@ public class EDCAspectRelationshipHandlerUseCase extends Step {
 	}
 
 	@SneakyThrows
-	private void edcProcessingforAspectRelationship(AssetEntryRequest assetEntryRequest, AspectRelationship input) {
+	private void edcProcessingforAspectRelationship(AssetEntryRequest assetEntryRequest, AspectRelationship input, PolicyModel policy) {
 
-		Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest,
-				input.getBpnNumbers(), input.getUsagePolicies());
+		Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest, policy);
 
 		// EDC transaction information for DB
 		input.setAssetId(assetEntryRequest.getId());

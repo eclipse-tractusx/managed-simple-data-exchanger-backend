@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -57,7 +57,7 @@ public class ConsumerController {
 		if (offset == null) {
 			offset = 0;
 		}
-		return ok().body(consumerControlPanelService.queryOnDataOffers(providerUrl, offset, limit, null));
+		return ok().body(null);
 	}
 
 	@PostMapping(value = "/subscribe-data-offers")

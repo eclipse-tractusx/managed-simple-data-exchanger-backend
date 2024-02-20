@@ -46,9 +46,7 @@ import com.google.gson.JsonObject;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SubmodelOrchestartorService {
@@ -116,7 +114,7 @@ public class SubmodelOrchestartorService {
 					ObjectNode newjObject = jsonObjectMapper.submodelFileRequestToJsonNodePojo(submodelPolicyRequest);
 					newjObject.put(ROW_NUMBER, rowjObj.position());
 					newjObject.put(PROCESS_ID, processId);
-					executor.executeCsvRecord(rowjObj, newjObject, processId);
+					executor.executeCsvRecord(rowjObj, newjObject, processId, submodelPolicyRequest);
 					// fetch by ID and check it if it is success then its updated.
 					successCount.incrementAndGet();
 
@@ -167,7 +165,7 @@ public class SubmodelOrchestartorService {
 
 			rowData.parallelStream().forEachOrdered(rowjObj -> {
 				try {
-					executor.executeJsonRecord(rowjObj.get(ROW_NUMBER).asInt(), rowjObj, processId);
+					executor.executeJsonRecord(rowjObj.get(ROW_NUMBER).asInt(), rowjObj, processId, policy);
 					successCount.incrementAndGet();
 				} catch (Exception e) {
 					failureLogs.saveLog(processId, e.getMessage());

@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -25,8 +25,8 @@ import static org.springframework.http.ResponseEntity.ok;
 
 import java.time.LocalDateTime;
 
+import org.eclipse.tractusx.sde.edc.util.EDCAssetUrlCacheService;
 import org.eclipse.tractusx.sde.portal.utils.MemberCompanyBPNCacheUtilityService;
-import org.eclipse.tractusx.sde.submodels.apr.steps.DigitalTwinsAspectRelationShipCsvHandlerUseCase;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,7 +37,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PingController {
 
-	private final DigitalTwinsAspectRelationShipCsvHandlerUseCase digitalTwinsAspectRelationShipCsvHandlerUseCase;
+	private final EDCAssetUrlCacheService edcAssetUrlCacheService;
 
 	private final MemberCompanyBPNCacheUtilityService memberCompanyBPNCacheUtilityService;
 
@@ -54,7 +54,7 @@ public class PingController {
 
 	@GetMapping(value = "/cache/clear-ddtrurl")
 	public ResponseEntity<String> clearDdtrurlCache() {
-		digitalTwinsAspectRelationShipCsvHandlerUseCase.clearDDTRUrlCache();
+		edcAssetUrlCacheService.clearDDTRUrlCache();
 		return ok().body("Cleared");
 	}
 }

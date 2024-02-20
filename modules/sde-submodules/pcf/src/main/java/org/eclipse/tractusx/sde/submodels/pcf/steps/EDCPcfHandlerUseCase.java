@@ -20,10 +20,10 @@
 
 package org.eclipse.tractusx.sde.submodels.pcf.steps;
 
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
@@ -34,6 +34,7 @@ import org.eclipse.tractusx.sde.edc.gateways.external.EDCGateway;
 import org.eclipse.tractusx.sde.submodels.pcf.entity.PcfEntity;
 import org.eclipse.tractusx.sde.submodels.pcf.model.PcfAspect;
 import org.eclipse.tractusx.sde.submodels.pcf.service.PcfService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -48,8 +49,11 @@ public class EDCPcfHandlerUseCase extends Step {
 	private final CreateEDCAssetFacilator createEDCAssetFacilator;
 	private final PcfService aspectService;
 
+	@Value(value = "${dft.hostname}")
+	private String dftHostname;
+
 	@SneakyThrows
-	public PcfAspect run(String submodel, PcfAspect input, String processId) {
+	public PcfAspect run(String submodel, PcfAspect input, String processId, PolicyModel policy) {
 		String shellId = input.getShellId();
 		String subModelId = input.getSubModelId();
 
@@ -57,15 +61,15 @@ public class EDCPcfHandlerUseCase extends Step {
 
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
 					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getId());
-			if (!edcGateway.assetExistsLookup(
-					assetEntryRequest.getId())) {
+			
+			if (!edcGateway.assetExistsLookup(assetEntryRequest.getId())) {
 
-				edcProcessingforAspect(assetEntryRequest, input);
+				edcProcessingforAspect(assetEntryRequest, input, policy);
 
 			} else {
 
 				deleteEDCFirstForUpdate(submodel, input, processId);
-				edcProcessingforAspect(assetEntryRequest, input);
+				edcProcessingforAspect(assetEntryRequest, input, policy);
 				input.setUpdated(CommonConstants.UPDATED_Y);
 			}
 
@@ -88,10 +92,9 @@ public class EDCPcfHandlerUseCase extends Step {
 	}
 
 	@SneakyThrows
-	private void edcProcessingforAspect(AssetEntryRequest assetEntryRequest, PcfAspect input) {
+	private void edcProcessingforAspect(AssetEntryRequest assetEntryRequest, PcfAspect input, PolicyModel policy) {
 
-		Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest,
-				List.of(), List.of());
+		Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest, policy);
 
 		// EDC transaction information for DB
 		input.setAssetId(assetEntryRequest.getId());

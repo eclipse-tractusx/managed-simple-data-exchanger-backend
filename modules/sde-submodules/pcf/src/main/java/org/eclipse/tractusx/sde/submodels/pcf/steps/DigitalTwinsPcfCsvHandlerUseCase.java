@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2023 T-Systems International GmbH
- * Copyright (c) 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023, 2024 T-Systems International GmbH
+ * Copyright (c) 2023, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -56,7 +56,7 @@ public class DigitalTwinsPcfCsvHandlerUseCase extends Step {
 		try {
 			return doRun(pcfAspect);
 		} catch (Exception e) {
-			throw new CsvHandlerUseCaseException(pcfAspect.getRowNumberforPcf(), ": DigitalTwins: " + e.getMessage());
+			throw new CsvHandlerUseCaseException(pcfAspect.getRowNumber(), ": DigitalTwins: " + e.getMessage());
 		}
 	}
 
@@ -83,24 +83,24 @@ public class DigitalTwinsPcfCsvHandlerUseCase extends Step {
 					String.format("Multiple ids found on aspect %s", shellLookupRequest.toJsonString()));
 		}
 
-		pcfAspect.setShellIdforPcf(shellId);
+		pcfAspect.setShellId(shellId);
 		SubModelListResponse subModelResponse = digitalTwinsFacilitator.getSubModels(shellId);
 		SubModelResponse foundSubmodel = null;
 		if (subModelResponse != null) {
 			foundSubmodel = subModelResponse.getResult().stream().filter(x -> getIdShortOfModel().equals(x.getIdShort()))
 					.findFirst().orElse(null);
 			if (foundSubmodel != null)
-				pcfAspect.setSubModelIdforPcf(foundSubmodel.getId());
+				pcfAspect.setSubModelId(foundSubmodel.getId());
 		}
 
 		if (subModelResponse == null || foundSubmodel == null) {
 			logDebug(String.format("No submodels for '%s'", shellId));
 			CreateSubModelRequest createSubModelRequest = digitalTwinsUtility
-					.getCreateSubModelRequest(pcfAspect.getShellIdforPcf(), getsemanticIdOfModel(), getIdShortOfModel());
+					.getCreateSubModelRequest(pcfAspect.getShellId(), getsemanticIdOfModel(), getIdShortOfModel());
 			digitalTwinsFacilitator.createSubModel(shellId, createSubModelRequest);
-			pcfAspect.setSubModelIdforPcf(createSubModelRequest.getId());
+			pcfAspect.setSubModelId(createSubModelRequest.getId());
 		} else {
-			pcfAspect.setUpdatedforPcf(CommonConstants.UPDATED_Y);
+			pcfAspect.setUpdated(CommonConstants.UPDATED_Y);
 			logDebug("Complete Digital Twins Update Update Digital Twins");
 		}
 

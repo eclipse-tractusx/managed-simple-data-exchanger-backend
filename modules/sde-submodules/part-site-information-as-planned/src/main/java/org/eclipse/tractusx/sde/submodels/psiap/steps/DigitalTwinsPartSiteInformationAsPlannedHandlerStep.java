@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -83,7 +83,7 @@ public class DigitalTwinsPartSiteInformationAsPlannedHandlerStep extends Step {
 			
 			digitalTwinsFacilitator.updateShellSpecificAssetIdentifiers(shellId,
 					digitalTwinsUtility.getSpecificAssetIds(getSpecificAssetIds(partSiteInformationAsPlannedAspect),
-							partSiteInformationAsPlannedAspect.getBpnNumbers()));
+							List.of()));
 
 			logDebug(String.format("Shell id '%s'", shellId));
 		} else {

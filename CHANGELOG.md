@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added new classes for file download history.
 - Added new classes for files for cache ddtr and bpndiscovery twin search.
 - Added DT asset provider configuration on start up.
+- Use common DTO in all submodels.
  
 
 ### Fixed

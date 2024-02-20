@@ -1,8 +1,8 @@
 /********************************************************************************
  * Copyright (c) 2022 Critical TechWorks GmbH
  * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -22,7 +22,7 @@
 
 package org.eclipse.tractusx.sde.submodels.spt.entity;
 
-import java.io.Serializable;
+import org.eclipse.tractusx.sde.common.entities.CommonPropEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -33,13 +33,11 @@ import lombok.Data;
 @Table(name = "aspect")
 @Entity
 @Data
-public class AspectEntity implements Serializable {
+public class AspectEntity extends CommonPropEntity {
 
     @Id
     @Column(name = "uuid")
     private String uuid;
-    @Column(name = "process_id")
-    private String processId;
     @Column(name = "part_instance_id")
     private String partInstanceId;
     @Column(name = "manufacturing_date")
@@ -60,20 +58,4 @@ public class AspectEntity implements Serializable {
     private String optionalIdentifierKey;
     @Column(name = "optional_identifier_value")
     private String optionalIdentifierValue;
-    @Column(name = "shell_id")
-    private String shellId;
-    @Column(name = "sub_model_id")
-    private String subModelId;
-    @Column(name = "contract_defination_id")
-    private String contractDefinationId;
-    @Column(name = "usage_policy_id")
-    private String usagePolicyId;
-    @Column(name = "access_policy_id")
-    private String accessPolicyId;
-    @Column(name = "asset_id")
-    private String assetId;
-    @Column(name = "deleted")
-    private String deleted;
-    @Column(name = "updated")
-    private String updated;
 }

@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2023 T-Systems International GmbH
- * Copyright (c) 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023, 2024 T-Systems International GmbH
+ * Copyright (c) 2023, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -116,7 +116,7 @@ public class PcfExecutor extends SubmodelExecutor {
 		eDCAspectHandlerUseCaseforPcf.init(getSubmodelSchema());
 		eDCAspectHandlerUseCaseforPcf.run(getNameOfModel(), pcfAspect, processId);
 		
-		if (StringUtils.isBlank(pcfAspect.getUpdatedforPcf())) {
+		if (StringUtils.isBlank(pcfAspect.getUpdated())) {
 			Map<String, String> bpnKeyMap = new HashMap<>();
 			bpnKeyMap.put(CommonConstants.MANUFACTURER_PART_ID, pcfAspect.getProductId());
 			bPNDiscoveryUseCaseHandlerforPcf.run(bpnKeyMap);

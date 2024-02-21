@@ -20,10 +20,15 @@
 
 package org.eclipse.tractusx.sde.edc.facilitator;
 
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringSubstitutor;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.edc.api.EDCFeignClientApi;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 import lombok.SneakyThrows;
 
@@ -34,6 +39,23 @@ public class DeleteEDCFacilitator extends AbstractEDCStepsHelper {
 
 	public DeleteEDCFacilitator(EDCFeignClientApi eDCFeignClientApi) {
 		this.eDCFeignClientApi = eDCFeignClientApi;
+	}
+
+	@SneakyThrows
+	public void findEDCOfferInformation(String shellId, String subModelId) {
+		String assetId = shellId + "-" + subModelId;
+		try {
+			JsonNode contractDefination = eDCFeignClientApi.getContractDefination(assetId);
+
+			deleteContractDefination(contractDefination.get("@id").asText());
+			deleteAccessPolicy(contractDefination.get("edc:accessPolicyId").asText());
+			deleteUsagePolicy(contractDefination.get("edc:contractPolicyId").asText());
+
+		} catch (Exception e) {
+			parseExceptionMessage(e);
+		}
+		
+		deleteAssets(assetId);
 	}
 
 	@SneakyThrows
@@ -82,5 +104,11 @@ public class DeleteEDCFacilitator extends AbstractEDCStepsHelper {
 		if (!e.toString().contains("FeignException$NotFound") || !e.toString().contains("404 Not Found")) {
 			throw new ServiceException("Exception in EDC delete request process:" + e.getMessage());
 		}
+	}
+	
+	@SneakyThrows
+	public String valueReplacer(String requestTemplate, Map<String, String> inputData) {
+		StringSubstitutor stringSubstitutor1 = new StringSubstitutor(inputData);
+		return stringSubstitutor1.replace(requestTemplate);
 	}
 }

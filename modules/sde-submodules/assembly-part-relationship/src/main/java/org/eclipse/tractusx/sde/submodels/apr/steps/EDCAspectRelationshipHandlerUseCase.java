@@ -27,11 +27,13 @@ import java.util.Map;
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
+import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequestFactory;
 import org.eclipse.tractusx.sde.edc.facilitator.CreateEDCAssetFacilator;
+import org.eclipse.tractusx.sde.edc.facilitator.DeleteEDCFacilitator;
 import org.eclipse.tractusx.sde.edc.gateways.external.EDCGateway;
 import org.eclipse.tractusx.sde.submodels.apr.entity.AspectRelationshipEntity;
 import org.eclipse.tractusx.sde.submodels.apr.model.AspectRelationship;
@@ -51,6 +53,7 @@ public class EDCAspectRelationshipHandlerUseCase extends Step {
 	private final EDCGateway edcGateway;
 	private final CreateEDCAssetFacilator createEDCAssetFacilator;
 	private final AspectRelationshipService aspectRelationshipService;
+	private final DeleteEDCFacilitator deleteEDCFacilitator;
 
 	@SneakyThrows
 	public AspectRelationship run(String submodel, AspectRelationship input, String processId, PolicyModel policy) {
@@ -65,7 +68,7 @@ public class EDCAspectRelationshipHandlerUseCase extends Step {
 
 				if (CommonConstants.UPDATED_Y.equals(input.getUpdated())
 						&& input.getOldSubmodelIdforUpdateCase() != null) {
-					deleteIfAnyReferenceExist(input.getOldSubmodelIdforUpdateCase());
+					deleteIfAnyReferenceExist(input, input.getOldSubmodelIdforUpdateCase());
 				}
 
 				edcProcessingforAspectRelationship(assetEntryRequest, input, policy);
@@ -83,7 +86,7 @@ public class EDCAspectRelationshipHandlerUseCase extends Step {
 		}
 	}
 
-	private void deleteIfAnyReferenceExist(String oldSubModelId) {
+	private void deleteIfAnyReferenceExist(AspectRelationship input, String oldSubModelId) {
 		try {
 			AspectRelationshipEntity aspectRelationshipEntity = aspectRelationshipService
 					.readEntityBySubModelId(oldSubModelId);
@@ -91,6 +94,9 @@ public class EDCAspectRelationshipHandlerUseCase extends Step {
 			log.info(
 					"Deleted existing EDC asset in update case reference,so EDC end will be single asset for each submodel: "
 							+ oldSubModelId);
+		} catch (NoDataFoundException e) {
+			log.warn("In deleteIfAnyReferenceExist The EDC assetInfo not found in local database for delete, looking EDC connector and going to delete asset");
+			deleteEDCFacilitator.findEDCOfferInformation(input.getShellId(), input.getSubModelId());
 		} catch (Exception e) {
 			log.warn(
 					"Trying to delete existing EDC asset in update case reference,so EDC end will be single asset for each submodel: "
@@ -105,6 +111,9 @@ public class EDCAspectRelationshipHandlerUseCase extends Step {
 			AspectRelationshipEntity aspectRelationshipEntity = aspectRelationshipService
 					.readEntity(input.getChildUuid());
 			aspectRelationshipService.deleteEDCAsset(aspectRelationshipEntity);
+		} catch (NoDataFoundException e) {
+			log.warn("In deleteEDCFirstForUpdate The EDC assetInfo not found in local database for delete, looking EDC connector and going to delete asset");
+			deleteEDCFacilitator.findEDCOfferInformation(input.getShellId(), input.getSubModelId());
 		} catch (Exception e) {
 			if (!e.getMessage().contains("404 Not Found")) {
 				throw new ServiceException("Exception in EDC delete request process: " + e.getMessage());

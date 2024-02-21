@@ -24,7 +24,6 @@ package org.eclipse.tractusx.sde.edc.entities.request.contractdefinition;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.tractusx.sde.common.utils.UUIdGenerator;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -43,7 +42,7 @@ public class ContractDefinitionRequestFactory {
 		return ContractDefinitionRequest.builder()
 				.contractPolicyId(usagePolicyId == null ? accessPolicyId : usagePolicyId)
 				.accessPolicyId(accessPolicyId)
-				.id(UUIdGenerator.getUuid())
+				.id(uuid)
 				.assetsSelector(criteria)
 				.build();
 	}

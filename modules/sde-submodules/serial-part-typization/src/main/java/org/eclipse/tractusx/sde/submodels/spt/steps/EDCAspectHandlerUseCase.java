@@ -27,11 +27,13 @@ import java.util.Map;
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
+import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequestFactory;
 import org.eclipse.tractusx.sde.edc.facilitator.CreateEDCAssetFacilator;
+import org.eclipse.tractusx.sde.edc.facilitator.DeleteEDCFacilitator;
 import org.eclipse.tractusx.sde.edc.gateways.external.EDCGateway;
 import org.eclipse.tractusx.sde.submodels.spt.entity.AspectEntity;
 import org.eclipse.tractusx.sde.submodels.spt.model.Aspect;
@@ -40,7 +42,9 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class EDCAspectHandlerUseCase extends Step {
@@ -48,6 +52,7 @@ public class EDCAspectHandlerUseCase extends Step {
 	private final AssetEntryRequestFactory assetFactory;
 	private final EDCGateway edcGateway;
 	private final CreateEDCAssetFacilator createEDCAssetFacilator;
+	private final DeleteEDCFacilitator deleteEDCFacilitator;
 	private final AspectService aspectService;
 
 	@SneakyThrows
@@ -81,6 +86,9 @@ public class EDCAspectHandlerUseCase extends Step {
 		try {
 			AspectEntity entity = aspectService.readEntity(input.getUuid());
 			aspectService.deleteEDCAsset(entity);
+		} catch (NoDataFoundException e) {
+			log.warn("The EDC assetInfo not found in local database for delete, looking EDC connector and going to delete asset");
+			deleteEDCFacilitator.findEDCOfferInformation(input.getShellId(), input.getSubModelId());
 		} catch (Exception e) {
 			if (!e.getMessage().contains("404 Not Found")) {
 				throw new ServiceException("Unable to delete EDC offer for update: " + e.getMessage());

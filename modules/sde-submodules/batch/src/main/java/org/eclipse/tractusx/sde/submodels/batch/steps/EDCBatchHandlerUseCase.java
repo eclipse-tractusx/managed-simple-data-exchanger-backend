@@ -25,11 +25,13 @@ import java.util.Map;
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
+import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequestFactory;
 import org.eclipse.tractusx.sde.edc.facilitator.CreateEDCAssetFacilator;
+import org.eclipse.tractusx.sde.edc.facilitator.DeleteEDCFacilitator;
 import org.eclipse.tractusx.sde.edc.gateways.external.EDCGateway;
 import org.eclipse.tractusx.sde.submodels.batch.entity.BatchEntity;
 import org.eclipse.tractusx.sde.submodels.batch.model.Batch;
@@ -38,7 +40,9 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class EDCBatchHandlerUseCase extends Step {
@@ -47,6 +51,7 @@ public class EDCBatchHandlerUseCase extends Step {
 	private final EDCGateway edcGateway;
 	private final CreateEDCAssetFacilator createEDCAssetFacilator;
 	private final BatchService batchDeleteService;
+	private final DeleteEDCFacilitator deleteEDCFacilitator;
 
 	@SneakyThrows
 	public Batch run(String submodel, Batch input, String processId, PolicyModel policy) {
@@ -77,6 +82,10 @@ public class EDCBatchHandlerUseCase extends Step {
 		try {
 			BatchEntity batchEntity = batchDeleteService.readEntity(input.getUuid());
 			batchDeleteService.deleteEDCAsset(batchEntity);
+		} catch (NoDataFoundException e) {
+			log.warn(
+					"The EDC assetInfo not found in local database for delete, looking EDC connector and going to delete asset");
+			deleteEDCFacilitator.findEDCOfferInformation(input.getShellId(), input.getSubModelId());
 		} catch (Exception e) {
 			if (!e.getMessage().contains("404 Not Found")) {
 				throw new ServiceException("Unable to delete EDC offer for update: " + e.getMessage());

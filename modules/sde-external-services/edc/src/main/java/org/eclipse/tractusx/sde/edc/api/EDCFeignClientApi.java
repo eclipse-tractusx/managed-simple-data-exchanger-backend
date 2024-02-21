@@ -56,6 +56,10 @@ public interface EDCFeignClientApi {
 
 	@PostMapping("${edc.managementpath.apiversion:/v2}/contractdefinitions")
 	public String createContractDefination(@RequestBody ContractDefinitionRequest requestBody);
+	
+	@GetMapping("${edc.managementpath.apiversion:/v2}/contractdefinitions/{id}")
+	public JsonNode getContractDefination(@PathVariable("id") String id);
+
 
 	@DeleteMapping(path = "${edc.managementpath.apiversion:/v2}/contractdefinitions/{id}")
 	public ResponseEntity<Object> deleteContractDefinition(@PathVariable("id") String contractdefinitionsId);

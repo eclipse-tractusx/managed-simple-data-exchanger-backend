@@ -173,7 +173,7 @@ paths:
             '*/*':
               schema:
                 type: array
-                maxItems: 3
+                maxItems: 100
                 items:
                   type: string
     post:
@@ -191,7 +191,7 @@ paths:
           application/json:
             schema:
               type: array
-              maxItems: 3
+              maxItems: 100
               items:
                 type: string
         required: true
@@ -320,7 +320,7 @@ paths:
           application/json:
             schema:
               type: array
-              maxItems: 3
+              maxItems: 100
               items:
                 type: string
         required: true
@@ -331,7 +331,7 @@ paths:
             '*/*':
               schema:
                 type: array
-                maxItems: 3
+                maxItems: 100
                 items:
                   $ref: '#/components/schemas/ConnectorInfo'
   /{submodel}/public/{uuid}:
@@ -420,7 +420,7 @@ paths:
             '*/*':
               schema:
                 type: array
-                maxItems: 3
+                maxItems: 100
                 items:
                   type: string
   /usecases:
@@ -435,7 +435,7 @@ paths:
             '*/*':
               schema:
                 type: array
-                maxItems: 3
+                maxItems: 100
                 items:
                   type: object
                   additionalProperties:
@@ -469,7 +469,7 @@ paths:
           required: false
           schema:
             type: array
-            maxItems: 3
+            maxItems: 100
             items:
               type: string
       responses:
@@ -479,7 +479,7 @@ paths:
             '*/*':
               schema:
                 type: array
-                maxItems: 3
+                maxItems: 100
                 items:
                   type: object
                   additionalProperties:
@@ -515,7 +515,7 @@ paths:
           required: false
           schema:
             type: array
-            maxItems: 3
+            maxItems: 100
             items:
               type: string
       responses:
@@ -525,7 +525,7 @@ paths:
             '*/*':
               schema:
                 type: array
-                maxItems: 3
+                maxItems: 100
                 items:
                   type: object
                   additionalProperties:
@@ -618,10 +618,10 @@ paths:
             application/json:
               schema:
                 type: array
-                maxItems: 3
+                maxItems: 100
                 items:
                   type: array
-                  maxItems: 3
+                  maxItems: 100
                   items:
                     type: string
   /processing-report/{id}:
@@ -660,7 +660,7 @@ paths:
             application/json:
               schema:
                 type: array
-                maxItems: 3
+                maxItems: 100
                 items:
                   $ref: '#/components/schemas/ProcessFailureDetails'
   /policy-hub/policy-types:
@@ -686,7 +686,7 @@ paths:
             '*/*':
               schema:
                 type: array
-                maxItems: 3
+                maxItems: 100
                 items:
                   $ref: '#/components/schemas/PolicyTypeResponse'
   /policy-hub/policy-attributes:
@@ -701,7 +701,7 @@ paths:
             '*/*':
               schema:
                 type: array
-                maxItems: 3
+                maxItems: 100
                 items:
                   type: string
   /ping:
@@ -746,7 +746,7 @@ paths:
             '*/*':
               schema:
                 type: array
-                maxItems: 3
+                maxItems: 100
                 items:
                   $ref: '#/components/schemas/LegalEntityResponse'
   /getEDCPolicy:
@@ -760,7 +760,7 @@ paths:
           required: true
           schema:
             type: array
-            maxItems: 3
+            maxItems: 100
             items:
               $ref: '#/components/schemas/QueryDataOfferRequest'
       responses:
@@ -930,7 +930,7 @@ components:
           type: string
         value:
           type: array
-          maxItems: 3
+          maxItems: 100
           items:
             type: string
     SubmodelJsonRequest:
@@ -953,17 +953,17 @@ components:
           type: string
         access_policies:
           type: array
-          maxItems: 3
+          maxItems: 100
           items:
             $ref: '#/components/schemas/Policies'
         usage_policies:
           type: array
-          maxItems: 3
+          maxItems: 100
           items:
             $ref: '#/components/schemas/Policies'
         row_data:
           type: array
-          maxItems: 3
+          maxItems: 100
           items:
             type: object
     ConsumerRequest:
@@ -974,14 +974,14 @@ components:
       properties:
         offers:
           type: array
-          maxItems: 3
+          maxItems: 100
           items:
             $ref: '#/components/schemas/Offer'
         downloadDataAs:
           type: string
         usage_policies:
           type: array
-          maxItems: 3
+          maxItems: 100
           items:
             $ref: '#/components/schemas/Policies'
     Offer:
@@ -1047,7 +1047,7 @@ components:
             - OR
         constraints:
           type: array
-          maxItems: 3
+          maxItems: 100
           items:
             $ref: '#/components/schemas/Constraint'
     JsonNode:
@@ -1059,7 +1059,7 @@ components:
           type: string
         connectorEndpoint:
           type: array
-          maxItems: 3
+          maxItems: 100
           items:
             type: string
     UnifiedBpnValidationResponse:
@@ -1106,12 +1106,12 @@ components:
           type: string
         accessPolicies:
           type: array
-          maxItems: 3
+          maxItems: 100
           items:
             $ref: '#/components/schemas/Policies'
         usagePolicies:
           type: array
-          maxItems: 3
+          maxItems: 100
           items:
             $ref: '#/components/schemas/Policies'
         numberOfUpdatedItems:
@@ -1136,7 +1136,7 @@ components:
           format: int64
         items:
           type: array
-          maxItems: 3
+          maxItems: 100
           items:
             $ref: '#/components/schemas/ProcessReport'
     ProcessFailureDetails:
@@ -1165,19 +1165,19 @@ components:
           type: string
         type:
           type: array
-          maxItems: 3
+          maxItems: 100
           items:
             type: string
         description:
           type: string
         useCase:
           type: array
-          maxItems: 3
+          maxItems: 100
           items:
             type: string
         attribute:
           type: array
-          maxItems: 3
+          maxItems: 100
           items:
             $ref: '#/components/schemas/PolicyAttributeResponse'
         technicalEnforced:
@@ -1201,12 +1201,12 @@ components:
           type: string
         access_policies:
           type: array
-          maxItems: 3
+          maxItems: 100
           items:
             $ref: '#/components/schemas/Policies'
         usage_policies:
           type: array
-          maxItems: 3
+          maxItems: 100
           items:
             $ref: '#/components/schemas/Policies'
     QueryDataOfferRequest:

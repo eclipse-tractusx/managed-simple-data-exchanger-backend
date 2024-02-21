@@ -24,6 +24,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Fix new dDTR support changes.
 - Fixed Vulnerability logback issue of CVE-2023-6481.
 - Docker image updated to fix vulnerability.
+- Fixed Postgres vulnerability CVE-2024-1597.
 
 ## [2.3.4] - 2023-12-21
 ### Fixed

@@ -51,6 +51,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import io.micrometer.common.util.StringUtils;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
@@ -79,12 +80,16 @@ public class DigitalTwinsUtility {
 			String uuid, Map<String, String> specificIdentifiers, PolicyModel policy) {
 
 		return ShellDescriptorRequest.builder()
-				.idShort(String.format("%s_%s_%s", nameAtManufacturer, manufacturerId, manufacturerPartId))
+				.idShort(resizeShortId(String.format("%s_%s_%s", nameAtManufacturer, manufacturerId, manufacturerPartId)))
 				.globalAssetId(uuid)
 				.specificAssetIds(getSpecificAssetIds(specificIdentifiers, policy))
 				.description(List.of())
 				.id(UUIdGenerator.getUrnUuid())
 				.build();
+	}
+
+	private String resizeShortId(String str) {
+		return str.length() > 128 ? str.substring(0, 126) : str;
 	}
 
 	@SneakyThrows

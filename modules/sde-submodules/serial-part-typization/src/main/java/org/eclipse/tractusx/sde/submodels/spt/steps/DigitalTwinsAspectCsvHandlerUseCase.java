@@ -70,7 +70,7 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends Step {
 		String shellId;
 		
 		ShellDescriptorRequest aasDescriptorRequest = digitalTwinsUtility.getShellDescriptorRequest(
-				aspect.getNameAtManufacturer(), aspect.getManufacturerPartId(), aspect.getUuid(),
+				aspect.getNameAtManufacturer()+"_"+aspect.getPartInstanceId(), aspect.getManufacturerPartId(), aspect.getUuid(),
 				getSpecificAssetIds(aspect), policy);
 
 		if (shellIds.isEmpty()) {

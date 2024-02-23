@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [Unreleased]
+### Fixed
+- open api fix in sde-open-api.yml.
+- Fixed Postgres vulnerability CVE-2024-1597.
+
 ## [2.3.5] - 2024-02-20
 
 ### Added

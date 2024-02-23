@@ -359,6 +359,6 @@ The Eclipse Dash tool is used to analyze the dependencies used in the project an
 
 Bellow you can find the information regarding Docker Notice for this application.
 
-  - [Managed-simple-data-exchanger] (DOCKER_NOTICE.md)
+  - [Managed-simple-data-exchanger] (https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backendblob/Notice/DOCKER_NOTICE.md)
 
 

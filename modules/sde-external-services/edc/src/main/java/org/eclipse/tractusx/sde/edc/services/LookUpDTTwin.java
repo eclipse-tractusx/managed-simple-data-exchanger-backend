@@ -201,7 +201,7 @@ public class LookUpDTTwin {
 
 				String type = edcOffer.getType();
 
-				if (sematicId != null && sematicId.toLowerCase().contains("pcf"))
+				if (sematicId.toLowerCase().contains("pcf"))
 					type = "data.pcf.exchangeEndpoint";
 
 				QueryDataOfferModel qdm = QueryDataOfferModel.builder().connectorId(edcOffer.getConnectorId())

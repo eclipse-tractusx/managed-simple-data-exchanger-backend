@@ -264,7 +264,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 
 			ShellLookupResponse shellLookup = eDCDigitalTwinProxyForLookUp.shellLookup(
 					new URI(endpoint + registryLookupUriLocal),
-					digitalTwinsUtility.encodeAssetIdsObject(shellLookupRequest.toJsonString()), header);
+					digitalTwinsUtility.encodeAssetIdsObject(shellLookupRequest), header);
 
 			childUUID = getChildSubmodelDetails(shellLookupRequest, endpoint + registryUri, header, aspectRelationShip,
 					dtOfferUrl, shellLookup.getResult());

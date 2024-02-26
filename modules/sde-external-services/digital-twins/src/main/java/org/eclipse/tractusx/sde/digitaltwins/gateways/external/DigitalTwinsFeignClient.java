@@ -74,14 +74,14 @@ public interface DigitalTwinsFeignClient {
 			@PathVariable("submodelIdentifier") String submodelIdentifier);
 
 	@GetMapping(path = "${digital-twins.registry.lookup.uri:/api/v3.0}/lookup/shells")
-	ResponseEntity<ShellLookupResponse> shellLookup(@RequestParam String assetIds,
+	ResponseEntity<ShellLookupResponse> shellLookup(@RequestParam("assetIds") List<String> assetIds,
 			@RequestHeader("Edc-Bpn") String edcBpn);
-
-	@PostMapping(path = "${digital-twins.registry.lookup.uri:/api/v3.0}/lookup/shells/{assetIds}")
-	ResponseEntity<List<Object>> createShellSpecificAttributes(@PathVariable("assetIds") String shellId,
+	
+	@PostMapping(path = "${digital-twins.registry.lookup.uri:/api/v3.0}/lookup/shells/{shellId}")
+	ResponseEntity<List<Object>> createShellSpecificAttributes(@PathVariable("shellId") String shellId,
 			@RequestHeader("Edc-Bpn") String edcBpn, @RequestBody List<Object> specificAssetIds);
 
-	@DeleteMapping(path = "${digital-twins.registry.lookup.uri:/api/v3.0}/lookup/shells/{assetIds}")
+	@DeleteMapping(path = "${digital-twins.registry.lookup.uri:/api/v3.0}/lookup/shells/{shellId}")
 	ResponseEntity<Object> deleteShellSpecificAttributes(@PathVariable("assetIds") String shellId,
 			@RequestHeader("Edc-Bpn") String edcBpn);
 

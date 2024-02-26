@@ -62,16 +62,22 @@ public class EDCSingleLevelUsageAsBuiltHandlerUseCase extends Step {
 
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
 					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getParentUuid());
+
+			Map<String, String> eDCAsset =null;
+			
 			if (!edcGateway.assetExistsLookup(assetEntryRequest.getId())) {
-
-				edcProcessingforAspectRelationship(assetEntryRequest, input, policy);
-
+				eDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest, policy);
 			} else {
-
-				deleteEDCFirstForUpdate(submodel, input, processId);
-				edcProcessingforAspectRelationship(assetEntryRequest, input, policy);
+			    eDCAsset = createEDCAssetFacilator.updateEDCAsset(assetEntryRequest, policy);
 				input.setUpdated(CommonConstants.UPDATED_Y);
 			}
+			
+			// EDC transaction information for DB
+			input.setAssetId(eDCAsset.get("assetId"));
+			input.setAccessPolicyId(eDCAsset.get("accessPolicyId"));
+			input.setUsagePolicyId(eDCAsset.get("usagePolicyId"));
+			input.setContractDefinationId(eDCAsset.get("contractDefinitionId"));
+			
 
 			return input;
 		} catch (Exception e) {

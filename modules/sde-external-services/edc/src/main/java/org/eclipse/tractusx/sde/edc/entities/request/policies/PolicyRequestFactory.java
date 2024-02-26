@@ -25,14 +25,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.tractusx.sde.common.utils.UUIdGenerator;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PolicyRequestFactory {
 
 	public PolicyDefinitionRequest getPolicy(String assetId, ActionRequest action,
-			Map<String, String> extensibleProperties) {
+			Map<String, String> extensibleProperties, String type) {
 
 		List<PermissionRequest> permissions = getPermissions(assetId, action);
 
@@ -43,7 +42,7 @@ public class PolicyRequestFactory {
 				.prohibitions(new ArrayList<>()).build();
 
 		return PolicyDefinitionRequest.builder()
-				.id(UUIdGenerator.getUuid())
+				.id(type +"-"+ assetId)
 				.policyRequest(policyRequest).build();
 	}
 

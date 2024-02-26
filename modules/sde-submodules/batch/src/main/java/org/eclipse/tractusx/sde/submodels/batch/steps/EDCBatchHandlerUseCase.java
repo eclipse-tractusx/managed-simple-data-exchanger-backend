@@ -62,14 +62,21 @@ public class EDCBatchHandlerUseCase extends Step {
 
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
 					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getUuid());
-			if (!edcGateway.assetExistsLookup(assetEntryRequest.getId())) {
-				edcProcessingforBatch(assetEntryRequest, input, policy);
 
+			Map<String, String> eDCAsset = null;
+
+			if (!edcGateway.assetExistsLookup(assetEntryRequest.getId())) {
+				eDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest, policy);
 			} else {
-				deleteEDCFirstForUpdate(submodel, input, processId);
-				edcProcessingforBatch(assetEntryRequest, input, policy);
+				eDCAsset = createEDCAssetFacilator.updateEDCAsset(assetEntryRequest, policy);
 				input.setUpdated(CommonConstants.UPDATED_Y);
 			}
+
+			// EDC transaction information for DB
+			input.setAssetId(eDCAsset.get("assetId"));
+			input.setAccessPolicyId(eDCAsset.get("accessPolicyId"));
+			input.setUsagePolicyId(eDCAsset.get("usagePolicyId"));
+			input.setContractDefinationId(eDCAsset.get("contractDefinitionId"));
 
 			return input;
 		} catch (Exception e) {

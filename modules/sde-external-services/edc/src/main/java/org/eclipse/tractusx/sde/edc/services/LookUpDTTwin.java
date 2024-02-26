@@ -102,7 +102,7 @@ public class LookUpDTTwin {
 		ShellLookupRequest shellLookupRequest = getShellLookupRequest(manufacturerPartId, bpnNumber, submodel);
 		try {
 
-			String assetIds = digitalTwinsUtility.encodeAssetIdsObject(shellLookupRequest.toJsonString());
+			List<String> assetIds = digitalTwinsUtility.encodeAssetIdsObject(shellLookupRequest);
 
 			ShellLookupResponse shellLookup = eDCDigitalTwinProxyForLookUp.shellLookup(new URI(endpoint), assetIds,
 					header);
@@ -151,7 +151,7 @@ public class LookUpDTTwin {
 
 		for (String shellId : shellIds) {
 			ShellDescriptorResponse shellDescriptorResponse = eDCDigitalTwinProxyForLookUp.getShellDescriptorByShellId(
-					new URI(endpoint), digitalTwinsUtility.encodeShellIdBase64Utf8(shellId), header);
+					new URI(endpoint), digitalTwinsUtility.encodeValueAsBase64Utf8(shellId), header);
 			preapreSubmodelResult(submodel, queryOnDataOffers, shellDescriptorResponse);
 		}
 		return queryOnDataOffers;

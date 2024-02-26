@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -43,6 +44,10 @@ public interface EDCFeignClientApi {
 	@PostMapping("${edc.managementpath.apiversion.asset:/v3}/assets")
 	public String createAsset(@RequestBody AssetEntryRequest requestBody);
 	
+	@PutMapping("${edc.managementpath.apiversion.asset:/v3}/assets")
+	public void updateAsset(@RequestBody AssetEntryRequest requestBody);
+	
+	
 	@PostMapping("${edc.managementpath.apiversion.asset:/v3}/assets/request")
 	public JsonNode getAssetByType(@RequestBody ObjectNode requestBody);
 	
@@ -54,8 +59,17 @@ public interface EDCFeignClientApi {
 	@PostMapping("${edc.managementpath.apiversion:/v2}/policydefinitions")
 	public JsonNode createPolicy(@RequestBody JsonNode requestBody);
 
+	@PutMapping("${edc.managementpath.apiversion:/v2}/policydefinitions/{id}")
+	public void updatePolicy(@PathVariable("id") String policyUUId, @RequestBody JsonNode requestBody);
+
+	
+	//Contract defination
 	@PostMapping("${edc.managementpath.apiversion:/v2}/contractdefinitions")
 	public String createContractDefination(@RequestBody ContractDefinitionRequest requestBody);
+	
+	@PutMapping("${edc.managementpath.apiversion:/v2}/contractdefinitions")
+	public void updateContractDefination(@RequestBody ContractDefinitionRequest requestBody);
+	
 	
 	@GetMapping("${edc.managementpath.apiversion:/v2}/contractdefinitions/{id}")
 	public JsonNode getContractDefination(@PathVariable("id") String id);

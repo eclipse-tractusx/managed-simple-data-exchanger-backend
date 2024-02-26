@@ -64,6 +64,9 @@ public class EDCAspectRelationshipHandlerUseCase extends Step {
 
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
 					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getParentUuid());
+
+			Map<String, String> eDCAsset = null;
+
 			if (!edcGateway.assetExistsLookup(assetEntryRequest.getId())) {
 
 				if (CommonConstants.UPDATED_Y.equals(input.getUpdated())
@@ -71,14 +74,17 @@ public class EDCAspectRelationshipHandlerUseCase extends Step {
 					deleteIfAnyReferenceExist(input, input.getOldSubmodelIdforUpdateCase());
 				}
 
-				edcProcessingforAspectRelationship(assetEntryRequest, input, policy);
-
+				eDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest, policy);
 			} else {
-
-				deleteEDCFirstForUpdate(submodel, input, processId);
-				edcProcessingforAspectRelationship(assetEntryRequest, input, policy);
+				eDCAsset = createEDCAssetFacilator.updateEDCAsset(assetEntryRequest, policy);
 				input.setUpdated(CommonConstants.UPDATED_Y);
 			}
+
+			// EDC transaction information for DB
+			input.setAssetId(eDCAsset.get("assetId"));
+			input.setAccessPolicyId(eDCAsset.get("accessPolicyId"));
+			input.setUsagePolicyId(eDCAsset.get("usagePolicyId"));
+			input.setContractDefinationId(eDCAsset.get("contractDefinitionId"));
 
 			return input;
 		} catch (Exception e) {
@@ -95,7 +101,8 @@ public class EDCAspectRelationshipHandlerUseCase extends Step {
 					"Deleted existing EDC asset in update case reference,so EDC end will be single asset for each submodel: "
 							+ oldSubModelId);
 		} catch (NoDataFoundException e) {
-			log.warn("In deleteIfAnyReferenceExist The EDC assetInfo not found in local database for delete, looking EDC connector and going to delete asset");
+			log.warn(
+					"In deleteIfAnyReferenceExist The EDC assetInfo not found in local database for delete, looking EDC connector and going to delete asset");
 			deleteEDCFacilitator.findEDCOfferInformation(input.getShellId(), input.getSubModelId());
 		} catch (Exception e) {
 			log.warn(
@@ -105,31 +112,4 @@ public class EDCAspectRelationshipHandlerUseCase extends Step {
 
 	}
 
-	@SneakyThrows
-	private void deleteEDCFirstForUpdate(String submodel, AspectRelationship input, String processId) {
-		try {
-			AspectRelationshipEntity aspectRelationshipEntity = aspectRelationshipService
-					.readEntity(input.getChildUuid());
-			aspectRelationshipService.deleteEDCAsset(aspectRelationshipEntity);
-		} catch (NoDataFoundException e) {
-			log.warn("In deleteEDCFirstForUpdate The EDC assetInfo not found in local database for delete, looking EDC connector and going to delete asset");
-			deleteEDCFacilitator.findEDCOfferInformation(input.getShellId(), input.getSubModelId());
-		} catch (Exception e) {
-			if (!e.getMessage().contains("404 Not Found")) {
-				throw new ServiceException("Exception in EDC delete request process: " + e.getMessage());
-			}
-		}
-	}
-
-	@SneakyThrows
-	private void edcProcessingforAspectRelationship(AssetEntryRequest assetEntryRequest, AspectRelationship input, PolicyModel policy) {
-
-		Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest, policy);
-
-		// EDC transaction information for DB
-		input.setAssetId(assetEntryRequest.getId());
-		input.setAccessPolicyId(createEDCAsset.get("accessPolicyId"));
-		input.setUsagePolicyId(createEDCAsset.get("usagePolicyId"));
-		input.setContractDefinationId(createEDCAsset.get("contractDefinitionId"));
-	}
 }

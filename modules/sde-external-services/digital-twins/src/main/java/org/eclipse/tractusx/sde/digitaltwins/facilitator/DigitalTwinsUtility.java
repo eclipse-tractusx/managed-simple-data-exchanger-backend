@@ -37,6 +37,7 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.common.Endpoint;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.ExternalSubjectId;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.KeyValuePair;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.Keys;
+import org.eclipse.tractusx.sde.digitaltwins.entities.common.LocalIdentifier;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.ProtocolInformation;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.SecurityAttributes;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.SemanticId;
@@ -49,7 +50,6 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -79,12 +79,16 @@ public class DigitalTwinsUtility {
 			String uuid, Map<String, String> specificIdentifiers, PolicyModel policy) {
 
 		return ShellDescriptorRequest.builder()
-				.idShort(String.format("%s_%s_%s", nameAtManufacturer, manufacturerId, manufacturerPartId))
+				.idShort(resizeShortId(String.format("%s_%s_%s", nameAtManufacturer, manufacturerId, manufacturerPartId)))
 				.globalAssetId(uuid)
 				.specificAssetIds(getSpecificAssetIds(specificIdentifiers, policy))
 				.description(List.of())
 				.id(UUIdGenerator.getUrnUuid())
 				.build();
+	}
+
+	private String resizeShortId(String str) {
+		return str.length() > 128 ? str.substring(0, 126) : str;
 	}
 
 	@SneakyThrows
@@ -169,13 +173,6 @@ public class DigitalTwinsUtility {
 		return Collections.emptyList();
 	}
 
-	private String getFieldFromJsonNode(JsonNode jnode, String fieldName) {
-		if (jnode.get(fieldName) != null)
-			return jnode.get(fieldName).asText();
-		else
-			return "";
-	}
-
 	@SneakyThrows
 	private List<String> getFieldFromJsonNodeArray(JsonNode jsonNode, String fieldName) {
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -197,13 +194,17 @@ public class DigitalTwinsUtility {
 		return shellLookupRequest;
 	}
 
-	public String encodeAssetIdsObject(String assetIdsList) {
+	public List<String> encodeAssetIdsObject(ShellLookupRequest request) {
 
-		return encodeShellIdBase64Utf8(assetIdsList.replace("[", "").replace("]", ""));
+		List<String> assetIdsList = new ArrayList<>();
+		for (LocalIdentifier assetIds : request.getAssetIds()) {
+			assetIdsList.add(encodeValueAsBase64Utf8(assetIds.toJsonString()));
+		}
+		return assetIdsList;
 	}
 
-	public String encodeShellIdBase64Utf8(String shellId) {
-		return Base64.getUrlEncoder().encodeToString(shellId.getBytes());
+	public String encodeValueAsBase64Utf8(String string) {
+		return Base64.getUrlEncoder().encodeToString(string.getBytes());
 	}
 
 }

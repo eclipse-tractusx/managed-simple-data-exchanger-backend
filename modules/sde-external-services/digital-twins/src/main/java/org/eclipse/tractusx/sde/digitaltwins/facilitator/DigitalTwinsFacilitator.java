@@ -53,17 +53,17 @@ public class DigitalTwinsFacilitator {
 
 	@Value(value = "${digital-twins.managed.thirdparty:false}")
 	private boolean managedThirdParty;
-
+	
 	private final DigitalTwinsUtility digitalTwinsUtility;
+	
 
 	@SneakyThrows
 	public List<String> shellLookup(ShellLookupRequest request) throws ServiceException {
 
 		List<String> shellIds = List.of();
 		try {
-
-			String assetIds =  digitalTwinsUtility.encodeAssetIdsObject(request.toJsonString());
-
+			List<String> assetIds =  digitalTwinsUtility.encodeAssetIdsObject(request);
+			
 			ResponseEntity<ShellLookupResponse> response = digitalTwinsFeignClient.shellLookup(assetIds,
 					manufacturerId);
 
@@ -91,7 +91,7 @@ public class DigitalTwinsFacilitator {
 		String deleteResponse = "";
 		try {
 			ResponseEntity<Void> response = digitalTwinsFeignClient
-					.deleteShell(digitalTwinsUtility.encodeShellIdBase64Utf8(shellId));
+					.deleteShell(digitalTwinsUtility.encodeValueAsBase64Utf8(shellId));
 
 			if (response.getStatusCode() == HttpStatus.NO_CONTENT) {
 				deleteResponse = "Asset identifier" + shellId + "deleted successfully";
@@ -122,15 +122,15 @@ public class DigitalTwinsFacilitator {
 	public ShellDescriptorResponse getShellDetailsById(String shellId) {
 
 		ResponseEntity<ShellDescriptorResponse> shellDescriptorResponse = digitalTwinsFeignClient
-				.getShellDescriptorByShellId(digitalTwinsUtility.encodeShellIdBase64Utf8(shellId), manufacturerId);
+				.getShellDescriptorByShellId(digitalTwinsUtility.encodeValueAsBase64Utf8(shellId), manufacturerId);
 		return shellDescriptorResponse.getBody();
 	}
 
 	@SneakyThrows
 	public void deleteSubmodelfromShellById(String shellId, String subModelId) {
 		try {
-			digitalTwinsFeignClient.deleteSubmodelfromShellById(digitalTwinsUtility.encodeShellIdBase64Utf8(shellId),
-					digitalTwinsUtility.encodeShellIdBase64Utf8(subModelId));
+			digitalTwinsFeignClient.deleteSubmodelfromShellById(digitalTwinsUtility.encodeValueAsBase64Utf8(shellId),
+					digitalTwinsUtility.encodeValueAsBase64Utf8(subModelId));
 		} catch (Exception e) {
 			parseExceptionMessage(e);
 		}
@@ -152,7 +152,7 @@ public class DigitalTwinsFacilitator {
 			CreateSubModelRequest createSubModelRequest) {
 
 		ResponseEntity<ShellDescriptorResponse> shellDescriptorByShellId = digitalTwinsFeignClient
-				.getShellDescriptorByShellId(digitalTwinsUtility.encodeShellIdBase64Utf8(shellId), manufacturerId);
+				.getShellDescriptorByShellId(digitalTwinsUtility.encodeValueAsBase64Utf8(shellId), manufacturerId);
 		
 		if(shellDescriptorByShellId.getStatusCode().is2xxSuccessful()) {
 			ShellDescriptorResponse shellDescriptorResponse = shellDescriptorByShellId.getBody();
@@ -182,7 +182,7 @@ public class DigitalTwinsFacilitator {
 			aasDescriptorRequest.setId(shellId);
 			
 			ResponseEntity<Void> updateShellDescriptorByShellId = digitalTwinsFeignClient
-					.updateShellDescriptorByShellId(digitalTwinsUtility.encodeShellIdBase64Utf8(shellId),
+					.updateShellDescriptorByShellId(digitalTwinsUtility.encodeValueAsBase64Utf8(shellId),
 							manufacturerId, aasDescriptorRequest);
 			if (updateShellDescriptorByShellId.getStatusCode().is2xxSuccessful()) {
 				log.debug("Shell update successfully : " + aasDescriptorRequest.toJsonString());
@@ -198,14 +198,14 @@ public class DigitalTwinsFacilitator {
 	public void updateShellSpecificAssetIdentifiers(String shellId, List<Object> specificAssetIds) {
 
 		ResponseEntity<Object> deleteShellSpecificAttributes = digitalTwinsFeignClient
-				.deleteShellSpecificAttributes(digitalTwinsUtility.encodeShellIdBase64Utf8(shellId), manufacturerId);
+				.deleteShellSpecificAttributes(digitalTwinsUtility.encodeValueAsBase64Utf8(shellId), manufacturerId);
 
 		if (!deleteShellSpecificAttributes.getStatusCode().is2xxSuccessful()) {
 			log.error("Error in shell SpecificAssetIdentifiers deletion: " + specificAssetIds.toString());
 		}
 
 		ResponseEntity<List<Object>> registerSubmodel = digitalTwinsFeignClient.createShellSpecificAttributes(
-				digitalTwinsUtility.encodeShellIdBase64Utf8(shellId), manufacturerId, specificAssetIds);
+				digitalTwinsUtility.encodeValueAsBase64Utf8(shellId), manufacturerId, specificAssetIds);
 		if (registerSubmodel.getStatusCode() != HttpStatus.CREATED) {
 			log.error("Error in shell SpecificAssetIdentifiers deletion: " + registerSubmodel.toString());
 		}
@@ -216,7 +216,7 @@ public class DigitalTwinsFacilitator {
 		request.setDescription(List.of());
 
 		ResponseEntity<String> response = digitalTwinsFeignClient
-				.createSubModel(digitalTwinsUtility.encodeShellIdBase64Utf8(shellId), request, manufacturerId);
+				.createSubModel(digitalTwinsUtility.encodeValueAsBase64Utf8(shellId), request, manufacturerId);
 		if (response.getStatusCode() != HttpStatus.CREATED) {
 			log.error("Unable to create submodel descriptor");
 		}
@@ -226,7 +226,7 @@ public class DigitalTwinsFacilitator {
 	public SubModelListResponse getSubModels(String shellId) {
 
 		ResponseEntity<SubModelListResponse> response = digitalTwinsFeignClient
-				.getSubModels(digitalTwinsUtility.encodeShellIdBase64Utf8(shellId), manufacturerId);
+				.getSubModels(digitalTwinsUtility.encodeValueAsBase64Utf8(shellId), manufacturerId);
 		SubModelListResponse responseBody = null;
 		if (response.getStatusCode() == HttpStatus.OK) {
 			responseBody = response.getBody();

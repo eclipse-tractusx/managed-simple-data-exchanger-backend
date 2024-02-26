@@ -119,7 +119,7 @@ public class TokenUtility {
 		long tokenExpirationTime = actualObj.get("exp").asLong() * 1000;
 		long currentTime = System.currentTimeMillis();
 
-		return tokenExpirationTime - 20000 > currentTime;
+		return tokenExpirationTime - 40000 > currentTime;
 	}
 
 }

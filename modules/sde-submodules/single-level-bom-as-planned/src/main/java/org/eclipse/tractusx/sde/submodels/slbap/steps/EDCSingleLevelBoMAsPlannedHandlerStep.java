@@ -63,47 +63,26 @@ public class EDCSingleLevelBoMAsPlannedHandlerStep extends Step {
 		try {
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
 					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getParentUuid());
+
+			Map<String, String> eDCAsset =null;
+			
 			if (!edcGateway.assetExistsLookup(assetEntryRequest.getId())) {
-				edcProcessingforSingleLevelBoMAsPlanned(assetEntryRequest, input, policy);
+				eDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest, policy);
 			} else {
-				deleteEDCFirstForUpdate(submodel, input, processId);
-				edcProcessingforSingleLevelBoMAsPlanned(assetEntryRequest, input, policy);
+			    eDCAsset = createEDCAssetFacilator.updateEDCAsset(assetEntryRequest, policy);
 				input.setUpdated(CommonConstants.UPDATED_Y);
 			}
-
+			
+			// EDC transaction information for DB
+			input.setAssetId(eDCAsset.get("assetId"));
+			input.setAccessPolicyId(eDCAsset.get("accessPolicyId"));
+			input.setUsagePolicyId(eDCAsset.get("usagePolicyId"));
+			input.setContractDefinationId(eDCAsset.get("contractDefinitionId"));
+			
 			return input;
 		} catch (Exception e) {
 			throw new CsvHandlerUseCaseException(input.getRowNumber(), "EDC: " + e.getMessage());
 		}
 	}
 
-	@SneakyThrows
-	private void deleteEDCFirstForUpdate(String submodel, SingleLevelBoMAsPlanned input, String processId) {
-		try {
-			SingleLevelBoMAsPlannedEntity singleLevelBoMAsPlannedEntity = singleLevelBoMAsPlannedService
-					.readEntity(input.getChildUuid());
-			singleLevelBoMAsPlannedService.deleteEDCAsset(singleLevelBoMAsPlannedEntity);
-
-		} catch (NoDataFoundException e) {
-			log.warn("The EDC assetInfo not found in local database for delete, looking EDC connector and going to delete asset");
-			deleteEDCFacilitator.findEDCOfferInformation(input.getShellId(), input.getSubModelId());
-		} catch (Exception e) {
-			if (!e.getMessage().contains("404 Not Found")) {
-				throw new ServiceException("Unable to delete EDC offer for update: " + e.getMessage());
-			}
-		}
-	}
-
-	@SneakyThrows
-	private void edcProcessingforSingleLevelBoMAsPlanned(AssetEntryRequest assetEntryRequest,
-			SingleLevelBoMAsPlanned input, PolicyModel policy) {
-
-		Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest, policy);
-
-		// EDC transaction information for DB
-		input.setAssetId(assetEntryRequest.getId());
-		input.setAccessPolicyId(createEDCAsset.get("accessPolicyId"));
-		input.setUsagePolicyId(createEDCAsset.get("usagePolicyId"));
-		input.setContractDefinationId(createEDCAsset.get("contractDefinitionId"));
-	}
 }

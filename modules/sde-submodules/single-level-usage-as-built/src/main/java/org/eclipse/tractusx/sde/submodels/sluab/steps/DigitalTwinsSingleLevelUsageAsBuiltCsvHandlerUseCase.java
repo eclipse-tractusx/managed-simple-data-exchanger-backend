@@ -142,7 +142,8 @@ public class DigitalTwinsSingleLevelUsageAsBuiltCsvHandlerUseCase extends Step {
 					"No parent aspect found");
 		}
 
-		return digitalTwinsUtility.getShellDescriptorRequest(aspectEntity.getNameAtManufacturer(),
+		return digitalTwinsUtility.getShellDescriptorRequest(aspectEntity.getNameAtManufacturer() + "_" + aspectEntity
+				.getPartInstanceId(),
 				aspectEntity.getManufacturerPartId(), aspectEntity.getUuid(),
 				getSpecificAssetIds(aspectMapper.mapFrom(aspectEntity)), policy);
 	}

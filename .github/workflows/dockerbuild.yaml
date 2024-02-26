@@ -100,3 +100,5 @@ jobs:
            username: ${{ secrets.DOCKER_HUB_USER }}
            password: ${{ secrets.DOCKER_HUB_TOKEN }}
            repository: ${{ env.IMAGE_NAMESPACE }}/${{ env.IMAGE_NAME }}
+           # IMPORTANT: Adjust this to the actual path of your container image notice
+           readme-filepath: ./docker_notice.md

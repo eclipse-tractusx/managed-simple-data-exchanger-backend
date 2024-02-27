@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.utils.UUIdGenerator;
@@ -36,6 +37,7 @@ import org.eclipse.tractusx.sde.edc.gateways.external.EDCGateway;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -60,33 +62,48 @@ public class DigitalTwinAssetProvider {
 	@SneakyThrows
 	public void init() {
 
+		if(sdeCommonProperties.getDigitalTwinRegistryURI().equals(sdeCommonProperties.getDigitalTwinRegistryLookUpURI())) {
+			create("registry", sdeCommonProperties.getDigitalTwinRegistryURI());
+		}else {
+			create("regisry-api", sdeCommonProperties.getDigitalTwinRegistryURI());
+			create("discovery-api", sdeCommonProperties.getDigitalTwinRegistryLookUpURI());
+		}
+	}
+
+	private void create(String registryType, String registryAPI) throws JsonProcessingException {
+		
 		String assetId = UUIdGenerator.getUuid();
 		AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest("", "Digital twin registry information",
 				assetId, "1", "");
 
+		String baseUrl = sdeCommonProperties.getDigitalTwinRegistry() + registryAPI;
+		
 		assetEntryRequest.getProperties().put("type", "data.core.digitalTwinRegistry");
-		assetEntryRequest.getProperties().put("registry", sdeCommonProperties.getDigitalTwinRegistry());
+		assetEntryRequest.getProperties().put(registryType, baseUrl);
+
+		assetEntryRequest.getDataAddress().getProperties().put("baseUrl", baseUrl);
 
 		assetEntryRequest.getDataAddress().getProperties().put("oauth2:tokenUrl",
 				sdeCommonProperties.getDigitalTwinTokenUrl());
+		
 		assetEntryRequest.getDataAddress().getProperties().put("oauth2:clientId",
 				sdeCommonProperties.getDigitalTwinClientId());
+		
+		assetEntryRequest.getDataAddress().getProperties().put("oauth2:clientSecret",
+				sdeCommonProperties.getDigitalTwinClientSecret());
 
-		if (sdeCommonProperties.isDDTRManagedThirdparty()) {
-			assetEntryRequest.getDataAddress().getProperties().put("baseUrl",
-					sdeCommonProperties.getDigitalTwinRegistry());
+		if (assetEntryRequest.getDataAddress().getProperties().containsKey("oauth2:clientSecretKey")) {
+			assetEntryRequest.getDataAddress().getProperties().remove("oauth2:clientSecretKey");
+		}
+		
+		if (StringUtils.isNotBlank(sdeCommonProperties.getDigitalTwinAuthenticationScope())) {
 			assetEntryRequest.getDataAddress().getProperties().put("oauth2:scope",
 					sdeCommonProperties.getDigitalTwinAuthenticationScope());
-			assetEntryRequest.getDataAddress().getProperties().put("oauth2:clientSecret", sdeCommonProperties.getDigitalTwinClientSecret());
-			assetEntryRequest.getDataAddress().getProperties().remove("oauth2:clientSecretKey");
-		} else {
-			assetEntryRequest.getDataAddress().getProperties().put("baseUrl",
-					sdeCommonProperties.getDigitalTwinRegistry() + sdeCommonProperties.getDigitalTwinRegistryURI());
 		}
 
 		Map<String, String> inputData = new HashMap<>();
-		inputData.put("manufacturerId", sdeCommonProperties.getManufacturerId());
-		inputData.put("digitalTwinRegistry", sdeCommonProperties.getDigitalTwinRegistry());
+		inputData.put("digitalTwinRegistry", baseUrl);
+		inputData.put("registryType", registryType);
 
 		ObjectNode requestBody = (ObjectNode) new ObjectMapper().readTree(valueReplacerUtility
 				.valueReplacerUsingFileTemplate("/edc_request_template/edc_asset_lookup.json", inputData));
@@ -99,9 +116,9 @@ public class DigitalTwinAssetProvider {
 					.build();
 			
 			Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest, policy);
-			log.info("Digital twin asset creates :" + createEDCAsset.toString());
+			log.info("Digital twin "+registryType+" asset creates :" + createEDCAsset.toString());
 		} else {
-			log.info("Digital twin asset exists in edc connector, so ignoring asset creation");
+			log.info("Digital twin "+registryType+" asset exists in edc connector, so ignoring asset creation");
 		}
 	}
 

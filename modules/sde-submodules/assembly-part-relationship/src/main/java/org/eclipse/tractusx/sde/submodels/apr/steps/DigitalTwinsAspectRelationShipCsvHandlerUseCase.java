@@ -96,7 +96,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 		String shellId = null;
 		SubModelResponse foundSubmodel = null;
 		ReturnDataClass checkShellforSubmodelExistorNot = null;
-		
+
 		if (shellIds.isEmpty()) {
 			// We don't need to create parent shell from aspect relationship
 			throw new CsvHandlerUseCaseException(aspectRelationShip.getRowNumber(),
@@ -224,10 +224,11 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 					break;
 				} else {
 					log.warn(aspectRelationShip.getRowNumber() + ", EDC connector " + dtOffer.getConnectorOfferUrl()
-							+ ", No child twin found for " + shellLookupRequest.toJsonString());
+							+ ", assetId " + dtOffer.getAssetId() + ", No child twin found for "
+							+ shellLookupRequest.toJsonString());
 				}
 			} else {
-				msg = ", EDC connector " + dtOffer.getConnectorOfferUrl()
+				msg = ", EDC connector " + dtOffer.getConnectorOfferUrl() + ", assetId " + dtOffer.getAssetId()
 						+ ", The EDR token is null to find child twin ";
 				log.warn(aspectRelationShip.getRowNumber() + msg + shellLookupRequest.toJsonString());
 			}
@@ -260,22 +261,19 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 			header.put(edrToken.getAuthKey(), edrToken.getAuthCode());
 			header.put("Edc-Bpn", aspectRelationShip.getChildManufacturerId());
 
-			String registryLookupUriLocal = dDTRManagedThirdparty ? registryLookupUri : registryUri;
-
-			ShellLookupResponse shellLookup = eDCDigitalTwinProxyForLookUp.shellLookup(
-					new URI(endpoint + registryLookupUriLocal),
+			ShellLookupResponse shellLookup = eDCDigitalTwinProxyForLookUp.shellLookup(new URI(endpoint),
 					digitalTwinsUtility.encodeAssetIdsObject(shellLookupRequest), header);
 
-			childUUID = getChildSubmodelDetails(shellLookupRequest, endpoint + registryUri, header, aspectRelationShip,
-					dtOfferUrl, shellLookup.getResult());
+			childUUID = getChildSubmodelDetails(shellLookupRequest, endpoint, header, aspectRelationShip, dtOfferUrl,
+					shellLookup.getResult());
 
 		} catch (FeignException e) {
-			String errorMsg = "Unable to look up child twin " + dtOfferUrl + ", " + shellLookupRequest.toJsonString()
-					+ " because: " + e.contentUTF8();
+			String errorMsg = "Unable to look up child twin " + dtOfferUrl + ", assetId" + dtOffer.getAssetId() + ", "
+					+ shellLookupRequest.toJsonString() + " because: " + e.contentUTF8();
 			log.error("FeignException : " + errorMsg);
 		} catch (Exception e) {
-			String errorMsg = "Unable to look up child twin " + dtOfferUrl + ", " + shellLookupRequest.toJsonString()
-					+ "because: " + e.getMessage();
+			String errorMsg = "Unable to look up child twin " + dtOfferUrl + ", assetId" + dtOffer.getAssetId() + ", "
+					+ shellLookupRequest.toJsonString() + "because: " + e.getMessage();
 			log.error("Exception : " + errorMsg);
 		}
 

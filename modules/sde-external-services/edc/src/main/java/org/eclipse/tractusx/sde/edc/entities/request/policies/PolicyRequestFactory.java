@@ -43,8 +43,10 @@ public class PolicyRequestFactory {
 		
 		//Use submodel id to generate unique policy id for asset use policy type as prefix asset/usage
 		String submodelId = assetId;
-		if (assetId.indexOf("urn:uuid") != -1)
+		if (assetId.indexOf("urn:uuid") != -1) {
 			submodelId = assetId.substring(assetId.indexOf("urn:uuid", 9));
+			submodelId =submodelId.replace("urn:uuid:", "");
+		}
 				
 		return PolicyDefinitionRequest.builder()
 				.id(type +"-"+ submodelId)

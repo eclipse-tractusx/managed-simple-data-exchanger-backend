@@ -222,6 +222,19 @@ public class DigitalTwinsFacilitator {
 		}
 
 	}
+	
+	public void updateSubModel(String shellId, String existingId, CreateSubModelRequest request) {
+
+		request.setDescription(List.of());
+
+		ResponseEntity<String> response = digitalTwinsFeignClient.updateSubModel(
+				digitalTwinsUtility.encodeValueAsBase64Utf8(shellId),
+				digitalTwinsUtility.encodeValueAsBase64Utf8(existingId), request, manufacturerId);
+		if (response.getStatusCode() != HttpStatus.CREATED) {
+			log.error("Unable to create submodel descriptor");
+		}
+
+	}
 
 	public SubModelListResponse getSubModels(String shellId) {
 

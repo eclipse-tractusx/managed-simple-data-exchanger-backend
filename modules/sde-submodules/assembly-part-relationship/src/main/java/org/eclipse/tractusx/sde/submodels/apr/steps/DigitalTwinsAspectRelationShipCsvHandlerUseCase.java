@@ -113,17 +113,17 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 
 		if (foundSubmodel == null) {
 			logDebug(String.format("No submodels for '%s'", shellId));
-			digitalTwinfacilitaor.deleteSubmodelfromShellById(shellId, createSubModelRequest.getId());
-			createSubModelSteps(aspectRelationShip, shellId, createSubModelRequest);
+			digitalTwinfacilitaor.createSubModel(shellId, createSubModelRequest);
 		} else {
 			if (!foundSubmodel.getId().equals(createSubModelRequest.getId())) {
-				digitalTwinfacilitaor.deleteSubmodelfromShellById(shellId, foundSubmodel.getId());
-				createSubModelSteps(aspectRelationShip, shellId, createSubModelRequest);
+				digitalTwinfacilitaor.updateSubModel(shellId, foundSubmodel.getId(), createSubModelRequest);
 				aspectRelationShip.setOldSubmodelIdforUpdateCase(foundSubmodel.getId());
 			}
 			aspectRelationShip.setUpdated(CommonConstants.UPDATED_Y);
 			logDebug(String.format("Complete Digital Twins Update for '%s'", shellId));
 		}
+		aspectRelationShip.setSubModelId(createSubModelRequest.getId());
+		aspectRelationShip.setChildUuid(createSubModelRequest.getId());
 
 		return aspectRelationShip;
 	}
@@ -168,13 +168,6 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 				returnDataClass.setFoundSubmodel(subModelResponse);
 			}
 		}
-	}
-
-	private void createSubModelSteps(AspectRelationship aspectRelationShip, String shellId,
-			CreateSubModelRequest createSubModelRequest) {
-		digitalTwinfacilitaor.createSubModel(shellId, createSubModelRequest);
-		aspectRelationShip.setSubModelId(createSubModelRequest.getId());
-		aspectRelationShip.setChildUuid(createSubModelRequest.getId());
 	}
 
 	private Map<String, String> getSpecificAssetIds(AspectRelationship aspectRelationShip) {

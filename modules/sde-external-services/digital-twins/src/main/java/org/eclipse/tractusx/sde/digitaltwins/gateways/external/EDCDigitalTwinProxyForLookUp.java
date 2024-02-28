@@ -45,6 +45,7 @@ public interface EDCDigitalTwinProxyForLookUp {
 			@RequestHeader Map<String, String> header);
 
 	@GetMapping(path = "/lookup/shells")
-	ShellLookupResponse shellLookup(URI url, @RequestParam List<String> assetIds, @RequestHeader Map<String, String> header);
+	ShellLookupResponse shellLookup(URI url, @RequestParam("assetIds") List<String> assetIds,
+			@RequestHeader Map<String, String> header);
 
 }

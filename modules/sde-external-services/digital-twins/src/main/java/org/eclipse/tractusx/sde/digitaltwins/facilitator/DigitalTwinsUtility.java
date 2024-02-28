@@ -202,6 +202,16 @@ public class DigitalTwinsUtility {
 		}
 		return assetIdsList;
 	}
+	
+	public List<String> encodeAssetIdsObjectOnlyPartInstanceId(ShellLookupRequest request) {
+
+		List<String> assetIdsList = new ArrayList<>();
+		for (LocalIdentifier assetIds : request.getAssetIds()) {
+			if (assetIds.getKey().equals("partInstanceId"))
+				assetIdsList.add(encodeValueAsBase64Utf8(assetIds.toJsonString()));
+		}
+		return assetIdsList;
+	}
 
 	public String encodeValueAsBase64Utf8(String string) {
 		return Base64.getUrlEncoder().encodeToString(string.getBytes());

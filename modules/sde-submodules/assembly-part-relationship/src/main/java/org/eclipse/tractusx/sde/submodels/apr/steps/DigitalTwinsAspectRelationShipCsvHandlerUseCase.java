@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseException;
@@ -222,11 +223,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 				childUUID = lookUpChildTwin(shellLookupRequest, aspectRelationShip, edrToken, dtOffer);
 				if (childUUID != null) {
 					break;
-				} else {
-					log.warn(aspectRelationShip.getRowNumber() + ", EDC connector " + dtOffer.getConnectorOfferUrl()
-							+ ", assetId " + dtOffer.getAssetId() + ", No child twin found for "
-							+ shellLookupRequest.toJsonString());
-				}
+				} 
 			} else {
 				msg = ", EDC connector " + dtOffer.getConnectorOfferUrl() + ", assetId " + dtOffer.getAssetId()
 						+ ", The EDR token is null to find child twin ";
@@ -262,14 +259,16 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 			header.put("Edc-Bpn", aspectRelationShip.getChildManufacturerId());
 
 			ShellLookupResponse shellLookup = eDCDigitalTwinProxyForLookUp.shellLookup(new URI(endpoint),
-					digitalTwinsUtility.encodeAssetIdsObject(shellLookupRequest), header);
+					digitalTwinsUtility.encodeAssetIdsObjectOnlyPartInstanceId(shellLookupRequest), header);
 
 			childUUID = getChildSubmodelDetails(shellLookupRequest, endpoint, header, aspectRelationShip, dtOfferUrl,
 					shellLookup.getResult());
 
 		} catch (FeignException e) {
+			String err = e.contentUTF8();
+			err = StringUtils.isBlank(err) ? e.getMessage() : err;
 			String errorMsg = "Unable to look up child twin " + dtOfferUrl + ", assetId" + dtOffer.getAssetId() + ", "
-					+ shellLookupRequest.toJsonString() + " because: " + e.contentUTF8();
+					+ shellLookupRequest.toJsonString() + " because: " + err;
 			log.error("FeignException : " + errorMsg);
 		} catch (Exception e) {
 			String errorMsg = "Unable to look up child twin " + dtOfferUrl + ", assetId" + dtOffer.getAssetId() + ", "

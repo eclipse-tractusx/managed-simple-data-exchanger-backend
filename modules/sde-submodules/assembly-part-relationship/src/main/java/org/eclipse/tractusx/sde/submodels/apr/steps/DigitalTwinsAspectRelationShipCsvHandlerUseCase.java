@@ -113,6 +113,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 
 		if (foundSubmodel == null) {
 			logDebug(String.format("No submodels for '%s'", shellId));
+			digitalTwinfacilitaor.deleteSubmodelfromShellById(shellId, createSubModelRequest.getId());
 			createSubModelSteps(aspectRelationShip, shellId, createSubModelRequest);
 		} else {
 			if (!foundSubmodel.getId().equals(createSubModelRequest.getId())) {

@@ -135,7 +135,7 @@ maven/mavencentral/org.springframework.cloud/spring-cloud-starter/4.0.3, Apache-
 maven/mavencentral/org.springframework.data/spring-data-commons/3.1.6, Apache-2.0, approved, #8805
 maven/mavencentral/org.springframework.data/spring-data-jpa/3.1.6, Apache-2.0, approved, #9120
 maven/mavencentral/org.springframework.security/spring-security-config/6.1.2, Apache-2.0, approved, #9736
-maven/mavencentral/org.springframework.security/spring-security-core/6.1.2, Apache-2.0, approved, #9801
+maven/mavencentral/org.springframework.security/spring-security-core/6.2.2, Apache-2.0, approved, #11904
 maven/mavencentral/org.springframework.security/spring-security-crypto/6.1.5, Apache-2.0 AND ISC, approved, #9735
 maven/mavencentral/org.springframework.security/spring-security-oauth2-core/6.1.5, Apache-2.0, approved, #9741
 maven/mavencentral/org.springframework.security/spring-security-oauth2-jose/6.1.5, Apache-2.0, approved, #9345

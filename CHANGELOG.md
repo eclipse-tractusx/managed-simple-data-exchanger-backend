@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 - open api fix in sde-open-api.yml.
 - Fixed Postgres vulnerability CVE-2024-1597.
+- Fixed spring security Vulnerability CVE-2024-22234.
 
 ## [2.3.5] - 2024-02-20
 

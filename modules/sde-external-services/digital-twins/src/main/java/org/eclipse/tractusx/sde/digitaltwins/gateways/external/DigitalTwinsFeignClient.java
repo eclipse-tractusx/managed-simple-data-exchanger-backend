@@ -64,6 +64,11 @@ public interface DigitalTwinsFeignClient {
 	@PostMapping(path = "${digital-twins.registry.uri:/api/v3.0}/shell-descriptors/{aasIdentifier}/submodel-descriptors")
 	ResponseEntity<String> createSubModel(@PathVariable("aasIdentifier") String shellId,
 			@RequestBody CreateSubModelRequest request, @RequestHeader("Edc-Bpn") String edcBpn);
+	
+	@PutMapping(path = "${digital-twins.registry.uri:/api/v3.0}/shell-descriptors/{aasIdentifier}/submodel-descriptors/{submodelIdentifier}")
+	ResponseEntity<String> updateSubModel(@PathVariable("aasIdentifier") String shellId,
+			@PathVariable("submodelIdentifier") String submodelIdentifier, @RequestBody CreateSubModelRequest request,
+			@RequestHeader("Edc-Bpn") String edcBpn);
 
 	@GetMapping(path = "${digital-twins.registry.uri:/api/v3.0}/shell-descriptors/{aasIdentifier}/submodel-descriptors")
 	ResponseEntity<SubModelListResponse> getSubModels(@PathVariable("aasIdentifier") String shellId,

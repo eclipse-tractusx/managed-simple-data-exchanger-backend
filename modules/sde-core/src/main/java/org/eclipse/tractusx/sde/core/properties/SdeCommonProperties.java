@@ -40,6 +40,9 @@ public class SdeCommonProperties {
 	@Value("${digital-twins.registry.uri:/api/v3.0}")
 	private  String digitalTwinRegistryURI;
 	
+	@Value("${digital-twins.registry.lookup.uri:/api/v3.0}")
+	private  String digitalTwinRegistryLookUpURI;
+	
 	@Value("${digital-twins.authentication.url:default}")
 	private String digitalTwinTokenUrl;
 	

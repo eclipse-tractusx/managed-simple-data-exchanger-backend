@@ -43,7 +43,6 @@ ARG USER_GID=$USER_UID
 
 RUN useradd -rm -d /home/sdeuser -s /bin/bash -u $USER_UID -U $USERNAME 
 
-
 USER $USERNAME
 
 # set deployment directory

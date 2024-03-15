@@ -53,7 +53,7 @@ public class EDRRequestHelper extends AbstractEDCStepsHelper {
 		ContractNegotiations contractNegotiations = contractMapper
 				.prepareContractNegotiations(providerUrl, offerId, assetId, providerId, action);
 		
-		log.info(contractNegotiations.toJsonString());
+		log.debug(contractNegotiations.toJsonString());
 		
 		AcknowledgementId acknowledgementId = edrApiProxy.edrCacheCreate(new URI(consumerHostWithDataPath),
 				contractNegotiations, getAuthHeader());

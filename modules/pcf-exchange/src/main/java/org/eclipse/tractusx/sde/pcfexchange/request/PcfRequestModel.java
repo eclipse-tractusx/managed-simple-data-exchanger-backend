@@ -22,6 +22,7 @@ public class PcfRequestModel {
 	private String bpnNumber;
 	private PCFTypeEnum type;
 	private String message;
+	private String remark;
 	private PCFRequestStatusEnum status;
 	private Long requestedTime;
 	private Long lastUpdatedTime;

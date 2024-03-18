@@ -23,12 +23,21 @@ package org.eclipse.tractusx.sde.pcfexchange.enums;
 public enum PCFRequestStatusEnum {
     REQUESTED,
     APPROVED,
+    
     PUSHING_DATA,
+    PUSHING_UPDATED_DATA,
+    
     REJECTED,
     SENDING_REJECT_NOTIFICATION,
+    
 	PUSHED,
+	PUSHED_UPDATED_DATA,
+	
 	RECEIVED,
     FAILED_TO_PUSH_DATA, 
     FAILED_TO_SEND_REJECT_NOTIFICATION, 
-    FAILED
+    FAILED, 
+    
+    SENDING_REQUEST, 
+    PENDING_DATA_FROM_PROVIDER
 }

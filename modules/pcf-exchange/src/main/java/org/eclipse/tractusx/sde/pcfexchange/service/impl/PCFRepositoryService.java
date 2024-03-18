@@ -61,7 +61,8 @@ public class PCFRepositoryService {
 
 	public PCFRequestStatusEnum updatePCFPushStatus(PCFRequestStatusEnum status, String requestId, String sendNotificationStatus) {
 		
-		if (PCFRequestStatusEnum.APPROVED.equals(status) && StringUtils.isNotBlank(sendNotificationStatus)) {
+		if ((PCFRequestStatusEnum.APPROVED.equals(status) || PCFRequestStatusEnum.PUSHING_DATA.equals(status))
+				&& StringUtils.isNotBlank(sendNotificationStatus)) {
 			status = PCFRequestStatusEnum.PUSHED;
 		} else if (PCFRequestStatusEnum.PUSHING_UPDATED_DATA.equals(status)
 				&& StringUtils.isNotBlank(sendNotificationStatus)) {

@@ -140,7 +140,7 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 
 			new Thread(runnable).start();
 
-			remark = "PCF push request accepted '" + pcfRequestModel.getProductId()
+			remark = "PCF push request accepted for '" + pcfRequestModel.getProductId()
 					+ "' and asynchronously pushing notification to consumer";
 
 		} catch (NoDataFoundException e) {

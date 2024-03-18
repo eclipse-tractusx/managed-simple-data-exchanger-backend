@@ -59,26 +59,51 @@ public class PCFRepositoryService {
 		return pcfMapper.mapFrom(pcfRequestRepository.save(entity));
 	}
 
-	public void updatePCFPushStatus(PCFRequestStatusEnum status, String requestId, String sendNotificationStatus) {
+	public PCFRequestStatusEnum updatePCFPushStatus(PCFRequestStatusEnum status, String requestId, String sendNotificationStatus) {
+		
 		if (PCFRequestStatusEnum.APPROVED.equals(status) && StringUtils.isNotBlank(sendNotificationStatus)) {
-			savePcfStatus(requestId, PCFRequestStatusEnum.PUSHED);
+			status = PCFRequestStatusEnum.PUSHED;
 		} else if (PCFRequestStatusEnum.PUSHING_UPDATED_DATA.equals(status)
 				&& StringUtils.isNotBlank(sendNotificationStatus)) {
-			savePcfStatus(requestId, PCFRequestStatusEnum.PUSHED_UPDATED_DATA);
+			status = PCFRequestStatusEnum.PUSHED_UPDATED_DATA;
 		} else if (PCFRequestStatusEnum.REQUESTED.equals(status) && StringUtils.isNotBlank(sendNotificationStatus)) {
-			savePcfStatus(requestId, PCFRequestStatusEnum.REQUESTED);
+			status = PCFRequestStatusEnum.REQUESTED;
 		} else if (PCFRequestStatusEnum.REJECTED.equals(status) && StringUtils.isNotBlank(sendNotificationStatus)) {
-			savePcfStatus(requestId, PCFRequestStatusEnum.REJECTED);
+			status = PCFRequestStatusEnum.REJECTED;
 		} else if (PCFRequestStatusEnum.APPROVED.equals(status)
 				|| PCFRequestStatusEnum.FAILED_TO_PUSH_DATA.equals(status)
+				|| PCFRequestStatusEnum.PUSHING_DATA.equals(status)
 				|| PCFRequestStatusEnum.PUSHING_UPDATED_DATA.equals(status)) {
-			savePcfStatus(requestId, PCFRequestStatusEnum.FAILED_TO_PUSH_DATA);
+			status = PCFRequestStatusEnum.FAILED_TO_PUSH_DATA;
 		} else if (PCFRequestStatusEnum.REJECTED.equals(status)
 				|| PCFRequestStatusEnum.FAILED_TO_SEND_REJECT_NOTIFICATION.equals(status))
-			savePcfStatus(requestId, PCFRequestStatusEnum.FAILED_TO_SEND_REJECT_NOTIFICATION);
+			status = PCFRequestStatusEnum.FAILED_TO_SEND_REJECT_NOTIFICATION;
 		else {
-			savePcfStatus(requestId, PCFRequestStatusEnum.FAILED);
+			status = PCFRequestStatusEnum.FAILED;
 		}
+		
+		savePcfStatus(requestId, status);
+		
+		return status;
+	}
+	
+	public PCFRequestStatusEnum identifyRunningStatus(String requestId, PCFRequestStatusEnum status) {
+		
+		boolean isApproval = PCFRequestStatusEnum.APPROVED.equals(status)
+				|| PCFRequestStatusEnum.FAILED_TO_PUSH_DATA.equals(status);
+
+		boolean isRejection = PCFRequestStatusEnum.REJECTED.equals(status)
+				|| PCFRequestStatusEnum.FAILED_TO_SEND_REJECT_NOTIFICATION.equals(status);
+
+		if (isApproval) {
+			status = PCFRequestStatusEnum.PUSHING_DATA;
+		} else if (isRejection) {
+			status = PCFRequestStatusEnum.SENDING_REJECT_NOTIFICATION;
+		}
+		
+		savePcfStatus(requestId, status);
+		
+		return status;
 	}
 
 	@SneakyThrows

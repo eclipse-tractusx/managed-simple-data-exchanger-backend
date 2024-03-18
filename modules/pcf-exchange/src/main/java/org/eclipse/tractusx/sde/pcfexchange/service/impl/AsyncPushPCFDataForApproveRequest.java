@@ -74,10 +74,11 @@ public class AsyncPushPCFDataForApproveRequest {
 								.readCreatedTwinsDetailsByProductId(request.getProductId()).get("json")
 								.getAsJsonObject();
 
-						pcfRepositoryService.savePcfStatus(request.getRequestId(), request.getStatus());
+						PCFRequestStatusEnum status = pcfRepositoryService.identifyRunningStatus(request.getRequestId(),
+								request.getStatus());
 
 						// push api call
-						Runnable runnable = () -> proxyRequestInterface.sendNotificationToConsumer(request.getStatus(),
+						Runnable runnable = () -> proxyRequestInterface.sendNotificationToConsumer(status,
 								calculatedPCFValue, request.getProductId(), request.getBpnNumber(),
 								request.getRequestId());
 

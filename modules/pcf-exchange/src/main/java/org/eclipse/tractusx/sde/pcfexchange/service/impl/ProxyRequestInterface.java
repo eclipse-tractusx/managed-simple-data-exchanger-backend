@@ -97,17 +97,6 @@ public class ProxyRequestInterface {
 	public void sendNotificationToConsumer(PCFRequestStatusEnum status, JsonObject calculatedPCFValue,
 			String productId, String bpnNumber, String requestId) {
 
-		boolean isApproval = PCFRequestStatusEnum.APPROVED.equals(status)
-				|| PCFRequestStatusEnum.FAILED_TO_PUSH_DATA.equals(status);
-
-		boolean isRejection = PCFRequestStatusEnum.REJECTED.equals(status)
-				|| PCFRequestStatusEnum.FAILED_TO_SEND_REJECT_NOTIFICATION.equals(status);
-		if (isApproval) {
-			pcfRepositoryService.savePcfStatus(requestId, PCFRequestStatusEnum.PUSHING_DATA);
-		} else if (isRejection) {
-			pcfRepositoryService.savePcfStatus(requestId, PCFRequestStatusEnum.SENDING_REJECT_NOTIFICATION);
-		}
-
 		// 1 fetch EDC connectors and DTR Assets from EDC connectors
 		List<QueryDataOfferModel> pcfExchangeUrlOffers = edcAssetUrlCacheService.getPCFExchangeUrlFromTwin(bpnNumber);
 
@@ -118,10 +107,13 @@ public class ProxyRequestInterface {
 		}
 		else {
 			pcfExchangeUrlOffers.parallelStream().forEach(dtOffer -> {
-				if (isRejection) {
+				
+				if (PCFRequestStatusEnum.SENDING_REJECT_NOTIFICATION.equals(status)) {
 					sendNotification(null, productId, bpnNumber, requestId, dtOffer, status);
-				} else
+				} else {
 					sendNotification(calculatedPCFValue, productId, bpnNumber, requestId, dtOffer, status);
+				}
+				
 			});
 		}
 	}

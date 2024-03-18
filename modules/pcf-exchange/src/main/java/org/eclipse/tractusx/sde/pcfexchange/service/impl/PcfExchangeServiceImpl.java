@@ -129,17 +129,19 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 			JsonObject calculatedPCFValue = pcfService
 					.readCreatedTwinsDetailsByProductId(pcfRequestModel.getProductId()).get("json").getAsJsonObject();
 
-			pcfRepositoryService.savePcfStatus(pcfRequestModel.getRequestId(), pcfRequestModel.getStatus());
+			
+			PCFRequestStatusEnum status = pcfRepositoryService.identifyRunningStatus(pcfRequestModel.getRequestId(),
+					pcfRequestModel.getStatus());
 
 			// push api call
-			Runnable runnable = () -> proxyRequestInterface.sendNotificationToConsumer(pcfRequestModel.getStatus(),
+			Runnable runnable = () -> proxyRequestInterface.sendNotificationToConsumer(status,
 					calculatedPCFValue, pcfRequestModel.getProductId(), pcfRequestModel.getBpnNumber(),
 					pcfRequestModel.getRequestId());
 
 			new Thread(runnable).start();
 
-			remark = "PCF request '" + pcfRequestModel.getStatus()
-					+ "' and asynchronously sending notification to consumer";
+			remark = "PCF push request accepted '" + pcfRequestModel.getProductId()
+					+ "' and asynchronously pushing notification to consumer";
 
 		} catch (NoDataFoundException e) {
 			remark = "Unable to take action on PCF request becasue PCF calculated value does not exist, please upload PCF value for "
@@ -189,7 +191,8 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 
 		pcfReqsponseRepository.save(entity);
 
-		if (PCFRequestStatusEnum.APPROVED.equals(status)) {
+		if (PCFRequestStatusEnum.APPROVED.equals(status) || PCFRequestStatusEnum.PUSHING_DATA.equals(status)
+				|| PCFRequestStatusEnum.PUSHING_UPDATED_DATA.equals(status)) {
 			status = PCFRequestStatusEnum.RECEIVED;
 		}
 

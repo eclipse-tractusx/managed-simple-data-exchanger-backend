@@ -59,18 +59,16 @@ public class PcfExchangeController {
 	public ResponseEntity<Object> requestForPcfDataOffer(@PathVariable String productId,
 			@Valid @RequestBody ConsumerRequest consumerRequest) throws Exception {
 		log.info("Request received for POST: /api/pcf/request/{}", productId);
-		return ok().body(Map.of("msg", pcfExchangeService.requestForPcfDataOffer(productId, consumerRequest)));
+		return ok().body(Map.of("msg", pcfExchangeService.requestForPcfDataExistingOffer(productId, consumerRequest)));
 	}
 	
 	@PostMapping(value = "/request/nonexistdataoffer")
 	@PreAuthorize("hasPermission('','request_for_pcf_value')")
-	public ResponseEntity<Object> requestForPcfNotExistDataOffer(
-			@RequestParam(value = "manufacturerPartId") String manufacturerPartId,
-			@RequestParam(value = "bpnNumber") String providerBpnNumber, @RequestParam String message)
+	public ResponseEntity<Object> requestForPcfNotExistDataOffer(@Valid @RequestBody PcfRequestModel pcfRequestModel)
 			throws Exception {
-		log.info("Request received for POST: /api/pcf/nonexistdataoffer/{}", manufacturerPartId);
+		log.info("Request received for POST: /api/pcf/nonexistdataoffer/{}", pcfRequestModel.getProductId());
 		return ok().body(Map.of("msg",
-				pcfExchangeService.requestForPcfNotExistDataOffer(manufacturerPartId, message, providerBpnNumber)));
+				pcfExchangeService.requestForPcfNotExistDataOffer(pcfRequestModel)));
 	}
 	
 	@GetMapping(value = "/request/{requestId}")

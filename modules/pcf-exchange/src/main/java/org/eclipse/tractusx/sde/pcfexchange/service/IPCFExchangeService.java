@@ -31,7 +31,7 @@ public interface IPCFExchangeService {
 
 	public String actionOnPcfRequestAndSendNotificationToConsumer(PcfRequestModel pcfRequestModel);
 	
-	public Object requestForPcfDataOffer(String productId, ConsumerRequest consumerRequest);
+	public Object requestForPcfDataExistingOffer(String productId, ConsumerRequest consumerRequest);
 
 	public PcfRequestModel savePcfRequestData(String requestId, String productId, String bpnNumber, String message);
 
@@ -42,6 +42,6 @@ public interface IPCFExchangeService {
 
 	public Object viewForPcfDataOffer(String requestId);
 
-	public Object requestForPcfNotExistDataOffer(String manufacturerPartId, String msg, String providerBpnNumber);
+	public Object requestForPcfNotExistDataOffer(PcfRequestModel pcfRequestModel);
 
 }

@@ -27,6 +27,8 @@ import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
+import org.eclipse.tractusx.sde.common.exception.ServiceException;
+import org.eclipse.tractusx.sde.common.exception.ValidationException;
 import org.eclipse.tractusx.sde.common.model.PagingResponse;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
@@ -61,7 +63,7 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 
 	@SneakyThrows
 	@Override
-	public String requestForPcfDataOffer(String productId, ConsumerRequest consumerRequest) {
+	public String requestForPcfDataExistingOffer(String productId, ConsumerRequest consumerRequest) {
 
 		StringBuilder sb = new StringBuilder();
 		consumerRequest.getOffers().stream().forEach(offer -> {
@@ -87,21 +89,22 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 	}
 
 	@Override
-	public Object requestForPcfNotExistDataOffer(String productId, String message, String providerBpnNumber) {
+	public Object requestForPcfNotExistDataOffer(PcfRequestModel pcfRequestModel) {
 		StringBuilder sb = new StringBuilder();
 		String requestId = UUID.randomUUID().toString();
 		try {
-			pcfRepositoryService.savePcfRequestData(requestId, productId, providerBpnNumber, message,
-					PCFTypeEnum.CONSUMER, PCFRequestStatusEnum.SENDING_REQUEST, "");
+			pcfRepositoryService.savePcfRequestData(requestId, pcfRequestModel.getProductId(),
+					pcfRequestModel.getBpnNumber(), pcfRequestModel.getMessage(), PCFTypeEnum.CONSUMER,
+					PCFRequestStatusEnum.SENDING_REQUEST, "");
 
 			// 1 fetch EDC connectors and DTR Assets from EDC connectors
 			List<QueryDataOfferModel> pcfExchangeUrlOffers = edcAssetUrlCacheService
-					.getPCFExchangeUrlFromTwin(providerBpnNumber);
+					.getPCFExchangeUrlFromTwin(pcfRequestModel.getBpnNumber());
 
 			// 2 request for PCF value for non existing sub model and send notification to
 			// call provider for data
-			pcfExchangeUrlOffers.parallelStream().forEach(dtOffer -> proxyRequestInterface
-					.requestToProviderForPCFValue(productId, sb, requestId, message, dtOffer));
+			pcfExchangeUrlOffers.parallelStream().forEach(dtOffer -> proxyRequestInterface.requestToProviderForPCFValue(
+					pcfRequestModel.getProductId(), sb, requestId, pcfRequestModel.getMessage(), dtOffer));
 
 		} catch (FeignException e) {
 			log.error("FeignRequest requestForPcfNotExistDataOffer:" + e.request());
@@ -109,12 +112,18 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 					+ (StringUtils.isBlank(e.contentUTF8()) ? e.getMessage() : e.contentUTF8());
 			log.error("FeignException requestForPcfNotExistDataOffer: " + errorMsg);
 		}
+
+		if (sb.isEmpty())
+			throw new ValidationException("Not requested to provider for '" + pcfRequestModel.getProductId()
+					+ "' because there is no PCF exchange endpoint found");
+
 		return sb.toString();
 	}
 
+	@SneakyThrows
 	@Override
 	public String actionOnPcfRequestAndSendNotificationToConsumer(PcfRequestModel pcfRequestModel) {
-		String msg = "";
+		String remark = "";
 		try {
 
 			JsonObject calculatedPCFValue = pcfService
@@ -129,17 +138,22 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 
 			new Thread(runnable).start();
 
-			msg = "PCF request '" + pcfRequestModel.getStatus()
+			remark = "PCF request '" + pcfRequestModel.getStatus()
 					+ "' and asynchronously sending notification to consumer";
 
 		} catch (NoDataFoundException e) {
-			msg = "Unable to take action on PCF request becasue pcf calculated value does not exist, please provide/upload PCF value for "
-					+ pcfRequestModel.getProductId();
-			throw new NoDataFoundException(msg);
+			remark = "Unable to take action on PCF request becasue PCF calculated value does not exist, please upload PCF value for "
+					+ pcfRequestModel.getProductId() + " in systems using Manual/Recurring Upload";
+			pcfRepositoryService.savePcfRequestData(pcfRequestModel.getRequestId(), pcfRequestModel.getProductId(),
+					pcfRequestModel.getBpnNumber(), pcfRequestModel.getMessage(), PCFTypeEnum.PROVIDER,
+					PCFRequestStatusEnum.FAILED, remark);
+			log.error(remark);
+			throw new ValidationException(e.getMessage());
 		} catch (Exception e) {
 			pcfRepositoryService.savePcfStatus(pcfRequestModel.getRequestId(), PCFRequestStatusEnum.FAILED);
+			throw new ServiceException(e.getMessage());
 		}
-		return msg;
+		return remark;
 	}
 
 	@Override

@@ -89,7 +89,6 @@ public class EDCAssetUrlCacheService {
 		if (ddtrUrl.isEmpty()) {
 			log.info("Found connector list empty so removing existing cache and retry to fetch");
 			removeDDTRUrlCache(bpnNumber);
-			ddtrUrl = dDTRUrlCacheUtility.getDDTRUrl(bpnNumber);
 		}
 		return ddtrUrl;
 	}
@@ -120,7 +119,6 @@ public class EDCAssetUrlCacheService {
 		if (pcfExchangeurls.isEmpty()) {
 			log.info("Found connector list empty so removing existing cache and retry to fetch");
 			removePCFExchangeCache(bpnNumber);
-			pcfExchangeurls = pcfExchangeAssetUtils.getPCFExchangeUrl(bpnNumber);
 		}
 		return pcfExchangeurls;
 	}

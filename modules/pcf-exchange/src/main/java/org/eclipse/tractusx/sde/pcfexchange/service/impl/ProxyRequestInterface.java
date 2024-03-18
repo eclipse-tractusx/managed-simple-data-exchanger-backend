@@ -46,6 +46,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ProxyRequestInterface {
 
+	private static final String SLASH_DELIMETER = "/";
 	private final PCFExchangeProxy pcfExchangeProxy;
 	private final PCFRepositoryService pcfRepositoryService;
 	private final EDCAssetUrlCacheService edcAssetUrlCacheService;
@@ -70,8 +71,8 @@ public class ProxyRequestInterface {
 			URI pcfEnpoint = null;
 			String endpoint = edrToken.getEndpoint();
 
-			if (endpoint.endsWith("/productIds"))
-				endpoint += "/" + productId;
+			if (endpoint.endsWith("productIds"))
+				endpoint += SLASH_DELIMETER + productId;
 
 			pcfEnpoint = new URI(endpoint);
 
@@ -135,13 +136,7 @@ public class ProxyRequestInterface {
 			EDRCachedByIdResponse edrToken = edcAssetUrlCacheService.verifyAndGetToken(bpnNumber, dtOffer);
 
 			if (edrToken != null) {
-				URI pcfpushEnpoint = null;
-				String endpoint = edrToken.getEndpoint();
-
-				if (endpoint.endsWith("/productIds"))
-					endpoint += "/" + productId;
-
-				pcfpushEnpoint = new URI(endpoint);
+				URI pcfpushEnpoint = new URI(edrToken.getEndpoint() + SLASH_DELIMETER + productId);
 				
 				Map<String, String> header = new HashMap<>();
 				header.put(edrToken.getAuthKey(), edrToken.getAuthCode());

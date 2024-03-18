@@ -63,6 +63,15 @@ public class PcfService {
 
 	}
 
+	public List<PcfEntity> readCreatedTwins(String processId) {
+
+		return Optional.ofNullable(pcfRepository.findByProcessId(processId)).filter(a -> !a.isEmpty())
+								.orElseThrow(() -> new NoDataFoundException(
+										String.format("No data found for processid %s ", processId)));
+
+	}
+
+	
 	public void deleteAllDataBySequence(JsonObject jsonObject) {
 
 		PcfEntity pcfEntity = pcfMapper.mapforEntity(jsonObject);

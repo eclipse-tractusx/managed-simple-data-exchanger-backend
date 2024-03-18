@@ -33,8 +33,7 @@ public interface IPCFExchangeService {
 	
 	public Object requestForPcfDataOffer(String productId, ConsumerRequest consumerRequest);
 
-	public PcfRequestModel savePcfRequestData(String requestId, String productId, String bpnNumber, String message,
-			PCFTypeEnum type);
+	public PcfRequestModel savePcfRequestData(String requestId, String productId, String bpnNumber, String message);
 
 	public PagingResponse getPcfData(PCFRequestStatusEnum status, PCFTypeEnum type, Integer page, Integer pageSize);
 
@@ -42,5 +41,7 @@ public interface IPCFExchangeService {
 			JsonNode pcfData);
 
 	public Object viewForPcfDataOffer(String requestId);
+
+	public Object requestForPcfNotExistDataOffer(String manufacturerPartId, String msg, String providerBpnNumber);
 
 }

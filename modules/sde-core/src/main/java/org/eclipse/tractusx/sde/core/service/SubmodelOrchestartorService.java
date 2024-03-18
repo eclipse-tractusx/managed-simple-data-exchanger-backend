@@ -43,6 +43,7 @@ import org.eclipse.tractusx.sde.core.policy.entity.PolicyMapper;
 import org.eclipse.tractusx.sde.core.policy.service.PolicyService;
 import org.eclipse.tractusx.sde.core.processreport.ProcessReportUseCase;
 import org.eclipse.tractusx.sde.core.processreport.model.ProcessReport;
+import org.eclipse.tractusx.sde.pcfexchange.service.impl.AsyncPushPCFDataForApproveRequest;
 import org.eclipse.tractusx.sde.retrieverl.service.PolicyProvider;
 import org.springframework.stereotype.Service;
 
@@ -84,6 +85,8 @@ public class SubmodelOrchestartorService {
 	private final PolicyMapper policyMapper;
 
 	private final PolicyProvider policyProvider;
+	
+	private final AsyncPushPCFDataForApproveRequest asyncPushPCFDataForApproveRequest;
 
 	ObjectMapper mapper = new ObjectMapper();
 
@@ -151,6 +154,12 @@ public class SubmodelOrchestartorService {
 			successCount.set(successCount.get() - updatedcount);
 			processReportUseCase.finishBuildProgressReport(processId, successCount.get(), failureCount.get(),
 					updatedcount);
+			
+			
+			// Push PCF value which already Approve request of consumer
+			if ("pcf".equalsIgnoreCase(submodelSchemaObject.getId())) {
+				asyncPushPCFDataForApproveRequest.pushPCFDataForApproveRequest(processId);
+			}
 		};
 
 		new Thread(runnable).start();
@@ -196,6 +205,11 @@ public class SubmodelOrchestartorService {
 			successCount.set(successCount.get() - updatedcount);
 			processReportUseCase.finishBuildProgressReport(processId, successCount.get(), failureCount.get(),
 					updatedcount);
+			
+			// Push PCF value which already Approve request of consumer
+			if ("pcf".equalsIgnoreCase(submodelSchemaObject.getId())) {
+				asyncPushPCFDataForApproveRequest.pushPCFDataForApproveRequest(processId);
+			}
 		};
 		new Thread(runnable).start();
 	}

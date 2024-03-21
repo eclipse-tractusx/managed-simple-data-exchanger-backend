@@ -37,9 +37,11 @@ import java.util.Optional;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.enums.ProgressStatusEnum;
 import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
 import org.eclipse.tractusx.sde.common.model.Acknowledgement;
@@ -49,6 +51,9 @@ import org.eclipse.tractusx.sde.core.failurelog.repository.ConsumerDownloadHisto
 import org.eclipse.tractusx.sde.core.processreport.entity.ConsumerDownloadHistoryEntity;
 import org.eclipse.tractusx.sde.core.processreport.mapper.ConsumerDownloadHistoryMapper;
 import org.eclipse.tractusx.sde.core.processreport.model.ConsumerDownloadHistory;
+import org.eclipse.tractusx.sde.edc.constants.EDCAssetConstant;
+import org.eclipse.tractusx.sde.edc.entities.request.policies.ActionRequest;
+import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyConstraintBuilderService;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
 import org.eclipse.tractusx.sde.edc.model.request.Offer;
 import org.eclipse.tractusx.sde.edc.services.ConsumerControlPanelService;
@@ -57,6 +62,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -79,6 +85,8 @@ public class ConsumerService {
 	private final ConsumerDownloadHistoryRepository consumerDownloadHistoryRepository;
 
 	private final ConsumerDownloadHistoryMapper consumerDownloadHistoryMapper;
+
+	private final PolicyConstraintBuilderService policyConstraintBuilderService;
 
 	ObjectMapper mapper = new ObjectMapper();
 
@@ -106,41 +114,61 @@ public class ConsumerService {
 		AtomicInteger failedCount = new AtomicInteger();
 		AtomicInteger successCount = new AtomicInteger();
 
-		ConsumerDownloadHistoryEntity entity = ConsumerDownloadHistoryEntity.builder().startDate(LocalDateTime.now())
-				//.connectorId(consumerRequest.getConnectorId()).providerUrl(consumerRequest.getProviderUrl())
-				.numberOfItems(consumerRequest.getOffers().size()).downloadSuccessed(successCount.get())
-				.downloadFailed(failedCount.get()).processId(processId)
-				.status(ProgressStatusEnum.IN_PROGRESS.toString()).build();
-
-		// Save consumer Download history in DB
-		consumerDownloadHistoryRepository.save(entity);
-
-		Map<String, Object> subscribeAndDownloadDataOffers = consumerControlPanelService
-				.subscribeAndDownloadDataOffers(consumerRequest, flagToDownloadImidiate);
-
 		Map<String, Object> dataWithValue = new TreeMap<>();
 
-		consumerRequest.getOffers().stream()
-				.forEach(offer -> prepareFromOfferResponse(subscribeAndDownloadDataOffers, failedCount, successCount,
-						dataWithValue, offer, flagToDownloadImidiate, consumerRequest.getDownloadDataAs()));
+		Map<Object, List<Offer>> collect = consumerRequest.getOffers().stream().collect(Collectors.groupingBy(
+				ele -> StringUtils.join(ele.getConnectorId(), "_", ele.getConnectorOfferUrl()), Collectors.toList()));
 
-		entity.setEndDate(LocalDateTime.now());
-		entity.setOffers(mapper.writeValueAsString(consumerRequest.getOffers()));
-		entity.setPolicies(mapper.writeValueAsString(consumerRequest.getUsagePolicies()));
-		entity.setDownloadSuccessed(successCount.get());
-		entity.setDownloadFailed(failedCount.get());
+		collect.entrySet().parallelStream().forEach(entry -> {
 
-		entity.setStatus(ProgressStatusEnum.FAILED.toString());
-		if (consumerRequest.getOffers().size() == successCount.get())
-			entity.setStatus(ProgressStatusEnum.COMPLETED.toString());
-		else if (successCount.get() != 0 && failedCount.get() != 0)
-			entity.setStatus(ProgressStatusEnum.PARTIALLY_FAILED.toString());
+			String key = entry.getKey().toString();
+			String[] strs = key.split("_");
 
-		// Save consumer Download history in DB
-		consumerDownloadHistoryRepository.save(entity);
+			ConsumerDownloadHistoryEntity entity = ConsumerDownloadHistoryEntity.builder()
+					.startDate(LocalDateTime.now()).connectorId(strs[0]).providerUrl(strs[1])
+					.numberOfItems(consumerRequest.getOffers().size()).downloadSuccessed(successCount.get())
+					.downloadFailed(failedCount.get()).processId(processId)
+					.status(ProgressStatusEnum.IN_PROGRESS.toString()).build();
+
+			// Save consumer Download history in DB
+			consumerDownloadHistoryRepository.save(entity);
+
+			ActionRequest action = policyConstraintBuilderService
+					.getUsagePoliciesConstraints(consumerRequest.getUsagePolicies());
+
+			entry.getValue().parallelStream().forEach(offer -> {
+
+				Object subcribeAndDownloadOffer = consumerControlPanelService.subcribeAndDownloadOffer(offer, action,
+						flagToDownloadImidiate, consumerRequest.getDownloadDataAs());
+
+				prepareFromOfferResponse(subcribeAndDownloadOffer, failedCount, successCount, dataWithValue, offer,
+						flagToDownloadImidiate, consumerRequest.getDownloadDataAs());
+
+			});
+
+			entity.setEndDate(LocalDateTime.now());
+			try {
+				entity.setOffers(mapper.writeValueAsString(entry.getValue()));
+				entity.setPolicies(mapper.writeValueAsString(consumerRequest.getUsagePolicies()));
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
+			}
+
+			entity.setDownloadSuccessed(successCount.get());
+			entity.setDownloadFailed(failedCount.get());
+
+			entity.setStatus(ProgressStatusEnum.FAILED.toString());
+			if (consumerRequest.getOffers().size() == successCount.get())
+				entity.setStatus(ProgressStatusEnum.COMPLETED.toString());
+			else if (successCount.get() != 0 && failedCount.get() != 0)
+				entity.setStatus(ProgressStatusEnum.PARTIALLY_FAILED.toString());
+
+			// Save consumer Download history in DB
+			consumerDownloadHistoryRepository.save(entity);
+
+		});
 
 		return dataWithValue;
-
 	}
 
 	@SneakyThrows
@@ -208,10 +236,9 @@ public class ConsumerService {
 		}
 	}
 
-	private void prepareFromOfferResponse(Map<String, Object> subscribeAndDownloadDataOffers, AtomicInteger failedCount,
-			AtomicInteger successCount, Map<String, Object> dataWithValue, Offer offer, boolean flagToDownloadImidiate,
-			String downloadDataAs) {
-		Object object = subscribeAndDownloadDataOffers.get(offer.getAssetId());
+	private void prepareFromOfferResponse(Object object, AtomicInteger failedCount, AtomicInteger successCount,
+			Map<String, Object> dataWithValue, Offer offer, boolean flagToDownloadImidiate, String downloadDataAs) {
+
 		if (object != null) {
 
 			JsonNode node = mapper.convertValue(object, JsonNode.class);
@@ -235,9 +262,10 @@ public class ConsumerService {
 			}
 
 			if (edrNode != null) {
-				offer.setAgreementId(readFieldFromJsonNode(edrNode, "edc:agreementId"));
+				offer.setAgreementId(readFieldFromJsonNode(edrNode, EDCAssetConstant.ASSET_PREFIX + "agreementId"));
 				offer.setExpirationDate(readFieldFromJsonNode(edrNode, "tx:expirationDate"));
-				offer.setTransferProcessId(readFieldFromJsonNode(edrNode, "edc:transferProcessId"));
+				offer.setTransferProcessId(
+						readFieldFromJsonNode(edrNode, EDCAssetConstant.ASSET_PREFIX + "transferProcessId"));
 			}
 		}
 	}
@@ -368,12 +396,9 @@ public class ConsumerService {
 				zippedOut.putNextEntry(e);
 				// There is no need for staging the CSV on filesystem or reading bytes into
 				// memory. Directly write bytes to the output stream.
-				CSVWriter writer = new CSVWriter(new OutputStreamWriter(zippedOut),
-						';',
-						ICSVWriter.NO_QUOTE_CHARACTER,
-	                    '/',
-	                    ICSVWriter.DEFAULT_LINE_END);
-				
+				CSVWriter writer = new CSVWriter(new OutputStreamWriter(zippedOut), ';', ICSVWriter.NO_QUOTE_CHARACTER,
+						'/', ICSVWriter.DEFAULT_LINE_END);
+
 				List<Object> valueList = (ArrayList<Object>) value;
 				for (Object list : valueList) {
 

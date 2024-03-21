@@ -41,22 +41,21 @@ public class EDCAssetUrlCacheService {
 				.getUsagePoliciesConstraints(queryDataOfferModel.getPolicy().getUsagePolicies());
 
 		Offer offer = Offer.builder().assetId(queryDataOfferModel.getAssetId())
-				.offerId(queryDataOfferModel.getOfferId())
-				.policyId(queryDataOfferModel.getPolicyId())
+				.offerId(queryDataOfferModel.getOfferId()).policyId(queryDataOfferModel.getPolicyId())
 				.connectorId(queryDataOfferModel.getConnectorId())
-				.connectorOfferUrl(queryDataOfferModel.getConnectorOfferUrl())
-				.build();
+				.connectorOfferUrl(queryDataOfferModel.getConnectorOfferUrl()).build();
 		try {
 			EDRCachedResponse eDRCachedResponse = contractNegotiationService.verifyOrCreateContractNegotiation(
 					bpnNumber, Map.of(), queryDataOfferModel.getConnectorOfferUrl(), action, offer);
 
 			if (eDRCachedResponse == null) {
 				throw new ServiceException("Time out!! to get 'NEGOTIATED' EDC EDR status to lookup '"
-						+ queryDataOfferModel.getAssetId() + "', The current status is null");
+						+ queryDataOfferModel.getConnectorOfferUrl() + ", " + queryDataOfferModel.getAssetId()
+						+ "', The current status is null");
 			} else if (!"NEGOTIATED".equalsIgnoreCase(eDRCachedResponse.getEdrState())) {
-				throw new ServiceException(
-						"Time out!! to get 'NEGOTIATED' EDC EDR status to lookup  '" + queryDataOfferModel.getAssetId()
-								+ "', The current status is '" + eDRCachedResponse.getEdrState() + "'");
+				throw new ServiceException("Time out!! to get 'NEGOTIATED' EDC EDR status to lookup  for '"
+						+ queryDataOfferModel.getConnectorOfferUrl() + ", " + queryDataOfferModel.getAssetId()
+						+ "', The current status is '" + eDRCachedResponse.getEdrState() + "'");
 			} else
 				return contractNegotiationService
 						.getAuthorizationTokenForDataDownload(eDRCachedResponse.getTransferProcessId());

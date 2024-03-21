@@ -84,7 +84,7 @@ public class ConsumerController {
 	@PreAuthorize("hasPermission('','consumer_view_contract_offers')")
 	public ResponseEntity<Object> getEDCPolicy(@RequestBody List<QueryDataOfferRequest> queryDataOfferRequest)
 			throws Exception {
-		log.info("Request received : /api/get-offer-policy");
+		log.info("Request received : /api/offer-policy-details");
 		return ok().body(consumerControlPanelService.getEDCPolicy(queryDataOfferRequest));
 	}
 	

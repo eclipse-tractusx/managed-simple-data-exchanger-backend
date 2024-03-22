@@ -158,7 +158,7 @@ public class SubmodelOrchestartorService {
 			
 			// Push PCF value which already Approve request of consumer
 			if ("pcf".equalsIgnoreCase(submodelSchemaObject.getId())) {
-				asyncPushPCFDataForApproveRequest.pushPCFDataForApproveRequest(processId);
+				asyncPushPCFDataForApproveRequest.pushPCFDataForApproveRequest(processId, submodelPolicyRequest);
 			}
 		};
 
@@ -208,7 +208,7 @@ public class SubmodelOrchestartorService {
 			
 			// Push PCF value which already Approve request of consumer
 			if ("pcf".equalsIgnoreCase(submodelSchemaObject.getId())) {
-				asyncPushPCFDataForApproveRequest.pushPCFDataForApproveRequest(processId);
+				asyncPushPCFDataForApproveRequest.pushPCFDataForApproveRequest(processId, policy);
 			}
 		};
 		new Thread(runnable).start();

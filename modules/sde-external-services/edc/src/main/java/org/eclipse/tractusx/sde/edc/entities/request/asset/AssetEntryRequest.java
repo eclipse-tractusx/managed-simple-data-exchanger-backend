@@ -44,11 +44,17 @@ public class AssetEntryRequest {
 	private Map<String,String> context = Map.of("edc", "https://w3id.org/edc/v0.0.1/ns/",
 	        "oauth2", "https://datatracker.ietf.org/doc/html/rfc6749",
 	        "dcat", "https://www.w3.org/ns/dcat/",
-	        "rdfs", "http://www.w3.org/2000/01/rdf-schema#");
+	        "rdfs", "http://www.w3.org/2000/01/rdf-schema#",
+	        "odrl", "http://www.w3.org/ ns/odrl/2/",
+	        "dct", "http://purl.org/dc/terms/",
+	        "rdfs", "http://www.w3.org/2000/01/rdf-schema#",
+	        "cx-taxo",  "https://w3id.org/catenax/taxonomy#",
+	        "cx-common", "https://w3id.org/catenax/ontology/common#",
+	        "aas-semantics", "https://admin-shell.io/aas/3/0/HasSemantics/");
 
 	@JsonProperty("@id")
 	private String id;
-	private HashMap<String, String> properties;
+	private HashMap<String, Object> properties;
 	private DataAddressRequest dataAddress;
 	
 

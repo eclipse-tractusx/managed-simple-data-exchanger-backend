@@ -83,7 +83,7 @@ public class PCFExchangeAssetProvider {
 				assetId, "1", "");
 
 		assetEntryRequest.getProperties().put("type", "data.pcf.exchangeEndpoint");
-		assetEntryRequest.getDataAddress().getProperties().put("baseUrl", sdeHostname+"/pcf/productIds");
+		assetEntryRequest.getDataAddress().getProperties().put("baseUrl", sdeHostname+"/pcf");
 		ObjectNode requestBody = (ObjectNode) new ObjectMapper().readTree(assetFilterRequest);
 
 		if (!edcGateway.assetExistsLookupBasedOnType(requestBody)) {

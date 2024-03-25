@@ -28,7 +28,6 @@ import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
 import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
-import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequestFactory;

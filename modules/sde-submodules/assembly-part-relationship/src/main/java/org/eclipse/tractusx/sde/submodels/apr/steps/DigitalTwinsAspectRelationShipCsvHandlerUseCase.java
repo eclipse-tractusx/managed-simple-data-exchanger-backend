@@ -235,8 +235,8 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 					"No child aspect found for " + shellLookupRequest.toJsonString());
 		}
 
-		return digitalTwinsUtility.getCreateSubModelRequestForChild(aspectRelationShip.getShellId(),
-				getsemanticIdOfModel(), getIdShortOfModel(), childUUID);
+		return digitalTwinsUtility.getCreateSubModelRequest(aspectRelationShip.getShellId(),
+				getsemanticIdOfModel(), getIdShortOfModel(), childUUID, getNameOfModel(), aspectRelationShip.getParentUuid());
 
 	}
 

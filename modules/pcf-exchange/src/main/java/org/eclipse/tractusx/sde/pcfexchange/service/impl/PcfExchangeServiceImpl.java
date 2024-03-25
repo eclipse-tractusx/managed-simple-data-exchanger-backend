@@ -81,7 +81,7 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 					.connectorOfferUrl(offer.getConnectorOfferUrl())
 					.policy(PolicyModel.builder().usagePolicies(consumerRequest.getUsagePolicies()).build()).build();
 
-			proxyRequestInterface.requestToProviderForPCFValue(productId, sb, requestId, message, queryDataOfferModel);
+			proxyRequestInterface.requestToProviderForPCFValue(productId, sb, requestId, message, queryDataOfferModel, false);
 		});
 
 		return sb.toString();
@@ -104,7 +104,7 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 			// 2 request for PCF value for non existing sub model and send notification to
 			// call provider for data
 			pcfExchangeUrlOffers.parallelStream().forEach(dtOffer -> proxyRequestInterface.requestToProviderForPCFValue(
-					pcfRequestModel.getProductId(), sb, requestId, pcfRequestModel.getMessage(), dtOffer));
+					pcfRequestModel.getProductId(), sb, requestId, pcfRequestModel.getMessage(), dtOffer, true));
 
 		} catch (FeignException e) {
 			log.error("FeignRequest requestForPcfNotExistDataOffer:" + e.request());

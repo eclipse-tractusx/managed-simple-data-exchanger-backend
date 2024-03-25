@@ -36,6 +36,10 @@ public abstract class Step {
 		this.submodelSchema = submodelSchema;
 	}
 
+	public String getNameOfModel() {
+		return submodelSchema.get("id").getAsString();
+	}
+	
 	public JsonObject getSubmodelItems() {
 		return submodelSchema.get("items").getAsJsonObject();
 	}

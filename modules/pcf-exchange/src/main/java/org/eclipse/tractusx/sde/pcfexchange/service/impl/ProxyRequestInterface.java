@@ -46,6 +46,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ProxyRequestInterface {
 
+	private static final String PRODUCT_IDS = "productIds";
 	private static final String SLASH_DELIMETER = "/";
 	private final PCFExchangeProxy pcfExchangeProxy;
 	private final PCFRepositoryService pcfRepositoryService;
@@ -60,7 +61,7 @@ public class ProxyRequestInterface {
 	
 	@SneakyThrows
 	public void requestToProviderForPCFValue(String productId, StringBuilder sb, String requestId, String message,
-			QueryDataOfferModel dataset) {
+			QueryDataOfferModel dataset, boolean isRequestToNonexistingTwin) {
 
 		EDRCachedByIdResponse edrToken = edcAssetUrlCacheService.verifyAndGetToken(dataset.getConnectorId(), dataset);
 
@@ -68,19 +69,20 @@ public class ProxyRequestInterface {
 			sb.append("\n");
 
 		if (edrToken != null) {
-			URI pcfEnpoint = null;
-			String endpoint = edrToken.getEndpoint();
-
-			if (endpoint.endsWith("productIds"))
-				endpoint += SLASH_DELIMETER + productId;
-
-			pcfEnpoint = new URI(endpoint);
+			
+			URI pcfpushEnpoint = null;
+			
+			if(isRequestToNonexistingTwin)
+				pcfpushEnpoint = new URI(
+						edrToken.getEndpoint() + SLASH_DELIMETER + PRODUCT_IDS + SLASH_DELIMETER + productId);
+			else
+				pcfpushEnpoint = new URI(edrToken.getEndpoint());
 
 			Map<String, String> header = new HashMap<>();
 			header.put(edrToken.getAuthKey(), edrToken.getAuthCode());
 
 			// Send request to data provider for PCF value push
-			pcfExchangeProxy.getPcfByProduct(pcfEnpoint, header, manufacturerId,
+			pcfExchangeProxy.getPcfByProduct(pcfpushEnpoint, header, manufacturerId,
 					requestId, message);
 
 			sb.append(productId + ": requested for PCF value");
@@ -128,8 +130,10 @@ public class ProxyRequestInterface {
 			EDRCachedByIdResponse edrToken = edcAssetUrlCacheService.verifyAndGetToken(bpnNumber, dtOffer);
 
 			if (edrToken != null) {
-				URI pcfpushEnpoint = new URI(edrToken.getEndpoint() + SLASH_DELIMETER + productId);
 				
+				URI pcfpushEnpoint = new URI(
+						edrToken.getEndpoint() + SLASH_DELIMETER + PRODUCT_IDS + SLASH_DELIMETER + productId);
+
 				Map<String, String> header = new HashMap<>();
 				header.put(edrToken.getAuthKey(), edrToken.getAuthCode());
 

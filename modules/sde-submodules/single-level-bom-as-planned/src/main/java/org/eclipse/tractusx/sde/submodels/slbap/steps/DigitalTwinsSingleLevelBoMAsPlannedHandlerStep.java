@@ -109,7 +109,8 @@ public class DigitalTwinsSingleLevelBoMAsPlannedHandlerStep extends Step {
 			logDebug(String.format("No submodels for '%s'", shellId));
 
 			CreateSubModelRequest createSubModelRequest = digitalTwinsUtility.getCreateSubModelRequest(
-					singleLevelBoMAsPlannedAspect.getShellId(), getsemanticIdOfModel(), getIdShortOfModel());
+					singleLevelBoMAsPlannedAspect.getShellId(), getsemanticIdOfModel(), getIdShortOfModel(),
+					getNameOfModel(), singleLevelBoMAsPlannedAspect.getParentUuid());
 
 			digitalTwinsFacilitator.updateShellDetails(shellId, aasDescriptorRequest, createSubModelRequest);
 			singleLevelBoMAsPlannedAspect.setSubModelId(createSubModelRequest.getId());

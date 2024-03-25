@@ -100,8 +100,9 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends Step {
 		if (subModelResponse == null || foundSubmodel == null) {
 			logDebug(String.format("No submodels for '%s'", shellId));
 			
-			CreateSubModelRequest createSubModelRequest = digitalTwinsUtility
-					.getCreateSubModelRequest(aspect.getShellId(), getsemanticIdOfModel(), getIdShortOfModel());
+			CreateSubModelRequest createSubModelRequest = digitalTwinsUtility.getCreateSubModelRequest(
+					aspect.getShellId(), getsemanticIdOfModel(), getIdShortOfModel(), getNameOfModel(),
+					aspect.getUuid());
 			
 			digitalTwinsFacilitator.updateShellDetails(shellId, aasDescriptorRequest, createSubModelRequest);
 			

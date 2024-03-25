@@ -3,7 +3,7 @@
 	"$id": "http://example.com/example.json",
 	"type": "array",
 	"id": "pcf",
-	"idShort": "pcf",
+	"idShort": "PCFExchangeEndpoint",
 	"version": "6.0.0",
 	"semantic_id": "urn:bamm:io.catenax.pcf:6.0.0#Pcf",
 	"title": "Product Carbon Footprint (pcf)",

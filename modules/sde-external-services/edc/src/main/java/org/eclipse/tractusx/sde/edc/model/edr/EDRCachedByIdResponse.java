@@ -20,6 +20,8 @@
 
 package org.eclipse.tractusx.sde.edc.model.edr;
 
+import org.eclipse.tractusx.sde.edc.constants.EDCAssetConstant;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -38,19 +40,19 @@ import lombok.NoArgsConstructor;
 @JsonInclude(Include.NON_NULL)
 public class EDRCachedByIdResponse {
 
-	@JsonProperty("edc:type")
+	@JsonProperty(EDCAssetConstant.ASSET_PREFIX + "type")
 	private String type;
 
-	@JsonProperty("edc:authCode")
+	@JsonProperty(EDCAssetConstant.ASSET_PREFIX + "authCode")
 	private String authCode;
 
-	@JsonProperty("edc:endpoint")
+	@JsonProperty(EDCAssetConstant.ASSET_PREFIX + "endpoint")
 	private String endpoint;
 
-	@JsonProperty("edc:id")
+	@JsonProperty(EDCAssetConstant.ASSET_PREFIX + "id")
 	private String id;
 
-	@JsonProperty("edc:authKey")
+	@JsonProperty(EDCAssetConstant.ASSET_PREFIX + "authKey")
 	private String authKey;
 
 }

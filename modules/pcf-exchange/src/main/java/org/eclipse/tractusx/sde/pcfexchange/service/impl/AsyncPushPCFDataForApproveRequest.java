@@ -22,8 +22,10 @@ package org.eclipse.tractusx.sde.pcfexchange.service.impl;
 
 import java.util.List;
 
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
 import org.eclipse.tractusx.sde.common.model.PagingResponse;
+import org.eclipse.tractusx.sde.common.utils.PolicyOperationUtil;
 import org.eclipse.tractusx.sde.pcfexchange.enums.PCFRequestStatusEnum;
 import org.eclipse.tractusx.sde.pcfexchange.enums.PCFTypeEnum;
 import org.eclipse.tractusx.sde.pcfexchange.request.PcfRequestModel;
@@ -43,11 +45,15 @@ import lombok.extern.slf4j.Slf4j;
 public class AsyncPushPCFDataForApproveRequest {
 
 	private final PCFRepositoryService pcfRepositoryService;
+	
 	private final PcfService pcfService;
 
 	private final ProxyRequestInterface proxyRequestInterface;
+	
 
-	public void pushPCFDataForApproveRequest(String processId) {
+	public void pushPCFDataForApproveRequest(String processId, PolicyModel policy) {
+		
+		List<String> accessBPNList = PolicyOperationUtil.getAccessBPNList(policy);
 
 		List<String> productList = pcfService.readCreatedTwins(processId).stream().map(PcfEntity::getProductId)
 				.toList();
@@ -63,7 +69,7 @@ public class AsyncPushPCFDataForApproveRequest {
 
 			requestList.forEach(request -> {
 
-				if (productList.contains(request.getProductId())) {
+				if (productList.contains(request.getProductId()) && accessBPNList.contains(request.getBpnNumber())) {
 
 					String msg = "";
 

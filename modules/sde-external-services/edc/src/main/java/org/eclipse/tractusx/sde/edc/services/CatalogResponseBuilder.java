@@ -76,7 +76,7 @@ public class CatalogResponseBuilder extends AbstractEDCStepsHelper {
 
 		JsonNode policy = offer.get("odrl:hasPolicy");
 
-		String edcstr = "edc:";
+		String edcstr = EDCAssetConstant.ASSET_PREFIX;
 
 		QueryDataOfferModel build = QueryDataOfferModel.builder()
 				.assetId(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_ID))

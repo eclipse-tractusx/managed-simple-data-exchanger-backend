@@ -46,15 +46,15 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ContractNegotiationService  extends AbstractEDCStepsHelper {
-	
+public class ContractNegotiationService extends AbstractEDCStepsHelper {
+
 	private static final String NEGOTIATED = "NEGOTIATED";
 	private final EDRRequestHelper edrRequestHelper;
 	private static final Integer RETRY = 5;
 	private static final Integer THRED_SLEEP_TIME = 5000;
-	
+
 	private final ContractNegotiateManagementHelper contractNegotiateManagement;
-	
+
 	@SneakyThrows
 	public EDRCachedResponse verifyOrCreateContractNegotiation(String connectorId,
 			Map<String, String> extensibleProperty, String recipientURL, ActionRequest action, Offer offer) {
@@ -71,18 +71,19 @@ public class ContractNegotiationService  extends AbstractEDCStepsHelper {
 			String contractAgreementId = checkandGetContractAgreementId(assetId);
 			if (StringUtils.isBlank(contractAgreementId)) {
 				log.info("The EDR process was not completed, no 'NEGOTIATED' EDR status found "
-						+ "and not valid contract agreementId for " + assetId + ", so initiating EDR process");
+						+ "and not valid contract agreementId for " + recipientURL + ", " + assetId
+						+ ", so initiating EDR process");
 				edrRequestHelper.edrRequestInitiate(recipientURL, connectorId, offer.getOfferId(), assetId, action,
 						extensibleProperty);
 				checkContractNegotiationStatus = verifyEDRRequestStatus(assetId);
 			} else {
-				log.info("There is valid contract agreement exist for " + assetId
+				log.info("There is valid contract agreement exist for " + recipientURL + ", " + assetId
 						+ ", so ignoring EDR process initiation");
 				checkContractNegotiationStatus = EDRCachedResponse.builder().agreementId(contractAgreementId)
 						.assetId(assetId).build();
 			}
 		} else {
-			log.info("There was EDR process initiated " + assetId
+			log.info("There was EDR process initiated " + recipientURL + ", " + assetId
 					+ ", so ignoring EDR process initiation, going to check EDR status only");
 			if (!NEGOTIATED.equals(checkContractNegotiationStatus.getEdrState()))
 				checkContractNegotiationStatus = verifyEDRRequestStatus(assetId);
@@ -90,10 +91,10 @@ public class ContractNegotiationService  extends AbstractEDCStepsHelper {
 
 		return checkContractNegotiationStatus;
 	}
-	
+
 	@SneakyThrows
 	private String checkandGetContractAgreementId(String assetId) {
-		
+
 		List<JsonNode> contractAgreements = contractNegotiateManagement.getAllContractAgreements(assetId,
 				Type.CONSUMER.name(), 0, 10);
 		String contractAgreementId = null;
@@ -109,7 +110,7 @@ public class ContractNegotiationService  extends AbstractEDCStepsHelper {
 
 		return contractAgreementId;
 	}
-	
+
 	private EDRCachedResponse verifyEDRResponse(List<EDRCachedResponse> eDRCachedResponseList) {
 		EDRCachedResponse eDRCachedResponse = null;
 		if (eDRCachedResponseList != null && !eDRCachedResponseList.isEmpty()) {
@@ -127,7 +128,7 @@ public class ContractNegotiationService  extends AbstractEDCStepsHelper {
 		}
 		return eDRCachedResponse;
 	}
-	
+
 	@SneakyThrows
 	public EDRCachedResponse verifyEDRRequestStatus(String assetId) {
 		EDRCachedResponse eDRCachedResponse = null;
@@ -138,7 +139,7 @@ public class ContractNegotiationService  extends AbstractEDCStepsHelper {
 			do {
 				if (counter > 1)
 					Thread.sleep(THRED_SLEEP_TIME);
-				
+
 				eDRCachedResponseList = edrRequestHelper.getEDRCachedByAsset(assetId);
 				eDRCachedResponse = verifyEDRResponse(eDRCachedResponseList);
 
@@ -156,7 +157,8 @@ public class ContractNegotiationService  extends AbstractEDCStepsHelper {
 					eDRCachedResponse = EDRCachedResponse.builder().agreementId(contractAgreementId).assetId(assetId)
 							.build();
 				} else
-					throw new ServiceException("Time out!! unable to get Contract negotiation FINALIZED status");
+					throw new ServiceException(
+							"Time out!! unable to get Contract negotiation FINALIZED status for " + assetId);
 			}
 
 		} catch (FeignException e) {
@@ -201,7 +203,6 @@ public class ContractNegotiationService  extends AbstractEDCStepsHelper {
 		return true;
 	}
 
-	
 	@SneakyThrows
 	public EDRCachedByIdResponse getAuthorizationTokenForDataDownload(String transferProcessId) {
 		return edrRequestHelper.getEDRCachedByTransferProcessId(transferProcessId);

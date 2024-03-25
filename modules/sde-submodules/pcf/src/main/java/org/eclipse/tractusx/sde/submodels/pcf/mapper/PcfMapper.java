@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2023 T-Systems International GmbH
- * Copyright (c) 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023, 2024 T-Systems International GmbH
+ * Copyright (c) 2023, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -23,14 +23,12 @@ import java.util.List;
 
 import org.eclipse.tractusx.sde.common.mapper.AspectResponseFactory;
 import org.eclipse.tractusx.sde.submodels.pcf.entity.PcfEntity;
-import org.eclipse.tractusx.sde.submodels.pcf.model.CompanyIds;
 import org.eclipse.tractusx.sde.submodels.pcf.model.CrossSectoralStandardsUsed;
 import org.eclipse.tractusx.sde.submodels.pcf.model.DataQualityRating;
 import org.eclipse.tractusx.sde.submodels.pcf.model.Pcf;
 import org.eclipse.tractusx.sde.submodels.pcf.model.PcfAspect;
 import org.eclipse.tractusx.sde.submodels.pcf.model.PcfSubmodelResponse;
 import org.eclipse.tractusx.sde.submodels.pcf.model.PrecedingPfIds;
-import org.eclipse.tractusx.sde.submodels.pcf.model.ProductIds;
 import org.eclipse.tractusx.sde.submodels.pcf.model.ProductOrSectorSpecificRule;
 import org.eclipse.tractusx.sde.submodels.pcf.model.ProductOrSectorSpecificRules;
 import org.eclipse.tractusx.sde.submodels.pcf.model.SecondaryEmissionFactorSources;
@@ -115,6 +113,7 @@ public abstract class PcfMapper {
 						.build()))
 				.unitaryProductAmount(entity.getUnitaryProductAmount())
 				.declaredUnit(entity.getDeclaredUnit())
+				.distributionStageAircraftGhgEmissions(entity.getDistributionStageAircraftGhgEmissions())
 				.referencePeriodStart(entity.getReferencePeriodStart())
 				.geographyRegionOrSubregion(entity.getGeographyRegionOrSubregion())
 				.fossilGhgEmissions(entity.getFossilGhgEmissions())
@@ -145,9 +144,7 @@ public abstract class PcfMapper {
 		
 		PcfSubmodelResponse build=PcfSubmodelResponse.builder()
 				.specVersion(entity.getSpecVersion())
-				.companyIds(List.of(CompanyIds.builder()
-						.companyId(entity.getCompanyId())
-						.build()))
+				.companyIds(List.of(entity.getCompanyId()))
 				.extWBCSDProductCodeCpc(entity.getExtWBCSDProductCodeCpc())
 				.created(entity.getCreated())
 				.companyName(entity.getCompanyName())
@@ -156,10 +153,7 @@ public abstract class PcfMapper {
 				.productName(entity.getProductName())
 				.pcf(pcfResponse)
 				.partialFullPcf(entity.getPartialFullPcf())
-				.productIds(List.of(ProductIds.builder()
-						.productId(entity.getProductId())
-						.build()))
-				
+				.productIds(List.of(entity.getProductId()))
 				.validityPeriodStart(entity.getValidityPeriodStart())
 				.comment(entity.getComment())
 				.id(entity.getId())

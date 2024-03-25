@@ -20,6 +20,8 @@
 
 package org.eclipse.tractusx.sde.edc.model.edr;
 
+import org.eclipse.tractusx.sde.edc.constants.EDCAssetConstant;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -44,16 +46,16 @@ public class EDRCachedResponse {
 	@JsonProperty("@context")
 	private Object context;
 
-	@JsonProperty("edc:agreementId")
+	@JsonProperty(EDCAssetConstant.ASSET_PREFIX + "agreementId")
 	private String agreementId;
 
-	@JsonProperty("edc:transferProcessId")
+	@JsonProperty(EDCAssetConstant.ASSET_PREFIX + "transferProcessId")
 	private String transferProcessId;
 
-	@JsonProperty("edc:assetId")
+	@JsonProperty(EDCAssetConstant.ASSET_PREFIX + "assetId")
 	private String assetId;
 
-	@JsonProperty("edc:providerId")
+	@JsonProperty(EDCAssetConstant.ASSET_PREFIX + "providerId")
 	private String providerId;
 
 	@JsonProperty("tx:edrState")

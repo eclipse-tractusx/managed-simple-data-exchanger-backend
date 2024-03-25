@@ -35,5 +35,7 @@ public final class EDCAssetConstant {
 	public static final String ASSET_PROP_POLICYID ="policy-id";
 	
 	
+	public static final String ASSET_PREFIX="";
+	
 	private EDCAssetConstant() {}
 }

@@ -17,37 +17,46 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-package org.eclipse.tractusx.sde.core.processreport.entity;
 
-import java.util.Collections;
+package org.eclipse.tractusx.sde.core.policy.entity;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.eclipse.tractusx.sde.common.entities.Policies;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import jakarta.persistence.AttributeConverter;
-import jakarta.persistence.Converter;
-import lombok.SneakyThrows;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.Data;
 
-@Converter
-public class PoliciesListToStringConverter implements AttributeConverter<List<Policies>, String> {
+@Table(name = "policy_tbl")
+@Entity
+@Data
+public class PolicyEntity {
 
-	ObjectMapper objectMapper = new ObjectMapper();
+	@Id
+	@Column(name = "uuid")
+	private String uuid;
 
-	@Override
-	@SneakyThrows
-	public String convertToDatabaseColumn(List<Policies> attribute) {
-		String policiesList = objectMapper.writeValueAsString(attribute);
-		return attribute == null ? null : policiesList;
-	}
-
-	@Override
-	@SneakyThrows
-	public List<Policies> convertToEntityAttribute(String dbData) {
-		return dbData == null ? Collections.emptyList()
-				: objectMapper.readValue(dbData, new TypeReference<List<Policies>>() {
-				});
-	}
+	@Column(name = "policy_name")
+	private String policyName;
+	
+	@Convert(converter = PoliciesListToStringConverter.class)
+	@Column(name = "access_policies", columnDefinition = "TEXT")
+	@JsonProperty(value = "access_policies")
+	private List<Policies> accessPolicies;
+	
+	@Convert(converter = PoliciesListToStringConverter.class)
+	@Column(name = "usage_policies", columnDefinition = "TEXT")
+	@JsonProperty(value = "usage_policies")
+	private List<Policies> usagePolicies;
+	
+	@Column(name = "last_updated_time")
+	private LocalDateTime lastUpdatedTime;
+	
 }

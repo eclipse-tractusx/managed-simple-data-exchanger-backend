@@ -105,7 +105,7 @@ public class ProxyRequestInterface {
 		// 2 lookup shell for PCF sub model and send notification to call consumer
 		// request
 		if(pcfExchangeUrlOffers.isEmpty()) {
-			pcfRepositoryService.updatePCFPushStatus(status, requestId, "");
+			pcfRepositoryService.updatePCFPushStatus(status, requestId, "Unable to find PCF exchange endpoint");
 		}
 		else {
 			pcfExchangeUrlOffers.parallelStream().forEach(dtOffer -> {
@@ -142,14 +142,17 @@ public class ProxyRequestInterface {
 
 				sendNotificationStatus = "SUCCESS";
 			} else {
-				log.warn("EDC connector " + dtOffer.getConnectorOfferUrl()
-						+ ", The EDR token is null to find pcf exchange asset");
+				String warn="EDC connector " + dtOffer.getConnectorOfferUrl()
+				+ ", The EDR token is null to find pcf exchange asset";
+				log.warn(warn);
+				sendNotificationStatus = warn;
 			}
 		} catch (FeignException e) {
 			log.error("FeignRequest:" + e.request());
 			String errorMsg = "Unable to send notification to consumer because: "
 					+ (StringUtils.isBlank(e.contentUTF8()) ? e.getMessage() : e.contentUTF8());
 			log.error("FeignException : " + errorMsg);
+			sendNotificationStatus = errorMsg;
 		} finally {
 			pcfRepositoryService.updatePCFPushStatus(status, requestId, sendNotificationStatus);
 		}

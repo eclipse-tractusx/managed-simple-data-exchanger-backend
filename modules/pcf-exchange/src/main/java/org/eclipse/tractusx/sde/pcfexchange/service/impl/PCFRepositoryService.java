@@ -44,6 +44,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class PCFRepositoryService {
 
+	private static final String SUCCESS = "SUCCESS";
 	private final PcfRequestRepository pcfRequestRepository;
 	private final PcfExchangeMapper pcfMapper;
 
@@ -62,15 +63,16 @@ public class PCFRepositoryService {
 	public PCFRequestStatusEnum updatePCFPushStatus(PCFRequestStatusEnum status, String requestId, String sendNotificationStatus) {
 		
 		if ((PCFRequestStatusEnum.APPROVED.equals(status) || PCFRequestStatusEnum.PUSHING_DATA.equals(status))
-				&& StringUtils.isNotBlank(sendNotificationStatus)) {
+				&& SUCCESS.equalsIgnoreCase(sendNotificationStatus)) {
 			status = PCFRequestStatusEnum.PUSHED;
+			sendNotificationStatus ="PCF data successfuly pushed";
 		} else if (PCFRequestStatusEnum.PUSHING_UPDATED_DATA.equals(status)
-				&& StringUtils.isNotBlank(sendNotificationStatus)) {
+				&& SUCCESS.equalsIgnoreCase(sendNotificationStatus)) {
 			status = PCFRequestStatusEnum.PUSHED_UPDATED_DATA;
-		} else if (PCFRequestStatusEnum.REQUESTED.equals(status) && StringUtils.isNotBlank(sendNotificationStatus)) {
-			status = PCFRequestStatusEnum.REQUESTED;
-		} else if (PCFRequestStatusEnum.REJECTED.equals(status) && StringUtils.isNotBlank(sendNotificationStatus)) {
+			sendNotificationStatus ="PCF updated data successfuly pushed";
+		} else if (PCFRequestStatusEnum.REJECTED.equals(status) && SUCCESS.equalsIgnoreCase(sendNotificationStatus)) {
 			status = PCFRequestStatusEnum.REJECTED;
+			sendNotificationStatus ="PCF request rejected successfuly";
 		} else if (PCFRequestStatusEnum.APPROVED.equals(status)
 				|| PCFRequestStatusEnum.FAILED_TO_PUSH_DATA.equals(status)
 				|| PCFRequestStatusEnum.PUSHING_DATA.equals(status)
@@ -82,8 +84,8 @@ public class PCFRepositoryService {
 		else {
 			status = PCFRequestStatusEnum.FAILED;
 		}
-		
-		savePcfStatus(requestId, status);
+
+		savePcfStatus(requestId, status, sendNotificationStatus);
 		
 		return status;
 	}
@@ -109,10 +111,19 @@ public class PCFRepositoryService {
 
 	@SneakyThrows
 	public PcfRequestEntity savePcfStatus(String requestId, PCFRequestStatusEnum status) {
+		return savePcfStatus(requestId, status, null);
+	}
+	
+	@SneakyThrows
+	public PcfRequestEntity savePcfStatus(String requestId, PCFRequestStatusEnum status, String remark) {
 
 		PcfRequestEntity pcfRequestEntity = pcfRequestRepository.getReferenceById(requestId);
 		pcfRequestEntity.setLastUpdatedTime(Instant.now().getEpochSecond());
 		pcfRequestEntity.setStatus(status);
+		
+		if(StringUtils.isNotBlank(remark))
+			pcfRequestEntity.setRemark(remark);
+		
 		log.info("'" + pcfRequestEntity.getProductId() + "' pcf request saved in the database successfully as {}",
 				status);
 		pcfRequestRepository.save(pcfRequestEntity);

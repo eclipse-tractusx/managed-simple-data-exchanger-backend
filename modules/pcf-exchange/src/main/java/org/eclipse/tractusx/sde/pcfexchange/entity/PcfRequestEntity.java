@@ -49,7 +49,7 @@ public class PcfRequestEntity {
 	@Enumerated(EnumType.STRING)
 	private PCFTypeEnum type;
 
-	@Column(name = "message")
+	@Column(name = "message" , columnDefinition = "TEXT")
 	private String message;
 	
 	@Column(name = "status")
@@ -62,7 +62,7 @@ public class PcfRequestEntity {
 	@Column(name = "last_updated_time")
 	private Long lastUpdatedTime;
 	
-	@Column(name = "remark")
+	@Column(name = "remark" , columnDefinition = "TEXT")
 	private String remark;
 
 }

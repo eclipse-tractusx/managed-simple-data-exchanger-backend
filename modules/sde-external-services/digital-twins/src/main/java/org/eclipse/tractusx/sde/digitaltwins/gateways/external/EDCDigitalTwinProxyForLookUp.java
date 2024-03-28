@@ -21,6 +21,7 @@
 package org.eclipse.tractusx.sde.digitaltwins.gateways.external;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorResponse;
@@ -44,6 +45,7 @@ public interface EDCDigitalTwinProxyForLookUp {
 			@RequestHeader Map<String, String> header);
 
 	@GetMapping(path = "/lookup/shells")
-	ShellLookupResponse shellLookup(URI url, @RequestParam String assetIds, @RequestHeader Map<String, String> header);
+	ShellLookupResponse shellLookup(URI url, @RequestParam("assetIds") List<String> assetIds,
+			@RequestHeader Map<String, String> header);
 
 }

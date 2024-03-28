@@ -64,6 +64,11 @@ public interface DigitalTwinsFeignClient {
 	@PostMapping(path = "${digital-twins.registry.uri:/api/v3.0}/shell-descriptors/{aasIdentifier}/submodel-descriptors")
 	ResponseEntity<String> createSubModel(@PathVariable("aasIdentifier") String shellId,
 			@RequestBody CreateSubModelRequest request, @RequestHeader("Edc-Bpn") String edcBpn);
+	
+	@PutMapping(path = "${digital-twins.registry.uri:/api/v3.0}/shell-descriptors/{aasIdentifier}/submodel-descriptors/{submodelIdentifier}")
+	ResponseEntity<String> updateSubModel(@PathVariable("aasIdentifier") String shellId,
+			@PathVariable("submodelIdentifier") String submodelIdentifier, @RequestBody CreateSubModelRequest request,
+			@RequestHeader("Edc-Bpn") String edcBpn);
 
 	@GetMapping(path = "${digital-twins.registry.uri:/api/v3.0}/shell-descriptors/{aasIdentifier}/submodel-descriptors")
 	ResponseEntity<SubModelListResponse> getSubModels(@PathVariable("aasIdentifier") String shellId,
@@ -74,14 +79,14 @@ public interface DigitalTwinsFeignClient {
 			@PathVariable("submodelIdentifier") String submodelIdentifier);
 
 	@GetMapping(path = "${digital-twins.registry.lookup.uri:/api/v3.0}/lookup/shells")
-	ResponseEntity<ShellLookupResponse> shellLookup(@RequestParam String assetIds,
+	ResponseEntity<ShellLookupResponse> shellLookup(@RequestParam("assetIds") List<String> assetIds,
 			@RequestHeader("Edc-Bpn") String edcBpn);
-
-	@PostMapping(path = "${digital-twins.registry.lookup.uri:/api/v3.0}/lookup/shells/{assetIds}")
-	ResponseEntity<List<Object>> createShellSpecificAttributes(@PathVariable("assetIds") String shellId,
+	
+	@PostMapping(path = "${digital-twins.registry.lookup.uri:/api/v3.0}/lookup/shells/{shellId}")
+	ResponseEntity<List<Object>> createShellSpecificAttributes(@PathVariable("shellId") String shellId,
 			@RequestHeader("Edc-Bpn") String edcBpn, @RequestBody List<Object> specificAssetIds);
 
-	@DeleteMapping(path = "${digital-twins.registry.lookup.uri:/api/v3.0}/lookup/shells/{assetIds}")
+	@DeleteMapping(path = "${digital-twins.registry.lookup.uri:/api/v3.0}/lookup/shells/{shellId}")
 	ResponseEntity<Object> deleteShellSpecificAttributes(@PathVariable("assetIds") String shellId,
 			@RequestHeader("Edc-Bpn") String edcBpn);
 

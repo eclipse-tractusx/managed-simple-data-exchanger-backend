@@ -98,7 +98,9 @@ public class DigitalTwinsPcfCsvHandlerUseCase extends Step {
 		if (subModelResponse == null || foundSubmodel == null) {
 			logDebug(String.format("No submodels for '%s'", shellId));
 			CreateSubModelRequest createSubModelRequest = digitalTwinsUtility
-					.getCreateSubModelRequest(pcfAspect.getShellId(), getsemanticIdOfModel(), getIdShortOfModel());
+					.getCreateSubModelRequest(pcfAspect.getShellId(), getsemanticIdOfModel(), 
+							getIdShortOfModel(), getNameOfModel(),
+							"productIds/" + pcfAspect.getProductId());
 			digitalTwinsFacilitator.updateShellDetails(shellId, aasDescriptorRequest, createSubModelRequest);
 			pcfAspect.setSubModelId(createSubModelRequest.getId());
 		} else {
@@ -125,6 +127,7 @@ public class DigitalTwinsPcfCsvHandlerUseCase extends Step {
 		specificIdentifiers.put(CommonConstants.MANUFACTURER_PART_ID, pcfAspect.getProductId());
 		specificIdentifiers.put(CommonConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId());
 		specificIdentifiers.put(CommonConstants.ASSET_LIFECYCLE_PHASE, pcfAspect.getAssetLifeCyclePhase());
+		specificIdentifiers.put("digitalTwinType", "PartType");
 
 		return specificIdentifiers;
 	}

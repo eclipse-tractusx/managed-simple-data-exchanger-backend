@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -24,7 +24,6 @@ package org.eclipse.tractusx.sde.edc.entities.request.contractdefinition;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.tractusx.sde.common.utils.UUIdGenerator;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -32,6 +31,12 @@ public class ContractDefinitionRequestFactory {
 
 	public ContractDefinitionRequest getContractDefinitionRequest(String uuid, String accessPolicyId,
 			String usagePolicyId) {
+		
+		String submodelId = uuid;
+		if (submodelId.indexOf("urn:uuid") != -1) {
+			submodelId = submodelId.substring(submodelId.indexOf("urn:uuid", 9));
+			submodelId =submodelId.replace("urn:uuid:", "");
+		}
 		
 		List<Criterion> criteria = new ArrayList<>();
 		criteria.add(Criterion.builder()
@@ -43,7 +48,7 @@ public class ContractDefinitionRequestFactory {
 		return ContractDefinitionRequest.builder()
 				.contractPolicyId(usagePolicyId == null ? accessPolicyId : usagePolicyId)
 				.accessPolicyId(accessPolicyId)
-				.id(UUIdGenerator.getUuid())
+				.id(submodelId)
 				.assetsSelector(criteria)
 				.build();
 	}

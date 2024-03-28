@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.eclipse.tractusx.sde.common.entities.Policies;
 import org.eclipse.tractusx.sde.common.enums.ProgressStatusEnum;
+import org.eclipse.tractusx.sde.core.policy.entity.PoliciesListToStringConverter;
 
 import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;

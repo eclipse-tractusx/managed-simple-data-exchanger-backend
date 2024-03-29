@@ -33,7 +33,7 @@ import lombok.Data;
 public class PcfSubmodelResponse {
 
 	private String specVersion;
-	private List<CompanyIds> companyIds;
+	private List<String> companyIds;
 	
 	@SerializedName(value = "extWBCSD_productCodeCpc")
 	private String extWBCSDProductCodeCpc;
@@ -46,7 +46,7 @@ public class PcfSubmodelResponse {
 	private Double version;
 	private Pcf pcf;
 	private String partialFullPcf;
-	private List<ProductIds> productIds;
+	private List<String> productIds;
 	private String validityPeriodStart;
 	private String comment;
     private String id;

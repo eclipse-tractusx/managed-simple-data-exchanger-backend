@@ -61,14 +61,16 @@ public class PolicyService {
 	@SneakyThrows
 	public PolicyModel savePolicy(String uuid, PolicyModel request) {
 
-		if (isPolicyNameValid(uuid, request.getPolicyName())) {
+		String policyName = request.getPolicyName();
+		if (isPolicyNameValid(uuid, policyName)) {
 			PolicyEntity policy = policyMapper.mapFrom(request);
 			policy.setUuid(uuid);
 			policy.setLastUpdatedTime(LocalDateTime.now());
 			request.setLastUpdatedTime(LocalDateTime.now());
 			request.setUuid(uuid);
 			repository.save(policy);
-			log.info("'" + request.getPolicyName() + "' policy saved in the database successfully");
+			
+			log.info("'" + policyName + "' policy saved in the database successfully");
 			return request;
 		} else
 			throw new ValidationException(

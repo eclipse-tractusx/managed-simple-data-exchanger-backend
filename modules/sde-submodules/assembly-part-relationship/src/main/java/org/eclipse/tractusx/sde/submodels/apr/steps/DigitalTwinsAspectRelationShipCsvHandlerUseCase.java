@@ -261,11 +261,13 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 		} catch (FeignException e) {
 			String err = e.contentUTF8();
 			err = StringUtils.isBlank(err) ? e.getMessage() : err;
-			String errorMsg = "Unable to look up child twin " + dtOfferUrl + ", assetId" + dtOffer.getAssetId() + ", "
+			String errorMsg = "Unable to look up child twin " + dtOfferUrl + ", assetId " + dtOffer.getAssetId() + ", "
 					+ shellLookupRequest.toJsonString() + " because: " + err;
 			log.error("FeignException : " + errorMsg);
+		} catch (CsvHandlerDigitalTwinUseCaseException e) {
+			throw e;
 		} catch (Exception e) {
-			String errorMsg = "Unable to look up child twin " + dtOfferUrl + ", assetId" + dtOffer.getAssetId() + ", "
+			String errorMsg = "Unable to look up child twin " + dtOfferUrl + ", assetId " + dtOffer.getAssetId() + ", "
 					+ shellLookupRequest.toJsonString() + "because: " + e.getMessage();
 			log.error("Exception : " + errorMsg);
 		}
@@ -276,7 +278,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 	@SneakyThrows
 	private String getChildSubmodelDetails(ShellLookupRequest shellLookupRequest, String endpoint,
 			Map<String, String> header, AspectRelationship aspectRelationShip, String dtOfferUrl,
-			List<String> childshellIds) {
+			List<String> childshellIds) throws CsvHandlerDigitalTwinUseCaseException {
 
 		String childUUID = null;
 		if (childshellIds == null) {

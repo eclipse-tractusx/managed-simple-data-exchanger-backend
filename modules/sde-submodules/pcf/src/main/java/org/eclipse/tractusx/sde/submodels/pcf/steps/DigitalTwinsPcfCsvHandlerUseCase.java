@@ -97,10 +97,9 @@ public class DigitalTwinsPcfCsvHandlerUseCase extends Step {
 
 		if (subModelResponse == null || foundSubmodel == null) {
 			logDebug(String.format("No submodels for '%s'", shellId));
-			CreateSubModelRequest createSubModelRequest = digitalTwinsUtility
-					.getCreateSubModelRequest(pcfAspect.getShellId(), getsemanticIdOfModel(), 
-							getIdShortOfModel(), getNameOfModel(),
-							"productIds/" + pcfAspect.getProductId());
+			CreateSubModelRequest createSubModelRequest = digitalTwinsUtility.getCreateSubModelRequest(
+					pcfAspect.getShellId(), getsemanticIdOfModel(), getIdShortOfModel(), getNameOfModel(),
+					"productIds/" + pcfAspect.getProductId(), getSubmodelShortDescriptionOfModel());
 			digitalTwinsFacilitator.updateShellDetails(shellId, aasDescriptorRequest, createSubModelRequest);
 			pcfAspect.setSubModelId(createSubModelRequest.getId());
 		} else {

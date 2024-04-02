@@ -110,7 +110,8 @@ public class DigitalTwinsSingleLevelBoMAsPlannedHandlerStep extends Step {
 
 			CreateSubModelRequest createSubModelRequest = digitalTwinsUtility.getCreateSubModelRequest(
 					singleLevelBoMAsPlannedAspect.getShellId(), getsemanticIdOfModel(), getIdShortOfModel(),
-					getNameOfModel(), singleLevelBoMAsPlannedAspect.getParentUuid());
+					getNameOfModel(), singleLevelBoMAsPlannedAspect.getParentUuid(),
+					getSubmodelShortDescriptionOfModel());
 
 			digitalTwinsFacilitator.updateShellDetails(shellId, aasDescriptorRequest, createSubModelRequest);
 			singleLevelBoMAsPlannedAspect.setSubModelId(createSubModelRequest.getId());

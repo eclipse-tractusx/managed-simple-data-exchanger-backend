@@ -108,7 +108,8 @@ public class DigitalTwinsSingleLevelUsageAsBuiltCsvHandlerUseCase extends Step {
 			logDebug(String.format("No submodels for '%s'", shellId));
 			CreateSubModelRequest createSubModelRequest = digitalTwinsUtility.getCreateSubModelRequest(
 					aspectSingleLevelUsageAsBuilt.getShellId(), getsemanticIdOfModel(), getIdShortOfModel(),
-					getNameOfModel(), aspectSingleLevelUsageAsBuilt.getParentUuid());
+					getNameOfModel(), aspectSingleLevelUsageAsBuilt.getParentUuid(),
+					getSubmodelShortDescriptionOfModel());
 
 			digitalTwinsFacilitator.updateShellDetails(shellId, aasDescriptorRequest, createSubModelRequest);
 			aspectSingleLevelUsageAsBuilt.setSubModelId(createSubModelRequest.getId());

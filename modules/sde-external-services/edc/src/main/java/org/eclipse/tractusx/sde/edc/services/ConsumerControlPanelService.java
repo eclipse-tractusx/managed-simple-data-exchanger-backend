@@ -287,12 +287,9 @@ public class ConsumerControlPanelService {
 						Collectors.mapping(QueryDataOfferRequest::getAssetId, Collectors.toList())));
 		
 		return collect.entrySet().stream()
-				.map(entry -> {
-					return lookUpDTTwin.getEDCOffer(entry.getValue(), entry.getKey());
-				})
+				.map(entry -> lookUpDTTwin.getEDCOffer(entry.getValue(), entry.getKey()))
 				.flatMap(Collection::stream)
 				.toList();
-
 	}
 
 }

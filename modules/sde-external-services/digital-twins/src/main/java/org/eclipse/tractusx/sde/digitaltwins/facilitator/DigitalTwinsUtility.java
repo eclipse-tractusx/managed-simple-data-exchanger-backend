@@ -39,6 +39,7 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.common.ExternalSubjectId;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.KeyValuePair;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.Keys;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.LocalIdentifier;
+import org.eclipse.tractusx.sde.digitaltwins.entities.common.MultiLanguage;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.ProtocolInformation;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.SecurityAttributes;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.SemanticId;
@@ -95,14 +96,14 @@ public class DigitalTwinsUtility {
 	}
 	
 	@SneakyThrows
-	public CreateSubModelRequest getCreateSubModelRequest(String shellId, String sematicId, String idShortofModel, String submodel, String productIdPath) {
+	public CreateSubModelRequest getCreateSubModelRequest(String shellId, String sematicId, String idShortofModel, String submodel, String productIdPath, String description) {
 		String identification = UUIdGenerator.getUrnUuid();
-		return getCreateSubModelRequest(shellId, sematicId, idShortofModel, identification, submodel, productIdPath);
+		return getCreateSubModelRequest(shellId, sematicId, idShortofModel, identification, submodel, productIdPath, description);
 	}
 
 	@SneakyThrows
 	public CreateSubModelRequest getCreateSubModelRequest(String shellId, String sematicId,
-			String idShortofModel, String identification, String submodel, String productIdPath) {
+			String idShortofModel, String identification, String submodel, String productIdPath, String description) {
 
 		SemanticId semanticId = SemanticId.builder().type(CommonConstants.EXTERNAL_REFERENCE)
 				.keys(List.of(new Keys(CommonConstants.GLOBAL_REFERENCE, sematicId))).build();
@@ -111,9 +112,19 @@ public class DigitalTwinsUtility {
 			productIdPath = FORWARD_SLASH + submodel + FORWARD_SLASH + productIdPath;
 		
 		List<Endpoint> endpoints = prepareDtEndpoint(shellId, identification, productIdPath);
-
-		return CreateSubModelRequest.builder().idShort(idShortofModel).id(identification).semanticId(semanticId)
-				.endpoints(endpoints).build();
+		
+		MultiLanguage engLang= MultiLanguage.builder()
+				.language("en")
+				.text(description)
+				.build();
+		
+		return CreateSubModelRequest.builder()
+				.idShort(idShortofModel)
+				.id(identification)
+				.semanticId(semanticId)
+				.description(List.of(engLang))
+				.endpoints(endpoints)
+				.build();
 	}
 
 	public List<Endpoint> prepareDtEndpoint(String shellId, String submodelIdentification, String productIdPath) {
@@ -200,16 +211,6 @@ public class DigitalTwinsUtility {
 		List<String> assetIdsList = new ArrayList<>();
 		for (LocalIdentifier assetIds : request.getAssetIds()) {
 			assetIdsList.add(encodeValueAsBase64Utf8(assetIds.toJsonString()));
-		}
-		return assetIdsList;
-	}
-	
-	public List<String> encodeAssetIdsObjectOnlyPartInstanceId(ShellLookupRequest request) {
-
-		List<String> assetIdsList = new ArrayList<>();
-		for (LocalIdentifier assetIds : request.getAssetIds()) {
-			if (assetIds.getKey().equals("partInstanceId"))
-				assetIdsList.add(encodeValueAsBase64Utf8(assetIds.toJsonString()));
 		}
 		return assetIdsList;
 	}

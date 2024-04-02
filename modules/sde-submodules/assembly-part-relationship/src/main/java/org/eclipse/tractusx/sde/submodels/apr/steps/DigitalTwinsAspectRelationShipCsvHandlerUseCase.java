@@ -283,8 +283,8 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 			log.warn(aspectRelationShip.getRowNumber() + ", " + dtOfferUrl + ", No child aspect found for "
 					+ shellLookupRequest.toJsonString());
 		} else if (childshellIds.size() > 1) {
-			log.warn(String.format("Multiple shell id's found for childAspect %s, %s", dtOfferUrl,
-					shellLookupRequest.toJsonString()));
+			throw new CsvHandlerDigitalTwinUseCaseException(String.format(
+					"Multiple shell id's found for childAspect %s, %s", dtOfferUrl, shellLookupRequest.toJsonString()));
 		} else if (childshellIds.size() == 1) {
 
 			ShellDescriptorResponse shellDescriptorResponse = eDCDigitalTwinProxyForLookUp.getShellDescriptorByShellId(

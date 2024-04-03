@@ -61,7 +61,8 @@ public class EDCSingleLevelUsageAsBuiltHandlerUseCase extends Step {
 		try {
 
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
-					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getParentUuid());
+					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getParentUuid(),
+					getsemanticIdOfModel(), "");
 
 			Map<String, String> eDCAsset =null;
 			

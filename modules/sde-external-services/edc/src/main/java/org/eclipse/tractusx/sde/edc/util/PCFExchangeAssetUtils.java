@@ -21,6 +21,7 @@ package org.eclipse.tractusx.sde.edc.util;
 
 import java.util.List;
 
+import org.eclipse.tractusx.sde.edc.constants.EDCAssetConstant;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -38,7 +39,7 @@ public class PCFExchangeAssetUtils {
 	
 	@Cacheable(value = "bpn-pcfexchange", key = "#bpnNumber")
 	public List<QueryDataOfferModel> getPCFExchangeUrl(String bpnNumber) {
-		return edcAssetLookUp.getEDCAssetsByType(bpnNumber, "data.pcf.exchangeEndpoint");
+		return edcAssetLookUp.getEDCAssetsByType(bpnNumber, EDCAssetConstant.DATA_CORE_PCF_EXCHANGE_ENPOINT_TYPE);
 	}
 
 	@CacheEvict(value = "bpn-pcfexchange", key = "#bpnNumber")

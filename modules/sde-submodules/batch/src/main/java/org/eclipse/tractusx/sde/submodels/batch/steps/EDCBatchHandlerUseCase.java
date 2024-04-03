@@ -61,7 +61,8 @@ public class EDCBatchHandlerUseCase extends Step {
 		try {
 
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
-					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getUuid());
+					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getUuid(), getsemanticIdOfModel(),
+					"");
 
 			Map<String, String> eDCAsset = null;
 

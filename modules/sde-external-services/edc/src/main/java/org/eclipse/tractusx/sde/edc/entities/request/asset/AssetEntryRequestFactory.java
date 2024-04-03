@@ -79,7 +79,7 @@ public class AssetEntryRequestFactory {
         assetProperties.put(EDCAssetConstant.ASSET_PROP_ID, assetId);
 		assetProperties.put(EDCAssetConstant.ASSET_PROP_POLICYID, EDCAssetConstant.ASSET_PROP_POLICYID);
         assetProperties.put(EDCAssetConstant.ASSET_PROP_CONTENTTYPE, EDCAssetConstant.ASSET_PROP_CONTENT_TYPE);
-        assetProperties.put(EDCAssetConstant.ASSET_PROP_VERSION, EDCAssetConstant.ASSET_PROP_VERSION);
+        assetProperties.put(EDCAssetConstant.ASSET_PROP_VERSION, EDCAssetConstant.ASSET_PROP_VERSION_VALUE);
         assetProperties.put(EDCAssetConstant.RDFS_LABEL, assetName);
         assetProperties.put(EDCAssetConstant.RDFS_COMMENT, assetName);
         assetProperties.put(EDCAssetConstant.DCAT_VERSION, EDCAssetConstant.ASSET_PROP_TWIN_VERSION);

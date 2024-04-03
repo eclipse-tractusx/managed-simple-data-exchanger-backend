@@ -50,6 +50,7 @@ import lombok.extern.slf4j.Slf4j;
 @Profile("default")
 public class PCFExchangeAssetProvider {
 
+	private static final String REGISTRY_TYPE = "registryType";
 	private final AssetEntryRequestFactory assetFactory;
 	private final EDCGateway edcGateway;
 	private final CreateEDCAssetFacilator createEDCAssetFacilator;
@@ -63,15 +64,17 @@ public class PCFExchangeAssetProvider {
 	public void init() {
 
 		String assetId = UUIdGenerator.getUuid();
+		String sematicId = "urn:bamm:io.catenax.pcf:6.0.0#Pcf";
 		AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest("", "PCF Exchange endpoint information",
-				assetId, "1", "", "", EDCAssetConstant.DATA_CORE_PCF_EXCHANGE_ENPOINT_TYPE);
+				assetId, "1", "", sematicId, EDCAssetConstant.DATA_CORE_PCF_EXCHANGE_ENPOINT_TYPE);
 
 		String baseUrl = sdeHostname + "/pcf";
 		assetEntryRequest.getDataAddress().getProperties().put("baseUrl", baseUrl);
+		assetEntryRequest.getProperties().put(REGISTRY_TYPE, baseUrl);
 
 		Map<String, String> inputData = new HashMap<>();
 		inputData.put("baseUrl", baseUrl);
-		inputData.put("registryType", "pcfExchangeEndpoint");
+		inputData.put(REGISTRY_TYPE, REGISTRY_TYPE);
 		inputData.put("assetType", EDCAssetConstant.DATA_CORE_PCF_EXCHANGE_ENPOINT_TYPE);
 
 		ObjectNode requestBody = (ObjectNode) new ObjectMapper().readTree(valueReplacerUtility

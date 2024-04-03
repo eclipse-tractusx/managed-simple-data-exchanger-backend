@@ -40,7 +40,6 @@ public final class EDCAssetConstant {
 	public static final String DATA_CORE_PCF_EXCHANGE_ENPOINT_TYPE = "data.pcf.exchangeEndpoint";
 
 	public static final String CX_TAXO_PREFIX = "cx-taxo:";
-	public static final String ASSET_PREFIX = "";
 
 	public static final String DCT_TYPE = "dct:type";
 	public static final String AAS_SEMANTICS_SEMANTIC_ID = "aas-semantics:semanticId";
@@ -53,6 +52,10 @@ public final class EDCAssetConstant {
 	public static final String ASSET_PROP_VERSION_VALUE = "1.0.0";
 	public static final String TYPE = "HttpData";
 
+	
+	
+	public static final String ASSET_PREFIX = "edc:";
+	
 	private EDCAssetConstant() {
 	}
 }

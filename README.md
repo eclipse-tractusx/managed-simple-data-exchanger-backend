@@ -290,7 +290,8 @@ To find information about supported submodules and there version in SDE please v
 | **POST:- localhost:8080/api/connectors-discovery** |This API is used to fetch connectors information | Refer Api Doc |Refer Api Doc|
 
 ## Detailed API specs available under:
-https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/blob/main/modules/sde-core/src/main/resources/sde-open-api.yml
+
+/modules/sde-core/src/main/resources/sde-open-api.yml
 
 ## Backend API Swagger-ui : 
 https://<host-url>/backend/api/swagger-ui/index.html

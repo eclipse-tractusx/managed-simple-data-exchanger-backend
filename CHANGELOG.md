@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 - Added controller interface api's for Policy management.
+- Dependency workflow added.
 
 ## [2.3.6] - 2024-03-06
 ### Fixed

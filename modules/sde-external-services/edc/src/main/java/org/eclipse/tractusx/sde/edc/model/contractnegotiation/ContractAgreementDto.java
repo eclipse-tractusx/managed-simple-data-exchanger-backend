@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,6 +20,7 @@
 
 package org.eclipse.tractusx.sde.edc.model.contractnegotiation;
 
+import org.eclipse.tractusx.sde.edc.constants.EDCAssetConstant;
 import org.eclipse.tractusx.sde.edc.model.policies.PolicyDefinition;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -40,22 +41,22 @@ public class ContractAgreementDto {
 	@JsonProperty("@id")
 	private String id;
 
-	@JsonProperty("edc:providerId")
+	@JsonProperty(EDCAssetConstant.ASSET_PREFIX + "providerId")
 	private String providerAgentId;
 
-	@JsonProperty("edc:consumerId")
+	@JsonProperty(EDCAssetConstant.ASSET_PREFIX + "consumerId")
 	private String consumerAgentId;
 
-	@JsonProperty("edc:contractSigningDate")
+	@JsonProperty(EDCAssetConstant.ASSET_PREFIX + "contractSigningDate")
 	private long contractSigningDate;
 
 	private long contractStartDate;
 	private long contractEndDate;
 
-	@JsonProperty("edc:assetId")
+	@JsonProperty(EDCAssetConstant.ASSET_PREFIX + "assetId")
 	private String assetId;
 
-	@JsonProperty("edc:policy")
+	@JsonProperty(EDCAssetConstant.ASSET_PREFIX + "policy")
 	private PolicyDefinition policy;
 
 }

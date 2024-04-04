@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -25,14 +25,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.tractusx.sde.common.utils.UUIdGenerator;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PolicyRequestFactory {
 
 	public PolicyDefinitionRequest getPolicy(String assetId, ActionRequest action,
-			Map<String, String> extensibleProperties) {
+			Map<String, String> extensibleProperties, String type) {
 
 		List<PermissionRequest> permissions = getPermissions(assetId, action);
 
@@ -41,9 +40,16 @@ public class PolicyRequestFactory {
 				.obligations(new ArrayList<>())
 				.extensibleProperties(extensibleProperties)
 				.prohibitions(new ArrayList<>()).build();
-
+		
+		//Use submodel id to generate unique policy id for asset use policy type as prefix asset/usage
+		String submodelId = assetId;
+		if (assetId.indexOf("urn:uuid") != -1) {
+			submodelId = assetId.substring(assetId.indexOf("urn:uuid", 9));
+			submodelId =submodelId.replace("urn:uuid:", "");
+		}
+				
 		return PolicyDefinitionRequest.builder()
-				.id(UUIdGenerator.getUuid())
+				.id(type +"-"+ submodelId)
 				.policyRequest(policyRequest).build();
 	}
 

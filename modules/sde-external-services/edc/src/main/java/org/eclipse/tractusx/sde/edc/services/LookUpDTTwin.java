@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.KeyValuePair;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.MultiLanguage;
@@ -44,7 +45,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import feign.FeignException;
-import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -70,8 +70,8 @@ public class LookUpDTTwin {
 			"filterExpression": [
 				    {
 				        "operandLeft": "https://w3id.org/edc/v0.0.1/ns/id",
-				        "operator": "=",
-				        "operandRight": "%s"
+				        "operator": "in",
+				        "operandRight": ["%s"]
 				    }
 				]
 			""";
@@ -102,7 +102,7 @@ public class LookUpDTTwin {
 		ShellLookupRequest shellLookupRequest = getShellLookupRequest(manufacturerPartId, bpnNumber, submodel);
 		try {
 
-			String assetIds = digitalTwinsUtility.encodeAssetIdsObject(shellLookupRequest.toJsonString());
+			List<String> assetIds = digitalTwinsUtility.encodeAssetIdsObject(shellLookupRequest);
 
 			ShellLookupResponse shellLookup = eDCDigitalTwinProxyForLookUp.shellLookup(new URI(endpoint), assetIds,
 					header);
@@ -151,7 +151,7 @@ public class LookUpDTTwin {
 
 		for (String shellId : shellIds) {
 			ShellDescriptorResponse shellDescriptorResponse = eDCDigitalTwinProxyForLookUp.getShellDescriptorByShellId(
-					new URI(endpoint), digitalTwinsUtility.encodeShellIdBase64Utf8(shellId), header);
+					new URI(endpoint), digitalTwinsUtility.encodeValueAsBase64Utf8(shellId), header);
 			preapreSubmodelResult(submodel, queryOnDataOffers, shellDescriptorResponse);
 		}
 		return queryOnDataOffers;
@@ -188,8 +188,9 @@ public class LookUpDTTwin {
 			String[] assetInfo = edcInfo[0].split("=");
 			String[] connectorInfo = edcInfo[1].split("=");
 
-			QueryDataOfferModel edcOffer = getEDCOffer(assetInfo[1], connectorInfo[1]);
-
+			List<QueryDataOfferModel> edcOfferList = getEDCOffer(List.of(assetInfo[1]), connectorInfo[1]);
+			QueryDataOfferModel edcOffer = edcOfferList.isEmpty() ? null : edcOfferList.get(0);
+			
 			if (edcOffer != null) {
 				Optional<String> descriptionOptional = subModelResponse.getDescription().stream()
 						.filter(e -> e.getLanguage().contains("en")).map(MultiLanguage::getText).findFirst();
@@ -201,15 +202,20 @@ public class LookUpDTTwin {
 
 				String type = edcOffer.getType();
 
-				if (sematicId != null && sematicId.toLowerCase().contains("pcf"))
+				if (sematicId.toLowerCase().contains("pcf"))
 					type = "data.pcf.exchangeEndpoint";
 
-				QueryDataOfferModel qdm = QueryDataOfferModel.builder().connectorId(edcOffer.getConnectorId())
-						.publisher(manufacturerBPNId).manufacturerPartId(manufacturerPartId)
-						.connectorOfferUrl(connectorInfo[1]).offerId(edcOffer.getOfferId())
+				QueryDataOfferModel qdm = QueryDataOfferModel.builder()
+						.connectorId(edcOffer.getConnectorId())
+						.publisher(manufacturerBPNId)
+						.manufacturerPartId(manufacturerPartId)
+						.connectorOfferUrl(connectorInfo[1])
+						.offerId(edcOffer.getOfferId())
 						.assetId(assetInfo[1]).type(type)
 						.title(idShort + "_" + shellDescriptorResponse.getIdShort())
-						.created(edcOffer.getCreated()).description(description).policy(edcOffer.getPolicy())
+						.created(edcOffer.getCreated())
+						.description(description)
+						.policy(edcOffer.getPolicy())
 						.build();
 
 				queryOnDataOffers.add(qdm);
@@ -217,12 +223,11 @@ public class LookUpDTTwin {
 		}
 	}
 
-	public QueryDataOfferModel getEDCOffer(String assetId, String connectorOfferUrl) {
-		String filterExpression = String.format(filterExpressionTemplate, assetId);
-		List<QueryDataOfferModel> queryOnDataOffers = catalogResponseBuilder.queryOnDataOffers(connectorOfferUrl, 0, 10,
+	public List<QueryDataOfferModel> getEDCOffer(List<String> assetId, String connectorOfferUrl) {
+		String joinStr = StringUtils.join(assetId, "\",\"");
+		String filterExpression = String.format(filterExpressionTemplate, joinStr);
+		return catalogResponseBuilder.queryOnDataOffers(connectorOfferUrl, 0, 100,
 				filterExpression);
-		Optional<QueryDataOfferModel> findFirst = queryOnDataOffers.stream().findFirst();
-		return findFirst.isPresent() ? findFirst.get() : null;
 	}
 
 	private String getSpecificKeyFromList(ShellDescriptorResponse shellDescriptorResponse, String key) {

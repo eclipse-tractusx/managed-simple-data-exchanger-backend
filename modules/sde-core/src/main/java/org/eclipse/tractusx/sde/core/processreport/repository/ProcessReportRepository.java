@@ -1,8 +1,8 @@
 /********************************************************************************
  * Copyright (c) 2022 Critical TechWorks GmbH
  * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -23,8 +23,10 @@
 package org.eclipse.tractusx.sde.core.processreport.repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.tractusx.sde.common.enums.ProgressStatusEnum;
 import org.eclipse.tractusx.sde.core.processreport.entity.ProcessReportEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -35,7 +37,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface ProcessReportRepository extends JpaRepository<ProcessReportEntity, String> {
 
+    Optional<ProcessReportEntity> findByProcessIdAndStatus(String processId, ProgressStatusEnum status);
+
+    long countByProcessIdInAndStatus(List<String> processIdList, ProgressStatusEnum status);
+
+    List<ProcessReportEntity> findByProcessIdIn(List<String> processIds);
+
     Optional<ProcessReportEntity> findByProcessId(String processId);
+
+    List<ProcessReportEntity> findByStatus(ProgressStatusEnum status);
 
     @Modifying
     @Transactional

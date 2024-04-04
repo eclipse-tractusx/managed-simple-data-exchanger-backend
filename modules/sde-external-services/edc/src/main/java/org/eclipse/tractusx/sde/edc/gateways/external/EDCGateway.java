@@ -77,6 +77,17 @@ public class EDCGateway {
 			throw new EDCGatewayException(e.getMessage());
 		}
 	}
+	
+	public void updateAsset(AssetEntryRequest request) {
+		try {
+			edcFeignClientApi.updateAsset(request);
+		} catch (FeignException e) {
+			if (e.status() == HttpStatus.CONFLICT.value()) {
+				throw new EDCGatewayException("Asset already exists");
+			}
+			throw new EDCGatewayException(e.getMessage());
+		}
+	}
 
 	@SneakyThrows
 	public JsonNode createPolicyDefinition(JsonNode request) {
@@ -86,10 +97,27 @@ public class EDCGateway {
 			throw new EDCGatewayException(e.getMessage());
 		}
 	}
+	
+	@SneakyThrows
+	public void updatePolicyDefinition(String policyUUId, JsonNode request) {
+		try {
+			edcFeignClientApi.updatePolicy(policyUUId, request);
+		} catch (FeignException e) {
+			throw new EDCGatewayException(e.getMessage());
+		}
+	}
 
 	public String createContractDefinition(ContractDefinitionRequest request) {
 		try {
 			return edcFeignClientApi.createContractDefination(request);
+		} catch (FeignException e) {
+			throw new EDCGatewayException(e.getMessage());
+		}
+	}
+	
+	public void updateContractDefinition(ContractDefinitionRequest request) {
+		try {
+			edcFeignClientApi.updateContractDefination(request);
 		} catch (FeignException e) {
 			throw new EDCGatewayException(e.getMessage());
 		}

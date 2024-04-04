@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.utils.PolicyOperationUtil;
@@ -37,6 +38,7 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.common.Endpoint;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.ExternalSubjectId;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.KeyValuePair;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.Keys;
+import org.eclipse.tractusx.sde.digitaltwins.entities.common.LocalIdentifier;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.ProtocolInformation;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.SecurityAttributes;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.SemanticId;
@@ -56,6 +58,8 @@ import lombok.SneakyThrows;
 @Component
 @Getter
 public class DigitalTwinsUtility {
+
+	private static final String FORWARD_SLASH = "/";
 
 	private static final String PUBLIC_READABLE = "PUBLIC_READABLE";
 
@@ -78,7 +82,7 @@ public class DigitalTwinsUtility {
 			String uuid, Map<String, String> specificIdentifiers, PolicyModel policy) {
 
 		return ShellDescriptorRequest.builder()
-				.idShort(String.format("%s_%s_%s", nameAtManufacturer, manufacturerId, manufacturerPartId))
+				.idShort(resizeShortId(String.format("%s_%s_%s", nameAtManufacturer, manufacturerId, manufacturerPartId)))
 				.globalAssetId(uuid)
 				.specificAssetIds(getSpecificAssetIds(specificIdentifiers, policy))
 				.description(List.of())
@@ -86,36 +90,38 @@ public class DigitalTwinsUtility {
 				.build();
 	}
 
+	private String resizeShortId(String str) {
+		return str.length() > 128 ? str.substring(0, 126) : str;
+	}
+	
 	@SneakyThrows
-	public CreateSubModelRequest getCreateSubModelRequest(String shellId, String sematicId, String idShortofModel) {
+	public CreateSubModelRequest getCreateSubModelRequest(String shellId, String sematicId, String idShortofModel, String submodel, String productIdPath) {
 		String identification = UUIdGenerator.getUrnUuid();
-
-		SemanticId semanticId = SemanticId.builder().type(CommonConstants.EXTERNAL_REFERENCE)
-				.keys(List.of(new Keys(CommonConstants.GLOBAL_REFERENCE, sematicId))).build();
-
-		List<Endpoint> endpoints = prepareDtEndpoint(shellId, identification);
-
-		return CreateSubModelRequest.builder().id(identification).idShort(idShortofModel).semanticId(semanticId)
-				.endpoints(endpoints).build();
+		return getCreateSubModelRequest(shellId, sematicId, idShortofModel, identification, submodel, productIdPath);
 	}
 
 	@SneakyThrows
-	public CreateSubModelRequest getCreateSubModelRequestForChild(String shellId, String sematicId,
-			String idShortofModel, String identification) {
+	public CreateSubModelRequest getCreateSubModelRequest(String shellId, String sematicId,
+			String idShortofModel, String identification, String submodel, String productIdPath) {
 
 		SemanticId semanticId = SemanticId.builder().type(CommonConstants.EXTERNAL_REFERENCE)
 				.keys(List.of(new Keys(CommonConstants.GLOBAL_REFERENCE, sematicId))).build();
 
-		List<Endpoint> endpoints = prepareDtEndpoint(shellId, identification);
+		if (StringUtils.isNotBlank(productIdPath))
+			productIdPath = FORWARD_SLASH + submodel + FORWARD_SLASH + productIdPath;
+		
+		List<Endpoint> endpoints = prepareDtEndpoint(shellId, identification, productIdPath);
 
 		return CreateSubModelRequest.builder().idShort(idShortofModel).id(identification).semanticId(semanticId)
 				.endpoints(endpoints).build();
 	}
 
-	public List<Endpoint> prepareDtEndpoint(String shellId, String submodelIdentification) {
+	public List<Endpoint> prepareDtEndpoint(String shellId, String submodelIdentification, String productIdPath) {
+		
 		List<Endpoint> endpoints = new ArrayList<>();
 		endpoints.add(Endpoint.builder().endpointInterface(CommonConstants.INTERFACE)
-				.protocolInformation(ProtocolInformation.builder().endpointAddress(digitalTwinEdcDataplaneEndpoint)
+				.protocolInformation(ProtocolInformation.builder()
+						.endpointAddress(digitalTwinEdcDataplaneEndpoint + productIdPath)
 						.endpointProtocol(CommonConstants.HTTP)
 						.endpointProtocolVersion(List.of(CommonConstants.ENDPOINT_PROTOCOL_VERSION))
 						.subProtocol(CommonConstants.SUB_PROTOCOL)
@@ -168,7 +174,6 @@ public class DigitalTwinsUtility {
 		return Collections.emptyList();
 	}
 
-
 	@SneakyThrows
 	private List<String> getFieldFromJsonNodeArray(JsonNode jsonNode, String fieldName) {
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -190,13 +195,27 @@ public class DigitalTwinsUtility {
 		return shellLookupRequest;
 	}
 
-	public String encodeAssetIdsObject(String assetIdsList) {
+	public List<String> encodeAssetIdsObject(ShellLookupRequest request) {
 
-		return encodeShellIdBase64Utf8(assetIdsList.replace("[", "").replace("]", ""));
+		List<String> assetIdsList = new ArrayList<>();
+		for (LocalIdentifier assetIds : request.getAssetIds()) {
+			assetIdsList.add(encodeValueAsBase64Utf8(assetIds.toJsonString()));
+		}
+		return assetIdsList;
+	}
+	
+	public List<String> encodeAssetIdsObjectOnlyPartInstanceId(ShellLookupRequest request) {
+
+		List<String> assetIdsList = new ArrayList<>();
+		for (LocalIdentifier assetIds : request.getAssetIds()) {
+			if (assetIds.getKey().equals("partInstanceId"))
+				assetIdsList.add(encodeValueAsBase64Utf8(assetIds.toJsonString()));
+		}
+		return assetIdsList;
 	}
 
-	public String encodeShellIdBase64Utf8(String shellId) {
-		return Base64.getUrlEncoder().encodeToString(shellId.getBytes());
+	public String encodeValueAsBase64Utf8(String string) {
+		return Base64.getUrlEncoder().encodeToString(string.getBytes());
 	}
 
 }

@@ -62,7 +62,7 @@ public class AssetEntryRequestFactory {
     private AssetEntryRequest buildAsset(String submodel, String shellId, String subModelId, String assetName, String uuid) {
         String assetId = shellId + "-" + subModelId;
         
-        HashMap<String, String> assetProperties = getAssetProperties(assetId, assetName);
+        HashMap<String, Object> assetProperties = getAssetProperties(assetId, assetName);
 
         String uriString = subModelPayloadUrl(submodel, uuid);
 
@@ -84,8 +84,8 @@ public class AssetEntryRequestFactory {
                  .toUriString();
 	}
 
-	private HashMap<String, String> getAssetProperties(String assetId, String assetName) {
-        HashMap<String, String> assetProperties = new HashMap<>();
+	private HashMap<String, Object> getAssetProperties(String assetId, String assetName) {
+        HashMap<String, Object> assetProperties = new HashMap<>();
         LocalDateTime d = LocalDateTime.now();
         String date = d.format(DateTimeFormatter.ofPattern(DATE_FORMATTER));
         assetProperties.put(EDCAssetConstant.ASSET_PROP_ID, assetId);
@@ -97,6 +97,7 @@ public class AssetEntryRequestFactory {
         assetProperties.put(EDCAssetConstant.ASSET_PROP_VERSION, ASSET_PROP_VERSION);
         assetProperties.put(EDCAssetConstant.ASSET_PROP_CREATED, date);
         assetProperties.put(EDCAssetConstant.ASSET_PROP_MODIFIED, date);
+        
         return assetProperties;
     }
 

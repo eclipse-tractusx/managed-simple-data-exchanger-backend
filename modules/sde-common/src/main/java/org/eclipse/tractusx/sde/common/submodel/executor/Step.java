@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -36,6 +36,10 @@ public abstract class Step {
 		this.submodelSchema = submodelSchema;
 	}
 
+	public String getNameOfModel() {
+		return submodelSchema.get("id").getAsString();
+	}
+	
 	public JsonObject getSubmodelItems() {
 		return submodelSchema.get("items").getAsJsonObject();
 	}

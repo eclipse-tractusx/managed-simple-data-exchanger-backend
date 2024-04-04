@@ -69,7 +69,7 @@ public class DigitalTwinsBatchCsvHandlerUseCase extends Step {
 
 		String shellId;
 		ShellDescriptorRequest aasDescriptorRequest = digitalTwinsUtility.getShellDescriptorRequest(
-				batch.getNameAtManufacturer(), batch.getManufacturerPartId(), batch.getUuid(),
+				batch.getNameAtManufacturer()+"_"+batch.getPartInstanceId(), batch.getManufacturerPartId(), batch.getUuid(),
 				getSpecificAssetIds(batch), policy);
 
 		if (shellIds.isEmpty()) {
@@ -99,8 +99,8 @@ public class DigitalTwinsBatchCsvHandlerUseCase extends Step {
 
 		if (subModelResponse == null || foundSubmodel == null) {
 			logDebug(String.format("No submodels for '%s'", shellId));
-			CreateSubModelRequest createSubModelRequest = digitalTwinsUtility
-					.getCreateSubModelRequest(batch.getShellId(), getsemanticIdOfModel(), getIdShortOfModel());
+			CreateSubModelRequest createSubModelRequest = digitalTwinsUtility.getCreateSubModelRequest(
+					batch.getShellId(), getsemanticIdOfModel(), getIdShortOfModel(), getNameOfModel(), batch.getUuid());
 			digitalTwinsFacilitator.updateShellDetails(shellId, aasDescriptorRequest, createSubModelRequest);
 			batch.setSubModelId(createSubModelRequest.getId());
 		} else {

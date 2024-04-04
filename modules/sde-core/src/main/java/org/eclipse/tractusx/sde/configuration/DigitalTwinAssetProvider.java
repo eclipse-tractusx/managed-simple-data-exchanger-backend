@@ -30,6 +30,7 @@ import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.utils.UUIdGenerator;
 import org.eclipse.tractusx.sde.core.properties.SdeCommonProperties;
 import org.eclipse.tractusx.sde.core.utils.ValueReplacerUtility;
+import org.eclipse.tractusx.sde.edc.constants.EDCAssetConstant;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequestFactory;
 import org.eclipse.tractusx.sde.edc.facilitator.CreateEDCAssetFacilator;
@@ -73,12 +74,12 @@ public class DigitalTwinAssetProvider {
 	private void create(String registryType, String registryAPI) throws JsonProcessingException {
 		
 		String assetId = UUIdGenerator.getUuid();
-		AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest("", "Digital twin registry information",
-				assetId, "1", "");
+
+		AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest("", "Digital twin registry information", assetId, "1", "", "",
+				EDCAssetConstant.DATA_CORE_DIGITAL_TWIN_REGISTRY_TYPE);
 
 		String baseUrl = sdeCommonProperties.getDigitalTwinRegistry() + registryAPI;
 		
-		assetEntryRequest.getProperties().put("type", "data.core.digitalTwinRegistry");
 		assetEntryRequest.getProperties().put(registryType, baseUrl);
 
 		assetEntryRequest.getDataAddress().getProperties().put("baseUrl", baseUrl);
@@ -102,8 +103,9 @@ public class DigitalTwinAssetProvider {
 		}
 
 		Map<String, String> inputData = new HashMap<>();
-		inputData.put("digitalTwinRegistry", baseUrl);
+		inputData.put("baseUrl", baseUrl);
 		inputData.put("registryType", registryType);
+		inputData.put("assetType", EDCAssetConstant.DATA_CORE_DIGITAL_TWIN_REGISTRY_TYPE);
 
 		ObjectNode requestBody = (ObjectNode) new ObjectMapper().readTree(valueReplacerUtility
 				.valueReplacerUsingFileTemplate("/edc_request_template/edc_asset_lookup.json", inputData));

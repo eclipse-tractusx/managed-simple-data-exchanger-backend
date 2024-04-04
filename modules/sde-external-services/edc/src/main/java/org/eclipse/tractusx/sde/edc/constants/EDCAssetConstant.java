@@ -31,11 +31,31 @@ public final class EDCAssetConstant {
 	public static final String ASSET_PROP_VERSION = "version";
 	public static final String ASSET_PROP_CONTENTTYPE = "contenttype";
 	public static final String ASSET_PROP_FILENAME = "fileName";
-	public static final String ASSET_PROP_TYPE ="type";
-	public static final String ASSET_PROP_POLICYID ="policy-id";
+	public static final String ASSET_PROP_TYPE = "type";
+	public static final String ASSET_PROP_POLICYID = "policy-id";
+	public static final String ASSET_PROP_TWIN_VERSION = "1.0.0";
+
+	public static final String ASSET_PROP_TYPE_VALUE = "data.core.digitalTwin.submodel";
+	public static final String DATA_CORE_DIGITAL_TWIN_REGISTRY_TYPE = "data.core.digitalTwinRegistry";
+	public static final String DATA_CORE_PCF_EXCHANGE_ENPOINT_TYPE = "data.pcf.exchangeEndpoint";
+
+	public static final String CX_TAXO_PREFIX = "cx-taxo:";
+
+	public static final String DCT_TYPE = "dct:type";
+	public static final String AAS_SEMANTICS_SEMANTIC_ID = "aas-semantics:semanticId";
+	public static final String CX_COMMON_VERSION = "cx-common:version";
+	public static final String DCAT_VERSION = "dcat:version";
+	public static final String RDFS_COMMENT = "rdfs:comment";
+	public static final String RDFS_LABEL = "rdfs:label";
+	public static final String ASSET_PROP_CONTENT_TYPE = "application/json";
+
+	public static final String ASSET_PROP_VERSION_VALUE = "1.0.0";
+	public static final String TYPE = "HttpData";
+
 	
 	
-	public static final String ASSET_PREFIX="";
+	public static final String ASSET_PREFIX = "edc:";
 	
-	private EDCAssetConstant() {}
+	private EDCAssetConstant() {
+	}
 }

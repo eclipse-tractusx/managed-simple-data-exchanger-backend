@@ -20,11 +20,14 @@
 
 package org.eclipse.tractusx.sde.configuration;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.utils.UUIdGenerator;
+import org.eclipse.tractusx.sde.core.utils.ValueReplacerUtility;
+import org.eclipse.tractusx.sde.edc.constants.EDCAssetConstant;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequestFactory;
 import org.eclipse.tractusx.sde.edc.facilitator.CreateEDCAssetFacilator;
@@ -47,44 +50,36 @@ import lombok.extern.slf4j.Slf4j;
 @Profile("default")
 public class PCFExchangeAssetProvider {
 
+	private static final String REGISTRY_TYPE = "registryType";
 	private final AssetEntryRequestFactory assetFactory;
 	private final EDCGateway edcGateway;
 	private final CreateEDCAssetFacilator createEDCAssetFacilator;
+	private final ValueReplacerUtility valueReplacerUtility;
 
 	@Value("${dft.hostname}")
 	private String sdeHostname;
-
-	private static String assetFilterRequest = """
-			{
-				    "@context": {
-				        "edc": "https://w3id.org/edc/v0.0.1/ns/"
-				    },
-				    "@type": "QuerySpec",
-				    "offset": 0,
-				    "limit": 10,
-				    "sortOrder": "DESC",
-				    "sortField": "id",
-				    "filterExpression": [
-				        {
-				            "edc:operandLeft": "https://w3id.org/edc/v0.0.1/ns/type",
-				            "edc:operator": "=",
-				            "edc:operandRight": "data.pcf.exchangeEndpoint"
-				        }
-				    ]
-				}
-			""";
 
 	@PostConstruct
 	@SneakyThrows
 	public void init() {
 
 		String assetId = UUIdGenerator.getUuid();
+		String sematicId = "urn:bamm:io.catenax.pcf:6.0.0#Pcf";
 		AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest("", "PCF Exchange endpoint information",
-				assetId, "1", "");
+				assetId, "1", "", sematicId, EDCAssetConstant.DATA_CORE_PCF_EXCHANGE_ENPOINT_TYPE);
 
-		assetEntryRequest.getProperties().put("type", "data.pcf.exchangeEndpoint");
-		assetEntryRequest.getDataAddress().getProperties().put("baseUrl", sdeHostname+"/pcf");
-		ObjectNode requestBody = (ObjectNode) new ObjectMapper().readTree(assetFilterRequest);
+		String baseUrl = sdeHostname + "/pcf";
+		assetEntryRequest.getDataAddress().getProperties().put("baseUrl", baseUrl);
+		assetEntryRequest.getProperties().put(REGISTRY_TYPE, baseUrl);
+
+		Map<String, String> inputData = new HashMap<>();
+		inputData.put("baseUrl", baseUrl);
+		inputData.put(REGISTRY_TYPE, REGISTRY_TYPE);
+		inputData.put("assetType", EDCAssetConstant.DATA_CORE_PCF_EXCHANGE_ENPOINT_TYPE);
+
+		ObjectNode requestBody = (ObjectNode) new ObjectMapper().readTree(valueReplacerUtility
+				.valueReplacerUsingFileTemplate("/edc_request_template/edc_asset_lookup.json", inputData));
+
 
 		if (!edcGateway.assetExistsLookupBasedOnType(requestBody)) {
 			

@@ -45,7 +45,7 @@ public class EDCPcfHandlerUseCase extends Step {
 	private final AssetEntryRequestFactory assetFactory;
 	private final EDCGateway edcGateway;
 	private final CreateEDCAssetFacilator createEDCAssetFacilator;
-	private static final String ASSET_PROP_VERSION = "1.0.0";
+
 
 	@Value(value = "${dft.hostname}")
 	private String dftHostname;
@@ -58,17 +58,9 @@ public class EDCPcfHandlerUseCase extends Step {
 		try {
 
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
-					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getId());
+					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getId(), getsemanticIdOfModel(),
+					"");
 
-				 
-			 assetEntryRequest.getProperties().put("rdfs:label", getSubmodelShortDescriptionOfModel());
-			 assetEntryRequest.getProperties().put("rdfs:comment", getSubmodelShortDescriptionOfModel());
-			 assetEntryRequest.getProperties().put("dcat:version", ASSET_PROP_VERSION);
-			 assetEntryRequest.getProperties().put("cx-common:version", ASSET_PROP_VERSION);
-			 assetEntryRequest.getProperties().put("aas-semantics:semanticId",Map.of("@id", getsemanticIdOfModel()));
-			 assetEntryRequest.getProperties().put("dct:type", Map.of("@id", "cx-taxo:PcfExchange"));
-		        
-			 
 			String baseURL = UriComponentsBuilder.fromHttpUrl(dftHostname).path("/pcf/productIds/")
 					.path(input.getProductId())
 					.toUriString();

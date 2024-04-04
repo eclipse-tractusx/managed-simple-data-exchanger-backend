@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2024 T-Systems International GmbH
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -18,27 +18,21 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.core.processreport.entity;
+package org.eclipse.tractusx.sde.core.policy.entity;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import org.eclipse.tractusx.sde.common.entities.PolicyTemplateRequest;
+import org.eclipse.tractusx.sde.common.entities.SubmodelJsonRequest;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
+import org.mapstruct.Mapper;
 
-import jakarta.persistence.AttributeConverter;
-import jakarta.persistence.Converter;
+@Mapper(componentModel = "spring")
+public interface PolicyMapper {
 
+	PolicyModel mapFrom(PolicyEntity entiry);
 
-@Converter
-public class ListToStringConverter implements AttributeConverter<List<String>, String> {
+	PolicyEntity mapFrom(PolicyModel pojo);
 	
-    @Override
-    public String convertToDatabaseColumn(List<String> attribute) {
-        return attribute == null ? null : String.join(",",attribute);
-    }
-
-    @Override
-    public List<String> convertToEntityAttribute(String dbData) {
-        return dbData == null ? Collections.emptyList() : Arrays.asList(dbData.split(","));
-    }
-    
+	PolicyModel mapFrom(PolicyTemplateRequest request);
+	
+	PolicyTemplateRequest mapFrom(SubmodelJsonRequest request);
 }

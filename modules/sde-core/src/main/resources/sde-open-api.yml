@@ -1,6 +1,6 @@
 #********************************************************************************
-# Copyright (c) 2024 T-Systems International GmbH
-# Copyright (c) 2024 Contributors to the Eclipse Foundation
+# Copyright (c) 2023, 2024 T-Systems International GmbH
+# Copyright (c) 2023, 2024 Contributors to the Eclipse Foundation
 #
 # See the NOTICE file(s) distributed with this work for additional
 # information regarding copyright ownership.
@@ -22,14 +22,143 @@ openapi: 3.0.1
 info:
   title: DFT/SDE API information
   description: This Service handles all DFT data provider and consumer operations
-  version: '1.0'
+  version: "1.0"
 servers:
-  - url: http://localhost:8080/api
+  - url: https://dft-api.int.demo.catena-x.net/api
     description: Generated server url
 security:
   - bearerAuth: []
 paths:
-  /{submodel}/upload:
+  "/policy/{uuid}":
+    get:
+      tags:
+        - policy-controller
+      operationId: getPolicy
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/PolicyModel"
+    put:
+      tags:
+        - policy-controller
+      operationId: updatePolicy
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PolicyModel"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/PolicyModel"
+    delete:
+      tags:
+        - policy-controller
+      operationId: deletePolicy
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: object
+  "/pcf/productIds/{productId}":
+    get:
+      tags:
+        - pcf-exchange-controller
+      operationId: getPcfByProduct
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: BPN
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: requestId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: message
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: object
+    put:
+      tags:
+        - pcf-exchange-controller
+      operationId: uploadPcfSubmodel
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: BPN
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: requestId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: message
+          in: query
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JsonNode"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: object
+  "/{submodel}/upload":
     post:
       tags:
         - submodel-process-controller
@@ -57,13 +186,13 @@ paths:
                   type: string
                   format: binary
       responses:
-        '200':
+        "200":
           description: OK
           content:
-            '*/*':
+            "*/*":
               schema:
-                type: string
-  /{submodel}/manualentry:
+                type: object
+  "/{submodel}/manualentry":
     post:
       tags:
         - submodel-process-controller
@@ -78,15 +207,38 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SubmodelJsonRequest'
+              $ref: "#/components/schemas/SubmodelJsonRequest"
         required: true
       responses:
-        '200':
+        "200":
           description: OK
           content:
-            '*/*':
+            "*/*":
               schema:
-                type: string
+                type: object
+  /upload:
+    post:
+      tags:
+        - submodel-process-controller
+      operationId: autoUpload
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+                - file
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: object
   /subscribe-download-data-offers:
     post:
       tags:
@@ -96,10 +248,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ConsumerRequest'
+              $ref: "#/components/schemas/ConsumerRequest"
         required: true
       responses:
-        '200':
+        "200":
           description: OK
   /subscribe-download-data-offers-async:
     post:
@@ -110,13 +262,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ConsumerRequest'
+              $ref: "#/components/schemas/ConsumerRequest"
         required: true
       responses:
-        '200':
+        "200":
           description: OK
           content:
-            '*/*':
+            "*/*":
               schema:
                 type: object
   /subscribe-data-offers:
@@ -128,13 +280,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ConsumerRequest'
+              $ref: "#/components/schemas/ConsumerRequest"
         required: true
       responses:
-        '200':
+        "200":
           description: OK
           content:
-            '*/*':
+            "*/*":
               schema:
                 type: object
   /role:
@@ -146,16 +298,16 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RolePojo'
+              $ref: "#/components/schemas/RolePojo"
         required: true
       responses:
-        '200':
+        "200":
           description: OK
           content:
-            '*/*':
+            "*/*":
               schema:
-                $ref: '#/components/schemas/RolePojo'
-  /role/{role}/permissions:
+                $ref: "#/components/schemas/RolePojo"
+  "/role/{role}/permissions":
     get:
       tags:
         - role-management-controller
@@ -167,10 +319,10 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: OK
           content:
-            '*/*':
+            "*/*":
               schema:
                 type: array
                 maxItems: 100
@@ -196,12 +348,56 @@ paths:
                 type: string
         required: true
       responses:
-        '200':
+        "200":
           description: OK
           content:
-            '*/*':
+            "*/*":
               schema:
-                type: string
+                type: object
+                additionalProperties:
+                  type: string
+  /policy:
+    get:
+      tags:
+        - policy-controller
+      operationId: getAllPolicies
+      parameters:
+        - name: page
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/PagingResponse"
+    post:
+      tags:
+        - policy-controller
+      operationId: savePolicy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PolicyModel"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/PolicyModel"
   /policy-hub/policy-content:
     get:
       tags:
@@ -234,12 +430,12 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: OK
           content:
-            '*/*':
+            "*/*":
               schema:
-                $ref: '#/components/schemas/JsonNode'
+                $ref: "#/components/schemas/JsonNode"
     post:
       tags:
         - policy-hub-controller
@@ -248,15 +444,96 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PolicyContentRequest'
+              $ref: "#/components/schemas/PolicyContentRequest"
       responses:
-        '200':
+        "200":
           description: OK
           content:
-            '*/*':
+            "*/*":
               schema:
-                $ref: '#/components/schemas/JsonNode'
-  /contract-agreements/{negotiationId}/provider/decline:
+                $ref: "#/components/schemas/JsonNode"
+  "/pcf/request/{productId}":
+    post:
+      tags:
+        - pcf-exchange-controller
+      operationId: requestForPcfDataOffer
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConsumerRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: object
+  /pcf/request/nonexistdataoffer:
+    post:
+      tags:
+        - pcf-exchange-controller
+      operationId: requestForPcfNotExistDataOffer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PcfRequestModel"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: object
+  /pcf/actionsonrequest:
+    post:
+      tags:
+        - pcf-exchange-controller
+      operationId: actionOnPcfRequestAndSendNotificationToConsumer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PcfRequestModel"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: object
+  /offer-policy-details:
+    post:
+      tags:
+        - consumer-controller
+      operationId: getEDCPolicy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              maxItems: 100
+              items:
+                $ref: "#/components/schemas/QueryDataOfferRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: object
+  "/contract-agreements/{negotiationId}/provider/decline":
     post:
       tags:
         - contract-management-controller
@@ -268,13 +545,13 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 type: object
-  /contract-agreements/{negotiationId}/provider/cancel:
+  "/contract-agreements/{negotiationId}/provider/cancel":
     post:
       tags:
         - contract-management-controller
@@ -286,13 +563,13 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 type: object
-  /contract-agreements/{negotiationId}/consumer/cancel:
+  "/contract-agreements/{negotiationId}/consumer/cancel":
     post:
       tags:
         - contract-management-controller
@@ -304,7 +581,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
@@ -325,16 +602,16 @@ paths:
                 type: string
         required: true
       responses:
-        '200':
+        "200":
           description: OK
           content:
-            '*/*':
+            "*/*":
               schema:
                 type: array
                 maxItems: 100
                 items:
-                  $ref: '#/components/schemas/ConnectorInfo'
-  /{submodel}/public/{uuid}:
+                  $ref: "#/components/schemas/ConnectorInfo"
+  "/{submodel}/public/{uuid}":
     get:
       tags:
         - submodel-process-controller
@@ -357,10 +634,10 @@ paths:
             type: string
             default: json
       responses:
-        '200':
+        "200":
           description: OK
           content:
-            '*/*':
+            "*/*":
               schema:
                 type: object
                 additionalProperties:
@@ -384,13 +661,13 @@ paths:
             type: integer
             format: int32
       responses:
-        '200':
+        "200":
           description: OK
           content:
-            '*/*':
+            "*/*":
               schema:
                 type: object
-  /view-download-history/{processId}:
+  "/view-download-history/{processId}":
     get:
       tags:
         - consumer-controller
@@ -402,10 +679,10 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: OK
           content:
-            '*/*':
+            "*/*":
               schema:
                 type: object
   /user/role/permissions:
@@ -414,10 +691,10 @@ paths:
         - role-management-controller
       operationId: getAllRolePermissions
       responses:
-        '200':
+        "200":
           description: OK
           content:
-            '*/*':
+            "*/*":
               schema:
                 type: array
                 maxItems: 100
@@ -429,10 +706,10 @@ paths:
         - submodel-controller
       operationId: getAllUsecases
       responses:
-        '200':
+        "200":
           description: OK
           content:
-            '*/*':
+            "*/*":
               schema:
                 type: array
                 maxItems: 100
@@ -440,7 +717,7 @@ paths:
                   type: object
                   additionalProperties:
                     type: object
-  /unified-bpn-validation/{bpn}:
+  "/unified-bpn-validation/{bpn}":
     get:
       tags:
         - portal-proxy-controller
@@ -452,12 +729,12 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: OK
           content:
-            '*/*':
+            "*/*":
               schema:
-                $ref: '#/components/schemas/UnifiedBpnValidationResponse'
+                $ref: "#/components/schemas/UnifiedBpnValidationResponse"
   /submodels:
     get:
       tags:
@@ -473,10 +750,10 @@ paths:
             items:
               type: string
       responses:
-        '200':
+        "200":
           description: OK
           content:
-            '*/*':
+            "*/*":
               schema:
                 type: array
                 maxItems: 100
@@ -484,7 +761,7 @@ paths:
                   type: object
                   additionalProperties:
                     type: string
-  /submodels/{submodelName}:
+  "/submodels/{submodelName}":
     get:
       tags:
         - submodel-controller
@@ -496,10 +773,10 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: OK
           content:
-            '*/*':
+            "*/*":
               schema:
                 type: object
                 additionalProperties:
@@ -519,10 +796,10 @@ paths:
             items:
               type: string
       responses:
-        '200':
+        "200":
           description: OK
           content:
-            '*/*':
+            "*/*":
               schema:
                 type: array
                 maxItems: 100
@@ -564,10 +841,10 @@ paths:
             type: integer
             format: int32
       responses:
-        '200':
+        "200":
           description: OK
           content:
-            '*/*':
+            "*/*":
               schema:
                 type: object
   /processing-report:
@@ -589,13 +866,13 @@ paths:
             type: integer
             format: int32
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProcessReportPageResponse'
-  /processing-report/{submodel}/success-details/{id}:
+                $ref: "#/components/schemas/ProcessReportPageResponse"
+  "/processing-report/{submodel}/success-details/{id}":
     get:
       tags:
         - process-report-controller
@@ -612,7 +889,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
@@ -624,7 +901,7 @@ paths:
                   maxItems: 100
                   items:
                     type: string
-  /processing-report/{id}:
+  "/processing-report/{id}":
     get:
       tags:
         - process-report-controller
@@ -636,13 +913,13 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProcessReport'
-  /processing-report/failure-details/{id}:
+                $ref: "#/components/schemas/ProcessReport"
+  "/processing-report/failure-details/{id}":
     get:
       tags:
         - process-report-controller
@@ -654,7 +931,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
@@ -662,7 +939,27 @@ paths:
                 type: array
                 maxItems: 100
                 items:
-                  $ref: '#/components/schemas/ProcessFailureDetails'
+                  $ref: "#/components/schemas/ProcessFailureDetails"
+  /policy/is-policy-name-valid:
+    get:
+      tags:
+        - policy-controller
+      operationId: isPolicyNameValid
+      parameters:
+        - name: policyName
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: object
+                additionalProperties:
+                  type: boolean
   /policy-hub/policy-types:
     get:
       tags:
@@ -680,25 +977,25 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: OK
           content:
-            '*/*':
+            "*/*":
               schema:
                 type: array
                 maxItems: 100
                 items:
-                  $ref: '#/components/schemas/PolicyTypeResponse'
+                  $ref: "#/components/schemas/PolicyTypeResponse"
   /policy-hub/policy-attributes:
     get:
       tags:
         - policy-hub-controller
       operationId: policyAttributes
       responses:
-        '200':
+        "200":
           description: OK
           content:
-            '*/*':
+            "*/*":
               schema:
                 type: array
                 maxItems: 100
@@ -710,12 +1007,83 @@ paths:
         - ping-controller
       operationId: getProcessReportById_1
       responses:
-        '200':
+        "200":
           description: OK
           content:
-            '*/*':
+            "*/*":
               schema:
                 type: string
+  "/pcf/{type}/requests":
+    get:
+      tags:
+        - pcf-exchange-controller
+      operationId: getPcfProviderData
+      parameters:
+        - name: type
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - CONSUMER
+              - PROVIDER
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - REQUESTED
+              - APPROVED
+              - PUSHING_DATA
+              - PUSHING_UPDATED_DATA
+              - REJECTED
+              - SENDING_REJECT_NOTIFICATION
+              - PUSHED
+              - PUSHED_UPDATED_DATA
+              - RECEIVED
+              - FAILED_TO_PUSH_DATA
+              - FAILED_TO_SEND_REJECT_NOTIFICATION
+              - FAILED
+              - SENDING_REQUEST
+              - PENDING_DATA_FROM_PROVIDER
+        - name: page
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: object
+  "/pcf/request/{requestId}":
+    get:
+      tags:
+        - pcf-exchange-controller
+      operationId: viewForPcfDataOffer
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: object
   /legal-entities:
     get:
       tags:
@@ -740,36 +1108,15 @@ paths:
             type: integer
             format: int32
       responses:
-        '200':
+        "200":
           description: OK
           content:
-            '*/*':
+            "*/*":
               schema:
                 type: array
                 maxItems: 100
                 items:
-                  $ref: '#/components/schemas/LegalEntityResponse'
-  /getEDCPolicy:
-    get:
-      tags:
-        - consumer-controller
-      operationId: getEDCPolicy
-      parameters:
-        - name: queryDataOfferRequest
-          in: query
-          required: true
-          schema:
-            type: array
-            maxItems: 100
-            items:
-              $ref: '#/components/schemas/QueryDataOfferRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            '*/*':
-              schema:
-                type: object
+                  $ref: "#/components/schemas/LegalEntityResponse"
   /download-data-offers:
     get:
       tags:
@@ -788,9 +1135,9 @@ paths:
             type: string
             default: csv
       responses:
-        '200':
+        "200":
           description: OK
-  /contract-agreements/{negotiationId}/consumer/decline:
+  "/contract-agreements/{negotiationId}/consumer/decline":
     get:
       tags:
         - contract-management-controller
@@ -802,7 +1149,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
@@ -827,7 +1174,7 @@ paths:
             type: integer
             format: int32
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
@@ -852,7 +1199,7 @@ paths:
             type: integer
             format: int32
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
@@ -864,10 +1211,10 @@ paths:
         - ping-controller
       operationId: clearBpnnumberCache
       responses:
-        '200':
+        "200":
           description: OK
           content:
-            '*/*':
+            "*/*":
               schema:
                 type: string
   /cache/clear-ddtrurl:
@@ -876,13 +1223,13 @@ paths:
         - ping-controller
       operationId: clearDdtrurlCache
       responses:
-        '200':
+        "200":
           description: OK
           content:
-            '*/*':
+            "*/*":
               schema:
                 type: string
-  /{submodel}/delete/{processId}:
+  "/{submodel}/delete/{processId}":
     delete:
       tags:
         - submodel-process-controller
@@ -899,15 +1246,13 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 type: object
-                additionalProperties:
-                  type: string
-  /role/{role}:
+  "/role/{role}":
     delete:
       tags:
         - role-management-controller
@@ -919,7 +1264,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: OK
 components:
   schemas:
@@ -933,6 +1278,28 @@ components:
           maxItems: 100
           items:
             type: string
+    PolicyModel:
+      type: object
+      properties:
+        uuid:
+          type: string
+        lastUpdatedTime:
+          type: string
+          format: date-time
+        policy_name:
+          type: string
+        Access:
+          type: array
+          maxItems: 100
+          items:
+            $ref: "#/components/schemas/Policies"
+        Usage:
+          type: array
+          maxItems: 100
+          items:
+            $ref: "#/components/schemas/Policies"
+    JsonNode:
+      type: object
     SubmodelJsonRequest:
       required:
         - row_data
@@ -951,16 +1318,16 @@ components:
             - NEW
         policy_name:
           type: string
-        access_policies:
+        Access:
           type: array
           maxItems: 100
           items:
-            $ref: '#/components/schemas/Policies'
-        usage_policies:
+            $ref: "#/components/schemas/Policies"
+        Usage:
           type: array
           maxItems: 100
           items:
-            $ref: '#/components/schemas/Policies'
+            $ref: "#/components/schemas/Policies"
         row_data:
           type: array
           maxItems: 100
@@ -976,14 +1343,14 @@ components:
           type: array
           maxItems: 100
           items:
-            $ref: '#/components/schemas/Offer'
+            $ref: "#/components/schemas/Offer"
         downloadDataAs:
           type: string
         usage_policies:
           type: array
           maxItems: 100
           items:
-            $ref: '#/components/schemas/Policies'
+            $ref: "#/components/schemas/Policies"
     Offer:
       required:
         - assetId
@@ -1049,9 +1416,60 @@ components:
           type: array
           maxItems: 100
           items:
-            $ref: '#/components/schemas/Constraint'
-    JsonNode:
+            $ref: "#/components/schemas/Constraint"
+    PcfRequestModel:
+      required:
+        - bpnNumber
+        - productId
       type: object
+      properties:
+        requestId:
+          type: string
+        productId:
+          type: string
+        bpnNumber:
+          type: string
+        type:
+          type: string
+          enum:
+            - CONSUMER
+            - PROVIDER
+        message:
+          type: string
+        remark:
+          type: string
+        status:
+          type: string
+          enum:
+            - REQUESTED
+            - APPROVED
+            - PUSHING_DATA
+            - PUSHING_UPDATED_DATA
+            - REJECTED
+            - SENDING_REJECT_NOTIFICATION
+            - PUSHED
+            - PUSHED_UPDATED_DATA
+            - RECEIVED
+            - FAILED_TO_PUSH_DATA
+            - FAILED_TO_SEND_REJECT_NOTIFICATION
+            - FAILED
+            - SENDING_REQUEST
+            - PENDING_DATA_FROM_PROVIDER
+        requestedTime:
+          type: integer
+          format: int64
+        lastUpdatedTime:
+          type: integer
+          format: int64
+    QueryDataOfferRequest:
+      type: object
+      properties:
+        assetId:
+          type: string
+        connectorOfferUrl:
+          type: string
+        policy:
+          $ref: "#/components/schemas/PolicyModel"
     ConnectorInfo:
       type: object
       properties:
@@ -1108,12 +1526,12 @@ components:
           type: array
           maxItems: 100
           items:
-            $ref: '#/components/schemas/Policies'
+            $ref: "#/components/schemas/Policies"
         usagePolicies:
           type: array
           maxItems: 100
           items:
-            $ref: '#/components/schemas/Policies'
+            $ref: "#/components/schemas/Policies"
         numberOfUpdatedItems:
           type: integer
           format: int32
@@ -1138,7 +1556,7 @@ components:
           type: array
           maxItems: 100
           items:
-            $ref: '#/components/schemas/ProcessReport'
+            $ref: "#/components/schemas/ProcessReport"
     ProcessFailureDetails:
       type: object
       properties:
@@ -1151,6 +1569,20 @@ components:
         dateTime:
           type: string
           format: date-time
+    PagingResponse:
+      type: object
+      properties:
+        page:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+        totalItems:
+          type: integer
+          format: int64
+        items:
+          type: object
     PolicyAttributeResponse:
       type: object
       properties:
@@ -1179,7 +1611,7 @@ components:
           type: array
           maxItems: 100
           items:
-            $ref: '#/components/schemas/PolicyAttributeResponse'
+            $ref: "#/components/schemas/PolicyAttributeResponse"
         technicalEnforced:
           type: boolean
     LegalEntityResponse:
@@ -1189,35 +1621,6 @@ components:
           type: string
         bpn:
           type: string
-    PolicyModel:
-      type: object
-      properties:
-        uuid:
-          type: string
-        lastUpdatedTime:
-          type: string
-          format: date-time
-        policy_name:
-          type: string
-        access_policies:
-          type: array
-          maxItems: 100
-          items:
-            $ref: '#/components/schemas/Policies'
-        usage_policies:
-          type: array
-          maxItems: 100
-          items:
-            $ref: '#/components/schemas/Policies'
-    QueryDataOfferRequest:
-      type: object
-      properties:
-        assetId:
-          type: string
-        connectorOfferUrl:
-          type: string
-        policy:
-          $ref: '#/components/schemas/PolicyModel'
   securitySchemes:
     bearerAuth:
       type: http

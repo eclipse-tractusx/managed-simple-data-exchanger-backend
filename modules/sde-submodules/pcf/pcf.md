@@ -5,9 +5,9 @@
 This module use for PCF submodel specification and descriptors. It's contain the codes related to PCF to validate, parse and transfer data for DigitalTwins and EDC to create aspect twins and data offer.
 
 ---
-#### Version: 4.0.1
-#### PCF Aspect Model URN: urn:bamm:io.catenax.pcf:4.0.1#Pcf
-#### Semantic Id: urn:bamm:io.catenax.pcf:4.0.1
+#### Version: 6.0.0
+#### PCF Aspect Model URN: urn:bamm:io.catenax.pcf:6.0.0#Pcf
+#### Semantic Id: urn:bamm:io.catenax.pcf:6.0.0
 ---
 
 ### Schema
@@ -82,8 +82,9 @@ Please find below links for schema details:
 | extTFS_distributionStageLuGhgEmissions				| Yes							    |	 60		|
 | carbonContentTotal    								| Yes 							    | 	 61	   	|
 | extWBCSD_fossilCarbonContent  	    				| No                            	| 	 62	  	|
-| carbonContentBiogenic 		      					| Yes                           	| 	 63	  	|
-| assetLifeCyclePhase		 							| Yes                               |    64	 	|
+| distributionStageAircraftGhgEmissions					| No								|	 63		|
+| carbonContentBiogenic 		      					| Yes                           	| 	 64	  	|
+| assetLifeCyclePhase		 							| Yes                               |    65	 	|
 
 
 #### [CSV Sample File Link]

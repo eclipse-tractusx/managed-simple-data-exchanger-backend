@@ -15,7 +15,7 @@ Currently SDE supports below submodels.
 #### [singleLevelBoMAsPlanned in Version 1.0.1]
 #### [partSiteInformationAsPlanned in Version 1.0.0]
 #### [SingleLevelUsageAsBuilt in Version 1.0.1]
-#### [Product Carbon Footprint(PCF) in Version 4.0.1]
+#### [Product Carbon Footprint(PCF) in Version 6.0.0]
 
 ### How we can add Submodels?
 
@@ -43,4 +43,4 @@ Once your maven module ready just do the clean build and install so submodel wil
 [singleLevelBoMAsPlanned in Version 1.0.1]: single-level-bom-as-planned/single-level-bom-as-planned.md
 [partSiteInformationAsPlanned in Version 1.0.0]: part-site-information-as-planned/part-site-information-as-planned.md
 [SingleLevelUsageAsBuilt in Version 1.0.1]: single-level-usage-as-built/single-level-usage-as-built.md
-[Product Carbon Footprint(PCF) in Version 4.0.1]: pcf/pcf.md
+[Product Carbon Footprint(PCF) in Version 6.0.0]: pcf/pcf.md

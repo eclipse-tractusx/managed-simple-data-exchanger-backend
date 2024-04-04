@@ -209,7 +209,7 @@
 				<plugin>
 					<groupId>org.eclipse.dash</groupId>
 					<artifactId>license-tool-plugin</artifactId>
-					<version>1.0.2</version>
+					<version>1.0.3-SNAPSHOT</version>
 					<configuration>
 						<projectId>automotive.tractusx</projectId>
 						<!-- name of dependencies file -->
@@ -230,22 +230,6 @@
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
 				</plugin>
-				 <plugin>
-                <groupId>org.eclipse.dash</groupId>
-                <artifactId>license-tool-plugin</artifactId>
-                <version>1.0.3-SNAPSHOT</version>
-                <executions>
-                    <execution>
-                        <id>license-check</id>
-                        <goals>
-                            <goal>license-check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <summary>DEPENDENCIES</summary>
-                </configuration>
-            </plugin>
 			</plugins>
 		</pluginManagement>
     <resources>

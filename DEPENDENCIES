@@ -114,7 +114,7 @@ maven/mavencentral/org.aspectj/aspectjweaver/1.9.19, Apache-2.0 AND BSD-3-Clause
 maven/mavencentral/org.aspectj/aspectjweaver/1.9.20.1, Apache-2.0 AND BSD-3-Clause AND EPL-1.0 AND BSD-3-Clause AND Apache-1.1, approved, #7695
 maven/mavencentral/org.aspectj/aspectjweaver/1.9.21, Apache-2.0 AND BSD-3-Clause AND EPL-1.0 AND BSD-3-Clause AND Apache-1.1, approved, #7695
 maven/mavencentral/org.assertj/assertj-core/3.24.2, Apache-2.0, approved, #6161
-maven/mavencentral/org.awaitility/awaitility/4.2.0, Apache-2.0, approved, clearlydefined
+maven/mavencentral/org.awaitility/awaitility/4.2.0, Apache-2.0, approved, #14178
 maven/mavencentral/org.bouncycastle/bcpkix-jdk15on/1.69, MIT, approved, clearlydefined
 maven/mavencentral/org.bouncycastle/bcprov-jdk15on/1.69, MIT, approved, clearlydefined
 maven/mavencentral/org.bouncycastle/bcprov-jdk18on/1.77, MIT AND CC0-1.0, approved, #11595
@@ -131,6 +131,7 @@ maven/mavencentral/org.eclipse.tractusx/digital-twins/0.0.1, Apache-2.0, approve
 maven/mavencentral/org.eclipse.tractusx/edc/0.0.1, Apache-2.0, approved, automotive.tractusx
 maven/mavencentral/org.eclipse.tractusx/part-as-planned/0.0.1, Apache-2.0, approved, automotive.tractusx
 maven/mavencentral/org.eclipse.tractusx/part-site-information-as-planned/0.0.1, Apache-2.0, approved, automotive.tractusx
+maven/mavencentral/org.eclipse.tractusx/pcf-exchange/0.0.1, Apache-2.0, approved, automotive.tractusx
 maven/mavencentral/org.eclipse.tractusx/pcf/0.0.1, Apache-2.0, approved, automotive.tractusx
 maven/mavencentral/org.eclipse.tractusx/policy-hub/0.0.1, Apache-2.0, approved, automotive.tractusx
 maven/mavencentral/org.eclipse.tractusx/portal/0.0.1, Apache-2.0, approved, automotive.tractusx
@@ -193,7 +194,7 @@ maven/mavencentral/org.springframework.boot/spring-boot-autoconfigure/3.1.6, Apa
 maven/mavencentral/org.springframework.boot/spring-boot-autoconfigure/3.2.3, Apache-2.0, approved, #11751
 maven/mavencentral/org.springframework.boot/spring-boot-devtools/3.1.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.springframework.boot/spring-boot-devtools/3.1.6, Apache-2.0, approved, clearlydefined
-maven/mavencentral/org.springframework.boot/spring-boot-devtools/3.2.3, , restricted, clearlydefined
+maven/mavencentral/org.springframework.boot/spring-boot-devtools/3.2.3, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.springframework.boot/spring-boot-starter-aop/3.1.0, Apache-2.0, approved, #9338
 maven/mavencentral/org.springframework.boot/spring-boot-starter-aop/3.1.6, Apache-2.0, approved, #9338
 maven/mavencentral/org.springframework.boot/spring-boot-starter-aop/3.2.3, Apache-2.0, approved, #11928

@@ -11,7 +11,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - EDC asset update refactored in supported submodels.
 - Support for pcf v6.0.0 submodel.
 
-
 ## [2.3.6] - 2024-03-06
 ### Fixed
 - open api fix in sde-open-api.yml.

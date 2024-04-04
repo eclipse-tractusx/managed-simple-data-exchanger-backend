@@ -1,6 +1,6 @@
 #********************************************************************************
-# Copyright (c) 2023, 2024 T-Systems International GmbH
-# Copyright (c) 2023, 2024 Contributors to the Eclipse Foundation
+# Copyright (c) 2024 T-Systems International GmbH
+# Copyright (c) 2024 Contributors to the Eclipse Foundation
 #
 # See the NOTICE file(s) distributed with this work for additional
 # information regarding copyright ownership.
@@ -24,7 +24,7 @@ info:
   description: This Service handles all DFT data provider and consumer operations
   version: "1.0"
 servers:
-  - url: https://dft-api.int.demo.catena-x.net/api
+  - url: http://localhost:8080/api
     description: Generated server url
 security:
   - bearerAuth: []

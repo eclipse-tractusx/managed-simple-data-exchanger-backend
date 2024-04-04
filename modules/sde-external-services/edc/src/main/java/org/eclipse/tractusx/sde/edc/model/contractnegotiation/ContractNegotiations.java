@@ -50,12 +50,12 @@ public class ContractNegotiations {
 	@Builder.Default
 	private String type = "NegotiationInitiateRequestDto";
 
-	@JsonProperty("counterPartyAddress")
+	//@JsonProperty("counterPartyAddress")
 	private String connectorAddress;
 
 	private String protocol;
 
-	@JsonProperty("counterPartyId")
+	//@JsonProperty("counterPartyId")
 	private String connectorId;
 
 	private String providerId;

@@ -253,7 +253,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 			header.put("Edc-Bpn", aspectRelationShip.getChildManufacturerId());
 
 			ShellLookupResponse shellLookup = eDCDigitalTwinProxyForLookUp.shellLookup(new URI(endpoint),
-					digitalTwinsUtility.encodeAssetIdsObject(shellLookupRequest), header);
+					digitalTwinsUtility.encodeAssetIdsObjectOnlyPartInstanceId(shellLookupRequest), header);
 
 			childUUID = getChildSubmodelDetails(shellLookupRequest, endpoint, header, aspectRelationShip, dtOfferUrl,
 					shellLookup.getResult());

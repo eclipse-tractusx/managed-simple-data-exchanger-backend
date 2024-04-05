@@ -36,7 +36,7 @@ updates:
 
     # Maintain dependencies for Docker
   - package-ecosystem: "docker"
-    directory: "./build/"
+    directory: "/"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5

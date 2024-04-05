@@ -291,7 +291,7 @@ To find information about supported submodules and there version in SDE please v
 
 ## Detailed API specs available under:
 
-/modules/sde-core/src/main/resources/sde-open-api.yml
+- [SDE-OPEN-API](src/main/resources/sde-open-api.yml)
 
 ## Backend API Swagger-ui : 
 https://<host-url>/backend/api/swagger-ui/index.html

@@ -54,7 +54,7 @@ public final class EDCAssetConstant {
 
 	
 	
-	public static final String ASSET_PREFIX = "edc:";
+	public static final String ASSET_PREFIX = "";
 	
 	private EDCAssetConstant() {
 	}

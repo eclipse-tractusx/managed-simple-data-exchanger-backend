@@ -50,12 +50,12 @@ public class DeleteEDCFacilitator extends AbstractEDCStepsHelper {
 			deleteContractDefination(contractDefination.get("@id").asText());
 			deleteAccessPolicy(contractDefination.get("edc:accessPolicyId").asText());
 			deleteUsagePolicy(contractDefination.get("edc:contractPolicyId").asText());
+			deleteAssets(assetId);
 
 		} catch (Exception e) {
 			parseExceptionMessage(e);
 		}
 		
-		deleteAssets(assetId);
 	}
 
 	@SneakyThrows

@@ -31,7 +31,7 @@ RUN mvn clean install
 
 # our final base image
 
-FROM eclipse-temurin:17.0.10_7-jdk-focal
+FROM eclipse-temurin:19.0.2_7-jdk-focal
 
 ARG USERNAME=sdeuser
 ARG USER_UID=1001

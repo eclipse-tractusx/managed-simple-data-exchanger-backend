@@ -8,7 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added controller interface api's for Policy management.
 - External EDC service interface api updated.
 - Updated supported sub-model implementation classes.
-- Dependency workflow added.
+- EDC asset update refactored in supported submodels.
+- Support for pcf v6.0.0 submodel.
 
 ## [2.3.6] - 2024-03-06
 ### Fixed

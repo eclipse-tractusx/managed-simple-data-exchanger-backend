@@ -25,17 +25,15 @@ import java.util.Map;
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
-import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequestFactory;
 import org.eclipse.tractusx.sde.edc.facilitator.CreateEDCAssetFacilator;
 import org.eclipse.tractusx.sde.edc.gateways.external.EDCGateway;
-import org.eclipse.tractusx.sde.submodels.pcf.entity.PcfEntity;
 import org.eclipse.tractusx.sde.submodels.pcf.model.PcfAspect;
-import org.eclipse.tractusx.sde.submodels.pcf.service.PcfService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -47,7 +45,7 @@ public class EDCPcfHandlerUseCase extends Step {
 	private final AssetEntryRequestFactory assetFactory;
 	private final EDCGateway edcGateway;
 	private final CreateEDCAssetFacilator createEDCAssetFacilator;
-	private final PcfService aspectService;
+	private static final String ASSET_PROP_VERSION = "1.0.0";
 
 	@Value(value = "${dft.hostname}")
 	private String dftHostname;
@@ -61,46 +59,40 @@ public class EDCPcfHandlerUseCase extends Step {
 
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
 					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getId());
-			
+
+				 
+			 assetEntryRequest.getProperties().put("rdfs:label", getSubmodelShortDescriptionOfModel());
+			 assetEntryRequest.getProperties().put("rdfs:comment", getSubmodelShortDescriptionOfModel());
+			 assetEntryRequest.getProperties().put("dcat:version", ASSET_PROP_VERSION);
+			 assetEntryRequest.getProperties().put("cx-common:version", ASSET_PROP_VERSION);
+			 assetEntryRequest.getProperties().put("aas-semantics:semanticId",Map.of("@id", getsemanticIdOfModel()));
+			 assetEntryRequest.getProperties().put("dct:type", Map.of("@id", "cx-taxo:PcfExchange"));
+		        
+			 
+			String baseURL = UriComponentsBuilder.fromHttpUrl(dftHostname).path("/pcf/productIds/")
+					.path(input.getProductId())
+					.toUriString();
+
+			assetEntryRequest.getDataAddress().getProperties().put("baseUrl", baseURL);
+
+			Map<String, String> eDCAsset = null;
+
 			if (!edcGateway.assetExistsLookup(assetEntryRequest.getId())) {
-
-				edcProcessingforAspect(assetEntryRequest, input, policy);
-
+				eDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest, policy);
 			} else {
-
-				deleteEDCFirstForUpdate(submodel, input, processId);
-				edcProcessingforAspect(assetEntryRequest, input, policy);
+				eDCAsset = createEDCAssetFacilator.updateEDCAsset(assetEntryRequest, policy);
 				input.setUpdated(CommonConstants.UPDATED_Y);
 			}
+
+			// EDC transaction information for DB
+			input.setAssetId(eDCAsset.get("assetId"));
+			input.setAccessPolicyId(eDCAsset.get("accessPolicyId"));
+			input.setUsagePolicyId(eDCAsset.get("usagePolicyId"));
+			input.setContractDefinationId(eDCAsset.get("contractDefinitionId"));
 
 			return input;
 		} catch (Exception e) {
 			throw new CsvHandlerUseCaseException(input.getRowNumber(), "EDC: " + e.getMessage());
 		}
 	}
-
-	@SneakyThrows
-	private void deleteEDCFirstForUpdate(String submodel, PcfAspect input, String processId) {
-		try {
-			PcfEntity entity = aspectService.readEntity(input.getId());
-			aspectService.deleteEDCAsset(entity);
-		} catch (Exception e) {
-			if (!e.getMessage().contains("404 Not Found")) {
-				throw new ServiceException("Unable to delete EDC offer for update: " + e.getMessage());
-			}
-		}
-	}
-
-	@SneakyThrows
-	private void edcProcessingforAspect(AssetEntryRequest assetEntryRequest, PcfAspect input, PolicyModel policy) {
-
-		Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest, policy);
-
-		// EDC transaction information for DB
-		input.setAssetId(assetEntryRequest.getId());
-		input.setAccessPolicyId(createEDCAsset.get("accessPolicyId"));
-		input.setUsagePolicyId(createEDCAsset.get("usagePolicyId"));
-		input.setContractDefinationId(createEDCAsset.get("contractDefinitionId"));
-	}
-
 }

@@ -145,9 +145,7 @@ public abstract class PcfMapper {
 		
 		PcfSubmodelResponse build=PcfSubmodelResponse.builder()
 				.specVersion(entity.getSpecVersion())
-				.companyIds(List.of(CompanyIds.builder()
-						.companyId(entity.getCompanyId())
-						.build()))
+				.companyIds(List.of(entity.getCompanyId()))
 				.extWBCSDProductCodeCpc(entity.getExtWBCSDProductCodeCpc())
 				.created(entity.getCreated())
 				.companyName(entity.getCompanyName())
@@ -156,10 +154,7 @@ public abstract class PcfMapper {
 				.productName(entity.getProductName())
 				.pcf(pcfResponse)
 				.partialFullPcf(entity.getPartialFullPcf())
-				.productIds(List.of(ProductIds.builder()
-						.productId(entity.getProductId())
-						.build()))
-				
+				.productIds(List.of(entity.getProductId()))
 				.validityPeriodStart(entity.getValidityPeriodStart())
 				.comment(entity.getComment())
 				.id(entity.getId())

@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
+import org.eclipse.tractusx.sde.common.utils.LogUtil;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ActionRequest;
 import org.eclipse.tractusx.sde.edc.enums.Type;
 import org.eclipse.tractusx.sde.edc.facilitator.AbstractEDCStepsHelper;
@@ -70,20 +71,20 @@ public class ContractNegotiationService  extends AbstractEDCStepsHelper {
 		if (checkContractNegotiationStatus == null) {
 			String contractAgreementId = checkandGetContractAgreementId(assetId);
 			if (StringUtils.isBlank(contractAgreementId)) {
-				log.info("The EDR process was not completed, no 'NEGOTIATED' EDR status found "
-						+ "and not valid contract agreementId for " + assetId + ", so initiating EDR process");
+				log.info(LogUtil.encode("The EDR process was not completed, no 'NEGOTIATED' EDR status found "
+						+ "and not valid contract agreementId for " + assetId + ", so initiating EDR process"));
 				edrRequestHelper.edrRequestInitiate(recipientURL, connectorId, offer.getOfferId(), assetId, action,
 						extensibleProperty);
 				checkContractNegotiationStatus = verifyEDRRequestStatus(assetId);
 			} else {
-				log.info("There is valid contract agreement exist for " + assetId
-						+ ", so ignoring EDR process initiation");
+				log.info(LogUtil.encode("There is valid contract agreement exist for " + assetId
+						+ ", so ignoring EDR process initiation"));
 				checkContractNegotiationStatus = EDRCachedResponse.builder().agreementId(contractAgreementId)
 						.assetId(assetId).build();
 			}
 		} else {
-			log.info("There was EDR process initiated " + assetId
-					+ ", so ignoring EDR process initiation, going to check EDR status only");
+			log.info(LogUtil.encode("There was EDR process initiated " + assetId
+					+ ", so ignoring EDR process initiation, going to check EDR status only"));
 			if (!NEGOTIATED.equals(checkContractNegotiationStatus.getEdrState()))
 				checkContractNegotiationStatus = verifyEDRRequestStatus(assetId);
 		}
@@ -145,8 +146,8 @@ public class ContractNegotiationService  extends AbstractEDCStepsHelper {
 				if (eDRCachedResponse != null && eDRCachedResponse.getEdrState() != null)
 					edrStatus = eDRCachedResponse.getEdrState();
 
-				log.info("Verifying 'NEGOTIATED' EDC EDR status to download data for '" + assetId
-						+ "', The current status is '" + edrStatus + "', Attempt " + counter);
+				log.info(LogUtil.encode("Verifying 'NEGOTIATED' EDC EDR status to download data for '" + assetId
+						+ "', The current status is '" + edrStatus + "', Attempt " + counter));
 				counter++;
 			} while (counter <= RETRY && !NEGOTIATED.equals(edrStatus));
 
@@ -162,16 +163,16 @@ public class ContractNegotiationService  extends AbstractEDCStepsHelper {
 		} catch (FeignException e) {
 			log.error("RequestBody: " + e.request());
 			String errorMsg = "FeignExceptionton for asset " + assetId + "," + e.contentUTF8();
-			log.error("Response: " + errorMsg);
+			log.error(LogUtil.encode("Response: " + errorMsg));
 			throw new ServiceException(errorMsg);
 		} catch (InterruptedException ie) {
 			Thread.currentThread().interrupt();
 			String errorMsg = "InterruptedException for asset " + assetId + "," + ie.getMessage();
-			log.error(errorMsg);
+			log.error(LogUtil.encode(errorMsg));
 			throw new ServiceException(errorMsg);
 		} catch (Exception e) {
 			String errorMsg = "Exception for asset " + assetId + "," + e.getMessage();
-			log.error(errorMsg);
+			log.error(LogUtil.encode(errorMsg));
 			throw new ServiceException(errorMsg);
 		}
 		return eDRCachedResponse;

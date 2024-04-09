@@ -45,12 +45,12 @@ public class PolicyConstraintBuilderService {
 
 	public JsonNode getAccessPolicy(String assetId, PolicyModel policy) {
 		return jsonobjectMapper.objectToJsonNode(policyRequestFactory.getPolicy(assetId,
-				getPoliciesConstraints(policy.getAccessPolicies(), "odrl:or"), Collections.emptyMap()));
+				getPoliciesConstraints(policy.getAccessPolicies(), "odrl:or"), Collections.emptyMap(), "a"));
 	}
 
 	public JsonNode getUsagePolicy(String assetId, PolicyModel policy) {
 		return jsonobjectMapper.objectToJsonNode(policyRequestFactory.getPolicy(assetId,
-				getPoliciesConstraints(policy.getUsagePolicies(), "odrl:and"), Collections.emptyMap()));
+				getPoliciesConstraints(policy.getUsagePolicies(), "odrl:and"), Collections.emptyMap(), "u"));
 	}
 
 	public ActionRequest getUsagePoliciesConstraints(List<Policies> policies) {
@@ -81,6 +81,11 @@ public class PolicyConstraintBuilderService {
 		String operator = "odrl:eq";
 		for (String value : policy.getValue()) {
 			if (StringUtils.isNotBlank(value)) {
+				
+				if(policy.getTechnicalKey().contains("FrameworkAgreement")) {
+					value="active";
+				}
+				
 				ConstraintRequest request = ConstraintRequest.builder()
 						.leftOperand(policy.getTechnicalKey())
 						.operator(Operator.builder().id(operator).build())

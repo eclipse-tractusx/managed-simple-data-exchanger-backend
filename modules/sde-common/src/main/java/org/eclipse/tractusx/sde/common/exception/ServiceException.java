@@ -20,6 +20,8 @@
 
 package org.eclipse.tractusx.sde.common.exception;
 
+import org.eclipse.tractusx.sde.common.utils.LogUtil;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -32,6 +34,6 @@ public class ServiceException extends Exception {
 
 	public ServiceException(String exceptionstr) {
 		super(exceptionstr);
-		log.info(exceptionstr);
+		log.info(LogUtil.encode(exceptionstr));
 	}
 }

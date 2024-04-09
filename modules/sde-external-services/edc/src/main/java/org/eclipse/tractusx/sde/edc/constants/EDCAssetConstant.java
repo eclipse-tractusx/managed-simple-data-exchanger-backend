@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -34,6 +34,8 @@ public final class EDCAssetConstant {
 	public static final String ASSET_PROP_TYPE ="type";
 	public static final String ASSET_PROP_POLICYID ="policy-id";
 	
+	
+	public static final String ASSET_PREFIX="";
 	
 	private EDCAssetConstant() {}
 }

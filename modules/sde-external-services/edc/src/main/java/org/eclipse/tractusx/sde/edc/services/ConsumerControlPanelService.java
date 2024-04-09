@@ -22,6 +22,7 @@ package org.eclipse.tractusx.sde.edc.services;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.bpndiscovery.handler.BpnDiscoveryProxyService;
@@ -47,6 +49,7 @@ import org.eclipse.tractusx.sde.edc.model.contractnegotiation.ContractNegotiatio
 import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedByIdResponse;
 import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedResponse;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
+import org.eclipse.tractusx.sde.edc.model.request.Offer;
 import org.eclipse.tractusx.sde.edc.model.request.QueryDataOfferRequest;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.eclipse.tractusx.sde.edc.util.EDCAssetUrlCacheService;
@@ -81,7 +84,7 @@ public class ConsumerControlPanelService {
 	public List<QueryDataOfferModel> queryOnDataOffers(String manufacturerPartId, String searchBpnNumber,
 			String submodel, Integer offset, Integer limit) {
 
-		List<QueryDataOfferModel> queryOnDataOffers =new ArrayList<>();
+		List<QueryDataOfferModel> queryOnDataOffers = new ArrayList<>();
 		List<String> bpnList = null;
 
 		// 1 find bpn if empty using BPN discovery
@@ -100,7 +103,6 @@ public class ConsumerControlPanelService {
 			bpnList = List.of(searchBpnNumber);
 		}
 
-
 		for (String bpnNumber : bpnList) {
 
 			// 2 fetch EDC connectors and DTR Assets from EDC connectors
@@ -112,11 +114,11 @@ public class ConsumerControlPanelService {
 				EDRCachedByIdResponse edrToken = edcAssetUrlCacheService.verifyAndGetToken(bpnNumber, dtOffer);
 				if (edrToken != null) {
 
-					queryOnDataOffers.addAll(lookUpDTTwin.lookUpTwin(edrToken, dtOffer, manufacturerPartId,
-							bpnNumber, submodel, offset, limit));
-					
+					queryOnDataOffers.addAll(lookUpDTTwin.lookUpTwin(edrToken, dtOffer, manufacturerPartId, bpnNumber,
+							submodel, offset, limit));
+
 				} else {
-					log.warn("EDR token is null, unable to look Up Twin");
+					log.warn("EDR token is null, unable to look Up Digital Twin for :" + dtOffer.toString());
 				}
 			}
 		}
@@ -137,8 +139,7 @@ public class ConsumerControlPanelService {
 		consumerRequest.getOffers().parallelStream().forEach(offer -> {
 			try {
 				negotiateContractId.set(contractNegotiateManagement.negotiateContract(offer.getConnectorOfferUrl(),
-						offer.getConnectorId(), offer.getOfferId(), offer.getAssetId(), action,
-						extensibleProperty));
+						offer.getConnectorId(), offer.getOfferId(), offer.getAssetId(), action, extensibleProperty));
 				int retry = 3;
 				int counter = 1;
 
@@ -158,8 +159,8 @@ public class ConsumerControlPanelService {
 				log.error("Exception in subscribeDataOffers" + e.getMessage());
 			} finally {
 				ContractNegotiationInfoEntity contractNegotiationInfoEntity = ContractNegotiationInfoEntity.builder()
-						.id(UUID.randomUUID().toString()).processId(processId)
-						.connectorId(offer.getConnectorId()).offerId(offer.getOfferId())
+						.id(UUID.randomUUID().toString()).processId(processId).connectorId(offer.getConnectorId())
+						.offerId(offer.getOfferId())
 						.contractNegotiationId(negotiateContractId != null ? negotiateContractId.get() : null)
 						.status(checkContractNegotiationStatus.get() != null
 								? checkContractNegotiationStatus.get().getState()
@@ -172,45 +173,36 @@ public class ConsumerControlPanelService {
 
 	}
 
-	public Map<String, Object> subscribeAndDownloadDataOffers(ConsumerRequest consumerRequest,
-			boolean flagToDownloadImidiate) {
-		HashMap<String, String> extensibleProperty = new HashMap<>();
-		Map<String, Object> response = new ConcurrentHashMap<>();
+	public Map<String, Object> subcribeAndDownloadOffer(Offer offer, ActionRequest action,
+			boolean flagToDownloadImidiate, String downloadAs) {
+		
+		Map<String, Object> resultFields = new ConcurrentHashMap<>();
+		try {
+			var recipientURL = UtilityFunctions.removeLastSlashOfUrl(offer.getConnectorOfferUrl());
+			EDRCachedResponse checkContractNegotiationStatus = contractNegotiationService
+					.verifyOrCreateContractNegotiation(offer.getConnectorId(), Map.of(), recipientURL, action, offer);
 
-		ActionRequest action = policyConstraintBuilderService
-				.getUsagePoliciesConstraints(consumerRequest.getUsagePolicies());
-		consumerRequest.getOffers().parallelStream().forEach(offer -> {
-			Map<String, Object> resultFields = new ConcurrentHashMap<>();
-			try {
-				var recipientURL = UtilityFunctions.removeLastSlashOfUrl(offer.getConnectorOfferUrl());
-				EDRCachedResponse checkContractNegotiationStatus = contractNegotiationService
-						.verifyOrCreateContractNegotiation(offer.getConnectorId(), extensibleProperty,
-								recipientURL, action, offer);
+			resultFields.put("edr", checkContractNegotiationStatus);
 
-				resultFields.put("edr", checkContractNegotiationStatus);
+			doVerifyResult(offer.getAssetId(), checkContractNegotiationStatus);
 
-				doVerifyResult(offer.getAssetId(), checkContractNegotiationStatus);
+			if (flagToDownloadImidiate)
+				resultFields.put("data", downloadFile(checkContractNegotiationStatus, downloadAs));
 
-				if (flagToDownloadImidiate)
-					resultFields.put("data",
-							downloadFile(checkContractNegotiationStatus, consumerRequest.getDownloadDataAs()));
+			resultFields.put(STATUS, "SUCCESS");
 
-				resultFields.put(STATUS, "SUCCESS");
+		} catch (FeignException e) {
+			log.error("Feign RequestBody: " + e.request());
+			String errorMsg = "Unable to complete subscribeAndDownloadDataOffers because: " + e.contentUTF8();
+			log.error(errorMsg);
+			prepareErrorMap(resultFields, errorMsg);
+		} catch (Exception e) {
+			log.error("SubscribeAndDownloadDataOffers Oops! We have -" + e.getMessage());
+			String errorMsg = "Unable to complete subscribeAndDownloadDataOffers because: " + e.getMessage();
+			prepareErrorMap(resultFields, errorMsg);
+		}
 
-			} catch (FeignException e) {
-				log.error("Feign RequestBody: " + e.request());
-				String errorMsg = "Unable to complete subscribeAndDownloadDataOffers because: " + e.contentUTF8();
-				log.error(errorMsg);
-				prepareErrorMap(resultFields, errorMsg);
-			} catch (Exception e) {
-				log.error("SubscribeAndDownloadDataOffers Oops! We have -" + e.getMessage());
-				String errorMsg = "Unable to complete subscribeAndDownloadDataOffers because: " + e.getMessage();
-				prepareErrorMap(resultFields, errorMsg);
-			} finally {
-				response.put(offer.getAssetId(), resultFields);
-			}
-		});
-		return response;
+		return resultFields;
 	}
 
 	@SneakyThrows
@@ -288,13 +280,19 @@ public class ConsumerControlPanelService {
 		return null;
 	}
 
-	public List<QueryDataOfferRequest> getEDCPolicy(List<QueryDataOfferRequest> queryDataOfferModel) {
-		queryDataOfferModel.stream().forEach(queryDataOffer -> queryDataOffer.setPolicy(lookUpDTTwin
-				.getEDCOffer(queryDataOffer.getAssetId(), queryDataOffer.getConnectorOfferUrl()).getPolicy()));
-		return queryDataOfferModel;
+	public List<QueryDataOfferModel> getEDCPolicy(List<QueryDataOfferRequest> queryDataOfferModel) {
+
+		Map<String, List<String>> collect = queryDataOfferModel.stream()
+				.collect(Collectors.groupingBy(QueryDataOfferRequest::getConnectorOfferUrl,
+						Collectors.mapping(QueryDataOfferRequest::getAssetId, Collectors.toList())));
+		
+		return collect.entrySet().stream()
+				.map(entry -> {
+					return lookUpDTTwin.getEDCOffer(entry.getValue(), entry.getKey());
+				})
+				.flatMap(Collection::stream)
+				.toList();
 
 	}
 
-	
-	
 }

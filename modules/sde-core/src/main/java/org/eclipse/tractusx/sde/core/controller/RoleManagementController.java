@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -21,6 +21,7 @@
 package org.eclipse.tractusx.sde.core.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.tractusx.sde.core.role.entity.RolePojo;
 import org.eclipse.tractusx.sde.core.service.RoleManagementService;
@@ -45,7 +46,7 @@ public class RoleManagementController {
 
 	@PostMapping(value = "/role/{role}/permissions")
 	@PreAuthorize("hasPermission(#role,'create_role')")
-	public String saveRolePermission(@PathVariable("role") String role, @RequestBody List<String> rolePermission) {
+	public Map<String,String> saveRolePermission(@PathVariable("role") String role, @RequestBody List<String> rolePermission) {
 		return roleManagementService.saveRoleWithPermission(role, rolePermission);
 	}
 	

@@ -107,7 +107,8 @@ public class DigitalTwinsSingleLevelUsageAsBuiltCsvHandlerUseCase extends Step {
 		if (subModelResponse == null || foundSubmodel == null) {
 			logDebug(String.format("No submodels for '%s'", shellId));
 			CreateSubModelRequest createSubModelRequest = digitalTwinsUtility.getCreateSubModelRequest(
-					aspectSingleLevelUsageAsBuilt.getShellId(), getsemanticIdOfModel(), getIdShortOfModel());
+					aspectSingleLevelUsageAsBuilt.getShellId(), getsemanticIdOfModel(), getIdShortOfModel(),
+					getNameOfModel(), aspectSingleLevelUsageAsBuilt.getParentUuid());
 
 			digitalTwinsFacilitator.updateShellDetails(shellId, aasDescriptorRequest, createSubModelRequest);
 			aspectSingleLevelUsageAsBuilt.setSubModelId(createSubModelRequest.getId());
@@ -142,7 +143,8 @@ public class DigitalTwinsSingleLevelUsageAsBuiltCsvHandlerUseCase extends Step {
 					"No parent aspect found");
 		}
 
-		return digitalTwinsUtility.getShellDescriptorRequest(aspectEntity.getNameAtManufacturer(),
+		return digitalTwinsUtility.getShellDescriptorRequest(aspectEntity.getNameAtManufacturer() + "_" + aspectEntity
+				.getPartInstanceId(),
 				aspectEntity.getManufacturerPartId(), aspectEntity.getUuid(),
 				getSpecificAssetIds(aspectMapper.mapFrom(aspectEntity)), policy);
 	}

@@ -22,7 +22,6 @@
 
 package org.eclipse.tractusx.sde.submodels.apr.steps;
 
-
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -30,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseException;
@@ -97,7 +97,7 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 		String shellId = null;
 		SubModelResponse foundSubmodel = null;
 		ReturnDataClass checkShellforSubmodelExistorNot = null;
-		
+
 		if (shellIds.isEmpty()) {
 			// We don't need to create parent shell from aspect relationship
 			throw new CsvHandlerUseCaseException(aspectRelationShip.getRowNumber(),
@@ -113,16 +113,17 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 
 		if (foundSubmodel == null) {
 			logDebug(String.format("No submodels for '%s'", shellId));
-			createSubModelSteps(aspectRelationShip, shellId, createSubModelRequest);
+			digitalTwinfacilitaor.createSubModel(shellId, createSubModelRequest);
 		} else {
 			if (!foundSubmodel.getId().equals(createSubModelRequest.getId())) {
-				digitalTwinfacilitaor.deleteSubmodelfromShellById(shellId, foundSubmodel.getId());
-				createSubModelSteps(aspectRelationShip, shellId, createSubModelRequest);
+				digitalTwinfacilitaor.updateSubModel(shellId, foundSubmodel.getId(), createSubModelRequest);
 				aspectRelationShip.setOldSubmodelIdforUpdateCase(foundSubmodel.getId());
 			}
 			aspectRelationShip.setUpdated(CommonConstants.UPDATED_Y);
 			logDebug(String.format("Complete Digital Twins Update for '%s'", shellId));
 		}
+		aspectRelationShip.setSubModelId(createSubModelRequest.getId());
+		aspectRelationShip.setChildUuid(createSubModelRequest.getId());
 
 		return aspectRelationShip;
 	}
@@ -167,13 +168,6 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 				returnDataClass.setFoundSubmodel(subModelResponse);
 			}
 		}
-	}
-
-	private void createSubModelSteps(AspectRelationship aspectRelationShip, String shellId,
-			CreateSubModelRequest createSubModelRequest) {
-		digitalTwinfacilitaor.createSubModel(shellId, createSubModelRequest);
-		aspectRelationShip.setSubModelId(createSubModelRequest.getId());
-		aspectRelationShip.setChildUuid(createSubModelRequest.getId());
 	}
 
 	private Map<String, String> getSpecificAssetIds(AspectRelationship aspectRelationShip) {
@@ -223,12 +217,9 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 				childUUID = lookUpChildTwin(shellLookupRequest, aspectRelationShip, edrToken, dtOffer);
 				if (childUUID != null) {
 					break;
-				} else {
-					log.warn(aspectRelationShip.getRowNumber() + ", EDC connector " + dtOffer.getConnectorOfferUrl()
-							+ ", No child twin found for " + shellLookupRequest.toJsonString());
-				}
+				} 
 			} else {
-				msg = ", EDC connector " + dtOffer.getConnectorOfferUrl()
+				msg = ", EDC connector " + dtOffer.getConnectorOfferUrl() + ", assetId " + dtOffer.getAssetId()
 						+ ", The EDR token is null to find child twin ";
 				log.warn(aspectRelationShip.getRowNumber() + msg + shellLookupRequest.toJsonString());
 			}
@@ -244,8 +235,8 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 					"No child aspect found for " + shellLookupRequest.toJsonString());
 		}
 
-		return digitalTwinsUtility.getCreateSubModelRequestForChild(aspectRelationShip.getShellId(),
-				getsemanticIdOfModel(), getIdShortOfModel(), childUUID);
+		return digitalTwinsUtility.getCreateSubModelRequest(aspectRelationShip.getShellId(),
+				getsemanticIdOfModel(), getIdShortOfModel(), childUUID, getNameOfModel(), aspectRelationShip.getParentUuid());
 
 	}
 
@@ -261,22 +252,21 @@ public class DigitalTwinsAspectRelationShipCsvHandlerUseCase extends Step {
 			header.put(edrToken.getAuthKey(), edrToken.getAuthCode());
 			header.put("Edc-Bpn", aspectRelationShip.getChildManufacturerId());
 
-			String registryLookupUriLocal = dDTRManagedThirdparty ? registryLookupUri : registryUri;
+			ShellLookupResponse shellLookup = eDCDigitalTwinProxyForLookUp.shellLookup(new URI(endpoint),
+					digitalTwinsUtility.encodeAssetIdsObjectOnlyPartInstanceId(shellLookupRequest), header);
 
-			ShellLookupResponse shellLookup = eDCDigitalTwinProxyForLookUp.shellLookup(
-					new URI(endpoint + registryLookupUriLocal),
-					digitalTwinsUtility.encodeAssetIdsObject(shellLookupRequest.toJsonString()), header);
-
-			childUUID = getChildSubmodelDetails(shellLookupRequest, endpoint + registryUri, header, aspectRelationShip,
-					dtOfferUrl, shellLookup.getResult());
+			childUUID = getChildSubmodelDetails(shellLookupRequest, endpoint, header, aspectRelationShip, dtOfferUrl,
+					shellLookup.getResult());
 
 		} catch (FeignException e) {
-			String errorMsg = "Unable to look up child twin " + dtOfferUrl + ", " + shellLookupRequest.toJsonString()
-					+ " because: " + e.contentUTF8();
+			String err = e.contentUTF8();
+			err = StringUtils.isBlank(err) ? e.getMessage() : err;
+			String errorMsg = "Unable to look up child twin " + dtOfferUrl + ", assetId" + dtOffer.getAssetId() + ", "
+					+ shellLookupRequest.toJsonString() + " because: " + err;
 			log.error("FeignException : " + errorMsg);
 		} catch (Exception e) {
-			String errorMsg = "Unable to look up child twin " + dtOfferUrl + ", " + shellLookupRequest.toJsonString()
-					+ "because: " + e.getMessage();
+			String errorMsg = "Unable to look up child twin " + dtOfferUrl + ", assetId" + dtOffer.getAssetId() + ", "
+					+ shellLookupRequest.toJsonString() + "because: " + e.getMessage();
 			log.error("Exception : " + errorMsg);
 		}
 

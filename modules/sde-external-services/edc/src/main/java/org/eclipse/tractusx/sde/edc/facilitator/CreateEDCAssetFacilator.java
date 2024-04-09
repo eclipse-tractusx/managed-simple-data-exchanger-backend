@@ -64,11 +64,40 @@ public class CreateEDCAssetFacilator extends AbstractEDCStepsHelper {
 
 		edcGateway.createContractDefinition(contractDefinitionRequest);
 
+		output.put("assetId", assetId);
 		output.put("accessPolicyId", accessPolicyUUId);
 		output.put("usagePolicyId", usagePolicyUUId);
 		output.put("contractDefinitionId", contractDefinitionRequest.getId());
 		return output;
 
 	}
+	
+	public Map<String, String> updateEDCAsset(AssetEntryRequest assetEntryRequest, PolicyModel policy) {
 
+		Map<String, String> output = new HashMap<>();
+
+		edcGateway.updateAsset(assetEntryRequest);
+
+		String assetId = assetEntryRequest.getId();
+
+		JsonNode accessPolicyDefinitionRequest = policyConstraintBuilderService.getAccessPolicy(assetId, policy);
+		String accessPolicyUUId = accessPolicyDefinitionRequest.get("@id").asText();
+		edcGateway.updatePolicyDefinition(accessPolicyUUId, accessPolicyDefinitionRequest);
+
+		JsonNode usagePolicyDefinitionRequest = policyConstraintBuilderService.getUsagePolicy(assetId, policy);
+		String usagePolicyUUId = usagePolicyDefinitionRequest.get("@id").asText();
+		edcGateway.updatePolicyDefinition(usagePolicyUUId, usagePolicyDefinitionRequest);
+
+		ContractDefinitionRequest contractDefinitionRequest = contractFactory.getContractDefinitionRequest(assetId,
+				accessPolicyUUId, usagePolicyUUId);
+
+		edcGateway.updateContractDefinition(contractDefinitionRequest);
+
+		output.put("assetId", assetId);
+		output.put("accessPolicyId", accessPolicyUUId);
+		output.put("usagePolicyId", usagePolicyUUId);
+		output.put("contractDefinitionId", contractDefinitionRequest.getId());
+		return output;
+
+	}
 }

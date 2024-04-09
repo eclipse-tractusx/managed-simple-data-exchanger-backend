@@ -20,7 +20,6 @@
 
 package org.eclipse.tractusx.sde.submodels.pcf.model;
 
-
 import org.eclipse.tractusx.sde.common.entities.CommonPropEntity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -143,5 +142,4 @@ public class PcfAspect extends CommonPropEntity {
 	private String pcfLegalStatement;
 	private String productDescription;
 	private String precedingPfId;
-
 }

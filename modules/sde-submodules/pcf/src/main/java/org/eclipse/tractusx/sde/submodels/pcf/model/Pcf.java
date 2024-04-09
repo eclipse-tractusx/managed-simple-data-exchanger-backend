@@ -103,6 +103,7 @@ public class Pcf {
 	@SerializedName("extTFS_distributionStageDlucGhgEmissions")
 	private Double extTFSDistributionStageDlucGhgEmissions; // 1.0,
 	private Double distributionStagePcfIncludingBiogenic; // 0.0,
+	private Double distributionStageAircraftGhgEmissions; // 0.0,
 	private Double carbonContentBiogenic; // 0.0,
 
 }

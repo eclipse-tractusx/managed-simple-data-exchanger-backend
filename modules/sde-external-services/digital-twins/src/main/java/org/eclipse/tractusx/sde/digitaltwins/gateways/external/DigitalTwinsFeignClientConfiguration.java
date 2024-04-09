@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2023 T-Systems International GmbH
- * Copyright (c) 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023, 2024 T-Systems International GmbH
+ * Copyright (c) 2023, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -54,6 +54,12 @@ class DigitalTwinsFeignClientConfigurationInterceptor implements RequestIntercep
 
 	@Value(value = "${digital-twins.authentication.url:default}")
 	private URI digitalAppTokenURI;
+	
+	@Value(value = "${digital-twins.authentication.scope:}")
+	private String digitalTwinsScope;
+	
+	@Value(value = "${digital-twins.managed.thirdparty:false}")
+	private boolean dDTRManagedThirdparty;
 
 	@Autowired
 	private TokenUtility tokenUtilityForDigital;
@@ -71,7 +77,12 @@ class DigitalTwinsFeignClientConfigurationInterceptor implements RequestIntercep
 		if (accessTokenForDigital != null && tokenUtilityForDigital.isTokenValid(accessTokenForDigital)) {
 			return "Bearer " + accessTokenForDigital;
 		}
-		accessTokenForDigital = tokenUtilityForDigital.getToken(digitalAppTokenURI, digitalGrantType, digitalAppClientId, digitalAppClientSecret);
+	
+		if(dDTRManagedThirdparty) {
+			accessTokenForDigital = tokenUtilityForDigital.getToken(digitalAppTokenURI, digitalGrantType, digitalAppClientId, digitalAppClientSecret, digitalTwinsScope);
+		}else {
+			accessTokenForDigital = tokenUtilityForDigital.getToken(digitalAppTokenURI, digitalGrantType, digitalAppClientId, digitalAppClientSecret);
+		}
 		return "Bearer " + accessTokenForDigital;
 	}
 

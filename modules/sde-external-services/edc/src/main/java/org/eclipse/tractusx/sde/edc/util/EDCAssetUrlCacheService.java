@@ -39,17 +39,20 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class EDCAssetUrlCacheService {
 
 	private static final Map<String, LocalDateTime> dDTRmap = new ConcurrentHashMap<>();
+	private static final Map<String, LocalDateTime> pcfExchangeURLMap = new ConcurrentHashMap<>();
 
 	private final ContractNegotiationService contractNegotiationService;
 	private final PolicyConstraintBuilderService policyConstraintBuilderService;
 
 	private final DDTRUrlCacheUtility dDTRUrlCacheUtility;
+	private final PCFExchangeAssetUtils pcfExchangeAssetUtils;
 
 	@SneakyThrows
 	public EDRCachedByIdResponse verifyAndGetToken(String bpnNumber, QueryDataOfferModel queryDataOfferModel) {
@@ -58,22 +61,21 @@ public class EDCAssetUrlCacheService {
 				.getUsagePoliciesConstraints(queryDataOfferModel.getPolicy().getUsagePolicies());
 
 		Offer offer = Offer.builder().assetId(queryDataOfferModel.getAssetId())
-				.offerId(queryDataOfferModel.getOfferId())
-				.policyId(queryDataOfferModel.getPolicyId())
+				.offerId(queryDataOfferModel.getOfferId()).policyId(queryDataOfferModel.getPolicyId())
 				.connectorId(queryDataOfferModel.getConnectorId())
-				.connectorOfferUrl(queryDataOfferModel.getConnectorOfferUrl())
-				.build();
+				.connectorOfferUrl(queryDataOfferModel.getConnectorOfferUrl()).build();
 		try {
 			EDRCachedResponse eDRCachedResponse = contractNegotiationService.verifyOrCreateContractNegotiation(
 					bpnNumber, Map.of(), queryDataOfferModel.getConnectorOfferUrl(), action, offer);
 
 			if (eDRCachedResponse == null) {
 				throw new ServiceException("Time out!! to get 'NEGOTIATED' EDC EDR status to lookup '"
-						+ queryDataOfferModel.getAssetId() + "', The current status is null");
+						+ queryDataOfferModel.getConnectorOfferUrl() + ", " + queryDataOfferModel.getAssetId()
+						+ "', The current status is null");
 			} else if (!"NEGOTIATED".equalsIgnoreCase(eDRCachedResponse.getEdrState())) {
-				throw new ServiceException(
-						"Time out!! to get 'NEGOTIATED' EDC EDR status to lookup  '" + queryDataOfferModel.getAssetId()
-								+ "', The current status is '" + eDRCachedResponse.getEdrState() + "'");
+				throw new ServiceException("Time out!! to get 'NEGOTIATED' EDC EDR status to lookup  for '"
+						+ queryDataOfferModel.getConnectorOfferUrl() + ", " + queryDataOfferModel.getAssetId()
+						+ "', The current status is '" + eDRCachedResponse.getEdrState() + "'");
 			} else
 				return contractNegotiationService
 						.getAuthorizationTokenForDataDownload(eDRCachedResponse.getTransferProcessId());
@@ -106,7 +108,6 @@ public class EDCAssetUrlCacheService {
 		if (ddtrUrl.isEmpty()) {
 			log.info("Found connector list empty so removing existing cache and retry to fetch");
 			removeDDTRUrlCache(bpnNumber);
-			ddtrUrl = dDTRUrlCacheUtility.getDDTRUrl(bpnNumber);
 		}
 		return ddtrUrl;
 	}
@@ -119,6 +120,36 @@ public class EDCAssetUrlCacheService {
 	public void removeDDTRUrlCache(String bpnNumber) {
 		dDTRUrlCacheUtility.removeDDTRUrlCache(bpnNumber);
 		dDTRmap.remove(bpnNumber);
+	}
+
+	public List<QueryDataOfferModel> getPCFExchangeUrlFromTwin(String bpnNumber) {
+
+		LocalDateTime cacheExpTime = pcfExchangeURLMap.get(bpnNumber);
+		LocalDateTime currDate = LocalDateTime.now();
+
+		if (cacheExpTime == null)
+			cacheExpTime = currDate.plusHours(12);
+		else if (currDate.isAfter(cacheExpTime)) {
+			pcfExchangeAssetUtils.removePCFExchangeCache(bpnNumber);
+			cacheExpTime = currDate.plusHours(12);
+		}
+		pcfExchangeURLMap.put(bpnNumber, cacheExpTime);
+		List<QueryDataOfferModel> pcfExchangeurls = pcfExchangeAssetUtils.getPCFExchangeUrl(bpnNumber);
+		if (pcfExchangeurls.isEmpty()) {
+			log.info("Found connector list empty so removing existing cache and retry to fetch");
+			removePCFExchangeCache(bpnNumber);
+		}
+		return pcfExchangeurls;
+	}
+
+	public void clearPCFExchangeUrlCache() {
+		pcfExchangeURLMap.clear();
+		pcfExchangeAssetUtils.clearePCFExchangeAllCache();
+	}
+
+	public void removePCFExchangeCache(String bpnNumber) {
+		pcfExchangeAssetUtils.removePCFExchangeCache(bpnNumber);
+		pcfExchangeURLMap.remove(bpnNumber);
 	}
 
 }

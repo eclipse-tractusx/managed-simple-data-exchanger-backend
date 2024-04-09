@@ -289,6 +289,12 @@ To find information about supported submodules and there version in SDE please v
 | **GET:- localhost:8080/api/legal-entities** |This API is used to fetch legal entities (list of company's) for Process| Refer Api Doc |Refer Api Doc|
 | **POST:- localhost:8080/api/connectors-discovery** |This API is used to fetch connectors information | Refer Api Doc |Refer Api Doc|
 
+## Detailed API specs available under:
+
+- [SDE-OPEN-API](src/main/resources/sde-open-api.yml)
+
+## Backend API Swagger-ui : 
+https://<host-url>/backend/api/swagger-ui/index.html
 
 ---
 #### **Response Status**

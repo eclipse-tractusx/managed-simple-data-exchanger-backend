@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.model.PagingResponse;
+import org.eclipse.tractusx.sde.common.utils.LogUtil;
 import org.eclipse.tractusx.sde.pcfexchange.entity.PcfRequestEntity;
 import org.eclipse.tractusx.sde.pcfexchange.enums.PCFRequestStatusEnum;
 import org.eclipse.tractusx.sde.pcfexchange.enums.PCFTypeEnum;
@@ -124,8 +125,8 @@ public class PCFRepositoryService {
 		if(StringUtils.isNotBlank(remark))
 			pcfRequestEntity.setRemark(remark);
 		
-		log.info("'" + pcfRequestEntity.getProductId() + "' pcf request saved in the database successfully as {}",
-				status);
+		log.info(LogUtil.encode("'" + pcfRequestEntity.getProductId() + "' pcf request saved in the database successfully as " +
+				status));
 		pcfRequestRepository.save(pcfRequestEntity);
 		return pcfRequestEntity;
 

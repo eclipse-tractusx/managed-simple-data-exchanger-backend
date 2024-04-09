@@ -21,6 +21,7 @@ package org.eclipse.tractusx.sde.edc.util;
 
 import java.util.List;
 
+import org.eclipse.tractusx.sde.common.utils.LogUtil;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -43,7 +44,7 @@ public class PCFExchangeAssetUtils {
 
 	@CacheEvict(value = "bpn-pcfexchange", key = "#bpnNumber")
 	public void removePCFExchangeCache(String bpnNumber) {
-		log.info("Cleared '" + bpnNumber + "' bpn-pcfexchange cache");
+		log.info(LogUtil.encode("Cleared '" + bpnNumber + "' bpn-pcfexchange cache"));
 	}
 
 	@CacheEvict(value = "bpn-pcfexchange", allEntries = true)

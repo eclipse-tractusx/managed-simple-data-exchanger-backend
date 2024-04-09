@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2024 T-Systems International GmbH
- * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
+ * Copyright (c) 2024 T-Systems International GmbH
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -18,22 +18,23 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.common.exception;
+package org.eclipse.tractusx.sde.configuration;
 
-import org.eclipse.tractusx.sde.common.utils.LogUtil;
+import org.eclipse.tractusx.sde.pcfexchange.enums.PCFTypeEnumFormator;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.format.FormatterRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import lombok.extern.slf4j.Slf4j;
+@Configuration
+public class EnumMappingAppConfig implements WebMvcConfigurer {
 
-@Slf4j
-public class ServiceException extends Exception {
+   private PCFTypeEnumFormator pcfEnumFormatter() {
+        return new PCFTypeEnumFormator();
+    }
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        registry.addFormatter(this.pcfEnumFormatter());
+    }
 
-	public ServiceException(String exceptionstr) {
-		super(exceptionstr);
-		log.info(LogUtil.encode(exceptionstr));
-	}
 }

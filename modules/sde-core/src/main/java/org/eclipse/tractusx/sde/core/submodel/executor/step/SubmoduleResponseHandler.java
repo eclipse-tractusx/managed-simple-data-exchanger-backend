@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2024 T-Systems International GmbH
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,17 +17,21 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-package org.eclipse.tractusx.sde.submodels.spt.constants;
+package org.eclipse.tractusx.sde.core.submodel.executor.step;
 
-import lombok.Getter;
+import org.eclipse.tractusx.sde.common.submodel.executor.Step;
+import org.springframework.stereotype.Service;
 
-@Getter
-public class SerialPartTypizationConstants {
+import com.google.gson.JsonObject;
 
-	private SerialPartTypizationConstants() {
-		throw new IllegalStateException("Constant class");
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class SubmoduleResponseHandler extends Step {
+
+	public JsonObject mapJsonbjectToFormatedResponse(JsonObject jsonObject) {
+		return getResponseTemplateOfModel();
 	}
-
-	public static final String AS_BUILT = "AsBuilt";
 
 }

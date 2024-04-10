@@ -38,10 +38,6 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelResponse;
 import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsFacilitator;
 import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsUtility;
 import org.eclipse.tractusx.sde.submodels.sluab.model.SingleLevelUsageAsBuilt;
-import org.eclipse.tractusx.sde.submodels.spt.entity.AspectEntity;
-import org.eclipse.tractusx.sde.submodels.spt.mapper.AspectMapper;
-import org.eclipse.tractusx.sde.submodels.spt.model.Aspect;
-import org.eclipse.tractusx.sde.submodels.spt.repository.AspectRepository;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -52,8 +48,8 @@ import lombok.SneakyThrows;
 public class DigitalTwinsSingleLevelUsageAsBuiltCsvHandlerUseCase extends Step {
 
 	private final DigitalTwinsFacilitator digitalTwinsFacilitator;
-	private final AspectRepository aspectRepository;
-	private final AspectMapper aspectMapper;
+//	private final AspectRepository aspectRepository;
+//	private final AspectMapper aspectMapper;
 	private final DigitalTwinsUtility digitalTwinsUtility;
 
 	@SneakyThrows
@@ -75,7 +71,7 @@ public class DigitalTwinsSingleLevelUsageAsBuiltCsvHandlerUseCase extends Step {
 		List<String> shellIds = digitalTwinsFacilitator.shellLookup(shellLookupRequest);
 
 		String shellId;
-		ShellDescriptorRequest aasDescriptorRequest = lookUpParentEntityLocaly(aspectSingleLevelUsageAsBuilt, policy);
+		ShellDescriptorRequest aasDescriptorRequest = null;// lookUpParentEntityLocaly(aspectSingleLevelUsageAsBuilt, policy);
 		
 		if (shellIds.isEmpty()) {
 			
@@ -126,29 +122,29 @@ public class DigitalTwinsSingleLevelUsageAsBuiltCsvHandlerUseCase extends Step {
 	}
 
 
-	private ShellDescriptorRequest lookUpParentEntityLocaly(SingleLevelUsageAsBuilt aspectSingleLevelUsageAsBuilt,
-			PolicyModel policy) throws CsvHandlerUseCaseException {
-		AspectEntity aspectEntity = null;
-		if (aspectSingleLevelUsageAsBuilt.hasOptionalParentIdentifier()) {
-			aspectEntity = aspectRepository.findByIdentifiers(aspectSingleLevelUsageAsBuilt.getParentPartInstanceId(),
-					aspectSingleLevelUsageAsBuilt.getParentManufacturerPartId(),
-					aspectSingleLevelUsageAsBuilt.getParentOptionalIdentifierKey(),
-					aspectSingleLevelUsageAsBuilt.getParentOptionalIdentifierValue());
-		} else {
-			aspectEntity = aspectRepository.findByIdentifiers(aspectSingleLevelUsageAsBuilt.getParentPartInstanceId(),
-					aspectSingleLevelUsageAsBuilt.getParentManufacturerPartId());
-		}
-
-		if (aspectEntity == null) {
-			throw new CsvHandlerUseCaseException(aspectSingleLevelUsageAsBuilt.getRowNumber(),
-					"No parent aspect found");
-		}
-
-		return digitalTwinsUtility.getShellDescriptorRequest(aspectEntity.getNameAtManufacturer() + "_" + aspectEntity
-				.getPartInstanceId(),
-				aspectEntity.getManufacturerPartId(), aspectEntity.getUuid(),
-				getSpecificAssetIds(aspectMapper.mapFrom(aspectEntity)), policy);
-	}
+//	private ShellDescriptorRequest lookUpParentEntityLocaly(SingleLevelUsageAsBuilt aspectSingleLevelUsageAsBuilt,
+//			PolicyModel policy) throws CsvHandlerUseCaseException {
+//		AspectEntity aspectEntity = null;
+//		if (aspectSingleLevelUsageAsBuilt.hasOptionalParentIdentifier()) {
+//			aspectEntity = aspectRepository.findByIdentifiers(aspectSingleLevelUsageAsBuilt.getParentPartInstanceId(),
+//					aspectSingleLevelUsageAsBuilt.getParentManufacturerPartId(),
+//					aspectSingleLevelUsageAsBuilt.getParentOptionalIdentifierKey(),
+//					aspectSingleLevelUsageAsBuilt.getParentOptionalIdentifierValue());
+//		} else {
+//			aspectEntity = aspectRepository.findByIdentifiers(aspectSingleLevelUsageAsBuilt.getParentPartInstanceId(),
+//					aspectSingleLevelUsageAsBuilt.getParentManufacturerPartId());
+//		}
+//
+//		if (aspectEntity == null) {
+//			throw new CsvHandlerUseCaseException(aspectSingleLevelUsageAsBuilt.getRowNumber(),
+//					"No parent aspect found");
+//		}
+//
+//		return digitalTwinsUtility.getShellDescriptorRequest(aspectEntity.getNameAtManufacturer() + "_" + aspectEntity
+//				.getPartInstanceId(),
+//				aspectEntity.getManufacturerPartId(), aspectEntity.getUuid(),
+//				getSpecificAssetIds(aspectMapper.mapFrom(aspectEntity)), policy);
+//	}
 
 	private ShellLookupRequest getShellLookupRequest(SingleLevelUsageAsBuilt aspectSingleLevelUsageAsBuilt) {
 		ShellLookupRequest shellLookupRequest = new ShellLookupRequest();
@@ -177,15 +173,15 @@ public class DigitalTwinsSingleLevelUsageAsBuiltCsvHandlerUseCase extends Step {
 		return specificIdentifiers;
 	}
 
-	private Map<String, String> getSpecificAssetIds(Aspect aspect) {
-		Map<String, String> specificIdentifiers = new HashMap<>();
-		specificIdentifiers.put(CommonConstants.PART_INSTANCE_ID, aspect.getPartInstanceId());
-		specificIdentifiers.put(CommonConstants.MANUFACTURER_PART_ID, aspect.getManufacturerPartId());
-		specificIdentifiers.put(CommonConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId());
-		if (aspect.hasOptionalIdentifier()) {
-			specificIdentifiers.put(aspect.getOptionalIdentifierKey(), aspect.getOptionalIdentifierValue());
-		}
-
-		return specificIdentifiers;
-	}
+//	private Map<String, String> getSpecificAssetIds(Aspect aspect) {
+//		Map<String, String> specificIdentifiers = new HashMap<>();
+//		specificIdentifiers.put(CommonConstants.PART_INSTANCE_ID, aspect.getPartInstanceId());
+//		specificIdentifiers.put(CommonConstants.MANUFACTURER_PART_ID, aspect.getManufacturerPartId());
+//		specificIdentifiers.put(CommonConstants.MANUFACTURER_ID, digitalTwinsUtility.getManufacturerId());
+//		if (aspect.hasOptionalIdentifier()) {
+//			specificIdentifiers.put(aspect.getOptionalIdentifierKey(), aspect.getOptionalIdentifierValue());
+//		}
+//
+//		return specificIdentifiers;
+//	}
 }

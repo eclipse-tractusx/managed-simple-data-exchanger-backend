@@ -23,10 +23,10 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.common.exception.ValidationException;
 import org.eclipse.tractusx.sde.common.model.Submodel;
 import org.eclipse.tractusx.sde.core.processreport.repository.SubmodelCustomHistoryGenerator;
+import org.eclipse.tractusx.sde.core.utils.SubmoduleUtility;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.JsonObject;
@@ -41,6 +41,8 @@ public class SubmodelCsvService {
 	private final SubmodelService submodelService;
 
 	private final SubmodelCustomHistoryGenerator submodelCustomHistoryGenerator;
+
+	private final SubmoduleUtility submoduleUtility;
 
 	private static final List<String> TYPES = List.of("sample", "template");
 
@@ -72,47 +74,17 @@ public class SubmodelCsvService {
 
 		List<List<String>> records = new LinkedList<>();
 		Submodel schemaObj = submodelService.findSubmodelByNameAsSubmdelObject(submodel);
-		Object autoPopulatefieldObj = schemaObj.getProperties().get("autoPopulatedfields");
-		List<String> headerName = getCSVHeader(schemaObj, autoPopulatefieldObj);
-		headerName.add("shell_id");
-		headerName.add("sub_model_id");
-		headerName.add("asset_id");
-		headerName.add("usage_policy_id");
-		headerName.add("access_policy_id");
-		headerName.add("contract_defination_id");
+		List<String> headerName = submoduleUtility.getTableColomnHeaderForCSV(schemaObj);
 
 		records.add(headerName);
 
-		String coloumns = String.join(",", headerName);
+		String tableName = submoduleUtility.getTableName(schemaObj);
 
-		String tableName = schemaObj.getProperties().get("tableName").toString();
-		if (tableName == null)
-			throw new ServiceException("The submodel table name not found for processing");
-
-		records.addAll(submodelCustomHistoryGenerator.findAllSubmodelCsvHistory(coloumns, tableName, processId));
+		records.addAll(submodelCustomHistoryGenerator.findAllSubmodelCsvHistory(headerName, tableName, processId));
 
 		return records;
 	}
 
-	public List<String> getCSVHeader(Submodel schemaObj, Object autoPopulatefieldObj) {
-		JsonObject schemaObject = schemaObj.getSchema();
-		return createCSVColumnHeader(schemaObject, autoPopulatefieldObj);
-	}
 
-	private List<String> createCSVColumnHeader(JsonObject schemaObject, Object autoPopulatefieldObj) {
-
-		JsonObject asJsonObject = schemaObject.get("items").getAsJsonObject().get("properties").getAsJsonObject();
-		List<String> headerList = asJsonObject.keySet().stream().toList();
-
-		List<String> headerName = new LinkedList<>();
-		headerName.addAll(headerList);
-
-		if (autoPopulatefieldObj != null) {
-			@SuppressWarnings("unchecked")
-			List<String> autoPopulatefield = (List<String>) autoPopulatefieldObj;
-			headerName.addAll(autoPopulatefield);
-		}
-		return headerName;
-	}
 
 }

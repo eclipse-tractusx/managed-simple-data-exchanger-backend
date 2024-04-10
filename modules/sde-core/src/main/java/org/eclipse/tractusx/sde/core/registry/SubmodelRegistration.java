@@ -25,24 +25,46 @@ import java.util.List;
 
 import org.eclipse.tractusx.sde.common.extensions.SubmodelExtension;
 import org.eclipse.tractusx.sde.common.model.Submodel;
+import org.eclipse.tractusx.sde.core.processreport.repository.SubmodelCustomHistoryGenerator;
+import org.eclipse.tractusx.sde.core.utils.SubmoduleUtility;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.JsonElement;
+
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
 public class SubmodelRegistration {
 
-	private final List<Submodel> submodelList;
+	private List<Submodel> submodelList;
 
+	private final SubmodelCustomHistoryGenerator submodelCustomHistoryGenerator;
+	private final SubmoduleUtility submoduleUtility;
 
-	public SubmodelRegistration() {
+	public SubmodelRegistration(SubmodelCustomHistoryGenerator submodelCustomHistoryGenerator,
+			SubmoduleUtility submoduleUtility) {
 		submodelList = new LinkedList<>();
+		this.submodelCustomHistoryGenerator = submodelCustomHistoryGenerator;
+		this.submoduleUtility = submoduleUtility;
 	}
 
+	@SneakyThrows
 	public void register(SubmodelExtension subomdelService) {
 		Submodel submodel = subomdelService.submodel();
 		log.info(submodel.toString());
+
+		
+		List<String> columns = submoduleUtility.getTableColomnHeader(submodel);
+		String tableName = submoduleUtility.getTableName(submodel);
+		JsonElement jsonElement = submodel.getSchema().get("addOn");
+
+		if (jsonElement != null && !jsonElement.isJsonNull()) {
+			String pkCol = jsonElement.getAsJsonObject().get("identifier").getAsString();
+			submodelCustomHistoryGenerator.checkTableIfNotExist(submodel.getSchema(), columns, tableName, pkCol);
+		}
+
 		submodelList.add(submodel);
 	}
 

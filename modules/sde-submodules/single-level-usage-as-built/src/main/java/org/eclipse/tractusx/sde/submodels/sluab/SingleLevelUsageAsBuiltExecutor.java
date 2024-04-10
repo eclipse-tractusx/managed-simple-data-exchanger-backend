@@ -98,7 +98,7 @@ public class SingleLevelUsageAsBuiltExecutor extends SubmodelExecutor {
 
 		SingleLevelUsageAsBuilt singleLevelUsageAsBuilt = singleLevelUsageAsBuiltMapper.mapFrom(jsonObject);
 
-		generateUrnUUID.run(singleLevelUsageAsBuilt, processId);
+//		generateUrnUUID.run(singleLevelUsageAsBuilt, processId);
 
 		jsonObject.put("uuid", singleLevelUsageAsBuilt.getChildUuid());
 		jsonObject.put("parent_uuid", singleLevelUsageAsBuilt.getParentUuid());

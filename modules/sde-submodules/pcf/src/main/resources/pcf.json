@@ -951,9 +951,21 @@
 			"extTFS_distributionStageLuGhgEmissions": 1.1,
 			"carbonContentTotal": 2.5,
 			"extWBCSD_fossilCarbonContent": 0.1,
-			"distributionStageAircraftGhgEmissions":0,
+			"distributionStageAircraftGhgEmissions": 0,
 			"carbonContentBiogenic": 0.0,
 			"assetLifeCyclePhase": "AsPlanned"
 		}
-	]
+	],
+	"addOn": {
+		"identifier": "id",
+		"specificAssetIdsSpecs": {
+			"assetLifecyclePhase": "assetLifeCyclePhase",
+			"manufacturerPartId": "productId",
+			"digitalTwinType": "PartType"
+		},
+		"shortIdSpecs": [
+			"productName",
+			"productId"
+		]
+	}
 }

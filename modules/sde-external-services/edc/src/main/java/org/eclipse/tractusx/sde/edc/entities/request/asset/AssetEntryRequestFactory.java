@@ -24,6 +24,7 @@ package org.eclipse.tractusx.sde.edc.entities.request.asset;
 import java.util.HashMap;
 import java.util.Map;
 
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.edc.constants.EDCAssetConstant;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,9 +49,14 @@ public class AssetEntryRequestFactory {
     @Value(value = "${digital-twins.authentication.clientId}")
     private String clientId;
 
+    @SneakyThrows
+    public String createAssetId(String shellId, String subModelId) {
+        return shellId + "-" + subModelId;
+    }
+
     public AssetEntryRequest getAssetRequest(String submodel, String assetName, String shellId, String subModelId, String uuid, String sematicId, String dctType) {
         
-    	String assetId = shellId + "-" + subModelId;
+    	String assetId = createAssetId(shellId, subModelId);
         
         HashMap<String, Object> assetProperties = getAssetProperties(assetId, assetName, sematicId, dctType);
 

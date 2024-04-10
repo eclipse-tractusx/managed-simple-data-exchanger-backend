@@ -19,13 +19,8 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.submodels.pcf;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-import org.eclipse.tractusx.sde.bpndiscovery.handler.BPNDiscoveryUseCaseHandler;
-import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.entities.csv.RowData;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseException;
@@ -67,8 +62,6 @@ public class PcfExecutor extends SubmodelExecutor {
 	private final EDCPcfHandlerUseCase eDCAspectHandlerUseCaseforPcf;
 
 	private final StorePcfCsvHandlerUseCase storeAspectCsvHandlerUseCaseforPcf;
-
-	private final BPNDiscoveryUseCaseHandler bPNDiscoveryUseCaseHandlerforPcf;
 
 	private final PcfService aspectServiceforPcf;
 
@@ -115,11 +108,6 @@ public class PcfExecutor extends SubmodelExecutor {
 		eDCAspectHandlerUseCaseforPcf.init(getSubmodelSchema());
 		eDCAspectHandlerUseCaseforPcf.run(getNameOfModel(), pcfAspect, processId, policy);
 
-		if (StringUtils.isBlank(pcfAspect.getUpdated())) {
-			Map<String, String> bpnKeyMap = new HashMap<>();
-			bpnKeyMap.put(CommonConstants.MANUFACTURER_PART_ID, pcfAspect.getProductId());
-			bPNDiscoveryUseCaseHandlerforPcf.run(bpnKeyMap);
-		}
 
 		storeAspectCsvHandlerUseCaseforPcf.run(pcfAspect);
 	}

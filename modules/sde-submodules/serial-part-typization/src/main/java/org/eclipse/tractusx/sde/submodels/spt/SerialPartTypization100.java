@@ -31,17 +31,14 @@ import org.springframework.stereotype.Component;
 import jakarta.annotation.PostConstruct;
 
 @Component
-public class SerialPartTypization extends SubmodelExtension {
+public class SerialPartTypization100 extends SubmodelExtension {
 
 	private Submodel submodel = null;
-
-	@Autowired
-	private SerialPartTypizationExecutor serialPartTypizationWorkflow;
 
 	@PostConstruct
 	public void init() {
 
-		String resource = "serial-part-typization.json";
+		String resource = "serial-part-typization_1.0.0.json";
 		// this is the path within the jar file
 		InputStream input = this.getClass().getResourceAsStream("/resources/" + resource);
 		if (input == null) {
@@ -50,7 +47,6 @@ public class SerialPartTypization extends SubmodelExtension {
 		}
 
 		submodel = loadSubmodel(input);
-		submodel.setExecutor(serialPartTypizationWorkflow);
 		
 		submodel.addProperties("tableName", "aspect");
 	}

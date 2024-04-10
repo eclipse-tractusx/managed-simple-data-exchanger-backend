@@ -19,30 +19,40 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
+package org.eclipse.tractusx.sde.submodels.spt;
 
-package org.eclipse.tractusx.sde.submodels.spt.steps;
+import jakarta.annotation.PostConstruct;
+import org.eclipse.tractusx.sde.common.extensions.SubmodelExtension;
+import org.eclipse.tractusx.sde.common.model.Submodel;
+import org.springframework.stereotype.Component;
 
-import org.eclipse.tractusx.sde.common.submodel.executor.Step;
-import org.eclipse.tractusx.sde.submodels.spt.entity.AspectEntity;
-import org.eclipse.tractusx.sde.submodels.spt.mapper.AspectMapper;
-import org.eclipse.tractusx.sde.submodels.spt.model.Aspect;
-import org.eclipse.tractusx.sde.submodels.spt.repository.AspectRepository;
-import org.springframework.stereotype.Service;
+import java.io.InputStream;
 
-@Service
-public class StoreAspectCsvHandlerUseCase extends Step {
+@Component
+public class SerialPartTypization101 extends SubmodelExtension {
 
-	private final AspectRepository aspectRepository;
-	private final AspectMapper aspectMapper;
+    private Submodel submodel = null;
 
-	public StoreAspectCsvHandlerUseCase(AspectRepository aspectRepository, AspectMapper mapper) {
-		this.aspectRepository = aspectRepository;
-		this.aspectMapper = mapper;
-	}
+    @PostConstruct
+    public void init() {
 
-	public Aspect run(Aspect input) {
-		AspectEntity entity = aspectMapper.mapFrom(input);
-		aspectRepository.save(entity);
-		return input;
-	}
+        String resource = "serial-part-typization_1.0.1.json";
+        // this is the path within the jar file
+        InputStream input = this.getClass().getResourceAsStream("/resources/" + resource);
+        if (input == null) {
+            // this is how we load file within editor (eg eclipse)
+            input = this.getClass().getClassLoader().getResourceAsStream(resource);
+        }
+
+        submodel = loadSubmodel(input);
+
+        submodel.addProperties("tableName", "aspect101");
+    }
+
+    @Override
+    public Submodel submodel() {
+        return submodel;
+    }
+
+
 }

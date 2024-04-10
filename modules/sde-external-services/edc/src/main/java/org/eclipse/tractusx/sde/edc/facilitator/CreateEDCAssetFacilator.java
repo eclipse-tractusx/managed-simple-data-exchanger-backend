@@ -23,6 +23,7 @@ package org.eclipse.tractusx.sde.edc.facilitator;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.tractusx.sde.common.constants.SubmoduleCommonColumnsConstant;
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.contractdefinition.ContractDefinitionRequest;
@@ -64,14 +65,14 @@ public class CreateEDCAssetFacilator extends AbstractEDCStepsHelper {
 
 		edcGateway.createContractDefinition(contractDefinitionRequest);
 
-		output.put("assetId", assetId);
-		output.put("accessPolicyId", accessPolicyUUId);
-		output.put("usagePolicyId", usagePolicyUUId);
-		output.put("contractDefinitionId", contractDefinitionRequest.getId());
+		output.put(SubmoduleCommonColumnsConstant.ASSET_ID, assetId);
+		output.put(SubmoduleCommonColumnsConstant.ACCESS_POLICY_ID, accessPolicyUUId);
+		output.put(SubmoduleCommonColumnsConstant.USAGE_POLICY_ID, usagePolicyUUId);
+		output.put(SubmoduleCommonColumnsConstant.CONTRACT_DEFINATION_ID, contractDefinitionRequest.getId());
 		return output;
 
 	}
-	
+
 	public Map<String, String> updateEDCAsset(AssetEntryRequest assetEntryRequest, PolicyModel policy) {
 
 		Map<String, String> output = new HashMap<>();
@@ -93,10 +94,10 @@ public class CreateEDCAssetFacilator extends AbstractEDCStepsHelper {
 
 		edcGateway.updateContractDefinition(contractDefinitionRequest);
 
-		output.put("assetId", assetId);
-		output.put("accessPolicyId", accessPolicyUUId);
-		output.put("usagePolicyId", usagePolicyUUId);
-		output.put("contractDefinitionId", contractDefinitionRequest.getId());
+		output.put(SubmoduleCommonColumnsConstant.ASSET_ID, assetId);
+		output.put(SubmoduleCommonColumnsConstant.ACCESS_POLICY_ID, accessPolicyUUId);
+		output.put(SubmoduleCommonColumnsConstant.USAGE_POLICY_ID, usagePolicyUUId);
+		output.put(SubmoduleCommonColumnsConstant.CONTRACT_DEFINATION_ID, contractDefinitionRequest.getId());
 		return output;
 
 	}

@@ -43,6 +43,8 @@ import org.eclipse.tractusx.sde.core.policy.entity.PolicyMapper;
 import org.eclipse.tractusx.sde.core.policy.service.PolicyService;
 import org.eclipse.tractusx.sde.core.processreport.ProcessReportUseCase;
 import org.eclipse.tractusx.sde.core.processreport.model.ProcessReport;
+import org.eclipse.tractusx.sde.core.submodel.executor.GenericSubmodelExecutor;
+import org.eclipse.tractusx.sde.core.utils.SubmoduleUtility;
 import org.eclipse.tractusx.sde.pcfexchange.service.impl.AsyncPushPCFDataForApproveRequest;
 import org.eclipse.tractusx.sde.retrieverl.service.PolicyProvider;
 import org.springframework.stereotype.Service;
@@ -78,8 +80,6 @@ public class SubmodelOrchestartorService {
 
 	private final CsvHandlerService csvHandlerService;
 
-	private final SubmodelCsvService submodelCsvService;
-
 	private final PolicyService policyService;
 
 	private final PolicyMapper policyMapper;
@@ -88,6 +88,10 @@ public class SubmodelOrchestartorService {
 	
 	private final AsyncPushPCFDataForApproveRequest asyncPushPCFDataForApproveRequest;
 
+	private final SubmoduleUtility submoduleUtility;
+	
+	private final GenericSubmodelExecutor genericSubmodelExecutor; 
+	
 	ObjectMapper mapper = new ObjectMapper();
 
 	public void processSubmodelCsv(PolicyTemplateRequest policyTemplateRequest, String processId, String submodel) {
@@ -132,7 +136,7 @@ public class SubmodelOrchestartorService {
 			AtomicInteger successCount = new AtomicInteger();
 			AtomicInteger failureCount = new AtomicInteger();
 
-			SubmodelExecutor executor = submodelSchemaObject.getExecutor();
+			SubmodelExecutor executor = getExecutor(submodelSchemaObject.getExecutor());
 			executor.init(submodelSchemaObject.getSchema());
 
 			csvContent.getRows().parallelStream().forEach(rowjObj -> {
@@ -179,7 +183,7 @@ public class SubmodelOrchestartorService {
 			AtomicInteger atInt = new AtomicInteger();
 			AtomicInteger successCount = new AtomicInteger();
 			AtomicInteger failureCount = new AtomicInteger();
-			SubmodelExecutor executor = submodelSchemaObject.getExecutor();
+			SubmodelExecutor executor = getExecutor(submodelSchemaObject.getExecutor());
 			executor.init(submodelSchema);
 
 			processReportUseCase.startBuildProcessReport(processId, submodelSchemaObject.getId(), rowData.size(),
@@ -214,13 +218,19 @@ public class SubmodelOrchestartorService {
 		new Thread(runnable).start();
 	}
 
+	private SubmodelExecutor getExecutor(SubmodelExecutor executor) {
+		if(executor == null)
+			executor = genericSubmodelExecutor;
+		return executor;
+	}
+
 	public void deleteSubmodelDigitalTwinsAndEDC(String refProcessId, String delProcessId, String submodel) {
 
 		Submodel submodelSchema = submodelService.findSubmodelByNameAsSubmdelObject(submodel);
 		AtomicInteger deletedCount = new AtomicInteger();
 		AtomicInteger failureCount = new AtomicInteger();
 
-		SubmodelExecutor executor = submodelSchema.getExecutor();
+		SubmodelExecutor executor = getExecutor(submodelSchema.getExecutor());
 
 		ProcessReport oldProcessReport = processReportUseCase.getProcessReportById(refProcessId);
 
@@ -248,11 +258,11 @@ public class SubmodelOrchestartorService {
 
 	public Map<Object, Object> readCreatedTwinsDetails(String submodel, String uuid, String type) {
 		Submodel submodelSchema = submodelService.findSubmodelByNameAsSubmdelObject(submodel);
-		SubmodelExecutor executor = submodelSchema.getExecutor();
+		SubmodelExecutor executor = getExecutor(submodelSchema.getExecutor());
 		JsonObject readCreatedTwinsDetails = executor.readCreatedTwinsDetails(uuid);
 		JsonObject jObject = new JsonObject();
 		if ("csv".equalsIgnoreCase(type)) {
-			List<String> csvHeader = submodelCsvService.getCSVHeader(submodelSchema, null);
+			List<String> csvHeader = submoduleUtility.getCSVHeader(submodelSchema, null);
 			JsonObject jElement = readCreatedTwinsDetails.get("csv").getAsJsonObject();
 			for (String field : csvHeader) {
 				jObject.add(field, jElement.get(field));

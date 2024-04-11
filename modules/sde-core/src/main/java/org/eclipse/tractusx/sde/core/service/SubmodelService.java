@@ -57,7 +57,7 @@ public class SubmodelService {
 			if (neededSubmodelList.contains(obj.getId()) || usecases == null || usecases.isEmpty()) {
 				Map<String, String> sbBuild = new LinkedHashMap<>();
 				sbBuild.put("id", obj.getId());
-				sbBuild.put("name", obj.getName());
+				sbBuild.put("name", obj.getName() +"-"+obj.getVersion());
 				sbBuild.put("version", obj.getVersion());
 				sbBuild.put("semanticId", obj.getSemanticId());
 				ls.add(sbBuild);

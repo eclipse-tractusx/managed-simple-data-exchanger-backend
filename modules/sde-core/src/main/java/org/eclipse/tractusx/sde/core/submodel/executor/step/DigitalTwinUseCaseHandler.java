@@ -2,7 +2,6 @@ package org.eclipse.tractusx.sde.core.submodel.executor.step;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -75,13 +74,36 @@ public class DigitalTwinUseCaseHandler extends Step {
 	}
 
 	private Map<String, String> generateSpecificAssetIds(JsonNode jsonObject) {
-		return getSpecificAssetIdsSpecsOfModel().entrySet().stream().map(entry -> {
-			String value = JsonObjectUtility.getValueFromJsonObjectAsString(jsonObject, entry.getValue().getAsString());
-			if (StringUtils.isBlank(value)) {
-				value = entry.getValue().getAsString();
+
+		Map<String, String> specIds = new ConcurrentHashMap<>();
+
+		getSpecificAssetIdsSpecsOfModel().entrySet().stream().forEach(entry -> {
+
+			if (entry.getKey().equals("optionalIdentifier")) {
+
+				entry.getValue().getAsJsonArray().forEach(optionaIdentifier -> {
+					
+					String key = JsonObjectUtility.getValueFromJsonObjectAsString(jsonObject,
+							optionaIdentifier.getAsJsonObject().get("key").getAsString());
+					String value = JsonObjectUtility.getValueFromJsonObjectAsString(jsonObject,
+							optionaIdentifier.getAsJsonObject().get("value").getAsString());
+					
+					if (StringUtils.isNotBlank(key) && StringUtils.isNotBlank(value))
+						specIds.put(key, value);
+					
+				});
+
+			} else {
+				String value = JsonObjectUtility.getValueFromJsonObjectAsString(jsonObject,
+						entry.getValue().getAsString());
+				if (StringUtils.isBlank(value)) {
+					value = entry.getValue().getAsString();
+				}
+				specIds.put(entry.getKey(), value);
 			}
-			return Map.entry(entry.getKey(), value);
-		}).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+		});
+
+		return specIds;
 	}
 
 	@SneakyThrows

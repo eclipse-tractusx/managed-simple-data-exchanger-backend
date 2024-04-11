@@ -259,6 +259,7 @@ public class SubmodelOrchestartorService {
 	public Map<Object, Object> readCreatedTwinsDetails(String submodel, String uuid, String type) {
 		Submodel submodelSchema = submodelService.findSubmodelByNameAsSubmdelObject(submodel);
 		SubmodelExecutor executor = getExecutor(submodelSchema.getExecutor());
+		executor.init(submodelSchema.getSchema());
 		JsonObject readCreatedTwinsDetails = executor.readCreatedTwinsDetails(uuid);
 		JsonObject jObject = new JsonObject();
 		if ("csv".equalsIgnoreCase(type)) {

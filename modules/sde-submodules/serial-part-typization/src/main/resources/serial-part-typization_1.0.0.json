@@ -374,7 +374,13 @@
 		"identifier": "uuid",
 		"specificAssetIdsSpecs": {
 			"partInstanceId": "part_instance_id",
-			"manufacturerPartId": "manufacturer_part_id"
+			"manufacturerPartId": "manufacturer_part_id",
+			"optionalIdentifier": [
+				{
+					"key": "optional_identifier_key",
+					"value": "optional_identifier_value"
+				}
+			]
 		},
 		"shortIdSpecs": [
 			"name_at_manufacturer",
@@ -383,6 +389,38 @@
 		],
 		"bpnDiscoverySpecs": {
 			"manufacturerPartId": "manufacturer_part_id"
+		},
+		"responseTemplate": {
+			"localIdentifiers": [
+				{
+					"key": "PartInstanceId",
+					"value": "${part_instance_id}"
+				},
+				{
+					"key": "ManufacturerPartID",
+					"value": "${manufacturer_part_id}"
+				},
+				{
+					"key": "${optional_identifier_key}",
+					"value": "${optional_identifier_value}"
+				},
+				{
+					"key": "ManufacturerID",
+					"value": "${manufacturerId}"
+				}
+			],
+			"manufacturingInformation": {
+				"date": "${manufacturing_date}",
+				"country": "${manufacturing_country}"
+			},
+			"catenaXId": "${uuid}",
+			"partTypeInformation": {
+				"manufacturerPartId": "${manufacturer_part_id}",
+				"customerPartId": "${customer_part_id}",
+				"classification": "${classification}",
+				"nameAtManufacturer": "${name_at_manufacturer}",
+				"nameAtCustomer": "${name_at_customer}"
+			}
 		}
 	}
 }

@@ -33,7 +33,7 @@ public class DatabaseUsecaseHandler extends Step {
 		List<String> columns = submoduleUtility.getTableColomnHeader(schemaObj);
 		String tableName = submoduleUtility.getTableName(schemaObj);
 		
-		submodelCustomHistoryGenerator.saveSubmodelData(columns, tableName, processId, jsonObject);
+		submodelCustomHistoryGenerator.saveSubmodelData(columns, tableName, processId, jsonObject, getIdentifierOfModel());
 	}
 
 	@SneakyThrows

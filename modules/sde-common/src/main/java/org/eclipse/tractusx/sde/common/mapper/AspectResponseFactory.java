@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 import lombok.SneakyThrows;
@@ -33,20 +34,33 @@ import lombok.SneakyThrows;
 public class AspectResponseFactory {
 
 	ObjectMapper mapper = new ObjectMapper();
+	Gson gson = new GsonBuilder().serializeNulls().create();
 
 	@SneakyThrows
 	public JsonObject maptoReponse(Object csvObject, Object aspectObject) {
 		JsonObject jobj = new JsonObject();
-		jobj.add("csv", extracted(csvObject));
-		jobj.add("json", new Gson().toJsonTree(aspectObject).getAsJsonObject());
+		jobj.add("csv", fasterJsonMapper(csvObject));
+		jobj.add("json", gsonMapper(aspectObject));
 
 		return jobj;
 	}
 
-	private JsonObject extracted(Object csvObject) throws JsonProcessingException {
-		String writeValueAsString = mapper.writeValueAsString(csvObject);
+	private JsonObject gsonMapper(Object aspectObject) {
+		if (aspectObject instanceof String) {
+			return gson.fromJson(aspectObject.toString(), JsonObject.class);
+		}
+		return gson.toJsonTree(aspectObject).getAsJsonObject();
+	}
+
+	private JsonObject fasterJsonMapper(Object csvObject) throws JsonProcessingException {
+		String writeValueAsString = "";
+		if (csvObject instanceof JsonObject) {
+			writeValueAsString = gson.toJson(csvObject);
+		} else {
+			writeValueAsString = mapper.writeValueAsString(csvObject);
+		}
 		writeValueAsString = writeValueAsString.replace(":null", ": \"\"");
-		return new Gson().fromJson(writeValueAsString, JsonObject.class);
+		return gson.fromJson(writeValueAsString, JsonObject.class);
 	}
 
 }

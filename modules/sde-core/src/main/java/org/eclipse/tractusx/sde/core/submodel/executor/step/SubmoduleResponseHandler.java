@@ -19,10 +19,22 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.core.submodel.executor.step;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.eclipse.tractusx.sde.common.configuration.properties.SDEConfigurationProperties;
+import org.eclipse.tractusx.sde.common.mapper.AspectResponseFactory;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
+import org.eclipse.tractusx.sde.core.utils.ValueReplacerUtility;
 import org.springframework.stereotype.Service;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import lombok.RequiredArgsConstructor;
 
@@ -30,8 +42,87 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SubmoduleResponseHandler extends Step {
 
+	private final ValueReplacerUtility valueReplacerUtility;
+	private final AspectResponseFactory aspectResponseFactory;
+	private final SDEConfigurationProperties sDEConfigurationProperties;
+
+	Gson gson = new Gson();
+
+	@SuppressWarnings("unchecked")
 	public JsonObject mapJsonbjectToFormatedResponse(JsonObject jsonObject) {
-		return getResponseTemplateOfModel();
+
+		jsonObject.addProperty("manufacturerId", sDEConfigurationProperties.getManufacturerId());
+		HashMap<String, String> jsonPojoMap = gson.fromJson(jsonObject, HashMap.class);
+		String valueReplacer = valueReplacerUtility.valueReplacer(gson.toJson(getResponseTemplateOfModel()),
+				jsonPojoMap);
+
+		return aspectResponseFactory.maptoReponse(jsonObject,
+				removeNullAndEmptyElementsFromJson(removeNullAndEmptyElementsFromJson(valueReplacer)));
+	}
+
+	@SuppressWarnings("deprecation")
+	public static String removeNullAndEmptyElementsFromJson(String jsonString) {
+		if (jsonString == null) {
+			return jsonString;
+		}
+		try {
+			JsonParser parser = new JsonParser();
+			JsonElement element = parser.parse(jsonString);
+			cleanByTree(element);
+			jsonString = new GsonBuilder().disableHtmlEscaping().create().toJson(element);
+			return jsonString;
+		} catch (Exception e) {
+			return jsonString;
+		}
+	}
+
+	private static void cleanByTree(JsonElement e1) {
+		if (e1 == null || e1.isJsonNull()) {
+		} else if (e1.isJsonArray()) {
+			for (Iterator<JsonElement> it = e1.getAsJsonArray().iterator(); it.hasNext();) {
+				extracted(it);
+			}
+		} else {
+			for (Iterator<Map.Entry<String, JsonElement>> it = e1.getAsJsonObject().entrySet().iterator(); it
+					.hasNext();) {
+				extracted1(it);
+			}
+		}
+	}
+
+	private static void extracted1(Iterator<Map.Entry<String, JsonElement>> it) {
+		Map.Entry<String, JsonElement> eIt = it.next();
+		JsonElement e2 = eIt.getValue();
+		if (e2 == null || e2.isJsonNull() || (e2.isJsonObject() && e2.getAsJsonObject().entrySet().isEmpty())) {
+			it.remove();
+		} else if (e2.isJsonArray()) {
+			if (e2.getAsJsonArray().size() == 0) {
+				it.remove();
+			} else {
+				cleanByTree(e2);
+			}
+		} else if (e2.isJsonObject()) {
+			cleanByTree(e2);
+		} else if (StringUtils.isBlank(e2.getAsString())) {
+			it.remove();
+		}
+	}
+
+	private static void extracted(Iterator<JsonElement> it) {
+		JsonElement e2 = it.next();
+		if (e2 == null || e2.isJsonNull() || (e2.isJsonObject() && e2.getAsJsonObject().entrySet().isEmpty())) {
+			it.remove();
+		} else if (e2.isJsonArray()) {
+			if (e2.getAsJsonArray().size() == 0) {
+				it.remove();
+			} else {
+				cleanByTree(e2);
+			}
+		} else if (e2.isJsonObject()) {
+			cleanByTree(e2);
+		} else if (StringUtils.isBlank(e2.getAsString())) {
+			it.remove();
+		}
 	}
 
 }

@@ -98,6 +98,7 @@ public class GenericSubmodelExecutor extends SubmodelExecutor {
 	@Override
 	public JsonObject readCreatedTwinsDetails(String uuid) {
 		databaseUsecaseHandler.init(getSubmodelSchema());
+		submoduleResponseHandler.init(getSubmodelSchema());
 		return submoduleResponseHandler.mapJsonbjectToFormatedResponse(databaseUsecaseHandler.readCreatedTwinsDetails(uuid));
 	}
 

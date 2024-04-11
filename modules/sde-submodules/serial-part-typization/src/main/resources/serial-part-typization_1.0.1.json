@@ -2,10 +2,10 @@
 	"$schema": "https://json-schema.org/draft/2019-09/schema",
 	"$id": "http://example.com/example.json",
 	"type": "array",
-	"id": "serialpart_v101",
+	"id": "serialpart_101",
 	"idShort": "serialPart",
-	"version": "1.0.0",
-	"semantic_id": "urn:bamm:io.catenax.serial_part:1.0.0#SerialPart",
+	"version": "1.0.1",
+	"semantic_id": "urn:bamm:io.catenax.serial_part:1.0.1#SerialPart",
 	"title": "Serial Part",
 	"shortDescription": "BoM As-Built - Submodel SerialPart",
 	"description": "A serialized part is an instantiation of a (design-) part, where the particular instantiation can be uniquely identified by means of a serial numbers or a similar identifier (e.g. VAN) or a combination of multiple identifiers (e.g. combination of manufacturer, date and number)",
@@ -374,12 +374,19 @@
 		"identifier": "uuid",
 		"specificAssetIdsSpecs": {
 			"partInstanceId": "part_instance_id",
-			"manufacturerPartId": "manufacturer_part_id"
+			"manufacturerPartId": "manufacturer_part_id",
+			"optionalIdentifier": [
+				{
+					"key": "optional_identifier_key",
+					"value" :"optional_identifier_value"
+				}
+			]
 		},
 		"shortIdSpecs": [
 			"name_at_manufacturer",
 			"part_instance_id",
 			"manufacturer_part_id"
+			
 		],
 		"bpnDiscoverySpecs": {
 			"manufacturerPartId": "manufacturer_part_id"
@@ -387,8 +394,20 @@
 		"responseTemplate": {
 			"localIdentifiers": [
 				{
-					"value": "${part_instance_id}",
-					"key": "PartInstanceID"
+					"key": "PartInstanceId",
+					"value": "${part_instance_id}"
+				},
+				{
+					"key": "ManufacturerPartID",
+					"value": "${manufacturer_part_id}"
+				},
+				{
+					"key": "${optional_identifier_key}",
+					"value": "${optional_identifier_value}"
+				},
+				{
+					"key": "ManufacturerID",
+					"value": "${manufacturerId}"
 				}
 			],
 			"manufacturingInformation": {
@@ -405,3 +424,4 @@
 			}
 		}
 	}
+}

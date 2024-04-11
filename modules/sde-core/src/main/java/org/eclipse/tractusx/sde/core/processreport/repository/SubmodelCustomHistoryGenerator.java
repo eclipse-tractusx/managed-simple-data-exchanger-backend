@@ -45,7 +45,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -161,22 +160,29 @@ public class SubmodelCustomHistoryGenerator {
 	@Transactional
 	@SneakyThrows
 	public JsonNode saveSubmodelData(List<String> colNames, String tableEntityName, String processId,
-			JsonNode submodelData) {
+			JsonNode submodelData, String pkColomn) {
 		try {
 			StringBuilder colname = new StringBuilder();
 			StringBuilder parameters = new StringBuilder();
+			StringBuilder updateParameters = new StringBuilder();
 			colNames.forEach(ele -> {
 				if (parameters.isEmpty()) {
 					colname.append(ele);
 					parameters.append("?");
+					updateParameters.append(ele + " = EXCLUDED." + ele);
 				} else {
 					colname.append("," + ele);
 					parameters.append(",?");
+					updateParameters.append("," + ele + " = EXCLUDED." + ele);
 				}
 			});
 
-			Query query = entityManager.createNativeQuery(
-					"INSERT INTO " + tableEntityName + " (" + colname + ") VALUES (" + parameters + ")");
+			Query query = entityManager
+					.createNativeQuery("INSERT INTO " + tableEntityName + " (" + colname + ") VALUES (" + parameters
+							+ ")" + " ON CONFLICT (" + pkColomn + ") " + " DO " + " UPDATE SET " + updateParameters
+
+					);
+
 			AtomicInteger i = new AtomicInteger(1);
 			colNames.forEach(col -> query.setParameter(i.getAndIncrement(),
 					JsonObjectUtility.getValueFromJsonObject(submodelData, col)));
@@ -208,11 +214,12 @@ public class SubmodelCustomHistoryGenerator {
 	@SneakyThrows
 	public int countUpdatedRecordCount(String tableEntityName, String updated, String processId) {
 		try {
-			Query query = entityManager.createNativeQuery(
-					"select count(ae) from " + tableEntityName + " as p WHERE ae.updated = ? and process_id= ? )");
+
+			Query query = entityManager.createNativeQuery("select 'record' from " + tableEntityName
+					+ " as p WHERE p.updated = ? and p.process_id= ?");
 			query.setParameter(1, updated);
 			query.setParameter(2, processId);
-			return query.getMaxResults();
+			return query.getResultList().size();
 		} catch (Exception e) {
 			throw new ServiceException("Unable to count updated records " + e.getMessage());
 		}

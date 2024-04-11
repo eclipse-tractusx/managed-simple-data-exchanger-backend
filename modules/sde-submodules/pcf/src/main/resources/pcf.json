@@ -966,6 +966,10 @@
 		"shortIdSpecs": [
 			"productName",
 			"productId"
-		]
+		],
+		"bpnDiscoverySpecs": {
+			"manufacturerPartId": "productId"
+		},
+		"responseTemplate": {}
 	}
 }

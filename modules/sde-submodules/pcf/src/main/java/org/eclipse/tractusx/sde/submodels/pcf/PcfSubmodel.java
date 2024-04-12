@@ -40,7 +40,7 @@ public class PcfSubmodel extends SubmodelExtension {
 	@PostConstruct
 	public void init() {
 
-		String resource = "pcf.json";
+		String resource = "pcf-v6.0.0.json";
 		// this is the path within the jar file
 		InputStream input = this.getClass().getResourceAsStream("/resources/" + resource);
 		if (input == null) {
@@ -52,7 +52,7 @@ public class PcfSubmodel extends SubmodelExtension {
 		
 		submodel.setEdcUseCaseStep(eDCPcfHandlerUseCase);
 		
-		submodel.addProperties("tableName", "pcf_aspect");
+		submodel.addProperties("tableName", "pcf_v_600");
 	}
 
 	@Override

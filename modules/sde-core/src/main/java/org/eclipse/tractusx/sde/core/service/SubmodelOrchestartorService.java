@@ -137,7 +137,7 @@ public class SubmodelOrchestartorService {
 			AtomicInteger failureCount = new AtomicInteger();
 
 			SubmodelExecutor executor = getExecutor(submodelSchemaObject.getExecutor());
-			executor.init(submodelSchemaObject.getSchema());
+			executor.init(submodelSchemaObject);
 
 			csvContent.getRows().parallelStream().forEach(rowjObj -> {
 				try {
@@ -172,8 +172,6 @@ public class SubmodelOrchestartorService {
 	@SneakyThrows
 	public void processSubmodel(SubmodelJsonRequest submodelJsonRequest, String processId, String submodel) {
 		Submodel submodelSchemaObject = submodelService.findSubmodelByNameAsSubmdelObject(submodel);
-		JsonObject submodelSchema = submodelSchemaObject.getSchema();
-
 		List<ObjectNode> rowData = submodelJsonRequest.getRowData();
 
 		PolicyModel policy = onFlyPolicyManagement(policyMapper.mapFrom(submodelJsonRequest));
@@ -184,7 +182,7 @@ public class SubmodelOrchestartorService {
 			AtomicInteger successCount = new AtomicInteger();
 			AtomicInteger failureCount = new AtomicInteger();
 			SubmodelExecutor executor = getExecutor(submodelSchemaObject.getExecutor());
-			executor.init(submodelSchema);
+			executor.init(submodelSchemaObject);
 
 			processReportUseCase.startBuildProcessReport(processId, submodelSchemaObject.getId(), rowData.size(),
 					policy.getAccessPolicies(), policy.getUsagePolicies(), policy.getUuid());
@@ -229,6 +227,7 @@ public class SubmodelOrchestartorService {
 		Submodel submodelSchema = submodelService.findSubmodelByNameAsSubmdelObject(submodel);
 		AtomicInteger deletedCount = new AtomicInteger();
 		AtomicInteger failureCount = new AtomicInteger();
+		AtomicInteger atInt = new AtomicInteger();
 
 		SubmodelExecutor executor = getExecutor(submodelSchema.getExecutor());
 
@@ -240,10 +239,16 @@ public class SubmodelOrchestartorService {
 
 			processReportUseCase.startDeleteProcess(oldProcessReport, refProcessId, submodel,
 					readCreatedTwinsforDelete.size(), delProcessId);
+			
+			readCreatedTwinsforDelete.stream().forEach(obj -> {
+				int andIncrement = atInt.incrementAndGet();
+				obj.addProperty(ROW_NUMBER, andIncrement);
+				obj.addProperty(PROCESS_ID, refProcessId);
+			});
 
 			readCreatedTwinsforDelete.parallelStream().forEach(rowjObj -> {
 				try {
-					executor.executeDeleteRecord(rowjObj, delProcessId, refProcessId);
+					executor.executeDeleteRecord(rowjObj.get(ROW_NUMBER).getAsInt(), rowjObj, delProcessId, refProcessId);
 					deletedCount.incrementAndGet();
 				} catch (Exception e) {
 					failureLogs.saveLog(delProcessId, e.getMessage());
@@ -259,7 +264,7 @@ public class SubmodelOrchestartorService {
 	public Map<Object, Object> readCreatedTwinsDetails(String submodel, String uuid, String type) {
 		Submodel submodelSchema = submodelService.findSubmodelByNameAsSubmdelObject(submodel);
 		SubmodelExecutor executor = getExecutor(submodelSchema.getExecutor());
-		executor.init(submodelSchema.getSchema());
+		executor.init(submodelSchema);
 		JsonObject readCreatedTwinsDetails = executor.readCreatedTwinsDetails(uuid);
 		JsonObject jObject = new JsonObject();
 		if ("csv".equalsIgnoreCase(type)) {

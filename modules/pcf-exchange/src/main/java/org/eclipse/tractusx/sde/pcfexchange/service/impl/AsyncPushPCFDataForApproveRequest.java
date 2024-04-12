@@ -29,8 +29,6 @@ import org.eclipse.tractusx.sde.common.utils.PolicyOperationUtil;
 import org.eclipse.tractusx.sde.pcfexchange.enums.PCFRequestStatusEnum;
 import org.eclipse.tractusx.sde.pcfexchange.enums.PCFTypeEnum;
 import org.eclipse.tractusx.sde.pcfexchange.request.PcfRequestModel;
-import org.eclipse.tractusx.sde.submodels.pcf.entity.PcfEntity;
-import org.eclipse.tractusx.sde.submodels.pcf.service.PcfService;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.JsonObject;
@@ -46,8 +44,6 @@ public class AsyncPushPCFDataForApproveRequest {
 
 	private final PCFRepositoryService pcfRepositoryService;
 	
-	private final PcfService pcfService;
-
 	private final ProxyRequestInterface proxyRequestInterface;
 	
 
@@ -55,8 +51,7 @@ public class AsyncPushPCFDataForApproveRequest {
 		
 		List<String> accessBPNList = PolicyOperationUtil.getAccessBPNList(policy);
 
-		List<String> productList = pcfService.readCreatedTwins(processId).stream().map(PcfEntity::getProductId)
-				.toList();
+		List<String> productList = null;// pcfService.readCreatedTwins(processId).stream().map(PcfEntity::getProductId).toList();
 
 		markedPCFDataForPendingProviderRequestAsRequested(productList);
 
@@ -76,9 +71,10 @@ public class AsyncPushPCFDataForApproveRequest {
 					try {
 						request.setStatus(PCFRequestStatusEnum.PUSHING_UPDATED_DATA);
 
-						JsonObject calculatedPCFValue = pcfService
-								.readCreatedTwinsDetailsByProductId(request.getProductId()).get("json")
-								.getAsJsonObject();
+						JsonObject calculatedPCFValue = null;
+//						pcfService
+//								.readCreatedTwinsDetailsByProductId(request.getProductId()).get("json")
+//								.getAsJsonObject();
 
 						PCFRequestStatusEnum status = pcfRepositoryService.identifyRunningStatus(request.getRequestId(),
 								request.getStatus());
@@ -120,8 +116,8 @@ public class AsyncPushPCFDataForApproveRequest {
 				if (productList.contains(request.getProductId())) {
 					String msg = "";
 					try {
-						pcfService.readCreatedTwinsDetailsByProductId(request.getProductId()).get("json")
-								.getAsJsonObject();
+//						pcfService.readCreatedTwinsDetailsByProductId(request.getProductId()).get("json")
+//								.getAsJsonObject();
 						pcfRepositoryService.savePcfStatus(request.getRequestId(), PCFRequestStatusEnum.REQUESTED);
 
 					} catch (NoDataFoundException e) {

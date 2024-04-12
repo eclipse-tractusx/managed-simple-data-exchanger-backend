@@ -27,6 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.configuration.properties.SDEConfigurationProperties;
 import org.eclipse.tractusx.sde.common.mapper.AspectResponseFactory;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
+import org.eclipse.tractusx.sde.common.submodel.executor.SubmoduleMapperUsecaseStep;
 import org.eclipse.tractusx.sde.core.utils.ValueReplacerUtility;
 import org.springframework.stereotype.Service;
 
@@ -38,9 +39,9 @@ import com.google.gson.JsonParser;
 
 import lombok.RequiredArgsConstructor;
 
-@Service
+@Service("SubmoduleResponseHandler")
 @RequiredArgsConstructor
-public class SubmoduleResponseHandler extends Step {
+public class SubmoduleResponseHandler extends Step  implements SubmoduleMapperUsecaseStep {
 
 	private final ValueReplacerUtility valueReplacerUtility;
 	private final AspectResponseFactory aspectResponseFactory;

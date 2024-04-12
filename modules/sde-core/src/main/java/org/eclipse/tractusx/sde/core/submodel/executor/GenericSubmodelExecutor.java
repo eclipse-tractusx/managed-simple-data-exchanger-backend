@@ -1,40 +1,68 @@
 package org.eclipse.tractusx.sde.core.submodel.executor;
 
 import java.util.List;
+import java.util.Optional;
 
-import org.eclipse.tractusx.sde.bpndiscovery.handler.BPNDiscoveryUseCaseHandler;
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.entities.csv.RowData;
+import org.eclipse.tractusx.sde.common.submodel.executor.BPNDiscoveryUsecaseStep;
+import org.eclipse.tractusx.sde.common.submodel.executor.DatabaseUsecaseStep;
+import org.eclipse.tractusx.sde.common.submodel.executor.DigitalTwinUsecaseStep;
+import org.eclipse.tractusx.sde.common.submodel.executor.EDCUsecaseStep;
 import org.eclipse.tractusx.sde.common.submodel.executor.SubmodelExecutor;
+import org.eclipse.tractusx.sde.common.submodel.executor.SubmoduleMapperUsecaseStep;
 import org.eclipse.tractusx.sde.common.submodel.executor.create.steps.impl.CsvParse;
 import org.eclipse.tractusx.sde.common.submodel.executor.create.steps.impl.GenerateUrnUUID;
 import org.eclipse.tractusx.sde.common.submodel.executor.create.steps.impl.JsonRecordFormating;
 import org.eclipse.tractusx.sde.common.submodel.executor.create.steps.impl.JsonRecordValidate;
-import org.eclipse.tractusx.sde.core.submodel.executor.step.DatabaseUsecaseHandler;
-import org.eclipse.tractusx.sde.core.submodel.executor.step.DigitalTwinUseCaseHandler;
-import org.eclipse.tractusx.sde.core.submodel.executor.step.EDCUsecaseHandler;
-import org.eclipse.tractusx.sde.core.submodel.executor.step.SubmoduleResponseHandler;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.JsonObject;
 
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 @Component
-@RequiredArgsConstructor
 public class GenericSubmodelExecutor extends SubmodelExecutor {
 
 	private final CsvParse csvParseStep;
 	private final JsonRecordFormating jsonRecordformater;
 	private final GenerateUrnUUID generateUrnUUID;
 	private final JsonRecordValidate jsonRecordValidate;
-	private final DigitalTwinUseCaseHandler digitalTwinUseCaseHandler;
-	private final EDCUsecaseHandler eDCAspectHandlerUseCase;
-	private final BPNDiscoveryUseCaseHandler bPNDiscoveryUseCaseHandler;
-	private final DatabaseUsecaseHandler databaseUsecaseHandler;
-	private final SubmoduleResponseHandler submoduleResponseHandler;
+
+	@Qualifier("DigitalTwinUseCaseHandler")
+	private final DigitalTwinUsecaseStep digitalTwinUseCaseStep;
+
+	@Qualifier("EDCUsecaseHandler")
+	private final EDCUsecaseStep edcUseCaseStep;
+
+	@Qualifier("BPNDiscoveryUseCaseHandler")
+	private final BPNDiscoveryUsecaseStep bpnUseCaseTwinStep;
+
+	@Qualifier("DatabaseUsecaseHandler")
+	private final DatabaseUsecaseStep databaseUseCaseStep;
+
+	@Qualifier("SubmoduleResponseHandler")
+	private final SubmoduleMapperUsecaseStep submodelMapperUseCaseStep;
+
+	public GenericSubmodelExecutor(CsvParse csvParseStep, JsonRecordFormating jsonRecordformater,
+			GenerateUrnUUID generateUrnUUID, JsonRecordValidate jsonRecordValidate,
+			@Qualifier("DigitalTwinUseCaseHandler") DigitalTwinUsecaseStep digitalTwinUseCaseStep,
+			@Qualifier("EDCUsecaseHandler") EDCUsecaseStep edcUseCaseStep,
+			@Qualifier("BPNDiscoveryUseCaseHandler") BPNDiscoveryUsecaseStep bpnUseCaseTwinStep,
+			@Qualifier("DatabaseUsecaseHandler") DatabaseUsecaseStep databaseUseCaseStep,
+			@Qualifier("SubmoduleResponseHandler") SubmoduleMapperUsecaseStep submodelMapperUseCaseStep) {
+		this.csvParseStep = csvParseStep;
+		this.jsonRecordformater = jsonRecordformater;
+		this.generateUrnUUID = generateUrnUUID;
+		this.jsonRecordValidate = jsonRecordValidate;
+		this.digitalTwinUseCaseStep = digitalTwinUseCaseStep;
+		this.edcUseCaseStep = edcUseCaseStep;
+		this.bpnUseCaseTwinStep = bpnUseCaseTwinStep;
+		this.databaseUseCaseStep = databaseUseCaseStep;
+		this.submodelMapperUseCaseStep = submodelMapperUseCaseStep;
+	}
 
 	@SneakyThrows
 	@Override
@@ -66,49 +94,67 @@ public class GenericSubmodelExecutor extends SubmodelExecutor {
 		jsonRecordValidate.init(getSubmodelSchema());
 		jsonRecordValidate.run(rowIndex, jsonObject);
 
-		digitalTwinUseCaseHandler.init(getSubmodelSchema());
-		digitalTwinUseCaseHandler.run(jsonObject, policy);
+		getDtExecutorStep().init(getSubmodelSchema());
+		getDtExecutorStep().run(rowIndex, jsonObject, processId, policy);
 
-		eDCAspectHandlerUseCase.init(getSubmodelSchema());
-		eDCAspectHandlerUseCase.run(rowIndex, jsonObject, processId, policy);
+		getEDCExecutorStep().init(getSubmodelSchema());
+		getEDCExecutorStep().run(rowIndex, jsonObject, processId, policy);
 
-		bPNDiscoveryUseCaseHandler.init(getSubmodelSchema());
-		bPNDiscoveryUseCaseHandler.run(jsonObject);
+		getBpnExecutorStep().init(getSubmodelSchema());
+		getBpnExecutorStep().run(rowIndex, jsonObject, processId, policy);
 
-		databaseUsecaseHandler.init(getSubmodelSchema());
-		databaseUsecaseHandler.run(jsonObject, processId);
+		getDatabaseExecutorStep().init(getSubmodelSchema());
+		getDatabaseExecutorStep().run(rowIndex, jsonObject, processId, policy);
 	}
 
 	@Override
-	public void executeDeleteRecord(JsonObject jsonObject, String delProcessId, String refProcessId) {
-		eDCAspectHandlerUseCase.init(getSubmodelSchema());
-		eDCAspectHandlerUseCase.deleteEDCAsset(jsonObject);
-		digitalTwinUseCaseHandler.init(getSubmodelSchema());
-		digitalTwinUseCaseHandler.deleteSubmodelfromShellById(jsonObject);
-		databaseUsecaseHandler.init(getSubmodelSchema());
-		databaseUsecaseHandler.saveSubmoduleWithDeleted(jsonObject, delProcessId, refProcessId);
+	public void executeDeleteRecord(Integer rowIndex, JsonObject jsonObject, String delProcessId, String refProcessId) {
+		getEDCExecutorStep().init(getSubmodelSchema());
+		getEDCExecutorStep().delete(rowIndex, jsonObject, delProcessId, refProcessId);
+		getDtExecutorStep().init(getSubmodelSchema());
+		getDtExecutorStep().delete(rowIndex, jsonObject, delProcessId, refProcessId);
+		getDatabaseExecutorStep().init(getSubmodelSchema());
+		getDatabaseExecutorStep().delete(rowIndex, jsonObject, delProcessId, refProcessId);
 	}
 
 	@Override
 	public List<JsonObject> readCreatedTwinsforDelete(String refProcessId) {
-		databaseUsecaseHandler.init(getSubmodelSchema());
-		return databaseUsecaseHandler.readCreatedTwinsforDelete(refProcessId);
+		getDatabaseExecutorStep().init(getSubmodelSchema());
+		return getDatabaseExecutorStep().readCreatedTwinsforDelete(refProcessId);
 	}
 
 	@Override
 	public JsonObject readCreatedTwinsDetails(String uuid) {
-		databaseUsecaseHandler.init(getSubmodelSchema());
-		submoduleResponseHandler.init(getSubmodelSchema());
-		return submoduleResponseHandler.mapJsonbjectToFormatedResponse(databaseUsecaseHandler.readCreatedTwinsDetails(uuid));
+		getDatabaseExecutorStep().init(getSubmodelSchema());
+		getSubmodelMapperExecutorStep().init(getSubmodelSchema());
+		return getSubmodelMapperExecutorStep()
+				.mapJsonbjectToFormatedResponse(getDatabaseExecutorStep().readCreatedTwinsDetails(uuid));
 	}
 
 	@Override
 	public int getUpdatedRecordCount(String processId) {
-		databaseUsecaseHandler.init(getSubmodelSchema());
-		return databaseUsecaseHandler.getUpdatedData(processId);
+		getDatabaseExecutorStep().init(getSubmodelSchema());
+		return getDatabaseExecutorStep().getUpdatedData(processId);
 	}
-	
-	
 
+	private DigitalTwinUsecaseStep getDtExecutorStep() {
+		return Optional.ofNullable(submodel.getDigitalTwinUseCaseStep()).orElse(digitalTwinUseCaseStep);
+	}
+
+	private EDCUsecaseStep getEDCExecutorStep() {
+		return Optional.ofNullable(submodel.getEdcUseCaseStep()).orElse(edcUseCaseStep);
+	}
+
+	private BPNDiscoveryUsecaseStep getBpnExecutorStep() {
+		return Optional.ofNullable(submodel.getBpnUseCaseTwinStep()).orElse(bpnUseCaseTwinStep);
+	}
+
+	private DatabaseUsecaseStep getDatabaseExecutorStep() {
+		return Optional.ofNullable(submodel.getDatabaseUseCaseStep()).orElse(databaseUseCaseStep);
+	}
+
+	private SubmoduleMapperUsecaseStep getSubmodelMapperExecutorStep() {
+		return Optional.ofNullable(submodel.getSubmodelMapperUseCaseStep()).orElse(submodelMapperUseCaseStep);
+	}
 
 }

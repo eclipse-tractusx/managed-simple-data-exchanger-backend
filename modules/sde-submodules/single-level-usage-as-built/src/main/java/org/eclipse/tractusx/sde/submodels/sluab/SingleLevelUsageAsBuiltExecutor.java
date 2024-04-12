@@ -122,7 +122,7 @@ public class SingleLevelUsageAsBuiltExecutor extends SubmodelExecutor {
 	}
 
 	@Override
-	public void executeDeleteRecord(JsonObject jsonObject, String delProcessId, String refProcessId) {
+	public void executeDeleteRecord(Integer rowIndex, JsonObject jsonObject, String delProcessId, String refProcessId) {
 		singleLevelUsageAsBuiltService.deleteAllDataBySequence(jsonObject);
 	}
 

@@ -39,7 +39,6 @@ import org.eclipse.tractusx.sde.pcfexchange.enums.PCFTypeEnum;
 import org.eclipse.tractusx.sde.pcfexchange.repository.PcfReqsponseRepository;
 import org.eclipse.tractusx.sde.pcfexchange.request.PcfRequestModel;
 import org.eclipse.tractusx.sde.pcfexchange.service.IPCFExchangeService;
-import org.eclipse.tractusx.sde.submodels.pcf.service.PcfService;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -58,7 +57,7 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 	private final PCFRepositoryService pcfRepositoryService;
 	private final PcfReqsponseRepository pcfReqsponseRepository;
 	private final EDCAssetUrlCacheService edcAssetUrlCacheService;
-	private final PcfService pcfService;
+	//private final PcfService pcfService;
 	private final ProxyRequestInterface proxyRequestInterface;
 
 	@SneakyThrows
@@ -126,8 +125,9 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 		String remark = "";
 		try {
 
-			JsonObject calculatedPCFValue = pcfService
-					.readCreatedTwinsDetailsByProductId(pcfRequestModel.getProductId()).get("json").getAsJsonObject();
+			JsonObject calculatedPCFValue = null;
+//			pcfService
+//					.readCreatedTwinsDetailsByProductId(pcfRequestModel.getProductId()).get("json").getAsJsonObject();
 
 			
 			PCFRequestStatusEnum status = pcfRepositoryService.identifyRunningStatus(pcfRequestModel.getRequestId(),
@@ -163,7 +163,7 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 		PCFRequestStatusEnum status = PCFRequestStatusEnum.REQUESTED;
 		String remark = "";
 		try {
-			pcfService.readCreatedTwinsDetailsByProductId(productId).get("json").getAsJsonObject();
+//			pcfService.readCreatedTwinsDetailsByProductId(productId).get("json").getAsJsonObject();
 		} catch (NoDataFoundException e) {
 			String msg = "The PCF calculated value does not exist in system, please upload PCF value for '" + productId
 					+ "' in systems using Manual/Recurring Upload";

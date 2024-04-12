@@ -9,18 +9,22 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.bpndiscovery.model.request.BpnDiscoveryRequest;
 import org.eclipse.tractusx.sde.common.constants.SubmoduleCommonColumnsConstant;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
+import org.eclipse.tractusx.sde.common.submodel.executor.BPNDiscoveryUsecaseStep;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
 import org.eclipse.tractusx.sde.common.utils.JsonObjectUtility;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.gson.JsonObject;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class BPNDiscoveryUseCaseHandler extends Step {
+public class BPNDiscoveryUseCaseHandler extends Step implements BPNDiscoveryUsecaseStep {
 
 	private final BpnDiscoveryProxyService bpnDiscoveryProxyService;
 
@@ -39,6 +43,18 @@ public class BPNDiscoveryUseCaseHandler extends Step {
 		} catch (Exception e) {
 			throw new ServiceException("Exception in BPN Discovery creation : " + e.getMessage());
 		}
+	}
+
+	@Override
+	public JsonNode run(Integer rowIndex, ObjectNode jsonObject, String processId, PolicyModel policy) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void delete(Integer rowIndex, JsonObject jsonObject, String delProcessId, String refProcessId) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	public void run(JsonNode jsonObject) throws ServiceException {
@@ -71,4 +87,5 @@ public class BPNDiscoveryUseCaseHandler extends Step {
 		}).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 	}
 
+	
 }

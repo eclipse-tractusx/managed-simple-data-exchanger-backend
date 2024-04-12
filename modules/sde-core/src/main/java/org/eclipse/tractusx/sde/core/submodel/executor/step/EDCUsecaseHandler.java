@@ -25,6 +25,7 @@ import java.util.Map;
 import org.eclipse.tractusx.sde.common.constants.SubmoduleCommonColumnsConstant;
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
+import org.eclipse.tractusx.sde.common.submodel.executor.EDCUsecaseStep;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
 import org.eclipse.tractusx.sde.common.utils.JsonObjectUtility;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequest;
@@ -40,9 +41,9 @@ import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
-@Service
+@Service("EDCUsecaseHandler")
 @RequiredArgsConstructor
-public class EDCUsecaseHandler extends Step {
+public class EDCUsecaseHandler extends Step implements EDCUsecaseStep {
 
 	private final AssetEntryRequestFactory assetFactory;
 	private final EDCGateway edcGateway;
@@ -76,7 +77,7 @@ public class EDCUsecaseHandler extends Step {
 		}
 	}
 
-	public void deleteEDCAsset(JsonObject jsonObject) {
+	public void delete(Integer rowIndex, JsonObject jsonObject, String delProcessId, String refProcessId) {
 
 		deleteEDCFacilitator.deleteContractDefination(JsonObjectUtility.getValueFromJsonObject(jsonObject,
 				SubmoduleCommonColumnsConstant.CONTRACT_DEFINATION_ID));
@@ -89,5 +90,6 @@ public class EDCUsecaseHandler extends Step {
 
 		deleteEDCFacilitator.deleteAssets(
 				JsonObjectUtility.getValueFromJsonObject(jsonObject, SubmoduleCommonColumnsConstant.ASSET_ID));
+		
 	}
 }

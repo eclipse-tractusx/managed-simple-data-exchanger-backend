@@ -22,48 +22,55 @@ package org.eclipse.tractusx.sde.submodels.pcf.steps;
 
 import java.util.Map;
 
-import org.eclipse.tractusx.sde.common.constants.CommonConstants;
+import org.eclipse.tractusx.sde.common.constants.SubmoduleCommonColumnsConstant;
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
+import org.eclipse.tractusx.sde.common.submodel.executor.EDCUsecaseStep;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
+import org.eclipse.tractusx.sde.common.utils.JsonObjectUtility;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequestFactory;
 import org.eclipse.tractusx.sde.edc.facilitator.CreateEDCAssetFacilator;
 import org.eclipse.tractusx.sde.edc.gateways.external.EDCGateway;
-import org.eclipse.tractusx.sde.submodels.pcf.model.PcfAspect;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.gson.JsonObject;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 @Service
 @RequiredArgsConstructor
-public class EDCPcfHandlerUseCase extends Step {
+public class EDCPcfHandlerUseCase extends Step implements EDCUsecaseStep {
 
 	private final AssetEntryRequestFactory assetFactory;
 	private final EDCGateway edcGateway;
 	private final CreateEDCAssetFacilator createEDCAssetFacilator;
 
-
 	@Value(value = "${dft.hostname}")
 	private String dftHostname;
 
 	@SneakyThrows
-	public PcfAspect run(String submodel, PcfAspect input, String processId, PolicyModel policy) {
-		String shellId = input.getShellId();
-		String subModelId = input.getSubModelId();
+	@Override
+	public JsonNode run(Integer rowIndex, ObjectNode jsonObject, String processId, PolicyModel policy) {
 
 		try {
+			String submodule = getNameOfModel();
+			String shellId = JsonObjectUtility.getValueFromJsonObjectAsString(jsonObject,
+					SubmoduleCommonColumnsConstant.SHELL_ID);
+			String subModelId = JsonObjectUtility.getValueFromJsonObjectAsString(jsonObject,
+					SubmoduleCommonColumnsConstant.SUBMODULE_ID);
+			String uuid = JsonObjectUtility.getValueFromJsonObjectAsString(jsonObject, getIdentifierOfModel());
 
-			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
-					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getId(), getsemanticIdOfModel(),
-					"");
+			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodule,
+					getSubmodelShortDescriptionOfModel(), shellId, subModelId, uuid, getsemanticIdOfModel(), "");
 
 			String baseURL = UriComponentsBuilder.fromHttpUrl(dftHostname).path("/pcf/productIds/")
-					.path(input.getProductId())
-					.toUriString();
+					.path(uuid).toUriString();
 
 			assetEntryRequest.getDataAddress().getProperties().put("baseUrl", baseURL);
 
@@ -73,19 +80,17 @@ public class EDCPcfHandlerUseCase extends Step {
 				eDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest, policy);
 			} else {
 				eDCAsset = createEDCAssetFacilator.updateEDCAsset(assetEntryRequest, policy);
-				input.setUpdated(CommonConstants.UPDATED_Y);
 			}
-
-			// EDC transaction information for DB
-			input.setAssetId(eDCAsset.get("assetId"));
-			input.setAccessPolicyId(eDCAsset.get("accessPolicyId"));
-			input.setUsagePolicyId(eDCAsset.get("usagePolicyId"));
-			input.setContractDefinationId(eDCAsset.get("contractDefinitionId"));
-
-			return input;
+			eDCAsset.entrySet().forEach(entry -> jsonObject.put(entry.getKey(), entry.getValue()));
+			return jsonObject;
 		} catch (Exception e) {
-			throw new CsvHandlerUseCaseException(input.getRowNumber(), "EDC: " + e.getMessage());
+			throw new CsvHandlerUseCaseException(rowIndex, "EDC: " + e.getMessage());
 		}
+	}
+
+	@Override
+	public void delete(Integer rowIndex, JsonObject jsonObject, String delProcessId, String refProcessId) {
+
 	}
 
 }

@@ -11,6 +11,7 @@ import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.constants.SubmoduleCommonColumnsConstant;
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.exception.CsvHandlerDigitalTwinUseCaseException;
+import org.eclipse.tractusx.sde.common.submodel.executor.DigitalTwinUsecaseStep;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
 import org.eclipse.tractusx.sde.common.utils.JsonObjectUtility;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.CreateSubModelRequest;
@@ -21,18 +22,16 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelListRespo
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelResponse;
 import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsFacilitator;
 import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsUtility;
-import org.springframework.stereotype.Component;
-
-import com.fasterxml.jackson.databind.JsonNode;
+import org.springframework.stereotype.Service;import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.JsonObject;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
-@Component
+@Service("DigitalTwinUseCaseHandler")
 @RequiredArgsConstructor
-public class DigitalTwinUseCaseHandler extends Step {
+public class DigitalTwinUseCaseHandler extends Step implements DigitalTwinUsecaseStep {
 
 	private final DigitalTwinsFacilitator digitalTwinFacilitator;
 
@@ -41,7 +40,7 @@ public class DigitalTwinUseCaseHandler extends Step {
 	private final SDEConfigurationProperties sdeConfigProperties;
 
 	@SneakyThrows
-	public JsonNode run(JsonNode jsonObject, PolicyModel policy) {
+	public JsonNode run(Integer rowIndex, ObjectNode jsonObject, String processId, PolicyModel policy) {
 
 		String identifier = getIdentifier(jsonObject);
 		String shortIdForShell = generateShortId(jsonObject);
@@ -54,15 +53,22 @@ public class DigitalTwinUseCaseHandler extends Step {
 
 		String shellId = checkAndCreateShellIfNotExist(specificAssetIds, aasDescriptorRequest);
 
-		((ObjectNode) jsonObject).put(SubmoduleCommonColumnsConstant.SHELL_ID, shellId);
+		jsonObject.put(SubmoduleCommonColumnsConstant.SHELL_ID, shellId);
 
 		Map<String, String> submodelId = checkAndCreateSubmodulIfNotExist(aasDescriptorRequest, shellId);
 
-		submodelId.entrySet().forEach(entry -> ((ObjectNode) jsonObject).put(entry.getKey(), entry.getValue()));
+		submodelId.entrySet().forEach(entry -> jsonObject.put(entry.getKey(), entry.getValue()));
 
 		return jsonObject;
 	}
 
+	public void delete(Integer rowIndex, JsonObject jsonObject, String delProcessId, String refProcessId) {
+		String shellId = JsonObjectUtility.getValueFromJsonObject(jsonObject, SubmoduleCommonColumnsConstant.SHELL_ID);
+		String submodelId = JsonObjectUtility.getValueFromJsonObject(jsonObject,
+				SubmoduleCommonColumnsConstant.SUBMODULE_ID);
+		digitalTwinFacilitator.deleteSubmodelfromShellById(shellId, submodelId);
+	}
+	
 	private String getIdentifier(JsonNode jsonObject) {
 		return JsonObjectUtility.getValueFromJsonObjectAsString(jsonObject, getIdentifierOfModel());
 	}
@@ -82,15 +88,15 @@ public class DigitalTwinUseCaseHandler extends Step {
 			if (entry.getKey().equals("optionalIdentifier")) {
 
 				entry.getValue().getAsJsonArray().forEach(optionaIdentifier -> {
-					
+
 					String key = JsonObjectUtility.getValueFromJsonObjectAsString(jsonObject,
 							optionaIdentifier.getAsJsonObject().get("key").getAsString());
 					String value = JsonObjectUtility.getValueFromJsonObjectAsString(jsonObject,
 							optionaIdentifier.getAsJsonObject().get("value").getAsString());
-					
+
 					if (StringUtils.isNotBlank(key) && StringUtils.isNotBlank(value))
 						specIds.put(key, value);
-					
+
 				});
 
 			} else {
@@ -205,13 +211,6 @@ public class DigitalTwinUseCaseHandler extends Step {
 
 	public void updateSubModel(String shellId, String existingId, CreateSubModelRequest createSubModelRequest) {
 		digitalTwinFacilitator.updateSubModel(shellId, existingId, createSubModelRequest);
-	}
-
-	public void deleteSubmodelfromShellById(JsonObject jsonObject) {
-		String shellId = JsonObjectUtility.getValueFromJsonObject(jsonObject, SubmoduleCommonColumnsConstant.SHELL_ID);
-		String submodelId = JsonObjectUtility.getValueFromJsonObject(jsonObject,
-				SubmoduleCommonColumnsConstant.SUBMODULE_ID);
-		digitalTwinFacilitator.deleteSubmodelfromShellById(shellId, submodelId);
 	}
 
 	public List<ShellDescriptorResponse> getShellDescriptorsWithSubmodelDetails(List<String> shellIds) {

@@ -44,6 +44,7 @@ import org.eclipse.tractusx.sde.core.policy.service.PolicyService;
 import org.eclipse.tractusx.sde.core.processreport.ProcessReportUseCase;
 import org.eclipse.tractusx.sde.core.processreport.model.ProcessReport;
 import org.eclipse.tractusx.sde.core.submodel.executor.GenericSubmodelExecutor;
+import org.eclipse.tractusx.sde.core.submodel.executor.step.DatabaseUsecaseHandler;
 import org.eclipse.tractusx.sde.core.utils.SubmoduleUtility;
 import org.eclipse.tractusx.sde.pcfexchange.service.impl.AsyncPushPCFDataForApproveRequest;
 import org.eclipse.tractusx.sde.retrieverl.service.PolicyProvider;
@@ -85,13 +86,14 @@ public class SubmodelOrchestartorService {
 	private final PolicyMapper policyMapper;
 
 	private final PolicyProvider policyProvider;
-	
+
 	private final AsyncPushPCFDataForApproveRequest asyncPushPCFDataForApproveRequest;
 
 	private final SubmoduleUtility submoduleUtility;
-	
-	private final GenericSubmodelExecutor genericSubmodelExecutor; 
-	
+
+	private final GenericSubmodelExecutor genericSubmodelExecutor;
+	private final DatabaseUsecaseHandler databaseUsecaseHandler;
+
 	ObjectMapper mapper = new ObjectMapper();
 
 	public void processSubmodelCsv(PolicyTemplateRequest policyTemplateRequest, String processId, String submodel) {
@@ -158,11 +160,12 @@ public class SubmodelOrchestartorService {
 			successCount.set(successCount.get() - updatedcount);
 			processReportUseCase.finishBuildProgressReport(processId, successCount.get(), failureCount.get(),
 					updatedcount);
-			
-			
+
 			// Push PCF value which already Approve request of consumer
-			if ("pcf".equalsIgnoreCase(submodelSchemaObject.getId())) {
-				asyncPushPCFDataForApproveRequest.pushPCFDataForApproveRequest(processId, submodelPolicyRequest);
+			if (submodelSchemaObject.getId().equalsIgnoreCase("pcf")) {
+				databaseUsecaseHandler.init(submodelSchemaObject.getSchema());
+				List<JsonObject> readCreatedTwins = databaseUsecaseHandler.readCreatedTwins(processId, null);
+				asyncPushPCFDataForApproveRequest.pushPCFDataForApproveRequest(readCreatedTwins, submodelPolicyRequest);
 			}
 		};
 
@@ -207,17 +210,19 @@ public class SubmodelOrchestartorService {
 			successCount.set(successCount.get() - updatedcount);
 			processReportUseCase.finishBuildProgressReport(processId, successCount.get(), failureCount.get(),
 					updatedcount);
-			
+
 			// Push PCF value which already Approve request of consumer
-			if ("pcf".equalsIgnoreCase(submodelSchemaObject.getId())) {
-				asyncPushPCFDataForApproveRequest.pushPCFDataForApproveRequest(processId, policy);
+			if (submodelSchemaObject.getId().equalsIgnoreCase("pcf")) {
+				databaseUsecaseHandler.init(submodelSchemaObject.getSchema());
+				List<JsonObject> readCreatedTwins = databaseUsecaseHandler.readCreatedTwins(processId, null);
+				asyncPushPCFDataForApproveRequest.pushPCFDataForApproveRequest(readCreatedTwins, policy);
 			}
 		};
 		new Thread(runnable).start();
 	}
 
 	private SubmodelExecutor getExecutor(SubmodelExecutor executor) {
-		if(executor == null)
+		if (executor == null)
 			executor = genericSubmodelExecutor;
 		return executor;
 	}
@@ -239,7 +244,7 @@ public class SubmodelOrchestartorService {
 
 			processReportUseCase.startDeleteProcess(oldProcessReport, refProcessId, submodel,
 					readCreatedTwinsforDelete.size(), delProcessId);
-			
+
 			readCreatedTwinsforDelete.stream().forEach(obj -> {
 				int andIncrement = atInt.incrementAndGet();
 				obj.addProperty(ROW_NUMBER, andIncrement);
@@ -248,7 +253,8 @@ public class SubmodelOrchestartorService {
 
 			readCreatedTwinsforDelete.parallelStream().forEach(rowjObj -> {
 				try {
-					executor.executeDeleteRecord(rowjObj.get(ROW_NUMBER).getAsInt(), rowjObj, delProcessId, refProcessId);
+					executor.executeDeleteRecord(rowjObj.get(ROW_NUMBER).getAsInt(), rowjObj, delProcessId,
+							refProcessId);
 					deletedCount.incrementAndGet();
 				} catch (Exception e) {
 					failureLogs.saveLog(delProcessId, e.getMessage());
@@ -300,14 +306,12 @@ public class SubmodelOrchestartorService {
 
 		case EXISTING:
 			PolicyModel localPolicy = policyService.getPolicy(policy.getUuid());
-			
-			if (StringUtils.isNotBlank(policy.getUuid())
-					&& ((CollectionUtils.isNotEmpty(policy.getUsagePolicies())
-							&& !localPolicy.getUsagePolicies().equals(policy.getUsagePolicies()))
+
+			if (StringUtils.isNotBlank(policy.getUuid()) && ((CollectionUtils.isNotEmpty(policy.getUsagePolicies())
+					&& !localPolicy.getUsagePolicies().equals(policy.getUsagePolicies()))
 					|| (CollectionUtils.isNotEmpty(policy.getAccessPolicies())
 							&& !localPolicy.getAccessPolicies().equals(policy.getAccessPolicies())))) {
-				
-				
+
 				if (StringUtils.isBlank(policy.getPolicyName())) {
 					policy.setPolicyName(localPolicy.getPolicyName());
 				}

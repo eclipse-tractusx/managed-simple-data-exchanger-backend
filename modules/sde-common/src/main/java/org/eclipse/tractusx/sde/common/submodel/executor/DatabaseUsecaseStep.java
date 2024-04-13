@@ -11,12 +11,12 @@ import com.google.gson.JsonObject;
 public interface DatabaseUsecaseStep {
 
 	public void init(JsonObject submodelSchema);
-	
+
 	public JsonNode run(Integer rowIndex, ObjectNode jsonObject, String processId, PolicyModel policy);
 
 	public void delete(Integer rowIndex, JsonObject jsonObject, String delProcessId, String refProcessId);
 
-	public List<JsonObject> readCreatedTwinsforDelete(String processId);
+	public List<JsonObject> readCreatedTwins(String processId, String isDeleted);
 
 	public JsonObject readCreatedTwinsDetails(String uuid);
 

@@ -3,6 +3,7 @@ package org.eclipse.tractusx.sde.core.submodel.executor;
 import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.entities.csv.RowData;
 import org.eclipse.tractusx.sde.common.submodel.executor.BPNDiscoveryUsecaseStep;
@@ -120,7 +121,13 @@ public class GenericSubmodelExecutor extends SubmodelExecutor {
 	@Override
 	public List<JsonObject> readCreatedTwinsforDelete(String refProcessId) {
 		getDatabaseExecutorStep().init(getSubmodelSchema());
-		return getDatabaseExecutorStep().readCreatedTwinsforDelete(refProcessId);
+		return getDatabaseExecutorStep().readCreatedTwins(refProcessId, null);
+	}
+
+	@Override
+	public List<JsonObject> readCreatedTwinsByProcessId(String refProcessId) {
+		getDatabaseExecutorStep().init(getSubmodelSchema());
+		return getDatabaseExecutorStep().readCreatedTwins(refProcessId, CommonConstants.DELETED_Y);
 	}
 
 	@Override

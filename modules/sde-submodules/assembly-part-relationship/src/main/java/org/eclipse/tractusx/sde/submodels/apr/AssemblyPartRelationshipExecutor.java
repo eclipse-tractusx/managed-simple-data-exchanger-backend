@@ -136,4 +136,10 @@ public class AssemblyPartRelationshipExecutor extends SubmodelExecutor {
 		return aspectRelationshipService.getUpdatedData(processId);
 	}
 
+	@Override
+	public List<JsonObject> readCreatedTwinsByProcessId(String refProcessId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

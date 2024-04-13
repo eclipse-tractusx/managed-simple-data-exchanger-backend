@@ -138,4 +138,10 @@ public class PartSiteInformationAsPlannedExecutor extends SubmodelExecutor {
 		return partSiteInformationAsPlannedService.getUpdatedData(processId);
 	}
 
+	@Override
+	public List<JsonObject> readCreatedTwinsByProcessId(String refProcessId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

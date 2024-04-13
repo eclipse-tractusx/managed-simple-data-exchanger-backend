@@ -138,4 +138,10 @@ public class BatchExecutor extends SubmodelExecutor {
 		return batchDeleteService.getUpdatedData(processId);
 	}
 
+	@Override
+	public List<JsonObject> readCreatedTwinsByProcessId(String refProcessId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

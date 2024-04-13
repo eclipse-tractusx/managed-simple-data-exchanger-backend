@@ -28,6 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.common.utils.JsonObjectUtility;
@@ -62,31 +63,19 @@ public class SubmodelCustomHistoryGenerator {
 
 	ObjectMapper objectMapper = new ObjectMapper();
 
-	@SuppressWarnings("unchecked")
 	@Modifying
 	@Transactional
 	@SneakyThrows
 	public List<List<String>> findAllSubmodelCsvHistory(List<String> colNames, String tableEntityName,
 			String processId) {
 		List<List<String>> records = new LinkedList<>();
-		try {
-			String colname = String.join(",", colNames);
-			Query query = entityManager
-					.createNativeQuery("SELECT " + colname + " FROM " + tableEntityName + " as p Where p.process_id=?");
-			query.setParameter(1, processId);
-			List<Object[]> resultList = query.getResultList();
-
-			if (resultList.isEmpty())
-				throw new NoDataFoundException(String.format("No data found for processid %s ", processId));
-			for (Object[] objectArray : resultList) {
-				List<String> list = new LinkedList<>();
-				for (Object object : objectArray) {
-					list.add(object == null ? "" : object.toString());
-				}
-				records.add(list);
+		List<Object[]> resultList = readData(colNames, tableEntityName, processId, null);
+		for (Object[] objectArray : resultList) {
+			List<String> list = new LinkedList<>();
+			for (Object object : objectArray) {
+				list.add(object == null ? "" : object.toString());
 			}
-		} catch (Exception e) {
-			throw new ServiceException("Unable to process dyanamic table read for history " + e.getMessage());
+			records.add(list);
 		}
 		return records;
 	}
@@ -95,30 +84,33 @@ public class SubmodelCustomHistoryGenerator {
 	@Transactional
 	@SneakyThrows
 	public List<JsonObject> findAllSubmoduleAsJsonList(List<String> colNames, String tableEntityName, String processId,
-			boolean isNotDeleted) {
+			String isDeleted) {
 		List<JsonObject> records = new LinkedList<>();
 
-		try {
-			String columns = String.join(",", colNames);
-			String isDeleted = "";
-			if (isNotDeleted)
-				isDeleted = "  AND p.deleted!= 'Y'";
+		List<Object[]> resultList = readData(colNames, tableEntityName, processId, isDeleted);
 
-			Query query = entityManager.createNativeQuery(
-					"SELECT " + columns + " FROM " + tableEntityName + " as p Where p.process_id=? " + isDeleted + "");
-			query.setParameter(1, processId);
-			List<Object[]> resultList = query.getResultList();
-
-			if (resultList.isEmpty())
-				throw new NoDataFoundException(String.format("No data found for processid %s ", processId));
-
-			for (Object[] objectArray : resultList) {
-				records.add(getJsonNodes(colNames, objectArray));
-			}
-		} catch (Exception e) {
-			throw new ServiceException("Unable to process dyanamic table read for history as Json " + e.getMessage());
+		for (Object[] objectArray : resultList) {
+			records.add(getJsonNodes(colNames, objectArray));
 		}
 		return records;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<Object[]> readData(List<String> colNames, String tableEntityName, String processId, String isDeleted) {
+
+		String columns = String.join(",", colNames);
+
+		if (StringUtils.isNotBlank(isDeleted))
+			isDeleted = "  AND p.deleted= '" + isDeleted + "'";
+
+		Query query = entityManager.createNativeQuery(
+				"SELECT " + columns + " FROM " + tableEntityName + " as p Where p.process_id=? " + isDeleted + "");
+		query.setParameter(1, processId);
+		List<Object[]> resultList = query.getResultList();
+
+		if (resultList.isEmpty())
+			throw new NoDataFoundException(String.format("No data found for processid %s ", processId));
+		return resultList;
 	}
 
 	@Modifying
@@ -128,21 +120,17 @@ public class SubmodelCustomHistoryGenerator {
 			String pkColomn) {
 
 		JsonObject jsonObject = null;
-		try {
-			String columns = String.join(",", colNames);
-			Query query = entityManager.createNativeQuery(
-					"SELECT " + columns + " FROM " + tableEntityName + " as p Where p." + pkColomn + "=? ");
-			query.setParameter(1, uuid);
-			List<Object[]> resultList = query.getResultList();
+		String columns = String.join(",", colNames);
+		Query query = entityManager.createNativeQuery(
+				"SELECT " + columns + " FROM " + tableEntityName + " as p Where p." + pkColomn + "=? ");
+		query.setParameter(1, uuid);
+		List<Object[]> resultList = query.getResultList();
 
-			if (resultList.isEmpty())
-				throw new NoDataFoundException(String.format("No data found for %s ", uuid));
+		if (resultList.isEmpty())
+			throw new NoDataFoundException(String.format("No data found for %s ", uuid));
 
-			for (Object[] objectArray : resultList) {
-				jsonObject = getJsonNodes(colNames, objectArray);
-			}
-		} catch (Exception e) {
-			throw new ServiceException("Unable to process dyanamic table read for as Json " + e.getMessage());
+		for (Object[] objectArray : resultList) {
+			jsonObject = getJsonNodes(colNames, objectArray);
 		}
 		return jsonObject;
 	}
@@ -159,70 +147,52 @@ public class SubmodelCustomHistoryGenerator {
 	@Modifying
 	@Transactional
 	@SneakyThrows
-	public JsonNode saveSubmodelData(List<String> colNames, String tableEntityName, String processId,
-			JsonNode submodelData, String pkColomn) {
-		try {
-			StringBuilder colname = new StringBuilder();
-			StringBuilder parameters = new StringBuilder();
-			StringBuilder updateParameters = new StringBuilder();
-			colNames.forEach(ele -> {
-				if (parameters.isEmpty()) {
-					colname.append(ele);
-					parameters.append("?");
-					updateParameters.append(ele + " = EXCLUDED." + ele);
-				} else {
-					colname.append("," + ele);
-					parameters.append(",?");
-					updateParameters.append("," + ele + " = EXCLUDED." + ele);
-				}
-			});
+	public int saveSubmodelData(List<String> colNames, String tableEntityName, String processId, JsonNode submodelData,
+			String pkColomn) {
+		StringBuilder colname = new StringBuilder();
+		StringBuilder parameters = new StringBuilder();
+		StringBuilder updateParameters = new StringBuilder();
+		colNames.forEach(ele -> {
+			if (parameters.isEmpty()) {
+				colname.append(ele);
+				parameters.append("?");
+				updateParameters.append(ele + " = EXCLUDED." + ele);
+			} else {
+				colname.append("," + ele);
+				parameters.append(",?");
+				updateParameters.append("," + ele + " = EXCLUDED." + ele);
+			}
+		});
 
-			Query query = entityManager
-					.createNativeQuery("INSERT INTO " + tableEntityName + " (" + colname + ") VALUES (" + parameters
-							+ ")" + " ON CONFLICT (" + pkColomn + ") " + " DO " + " UPDATE SET " + updateParameters
+		Query query = entityManager.createNativeQuery("INSERT INTO " + tableEntityName + " (" + colname + ") VALUES ("
+				+ parameters + ")  ON CONFLICT (" + pkColomn + ")  DO " + " UPDATE SET " + updateParameters);
 
-					);
+		AtomicInteger i = new AtomicInteger(1);
+		colNames.forEach(col -> query.setParameter(i.getAndIncrement(),
+				JsonObjectUtility.getValueFromJsonObject(submodelData, col)));
 
-			AtomicInteger i = new AtomicInteger(1);
-			colNames.forEach(col -> query.setParameter(i.getAndIncrement(),
-					JsonObjectUtility.getValueFromJsonObject(submodelData, col)));
-
-			query.executeUpdate();
-
-		} catch (Exception e) {
-			throw new ServiceException("Unable to process dyanamic table insert " + e.getMessage());
-		}
-		return null;
+		return query.executeUpdate();
 	}
 
 	@Modifying
 	@Transactional
 	@SneakyThrows
-	public void saveAspectWithDeleted(String uuid, String tableEntityName, String pkColomn) {
-		try {
-			Query query = entityManager
-					.createNativeQuery("UPDATE " + tableEntityName + " set deleted='Y' WHERE " + pkColomn + "= ? )");
-			query.setParameter(1, uuid);
-			query.executeUpdate();
-		} catch (Exception e) {
-			throw new ServiceException("Unable to marked delete " + e.getMessage());
-		}
+	public int saveAspectWithDeleted(String uuid, String tableEntityName, String pkColomn) {
+		Query query = entityManager
+				.createNativeQuery("UPDATE " + tableEntityName + " set deleted='Y' WHERE " + pkColomn + "= ? )");
+		query.setParameter(1, uuid);
+		return query.executeUpdate();
 	}
 
 	@Modifying
 	@Transactional
 	@SneakyThrows
 	public int countUpdatedRecordCount(String tableEntityName, String updated, String processId) {
-		try {
-
-			Query query = entityManager.createNativeQuery("select 'record' from " + tableEntityName
-					+ " as p WHERE p.updated = ? and p.process_id= ?");
-			query.setParameter(1, updated);
-			query.setParameter(2, processId);
-			return query.getResultList().size();
-		} catch (Exception e) {
-			throw new ServiceException("Unable to count updated records " + e.getMessage());
-		}
+		Query query = entityManager.createNativeQuery(
+				"select 'record' from " + tableEntityName + " as p WHERE p.updated = ? and p.process_id= ?");
+		query.setParameter(1, updated);
+		query.setParameter(2, processId);
+		return query.getResultList().size();
 	}
 
 	@SneakyThrows

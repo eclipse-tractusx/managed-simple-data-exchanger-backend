@@ -141,4 +141,10 @@ public class SingleLevelUsageAsBuiltExecutor extends SubmodelExecutor {
 		return singleLevelUsageAsBuiltService.getUpdatedData(processId);
 	}
 
+	@Override
+	public List<JsonObject> readCreatedTwinsByProcessId(String refProcessId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

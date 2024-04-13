@@ -58,7 +58,10 @@ public abstract class SubmodelExecutor {
 
 	public abstract List<JsonObject> readCreatedTwinsforDelete(String refProcessId);
 
-	public abstract void executeDeleteRecord(Integer rowIndex, JsonObject jsonObject, String delProcessId, String refProcessId);
+	public abstract List<JsonObject> readCreatedTwinsByProcessId(String refProcessId);
+
+	public abstract void executeDeleteRecord(Integer rowIndex, JsonObject jsonObject, String delProcessId,
+			String refProcessId);
 
 	public abstract JsonObject readCreatedTwinsDetails(String uuid);
 

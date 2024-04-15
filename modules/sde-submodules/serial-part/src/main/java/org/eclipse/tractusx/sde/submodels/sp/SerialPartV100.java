@@ -1,8 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022 Critical TechWorks GmbH
- * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2024 T-Systems International GmbH
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,7 +17,8 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-package org.eclipse.tractusx.sde.submodels.spt;
+
+package org.eclipse.tractusx.sde.submodels.sp;
 
 import java.io.InputStream;
 
@@ -30,14 +29,14 @@ import org.springframework.stereotype.Component;
 import jakarta.annotation.PostConstruct;
 
 @Component
-public class SerialPartTypization100 extends SubmodelExtension {
+public class SerialPartV100 extends SubmodelExtension {
 
 	private Submodel submodel = null;
 
 	@PostConstruct
 	public void init() {
 
-		String resource = "serial-part-typization_1.0.0.json";
+		String resource = "serial-part-v1.0.0.json";
 		// this is the path within the jar file
 		InputStream input = this.getClass().getResourceAsStream("/resources/" + resource);
 		if (input == null) {
@@ -47,12 +46,11 @@ public class SerialPartTypization100 extends SubmodelExtension {
 
 		submodel = loadSubmodel(input);
 		
-		submodel.addProperties("tableName", "aspect");
+		submodel.addProperties("tableName", "serialpart_v_100");
 	}
 
 	@Override
 	public Submodel submodel() {
 		return submodel;
 	}
-
 }

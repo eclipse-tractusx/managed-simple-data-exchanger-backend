@@ -55,4 +55,5 @@ Please find below links for schema details:
 
  - DigitalTwins
  - EDC Connectors
+ - BPN Discovery
 

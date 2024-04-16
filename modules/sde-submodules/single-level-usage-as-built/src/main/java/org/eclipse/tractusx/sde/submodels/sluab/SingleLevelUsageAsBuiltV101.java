@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2024 T-Systems International GmbH
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -23,23 +23,19 @@ import java.io.InputStream;
 
 import org.eclipse.tractusx.sde.common.extensions.SubmodelExtension;
 import org.eclipse.tractusx.sde.common.model.Submodel;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import jakarta.annotation.PostConstruct;
 
 @Component
-public class SingleLevelUsageAsBuiltSubmodel extends SubmodelExtension {
+public class SingleLevelUsageAsBuiltV101 extends SubmodelExtension {
 
 	private Submodel submodel = null;
-
-	@Autowired
-	private SingleLevelUsageAsBuiltExecutor singleLevelUsageAsBuiltWorkflow;
 
 	@PostConstruct
 	public void init() {
 
-		String resource = "single-level-usage-as-built.json";
+		String resource = "single-level-usage-as-built-v1.0.1.json";
 		// this is the path within the jar file
 		InputStream input = this.getClass().getResourceAsStream("/resources/" + resource);
 		if (input == null) {
@@ -48,9 +44,8 @@ public class SingleLevelUsageAsBuiltSubmodel extends SubmodelExtension {
 		}
 
 		submodel = loadSubmodel(input);
-		submodel.setExecutor(singleLevelUsageAsBuiltWorkflow);
 		
-		submodel.addProperties("tableName", "single_level_usage_as_built");
+		submodel.addProperties("tableName", "singlelevelusageasbuilt_v_101");
 	}
 
 	@Override

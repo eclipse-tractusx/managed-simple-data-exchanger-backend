@@ -1,2 +1,0 @@
-parent_uuid;parent_part_instance_id;parent_manufacturer_part_id;parent_optional_identifier_key;parent_optional_identifier_value;uuid;part_instance_id;manufacturer_part_id;optional_identifier_key;optional_identifier_value;quantity_number;measurement_unit;created_on;last_modified_on
-urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2;NO-159040131155901488695376;37754B7-76;;;urn:uuid:f7cf62fe-9e25-472b-9148-66ebcc291f31;NO-056604022229087145032390;98801V5-17;;;2.5;litre;2022-02-03T14:48:54.709Z;2022-02-03T14:48:54.709Z

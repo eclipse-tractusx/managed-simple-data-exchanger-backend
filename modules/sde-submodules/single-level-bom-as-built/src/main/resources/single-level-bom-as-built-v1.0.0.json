@@ -226,7 +226,7 @@
 			"manufacturerPartId": "manufacturer_part_id"
 		},
 		"responseTemplate": {
-			"catenaXId": "${uuid}",
+			"catenaXId": "${parent_uuid}",
 			"childItems": [
 				{
 					"catenaXId": "${uuid}",

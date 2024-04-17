@@ -82,9 +82,9 @@ maven/mavencentral/org.eclipse.tractusx/serial-part-typization/0.0.1, Apache-2.0
 maven/mavencentral/org.eclipse.tractusx/single-level-bom-as-planned/0.0.1, Apache-2.0, approved, automotive.tractusx
 maven/mavencentral/org.eclipse.tractusx/single-level-usage-as-built/0.0.1, Apache-2.0, approved, automotive.tractusx
 maven/mavencentral/org.flywaydb/flyway-core/9.16.3, Apache-2.0, approved, #7935
-maven/mavencentral/org.glassfish.jaxb/jaxb-core/4.0.4, BSD-3-Clause, approved, ee4j.jaxb
-maven/mavencentral/org.glassfish.jaxb/jaxb-runtime/4.0.4, BSD-3-Clause, approved, ee4j.jaxb
-maven/mavencentral/org.glassfish.jaxb/txw2/4.0.4, BSD-3-Clause, approved, ee4j.jaxb
+maven/mavencentral/org.glassfish.jaxb/jaxb-core/4.0.4, BSD-3-Clause, approved, ee4j.jaxb-impl
+maven/mavencentral/org.glassfish.jaxb/jaxb-runtime/4.0.4, BSD-3-Clause, approved, ee4j.jaxb-impl
+maven/mavencentral/org.glassfish.jaxb/txw2/4.0.4, BSD-3-Clause, approved, ee4j.jaxb-impl
 maven/mavencentral/org.hamcrest/hamcrest/2.2, BSD-3-Clause, approved, clearlydefined
 maven/mavencentral/org.hibernate.common/hibernate-commons-annotations/6.0.6.Final, LGPL-2.1-only, approved, #6962
 maven/mavencentral/org.hibernate.orm/hibernate-core/6.2.13.Final, LGPL-2.1-only AND Apache-2.0 AND MIT AND CC-PDDC AND (EPL-2.0 OR BSD-3-Clause), approved, #9121

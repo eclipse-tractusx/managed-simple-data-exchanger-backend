@@ -322,5 +322,44 @@
 			"classification": "component",
 			"name_at_manufacturer": "Sensor"
 		}
-	]
+	],
+	"addOn": {
+		"identifier": "${uuid}",
+		"lookupShellSpecificAssetIdsSpecs": {
+			"partInstanceId": "${part_instance_id}",
+			"manufacturerPartId": "${manufacturer_part_id}",
+			"optionalIdentifier": [
+				{
+					"key": "batchId",
+					"value" :"${batch_id}"
+				}
+			]
+		},
+		"shortIdSpecs": [
+			"${name_at_manufacturer}",
+			"${part_instance_id}",
+			"${manufacturer_part_id}"
+		],
+		"bpnDiscoverySpecs": {
+			"manufacturerPartId": "${manufacturer_part_id}"
+		},
+		"responseTemplate": {
+			"localIdentifiers": [
+				{
+					"key": "batchId",
+					"value": "${batch_id}"
+				}
+			],
+			"manufacturingInformation": {
+				"date": "${manufacturing_date}",
+				"country": "${manufacturing_country}"
+			},
+			"catenaXId": "${uuid}",
+			"partTypeInformation": {
+				"manufacturerPartId": "${manufacturer_part_id}",
+				"classification": "${classification}",
+				"nameAtManufacturer": "${name_at_manufacturer}"
+			}
+		}
+	}
 }

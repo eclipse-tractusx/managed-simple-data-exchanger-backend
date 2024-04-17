@@ -37,14 +37,13 @@ import org.eclipse.tractusx.sde.agent.model.SchedulerConfigModel;
 import org.eclipse.tractusx.sde.agent.model.SchedulerType;
 import org.eclipse.tractusx.sde.bpndiscovery.handler.BPNDiscoveryUseCaseHandler;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
+import org.eclipse.tractusx.sde.core.submodel.executor.step.DigitalTwinUseCaseHandler;
+import org.eclipse.tractusx.sde.core.submodel.executor.step.EDCUsecaseHandler;
 import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsFacilitator;
 import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsUtility;
 import org.eclipse.tractusx.sde.retrieverl.service.ActiveStorageMediaProvider;
-import org.eclipse.tractusx.sde.retrieverl.service.PolicyProvider;
 import org.eclipse.tractusx.sde.retrieverl.service.ProcessRemoteCsv;
 import org.eclipse.tractusx.sde.retrieverl.service.SchedulerConfigService;
-import org.eclipse.tractusx.sde.submodels.batch.steps.DigitalTwinsBatchCsvHandlerUseCase;
-import org.eclipse.tractusx.sde.submodels.batch.steps.EDCBatchHandlerUseCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
@@ -81,11 +80,11 @@ public class SchedulerMinioTest extends MinioBase{
 	@MockBean
 	DigitalTwinsFacilitator digitalTwinsFacilitator;
 	@MockBean
-	DigitalTwinsBatchCsvHandlerUseCase digitalTwinsBatchCsvHandlerUseCase;
+	DigitalTwinUseCaseHandler digitalTwinsBatchCsvHandlerUseCase;
 	@MockBean
 	DigitalTwinsUtility digitalTwinsUtility;
 	@MockBean
-	EDCBatchHandlerUseCase EdcMock;
+	EDCUsecaseHandler EdcMock;
 	
 	@MockBean
 	BPNDiscoveryUseCaseHandler bPNDiscoveryUseCaseHandler;

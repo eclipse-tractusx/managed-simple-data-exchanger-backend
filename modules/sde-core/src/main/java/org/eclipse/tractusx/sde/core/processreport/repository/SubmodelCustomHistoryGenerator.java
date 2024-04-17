@@ -196,7 +196,7 @@ public class SubmodelCustomHistoryGenerator {
 	}
 
 	@SneakyThrows
-	public void checkTableIfNotExist(JsonObject schema, List<String> columns, String tableName, String pkCol) {
+	public void checkTableIfNotExistCreate(JsonObject schema, List<String> columns, String tableName, String pkCol) {
 		boolean isTableNotExist = false;
 		try (Connection con = DriverManager.getConnection(dataSourceProperties.getUrl(),
 				dataSourceProperties.getUsername(), dataSourceProperties.getPassword())) {

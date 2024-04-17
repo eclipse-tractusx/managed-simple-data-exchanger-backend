@@ -371,24 +371,24 @@
 		}
 	],
 	"addOn": {
-		"identifier": "uuid",
-		"specificAssetIdsSpecs": {
-			"partInstanceId": "part_instance_id",
-			"manufacturerPartId": "manufacturer_part_id",
+		"identifier": "${uuid}",
+		"lookupShellSpecificAssetIdsSpecs": {
+			"partInstanceId": "${part_instance_id}",
+			"manufacturerPartId": "${manufacturer_part_id}",
 			"optionalIdentifier": [
 				{
-					"key": "optional_identifier_key",
-					"value": "optional_identifier_value"
+					"key": "${optional_identifier_key}",
+					"value" :"${optional_identifier_value}"
 				}
 			]
 		},
 		"shortIdSpecs": [
-			"name_at_manufacturer",
-			"part_instance_id",
-			"manufacturer_part_id"
+			"${name_at_manufacturer}",
+			"${part_instance_id}",
+			"${manufacturer_part_id}"
 		],
 		"bpnDiscoverySpecs": {
-			"manufacturerPartId": "manufacturer_part_id"
+			"manufacturerPartId": "${manufacturer_part_id}"
 		},
 		"responseTemplate": {
 			"localIdentifiers": [

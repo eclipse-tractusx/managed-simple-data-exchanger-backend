@@ -115,7 +115,7 @@ public class GenericSubmodelExecutor extends SubmodelExecutor {
 		getDtExecutorStep().init(getSubmodelSchema());
 		getDtExecutorStep().delete(rowIndex, jsonObject, delProcessId, refProcessId);
 		getDatabaseExecutorStep().init(getSubmodelSchema());
-		getDatabaseExecutorStep().delete(rowIndex, jsonObject, delProcessId, refProcessId);
+		getDatabaseExecutorStep().saveSubmoduleWithDeleted(rowIndex, jsonObject, delProcessId, refProcessId);
 	}
 
 	@Override

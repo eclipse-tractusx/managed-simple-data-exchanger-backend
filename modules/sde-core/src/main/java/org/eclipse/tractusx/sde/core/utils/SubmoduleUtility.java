@@ -8,6 +8,7 @@ import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.common.model.Submodel;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 @Component
@@ -20,9 +21,17 @@ public class SubmoduleUtility {
 		return tableName;
 	}
 
+
+	public List<String> getTableColomnHeader(Submodel schemaObj) {
+		List<String> tableColomnHeader = getTableColomnHeaderForCSV(schemaObj);
+		tableColomnHeader.add(SubmoduleCommonColumnsConstant.PROCESS_ID);
+		tableColomnHeader.add(SubmoduleCommonColumnsConstant.DELETED);
+		tableColomnHeader.add(SubmoduleCommonColumnsConstant.UPDATED);
+		return tableColomnHeader;
+	}
+	
 	public List<String> getTableColomnHeaderForCSV(Submodel schemaObj) {
-		Object autoPopulatefieldObj = schemaObj.getProperties().get("autoPopulatedfields");
-		List<String> headerName = getCSVHeader(schemaObj, autoPopulatefieldObj);
+		List<String> headerName = getCSVHeader(schemaObj);
 		headerName.add(SubmoduleCommonColumnsConstant.SHELL_ID);
 		headerName.add(SubmoduleCommonColumnsConstant.SUBMODULE_ID);
 		headerName.add(SubmoduleCommonColumnsConstant.ASSET_ID);
@@ -32,32 +41,31 @@ public class SubmoduleUtility {
 		return headerName;
 	}
 
-	public List<String> getTableColomnHeader(Submodel schemaObj) {
-		List<String> tableColomnHeader = getTableColomnHeaderForCSV(schemaObj);
-		tableColomnHeader.add(SubmoduleCommonColumnsConstant.PROCESS_ID);
-		tableColomnHeader.add(SubmoduleCommonColumnsConstant.DELETED);
-		tableColomnHeader.add(SubmoduleCommonColumnsConstant.UPDATED);
-		return tableColomnHeader;
-	}
-
-	public List<String> getCSVHeader(Submodel schemaObj, Object autoPopulatefieldObj) {
+	public List<String> getCSVHeader(Submodel schemaObj) {
+		
 		JsonObject schemaObject = schemaObj.getSchema();
-		return createCSVColumnHeader(schemaObject, autoPopulatefieldObj);
-	}
-
-	private List<String> createCSVColumnHeader(JsonObject schemaObject, Object autoPopulatefieldObj) {
-
+		
 		JsonObject asJsonObject = schemaObject.get("items").getAsJsonObject().get("properties").getAsJsonObject();
 		List<String> headerList = asJsonObject.keySet().stream().toList();
-
 		List<String> headerName = new LinkedList<>();
 		headerName.addAll(headerList);
 
-		if (autoPopulatefieldObj != null) {
-			@SuppressWarnings("unchecked")
-			List<String> autoPopulatefield = (List<String>) autoPopulatefieldObj;
+		JsonElement autoPopulatedfields = schemaObject.get("addOn").getAsJsonObject().get("autoPopulatedfields");
+		if (autoPopulatedfields != null && autoPopulatedfields.isJsonArray()) {
+			List<String> autoPopulatefield = autoPopulatedfields.getAsJsonArray().asList().stream()
+					.map(ele -> extractExactFieldName(ele.getAsJsonObject().get("key").getAsString())).toList();
 			headerName.addAll(autoPopulatefield);
 		}
+		
 		return headerName;
+	}
+
+	private String extractExactFieldName(String str) {
+
+		if (str.startsWith("${")) {
+			return str.replace("${", "").replace("}", "").trim();
+		} else {
+			return str;
+		}
 	}
 }

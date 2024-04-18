@@ -14,6 +14,7 @@
 		"required": [
 			"uuid",
 			"manufacturer_part_id",
+			"catenax_site_id",
 			"name_at_manufacturer",
 			"classification_standard",
 			"classification_id",
@@ -43,6 +44,17 @@
 				"description" : "Part ID as assigned by the manufacturer of the part. The part ID identifies the part in the manufacturer`s dataspace. The part ID references a specific version of a part. The version number must be included in the part ID if it is available. The part ID does not reference a specific instance of a part and must not be confused with the serial number.",
 				"examples": [
 					"123-0.740-3434-A"
+				]
+			},
+			"catenax_site_id": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"title": "catenaX Site Id",
+				"description": "The identifier of the site according to Catena-X BPDM. The catenaXsiteId must be a valid Catena-X BPN. The BPN is a unique, unchangeable identifier for Business Partners / company locations from foundation to closure, regardless of the different business relationships / structures between or within the Business Partners or company locations.",
+				"examples": [
+					"BPNS1234567890ZZ"
 				]
 			},
 			"classification_standard": {
@@ -135,6 +147,7 @@
 		{
 			"uuid": "urn:uuid:055c1128-0375-47c8-98de-7cf802c3241d",
 			"manufacturer_part_id": "123-0.740-3434-A",
+			"catenax_site_id": "BPNS1234567890ZZ",
 			"classification_standard": "IEC",
 			"classification_id": "61360- 2:2012",
 			"classification_description": "Standard data element types with associated classification scheme for electric components.",
@@ -173,7 +186,7 @@
 			"partSitesInformationAsPlanned": [
 				{
 					"functionValidUntil": "${function_valid_until}",
-					"catenaXsiteId": "${manufacturerId}",
+					"catenaXsiteId": "${catenax_site_id}",
 					"function": "${function}",
 					"functionValidFrom": "${function_valid_from}"
 				}

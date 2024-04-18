@@ -47,7 +47,7 @@ public class PcfV600 extends SubmodelExtension {
 
 		submodel = loadSubmodel(input);
 		
-		submodel.addProperties("tableName", "pcf");
+		submodel.addProperties("tableName", "pcf_aspect");
 	}
 
 	@Override

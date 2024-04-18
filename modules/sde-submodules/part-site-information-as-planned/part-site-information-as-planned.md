@@ -49,5 +49,3 @@ Please find below links for schema details:
 
  - DigitalTwins
  - EDC Connectors
- 
-[CSV Sample File Link]: src/main/resources/partSiteInformationAsPlanned.csv

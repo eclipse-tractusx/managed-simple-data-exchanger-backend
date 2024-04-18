@@ -76,16 +76,17 @@ public class DatabaseUsecaseHandler extends Step implements DatabaseUsecaseStep 
 	}
 
 	@SneakyThrows
-	public List<JsonObject> readCreatedTwins(String refProcessId, String isDeleted) {
+	public List<JsonObject> readCreatedTwins(String refProcessId, String fetchNotDeletedRecord) {
 		Submodel schemaObj = submodelService.findSubmodelByNameAsSubmdelObject(getNameOfModel());
 		List<String> columns = submoduleUtility.getTableColomnHeader(schemaObj);
 		String tableName = submoduleUtility.getTableName(schemaObj);
 
 		List<JsonObject> allSubmoduleAsJsonList = submodelCustomHistoryGenerator.findAllSubmoduleAsJsonList(columns,
-				tableName, refProcessId, isDeleted);
+				tableName, refProcessId, fetchNotDeletedRecord);
 
 		if (allSubmoduleAsJsonList.isEmpty())
-			throw new NoDataFoundException("No data founds for deletion, All records are already deleted");
+			throw new NoDataFoundException("No data founds for deletion, might be all records are already deleted");
+		
 		return allSubmoduleAsJsonList;
 	}
 

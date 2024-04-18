@@ -235,7 +235,7 @@ public class SubmodelOrchestartorService {
 		AtomicInteger atInt = new AtomicInteger();
 
 		SubmodelExecutor executor = getExecutor(submodelSchema.getExecutor());
-
+		executor.init(submodelSchema);
 		ProcessReport oldProcessReport = processReportUseCase.getProcessReportById(refProcessId);
 
 		List<JsonObject> readCreatedTwinsforDelete = executor.readCreatedTwinsforDelete(refProcessId);

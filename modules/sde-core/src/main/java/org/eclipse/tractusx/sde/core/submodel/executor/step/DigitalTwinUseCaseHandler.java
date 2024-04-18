@@ -94,6 +94,7 @@ public class DigitalTwinUseCaseHandler extends Step implements DigitalTwinUsecas
 				aasDescriptorRequest = digitalTwinsUtility.getShellDescriptorRequest(shortIdForShell, identifier,
 						specificAssetIds, policy);
 				createShell(specificAssetIds, aasDescriptorRequest);
+				shellId = aasDescriptorRequest.getId();
 			}
 
 			jsonObject.put(SubmoduleCommonColumnsConstant.SHELL_ID, shellId);
@@ -242,6 +243,8 @@ public class DigitalTwinUseCaseHandler extends Step implements DigitalTwinUsecas
 					identification = identificationLocal;
 				}
 			}
+		} else {
+			identification = UUIdGenerator.getUrnUuid();
 		}
 
 		return identification;

@@ -121,13 +121,13 @@ public class GenericSubmodelExecutor extends SubmodelExecutor {
 	@Override
 	public List<JsonObject> readCreatedTwinsforDelete(String refProcessId) {
 		getDatabaseExecutorStep().init(getSubmodelSchema());
-		return getDatabaseExecutorStep().readCreatedTwins(refProcessId, null);
+		return getDatabaseExecutorStep().readCreatedTwins(refProcessId, CommonConstants.DELETED_Y);
 	}
 
 	@Override
 	public List<JsonObject> readCreatedTwinsByProcessId(String refProcessId) {
 		getDatabaseExecutorStep().init(getSubmodelSchema());
-		return getDatabaseExecutorStep().readCreatedTwins(refProcessId, CommonConstants.DELETED_Y);
+		return getDatabaseExecutorStep().readCreatedTwins(refProcessId, null);
 	}
 
 	@Override

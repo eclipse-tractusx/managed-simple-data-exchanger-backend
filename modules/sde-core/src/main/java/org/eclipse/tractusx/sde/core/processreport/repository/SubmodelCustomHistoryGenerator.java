@@ -70,6 +70,10 @@ public class SubmodelCustomHistoryGenerator {
 			String processId) {
 		List<List<String>> records = new LinkedList<>();
 		List<Object[]> resultList = readData(colNames, tableEntityName, processId, null);
+		
+		if (resultList.isEmpty())
+			throw new NoDataFoundException(String.format("No data found for processid %s ", processId));
+		
 		for (Object[] objectArray : resultList) {
 			List<String> list = new LinkedList<>();
 			for (Object object : objectArray) {
@@ -84,32 +88,35 @@ public class SubmodelCustomHistoryGenerator {
 	@Transactional
 	@SneakyThrows
 	public List<JsonObject> findAllSubmoduleAsJsonList(List<String> colNames, String tableEntityName, String processId,
-			String isDeleted) {
+			String fetchNotDeletedRecord) {
 		List<JsonObject> records = new LinkedList<>();
 
-		List<Object[]> resultList = readData(colNames, tableEntityName, processId, isDeleted);
+		List<Object[]> resultList = readData(colNames, tableEntityName, processId, fetchNotDeletedRecord);
 
 		for (Object[] objectArray : resultList) {
 			records.add(getJsonNodes(colNames, objectArray));
 		}
+		
 		return records;
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<Object[]> readData(List<String> colNames, String tableEntityName, String processId, String isDeleted) {
+	private List<Object[]> readData(List<String> colNames, String tableEntityName, String processId, String fetchNotDeletedRecord) {
 
 		String columns = String.join(",", colNames);
 
-		if (StringUtils.isNotBlank(isDeleted))
-			isDeleted = "  AND p.deleted= '" + isDeleted + "'";
+		if (StringUtils.isNotBlank(fetchNotDeletedRecord))
+			fetchNotDeletedRecord = "  AND p.deleted != '" + fetchNotDeletedRecord + "'";
+		else {
+			fetchNotDeletedRecord= "";
+		}
+		
 
 		Query query = entityManager.createNativeQuery(
-				"SELECT " + columns + " FROM " + tableEntityName + " as p Where p.process_id=? " + isDeleted + "");
+				"SELECT " + columns + " FROM " + tableEntityName + " as p Where p.process_id=? " + fetchNotDeletedRecord + "");
 		query.setParameter(1, processId);
 		List<Object[]> resultList = query.getResultList();
 
-		if (resultList.isEmpty())
-			throw new NoDataFoundException(String.format("No data found for processid %s ", processId));
 		return resultList;
 	}
 
@@ -179,7 +186,7 @@ public class SubmodelCustomHistoryGenerator {
 	@SneakyThrows
 	public int saveAspectWithDeleted(String uuid, String tableEntityName, String pkColomn) {
 		Query query = entityManager
-				.createNativeQuery("UPDATE " + tableEntityName + " set deleted='Y' WHERE " + pkColomn + "= ? )");
+				.createNativeQuery("UPDATE " + tableEntityName + " set deleted='Y' WHERE " + pkColomn + "= ?");
 		query.setParameter(1, uuid);
 		return query.executeUpdate();
 	}

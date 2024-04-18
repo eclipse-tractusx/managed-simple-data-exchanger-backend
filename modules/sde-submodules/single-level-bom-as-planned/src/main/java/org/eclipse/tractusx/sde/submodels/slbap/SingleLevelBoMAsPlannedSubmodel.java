@@ -23,7 +23,6 @@ import java.io.InputStream;
 
 import org.eclipse.tractusx.sde.common.extensions.SubmodelExtension;
 import org.eclipse.tractusx.sde.common.model.Submodel;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import jakarta.annotation.PostConstruct;
@@ -33,8 +32,6 @@ public class SingleLevelBoMAsPlannedSubmodel extends SubmodelExtension {
 
 	private Submodel submodel = null;
 	
-	@Autowired
-	private SingleLevelBoMAsPlannedExecutor singleLevelBoMAsPlannedExecutor;
 	
 	@PostConstruct
 	public void init() {
@@ -48,7 +45,6 @@ public class SingleLevelBoMAsPlannedSubmodel extends SubmodelExtension {
 		}
 
 		submodel = loadSubmodel(input);
-		submodel.setExecutor(singleLevelBoMAsPlannedExecutor);
 		
 		submodel.addProperties("tableName", "single_level_bom_as_planned");
 	}

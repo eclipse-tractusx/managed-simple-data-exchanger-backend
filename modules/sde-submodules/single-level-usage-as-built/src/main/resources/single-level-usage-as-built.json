@@ -226,5 +226,50 @@
 			"created_on": "2022-02-03T14:48:54.709Z",
 			"last_modified_on": "2022-02-03T14:48:54.709Z"
 		}
-	]
+	],
+	"addOn": {
+		"identifier": "${uuid}",
+		"lookupShellSpecificAssetIdsSpecs": {
+			"partInstanceId": "${parent_part_instance_id}",
+			"manufacturerPartId": "${parent_manufacturer_part_id}",
+			"optionalIdentifier": [
+				{
+					"key": "${parent_optional_identifier_key}",
+					"value": "${parent_optional_identifier_value}"
+				}
+			]
+		},
+		"createShellIfNotExist": true,
+		"createShellSpecificAssetIdsSpecs": {
+			"partInstanceId": "${part_instance_id}",
+			"manufacturerPartId": "${manufacturer_part_id}",
+			"optionalIdentifier": [
+				{
+					"key": "${optional_identifier_key}",
+					"value": "${optional_identifier_value}"
+				}
+			]
+		},
+		"shortIdSpecs": [
+			"${manufacturer_part_id}",
+			"${part_instance_id}"
+		],
+		"bpnDiscoverySpecs": {
+			"manufacturerPartId": "${manufacturer_part_id}"
+		},
+		"responseTemplate": {
+			"catenaXId": "${uuid}",
+			"parentParts": [
+				{
+					"parentCatenaXId": "${parent_uuid}",
+					"createdOn": "${created_on}",
+					"lastModifiedOn": "${last_modified_on}",
+					"quantity": {
+						"quantityNumber": "${quantity_number}",
+						"measurementUnit": "${measurement_unit}"
+					}
+				}
+			]
+		}
+	}
 }

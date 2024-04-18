@@ -61,8 +61,8 @@ public class SubmodelRegistration {
 		JsonElement jsonElement = submodel.getSchema().get("addOn");
 
 		if (jsonElement != null && !jsonElement.isJsonNull()) {
-			String pkCol = jsonElement.getAsJsonObject().get("identifier").getAsString();
-			submodelCustomHistoryGenerator.checkTableIfNotExist(submodel.getSchema(), columns, tableName, pkCol);
+			String pkCol = extractExactFieldName(jsonElement.getAsJsonObject().get("identifier").getAsString());
+			submodelCustomHistoryGenerator.checkTableIfNotExistCreate(submodel.getSchema(), columns, tableName, pkCol);
 		}
 
 		submodelList.add(submodel);
@@ -70,6 +70,15 @@ public class SubmodelRegistration {
 
 	public List<Submodel> getModels() {
 		return this.submodelList;
+	}
+	
+	private String extractExactFieldName(String str) {
+
+		if (str.startsWith("${")) {
+			return str.replace("${", "").replace("}", "").trim();
+		} else {
+			return str;
+		}
 	}
 
 }

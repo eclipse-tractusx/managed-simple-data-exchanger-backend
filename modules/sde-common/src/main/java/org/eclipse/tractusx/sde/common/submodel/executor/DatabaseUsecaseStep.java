@@ -14,12 +14,21 @@ public interface DatabaseUsecaseStep {
 
 	public JsonNode run(Integer rowIndex, ObjectNode jsonObject, String processId, PolicyModel policy);
 
-	public void delete(Integer rowIndex, JsonObject jsonObject, String delProcessId, String refProcessId);
+	public void saveSubmoduleWithDeleted(Integer rowIndex, JsonObject jsonObject, String delProcessId, String refProcessId);
 
 	public List<JsonObject> readCreatedTwins(String processId, String isDeleted);
 
 	public JsonObject readCreatedTwinsDetails(String uuid);
 
 	public int getUpdatedData(String processId);
+	
+	default String extractExactFieldName(String str) {
+
+		if (str.startsWith("${")) {
+			return str.replace("${", "").replace("}", "").trim();
+		} else {
+			return str;
+		}
+	}
 
 }

@@ -106,7 +106,7 @@ public class SubmodelCustomHistoryGenerator {
 		String columns = String.join(",", colNames);
 
 		if (StringUtils.isNotBlank(fetchNotDeletedRecord))
-			fetchNotDeletedRecord = "  AND p.deleted != '" + fetchNotDeletedRecord + "'";
+			fetchNotDeletedRecord = " AND coalesce(p.deleted, '') != '" + fetchNotDeletedRecord + "'";
 		else {
 			fetchNotDeletedRecord= "";
 		}

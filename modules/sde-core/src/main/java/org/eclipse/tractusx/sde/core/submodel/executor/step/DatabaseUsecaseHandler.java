@@ -85,8 +85,8 @@ public class DatabaseUsecaseHandler extends Step implements DatabaseUsecaseStep 
 				tableName, refProcessId, fetchNotDeletedRecord);
 
 		if (allSubmoduleAsJsonList.isEmpty())
-			throw new NoDataFoundException("No data founds for deletion, might be all records are already deleted");
-		
+			throw new NoDataFoundException("No data founds for deletion " + refProcessId);
+
 		return allSubmoduleAsJsonList;
 	}
 

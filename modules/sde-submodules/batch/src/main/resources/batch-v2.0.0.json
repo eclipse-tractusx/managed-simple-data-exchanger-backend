@@ -18,7 +18,8 @@
 			"classification",
 			"name_at_manufacturer"
 		],
-		"dependentRequired": {},
+		"dependentRequired": {
+		},
 		"properties": {
 			"uuid": {
 				"type": [
@@ -323,36 +324,30 @@
 		}
 	],
 	"addOn": {
-		"identifier": "uuid",
-		"specificAssetIdsSpecs": {
-			"partInstanceId": "part_instance_id",
-			"manufacturerPartId": "manufacturer_part_id"
+		"identifier": "${uuid}",
+		"lookupShellSpecificAssetIdsSpecs": {
+			"partInstanceId": "${part_instance_id}",
+			"manufacturerPartId": "${manufacturer_part_id}",
+			"optionalIdentifier": [
+				{
+					"key": "batchId",
+					"value" :"${batch_id}"
+				}
+			]
 		},
 		"shortIdSpecs": [
-			"name_at_manufacturer",
-			"part_instance_id",
-			"manufacturer_part_id"
+			"${name_at_manufacturer}",
+			"${part_instance_id}",
+			"${manufacturer_part_id}"
 		],
 		"bpnDiscoverySpecs": {
-			"manufacturerPartId": "manufacturer_part_id"
+			"manufacturerPartId": "${manufacturer_part_id}"
 		},
 		"responseTemplate": {
 			"localIdentifiers": [
 				{
-					"key": "PartInstanceId",
-					"value": "${part_instance_id}"
-				},
-				{
-					"key": "ManufacturerPartId",
-					"value": "${manufacturer_part_id}"
-				},
-				{
 					"key": "batchId",
 					"value": "${batch_id}"
-				},
-				{
-					"key": "ManufacturerId",
-					"value": "${manufacturerId}"
 				}
 			],
 			"manufacturingInformation": {
@@ -361,8 +356,8 @@
 			},
 			"catenaXId": "${uuid}",
 			"partTypeInformation": {
-				"classification": "${classification}",
 				"manufacturerPartId": "${manufacturer_part_id}",
+				"classification": "${classification}",
 				"nameAtManufacturer": "${name_at_manufacturer}"
 			}
 		}

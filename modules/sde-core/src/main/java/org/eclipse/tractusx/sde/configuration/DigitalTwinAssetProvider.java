@@ -63,40 +63,41 @@ public class DigitalTwinAssetProvider {
 	@SneakyThrows
 	public void init() {
 
-		if(sdeCommonProperties.getDigitalTwinRegistryURI().equals(sdeCommonProperties.getDigitalTwinRegistryLookUpURI())) {
+		if (sdeCommonProperties.getDigitalTwinRegistryURI()
+				.equals(sdeCommonProperties.getDigitalTwinRegistryLookUpURI())) {
 			create("registry", sdeCommonProperties.getDigitalTwinRegistryURI());
-		}else {
+		} else {
 			create("regisry-api", sdeCommonProperties.getDigitalTwinRegistryURI());
 			create("discovery-api", sdeCommonProperties.getDigitalTwinRegistryLookUpURI());
 		}
 	}
 
 	private void create(String registryType, String registryAPI) throws JsonProcessingException {
-		
+
 		String assetId = UUIdGenerator.getUuid();
 
-		AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest("", "Digital twin registry information", assetId, "1", "", "",
-				EDCAssetConstant.DATA_CORE_DIGITAL_TWIN_REGISTRY_TYPE);
+		AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest("", "Digital twin registry information",
+				assetId, "1", "", "", "", EDCAssetConstant.DATA_CORE_DIGITAL_TWIN_REGISTRY_TYPE);
 
 		String baseUrl = sdeCommonProperties.getDigitalTwinRegistry() + registryAPI;
-		
+
 		assetEntryRequest.getProperties().put(registryType, baseUrl);
 
 		assetEntryRequest.getDataAddress().getProperties().put("baseUrl", baseUrl);
 
 		assetEntryRequest.getDataAddress().getProperties().put("oauth2:tokenUrl",
 				sdeCommonProperties.getDigitalTwinTokenUrl());
-		
+
 		assetEntryRequest.getDataAddress().getProperties().put("oauth2:clientId",
 				sdeCommonProperties.getDigitalTwinClientId());
-		
+
 		assetEntryRequest.getDataAddress().getProperties().put("oauth2:clientSecret",
 				sdeCommonProperties.getDigitalTwinClientSecret());
 
 		if (assetEntryRequest.getDataAddress().getProperties().containsKey("oauth2:clientSecretKey")) {
 			assetEntryRequest.getDataAddress().getProperties().remove("oauth2:clientSecretKey");
 		}
-		
+
 		if (StringUtils.isNotBlank(sdeCommonProperties.getDigitalTwinAuthenticationScope())) {
 			assetEntryRequest.getDataAddress().getProperties().put("oauth2:scope",
 					sdeCommonProperties.getDigitalTwinAuthenticationScope());
@@ -111,16 +112,13 @@ public class DigitalTwinAssetProvider {
 				.valueReplacerUsingFileTemplate("/edc_request_template/edc_asset_lookup.json", inputData));
 
 		if (!edcGateway.assetExistsLookupBasedOnType(requestBody)) {
-			
-			PolicyModel policy= PolicyModel.builder()
-					.accessPolicies(List.of())
-					.usagePolicies(List.of())
-					.build();
-			
+
+			PolicyModel policy = PolicyModel.builder().accessPolicies(List.of()).usagePolicies(List.of()).build();
+
 			Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest, policy);
-			log.info("Digital twin "+registryType+" asset creates :" + createEDCAsset.toString());
+			log.info("Digital twin " + registryType + " asset creates :" + createEDCAsset.toString());
 		} else {
-			log.info("Digital twin "+registryType+" asset exists in edc connector, so ignoring asset creation");
+			log.info("Digital twin " + registryType + " asset exists in edc connector, so ignoring asset creation");
 		}
 	}
 

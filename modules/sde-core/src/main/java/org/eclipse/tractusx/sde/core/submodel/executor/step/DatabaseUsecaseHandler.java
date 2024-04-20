@@ -21,6 +21,7 @@
 package org.eclipse.tractusx.sde.core.submodel.executor.step;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
@@ -39,7 +40,9 @@ import com.google.gson.JsonObject;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service("DatabaseUsecaseHandler")
 @RequiredArgsConstructor
 public class DatabaseUsecaseHandler extends Step implements DatabaseUsecaseStep {
@@ -91,12 +94,37 @@ public class DatabaseUsecaseHandler extends Step implements DatabaseUsecaseStep 
 	}
 
 	@SneakyThrows
+	public JsonObject readCreatedTwinsBySpecifyColomn(String sematicId, String basedCol, String value) {
+
+		List<Submodel> allSubmodels = submodelService.getAllSubmodels();
+		List<Submodel> list = allSubmodels.stream().filter(ele -> ele.getSemanticId().startsWith(sematicId)).toList();
+
+		List<JsonObject> jsonObjectList = list.stream().flatMap(schemaObj -> {
+			try {
+				List<String> columns = submoduleUtility.getTableColomnHeader(schemaObj);
+				String tableName = submoduleUtility.getTableName(schemaObj);
+				return submodelCustomHistoryGenerator.readCreatedTwinsDetails(columns, tableName, value, basedCol).stream();
+			} catch (Exception e) {
+				log.debug("Exception for {}, {}, {}, {}", sematicId, basedCol, value, e.getMessage());
+			}
+			return null;
+		})
+				.filter(ele-> Optional.ofNullable(ele).isPresent())
+				.toList();
+		
+		if (jsonObjectList.isEmpty())
+			throw new NoDataFoundException("No data founds for "+sematicId +", " + value);
+		else
+			return jsonObjectList.get(0);
+	}
+
+	@SneakyThrows
 	public JsonObject readCreatedTwinsDetails(String uuid) {
 		Submodel schemaObj = submodelService.findSubmodelByNameAsSubmdelObject(getNameOfModel());
 		List<String> columns = submoduleUtility.getTableColomnHeader(schemaObj);
 		String tableName = submoduleUtility.getTableName(schemaObj);
 		return submodelCustomHistoryGenerator.readCreatedTwinsDetails(columns, tableName, uuid,
-				extractExactFieldName(getIdentifierOfModel()));
+				extractExactFieldName(getIdentifierOfModel())).get(0);
 	}
 
 	@SneakyThrows

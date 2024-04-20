@@ -17,6 +17,8 @@ public interface DatabaseUsecaseStep {
 	public void saveSubmoduleWithDeleted(Integer rowIndex, JsonObject jsonObject, String delProcessId, String refProcessId);
 
 	public List<JsonObject> readCreatedTwins(String processId, String isDeleted);
+	
+	public JsonObject readCreatedTwinsBySpecifyColomn(String sematicId, String basedCol, String value);
 
 	public JsonObject readCreatedTwinsDetails(String uuid);
 

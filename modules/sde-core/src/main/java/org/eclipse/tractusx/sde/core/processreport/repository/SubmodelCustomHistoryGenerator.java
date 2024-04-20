@@ -99,7 +99,7 @@ public class SubmodelCustomHistoryGenerator {
 		
 		return records;
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	private List<Object[]> readData(List<String> colNames, String tableEntityName, String processId, String fetchNotDeletedRecord) {
 
@@ -123,10 +123,9 @@ public class SubmodelCustomHistoryGenerator {
 	@Modifying
 	@Transactional
 	@SneakyThrows
-	public JsonObject readCreatedTwinsDetails(List<String> colNames, String tableEntityName, String uuid,
+	public List<JsonObject> readCreatedTwinsDetails(List<String> colNames, String tableEntityName, String uuid,
 			String pkColomn) {
 
-		JsonObject jsonObject = null;
 		String columns = String.join(",", colNames);
 		Query query = entityManager.createNativeQuery(
 				"SELECT " + columns + " FROM " + tableEntityName + " as p Where p." + pkColomn + "=? ");
@@ -136,10 +135,12 @@ public class SubmodelCustomHistoryGenerator {
 		if (resultList.isEmpty())
 			throw new NoDataFoundException(String.format("No data found for %s ", uuid));
 
+		List<JsonObject> records = new LinkedList<>();
+		
 		for (Object[] objectArray : resultList) {
-			jsonObject = getJsonNodes(colNames, objectArray);
+			records.add(getJsonNodes(colNames, objectArray));
 		}
-		return jsonObject;
+		return records;
 	}
 
 	private JsonObject getJsonNodes(List<String> colNames, Object[] objectArray) {

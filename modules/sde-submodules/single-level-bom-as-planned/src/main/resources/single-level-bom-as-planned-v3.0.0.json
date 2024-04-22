@@ -193,18 +193,22 @@
 		}
 	],
 	"addOn": {
-		"identifier": "uuid",
-		"specificAssetIdsSpecs": {
-			"manufacturerId": "manufacturerId",
-			"manufacturerPartId": "manufacturer_part_id",
+		"identifier": "${uuid}",
+		"lookupShellSpecificAssetIdsSpecs": {
+			"manufacturerPartId": "${parent_manufacturer_part_id}",
+			"assetLifecyclePhase": "AsPlanned"
+		},
+		"createShellIfNotExist": true,
+		"createShellSpecificAssetIdsSpecs":{
+			"manufacturerPartId": "${manufacturer_part_id}",
 			"assetLifecyclePhase": "AsPlanned"
 		},
 		"shortIdSpecs": [
-			"name_at_manufacturer",
-			"manufacturer_part_id"
+			"${name_at_manufacturer}",
+			"${manufacturer_part_id}"
 		],
 		"bpnDiscoverySpecs": {
-			"manufacturerPartId": "manufacturer_part_id"
+			"manufacturerPartId": "${manufacturer_part_id}"
 		},
 		"responseTemplate": {
 			"catenaXId": "${parent_uuid}",

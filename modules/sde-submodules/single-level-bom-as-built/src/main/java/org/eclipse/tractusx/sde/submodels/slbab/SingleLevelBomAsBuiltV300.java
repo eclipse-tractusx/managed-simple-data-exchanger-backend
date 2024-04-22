@@ -45,7 +45,7 @@ public class SingleLevelBomAsBuiltV300 extends SubmodelExtension {
 
 		submodel = loadSubmodel(input);
 		
-		submodel.addProperties("tableName", "singlelevelbomasbuilt_v_300");
+		submodel.addProperties("tableName", "single_level_bom_asbuilt_v_300");
 	}
 
 	@Override

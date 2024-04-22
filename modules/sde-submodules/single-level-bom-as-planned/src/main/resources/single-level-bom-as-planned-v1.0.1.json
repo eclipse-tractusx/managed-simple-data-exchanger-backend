@@ -18,7 +18,6 @@
 			"manufacturer_part_id",
 			"quantity_number",
 			"measurement_unit",
-			"datatype_uri",
 			"created_on"
 		],
 		"dependentRequired": {},

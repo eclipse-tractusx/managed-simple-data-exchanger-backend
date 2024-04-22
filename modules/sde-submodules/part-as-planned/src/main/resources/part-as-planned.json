@@ -129,6 +129,7 @@
 			"${name_at_manufacturer}",
 			"${manufacturer_part_id}"
 		],
+		"createShellIfNotExist": true,
 		"bpnDiscoverySpecs": {
 			"manufacturerPartId": "${manufacturer_part_id}"
 		},

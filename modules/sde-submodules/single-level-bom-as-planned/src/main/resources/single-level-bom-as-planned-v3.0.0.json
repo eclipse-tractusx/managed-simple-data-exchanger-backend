@@ -198,13 +198,13 @@
 			"manufacturerPartId": "${parent_manufacturer_part_id}",
 			"assetLifecyclePhase": "AsPlanned"
 		},
-		"createShellIfNotExist": true,
+		"createShellIfNotExist": false,
 		"createShellSpecificAssetIdsSpecs":{
 			"manufacturerPartId": "${manufacturer_part_id}",
 			"assetLifecyclePhase": "AsPlanned"
 		},
 		"shortIdSpecs": [
-			"${name_at_manufacturer}",
+			"${parent_manufacturer_part_id}",
 			"${manufacturer_part_id}"
 		],
 		"bpnDiscoverySpecs": {

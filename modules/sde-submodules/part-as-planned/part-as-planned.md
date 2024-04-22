@@ -32,8 +32,6 @@ Please find below links for schema details:
 
 #### Example for submodel PartAsPlanned
 
-<br/><br/><img src="src/main/resources/images/partasplanned.png" height="60%" width="80%"/><br/><br/>
-
 ### Work Flow 
 
  - CSV to POJO
@@ -48,6 +46,3 @@ Please find below links for schema details:
 
  - DigitalTwins
  - EDC Connectors
- 
- 
-[CSV Sample File Link]: src/main/resources/partAsPlanned.csv

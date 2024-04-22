@@ -2,7 +2,7 @@
 	"$schema": "https://json-schema.org/draft/2019-09/schema",
 	"$id": "http://example.com/example.json",
 	"type": "array",
-	"id": "partsiteinformationasplanned_100",
+	"id": "partsiteinformationasplanned",
 	"idShort": "partSiteInformationAsPlanned",
 	"version": "1.0.0",
 	"semantic_id": "urn:bamm:io.catenax.part_site_information_as_planned:1.0.0#PartSiteInformationAsPlanned",
@@ -116,29 +116,27 @@
 		}
 	],
 	"addOn": {
-		"identifier": "uuid",
-		"specificAssetIdsSpecs": {
-			"manufacturerId": "manufacturerId",
-			"manufacturerPartId": "manufacturer_part_id",
+		"identifier": "${uuid}",
+		"lookupShellSpecificAssetIdsSpecs": {
+			"manufacturerPartId": "${manufacturer_part_id}",
 			"assetLifecyclePhase": "AsPlanned"
 		},
+		"createShellIfNotExist": true,
 		"shortIdSpecs": [
-			"name_at_manufacturer",
-			"manufacturer_part_id"
+			"${name_at_manufacturer}",
+			"${manufacturer_part_id}"
 		],
 		"bpnDiscoverySpecs": {
-			"manufacturerPartId": "manufacturer_part_id"
+			"manufacturerPartId": "${manufacturer_part_id}"
 		},
-		"responseTemplate":{
+		"responseTemplate": {
 			"catenaXId": "${uuid}",
-			"sites": [
-				{
-					"functionValidUntil": "${function_valid_until}",
-					"catenaXsiteId": "${catenax_site_id}",
-					"function": "${function}",
-					"functionValidFrom": "${function_valid_from}"
-				}
-			]
+			"sites": {
+				"function": "${function}",
+				"functionValidUntil": "${function_valid_until}",
+				"functionValidFrom": "${function_valid_from}",
+				"catenaXSiteId": "${catenax_site_id}"
+			}
 		}
 	}
 }

@@ -35,7 +35,7 @@ public class PartSiteInformationAsPlannedSubmodel extends SubmodelExtension {
 	@PostConstruct
 	public void init() {
 
-		String resource = "part-site-information-as-planned-v1.0.0.json";
+		String resource = "part-site-information-as-planned.json";
 		// this is the path within the jar file
 		InputStream input = this.getClass().getResourceAsStream("/resources/" + resource);
 		if (input == null) {
@@ -45,7 +45,8 @@ public class PartSiteInformationAsPlannedSubmodel extends SubmodelExtension {
 
 		submodel = loadSubmodel(input);
 
-		submodel.addProperties("tableName", "Partsiteinformationasplanned_v_100");
+		submodel.addProperties("tableName", "Part_site_information_as_planned");
+
 	}
 
 	@Override

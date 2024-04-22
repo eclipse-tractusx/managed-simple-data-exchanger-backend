@@ -2,7 +2,7 @@
 	"$schema": "https://json-schema.org/draft/2019-09/schema",
 	"$id": "http://example.com/example.json",
 	"type": "array",
-	"id": "singlelevelbomasbuilt_100",
+	"id": "singlelevelbomasbuilt",
 	"idShort": "singleLevelBoMAsBuilt",
 	"version": "1.0.0",
 	"semantic_id": "urn:bamm:io.catenax.single_level_bom_as_built:1.0.0#SingleLevelBomAsBuilt",
@@ -162,7 +162,7 @@
 					"string"
 				],
 				"title": "Measurement Unit",
-				"pattern" : "[a-zA-Z]*:[a-zA-Z]+",
+								"pattern" : "[a-zA-Z]*:[a-zA-Z]+",
 				"description": "Unit of Measurement for the quantity of serialized objects",
 				"minLength": 1,
 				"examples": [
@@ -206,39 +206,63 @@
 			"optional_identifier_key": "",
 			"optional_identifier_value": "",
 			"quantity_number": 2.5,
-			"measurement_unit": "litre",
+			"measurement_unit": "unit:litre",
 			"created_on": "2022-02-03T14:48:54.709Z",
 			"last_modified_on": "2022-02-03T14:48:54.709Z"
 		}
 	],
 	"addOn": {
-		"identifier": "uuid",
-		"specificAssetIdsSpecs": {
-			"partInstanceId": "part_instance_id",
-			"manufacturerPartId": "manufacturer_part_id"
-		},
-		"shortIdSpecs": [
-			"name_at_manufacturer",
-			"part_instance_id",
-			"manufacturer_part_id"
-		],
-		"bpnDiscoverySpecs": {
-			"manufacturerPartId": "manufacturer_part_id"
-		},
-		"responseTemplate": {
-			"catenaXId": "${uuid}",
-			"childItems": [
+		"identifier": "${uuid}",
+		"lookupShellSpecificAssetIdsSpecs": {
+			"partInstanceId": "${parent_part_instance_id}",
+			"manufacturerPartId": "${parent_manufacturer_part_id}",
+			"optionalIdentifier": [
 				{
-					"catenaXId": "${uuid}",
-					"quantity": {
-						"quantityNumber": "${quantity_number}",
-						"measurementUnit": "${measurement_unit}"
-					},
-					"createdOn": "${created_on}",
-					"businessPartner": "${manufacturer_id}",
-					"lastModifiedOn": "${last_modified_on}"
+					"key": "${parent_optional_identifier_key}",
+					"value": "${parent_optional_identifier_value}"
 				}
 			]
+		},
+		"shortIdSpecs": [],
+		"createShellIfNotExist": false,
+		"autoPopulatedfields": [
+			{
+				"key": "${parent_uuid}",
+				"ref": "shellGlobalAssetId"
+			},
+			{
+				"key": "${uuid}",
+				"ref": {
+					"lookupChildTwinRemote": true,
+					"bpn_for_remote_registry": "${manufacturer_id}",
+					"specificAssetIdsSpecs": {
+						"partInstanceId": "${part_instance_id}",
+						"manufacturerPartId": "${manufacturer_part_id}",
+						"manufacturerId": "${manufacturer_id}",
+						"optionalIdentifier": [
+							{
+								"key": "${optional_identifier_key}",
+								"value": "${optional_identifier_value}"
+							}
+						]
+					}
+				}
+			}
+		],
+		"bpnDiscoverySpecs": {
+			"manufacturerPartId": "${manufacturer_part_id}"
+		},
+		"responseTemplate": {
+			"catenaXId": "${parent_uuid}",
+			"childItems": {
+				"catenaXId": "${uuid}",
+				"businessPartner": "${manufacturer_id}",
+				"createdOn": "${created_on}",
+				"quantity": {
+					"quantityNumber": "${quantity_number}",
+					"measurementUnit": "${measurement_unit}"
+				}
+			}
 		}
 	}
 }

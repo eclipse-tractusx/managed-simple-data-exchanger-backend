@@ -45,7 +45,7 @@ public class SingleLevelBoMAsPlannedV101 extends SubmodelExtension {
 
 		submodel = loadSubmodel(input);
 		
-		submodel.addProperties("tableName", "singlelevelbom_asplanned_v_101");
+		submodel.addProperties("tableName", "single_level_bom_as_planned");
 	}
 	
 	@Override

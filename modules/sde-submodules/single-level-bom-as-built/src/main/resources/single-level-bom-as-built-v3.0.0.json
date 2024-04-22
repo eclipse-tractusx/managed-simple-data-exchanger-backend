@@ -152,7 +152,7 @@
 				],
 				"minLength": 1,
 				"title": "Quantity Value",
-				"description" : "The quantity value associated with the unit.",
+				"description": "The quantity value associated with the unit.",
 				"multipleOf": 0.01,
 				"examples": [
 					2.5
@@ -200,8 +200,8 @@
 					"unit:day"
 				],
 				"title": "Quantity Unit",
-				"pattern" : "[a-zA-Z]*:[a-zA-Z]+",
-				"description" : "The unit of an item. Common units may be related to mass, count, linear, area, volume or misc.",
+				"pattern": "[a-zA-Z]*:[a-zA-Z]+",
+				"description": "The unit of an item. Common units may be related to mass, count, linear, area, volume or misc.",
 				"minLength": 1,
 				"examples": [
 					"litre"
@@ -262,21 +262,48 @@
 		}
 	],
 	"addOn": {
-		"identifier": "uuid",
-		"specificAssetIdsSpecs": {
-			"partInstanceId": "part_instance_id",
-			"manufacturerPartId": "manufacturer_part_id"
+		"identifier": "${uuid}",
+		"lookupShellSpecificAssetIdsSpecs": {
+			"partInstanceId": "${parent_part_instance_id}",
+			"manufacturerPartId": "${parent_manufacturer_part_id}",
+			"optionalIdentifier": [
+				{
+					"key": "${parent_optional_identifier_key}",
+					"value": "${parent_optional_identifier_value}"
+				}
+			]
 		},
-		"shortIdSpecs": [
-			"name_at_manufacturer",
-			"part_instance_id",
-			"manufacturer_part_id"
+		"shortIdSpecs": [],
+		"createShellIfNotExist": false,
+		"autoPopulatedfields": [
+			{
+				"key": "${parent_uuid}",
+				"ref": "shellGlobalAssetId"
+			},
+			{
+				"key": "${uuid}",
+				"ref": {
+					"lookupChildTwinRemote": true,
+					"bpn_for_remote_registry": "${manufacturer_id}",
+					"specificAssetIdsSpecs": {
+						"partInstanceId": "${part_instance_id}",
+						"manufacturerPartId": "${manufacturer_part_id}",
+						"manufacturerId": "${manufacturer_id}",
+						"optionalIdentifier": [
+							{
+								"key": "${optional_identifier_key}",
+								"value": "${optional_identifier_value}"
+							}
+						]
+					}
+				}
+			}
 		],
 		"bpnDiscoverySpecs": {
-			"manufacturerPartId": "manufacturer_part_id"
+			"manufacturerPartId": "${manufacturer_part_id}"
 		},
 		"responseTemplate": {
-			"catenaXId": "${uuid}",
+			"catenaXId": "${parent_uuid}",
 			"childItems": [
 				{
 					"catenaXId": "${uuid}",

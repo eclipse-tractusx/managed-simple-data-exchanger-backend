@@ -34,63 +34,59 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Service
 public class AssetEntryRequestFactory {
 
-    @Value(value = "${dft.hostname}")
-    private String dftHostname;
-    
-    @Value(value = "${manufacturerId}")
-    private String manufacturerId;
-    
-    @Value(value = "${edc.hostname}")
-    private String edcEndpoint;
-  
-    @Value(value = "${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/token")
-    private String idpIssuerTokenURL;
-    
-    @Value(value = "${digital-twins.authentication.clientId}")
-    private String clientId;
+	@Value(value = "${dft.hostname}")
+	private String dftHostname;
 
-    @SneakyThrows
-    public String createAssetId(String shellId, String subModelId) {
-        return shellId + "-" + subModelId;
-    }
+	@Value(value = "${manufacturerId}")
+	private String manufacturerId;
 
-    public AssetEntryRequest getAssetRequest(String submodel, String assetName, String shellId, String subModelId, String uuid, String sematicId, String dctType) {
-        
-    	String assetId = createAssetId(shellId, subModelId);
-        
-        HashMap<String, Object> assetProperties = getAssetProperties(assetId, assetName, sematicId, dctType);
+	@Value(value = "${edc.hostname}")
+	private String edcEndpoint;
 
-        String uriString = subModelPayloadUrl(submodel, uuid);
+	@Value(value = "${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/token")
+	private String idpIssuerTokenURL;
 
-        HashMap<String, String> dataAddressProperties = getDataAddressProperties(shellId, subModelId, uriString);
-        DataAddressRequest dataAddressRequest = DataAddressRequest.builder().properties(dataAddressProperties).build();
+	@Value(value = "${digital-twins.authentication.clientId}")
+	private String clientId;
 
-        return AssetEntryRequest.builder()
-                .id(assetId)
-                .properties(assetProperties)
-                .dataAddress(dataAddressRequest)
-                .build();
-    }
-
-    private String subModelPayloadUrl(String submodel, String uuid) {
-    	 return UriComponentsBuilder
-                 .fromHttpUrl(dftHostname)
-                 .path("/"+submodel+"/public/")
-                 .path(uuid)
-                 .toUriString();
+	@SneakyThrows
+	public String createAssetId(String shellId, String subModelId) {
+		return shellId + "-" + subModelId;
 	}
 
-	private HashMap<String, Object> getAssetProperties(String assetId, String assetName, String sematicId, String edcAssetType) {
-        HashMap<String, Object> assetProperties = new HashMap<>();
-        assetProperties.put(EDCAssetConstant.ASSET_PROP_ID, assetId);
+	public AssetEntryRequest getAssetRequest(String submodel, String assetName, String shellId, String subModelId,
+			String submoduleUriPath, String uuid, String sematicId, String dctType) {
+
+		String assetId = createAssetId(shellId, subModelId);
+
+		HashMap<String, Object> assetProperties = getAssetProperties(assetId, assetName, sematicId, dctType);
+
+		String uriString = subModelPayloadUrl(submodel, submoduleUriPath, uuid);
+
+		HashMap<String, String> dataAddressProperties = getDataAddressProperties(shellId, subModelId, uriString);
+		DataAddressRequest dataAddressRequest = DataAddressRequest.builder().properties(dataAddressProperties).build();
+
+		return AssetEntryRequest.builder().id(assetId).properties(assetProperties).dataAddress(dataAddressRequest)
+				.build();
+	}
+
+	private String subModelPayloadUrl(String submodel, String submoduleUriPath, String uuid) {
+		return UriComponentsBuilder.fromHttpUrl(dftHostname).path("/" + submodel + "/" + submoduleUriPath).path(uuid)
+				.toUriString();
+	}
+
+	private HashMap<String, Object> getAssetProperties(String assetId, String assetName, String sematicId,
+			String edcAssetType) {
+		HashMap<String, Object> assetProperties = new HashMap<>();
+		assetProperties.put(EDCAssetConstant.ASSET_PROP_ID, assetId);
 		assetProperties.put(EDCAssetConstant.ASSET_PROP_POLICYID, EDCAssetConstant.ASSET_PROP_POLICYID);
-        assetProperties.put(EDCAssetConstant.ASSET_PROP_CONTENTTYPE, EDCAssetConstant.ASSET_PROP_CONTENT_TYPE);
-        assetProperties.put(EDCAssetConstant.ASSET_PROP_VERSION, EDCAssetConstant.ASSET_PROP_VERSION_VALUE);
-        assetProperties.put(EDCAssetConstant.RDFS_LABEL, assetName);
-        assetProperties.put(EDCAssetConstant.RDFS_COMMENT, assetName);
-        assetProperties.put(EDCAssetConstant.DCAT_VERSION, EDCAssetConstant.ASSET_PROP_TWIN_VERSION);
-        assetProperties.put(EDCAssetConstant.CX_COMMON_VERSION, EDCAssetConstant.ASSET_PROP_TWIN_VERSION);
-        
+		assetProperties.put(EDCAssetConstant.ASSET_PROP_CONTENTTYPE, EDCAssetConstant.ASSET_PROP_CONTENT_TYPE);
+		assetProperties.put(EDCAssetConstant.ASSET_PROP_VERSION, EDCAssetConstant.ASSET_PROP_VERSION_VALUE);
+		assetProperties.put(EDCAssetConstant.RDFS_LABEL, assetName);
+		assetProperties.put(EDCAssetConstant.RDFS_COMMENT, assetName);
+		assetProperties.put(EDCAssetConstant.DCAT_VERSION, EDCAssetConstant.ASSET_PROP_TWIN_VERSION);
+		assetProperties.put(EDCAssetConstant.CX_COMMON_VERSION, EDCAssetConstant.ASSET_PROP_TWIN_VERSION);
+
 		if (StringUtils.isNotBlank(sematicId))
 			assetProperties.put(EDCAssetConstant.AAS_SEMANTICS_SEMANTIC_ID, Map.of("@id", sematicId));
 
@@ -101,9 +97,9 @@ public class AssetEntryRequestFactory {
 		} else {
 			assetProperties.put(EDCAssetConstant.ASSET_PROP_TYPE, EDCAssetConstant.ASSET_PROP_TYPE_VALUE);
 		}
-        
-        return assetProperties;
-    }
+
+		return assetProperties;
+	}
 
 	private HashMap<String, String> getDataAddressProperties(String shellId, String subModelId, String endpoint) {
 		HashMap<String, String> dataAddressProperties = new HashMap<>();
@@ -120,4 +116,4 @@ public class AssetEntryRequestFactory {
 		return dataAddressProperties;
 	}
 
- }
+}

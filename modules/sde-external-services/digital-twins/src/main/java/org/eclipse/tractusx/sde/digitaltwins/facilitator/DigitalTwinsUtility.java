@@ -60,187 +60,174 @@ import lombok.SneakyThrows;
 @Getter
 public class DigitalTwinsUtility {
 
-    private static final String FORWARD_SLASH = "/";
+	private static final String FORWARD_SLASH = "/";
 
-    private static final String PUBLIC_READABLE = "PUBLIC_READABLE";
+	private static final String PUBLIC_READABLE = "PUBLIC_READABLE";
 
-    @Value(value = "${manufacturerId}")
-    public String manufacturerId;
+	@Value(value = "${manufacturerId}")
+	public String manufacturerId;
 
-    @Value(value = "${edc.hostname}${edc.dsp.endpointpath:/api/v1/dsp}")
-    public String digitalTwinEdcDspEndpoint;
+	@Value(value = "${edc.hostname}${edc.dsp.endpointpath:/api/v1/dsp}")
+	public String digitalTwinEdcDspEndpoint;
 
-    @Value(value = "${edc.hostname}${edc.dataplane.endpointpath:/api/public}")
-    public String digitalTwinEdcDataplaneEndpoint;
+	@Value(value = "${edc.hostname}${edc.dataplane.endpointpath:/api/public}")
+	public String digitalTwinEdcDataplaneEndpoint;
 
-    ObjectMapper mapper = new ObjectMapper();
+	ObjectMapper mapper = new ObjectMapper();
 
-    private static final Map<String, List<String>> publicReadableSpecificAssetIDs = Map.of(MANUFACTURER_PART_ID,
-            List.of("*"), ASSET_LIFECYCLE_PHASE, List.of("AsBuilt", "AsPlanned"));
+	private static final Map<String, List<String>> publicReadableSpecificAssetIDs = Map.of(MANUFACTURER_PART_ID,
+			List.of("*"), ASSET_LIFECYCLE_PHASE, List.of("AsBuilt", "AsPlanned"));
 
+	@SneakyThrows
+	public ShellDescriptorRequest getShellDescriptorRequest(String shortId, String uuid,
+			Map<String, String> specificIdentifiers, PolicyModel policy) {
 
-    @SneakyThrows
-    public ShellDescriptorRequest getShellDescriptorRequest(String shortId,
-                                                            String uuid, Map<String, String> specificIdentifiers, PolicyModel policy) {
+		return ShellDescriptorRequest.builder().idShort(resizeShortId(shortId)).globalAssetId(uuid)
+				.specificAssetIds(getSpecificAssetIds(specificIdentifiers, policy)).description(List.of())
+				.id(UUIdGenerator.getUrnUuid()).build();
+	}
 
-        return ShellDescriptorRequest.builder()
-                .idShort(resizeShortId(shortId))
-                .globalAssetId(uuid)
-                .specificAssetIds(getSpecificAssetIds(specificIdentifiers, policy))
-                .description(List.of())
-                .id(UUIdGenerator.getUrnUuid())
-                .build();
-    }
+	@SneakyThrows
+	public ShellDescriptorRequest getShellDescriptorRequest(String nameAtManufacturer, String manufacturerPartId,
+			String uuid, Map<String, String> specificIdentifiers, PolicyModel policy) {
 
-    @SneakyThrows
-    public ShellDescriptorRequest getShellDescriptorRequest(String nameAtManufacturer, String manufacturerPartId,
-                                                            String uuid, Map<String, String> specificIdentifiers, PolicyModel policy) {
+		return ShellDescriptorRequest.builder()
+				.idShort(resizeShortId(
+						String.format("%s_%s_%s", nameAtManufacturer, manufacturerId, manufacturerPartId)))
+				.globalAssetId(uuid).specificAssetIds(getSpecificAssetIds(specificIdentifiers, policy))
+				.description(List.of()).id(UUIdGenerator.getUrnUuid()).build();
+	}
 
-        return ShellDescriptorRequest.builder()
-                .idShort(resizeShortId(String.format("%s_%s_%s", nameAtManufacturer, manufacturerId, manufacturerPartId)))
-                .globalAssetId(uuid)
-                .specificAssetIds(getSpecificAssetIds(specificIdentifiers, policy))
-                .description(List.of())
-                .id(UUIdGenerator.getUrnUuid())
-                .build();
-    }
+	private String resizeShortId(String str) {
+		return str.length() > 128 ? str.substring(0, 126) : str;
+	}
 
-    private String resizeShortId(String str) {
-        return str.length() > 128 ? str.substring(0, 126) : str;
-    }
+	@SneakyThrows
+	public CreateSubModelRequest getCreateSubModelRequest(String shellId, String sematicId, String idShortofModel,
+			String submodel, String productIdPath, String description) {
+		String identification = UUIdGenerator.getUrnUuid();
+		return getCreateSubModelRequest(shellId, sematicId, idShortofModel, identification, submodel, productIdPath,
+				description);
+	}
 
-    @SneakyThrows
-    public CreateSubModelRequest getCreateSubModelRequest(String shellId, String sematicId, String idShortofModel, String submodel, String productIdPath, String description) {
-        String identification = UUIdGenerator.getUrnUuid();
-        return getCreateSubModelRequest(shellId, sematicId, idShortofModel, identification, submodel, productIdPath, description);
-    }
+	@SneakyThrows
+	public CreateSubModelRequest getCreateSubModelRequest(String shellId, String sematicId, String idShortofModel,
+			String identification, String submodel, String productIdPath, String description) {
 
-    @SneakyThrows
-    public CreateSubModelRequest getCreateSubModelRequest(String shellId, String sematicId,
-                                                          String idShortofModel, String identification, String submodel, String productIdPath, String description) {
+		SemanticId semanticId = SemanticId.builder().type(CommonConstants.EXTERNAL_REFERENCE)
+				.keys(List.of(new Keys(CommonConstants.GLOBAL_REFERENCE, sematicId))).build();
 
-        SemanticId semanticId = SemanticId.builder().type(CommonConstants.EXTERNAL_REFERENCE)
-                .keys(List.of(new Keys(CommonConstants.GLOBAL_REFERENCE, sematicId))).build();
+		if (StringUtils.isNotBlank(productIdPath))
+			productIdPath = FORWARD_SLASH + submodel + FORWARD_SLASH + productIdPath + FORWARD_SLASH + identification;
 
-        if (StringUtils.isNotBlank(productIdPath))
-            productIdPath = FORWARD_SLASH + submodel + FORWARD_SLASH + productIdPath;
+		List<Endpoint> endpoints = prepareDtEndpoint(shellId, identification, productIdPath);
 
-        List<Endpoint> endpoints = prepareDtEndpoint(shellId, identification, productIdPath);
+		MultiLanguage engLang = MultiLanguage.builder().language("en").text(description).build();
 
-        MultiLanguage engLang = MultiLanguage.builder()
-                .language("en")
-                .text(description)
-                .build();
+		return CreateSubModelRequest.builder().idShort(idShortofModel).id(identification).semanticId(semanticId)
+				.description(List.of(engLang)).endpoints(endpoints).build();
+	}
 
-        return CreateSubModelRequest.builder()
-                .idShort(idShortofModel)
-                .id(identification)
-                .semanticId(semanticId)
-                .description(List.of(engLang))
-                .endpoints(endpoints)
-                .build();
-    }
+	public List<Endpoint> prepareDtEndpoint(String shellId, String submodelIdentification, String productIdPath) {
 
-    public List<Endpoint> prepareDtEndpoint(String shellId, String submodelIdentification, String productIdPath) {
+		List<Endpoint> endpoints = new ArrayList<>();
+		endpoints.add(Endpoint.builder().endpointInterface(CommonConstants.INTERFACE)
+				.protocolInformation(ProtocolInformation.builder()
+						.endpointAddress(digitalTwinEdcDataplaneEndpoint + productIdPath)
+						.endpointProtocol(CommonConstants.HTTP)
+						.endpointProtocolVersion(List.of(CommonConstants.ENDPOINT_PROTOCOL_VERSION))
+						.subProtocol(CommonConstants.SUB_PROTOCOL)
+						.subprotocolBody("id=" + shellId + "-" + submodelIdentification + ";dspEndpoint="
+								+ digitalTwinEdcDspEndpoint)
+						.subprotocolBodyEncoding(CommonConstants.BODY_ENCODING)
+						.securityAttributes(List.of(new SecurityAttributes("NONE", "NONE", "NONE"))).build())
+				.build());
+		return endpoints;
+	}
 
-        List<Endpoint> endpoints = new ArrayList<>();
-        endpoints.add(Endpoint.builder().endpointInterface(CommonConstants.INTERFACE)
-                .protocolInformation(ProtocolInformation.builder()
-                        .endpointAddress(digitalTwinEdcDataplaneEndpoint + productIdPath)
-                        .endpointProtocol(CommonConstants.HTTP)
-                        .endpointProtocolVersion(List.of(CommonConstants.ENDPOINT_PROTOCOL_VERSION))
-                        .subProtocol(CommonConstants.SUB_PROTOCOL)
-                        .subprotocolBody("id=" + shellId + "-" + submodelIdentification + ";dspEndpoint="
-                                + digitalTwinEdcDspEndpoint)
-                        .subprotocolBodyEncoding(CommonConstants.BODY_ENCODING)
-                        .securityAttributes(List.of(new SecurityAttributes("NONE", "NONE", "NONE"))).build())
-                .build());
-        return endpoints;
-    }
+	@SneakyThrows
+	public List<Object> getSpecificAssetIds(Map<String, String> specificAssetIds, PolicyModel policy) {
 
-    @SneakyThrows
-    public List<Object> getSpecificAssetIds(Map<String, String> specificAssetIds, PolicyModel policy) {
+		List<Object> specificIdentifiers = new ArrayList<>();
 
-        List<Object> specificIdentifiers = new ArrayList<>();
+		List<Keys> keyList = bpnKeyRefrence(PolicyOperationUtil.getAccessBPNList(policy));
 
-        List<Keys> keyList = bpnKeyRefrence(PolicyOperationUtil.getAccessBPNList(policy));
+		specificAssetIds.entrySet().stream().forEach(entry -> {
 
-        specificAssetIds.entrySet().stream().forEach(entry -> {
+			List<String> list = publicReadableSpecificAssetIDs.get(entry.getKey());
+			ExternalSubjectId externalSubjectId = null;
 
-            List<String> list = publicReadableSpecificAssetIDs.get(entry.getKey());
-            ExternalSubjectId externalSubjectId = null;
+			if (list != null && (list.contains("*") || list.contains(entry.getValue()))) {
+				externalSubjectId = ExternalSubjectId.builder().type("ExternalReference")
+						.keys(List.of(Keys.builder().type("GlobalReference").value(PUBLIC_READABLE).build())).build();
+				specificIdentifiers.add(new KeyValuePair(entry.getKey(), entry.getValue(), externalSubjectId));
+			} else {
+				if (keyList != null && !keyList.isEmpty() && !entry.getValue().isEmpty()) {
 
-            if (list != null && (list.contains("*") || list.contains(entry.getValue()))) {
-                externalSubjectId = ExternalSubjectId.builder().type("ExternalReference")
-                        .keys(List.of(Keys.builder().type("GlobalReference").value(PUBLIC_READABLE).build())).build();
-                specificIdentifiers.add(new KeyValuePair(entry.getKey(), entry.getValue(), externalSubjectId));
-            } else {
-                if (keyList != null && !keyList.isEmpty() && !entry.getValue().isEmpty()) {
+					externalSubjectId = ExternalSubjectId.builder().type("ExternalReference").keys(keyList).build();
+					specificIdentifiers.add(new KeyValuePair(entry.getKey(), entry.getValue(), externalSubjectId));
 
-                    externalSubjectId = ExternalSubjectId.builder().type("ExternalReference").keys(keyList).build();
-                    specificIdentifiers.add(new KeyValuePair(entry.getKey(), entry.getValue(), externalSubjectId));
+				} else {
+					Map<String, Object> map = new HashMap<>();
+					map.put("name", entry.getKey());
+					map.put("value", entry.getValue());
+					specificIdentifiers.add(map);
+				}
+			}
+		});
 
-                } else {
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("name", entry.getKey());
-                    map.put("value", entry.getValue());
-                    specificIdentifiers.add(map);
-                }
-            }
-        });
+		return specificIdentifiers;
+	}
 
-        return specificIdentifiers;
-    }
+	private List<Keys> bpnKeyRefrence(List<String> bpns) {
+		if (bpns != null && !(bpns.size() == 1 && bpns.contains(manufacturerId))) {
+			return bpns.stream().map(bpn -> Keys.builder().type("GlobalReference").value(bpn).build()).toList();
+		}
+		return Collections.emptyList();
+	}
 
-    private List<Keys> bpnKeyRefrence(List<String> bpns) {
-        if (bpns != null && !(bpns.size() == 1 && bpns.contains(manufacturerId))) {
-            return bpns.stream().map(bpn -> Keys.builder().type("GlobalReference").value(bpn).build()).toList();
-        }
-        return Collections.emptyList();
-    }
+	@SneakyThrows
+	private List<String> getFieldFromJsonNodeArray(JsonNode jsonNode, String fieldName) {
+		ObjectMapper objectMapper = new ObjectMapper();
 
-    @SneakyThrows
-    private List<String> getFieldFromJsonNodeArray(JsonNode jsonNode, String fieldName) {
-        ObjectMapper objectMapper = new ObjectMapper();
+		if (jsonNode.get(fieldName) != null)
+			return objectMapper.readValue(jsonNode.get(fieldName).toString(), new TypeReference<List<String>>() {
+			});
 
-        if (jsonNode.get(fieldName) != null)
-            return objectMapper.readValue(jsonNode.get(fieldName).toString(), new TypeReference<List<String>>() {
-            });
+		else
+			return List.of();
+	}
 
-        else
-            return List.of();
-    }
+	public ShellLookupRequest getShellLookupRequest(Map<String, String> specificAssetIds) {
 
-    public ShellLookupRequest getShellLookupRequest(Map<String, String> specificAssetIds) {
+		ShellLookupRequest shellLookupRequest = new ShellLookupRequest();
+		specificAssetIds.entrySet().stream()
+				.forEach(entry -> shellLookupRequest.addLocalIdentifier(entry.getKey(), entry.getValue()));
 
-        ShellLookupRequest shellLookupRequest = new ShellLookupRequest();
-        specificAssetIds.entrySet().stream()
-                .forEach(entry -> shellLookupRequest.addLocalIdentifier(entry.getKey(), entry.getValue()));
+		return shellLookupRequest;
+	}
 
-        return shellLookupRequest;
-    }
+	public List<String> encodeAssetIdsObject(ShellLookupRequest request) {
 
-    public List<String> encodeAssetIdsObject(ShellLookupRequest request) {
+		List<String> assetIdsList = new ArrayList<>();
+		for (LocalIdentifier assetIds : request.getAssetIds()) {
+			assetIdsList.add(encodeValueAsBase64Utf8(assetIds.toJsonString()));
+		}
+		return assetIdsList;
+	}
 
-        List<String> assetIdsList = new ArrayList<>();
-        for (LocalIdentifier assetIds : request.getAssetIds()) {
-            assetIdsList.add(encodeValueAsBase64Utf8(assetIds.toJsonString()));
-        }
-        return assetIdsList;
-    }
+	public List<String> encodeAssetIdsObjectOnlyPartInstanceId(ShellLookupRequest request) {
 
-    public List<String> encodeAssetIdsObjectOnlyPartInstanceId(ShellLookupRequest request) {
+		List<String> assetIdsList = new ArrayList<>();
+		for (LocalIdentifier assetIds : request.getAssetIds()) {
+			if (assetIds.getKey().equals("partInstanceId"))
+				assetIdsList.add(encodeValueAsBase64Utf8(assetIds.toJsonString()));
+		}
+		return assetIdsList;
+	}
 
-        List<String> assetIdsList = new ArrayList<>();
-        for (LocalIdentifier assetIds : request.getAssetIds()) {
-            if (assetIds.getKey().equals("partInstanceId"))
-                assetIdsList.add(encodeValueAsBase64Utf8(assetIds.toJsonString()));
-        }
-        return assetIdsList;
-    }
-
-    public String encodeValueAsBase64Utf8(String string) {
-        return Base64.getUrlEncoder().encodeToString(string.getBytes());
-    }
+	public String encodeValueAsBase64Utf8(String string) {
+		return Base64.getUrlEncoder().encodeToString(string.getBytes());
+	}
 
 }

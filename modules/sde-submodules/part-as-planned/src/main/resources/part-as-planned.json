@@ -120,30 +120,29 @@
 		}
 	],
 	"addOn": {
-		"identifier": "uuid",
-		"specificAssetIdsSpecs": {
-			"manufacturerId": "manufacturerId",
-			"manufacturerPartId": "manufacturer_part_id",
-			"assetLifecyclePhase": "AsPlanned"
+		"identifier": "${uuid}",
+		"lookupShellSpecificAssetIdsSpecs": {
+			"manufacturerPartId": "${manufacturer_part_id}",
+			"assetLifecyclePhase" :"AsPlanned"
 		},
 		"shortIdSpecs": [
-			"name_at_manufacturer",
-			"manufacturer_part_id"
+			"${name_at_manufacturer}",
+			"${manufacturer_part_id}"
 		],
 		"bpnDiscoverySpecs": {
-			"manufacturerPartId": "manufacturer_part_id"
+			"manufacturerPartId": "${manufacturer_part_id}"
 		},
 		"responseTemplate": {
-			"partTypeInformation": {
-				"classification": "${classification}",
-				"manufacturerPartId": "${manufacturer_part_id}",
-				"nameAtManufacturer": "${name_at_manufacturer}"
-			},
 			"validityPeriod": {
 				"validFrom": "${valid_from}",
 				"validTo": "${valid_to}"
 			},
-			"catenaXId": "${uuid}"
+			"catenaXId": "${uuid}",
+			"partTypeInformation": {
+				"manufacturerPartId": "${manufacturer_part_id}",
+				"classification": "${classification}",
+				"nameAtManufacturer": "${name_at_manufacturer}"
+			}
 		}
 	}
 }

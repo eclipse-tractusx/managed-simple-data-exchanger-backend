@@ -45,7 +45,7 @@ public class BatchV200 extends SubmodelExtension {
 
 		submodel = loadSubmodel(input);
 		
-		submodel.addProperties("tableName", "batch_v_200");
+		submodel.addProperties("tableName", "batch");
 	}
 
 	@Override

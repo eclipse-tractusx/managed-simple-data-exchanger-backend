@@ -70,6 +70,10 @@ public class SubmodelCustomHistoryGenerator {
 			String processId) {
 		List<List<String>> records = new LinkedList<>();
 		List<Object[]> resultList = readData(colNames, tableEntityName, processId, null);
+		
+		if (resultList.isEmpty())
+			throw new NoDataFoundException(String.format("No data found for processid %s ", processId));
+		
 		for (Object[] objectArray : resultList) {
 			List<String> list = new LinkedList<>();
 			for (Object object : objectArray) {
@@ -84,42 +88,44 @@ public class SubmodelCustomHistoryGenerator {
 	@Transactional
 	@SneakyThrows
 	public List<JsonObject> findAllSubmoduleAsJsonList(List<String> colNames, String tableEntityName, String processId,
-			String isDeleted) {
+			String fetchNotDeletedRecord) {
 		List<JsonObject> records = new LinkedList<>();
 
-		List<Object[]> resultList = readData(colNames, tableEntityName, processId, isDeleted);
+		List<Object[]> resultList = readData(colNames, tableEntityName, processId, fetchNotDeletedRecord);
 
 		for (Object[] objectArray : resultList) {
 			records.add(getJsonNodes(colNames, objectArray));
 		}
+		
 		return records;
 	}
-
+	
 	@SuppressWarnings("unchecked")
-	private List<Object[]> readData(List<String> colNames, String tableEntityName, String processId, String isDeleted) {
+	private List<Object[]> readData(List<String> colNames, String tableEntityName, String processId, String fetchNotDeletedRecord) {
 
 		String columns = String.join(",", colNames);
 
-		if (StringUtils.isNotBlank(isDeleted))
-			isDeleted = "  AND p.deleted= '" + isDeleted + "'";
+		if (StringUtils.isNotBlank(fetchNotDeletedRecord))
+			fetchNotDeletedRecord = " AND coalesce(p.deleted, '') != '" + fetchNotDeletedRecord + "'";
+		else {
+			fetchNotDeletedRecord= "";
+		}
+		
 
 		Query query = entityManager.createNativeQuery(
-				"SELECT " + columns + " FROM " + tableEntityName + " as p Where p.process_id=? " + isDeleted + "");
+				"SELECT " + columns + " FROM " + tableEntityName + " as p Where p.process_id=? " + fetchNotDeletedRecord + "");
 		query.setParameter(1, processId);
 		List<Object[]> resultList = query.getResultList();
 
-		if (resultList.isEmpty())
-			throw new NoDataFoundException(String.format("No data found for processid %s ", processId));
 		return resultList;
 	}
 
 	@Modifying
 	@Transactional
 	@SneakyThrows
-	public JsonObject readCreatedTwinsDetails(List<String> colNames, String tableEntityName, String uuid,
+	public List<JsonObject> readCreatedTwinsDetails(List<String> colNames, String tableEntityName, String uuid,
 			String pkColomn) {
 
-		JsonObject jsonObject = null;
 		String columns = String.join(",", colNames);
 		Query query = entityManager.createNativeQuery(
 				"SELECT " + columns + " FROM " + tableEntityName + " as p Where p." + pkColomn + "=? ");
@@ -129,10 +135,12 @@ public class SubmodelCustomHistoryGenerator {
 		if (resultList.isEmpty())
 			throw new NoDataFoundException(String.format("No data found for %s ", uuid));
 
+		List<JsonObject> records = new LinkedList<>();
+		
 		for (Object[] objectArray : resultList) {
-			jsonObject = getJsonNodes(colNames, objectArray);
+			records.add(getJsonNodes(colNames, objectArray));
 		}
-		return jsonObject;
+		return records;
 	}
 
 	private JsonObject getJsonNodes(List<String> colNames, Object[] objectArray) {
@@ -179,7 +187,7 @@ public class SubmodelCustomHistoryGenerator {
 	@SneakyThrows
 	public int saveAspectWithDeleted(String uuid, String tableEntityName, String pkColomn) {
 		Query query = entityManager
-				.createNativeQuery("UPDATE " + tableEntityName + " set deleted='Y' WHERE " + pkColomn + "= ? )");
+				.createNativeQuery("UPDATE " + tableEntityName + " set deleted='Y' WHERE " + pkColomn + "= ?");
 		query.setParameter(1, uuid);
 		return query.executeUpdate();
 	}
@@ -196,7 +204,7 @@ public class SubmodelCustomHistoryGenerator {
 	}
 
 	@SneakyThrows
-	public void checkTableIfNotExist(JsonObject schema, List<String> columns, String tableName, String pkCol) {
+	public void checkTableIfNotExistCreate(JsonObject schema, List<String> columns, String tableName, String pkCol) {
 		boolean isTableNotExist = false;
 		try (Connection con = DriverManager.getConnection(dataSourceProperties.getUrl(),
 				dataSourceProperties.getUsername(), dataSourceProperties.getPassword())) {

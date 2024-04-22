@@ -24,9 +24,11 @@ import java.io.InputStream;
 
 import org.eclipse.tractusx.sde.common.extensions.SubmodelExtension;
 import org.eclipse.tractusx.sde.common.model.Submodel;
+import org.springframework.stereotype.Component;
 
 import jakarta.annotation.PostConstruct;
 
+@Component
 public class SingleLevelBomAsBuiltV100 extends SubmodelExtension {
 	
 	private Submodel submodel = null;
@@ -44,7 +46,7 @@ public class SingleLevelBomAsBuiltV100 extends SubmodelExtension {
 
 		submodel = loadSubmodel(input);
 		
-		submodel.addProperties("tableName", "singlelevelbomasbuilt_v_100");
+		submodel.addProperties("tableName", "aspect_relationship");
 	}
 
 	@Override

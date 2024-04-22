@@ -66,7 +66,6 @@
 		<module>modules/sde-submodules/serial-part</module>
 		<module>modules/sde-submodules/batch</module>
 		<module>modules/sde-submodules/single-level-bom-as-built</module>
-		<module>modules/sde-submodules/assembly-part-relationship</module>
 		<module>modules/sde-submodules/part-as-planned</module>
 		<module>modules/sde-submodules/part-type-information</module>
 		<module>modules/sde-submodules/single-level-bom-as-planned</module>

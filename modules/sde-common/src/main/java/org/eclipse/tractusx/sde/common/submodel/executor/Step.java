@@ -21,6 +21,7 @@
 package org.eclipse.tractusx.sde.common.submodel.executor;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import lombok.Getter;
@@ -64,6 +65,11 @@ public abstract class Step {
 		return this.submodelSchema.get("semantic_id").getAsString();
 	}
 
+	public String getSubmoduleUriPathOfSubmodule() {
+		JsonElement jsonElement = this.submodelSchema.get("submodelUriPath");
+		return jsonElement == null || jsonElement.isJsonNull() ? "public" : jsonElement.getAsString();
+	}
+
 	public JsonObject getAddOnOfModel() {
 		return this.submodelSchema.get("addOn").getAsJsonObject();
 	}
@@ -72,8 +78,29 @@ public abstract class Step {
 		return this.getAddOnOfModel().get("identifier").getAsString();
 	}
 
+	public boolean checkShellCreateOption() {
+		JsonElement jsonElement = this.getAddOnOfModel().get("createShellIfNotExist");
+		return jsonElement == null || jsonElement.isJsonNull() || jsonElement.getAsBoolean();
+	}
+
+	public JsonObject checkIsRelationSubmodel() {
+		JsonElement jsonElement = this.getAddOnOfModel().get("isRelationSubmodel");
+		return jsonElement == null || jsonElement.isJsonNull() ? null : jsonElement.getAsJsonObject();
+	}
+
+	public JsonArray checkIsAutoPopulatedfieldsSubmodel() {
+		JsonElement jsonElement = this.getAddOnOfModel().get("autoPopulatedfields");
+		return jsonElement == null || jsonElement.isJsonNull() ? null : jsonElement.getAsJsonArray();
+	}
+
 	public JsonObject getSpecificAssetIdsSpecsOfModel() {
-		return this.getAddOnOfModel().get("specificAssetIdsSpecs").getAsJsonObject();
+		return this.getAddOnOfModel().get("lookupShellSpecificAssetIdsSpecs").getAsJsonObject();
+	}
+
+	public JsonObject getCreateShellSpecificAssetIdsSpecsOfModel() {
+		JsonElement jsonElement = this.getAddOnOfModel().get("createShellSpecificAssetIdsSpecs");
+		return jsonElement == null || jsonElement.isJsonNull() ? getSpecificAssetIdsSpecsOfModel()
+				: jsonElement.getAsJsonObject();
 	}
 
 	public JsonObject getBPNDiscoverySpecsOfModel() {

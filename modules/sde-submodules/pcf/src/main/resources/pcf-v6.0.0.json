@@ -2,8 +2,9 @@
 	"$schema": "https://json-schema.org/draft/2019-09/schema",
 	"$id": "http://example.com/example.json",
 	"type": "array",
-	"id": "pcf_600",
+	"id": "pcf",
 	"idShort": "PCFExchangeEndpoint",
+	"submodelUriPath":"productIds",
 	"version": "6.0.0",
 	"semantic_id": "urn:bamm:io.catenax.pcf:6.0.0#Pcf",
 	"title": "Product Carbon Footprint (pcf)",
@@ -957,18 +958,18 @@
 		}
 	],
 	"addOn": {
-		"identifier": "id",
-		"specificAssetIdsSpecs": {
-			"assetLifecyclePhase": "assetLifeCyclePhase",
-			"manufacturerPartId": "productId",
+		"identifier": "${id}",
+		"lookupShellSpecificAssetIdsSpecs": {
+			"assetLifecyclePhase": "${assetLifeCyclePhase}",
+			"manufacturerPartId": "${productId}",
 			"digitalTwinType": "PartType"
 		},
 		"shortIdSpecs": [
-			"productName",
-			"productId"
+			"${productName}",
+			"${productId}"
 		],
 		"bpnDiscoverySpecs": {
-			"manufacturerPartId": "productId"
+			"manufacturerPartId": "${productId}"
 		},
 		"responseTemplate": {
 			"specVersion": "${specVersion}",

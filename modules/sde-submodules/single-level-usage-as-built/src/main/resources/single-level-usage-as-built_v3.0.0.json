@@ -267,18 +267,34 @@
 		}
 	],
 	"addOn": {
-		"identifier": "uuid",
-		"specificAssetIdsSpecs": {
-			"partInstanceId": "part_instance_id",
-			"manufacturerPartId": "manufacturer_part_id"
+		"identifier": "${uuid}",
+		"lookupShellSpecificAssetIdsSpecs": {
+			"partInstanceId": "${parent_part_instance_id}",
+			"manufacturerPartId": "${parent_manufacturer_part_id}",
+			"optionalIdentifier": [
+				{
+					"key": "${parent_optional_identifier_key}",
+					"value": "${parent_optional_identifier_value}"
+				}
+			]
+		},
+		"createShellIfNotExist": true,
+		"createShellSpecificAssetIdsSpecs": {
+			"partInstanceId": "${part_instance_id}",
+			"manufacturerPartId": "${manufacturer_part_id}",
+			"optionalIdentifier": [
+				{
+					"key": "${optional_identifier_key}",
+					"value": "${optional_identifier_value}"
+				}
+			]
 		},
 		"shortIdSpecs": [
-			"name_at_manufacturer",
-			"part_instance_id",
-			"manufacturer_part_id"
+			"${manufacturer_part_id}",
+			"${part_instance_id}"
 		],
 		"bpnDiscoverySpecs": {
-			"manufacturerPartId": "manufacturer_part_id"
+			"manufacturerPartId": "${manufacturer_part_id}"
 		},
 		"responseTemplate": {
 			"catenaXId": "${uuid}",

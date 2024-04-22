@@ -147,7 +147,7 @@ public class DigitalTwinUseCaseHandler extends Step implements DigitalTwinUsecas
 			// We don't need to create parent shell for aspect relationship because
 			// checkShellCreateOption=false
 			throw new CsvHandlerDigitalTwinUseCaseException(
-					String.format("No parent aspect found in DT %s", shellLookupRequest.toJsonString()));
+					String.format("No shell found in DT %s", shellLookupRequest.toJsonString()));
 		}
 
 		return shellId;
@@ -203,7 +203,10 @@ public class DigitalTwinUseCaseHandler extends Step implements DigitalTwinUsecas
 
 		if (jArray != null) {
 			List<JsonElement> allGlobalFiled = jArray.asList().stream()
-					.filter(ele -> ele.getAsJsonObject().get("ref").getAsString().equals("shellGlobalAssetId"))
+					.filter(ele -> {
+						JsonElement refElement = ele.getAsJsonObject().get("ref");
+						return refElement!= null && refElement.equals("shellGlobalAssetId");
+					})
 					.toList();
 			if (!allGlobalFiled.isEmpty()) {
 				for (JsonElement jsonElement : allGlobalFiled) {

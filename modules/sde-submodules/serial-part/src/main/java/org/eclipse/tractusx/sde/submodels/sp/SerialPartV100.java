@@ -46,7 +46,7 @@ public class SerialPartV100 extends SubmodelExtension {
 
 		submodel = loadSubmodel(input);
 		
-		submodel.addProperties("tableName", "serialpart_v_100");
+		submodel.addProperties("tableName", "aspect");
 	}
 
 	@Override

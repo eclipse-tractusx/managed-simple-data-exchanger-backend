@@ -21,11 +21,9 @@
 package org.eclipse.tractusx.sde.submodels.apr;
 
 import java.io.InputStream;
-import java.util.List;
 
 import org.eclipse.tractusx.sde.common.extensions.SubmodelExtension;
 import org.eclipse.tractusx.sde.common.model.Submodel;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import jakarta.annotation.PostConstruct;
@@ -34,9 +32,6 @@ import jakarta.annotation.PostConstruct;
 public class AssemblyPartRelationship extends SubmodelExtension {
 
 	private Submodel submodel = null;
-
-	@Autowired
-	private AssemblyPartRelationshipExecutor assemblyPartRelationshipWorkflow;
 
 	@PostConstruct
 	public void init() {
@@ -50,10 +45,7 @@ public class AssemblyPartRelationship extends SubmodelExtension {
 		}
 
 		submodel = loadSubmodel(input);
-		submodel.setExecutor(assemblyPartRelationshipWorkflow);
-
 		submodel.addProperties("tableName", "aspect_relationship");
-		submodel.addProperties("autoPopulatedfields", List.of("parent_uuid", "uuid"));
 	}
 
 	@Override

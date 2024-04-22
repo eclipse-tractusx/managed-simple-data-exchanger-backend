@@ -23,7 +23,6 @@ import java.io.InputStream;
 
 import org.eclipse.tractusx.sde.common.extensions.SubmodelExtension;
 import org.eclipse.tractusx.sde.common.model.Submodel;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import jakarta.annotation.PostConstruct;
@@ -32,9 +31,6 @@ import jakarta.annotation.PostConstruct;
 public class PartAsPlannedSubmodel extends SubmodelExtension {
 
 	private Submodel submodel = null;
-	
-	@Autowired
-	private PartAsPlannedExecutor partAsPlannedExecutor;
 	
 	@PostConstruct
 	public void init() {
@@ -49,8 +45,6 @@ public class PartAsPlannedSubmodel extends SubmodelExtension {
 
 		submodel = loadSubmodel(input);
 
-		submodel.setExecutor(partAsPlannedExecutor);
-		
 		submodel.addProperties("tableName", "part_as_planned");
 	}
 	

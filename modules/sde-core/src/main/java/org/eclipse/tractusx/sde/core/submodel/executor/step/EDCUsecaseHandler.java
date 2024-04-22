@@ -61,7 +61,8 @@ public class EDCUsecaseHandler extends Step implements EDCUsecaseStep {
 			String uuid = JsonObjectUtility.getValueFromJsonObjectAsString(objectNode, getIdentifierOfModel());
 
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodule,
-					getSubmodelShortDescriptionOfModel(), shellId, subModelId, uuid, getsemanticIdOfModel(), "");
+					getSubmodelShortDescriptionOfModel(), shellId, subModelId, getSubmoduleUriPathOfSubmodule(), uuid,
+					getsemanticIdOfModel(), "");
 
 			Map<String, String> eDCAsset = null;
 
@@ -90,6 +91,6 @@ public class EDCUsecaseHandler extends Step implements EDCUsecaseStep {
 
 		deleteEDCFacilitator.deleteAssets(
 				JsonObjectUtility.getValueFromJsonObject(jsonObject, SubmoduleCommonColumnsConstant.ASSET_ID));
-		
+
 	}
 }

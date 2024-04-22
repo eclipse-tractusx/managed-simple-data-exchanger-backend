@@ -235,7 +235,7 @@ public class SubmodelOrchestartorService {
 		AtomicInteger atInt = new AtomicInteger();
 
 		SubmodelExecutor executor = getExecutor(submodelSchema.getExecutor());
-
+		executor.init(submodelSchema);
 		ProcessReport oldProcessReport = processReportUseCase.getProcessReportById(refProcessId);
 
 		List<JsonObject> readCreatedTwinsforDelete = executor.readCreatedTwinsforDelete(refProcessId);
@@ -274,7 +274,7 @@ public class SubmodelOrchestartorService {
 		JsonObject readCreatedTwinsDetails = executor.readCreatedTwinsDetails(uuid);
 		JsonObject jObject = new JsonObject();
 		if ("csv".equalsIgnoreCase(type)) {
-			List<String> csvHeader = submoduleUtility.getCSVHeader(submodelSchema, null);
+			List<String> csvHeader = submoduleUtility.getCSVHeader(submodelSchema);
 			JsonObject jElement = readCreatedTwinsDetails.get("csv").getAsJsonObject();
 			for (String field : csvHeader) {
 				jObject.add(field, jElement.get(field));

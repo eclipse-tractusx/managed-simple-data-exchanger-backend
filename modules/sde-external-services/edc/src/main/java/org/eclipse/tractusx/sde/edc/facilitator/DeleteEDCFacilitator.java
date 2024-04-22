@@ -94,7 +94,7 @@ public class DeleteEDCFacilitator extends AbstractEDCStepsHelper {
 		try {
 			eDCFeignClientApi.deleteAssets(assetId);
 		} catch (Exception e) {
-			throw new ServiceException("Unable to delete EDC asset: " + e.getMessage());
+			parseExceptionMessage(e);
 		}
 
 	}

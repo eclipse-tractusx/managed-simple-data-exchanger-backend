@@ -24,9 +24,11 @@ import java.io.InputStream;
 
 import org.eclipse.tractusx.sde.common.extensions.SubmodelExtension;
 import org.eclipse.tractusx.sde.common.model.Submodel;
+import org.springframework.stereotype.Component;
 
 import jakarta.annotation.PostConstruct;
 
+@Component
 public class SingleLevelUsageAsBuiltV300 extends SubmodelExtension {
 
 	private Submodel submodel = null;

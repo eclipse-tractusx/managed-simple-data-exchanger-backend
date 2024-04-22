@@ -153,23 +153,23 @@
 			"classification_description": "Standard data element types with associated classification scheme for electric components.",
 			"function": "production",
 			"function_valid_from": "2024-01-29T12:00:00.123+02:00",
-			"function_valid_until": "component",
+			"function_valid_until": "2024-03-29T12:00:00.123+02:00",
 			"name_at_manufacturer": "Mirror left"
 		}
 	],
 	"addOn": {
-		"identifier": "uuid",
-		"specificAssetIdsSpecs": {
-			"manufacturerId": "manufacturerId",
-			"manufacturerPartId": "manufacturer_part_id",
-			"assetLifecyclePhase": "AsPlanned"
+		"identifier": "${uuid}",
+		"lookupShellSpecificAssetIdsSpecs": {
+			"manufacturerPartId": "${manufacturer_part_id}",
+			"assetLifecyclePhase" :"AsPlanned"
 		},
 		"shortIdSpecs": [
-			"name_at_manufacturer",
-			"manufacturer_part_id"
+			"${name_at_manufacturer}",
+			"${manufacturer_part_id}"
 		],
+		"createShellIfNotExist": true,
 		"bpnDiscoverySpecs": {
-			"manufacturerPartId": "manufacturer_part_id"
+			"manufacturerPartId": "${manufacturer_part_id}"
 		},
 		"responseTemplate": {
 			"partTypeInformation": {

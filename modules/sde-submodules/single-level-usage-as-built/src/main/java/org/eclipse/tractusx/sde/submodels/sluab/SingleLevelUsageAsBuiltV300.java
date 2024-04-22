@@ -46,7 +46,7 @@ public class SingleLevelUsageAsBuiltV300 extends SubmodelExtension {
 
 		submodel = loadSubmodel(input);
 		
-		submodel.addProperties("tableName", "singlelevelusageasbuilt_v_300");
+		submodel.addProperties("tableName", "single_level_usage_as_built_v_300");
 	}
 
 	@Override

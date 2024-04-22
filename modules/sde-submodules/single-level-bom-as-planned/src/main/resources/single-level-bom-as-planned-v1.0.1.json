@@ -88,7 +88,7 @@
 				"pattern" : "[a-zA-Z]*:[a-zA-Z]+",
 				"description" : "Unit of Measurement for the quantity of serialized objects",
 				"examples": [
-					"litre"
+					"unit:litre"
 				]
 			},
 			"created_on": {
@@ -125,7 +125,7 @@
 			"uuid": "urn:uuid:5daB938E-Cafa-92B3-7ca1-9aD7885e9dC8",
 			"manufacturer_part_id": "37754B7-76",
 			"quantity_number": 2.5,
-			"measurement_unit": "litre",
+			"measurement_unit": "unit:litre",
 			"created_on": "2022-02-03T14:48:54.709Z",
 			"last_modified_on": "2022-02-03T14:48:54.709Z"
 		}

@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -23,7 +23,12 @@ package org.eclipse.tractusx.sde.common.model;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.eclipse.tractusx.sde.common.submodel.executor.BPNDiscoveryUsecaseStep;
+import org.eclipse.tractusx.sde.common.submodel.executor.DatabaseUsecaseStep;
+import org.eclipse.tractusx.sde.common.submodel.executor.DigitalTwinUsecaseStep;
+import org.eclipse.tractusx.sde.common.submodel.executor.EDCUsecaseStep;
 import org.eclipse.tractusx.sde.common.submodel.executor.SubmodelExecutor;
+import org.eclipse.tractusx.sde.common.submodel.executor.SubmoduleMapperUsecaseStep;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -58,6 +63,16 @@ public class Submodel {
 	private Map<String, Object> properties;
 
 	private SubmodelExecutor executor;
+	
+	private DigitalTwinUsecaseStep digitalTwinUseCaseStep;
+	
+	private BPNDiscoveryUsecaseStep bpnUseCaseTwinStep;
+	
+	private EDCUsecaseStep edcUseCaseStep;
+	
+	private DatabaseUsecaseStep databaseUseCaseStep;
+	
+	private SubmoduleMapperUsecaseStep submodelMapperUseCaseStep;
 
 	public void addProperties(String key, Object value) {
 		if (properties == null)

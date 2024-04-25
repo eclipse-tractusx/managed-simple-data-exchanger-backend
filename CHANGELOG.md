@@ -15,7 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added new classes for multiple submodel version support.
 - Added refactor code changes for external services.
 - Added usecase handle implementation for multiple submodel support.
-- Added new submodel with multi version support. 
+- Supported new serial part submodel with multi version support. 
 
 ## [2.3.6] - 2024-03-06
 ### Fixed

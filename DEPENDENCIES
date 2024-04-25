@@ -72,7 +72,6 @@ maven/mavencentral/org.eclipse.tractusx/digital-twins/0.0.1, Apache-2.0, approve
 maven/mavencentral/org.eclipse.tractusx/edc/0.0.1, Apache-2.0, approved, automotive.tractusx
 maven/mavencentral/org.eclipse.tractusx/part-as-planned/0.0.1, Apache-2.0, approved, automotive.tractusx
 maven/mavencentral/org.eclipse.tractusx/part-site-information-as-planned/0.0.1, Apache-2.0, approved, automotive.tractusx
-maven/mavencentral/org.eclipse.tractusx/part-type-information/0.0.1, Apache-2.0, approved, automotive.tractusx
 maven/mavencentral/org.eclipse.tractusx/pcf-exchange/0.0.1, Apache-2.0, approved, automotive.tractusx
 maven/mavencentral/org.eclipse.tractusx/pcf/0.0.1, Apache-2.0, approved, automotive.tractusx
 maven/mavencentral/org.eclipse.tractusx/policy-hub/0.0.1, Apache-2.0, approved, automotive.tractusx
@@ -80,7 +79,6 @@ maven/mavencentral/org.eclipse.tractusx/portal/0.0.1, Apache-2.0, approved, auto
 maven/mavencentral/org.eclipse.tractusx/sde-common/0.0.1, Apache-2.0, approved, automotive.tractusx
 maven/mavencentral/org.eclipse.tractusx/serial-part-typization/0.0.1, Apache-2.0, approved, automotive.tractusx
 maven/mavencentral/org.eclipse.tractusx/serial-part/0.0.1, Apache-2.0, approved, automotive.tractusx
-maven/mavencentral/org.eclipse.tractusx/single-level-bom-as-built/0.0.1, Apache-2.0, approved, automotive.tractusx
 maven/mavencentral/org.eclipse.tractusx/single-level-bom-as-planned/0.0.1, Apache-2.0, approved, automotive.tractusx
 maven/mavencentral/org.eclipse.tractusx/single-level-usage-as-built/0.0.1, Apache-2.0, approved, automotive.tractusx
 maven/mavencentral/org.flywaydb/flyway-core/9.16.3, Apache-2.0, approved, #7935

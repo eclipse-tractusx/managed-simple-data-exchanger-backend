@@ -151,5 +151,4 @@ public class EDCAssetUrlCacheService {
 		pcfExchangeAssetUtils.removePCFExchangeCache(bpnNumber);
 		pcfExchangeURLMap.remove(bpnNumber);
 	}
-
 }

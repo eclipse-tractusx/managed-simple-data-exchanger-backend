@@ -102,7 +102,7 @@ public class DigitalTwinsAspectCsvHandlerUseCase extends Step {
 			
 			CreateSubModelRequest createSubModelRequest = digitalTwinsUtility.getCreateSubModelRequest(
 					aspect.getShellId(), getsemanticIdOfModel(), getIdShortOfModel(), getNameOfModel(),
-					aspect.getUuid());
+					aspect.getUuid(), null);
 			
 			digitalTwinsFacilitator.updateShellDetails(shellId, aasDescriptorRequest, createSubModelRequest);
 			

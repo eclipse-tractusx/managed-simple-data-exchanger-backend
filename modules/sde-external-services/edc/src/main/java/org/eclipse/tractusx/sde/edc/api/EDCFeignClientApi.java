@@ -38,47 +38,47 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public interface EDCFeignClientApi {
 
 	//Assets
-		@GetMapping(path = "${edc.managementpath.apiversion.asset:/v3}/assets/{id}")
-		public ResponseEntity<Object> getAsset(@PathVariable("id") String assetId);
+	@GetMapping(path = "${edc.managementpath.apiversion.asset:/v3}/assets/{id}")
+	public ResponseEntity<Object> getAsset(@PathVariable("id") String assetId);
 
-		@PostMapping("${edc.managementpath.apiversion.asset:/v3}/assets")
-		public String createAsset(@RequestBody AssetEntryRequest requestBody);
-		
-		@PutMapping("${edc.managementpath.apiversion.asset:/v3}/assets")
-		public void updateAsset(@RequestBody AssetEntryRequest requestBody);
-		
-		
-		@PostMapping("${edc.managementpath.apiversion.asset:/v3}/assets/request")
-		public JsonNode getAssetByType(@RequestBody ObjectNode requestBody);
-		
-		@DeleteMapping(path = "${edc.managementpath.apiversion.asset:/v3}/assets/{id}")
-		public ResponseEntity<Object> deleteAssets(@PathVariable("id") String assetsId);
-		
-		
-		//Policy & Contract
-		@PostMapping("${edc.managementpath.apiversion:/v2}/policydefinitions")
-		public JsonNode createPolicy(@RequestBody JsonNode requestBody);
+	@PostMapping("${edc.managementpath.apiversion.asset:/v3}/assets")
+	public String createAsset(@RequestBody AssetEntryRequest requestBody);
+	
+	@PutMapping("${edc.managementpath.apiversion.asset:/v3}/assets")
+	public void updateAsset(@RequestBody AssetEntryRequest requestBody);
+	
+	
+	@PostMapping("${edc.managementpath.apiversion.asset:/v3}/assets/request")
+	public JsonNode getAssetByType(@RequestBody ObjectNode requestBody);
+	
+	@DeleteMapping(path = "${edc.managementpath.apiversion.asset:/v3}/assets/{id}")
+	public ResponseEntity<Object> deleteAssets(@PathVariable("id") String assetsId);
+	
+	
+	//Policy & Contract
+	@PostMapping("${edc.managementpath.apiversion:/v2}/policydefinitions")
+	public JsonNode createPolicy(@RequestBody JsonNode requestBody);
 
-		@PutMapping("${edc.managementpath.apiversion:/v2}/policydefinitions/{id}")
-		public void updatePolicy(@PathVariable("id") String policyUUId, @RequestBody JsonNode requestBody);
+	@PutMapping("${edc.managementpath.apiversion:/v2}/policydefinitions/{id}")
+	public void updatePolicy(@PathVariable("id") String policyUUId, @RequestBody JsonNode requestBody);
 
-		
-		//Contract defination
-		@PostMapping("${edc.managementpath.apiversion:/v2}/contractdefinitions")
-		public String createContractDefination(@RequestBody ContractDefinitionRequest requestBody);
-		
-		@PutMapping("${edc.managementpath.apiversion:/v2}/contractdefinitions")
-		public void updateContractDefination(@RequestBody ContractDefinitionRequest requestBody);
-		
-		
-		@GetMapping("${edc.managementpath.apiversion:/v2}/contractdefinitions/{id}")
-		public JsonNode getContractDefination(@PathVariable("id") String id);
+	
+	//Contract defination
+	@PostMapping("${edc.managementpath.apiversion:/v2}/contractdefinitions")
+	public String createContractDefination(@RequestBody ContractDefinitionRequest requestBody);
+	
+	@PutMapping("${edc.managementpath.apiversion:/v2}/contractdefinitions")
+	public void updateContractDefination(@RequestBody ContractDefinitionRequest requestBody);
+	
+	
+	@GetMapping("${edc.managementpath.apiversion:/v2}/contractdefinitions/{id}")
+	public JsonNode getContractDefination(@PathVariable("id") String id);
 
 
-		@DeleteMapping(path = "${edc.managementpath.apiversion:/v2}/contractdefinitions/{id}")
-		public ResponseEntity<Object> deleteContractDefinition(@PathVariable("id") String contractdefinitionsId);
+	@DeleteMapping(path = "${edc.managementpath.apiversion:/v2}/contractdefinitions/{id}")
+	public ResponseEntity<Object> deleteContractDefinition(@PathVariable("id") String contractdefinitionsId);
 
-		@DeleteMapping(path = "${edc.managementpath.apiversion:/v2}/policydefinitions/{id}")
-		public ResponseEntity<Object> deletePolicyDefinitions(@PathVariable("id") String policydefinitionsId);	
+	@DeleteMapping(path = "${edc.managementpath.apiversion:/v2}/policydefinitions/{id}")
+	public ResponseEntity<Object> deletePolicyDefinitions(@PathVariable("id") String policydefinitionsId);
 
-	}
+}

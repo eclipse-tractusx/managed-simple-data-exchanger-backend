@@ -58,7 +58,7 @@ public class EDCPcfHandlerUseCase extends Step {
 		try {
 
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
-					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getId());
+					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getId(), null, null, null);
 
 				 
 			 assetEntryRequest.getProperties().put("rdfs:label", getSubmodelShortDescriptionOfModel());

@@ -100,7 +100,7 @@ public class DigitalTwinsPcfCsvHandlerUseCase extends Step {
 			CreateSubModelRequest createSubModelRequest = digitalTwinsUtility
 					.getCreateSubModelRequest(pcfAspect.getShellId(), getsemanticIdOfModel(), 
 							getIdShortOfModel(), getNameOfModel(),
-							"productIds/" + pcfAspect.getProductId());
+							"productIds/" + pcfAspect.getProductId(), null);
 			digitalTwinsFacilitator.updateShellDetails(shellId, aasDescriptorRequest, createSubModelRequest);
 			pcfAspect.setSubModelId(createSubModelRequest.getId());
 		} else {

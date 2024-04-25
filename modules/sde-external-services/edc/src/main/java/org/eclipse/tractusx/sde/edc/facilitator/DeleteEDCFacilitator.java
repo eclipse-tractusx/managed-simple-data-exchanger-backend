@@ -50,12 +50,11 @@ public class DeleteEDCFacilitator extends AbstractEDCStepsHelper {
 			deleteContractDefination(contractDefination.get("@id").asText());
 			deleteAccessPolicy(contractDefination.get("edc:accessPolicyId").asText());
 			deleteUsagePolicy(contractDefination.get("edc:contractPolicyId").asText());
-
+			deleteAssets(assetId);
+			
 		} catch (Exception e) {
 			parseExceptionMessage(e);
 		}
-		
-		deleteAssets(assetId);
 	}
 
 	@SneakyThrows
@@ -94,7 +93,7 @@ public class DeleteEDCFacilitator extends AbstractEDCStepsHelper {
 		try {
 			eDCFeignClientApi.deleteAssets(assetId);
 		} catch (Exception e) {
-			throw new ServiceException("Unable to delete EDC asset: " + e.getMessage());
+			parseExceptionMessage(e);
 		}
 
 	}

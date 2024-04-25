@@ -54,6 +54,8 @@ public class QueryDataOfferModel {
 	private String type;
 
 	private String version;
+	
+	private String sematicVersion;
 
 	private String description;
 

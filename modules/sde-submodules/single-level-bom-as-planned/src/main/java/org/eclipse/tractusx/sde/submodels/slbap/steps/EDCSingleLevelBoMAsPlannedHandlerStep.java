@@ -53,7 +53,7 @@ public class EDCSingleLevelBoMAsPlannedHandlerStep extends Step {
 
 		try {
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
-					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getParentUuid());
+					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getParentUuid(), null, null, null);
 
 			Map<String, String> eDCAsset =null;
 			

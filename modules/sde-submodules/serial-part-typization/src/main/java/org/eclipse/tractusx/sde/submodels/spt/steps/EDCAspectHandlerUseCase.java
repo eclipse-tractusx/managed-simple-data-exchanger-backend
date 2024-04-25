@@ -54,7 +54,7 @@ public class EDCAspectHandlerUseCase extends Step {
 		try {
 
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodel,
-					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getUuid());
+					getSubmodelShortDescriptionOfModel(), shellId, subModelId, input.getUuid(), null, null, null);
 			
 			Map<String, String> eDCAsset =null;
 			

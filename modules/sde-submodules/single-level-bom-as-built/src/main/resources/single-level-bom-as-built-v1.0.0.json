@@ -1,0 +1,268 @@
+{
+	"$schema": "https://json-schema.org/draft/2019-09/schema",
+	"$id": "http://example.com/example.json",
+	"type": "array",
+	"id": "singlelevelbomasbuilt",
+	"idShort": "singleLevelBoMAsBuilt",
+	"version": "1.0.0",
+	"semantic_id": "urn:bamm:io.catenax.single_level_bom_as_built:1.0.0#SingleLevelBomAsBuilt",
+	"title": "Single Level Bom AsBuilt",
+	"shortDescription": "BoM AsBuilt - Submodel SingleLevelBoMAsBuilt",
+	"description": "The aspect provides the child parts (one structural level down) which the given object assembles.",
+	"items": {
+		"type": "object",
+		"required": [
+			"parent_part_instance_id",
+			"parent_manufacturer_part_id",
+			"part_instance_id",
+			"manufacturer_part_id",
+			"manufacturer_id",
+			"quantity_number",
+			"measurement_unit",
+			"created_on"
+		],
+		"dependentRequired": {
+			"parent_optional_identifier_key": [
+				"parent_optional_identifier_value"
+			],
+			"parent_optional_identifier_value": [
+				"parent_optional_identifier_key"
+			],
+			"optional_identifier_key": [
+				"optional_identifier_value"
+			],
+			"optional_identifier_value": [
+				"optional_identifier_key"
+			]
+		},
+		"properties": {
+			"parent_part_instance_id": {
+				"type": [
+					"string"
+				],
+				"title": "Parent Part Instance ID",
+				"description": "The Parent Part Instance ID of the parent object Part Instance ID, to identify parent object in digital twins.",
+				"minLength": 1,
+				"examples": [
+					"ParentNO-64534234"
+				]
+			},
+			"parent_manufacturer_part_id": {
+				"type": [
+					"string"
+				],
+				"title": "Parent Manufacturer Part ID",
+				"description": "The Parent Manufacturer Part ID of the parent object Manufacturer Part ID, to identify parent object in digital twins.",
+				"minLength": 1,
+				"examples": [
+					"PART-2345546234"
+				]
+			},
+			"parent_optional_identifier_key": {
+				"type": [
+					"string",
+					"null"
+				],
+				"enum": [
+					"",
+					"van",
+					"batchId"
+				],
+				"title": "Parent Optional Identifier Key",
+				"description": "The Parent Optional Identifier Key of the parent object Optional Identifier Key, to identify parent object in digital twins.",
+				"examples": [
+					"van"
+				]
+			},
+			"parent_optional_identifier_value": {
+				"type": [
+					"string",
+					"null"
+				],
+				"title": "Parent Optional Identifier Value",
+				"description": "The Parent Optional Identifier Value of the parent object Optional Identifier Value, to identify parent object in digital twins.",
+				"examples": [
+					"Value"
+				]
+			},
+			"part_instance_id": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"title": "Part Instance ID",
+				"description": "The serial number of the serialized part from the manufacturer. We assume here that the customer does not have or create its own serial number for a part, but just used the manufacturer's serial number.",
+				"examples": [
+					"NO-234523423"
+				]
+			},
+			"manufacturer_part_id": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"title": "Manufacturer Part ID",
+				"description": "The ID of the type/catalog part (of which the serialized part is an instance of) from the manufacturer.",
+				"examples": [
+					"37754B7-76"
+				]
+			},
+			"manufacturer_id": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"title": "Manufacturer id",
+				"description": "The Business Partner Number (BPNL) of the manufacturer of the serialized part, i.e., the companies main entry.",
+				"examples": [
+					"BPNL00000000001"
+				]
+			},
+			"optional_identifier_key": {
+				"type": [
+					"string",
+					"null"
+				],
+				"enum": [
+					"",
+					"van",
+					"batchId"
+				],
+				"title": "Optional Identifier Key",
+				"description": "The Optional Identifier Key is used for create optional identifier for shell in digital twins. If you ha Identifier Key provided.",
+				"examples": [
+					"van"
+				]
+			},
+			"optional_identifier_value": {
+				"type": [
+					"string",
+					"null"
+				],
+				"title": "Optional Identifier Value",
+				"description": "The Optional Identifier Value is used for create optional identifier for shell in digital twins. If you ha Identifier Key provided.",
+				"examples": [
+					"Value"
+				]
+			},
+			"quantity_number": {
+				"type": [
+					"number"
+				],
+				"minLength": 1,
+				"title": "Quantity Number",
+				"description": "The number of objects related to the measurement unit",
+				"multipleOf": 0.01,
+				"examples": [
+					2.5
+				]
+			},
+			"measurement_unit": {
+				"type": [
+					"string"
+				],
+				"title": "Measurement Unit",
+								"pattern" : "[a-zA-Z]*:[a-zA-Z]+",
+				"description": "Unit of Measurement for the quantity of serialized objects",
+				"minLength": 1,
+				"examples": [
+					"litre"
+				]
+			},
+			"created_on": {
+				"type": [
+					"string"
+				],
+				"format": "date-time",
+				"title": "Created On",
+				"description": "Timestamp when the relation between the parent part and the child part was created, e.g. when the serialized child part was assembled into the given part.",
+				"examples": [
+					"2022-02-03T14:48:54.709Z"
+				]
+			},
+			"last_modified_on": {
+				"type": [
+					"string",
+					"null"
+				],
+				"format": "date-time",
+				"title": "last Modified On",
+				"description": "Timestamp when the assembly relationship between parent part and child part was last modified.",
+				"examples": [
+					"2022-02-03T14:48:54.709Z"
+				]
+			}
+		}
+	},
+	"examples": [
+		{
+			"parent_part_instance_id": "NO-159040131155901488695376",
+			"parent_manufacturer_part_id": "MAN-159040131155901488695376",
+			"parent_optional_identifier_key": "van",
+			"parent_optional_identifier_value": "Value",
+			"part_instance_id": "NO-159040131155901488695376",
+			"manufacturer_part_id": "PART-123412416",
+			"manufacturer_id": "BPNL00000000001",
+			"optional_identifier_key": "",
+			"optional_identifier_value": "",
+			"quantity_number": 2.5,
+			"measurement_unit": "unit:litre",
+			"created_on": "2022-02-03T14:48:54.709Z",
+			"last_modified_on": "2022-02-03T14:48:54.709Z"
+		}
+	],
+	"addOn": {
+		"identifier": "${uuid}",
+		"lookupShellSpecificAssetIdsSpecs": {
+			"partInstanceId": "${parent_part_instance_id}",
+			"manufacturerPartId": "${parent_manufacturer_part_id}",
+			"optionalIdentifier": [
+				{
+					"key": "${parent_optional_identifier_key}",
+					"value": "${parent_optional_identifier_value}"
+				}
+			]
+		},
+		"shortIdSpecs": [],
+		"createShellIfNotExist": false,
+		"autoPopulatedfields": [
+			{
+				"key": "${parent_uuid}",
+				"ref": "shellGlobalAssetId"
+			},
+			{
+				"key": "${uuid}",
+				"ref": {
+					"lookupChildTwinRemote": true,
+					"bpn_for_remote_registry": "${manufacturer_id}",
+					"specificAssetIdsSpecs": {
+						"partInstanceId": "${part_instance_id}",
+						"manufacturerPartId": "${manufacturer_part_id}",
+						"manufacturerId": "${manufacturer_id}",
+						"optionalIdentifier": [
+							{
+								"key": "${optional_identifier_key}",
+								"value": "${optional_identifier_value}"
+							}
+						]
+					}
+				}
+			}
+		],
+		"bpnDiscoverySpecs": {
+			"manufacturerPartId": "${manufacturer_part_id}"
+		},
+		"responseTemplate": {
+			"catenaXId": "${parent_uuid}",
+			"childItems": {
+				"catenaXId": "${uuid}",
+				"businessPartner": "${manufacturer_id}",
+				"createdOn": "${created_on}",
+				"quantity": {
+					"quantityNumber": "${quantity_number}",
+					"measurementUnit": "${measurement_unit}"
+				}
+			}
+		}
+	}
+}

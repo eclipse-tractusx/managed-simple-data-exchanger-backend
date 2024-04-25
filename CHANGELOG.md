@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added usecase handle implementation for multiple submodel support.
 - Supported new serial part submodel with multi version support. 
 - Supported new single level bom as built submodel with multi version support. 
+- New maven module for part type information submodel support.
 
 ## [2.3.6] - 2024-03-06
 ### Fixed

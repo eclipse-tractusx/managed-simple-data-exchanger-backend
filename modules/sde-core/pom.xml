@@ -29,7 +29,7 @@
 		<groupId>org.eclipse.tractusx</groupId>
 		<artifactId>sde</artifactId>
 		<version>0.0.1</version>
-		<relativePath>../../</relativePath>
+		<relativePath>../../pom.xml</relativePath>
 	</parent>
 	<artifactId>sde-core</artifactId>
 	<name>sde-core</name>
@@ -139,6 +139,18 @@
 			<version>0.0.1</version>
 		</dependency>
 
+	<dependency>
+			<groupId>org.eclipse.tractusx</groupId>
+			<artifactId>serial-part</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.eclipse.tractusx</groupId>
+			<artifactId>single-level-bom-as-built</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+		
 		<dependency>
 			<groupId>org.eclipse.tractusx</groupId>
 			<artifactId>batch</artifactId>
@@ -148,6 +160,12 @@
 		<dependency>
 			<groupId>org.eclipse.tractusx</groupId>
 			<artifactId>part-as-planned</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.eclipse.tractusx</groupId>
+			<artifactId>part-type-information</artifactId>
 			<version>0.0.1</version>
 		</dependency>
 
@@ -162,11 +180,13 @@
 			<artifactId>part-site-information-as-planned</artifactId>
 			<version>0.0.1</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.eclipse.tractusx</groupId>
 			<artifactId>single-level-usage-as-built</artifactId>
 			<version>0.0.1</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.eclipse.tractusx</groupId>
 			<artifactId>pcf</artifactId>

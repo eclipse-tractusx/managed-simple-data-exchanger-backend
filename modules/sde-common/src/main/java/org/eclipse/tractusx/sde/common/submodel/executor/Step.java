@@ -21,6 +21,7 @@
 package org.eclipse.tractusx.sde.common.submodel.executor;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import lombok.Getter;
@@ -39,11 +40,11 @@ public abstract class Step {
 	public String getNameOfModel() {
 		return submodelSchema.get("id").getAsString();
 	}
-	
+
 	public JsonObject getSubmodelItems() {
 		return submodelSchema.get("items").getAsJsonObject();
 	}
-	
+
 	public JsonObject getSubmodelProperties() {
 		return getSubmodelItems().get("properties").getAsJsonObject();
 	}
@@ -51,27 +52,77 @@ public abstract class Step {
 	public JsonArray getSubmodelRequiredFields() {
 		return getSubmodelItems().get("required").getAsJsonArray();
 	}
-	
+
 	public String getIdShortOfModel() {
 		return this.submodelSchema.get("idShort").getAsString();
 	}
-	
+
 	public String getVersionOfModel() {
 		return this.submodelSchema.get("version").getAsString();
 	}
-	
+
 	public String getsemanticIdOfModel() {
 		return this.submodelSchema.get("semantic_id").getAsString();
 	}
-	
+
+	public String getSubmoduleUriPathOfSubmodule() {
+		JsonElement jsonElement = this.submodelSchema.get("submodelUriPath");
+		return jsonElement == null || jsonElement.isJsonNull() ? "public" : jsonElement.getAsString();
+	}
+
+	public JsonObject getAddOnOfModel() {
+		return this.submodelSchema.get("addOn").getAsJsonObject();
+	}
+
+	public String getIdentifierOfModel() {
+		return this.getAddOnOfModel().get("identifier").getAsString();
+	}
+
+	public boolean checkShellCreateOption() {
+		JsonElement jsonElement = this.getAddOnOfModel().get("createShellIfNotExist");
+		return jsonElement == null || jsonElement.isJsonNull() || jsonElement.getAsBoolean();
+	}
+
+	public JsonObject checkIsRelationSubmodel() {
+		JsonElement jsonElement = this.getAddOnOfModel().get("isRelationSubmodel");
+		return jsonElement == null || jsonElement.isJsonNull() ? null : jsonElement.getAsJsonObject();
+	}
+
+	public JsonArray checkIsAutoPopulatedfieldsSubmodel() {
+		JsonElement jsonElement = this.getAddOnOfModel().get("autoPopulatedfields");
+		return jsonElement == null || jsonElement.isJsonNull() ? null : jsonElement.getAsJsonArray();
+	}
+
+	public JsonObject getSpecificAssetIdsSpecsOfModel() {
+		return this.getAddOnOfModel().get("lookupShellSpecificAssetIdsSpecs").getAsJsonObject();
+	}
+
+	public JsonObject getCreateShellSpecificAssetIdsSpecsOfModel() {
+		JsonElement jsonElement = this.getAddOnOfModel().get("createShellSpecificAssetIdsSpecs");
+		return jsonElement == null || jsonElement.isJsonNull() ? getSpecificAssetIdsSpecsOfModel()
+				: jsonElement.getAsJsonObject();
+	}
+
+	public JsonObject getBPNDiscoverySpecsOfModel() {
+		return this.getAddOnOfModel().get("bpnDiscoverySpecs").getAsJsonObject();
+	}
+
+	public JsonArray getShortIdSpecsOfModel() {
+		return this.getAddOnOfModel().get("shortIdSpecs").getAsJsonArray();
+	}
+
+	public JsonObject getResponseTemplateOfModel() {
+		return this.getAddOnOfModel().get("responseTemplate").getAsJsonObject();
+	}
+
 	public String getSubmodelShortDescriptionOfModel() {
 		return this.submodelSchema.get("shortDescription").getAsString();
 	}
-	
+
 	public String getSubmodelTitleIdOfModel() {
 		return this.submodelSchema.get("title").getAsString();
 	}
-	
+
 	public JsonObject getSubmodelDependentRequiredFields() {
 		return getSubmodelItems().get("dependentRequired").getAsJsonObject();
 	}
@@ -79,7 +130,7 @@ public abstract class Step {
 	protected void logDebug(String message) {
 		log.debug(String.format("[%s] %s", this.getClass().getSimpleName(), message));
 	}
-	
+
 	protected void logInfo(String message) {
 		log.info(String.format("[%s] %s", this.getClass().getSimpleName(), message));
 	}

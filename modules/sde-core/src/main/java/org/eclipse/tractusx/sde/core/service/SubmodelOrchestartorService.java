@@ -44,9 +44,7 @@ import org.eclipse.tractusx.sde.core.policy.service.PolicyService;
 import org.eclipse.tractusx.sde.core.processreport.ProcessReportUseCase;
 import org.eclipse.tractusx.sde.core.processreport.model.ProcessReport;
 import org.eclipse.tractusx.sde.core.submodel.executor.GenericSubmodelExecutor;
-import org.eclipse.tractusx.sde.core.submodel.executor.step.DatabaseUsecaseHandler;
 import org.eclipse.tractusx.sde.core.utils.SubmoduleUtility;
-import org.eclipse.tractusx.sde.pcfexchange.service.impl.AsyncPushPCFDataForApproveRequest;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -84,12 +82,10 @@ public class SubmodelOrchestartorService {
 
 	private final PolicyMapper policyMapper;
 
-	private final AsyncPushPCFDataForApproveRequest asyncPushPCFDataForApproveRequest;
-
 	private final SubmoduleUtility submoduleUtility;
 
 	private final GenericSubmodelExecutor genericSubmodelExecutor;
-	private final DatabaseUsecaseHandler databaseUsecaseHandler;
+	
 
 	ObjectMapper mapper = new ObjectMapper();
 
@@ -145,12 +141,12 @@ public class SubmodelOrchestartorService {
 			processReportUseCase.finishBuildProgressReport(processId, successCount.get(), failureCount.get(),
 					updatedcount);
 
-			// Push PCF value which already Approve request of consumer
-			if (submodelSchemaObject.getId().equalsIgnoreCase("pcf")) {
-				databaseUsecaseHandler.init(submodelSchemaObject.getSchema());
-				List<JsonObject> readCreatedTwins = databaseUsecaseHandler.readCreatedTwins(processId, null);
-				asyncPushPCFDataForApproveRequest.pushPCFDataForApproveRequest(readCreatedTwins, submodelPolicyRequest);
-			}
+//			// Push PCF value which already Approve request of consumer
+//			if (submodelSchemaObject.getId().equalsIgnoreCase("pcf")) {
+//				databaseUsecaseHandler.init(submodelSchemaObject.getSchema());
+//				List<JsonObject> readCreatedTwins = databaseUsecaseHandler.readCreatedTwins(processId, null);
+//				asyncPushPCFDataForApproveRequest.pushPCFDataForApproveRequest(readCreatedTwins, submodelPolicyRequest);
+//			}
 		};
 
 		new Thread(runnable).start();
@@ -195,12 +191,12 @@ public class SubmodelOrchestartorService {
 			processReportUseCase.finishBuildProgressReport(processId, successCount.get(), failureCount.get(),
 					updatedcount);
 
-			// Push PCF value which already Approve request of consumer
-			if (submodelSchemaObject.getId().equalsIgnoreCase("pcf")) {
-				databaseUsecaseHandler.init(submodelSchemaObject.getSchema());
-				List<JsonObject> readCreatedTwins = databaseUsecaseHandler.readCreatedTwins(processId, null);
-				asyncPushPCFDataForApproveRequest.pushPCFDataForApproveRequest(readCreatedTwins, policy);
-			}
+//			// Push PCF value which already Approve request of consumer
+//			if (submodelSchemaObject.getId().equalsIgnoreCase("pcf")) {
+//				databaseUsecaseHandler.init(submodelSchemaObject.getSchema());
+//				List<JsonObject> readCreatedTwins = databaseUsecaseHandler.readCreatedTwins(processId, null);
+//				asyncPushPCFDataForApproveRequest.pushPCFDataForApproveRequest(readCreatedTwins, policy);
+//			}
 		};
 		new Thread(runnable).start();
 	}

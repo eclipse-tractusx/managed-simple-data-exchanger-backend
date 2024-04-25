@@ -80,11 +80,11 @@ public class ConsumerController {
 				consumerControlPanelService.queryOnDataOffers(manufacturerPartId, bpnNumber, submodel, offset, limit));
 	}
 
-	@GetMapping(value = "/getEDCPolicy")
+	@PostMapping(value = "/offer-policy-details")
 	@PreAuthorize("hasPermission('','consumer_view_contract_offers')")
 	public ResponseEntity<Object> getEDCPolicy(@RequestBody List<QueryDataOfferRequest> queryDataOfferRequest)
 			throws Exception {
-		log.info("Request received : /api/query-data-Offers");
+		log.info("Request received : /api/offer-policy-details");
 		return ok().body(consumerControlPanelService.getEDCPolicy(queryDataOfferRequest));
 	}
 	
@@ -139,7 +139,5 @@ public class ConsumerController {
 			throws Exception {
 		log.info("Request received : /api/view-download-history-details");
 		return ok().body(consumerService.viewConsumerDownloadHistoryDetails(processId));
-
 	}
-
 }

@@ -25,12 +25,11 @@ import java.util.List;
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
 import org.eclipse.tractusx.sde.common.model.PagingResponse;
+import org.eclipse.tractusx.sde.common.utils.JsonObjectUtility;
 import org.eclipse.tractusx.sde.common.utils.PolicyOperationUtil;
 import org.eclipse.tractusx.sde.pcfexchange.enums.PCFRequestStatusEnum;
 import org.eclipse.tractusx.sde.pcfexchange.enums.PCFTypeEnum;
 import org.eclipse.tractusx.sde.pcfexchange.request.PcfRequestModel;
-import org.eclipse.tractusx.sde.submodels.pcf.entity.PcfEntity;
-import org.eclipse.tractusx.sde.submodels.pcf.service.PcfService;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.JsonObject;
@@ -44,21 +43,20 @@ import lombok.extern.slf4j.Slf4j;
 @SuppressWarnings("unchecked")
 public class AsyncPushPCFDataForApproveRequest {
 
+	private static final String PRODUCT_ID = "product_id";
+
 	private final PCFRepositoryService pcfRepositoryService;
-	
-	private final PcfService pcfService;
 
 	private final ProxyRequestInterface proxyRequestInterface;
-	
 
-	public void pushPCFDataForApproveRequest(String processId, PolicyModel policy) {
-		
+	public void pushPCFDataForApproveRequest(List<JsonObject> jsonObjectList, PolicyModel policy) {
+
 		List<String> accessBPNList = PolicyOperationUtil.getAccessBPNList(policy);
 
-		List<String> productList = pcfService.readCreatedTwins(processId).stream().map(PcfEntity::getProductId)
-				.toList();
+		List<String> productList = jsonObjectList.stream()
+				.map(ele -> JsonObjectUtility.getValueFromJsonObject(ele, PRODUCT_ID)).toList();
 
-		markedPCFDataForPendingProviderRequestAsRequested(productList);
+		markedPCFDataForPendingProviderRequestAsRequested(productList, jsonObjectList);
 
 		PagingResponse pcfData = pcfRepositoryService.getPcfData(
 				List.of(PCFRequestStatusEnum.PUSHED, PCFRequestStatusEnum.PUSHED_UPDATED_DATA), PCFTypeEnum.PROVIDER, 0,
@@ -76,9 +74,11 @@ public class AsyncPushPCFDataForApproveRequest {
 					try {
 						request.setStatus(PCFRequestStatusEnum.PUSHING_UPDATED_DATA);
 
-						JsonObject calculatedPCFValue = pcfService
-								.readCreatedTwinsDetailsByProductId(request.getProductId()).get("json")
-								.getAsJsonObject();
+						JsonObject calculatedPCFValue = jsonObjectList.stream()
+								.filter(ele -> request.getProductId()
+										.equals(JsonObjectUtility.getValueFromJsonObject(ele, PRODUCT_ID)))
+								.findAny().orElseThrow(() -> new NoDataFoundException(
+										"No data found for product_id " + request.getProductId()));
 
 						PCFRequestStatusEnum status = pcfRepositoryService.identifyRunningStatus(request.getRequestId(),
 								request.getStatus());
@@ -109,10 +109,11 @@ public class AsyncPushPCFDataForApproveRequest {
 
 	}
 
-	public void markedPCFDataForPendingProviderRequestAsRequested(List<String> productList) {
+	public void markedPCFDataForPendingProviderRequestAsRequested(List<String> productList,
+			List<JsonObject> jsonObjectList) {
 
-		PagingResponse pcfData = pcfRepositoryService.getPcfData(List.of(PCFRequestStatusEnum.PENDING_DATA_FROM_PROVIDER),
-				PCFTypeEnum.PROVIDER, 0, 1000);
+		PagingResponse pcfData = pcfRepositoryService
+				.getPcfData(List.of(PCFRequestStatusEnum.PENDING_DATA_FROM_PROVIDER), PCFTypeEnum.PROVIDER, 0, 1000);
 		List<PcfRequestModel> requestList = (List<PcfRequestModel>) pcfData.getItems();
 
 		if (!requestList.isEmpty()) {
@@ -120,8 +121,13 @@ public class AsyncPushPCFDataForApproveRequest {
 				if (productList.contains(request.getProductId())) {
 					String msg = "";
 					try {
-						pcfService.readCreatedTwinsDetailsByProductId(request.getProductId()).get("json")
-								.getAsJsonObject();
+						
+						JsonObject calculatedPCFValue = jsonObjectList.stream()
+								.filter(ele -> request.getProductId()
+										.equals(JsonObjectUtility.getValueFromJsonObject(ele, PRODUCT_ID)))
+								.findAny().orElseThrow(() -> new NoDataFoundException(
+										"No data found for product_id " + request.getProductId()));
+						
 						pcfRepositoryService.savePcfStatus(request.getRequestId(), PCFRequestStatusEnum.REQUESTED);
 
 					} catch (NoDataFoundException e) {

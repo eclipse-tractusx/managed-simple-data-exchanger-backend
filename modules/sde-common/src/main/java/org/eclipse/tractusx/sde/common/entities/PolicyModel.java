@@ -46,10 +46,10 @@ public class PolicyModel {
 	@JsonProperty(value = "policy_name")
 	private String policyName;
 
-	@JsonProperty(value = "access_policies")
+	@JsonProperty(value = "Access")
 	private List<Policies> accessPolicies;
 	
-	@JsonProperty(value = "usage_policies")
+	@JsonProperty(value = "Usage")
 	private List<Policies> usagePolicies;
 
 	private LocalDateTime lastUpdatedTime;

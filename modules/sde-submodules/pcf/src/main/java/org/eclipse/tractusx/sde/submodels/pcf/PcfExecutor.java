@@ -124,7 +124,6 @@ public class PcfExecutor extends SubmodelExecutor {
 		storeAspectCsvHandlerUseCaseforPcf.run(pcfAspect);
 	}
 
-	@Override
 	public void executeDeleteRecord(JsonObject jsonObject, String delProcessId, String refProcessId) {
 		aspectServiceforPcf.deleteAllDataBySequence(jsonObject);
 	}
@@ -142,6 +141,18 @@ public class PcfExecutor extends SubmodelExecutor {
 	@Override
 	public int getUpdatedRecordCount(String processId) {
 		return aspectServiceforPcf.getUpdatedData(processId);
+	}
+
+	@Override
+	public List<JsonObject> readCreatedTwinsByProcessId(String refProcessId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void executeDeleteRecord(Integer rowIndex, JsonObject jsonObject, String delProcessId, String refProcessId) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -15,8 +15,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added new classes for multiple submodel version support.
 - Added refactor code changes for external services.
 - Added different usecase Handler for multi version support.
+<<<<<<< HEAD
+=======
+- Added refactor code changes for external services.
+>>>>>>> refs/heads/CX_R24.05_multi_version_submodel_impl_part_3
 - Added usecase handle implementation for multiple submodel support.
+<<<<<<< HEAD
 - Supported new serial part submodel with multi version support. 
+=======
+>>>>>>> refs/heads/CX_R24.05_multi_version_submodel_impl_part_3
 
 ## [2.3.6] - 2024-03-06
 ### Fixed

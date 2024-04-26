@@ -8,33 +8,37 @@ This module use for Batch submodel specification and descriptors. It's contain t
 #### Version: 2.0.0
 #### Batch Aspect Model URN: urn:bamm:io.catenax.batch:2.0.0#Batch
 #### Semantic Id: urn:samm:io.catenax.batch:2.0.0
+
+#### Version: 3.0.0
+#### Batch Aspect Model URN: urn:bamm:io.catenax.batch:3.0.0#Batch
+#### Semantic Id: urn:samm:io.catenax.batch:3.0.0
 ---
 
 ### Schema
 
 Please find below links for schema details:
 
-- [schema](src/main/resources/batch.json)
+- [batch-v2.0.0 schema](src/main/resources/batch-v2.0.0.json)
+- [batch-v3.0.0 schema](src/main/resources/batch-v2.0.0.json)
 
 
 ### CSV file headers
 
 | Headers Name       	       		| Mandatory                     	| Position 	|
-|-------------------------------	|-----------------------------	    |--------	|
+|-------------------------------	----|-----------------------------	|--------	|
 | uuid		                   		| No		             		    |    1     	|
 | batch_id					   		| No						      	|    2    	|
-| part_instance_id					| Yes							    |	 3		|
-| manufacturing_date    			| Yes 							    | 	 4	   	|
-| manufacturing_country  	    	| No                            	| 	 5	  	|
+| part_instance_id					| Yes							|	 3		|
+| manufacturing_date    				| Yes 							| 	 4	   	|
+| manufacturing_country  	    		| No                            	| 	 5	  	|
 | manufacturer_part_id 		      	| Yes                           	| 	 6	  	|
-| classification		 			| Yes                               |    7	 	|
+| classification		 				| Yes                           |    7	 	|
 | name_at_manufacturer	 			| Yes                           	|    8 	 	|
 
 
 #### [CSV Sample File Link]
 
 #### Example for submodel Batch
-<br/><br/><img src="src/main/resources/images/batch.png" height="60%" width="80%" /><br/><br/>
 
 ### Work Flow 
 
@@ -44,11 +48,12 @@ Please find below links for schema details:
  - UUID generate v4
  - DigitalTwins API's calls 
  - EDC API's calls
+ - BPNDiscovery API Call
  - DB Store
  
 ### External Services Call
 
  - DigitalTwins
  - EDC Connectors
- 
-[CSV Sample File Link]: src/main/resources/batch.csv
+ - BPN Discovery
+

@@ -18,8 +18,7 @@
 			"name_at_manufacturer",
 			"function"
 		],
-		"dependentRequired": {
-		},
+		"dependentRequired": {},
 		"properties": {
 			"uuid": {
 				"type": [
@@ -115,5 +114,29 @@
 			"function_valid_from": "2022-11-28T09:39:44.673Z",
 			"function_valid_until": "2022-11-28T09:39:44.673Z"
 		}
-	]
+	],
+	"addOn": {
+		"identifier": "${uuid}",
+		"lookupShellSpecificAssetIdsSpecs": {
+			"manufacturerPartId": "${manufacturer_part_id}",
+			"assetLifecyclePhase": "AsPlanned"
+		},
+		"createShellIfNotExist": true,
+		"shortIdSpecs": [
+			"${name_at_manufacturer}",
+			"${manufacturer_part_id}"
+		],
+		"bpnDiscoverySpecs": {
+			"manufacturerPartId": "${manufacturer_part_id}"
+		},
+		"responseTemplate": {
+			"catenaXId": "${uuid}",
+			"sites": {
+				"function": "${function}",
+				"functionValidUntil": "${function_valid_until}",
+				"functionValidFrom": "${function_valid_from}",
+				"catenaXSiteId": "${catenax_site_id}"
+			}
+		}
+	}
 }

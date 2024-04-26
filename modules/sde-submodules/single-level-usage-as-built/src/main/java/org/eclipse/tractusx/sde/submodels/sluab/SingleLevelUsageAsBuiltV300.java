@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2024 T-Systems International GmbH
- * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
+ * Copyright (c) 2024 T-Systems International GmbH
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,7 +17,8 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-package org.eclipse.tractusx.sde.submodels.psiap;
+
+package org.eclipse.tractusx.sde.submodels.sluab;
 
 import java.io.InputStream;
 
@@ -28,14 +29,14 @@ import org.springframework.stereotype.Component;
 import jakarta.annotation.PostConstruct;
 
 @Component
-public class PartSiteInformationAsPlannedSubmodel extends SubmodelExtension {
+public class SingleLevelUsageAsBuiltV300 extends SubmodelExtension {
 
 	private Submodel submodel = null;
 
 	@PostConstruct
 	public void init() {
 
-		String resource = "part-site-information-as-planned.json";
+		String resource = "single-level-usage-as-built-v3.0.0.json";
 		// this is the path within the jar file
 		InputStream input = this.getClass().getResourceAsStream("/resources/" + resource);
 		if (input == null) {
@@ -44,9 +45,8 @@ public class PartSiteInformationAsPlannedSubmodel extends SubmodelExtension {
 		}
 
 		submodel = loadSubmodel(input);
-
-		submodel.addProperties("tableName", "Part_site_information_as_planned");
-
+		
+		submodel.addProperties("tableName", "single_level_usage_as_built_v_300");
 	}
 
 	@Override

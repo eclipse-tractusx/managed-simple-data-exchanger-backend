@@ -86,5 +86,4 @@ public class EDCAssetLookUp {
 
 		return offers;
 	}
-
 }

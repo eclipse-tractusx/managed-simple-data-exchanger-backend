@@ -106,7 +106,7 @@ public class DigitalTwinsPartSiteInformationAsPlannedHandlerStep extends Step {
 			logDebug(String.format("No submodels for '%s'", shellId));
 			CreateSubModelRequest createSubModelRequest = digitalTwinsUtility.getCreateSubModelRequest(
 					partSiteInformationAsPlannedAspect.getShellId(), getsemanticIdOfModel(), getIdShortOfModel(),
-					getNameOfModel(), partSiteInformationAsPlannedAspect.getUuid());
+					getNameOfModel(), partSiteInformationAsPlannedAspect.getUuid(), null);
 			digitalTwinsFacilitator.updateShellDetails(shellId, aasDescriptorRequest, createSubModelRequest);
 			partSiteInformationAsPlannedAspect.setSubModelId(createSubModelRequest.getId());
 		} else {

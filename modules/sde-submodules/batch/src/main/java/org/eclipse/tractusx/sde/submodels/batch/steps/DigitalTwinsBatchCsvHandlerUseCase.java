@@ -100,7 +100,7 @@ public class DigitalTwinsBatchCsvHandlerUseCase extends Step {
 		if (subModelResponse == null || foundSubmodel == null) {
 			logDebug(String.format("No submodels for '%s'", shellId));
 			CreateSubModelRequest createSubModelRequest = digitalTwinsUtility.getCreateSubModelRequest(
-					batch.getShellId(), getsemanticIdOfModel(), getIdShortOfModel(), getNameOfModel(), batch.getUuid());
+					batch.getShellId(), getsemanticIdOfModel(), getIdShortOfModel(), getNameOfModel(), batch.getUuid(), null);
 			digitalTwinsFacilitator.updateShellDetails(shellId, aasDescriptorRequest, createSubModelRequest);
 			batch.setSubModelId(createSubModelRequest.getId());
 		} else {

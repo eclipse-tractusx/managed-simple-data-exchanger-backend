@@ -22,6 +22,7 @@ package org.eclipse.tractusx.sde.digitaltwins.facilitator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.CreateSubModelRequest;
@@ -174,6 +175,7 @@ public class DigitalTwinsFacilitator {
 							.idShort(e.getIdShort())
 							.semanticId(e.getSemanticId())
 							.endpoints(e.getEndpoints())
+							.description(e.getDescription())
 							.build())
 				);
 				
@@ -213,7 +215,9 @@ public class DigitalTwinsFacilitator {
 
 	public void createSubModel(String shellId, CreateSubModelRequest request) {
 
-		request.setDescription(List.of());
+		if(Optional.ofNullable(request.getDescription()).isEmpty()) {
+			request.setDescription(List.of());
+		}
 
 		ResponseEntity<String> response = digitalTwinsFeignClient
 				.createSubModel(digitalTwinsUtility.encodeValueAsBase64Utf8(shellId), request, manufacturerId);
@@ -225,7 +229,9 @@ public class DigitalTwinsFacilitator {
 	
 	public void updateSubModel(String shellId, String existingId, CreateSubModelRequest request) {
 
-		request.setDescription(List.of());
+		if(Optional.ofNullable(request.getDescription()).isEmpty()) {
+			request.setDescription(List.of());
+		}
 
 		ResponseEntity<String> response = digitalTwinsFeignClient.updateSubModel(
 				digitalTwinsUtility.encodeValueAsBase64Utf8(shellId),

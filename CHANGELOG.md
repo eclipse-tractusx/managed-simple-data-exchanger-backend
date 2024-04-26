@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added controller interface api's for PCF Exchange.
 - Added new classes for multiple submodel version support.
 - Added refactor code changes for external services.
+- Added different usecase Handler for multi version support.
 - Added usecase handle implementation for multiple submodel support.
 - Supported new serial part submodel with multi version support. 
 - Supported new single level bom as built submodel with multi version support. 

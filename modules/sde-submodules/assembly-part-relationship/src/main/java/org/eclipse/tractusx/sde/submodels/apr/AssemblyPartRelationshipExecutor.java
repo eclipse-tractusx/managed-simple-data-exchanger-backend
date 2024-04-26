@@ -116,7 +116,6 @@ public class AssemblyPartRelationshipExecutor extends SubmodelExecutor {
 		storeAspectRelationshipCsvHandlerUseCase.run(aspectRelationship);
 	}
 
-	@Override
 	public void executeDeleteRecord(JsonObject jsonObject, String delProcessId, String refProcessId) {
 		aspectRelationshipService.deleteAllDataBySequence(jsonObject);
 	}
@@ -134,6 +133,18 @@ public class AssemblyPartRelationshipExecutor extends SubmodelExecutor {
 	@Override
 	public int getUpdatedRecordCount(String processId) {
 		return aspectRelationshipService.getUpdatedData(processId);
+	}
+
+	@Override
+	public List<JsonObject> readCreatedTwinsByProcessId(String refProcessId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void executeDeleteRecord(Integer rowIndex, JsonObject jsonObject, String delProcessId, String refProcessId) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

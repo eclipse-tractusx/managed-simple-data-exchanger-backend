@@ -123,7 +123,6 @@ public class BatchExecutor extends SubmodelExecutor {
 		return batchDeleteService.readCreatedTwinsforDelete(refProcessId);
 	}
 
-	@Override
 	public void executeDeleteRecord(JsonObject jsonObject, String delProcessId, String refProcessId) {
 		batchDeleteService.deleteAllDataBySequence(jsonObject);
 	}
@@ -136,6 +135,18 @@ public class BatchExecutor extends SubmodelExecutor {
 	@Override
 	public int getUpdatedRecordCount(String processId) {
 		return batchDeleteService.getUpdatedData(processId);
+	}
+
+	@Override
+	public List<JsonObject> readCreatedTwinsByProcessId(String refProcessId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void executeDeleteRecord(Integer rowIndex, JsonObject jsonObject, String delProcessId, String refProcessId) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -56,12 +56,12 @@ public class SubmodelProcessController {
 	private final SubmodelOrchestartorService submodelOrchestartorService;
 
 	private final CsvHandlerService csvHandlerService;
-	
+
 	private final PolicyTemplateObjectMapper mapper;
 
 	@PostMapping(value = "/{submodel}/upload")
 	@PreAuthorize("hasPermission(#submodel,'provider_create_contract_offer@provider_update_contract_offer')")
-	public ResponseEntity<String> upload(@PathVariable("submodel") String submodel,
+	public ResponseEntity<Object> upload(@PathVariable("submodel") String submodel,
 			@RequestParam("file") MultipartFile file,
 			@RequestParam("meta_data") @Valid @ValidatePolicyTemplate String metaData) {
 
@@ -71,19 +71,19 @@ public class SubmodelProcessController {
 
 		submodelOrchestartorService.processSubmodelCsv(policyTemplateRequest, processId, submodel);
 
-		return ok().body(processId);
+		return prepareAndReturnResponse(processId);
 	}
 
 	@PostMapping(value = "/{submodel}/manualentry", consumes = APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasPermission(#submodel,'provider_create_contract_offer@provider_update_contract_offer')")
-	public ResponseEntity<String> manualentry(@PathVariable("submodel") String submodel,
+	public ResponseEntity<Object> manualentry(@PathVariable("submodel") String submodel,
 			@RequestBody @Valid @ValidatePolicyTemplate SubmodelJsonRequest body) {
 
 		String processId = UUID.randomUUID().toString();
 
 		submodelOrchestartorService.processSubmodel(body, processId, submodel);
 
-		return ok().body(processId);
+		return prepareAndReturnResponse(processId);
 	}
 
 	@GetMapping(value = "/{submodel}/public/{uuid}")
@@ -95,13 +95,18 @@ public class SubmodelProcessController {
 
 	@DeleteMapping(value = "/{submodel}/delete/{processId}", produces = APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasPermission(#submodel,'provider_delete_contract_offer')")
-	public ResponseEntity<Map<String, String>> deleteRecordsWithDigitalTwinAndEDC(
+	public ResponseEntity<Object> deleteRecordsWithDigitalTwinAndEDC(
 			@PathVariable("processId") String processId, @PathVariable("submodel") String submodel) {
 		String delProcessId = UUID.randomUUID().toString();
 
 		submodelOrchestartorService.deleteSubmodelDigitalTwinsAndEDC(processId, delProcessId, submodel);
+		
+		return prepareAndReturnResponse(delProcessId);
+	}
+	
+	private ResponseEntity<Object> prepareAndReturnResponse(String processId) {
 		Map<String, String> res = new HashMap<>();
-		res.put("processId", delProcessId);
+		res.put("processId", processId);
 		return ok().body(res);
 	}
 }

@@ -24,8 +24,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.entities.PolicyTemplateRequest;
+import org.eclipse.tractusx.sde.common.entities.PolicyTemplateType;
 import org.eclipse.tractusx.sde.common.entities.SubmodelJsonRequest;
 import org.eclipse.tractusx.sde.common.entities.csv.CsvContent;
 import org.eclipse.tractusx.sde.common.exception.ValidationException;
@@ -36,8 +39,12 @@ import org.eclipse.tractusx.sde.common.submodel.executor.SubmodelExecutor;
 import org.eclipse.tractusx.sde.common.validators.SubmodelCSVValidator;
 import org.eclipse.tractusx.sde.core.csv.service.CsvHandlerService;
 import org.eclipse.tractusx.sde.core.failurelog.FailureLogs;
+import org.eclipse.tractusx.sde.core.policy.entity.PolicyMapper;
+import org.eclipse.tractusx.sde.core.policy.service.PolicyService;
 import org.eclipse.tractusx.sde.core.processreport.ProcessReportUseCase;
 import org.eclipse.tractusx.sde.core.processreport.model.ProcessReport;
+import org.eclipse.tractusx.sde.core.submodel.executor.GenericSubmodelExecutor;
+import org.eclipse.tractusx.sde.core.utils.SubmoduleUtility;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,7 +53,9 @@ import com.google.gson.JsonObject;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SubmodelOrchestartorService {
@@ -69,7 +78,14 @@ public class SubmodelOrchestartorService {
 
 	private final CsvHandlerService csvHandlerService;
 
-	private final SubmodelCsvService submodelCsvService;
+	private final PolicyService policyService;
+
+	private final PolicyMapper policyMapper;
+
+	private final SubmoduleUtility submoduleUtility;
+
+	private final GenericSubmodelExecutor genericSubmodelExecutor;
+	
 
 	ObjectMapper mapper = new ObjectMapper();
 
@@ -84,11 +100,7 @@ public class SubmodelOrchestartorService {
 			throw new ValidationException(String.format("Csv column header is not matching %s submodel", submodel));
 		}
 
-		PolicyModel submodelPolicyRequest = PolicyModel.builder()
-				.accessPolicies(policyTemplateRequest.getAccessPolicies())
-				.usagePolicies(policyTemplateRequest.getUsagePolicies())
-				.uuid("")
-				.build();
+		PolicyModel submodelPolicyRequest = onFlyPolicyManagement(policyTemplateRequest);
 
 		processCsv(submodelPolicyRequest, processId, submodelSchemaObject, csvContent);
 
@@ -106,8 +118,8 @@ public class SubmodelOrchestartorService {
 			AtomicInteger successCount = new AtomicInteger();
 			AtomicInteger failureCount = new AtomicInteger();
 
-			SubmodelExecutor executor = submodelSchemaObject.getExecutor();
-			executor.init(submodelSchemaObject.getSchema());
+			SubmodelExecutor executor = getExecutor(submodelSchemaObject.getExecutor());
+			executor.init(submodelSchemaObject);
 
 			csvContent.getRows().parallelStream().forEach(rowjObj -> {
 				try {
@@ -128,6 +140,13 @@ public class SubmodelOrchestartorService {
 			successCount.set(successCount.get() - updatedcount);
 			processReportUseCase.finishBuildProgressReport(processId, successCount.get(), failureCount.get(),
 					updatedcount);
+
+//			// Push PCF value which already Approve request of consumer
+//			if (submodelSchemaObject.getId().equalsIgnoreCase("pcf")) {
+//				databaseUsecaseHandler.init(submodelSchemaObject.getSchema());
+//				List<JsonObject> readCreatedTwins = databaseUsecaseHandler.readCreatedTwins(processId, null);
+//				asyncPushPCFDataForApproveRequest.pushPCFDataForApproveRequest(readCreatedTwins, submodelPolicyRequest);
+//			}
 		};
 
 		new Thread(runnable).start();
@@ -136,23 +155,17 @@ public class SubmodelOrchestartorService {
 	@SneakyThrows
 	public void processSubmodel(SubmodelJsonRequest submodelJsonRequest, String processId, String submodel) {
 		Submodel submodelSchemaObject = submodelService.findSubmodelByNameAsSubmdelObject(submodel);
-		JsonObject submodelSchema = submodelSchemaObject.getSchema();
-
 		List<ObjectNode> rowData = submodelJsonRequest.getRowData();
 
-		PolicyModel policy = PolicyModel.builder()
-				.accessPolicies(submodelJsonRequest.getAccessPolicies())
-				.usagePolicies(submodelJsonRequest.getUsagePolicies())
-				.uuid("")
-				.build();
+		PolicyModel policy = onFlyPolicyManagement(policyMapper.mapFrom(submodelJsonRequest));
 
 		Runnable runnable = () -> {
 
 			AtomicInteger atInt = new AtomicInteger();
 			AtomicInteger successCount = new AtomicInteger();
 			AtomicInteger failureCount = new AtomicInteger();
-			SubmodelExecutor executor = submodelSchemaObject.getExecutor();
-			executor.init(submodelSchema);
+			SubmodelExecutor executor = getExecutor(submodelSchemaObject.getExecutor());
+			executor.init(submodelSchemaObject);
 
 			processReportUseCase.startBuildProcessReport(processId, submodelSchemaObject.getId(), rowData.size(),
 					policy.getAccessPolicies(), policy.getUsagePolicies(), policy.getUuid());
@@ -177,8 +190,21 @@ public class SubmodelOrchestartorService {
 			successCount.set(successCount.get() - updatedcount);
 			processReportUseCase.finishBuildProgressReport(processId, successCount.get(), failureCount.get(),
 					updatedcount);
+
+//			// Push PCF value which already Approve request of consumer
+//			if (submodelSchemaObject.getId().equalsIgnoreCase("pcf")) {
+//				databaseUsecaseHandler.init(submodelSchemaObject.getSchema());
+//				List<JsonObject> readCreatedTwins = databaseUsecaseHandler.readCreatedTwins(processId, null);
+//				asyncPushPCFDataForApproveRequest.pushPCFDataForApproveRequest(readCreatedTwins, policy);
+//			}
 		};
 		new Thread(runnable).start();
+	}
+
+	private SubmodelExecutor getExecutor(SubmodelExecutor executor) {
+		if (executor == null)
+			executor = genericSubmodelExecutor;
+		return executor;
 	}
 
 	public void deleteSubmodelDigitalTwinsAndEDC(String refProcessId, String delProcessId, String submodel) {
@@ -186,9 +212,10 @@ public class SubmodelOrchestartorService {
 		Submodel submodelSchema = submodelService.findSubmodelByNameAsSubmdelObject(submodel);
 		AtomicInteger deletedCount = new AtomicInteger();
 		AtomicInteger failureCount = new AtomicInteger();
+		AtomicInteger atInt = new AtomicInteger();
 
-		SubmodelExecutor executor = submodelSchema.getExecutor();
-
+		SubmodelExecutor executor = getExecutor(submodelSchema.getExecutor());
+		executor.init(submodelSchema);
 		ProcessReport oldProcessReport = processReportUseCase.getProcessReportById(refProcessId);
 
 		List<JsonObject> readCreatedTwinsforDelete = executor.readCreatedTwinsforDelete(refProcessId);
@@ -198,9 +225,16 @@ public class SubmodelOrchestartorService {
 			processReportUseCase.startDeleteProcess(oldProcessReport, refProcessId, submodel,
 					readCreatedTwinsforDelete.size(), delProcessId);
 
+			readCreatedTwinsforDelete.stream().forEach(obj -> {
+				int andIncrement = atInt.incrementAndGet();
+				obj.addProperty(ROW_NUMBER, andIncrement);
+				obj.addProperty(PROCESS_ID, refProcessId);
+			});
+
 			readCreatedTwinsforDelete.parallelStream().forEach(rowjObj -> {
 				try {
-					executor.executeDeleteRecord(rowjObj, delProcessId, refProcessId);
+					executor.executeDeleteRecord(rowjObj.get(ROW_NUMBER).getAsInt(), rowjObj, delProcessId,
+							refProcessId);
 					deletedCount.incrementAndGet();
 				} catch (Exception e) {
 					failureLogs.saveLog(delProcessId, e.getMessage());
@@ -215,11 +249,12 @@ public class SubmodelOrchestartorService {
 
 	public Map<Object, Object> readCreatedTwinsDetails(String submodel, String uuid, String type) {
 		Submodel submodelSchema = submodelService.findSubmodelByNameAsSubmdelObject(submodel);
-		SubmodelExecutor executor = submodelSchema.getExecutor();
+		SubmodelExecutor executor = getExecutor(submodelSchema.getExecutor());
+		executor.init(submodelSchema);
 		JsonObject readCreatedTwinsDetails = executor.readCreatedTwinsDetails(uuid);
 		JsonObject jObject = new JsonObject();
 		if ("csv".equalsIgnoreCase(type)) {
-			List<String> csvHeader = submodelCsvService.getCSVHeader(submodelSchema, null);
+			List<String> csvHeader = submoduleUtility.getCSVHeader(submodelSchema);
 			JsonObject jElement = readCreatedTwinsDetails.get("csv").getAsJsonObject();
 			for (String field : csvHeader) {
 				jObject.add(field, jElement.get(field));
@@ -240,6 +275,51 @@ public class SubmodelOrchestartorService {
 		processCsv(submodelFileRequest, processId, foundSubmodelSchemaObject, csvContent);
 	}
 
+	public PolicyModel onFlyPolicyManagement(PolicyTemplateRequest policyTemplateRequest) {
+
+		PolicyTemplateType type = policyTemplateRequest.getType();
+		PolicyModel policy = policyMapper.mapFrom(policyTemplateRequest);
+		switch (type) {
+		case NONE:
+			log.info("Nothing to do with policy");
+			break;
+
+		case EXISTING:
+			PolicyModel localPolicy = policyService.getPolicy(policy.getUuid());
+
+			if (StringUtils.isNotBlank(policy.getUuid()) && ((CollectionUtils.isNotEmpty(policy.getUsagePolicies())
+					&& !localPolicy.getUsagePolicies().equals(policy.getUsagePolicies()))
+					|| (CollectionUtils.isNotEmpty(policy.getAccessPolicies())
+							&& !localPolicy.getAccessPolicies().equals(policy.getAccessPolicies())))) {
+
+				if (StringUtils.isBlank(policy.getPolicyName())) {
+					policy.setPolicyName(localPolicy.getPolicyName());
+				}
+				if (CollectionUtils.isEmpty(policy.getAccessPolicies())) {
+					policy.setAccessPolicies(localPolicy.getAccessPolicies());
+				}
+				if (CollectionUtils.isEmpty(policy.getUsagePolicies())) {
+					policy.setAccessPolicies(localPolicy.getUsagePolicies());
+				}
+
+				policy = policyService.updatePolicy(policy.getUuid(), policy);
+				log.info("Updated existing policy " + policy.getUuid());
+
+			} else {
+				policy = policyService.getPolicy(policy.getUuid());
+				log.info("Using existing policy for " + policy.getUuid());
+			}
+			break;
+
+		case NEW:
+			policy = policyService.savePolicy(policy);
+			break;
+		default:
+			throw new ValidationException(type + " policy template type not found");
+		}
+		return policy;
+	}
+
 	public Submodel findSubmodel(List<String> columns) {
 
 		Submodel foundSubmodelSchemaObject = null;
@@ -257,5 +337,4 @@ public class SubmodelOrchestartorService {
 		}
 		return foundSubmodelSchemaObject;
 	}
-
 }

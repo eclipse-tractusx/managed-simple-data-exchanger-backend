@@ -121,7 +121,6 @@ public class SingleLevelUsageAsBuiltExecutor extends SubmodelExecutor {
 		storeSingleLevelUsageAsBuiltCsvHandlerUseCase.run(singleLevelUsageAsBuilt);
 	}
 
-	@Override
 	public void executeDeleteRecord(JsonObject jsonObject, String delProcessId, String refProcessId) {
 		singleLevelUsageAsBuiltService.deleteAllDataBySequence(jsonObject);
 	}
@@ -139,6 +138,18 @@ public class SingleLevelUsageAsBuiltExecutor extends SubmodelExecutor {
 	@Override
 	public int getUpdatedRecordCount(String processId) {
 		return singleLevelUsageAsBuiltService.getUpdatedData(processId);
+	}
+
+	@Override
+	public List<JsonObject> readCreatedTwinsByProcessId(String refProcessId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void executeDeleteRecord(Integer rowIndex, JsonObject jsonObject, String delProcessId, String refProcessId) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

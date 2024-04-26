@@ -122,7 +122,6 @@ public class SingleLevelBoMAsPlannedExecutor extends SubmodelExecutor {
 		storeSingleLevelBoMAsPlannedStep.run(singleLevelBoMAsPlanned);
 	}
 
-	@Override
 	public void executeDeleteRecord(JsonObject jsonObject, String delProcessId, String refProcessId) {
 		singleLevelBoMAsPlannedService.deleteAllDataBySequence(jsonObject);
 	}
@@ -140,6 +139,18 @@ public class SingleLevelBoMAsPlannedExecutor extends SubmodelExecutor {
 	@Override
 	public int getUpdatedRecordCount(String processId) {
 		return singleLevelBoMAsPlannedService.getUpdatedData(processId);
+	}
+
+	@Override
+	public List<JsonObject> readCreatedTwinsByProcessId(String refProcessId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void executeDeleteRecord(Integer rowIndex, JsonObject jsonObject, String delProcessId, String refProcessId) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

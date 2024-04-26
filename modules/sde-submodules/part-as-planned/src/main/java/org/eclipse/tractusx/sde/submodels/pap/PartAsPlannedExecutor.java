@@ -118,7 +118,7 @@ public class PartAsPlannedExecutor extends SubmodelExecutor {
 		storePartAsPlannedCsvHandlerUseCase.run(partAsPlannedAspect);
 	}
 
-	@Override
+
 	public void executeDeleteRecord(JsonObject jsonObject, String delProcessId, String refProcessId) {
 		partAsPlannedService.deleteAllDataBySequence(jsonObject);
 	}
@@ -136,6 +136,18 @@ public class PartAsPlannedExecutor extends SubmodelExecutor {
 	@Override
 	public int getUpdatedRecordCount(String processId) {
 		return partAsPlannedService.getUpdatedData(processId);
+	}
+
+	@Override
+	public List<JsonObject> readCreatedTwinsByProcessId(String refProcessId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void executeDeleteRecord(Integer rowIndex, JsonObject jsonObject, String delProcessId, String refProcessId) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

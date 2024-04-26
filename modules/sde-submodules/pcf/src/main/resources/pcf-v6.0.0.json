@@ -4,6 +4,7 @@
 	"type": "array",
 	"id": "pcf",
 	"idShort": "PCFExchangeEndpoint",
+	"submodelUriPath":"productIds",
 	"version": "6.0.0",
 	"semantic_id": "urn:bamm:io.catenax.pcf:6.0.0#Pcf",
 	"title": "Product Carbon Footprint (pcf)",
@@ -951,9 +952,118 @@
 			"extTFS_distributionStageLuGhgEmissions": 1.1,
 			"carbonContentTotal": 2.5,
 			"extWBCSD_fossilCarbonContent": 0.1,
-			"distributionStageAircraftGhgEmissions":0,
+			"distributionStageAircraftGhgEmissions": 0,
 			"carbonContentBiogenic": 0.0,
 			"assetLifeCyclePhase": "AsPlanned"
 		}
-	]
+	],
+	"addOn": {
+		"identifier": "${id}",
+		"lookupShellSpecificAssetIdsSpecs": {
+			"assetLifecyclePhase": "${assetLifeCyclePhase}",
+			"manufacturerPartId": "${productId}",
+			"digitalTwinType": "PartType"
+		},
+		"shortIdSpecs": [
+			"${productName}",
+			"${productId}"
+		],
+		"bpnDiscoverySpecs": {
+			"manufacturerPartId": "${productId}"
+		},
+		"responseTemplate": {
+			"specVersion": "${specVersion}",
+			"companyIds": [
+				"${companyId}"
+			],
+			"extWBCSD_productCodeCpc": "${extWBCSD_productCodeCpc}",
+			"created": "${created}",
+			"companyName": "${companyName}",
+			"extWBCSD_pfStatus": "${extWBCSD_pfStatus}",
+			"version": "${version}",
+			"productName": "${productName}",
+			"pcf": {
+				"biogenicCarbonEmissionsOtherThanCO2": "${biogenicCarbonEmissionsOtherThanCO2}",
+				"distributionStagePcfExcludingBiogenic": "${distributionStagePcfExcludingBiogenic}",
+				"biogenicCarbonWithdrawal": "${biogenicCarbonWithdrawal}",
+				"distributionStageBiogenicCarbonEmissionsOtherThanCO2": "${distributionStageBiogenicCarbonEmissionsOtherThanCO2}",
+				"extWBCSD_allocationRulesDescription": "${extWBCSD_allocationRulesDescription}",
+				"exemptedEmissionsDescription": "${exemptedEmissionsDescription}",
+				"distributionStageFossilGhgEmissions": "${distributionStageFossilGhgEmissions}",
+				"exemptedEmissionsPercent": "${exemptedEmissionsPercent}",
+				"geographyCountrySubdivision": "${geographyCountrySubdivision}",
+				"extTFS_luGhgEmissions": "${extTFS_luGhgEmissions}",
+				"distributionStageBiogenicCarbonWithdrawal": "${distributionStageBiogenicCarbonWithdrawal}",
+				"pcfIncludingBiogenic": "${pcfIncludingBiogenic}",
+				"aircraftGhgEmissions": "${aircraftGhgEmissions}",
+				"productMassPerDeclaredUnit": "${productMassPerDeclaredUnit}",
+				"productOrSectorSpecificRules": [
+					{
+						"extWBCSD_operator": "${extWBCSD_operator}",
+						"productOrSectorSpecificRules": [
+							{
+								"ruleName": "${ruleName}"
+							}
+						],
+						"extWBCSD_otherOperatorName": "${extWBCSD_otherOperatorName}"
+					}
+				],
+				"extTFS_allocationWasteIncineration": "${extTFS_allocationWasteIncineration}",
+				"pcfExcludingBiogenic": "${pcfExcludingBiogenic}",
+				"referencePeriodEnd": "${referencePeriodEnd}",
+				"extWBCSD_characterizationFactors": "${extWBCSD_characterizationFactors}",
+				"secondaryEmissionFactorSources": [
+					{
+						"secondaryEmissionFactorSource": "${secondaryEmissionFactorSource}"
+					}
+				],
+				"unitaryProductAmount": "${unitaryProductAmount}",
+				"declaredUnit": "${declaredUnit}",
+				"referencePeriodStart": "${referencePeriodStart}",
+				"geographyRegionOrSubregion": "${geographyRegionOrSubregion}",
+				"fossilGhgEmissions": "${fossilGhgEmissions}",
+				"distributionStageAircraftGhgEmissions": "${distributionStageAircraftGhgEmissions}",
+				"boundaryProcessesDescription": "${boundaryProcessesDescription}",
+				"geographyCountry": "${geographyCountry}",
+				"extWBCSD_packagingGhgEmissions": "${extWBCSD_packagingGhgEmissions}",
+				"dlucGhgEmissions": "${dlucGhgEmissions}",
+				"carbonContentTotal": "${carbonContentTotal}",
+				"extTFS_distributionStageLuGhgEmissions": "${extTFS_distributionStageLuGhgEmissions}",
+				"primaryDataShare": "${primaryDataShare}",
+				"dataQualityRating": {
+					"completenessDQR": "${completenessDQR}",
+					"technologicalDQR": "${technologicalDQR}",
+					"geographicalDQR": "${geographicalDQR}",
+					"temporalDQR": "${temporalDQR}",
+					"reliabilityDQR": "${reliabilityDQR}",
+					"coveragePercent": "${coveragePercent}"
+				},
+				"extWBCSD_packagingEmissionsIncluded": "${extWBCSD_packagingEmissionsIncluded}",
+				"extWBCSD_fossilCarbonContent": "${extWBCSD_fossilCarbonContent}",
+				"crossSectoralStandardsUsed": [
+					{
+						"crossSectoralStandard": "${crossSectoralStandard}"
+					}
+				],
+				"extTFS_distributionStageDlucGhgEmissions": "${extTFS_distributionStageDlucGhgEmissions}",
+				"distributionStagePcfIncludingBiogenic": "${distributionStagePcfIncludingBiogenic}",
+				"carbonContentBiogenic": "${carbonContentBiogenic}"
+			},
+			"partialFullPcf": "${partialFullPcf}",
+			"productIds": [
+				"${productId}"
+			],
+			"validityPeriodStart": "${validityPeriodStart}",
+			"comment": "${comment}",
+			"id": "${id}",
+			"validityPeriodEnd": "${validityPeriodEnd}",
+			"pcfLegalStatement": "${pcfLegalStatement}",
+			"productDescription": "${productDescription}",
+			"precedingPfIds": [
+				{
+					"id": "${precedingPfId}"
+				}
+			]
+		}
+	}
 }

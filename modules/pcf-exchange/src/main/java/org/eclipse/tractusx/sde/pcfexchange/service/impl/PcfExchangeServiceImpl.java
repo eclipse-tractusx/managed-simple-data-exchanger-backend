@@ -30,7 +30,7 @@ import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.common.exception.ValidationException;
 import org.eclipse.tractusx.sde.common.model.PagingResponse;
-import org.eclipse.tractusx.sde.common.utils.LogUtil;
+import org.eclipse.tractusx.sde.common.submodel.executor.DatabaseUsecaseStep;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.eclipse.tractusx.sde.edc.util.EDCAssetUrlCacheService;
@@ -40,7 +40,7 @@ import org.eclipse.tractusx.sde.pcfexchange.enums.PCFTypeEnum;
 import org.eclipse.tractusx.sde.pcfexchange.repository.PcfReqsponseRepository;
 import org.eclipse.tractusx.sde.pcfexchange.request.PcfRequestModel;
 import org.eclipse.tractusx.sde.pcfexchange.service.IPCFExchangeService;
-import org.eclipse.tractusx.sde.submodels.pcf.service.PcfService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -59,7 +59,8 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 	private final PCFRepositoryService pcfRepositoryService;
 	private final PcfReqsponseRepository pcfReqsponseRepository;
 	private final EDCAssetUrlCacheService edcAssetUrlCacheService;
-	private final PcfService pcfService;
+	@Qualifier("DatabaseUsecaseHandler")
+	private final DatabaseUsecaseStep databaseUsecaseStep;
 	private final ProxyRequestInterface proxyRequestInterface;
 
 	@SneakyThrows
@@ -82,7 +83,8 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 					.connectorOfferUrl(offer.getConnectorOfferUrl())
 					.policy(PolicyModel.builder().usagePolicies(consumerRequest.getUsagePolicies()).build()).build();
 
-			proxyRequestInterface.requestToProviderForPCFValue(productId, sb, requestId, message, queryDataOfferModel, false);
+			proxyRequestInterface.requestToProviderForPCFValue(productId, sb, requestId, message, queryDataOfferModel,
+					false);
 		});
 
 		return sb.toString();
@@ -104,8 +106,10 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 
 			// 2 request for PCF value for non existing sub model and send notification to
 			// call provider for data
-			pcfExchangeUrlOffers.parallelStream().forEach(dtOffer -> proxyRequestInterface.requestToProviderForPCFValue(
-					pcfRequestModel.getProductId(), sb, requestId, pcfRequestModel.getMessage(), dtOffer, true));
+			pcfExchangeUrlOffers.parallelStream()
+					.forEach(dtOffer -> proxyRequestInterface.requestToProviderForPCFValue(
+							pcfRequestModel.getProductId(), sb, requestId, pcfRequestModel.getMessage(), dtOffer,
+							true));
 
 		} catch (FeignException e) {
 			log.error("FeignRequest requestForPcfNotExistDataOffer:" + e.request());
@@ -127,17 +131,15 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 		String remark = "";
 		try {
 
-			JsonObject calculatedPCFValue = pcfService
-					.readCreatedTwinsDetailsByProductId(pcfRequestModel.getProductId()).get("json").getAsJsonObject();
+			JsonObject calculatedPCFValue = databaseUsecaseStep.readCreatedTwinsBySpecifyColomn(
+					"urn:bamm:io.catenax.pcf", "productId", pcfRequestModel.getProductId());
 
-			
 			PCFRequestStatusEnum status = pcfRepositoryService.identifyRunningStatus(pcfRequestModel.getRequestId(),
 					pcfRequestModel.getStatus());
 
 			// push api call
-			Runnable runnable = () -> proxyRequestInterface.sendNotificationToConsumer(status,
-					calculatedPCFValue, pcfRequestModel.getProductId(), pcfRequestModel.getBpnNumber(),
-					pcfRequestModel.getRequestId());
+			Runnable runnable = () -> proxyRequestInterface.sendNotificationToConsumer(status, calculatedPCFValue,
+					pcfRequestModel.getProductId(), pcfRequestModel.getBpnNumber(), pcfRequestModel.getRequestId());
 
 			new Thread(runnable).start();
 
@@ -150,7 +152,7 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 			pcfRepositoryService.savePcfRequestData(pcfRequestModel.getRequestId(), pcfRequestModel.getProductId(),
 					pcfRequestModel.getBpnNumber(), pcfRequestModel.getMessage(), PCFTypeEnum.PROVIDER,
 					PCFRequestStatusEnum.FAILED, remark);
-			log.error(LogUtil.encode(remark));
+			log.error(remark);
 			throw new ValidationException(e.getMessage());
 		} catch (Exception e) {
 			pcfRepositoryService.savePcfStatus(pcfRequestModel.getRequestId(), PCFRequestStatusEnum.FAILED);
@@ -164,11 +166,12 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 		PCFRequestStatusEnum status = PCFRequestStatusEnum.REQUESTED;
 		String remark = "";
 		try {
-			pcfService.readCreatedTwinsDetailsByProductId(productId).get("json").getAsJsonObject();
+			databaseUsecaseStep.readCreatedTwinsBySpecifyColomn("urn:bamm:io.catenax.pcf", "productId",
+					productId);
 		} catch (NoDataFoundException e) {
 			String msg = "The PCF calculated value does not exist in system, please upload PCF value for '" + productId
 					+ "' in systems using Manual/Recurring Upload";
-			log.warn(LogUtil.encode(msg));
+			log.warn(msg);
 			remark = msg;
 			status = PCFRequestStatusEnum.PENDING_DATA_FROM_PROVIDER;
 		}

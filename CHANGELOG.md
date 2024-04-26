@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Support for pcf v6.0.0 submodel.
 - Added controller interface api's for PCF Exchange.
 - Added new classes for multiple submodel version support.
+- Added different usecase Handler for multi version support.
 - Added refactor code changes for external services.
 - Added usecase handle implementation for multiple submodel support.
 - Supported new serial part submodel with multi version support. 

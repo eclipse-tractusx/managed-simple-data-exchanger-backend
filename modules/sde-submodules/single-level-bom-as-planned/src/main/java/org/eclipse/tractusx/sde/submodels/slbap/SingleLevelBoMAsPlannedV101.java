@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2024 T-Systems International GmbH
- * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
+ * Copyright (c) 2024 T-Systems International GmbH
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,7 +17,8 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-package org.eclipse.tractusx.sde.submodels.pap;
+
+package org.eclipse.tractusx.sde.submodels.slbap;
 
 import java.io.InputStream;
 
@@ -28,14 +29,14 @@ import org.springframework.stereotype.Component;
 import jakarta.annotation.PostConstruct;
 
 @Component
-public class PartAsPlannedSubmodel extends SubmodelExtension {
+public class SingleLevelBoMAsPlannedV101 extends SubmodelExtension {
 
 	private Submodel submodel = null;
 	
 	@PostConstruct
 	public void init() {
 
-		String resource = "part-as-planned.json";
+		String resource = "single-level-bom-as-planned-v1.0.1.json";
 		// this is the path within the jar file
 		InputStream input = this.getClass().getResourceAsStream("/resources/" + resource);
 		if (input == null) {
@@ -45,7 +46,7 @@ public class PartAsPlannedSubmodel extends SubmodelExtension {
 
 		submodel = loadSubmodel(input);
 		
-		submodel.addProperties("tableName", "part_as_planned");
+		submodel.addProperties("tableName", "single_level_bom_as_planned");
 	}
 	
 	@Override

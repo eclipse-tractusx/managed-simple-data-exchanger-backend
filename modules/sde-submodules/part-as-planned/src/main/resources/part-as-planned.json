@@ -118,5 +118,32 @@
 			"customer_part_id": "Currently missing the syntax",
 			"name_at_manufacturer": "Sensor"
 		}
-	]
+	],
+	"addOn": {
+		"identifier": "${uuid}",
+		"lookupShellSpecificAssetIdsSpecs": {
+			"manufacturerPartId": "${manufacturer_part_id}",
+			"assetLifecyclePhase" :"AsPlanned"
+		},
+		"shortIdSpecs": [
+			"${name_at_manufacturer}",
+			"${manufacturer_part_id}"
+		],
+		"createShellIfNotExist": true,
+		"bpnDiscoverySpecs": {
+			"manufacturerPartId": "${manufacturer_part_id}"
+		},
+		"responseTemplate": {
+			"validityPeriod": {
+				"validFrom": "${valid_from}",
+				"validTo": "${valid_to}"
+			},
+			"catenaXId": "${uuid}",
+			"partTypeInformation": {
+				"manufacturerPartId": "${manufacturer_part_id}",
+				"classification": "${classification}",
+				"nameAtManufacturer": "${name_at_manufacturer}"
+			}
+		}
+	}
 }

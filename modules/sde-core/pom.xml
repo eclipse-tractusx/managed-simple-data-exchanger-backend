@@ -29,7 +29,7 @@
 		<groupId>org.eclipse.tractusx</groupId>
 		<artifactId>sde</artifactId>
 		<version>0.0.1</version>
-		<relativePath>../../</relativePath>
+		<relativePath>../../pom.xml</relativePath>
 	</parent>
 	<artifactId>sde-core</artifactId>
 	<name>sde-core</name>
@@ -139,18 +139,12 @@
 			<version>0.0.1</version>
 		</dependency>
 
-		<dependency>
+	<dependency>
 			<groupId>org.eclipse.tractusx</groupId>
-			<artifactId>serial-part-typization</artifactId>
+			<artifactId>serial-part</artifactId>
 			<version>0.0.1</version>
 		</dependency>
-
-		<dependency>
-			<groupId>org.eclipse.tractusx</groupId>
-			<artifactId>assembly-part-relationship</artifactId>
-			<version>0.0.1</version>
-		</dependency>
-
+		
 		<dependency>
 			<groupId>org.eclipse.tractusx</groupId>
 			<artifactId>batch</artifactId>
@@ -174,11 +168,13 @@
 			<artifactId>part-site-information-as-planned</artifactId>
 			<version>0.0.1</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.eclipse.tractusx</groupId>
 			<artifactId>single-level-usage-as-built</artifactId>
 			<version>0.0.1</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.eclipse.tractusx</groupId>
 			<artifactId>pcf</artifactId>
@@ -194,7 +190,7 @@
 		<dependency>
 		    <groupId>com.opencsv</groupId>
 		    <artifactId>opencsv</artifactId>
-		    <version>5.8</version>
+		    <version>5.9</version>
 		</dependency>
 		
 	</dependencies>

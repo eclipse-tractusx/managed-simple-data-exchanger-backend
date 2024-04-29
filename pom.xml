@@ -44,7 +44,7 @@
 		<log4j2.version>2.17.1</log4j2.version>
 		<spring-cloud.version>2022.0.3</spring-cloud.version>
 		<org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
-		<org.mapstruct.processor.version>1.3.1.Final</org.mapstruct.processor.version>
+		<org.mapstruct.processor.version>1.4.2.Final</org.mapstruct.processor.version>
 		<snakey-version>2.0</snakey-version>
 	</properties>
 
@@ -59,9 +59,8 @@
 		<module>modules/sde-core</module>
 		<module>modules/pcf-exchange</module>
 
-		<module>modules/sde-submodules/serial-part-typization</module>
+		<module>modules/sde-submodules/serial-part</module>
 		<module>modules/sde-submodules/batch</module>
-		<module>modules/sde-submodules/assembly-part-relationship</module>
 		<module>modules/sde-submodules/part-as-planned</module>
 		<module>modules/sde-submodules/single-level-bom-as-planned</module>
 		<module>modules/sde-submodules/part-site-information-as-planned</module>

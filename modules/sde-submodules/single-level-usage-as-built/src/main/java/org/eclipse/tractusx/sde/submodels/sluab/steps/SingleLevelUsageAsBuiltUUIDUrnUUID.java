@@ -19,10 +19,9 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.submodels.sluab.steps;
 
-import org.eclipse.tractusx.sde.common.exception.CsvHandlerUseCaseException;
+import java.util.UUID;
+
 import org.eclipse.tractusx.sde.submodels.sluab.model.SingleLevelUsageAsBuilt;
-import org.eclipse.tractusx.sde.submodels.spt.entity.AspectEntity;
-import org.eclipse.tractusx.sde.submodels.spt.repository.AspectRepository;
 import org.springframework.stereotype.Component;
 
 import lombok.SneakyThrows;
@@ -30,12 +29,12 @@ import lombok.SneakyThrows;
 @Component
 public class SingleLevelUsageAsBuiltUUIDUrnUUID {
 	
-	private final AspectRepository repository;
-
-
-	public SingleLevelUsageAsBuiltUUIDUrnUUID(AspectRepository repository) {
-		this.repository = repository;
-	}
+//	private final AspectRepository repository;
+//
+//
+//	public SingleLevelUsageAsBuiltUUIDUrnUUID(AspectRepository repository) {
+//		this.repository = repository;
+//	}
 	
 	@SneakyThrows
 	public SingleLevelUsageAsBuilt run(SingleLevelUsageAsBuilt input, String processId) {
@@ -59,15 +58,15 @@ public class SingleLevelUsageAsBuiltUUIDUrnUUID {
 	@SneakyThrows
 	private String getUuidIfAspectExists(int rowNumber, String partInstanceId, String manufactorerPartId,
 			String optionalIdentifierKey, String optionalIdentifierValue) {
-		AspectEntity aspect = repository.findByIdentifiers(partInstanceId, manufactorerPartId, optionalIdentifierKey,
-				optionalIdentifierValue);
-
-		if (aspect == null) {
-			throw new CsvHandlerUseCaseException(rowNumber, String.format(
-					"Missing parent aspect for the given Identifier: PartInstanceID: %s | ManufactorerId: %s | %s: %s",
-					partInstanceId, manufactorerPartId, optionalIdentifierKey, optionalIdentifierValue));
-		}
-		return aspect.getUuid();
+////		AspectEntity aspect = repository.findByIdentifiers(partInstanceId, manufactorerPartId, optionalIdentifierKey,
+////				optionalIdentifierValue);
+//
+//		if (aspect == null) {
+//			throw new CsvHandlerUseCaseException(rowNumber, String.format(
+//					"Missing parent aspect for the given Identifier: PartInstanceID: %s | ManufactorerId: %s | %s: %s",
+//					partInstanceId, manufactorerPartId, optionalIdentifierKey, optionalIdentifierValue));
+//		}
+		return UUID.randomUUID().toString();
 	}
 
 }

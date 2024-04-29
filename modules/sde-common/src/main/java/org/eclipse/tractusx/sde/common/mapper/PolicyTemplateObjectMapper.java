@@ -41,5 +41,4 @@ public abstract class PolicyTemplateObjectMapper {
 		mapper.setConfig(newConfig);
 		return mapper.readValue(metaData, PolicyTemplateRequest.class);
 	}
-
 }

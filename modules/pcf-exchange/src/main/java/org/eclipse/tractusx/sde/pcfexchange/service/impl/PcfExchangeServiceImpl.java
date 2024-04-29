@@ -1,5 +1,4 @@
 /********************************************************************************
-
  * Copyright (c) 2024 T-Systems International GmbH
  * Copyright (c) 2024 Contributors to the Eclipse Foundation
  *

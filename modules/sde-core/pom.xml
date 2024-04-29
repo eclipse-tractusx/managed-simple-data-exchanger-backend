@@ -147,6 +147,12 @@
 		
 		<dependency>
 			<groupId>org.eclipse.tractusx</groupId>
+			<artifactId>single-level-bom-as-built</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.eclipse.tractusx</groupId>
 			<artifactId>batch</artifactId>
 			<version>0.0.1</version>
 		</dependency>

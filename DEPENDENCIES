@@ -78,6 +78,7 @@ maven/mavencentral/org.eclipse.tractusx/policy-hub/0.0.1, Apache-2.0, approved, 
 maven/mavencentral/org.eclipse.tractusx/portal/0.0.1, Apache-2.0, approved, automotive.tractusx
 maven/mavencentral/org.eclipse.tractusx/sde-common/0.0.1, Apache-2.0, approved, automotive.tractusx
 maven/mavencentral/org.eclipse.tractusx/serial-part/0.0.1, Apache-2.0, approved, automotive.tractusx
+maven/mavencentral/org.eclipse.tractusx/single-level-bom-as-built/0.0.1, Apache-2.0, approved, automotive.tractusx
 maven/mavencentral/org.eclipse.tractusx/single-level-bom-as-planned/0.0.1, Apache-2.0, approved, automotive.tractusx
 maven/mavencentral/org.eclipse.tractusx/single-level-usage-as-built/0.0.1, Apache-2.0, approved, automotive.tractusx
 maven/mavencentral/org.flywaydb/flyway-core/9.16.3, Apache-2.0, approved, #7935

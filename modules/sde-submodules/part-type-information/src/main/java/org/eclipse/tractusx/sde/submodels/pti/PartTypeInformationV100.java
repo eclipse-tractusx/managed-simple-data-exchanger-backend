@@ -38,7 +38,7 @@ public class PartTypeInformationV100 extends SubmodelExtension {
 
 		String resource = "part-type-information-v1.0.0.json";
 		// this is the path within the jar file
-		InputStream input = this.getClass().getResourceAsStream("/resources/" + resource);
+		InputStream input = PartTypeInformationV100.class.getResourceAsStream("/resources/" + resource);
 		if (input == null) {
 			// this is how we load file within editor (eg eclipse)
 			input = this.getClass().getClassLoader().getResourceAsStream(resource);

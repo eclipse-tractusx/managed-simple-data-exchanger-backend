@@ -1,0 +1,167 @@
+{
+	"$schema": "https://json-schema.org/draft/2019-09/schema",
+	"$id": "http://example.com/example.json",
+	"type": "array",
+	"id": "singlelevelbomasplanned",
+	"idShort": "singleLevelBomAsPlanned",
+	"version": "1.0.1",
+	"semantic_id": "urn:bamm:io.catenax.single_level_bom_as_planned:1.0.1#SingleLevelBomAsPlanned",
+	"title": "Single Level Bom AsPlanned",
+	"shortDescription": "BoM As-Planned - Submodel SingleLevelBomAsPlanned",
+	"description": "The single-level Bill of Material represents one sub-level of an assembly and does not include any lower-level subassemblies. In As-Planned lifecycle state all variants are covered ('120% BOM'). It includes multiple suppliers for the same component.",
+	"items": {
+		"type": "object",
+		"required": [
+			"parent_uuid",
+			"parent_manufacturer_part_id",
+			"uuid",
+			"manufacturer_part_id",
+			"quantity_number",
+			"measurement_unit",
+			"created_on"
+		],
+		"dependentRequired": {},
+		"properties": {
+			"parent_uuid": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"pattern" : "(^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)|(^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)",
+				"title": "Parent UUID",
+				 "description" : "The Catena-X ID of the given part (e.g. the component), valid for the Catena-X dataspace.",
+				"examples": [
+					"urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf34dfa4c2"
+				]
+			},
+			"parent_manufacturer_part_id": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"title": "Parent Manufacturer Part ID",
+				"description": "The Parent Manufacturer Part ID of the parent object Manufacturer Part ID, to identify parent object in digital twins.",
+				"examples": [
+					"37754B7-76"
+				]
+			},
+			"uuid": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"title": "UUID",
+				"description" : "The Catena-X ID of the child object which is assembled into the given parent part.",
+				"pattern" : "(^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)|(^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)",
+				"examples": [
+					"urn:uuid:5daB938E-Cafa-92B3-7ca1-9aD7885e9dC8"
+				]
+			},
+			"manufacturer_part_id": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"title": "Manufacturer Part ID",
+				"description": "The ID of the type/catalog part (of which the serialized part is an instance of) from the manufacturer.",
+				"examples": [
+					"37754B7-76"
+				]
+			},
+			"quantity_number": {
+				"type": [
+					"number"
+				],
+				"minLength": 1,
+				"title": "Quantity Number",
+				"description" : "The number of objects related to the measurement unit",
+				"examples": [
+					2.5
+				]
+			},
+			"measurement_unit": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"title": "Measurement Unit",
+				"pattern" : "[a-zA-Z]*:[a-zA-Z]+",
+				"description" : "Unit of Measurement for the quantity of serialized objects",
+				"examples": [
+					"unit:litre"
+				]
+			},
+			"created_on": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"format": "date-time",
+				"title": "Created On",
+				"pattern" : "-?([1-9][0-9]{3,}|0[0-9]{3})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T(([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.[0-9]+)?|(24:00:00(\\.0+)?))(Z|(\\+|-)((0[0-9]|1[0-3]):[0-5][0-9]|14:00))?",
+				"description" : "Timestamp when the relation between the parent part and the child part was created",
+				"examples": [
+					"2022-02-03T14:48:54.709Z"
+				]
+			},
+			"last_modified_on": {
+				"type": [
+					"string",
+					"null"
+				],
+				"format": "date-time",
+				"title": "Last Modified On",
+				"description": "Timestamp when the relationship between parent part and child part was last modified.",
+				"examples": [
+					"2022-02-03T14:48:54.709Z"
+				]
+			}
+		}
+	},
+	"examples": [
+		{
+			"parent_uuid": "urn:uuid:055c1128-0375-47c8-98de-7cf802c3241d",
+			"parent_manufacturer_part_id": "37754B7-76",
+			"uuid": "urn:uuid:5daB938E-Cafa-92B3-7ca1-9aD7885e9dC8",
+			"manufacturer_part_id": "37754B7-76",
+			"quantity_number": 2.5,
+			"measurement_unit": "unit:litre",
+			"created_on": "2022-02-03T14:48:54.709Z",
+			"last_modified_on": "2022-02-03T14:48:54.709Z"
+		}
+	],
+	"addOn": {
+		"identifier": "${uuid}",
+		"lookupShellSpecificAssetIdsSpecs": {
+			"manufacturerPartId": "${parent_manufacturer_part_id}",
+			"assetLifecyclePhase": "AsPlanned"
+		},
+		"createShellIfNotExist": false,
+		"createShellSpecificAssetIdsSpecs":{
+			"manufacturerPartId": "${manufacturer_part_id}",
+			"assetLifecyclePhase": "AsPlanned"
+		},
+		"shortIdSpecs": [
+			"${parent_manufacturer_part_id}",
+			"${manufacturer_part_id}"
+			
+		],
+		"bpnDiscoverySpecs": {
+			"manufacturerPartId": "${manufacturer_part_id}"
+		},
+		"responseTemplate": {
+			"catenaXId": "${parent_uuid}",
+			"childParts": [
+				{
+					"quantity": {
+						"quantityNumber": "${quantity_number}",
+						"measurementUnit": "${measurement_unit}"
+					},
+					"createdOn": "${created_on}",
+					"lastModifiedOn": "${last_modified_on}",
+					"childCatenaXId": "${uuid}"
+				}
+			]
+		}
+	}
+}

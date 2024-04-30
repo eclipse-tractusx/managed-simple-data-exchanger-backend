@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Support for pcf v6.0.0 submodel.
 - Added controller interface api's for PCF Exchange.
 - Added new classes for multiple submodel version support.
+- Added different usecase Handler for multi version support.
 - Added refactor code changes for external services.
 - Added different usecase Handler for multi version support.
 - Added usecase handle implementation for multiple submodel support.
@@ -20,6 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Supported new single level bom as built submodel with multi version support.
 - Removed maven modules  serial-part-typization and assembly-part-relationship for update. 
 - New maven module for part type information submodel support.
+- Refactored/Updated batch maven module to support multi version.
 
 ## [2.3.6] - 2024-03-06
 ### Fixed

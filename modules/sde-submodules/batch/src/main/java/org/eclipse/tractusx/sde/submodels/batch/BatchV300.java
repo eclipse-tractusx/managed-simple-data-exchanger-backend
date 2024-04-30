@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2024 T-Systems International GmbH
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -23,35 +23,29 @@ import java.io.InputStream;
 
 import org.eclipse.tractusx.sde.common.extensions.SubmodelExtension;
 import org.eclipse.tractusx.sde.common.model.Submodel;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import jakarta.annotation.PostConstruct;
 
 @Component
-public class BatchSubmodel extends SubmodelExtension {
+public class BatchV300 extends SubmodelExtension {
 
 	private Submodel submodel = null;
-
-	@Autowired
-	private BatchExecutor batchWorkflow;
 
 	@PostConstruct
 	public void init() {
 
-		String resource = "batch.json";
+		String resource = "batch-v3.0.0.json";
 		// this is the path within the jar file
-		InputStream input = this.getClass().getResourceAsStream("/resources/" + resource);
+		InputStream input = BatchV300.class.getResourceAsStream("/resources/" + resource);
 		if (input == null) {
 			// this is how we load file within editor (eg eclipse)
 			input = this.getClass().getClassLoader().getResourceAsStream(resource);
 		}
 
 		submodel = loadSubmodel(input);
-
-		submodel.setExecutor(batchWorkflow);
 		
-		submodel.addProperties("tableName", "batch");
+		submodel.addProperties("tableName", "batch_v_300");
 	}
 
 	@Override

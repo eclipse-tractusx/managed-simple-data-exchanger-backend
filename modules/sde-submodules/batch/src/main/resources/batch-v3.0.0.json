@@ -1,0 +1,428 @@
+{
+	"$schema": "https://json-schema.org/draft/2019-09/schema",
+	"$id": "http://example.com/example.json",
+	"type": "array",
+	"id": "batch_300",
+	"idShort": "Batch",
+	"version": "3.0.0",
+	"semantic_id": "urn:samm:io.catenax.batch:3.0.0#Batch",
+	"title": "Batch",
+	"shortDescription": "BoM AsBuilt - Submodel Batch",
+	"description": "A batch is a quantity of (semi-) finished products or (raw) material product that have been produced under the same circumstances (e.g. same production location), as specified groups or amounts, within a certain time frame. Every batch can differ in the number or amount of products. Different batches can have varied specifications, e.g., different colors. A batch is identified via a Batch ID.",
+	"items": {
+		"type": "object",
+		"required": [
+			"part_instance_id",
+			"manufacturing_date",
+			"catenax_site_id",
+			"function",
+			"manufacturer_part_id",
+			"classification_standard",
+			"classification_id",
+			"name_at_manufacturer"
+		],
+		"dependentRequired": {},
+		"properties": {
+			"uuid": {
+				"type": [
+					"string",
+					"null"
+				],
+				"pattern": "^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+				"title": "UUID URN",
+				"description": "The fully anonymous Catena-X ID of the batch, valid for the Catena-X dataspace. The provided regular expression ensures that the UUID is composed of five groups of characters separated by hyphens, in the form 8-4-4-4-12 for a total of 36 characters (32 hexadecimal characters and 4 hyphens), optionally prefixed by 'urn:uuid:' to make it an IRI.",
+				"examples": [
+					"urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2"
+				]
+			},
+			"batch_id": {
+				"type": [
+					"string",
+					"null"
+				],
+				"title": "Batch ID",
+				"description": "The batch number of the batch from the manufacturer. We assume here that the customer does not have or create its own batch number for a batch, but just used the manufacturer's batch number.",
+				"examples": [
+					"NO-159040131155901488695376"
+				]
+			},
+			"part_instance_id": {
+				"type": [
+					"string"
+				],
+				"title": "Part Instance ID",
+				"description": "The serial number of the serialized part from the manufacturer. We assume here that the customer does not have or create its own serial number for a part, but just used the manufacturer's serial number.",
+				"minLength": 1,
+				"examples": [
+					"PINO04013115590"
+				]
+			},
+			"manufacturing_date": {
+				"type": [
+					"string"
+				],
+				"format": "date-time",
+				"title": "Manufacturing Date",
+				"pattern": "^(?:[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:[.][0-9]+)?Z|[0-9]{4}-[0-9]{2}-[0-9]{2}(?:T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:[.][0-9]+)?(?:Z|[+-][0-9]{2}:[0-9]{2}))?)$",
+				"description": "Timestamp of the manufacturing date as the final step in production process (e.g. final quality check, ready-for-shipment event)",
+				"examples": [
+					"2022-02-04T14:48:54"
+				]
+			},
+			"manufacturing_country": {
+				"type": [
+					"string",
+					"null"
+				],
+				"enum": [
+					"",
+					"AUS",
+					"ALB",
+					"DZA",
+					"AND",
+					"AGO",
+					"AIA",
+					"ATG",
+					"ARG",
+					"ARM",
+					"ABW",
+					"AUT",
+					"AZE",
+					"BHS",
+					"BHR",
+					"BRB",
+					"BEL",
+					"BLZ",
+					"BEN",
+					"BMU",
+					"BTN",
+					"BOL",
+					"BIH",
+					"BWA",
+					"BRA",
+					"VGB",
+					"BRN",
+					"BGR",
+					"BFA",
+					"BDI",
+					"KHM",
+					"CAN",
+					"CPV",
+					"CYM",
+					"TCD",
+					"CHL",
+					"CHN",
+					"COL",
+					"COM",
+					"COK",
+					"CRI",
+					"HRV",
+					"CYP",
+					"CZE",
+					"COD",
+					"DNK",
+					"DJI",
+					"DMA",
+					"DOM",
+					"ECU",
+					"SLV",
+					"ERI",
+					"EST",
+					"ETH",
+					"FLK",
+					"FRO",
+					"FSM",
+					"FJI",
+					"FIN",
+					"FRA",
+					"GUF",
+					"PYF",
+					"GAB",
+					"GMB",
+					"DEU",
+					"GIB",
+					"GRC",
+					"GRL",
+					"GRD",
+					"GLP",
+					"GTM",
+					"GIN",
+					"GNB",
+					"GUY",
+					"HND",
+					"HKG",
+					"HUN",
+					"ISL",
+					"IND",
+					"IDN",
+					"IRL",
+					"ISR",
+					"ITA",
+					"JAM",
+					"JPN",
+					"JOR",
+					"KAZ",
+					"KEN",
+					"KIR",
+					"KWT",
+					"KGZ",
+					"LAO",
+					"LVA",
+					"LSO",
+					"LIE",
+					"LTU",
+					"LUX",
+					"MDG",
+					"MWI",
+					"MYS",
+					"MDV",
+					"MLI",
+					"MLT",
+					"MHL",
+					"MTQ",
+					"MRT",
+					"MUS",
+					"MYT",
+					"MEX",
+					"MNG",
+					"MSR",
+					"MAR",
+					"MOZ",
+					"NAM",
+					"NRU",
+					"NPL",
+					"NLD",
+					"ANT",
+					"NCL",
+					"NZL",
+					"NIC",
+					"NER",
+					"NIU",
+					"NFK",
+					"NOR",
+					"OMN",
+					"PLW",
+					"PAN",
+					"PNG",
+					"PER",
+					"PHL",
+					"PCN",
+					"POL",
+					"PRT",
+					"QAT",
+					"REU",
+					"ROM",
+					"RUS",
+					"RWA",
+					"VCT",
+					"WSM",
+					"SMR",
+					"STP",
+					"SAU",
+					"SEN",
+					"SYC",
+					"SLE",
+					"SGP",
+					"SVK",
+					"SVN",
+					"SLB",
+					"SOM",
+					"ZAF",
+					"KOR",
+					"ESP",
+					"LKA",
+					"SHN",
+					"KNA",
+					"LCA",
+					"SPM",
+					"SUR",
+					"SJM",
+					"SWZ",
+					"SWE",
+					"CHE",
+					"TWN",
+					"TJK",
+					"TZA",
+					"THA",
+					"TGO",
+					"TON",
+					"TTO",
+					"TUN",
+					"TUR",
+					"TKM",
+					"TCA",
+					"TUV",
+					"UGA",
+					"UKR",
+					"ARE",
+					"GBR",
+					"USA",
+					"URY",
+					"VUT",
+					"VAT",
+					"VEN",
+					"VNM",
+					"WLF",
+					"YEM",
+					"ZMB"
+				],
+				"title": "Manufacturing Country",
+				"description": "Country code where the part was manufactured",
+				"examples": [
+					"DEU"
+				]
+			},
+			"catenax_site_id": {
+				"type": [
+					"string"
+				],
+				"title": "CatenaX site Id",
+				"minLength": 1,
+				"pattern": "^BPNS[a-zA-Z0-9]{12}$",
+				"description": "The identifier of the site according to Catena-X BPDM. The catenaXsiteId must be a valid Catena-X BPN. The BPN is a unique, unchangeable identifier for Business Partners / company locations from foundation to closure, regardless of the different business relationships / structures between or within the Business Partners or company locations.",
+				"examples": [
+					"BPNS1234567890ZZ"
+				]
+			},
+			"function": {
+				"type": [
+					"string"
+				],
+				"enum": [
+					"production",
+					"warehouse",
+					"spare part warehouse"
+				],
+				"title": "function",
+				"minLength": 1,
+				"description": "The function of the site in relation to the part(i.e. the activity within the value chain of the part that is performed at the site)",
+				"examples": [
+					"production"
+				]
+			},
+			"manufacturer_part_id": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"title": "Manufacturer Part ID",
+				"description": "Part ID as assigned by the manufacturer of the part. The Part ID identifies the part (as designed) in the manufacturer`s dataspace. The Part ID does not reference a specific instance of a part and thus should not be confused with the serial number or batch number.",
+				"examples": [
+					"37754B7-76"
+				]
+			},
+			"name_at_manufacturer": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"title": "Name At Manufacturer",
+				"description": "Name of the part as assigned by the manufacturer",
+				"examples": [
+					"Sensor"
+				]
+			},
+			"classification_standard": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"title": "Classification Standard",
+				"description": "Identified classification standards that align to the Catena-X needs.",
+				"examples": [
+					"IEC"
+				]
+			},
+			"classification_id": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"title": "Classification ID",
+				"description": "The classification ID of the part type according to the corresponding standard definition mentioned in the key value pair.",
+				"examples": [
+					"61360- 2:2012"
+				]
+			},
+			"classification_description": {
+				"type": [
+					"string",
+					"null"
+				],
+				"title": "Classification Description",
+				"description": "Optional property describing the classification standard.",
+				"examples": [
+					"Standard data element types with associated classification scheme for electric components."
+				]
+			}
+		}
+	},
+	"examples": [
+		{
+			"uuid": "urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2",
+			"batch_id": "NO-159040131155901488695376",
+			"part_instance_id": "PINO-34634534535",
+			"manufacturing_date": "2022-02-04T14:48:54.709Z",
+			"manufacturing_country": "DEU",
+			"catenax_site_id": "BPNS1234567890ZZ",
+			"function": "production",
+			"manufacturer_part_id": "37754B7-76",
+			"name_at_manufacturer": "Sensor",
+			"classification_standard": "IEC",
+			"classification_id": "61360- 2:2012 ",
+			"classification_description": "Standard data element types with associated classification scheme for electric components."
+		}
+	],
+	"addOn": {
+		"identifier": "${uuid}",
+		"lookupShellSpecificAssetIdsSpecs": {
+			"partInstanceId": "${part_instance_id}",
+			"manufacturerPartId": "${manufacturer_part_id}",
+			"optionalIdentifier": [
+				{
+					"key": "batchId",
+					"value" :"${batch_id}"
+				}
+			]
+		},
+		"shortIdSpecs": [
+			"${name_at_manufacturer}",
+			"${part_instance_id}",
+			"${manufacturer_part_id}"
+		],
+		"bpnDiscoverySpecs": {
+			"manufacturerPartId": "${manufacturer_part_id}"
+		},
+		"responseTemplate": {
+			"localIdentifiers": [
+				{
+					"key": "batchId",
+					"value": "${batch_id}"
+				}
+			],
+			"manufacturingInformation": {
+				"date": "${manufacturing_date}",
+				"country": "${manufacturing_country}",
+				"sites": [
+					{
+						"catenaXsiteId": "${catenax_site_id}",
+						"function": "${function}"
+					}
+				]
+				
+			},
+			"catenaXId": "${uuid}",
+			"partTypeInformation": {
+				"partClassification": [
+					{
+						"classificationStandard": "${classification_standard}",
+						"classificationID": "${classification_id}",
+						"classificationDescription": "${classification_description}"
+					}
+				],
+				"manufacturerPartId": "${manufacturer_part_id}",
+				"nameAtManufacturer": "${name_at_manufacturer}"
+			}
+		}
+	}
+}

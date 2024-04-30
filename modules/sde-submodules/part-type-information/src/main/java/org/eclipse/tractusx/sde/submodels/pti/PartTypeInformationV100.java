@@ -18,7 +18,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.submodels.sp;
+package org.eclipse.tractusx.sde.submodels.pti;
 
 import java.io.InputStream;
 
@@ -29,16 +29,16 @@ import org.springframework.stereotype.Component;
 import jakarta.annotation.PostConstruct;
 
 @Component
-public class SerialPartV300 extends SubmodelExtension {
+public class PartTypeInformationV100 extends SubmodelExtension {
 
 	private Submodel submodel = null;
 
 	@PostConstruct
 	public void init() {
 
-		String resource = "serial-part-v3.0.0.json";
+		String resource = "part-type-information-v1.0.0.json";
 		// this is the path within the jar file
-		InputStream input = SerialPartV300.class.getResourceAsStream("/resources/" + resource);
+		InputStream input = PartTypeInformationV100.class.getResourceAsStream("/resources/" + resource);
 		if (input == null) {
 			// this is how we load file within editor (eg eclipse)
 			input = this.getClass().getClassLoader().getResourceAsStream(resource);
@@ -46,11 +46,12 @@ public class SerialPartV300 extends SubmodelExtension {
 
 		submodel = loadSubmodel(input);
 		
-		submodel.addProperties("tableName", "serialpart_v_300");
+		submodel.addProperties("tableName", "parttypeinformation_v_100");
 	}
 
 	@Override
 	public Submodel submodel() {
 		return submodel;
 	}
+
 }

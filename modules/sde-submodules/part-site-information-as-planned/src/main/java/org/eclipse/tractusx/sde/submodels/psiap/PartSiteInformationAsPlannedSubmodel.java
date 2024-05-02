@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -23,7 +23,6 @@ import java.io.InputStream;
 
 import org.eclipse.tractusx.sde.common.extensions.SubmodelExtension;
 import org.eclipse.tractusx.sde.common.model.Submodel;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import jakarta.annotation.PostConstruct;
@@ -31,11 +30,8 @@ import jakarta.annotation.PostConstruct;
 @Component
 public class PartSiteInformationAsPlannedSubmodel extends SubmodelExtension {
 
-private Submodel submodel = null;
-	
-	@Autowired
-	private PartSiteInformationAsPlannedExecutor partSiteInformationAsPlannedExecutor;
-	
+	private Submodel submodel = null;
+
 	@PostConstruct
 	public void init() {
 
@@ -49,11 +45,10 @@ private Submodel submodel = null;
 
 		submodel = loadSubmodel(input);
 
-		submodel.setExecutor(partSiteInformationAsPlannedExecutor);
-		
 		submodel.addProperties("tableName", "Part_site_information_as_planned");
+
 	}
-	
+
 	@Override
 	public Submodel submodel() {
 		return submodel;

@@ -8,13 +8,19 @@ This module use for SingleLevelUsageAsBuilt submodel specification and descripto
 #### Version: 1.0.1
 #### AssemblyPartRelationship Aspect Model URN: urn:bamm:io.catenax.single_level_usage_as_built:1.0.1#SingleLevelUsageAsBuilt
 #### Semantic Id: urn:bamm:io.catenax.single_level_usage_as_built:1.0.1
+
+#### Version: 3.0.0
+#### AssemblyPartRelationship Aspect Model URN: urn:bamm:io.catenax.single_level_usage_as_built:3.0.0#SingleLevelUsageAsBuilt
+#### Semantic Id: urn:bamm:io.catenax.single_level_usage_as_built:3.0.0
+
 ---
 
 ### Schema
 
 Please find below links for schema details:
 
-- [schema](src/main/resources/single-level-usage-as-built.json)
+- [single-level-usage-as-built-v1.0.1-schema](src/main/resources/single-level-usage-as-built-v1.0.1.json)
+- [single-level-usage-as-built-v3.0.0-schema](src/main/resources/single-level-usage-as-built-v3.0.0.json)
 
 
 ### SingleLevelUsageAsBuilt CSV file headers
@@ -24,24 +30,22 @@ Please find below links for schema details:
 | parent_uuid		                | Yes		             	    |    1     	|
 | parent_part_instance_id	     	| Yes		             	    |    2    	|
 | parent_manufacturer_part_id	    | Yes		             	    |    3    	|
-| parent_optional_identifier_key	| No			             	|    4    	|
-| parent_optional_identifier_value 	| No			             	|    5    	|
+| parent_optional_identifier_key		| No				             	|    4    	|
+| parent_optional_identifier_value 	| No				             	|    5    	|
 | uuid		                   		| Yes		             	    |    6     	|
 | part_instance_id			   		| Yes					      	|    7    	|
 | manufacturer_part_id 		      	| Yes                           | 	 8	  	|
 | optional_identifier_key	 		| No                           	|    9 	 	|
-| optional_identifier_value			| No                           	|    10 	|
+| optional_identifier_value			| No                           	|    10	 	|
 | quantity_number		 			| Yes                           |    11	 	|
 | measurement_unit 					| Yes                           |    12	 	|
-| created_on	 					| Yes                          	|    13	 	|
+| created_on	 						| Yes                          	|    13	 	|
 | last_modified_on	 				| No                           	|    14	 	|
 
 
 #### [CSV Sample File Link]
 
 #### Example for submodel SingleLevelUsageAsBuilt
-
-<br/><br/><img src="src/main/resources/images/singlelevelusageasbuilt.png" height="60%" width="80%"/><br/><br/>
 
 ### Work Flow 
 
@@ -51,11 +55,11 @@ Please find below links for schema details:
  - Lookup parent UUID and child UUID
  - DigitalTwins API's calls 
  - EDC API's calls
+ - BPN
  - DB Store
  
 ### External Services Call
 
  - DigitalTwins
  - EDC Connectors
- 
-[CSV Sample File Link]: src/main/resources/singleLevelUsageAsBuilt.csv
+ - BPN Discovery

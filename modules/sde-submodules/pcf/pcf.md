@@ -14,7 +14,7 @@ This module use for PCF submodel specification and descriptors. It's contain the
 
 Please find below links for schema details:
 
-- [schema](src/main/resources/pcf.json)
+- [schema](src/main/resources/pcf-v6.0.0.json)
 
 
 ### PCF CSV file headers
@@ -91,8 +91,6 @@ Please find below links for schema details:
 
 #### Example for submodel PCF
 
-<br/><br/><img src="src/main/resources/images/pcf.png" height="60%" width="80%"/><br/><br/>
-
 ### Work Flow 
 
  - CSV to POJO
@@ -110,4 +108,3 @@ Please find below links for schema details:
  - EDC Connectors
  - BPN Discovery
  
-[CSV Sample File Link]: src/main/resources/pcf.csv

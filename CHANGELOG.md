@@ -25,6 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Refactored/Updated PartSiteInformationAsPlanned maven module to support multi version.
 - Refactored/Updated SingleLevelUsageAsBuilt maven module to support multi version.
 - Refactored/Updated PCF maven module to support multi version.
+- Added new flyway files.
 
 
 ## [2.3.6] - 2024-03-06

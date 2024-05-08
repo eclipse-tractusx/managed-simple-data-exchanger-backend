@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.mapper.JsonObjectMapper;
+import org.eclipse.tractusx.sde.common.utils.LogUtil;
 import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedByIdResponse;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.eclipse.tractusx.sde.edc.util.EDCAssetUrlCacheService;
@@ -89,8 +90,8 @@ public class ProxyRequestInterface {
 			pcfRepositoryService.savePcfStatus(requestId, PCFRequestStatusEnum.REQUESTED);
 		} else {
 			sb.append(productId + ": Unable to request for PCF value becasue the EDR token status is null");
-			log.warn("EDC connector " + dataset.getConnectorOfferUrl() + ": {},{},{}", requestId, productId,
-					"Unable to request for PCF value becasue the EDR token status is null");
+			log.warn(LogUtil.encode("EDC connector " + dataset.getConnectorOfferUrl() + ":"+ requestId +","+ productId +
+					"Unable to request for PCF value becasue the EDR token status is null"));
 			pcfRepositoryService.savePcfStatus(requestId, PCFRequestStatusEnum.FAILED);
 		}
 	}

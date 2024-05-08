@@ -12,6 +12,7 @@ Currently SDE supports below submodels.
 #### [batch in Version 2.0.0]
 #### [assembly-part-relationship in Version 1.1.1]
 #### [partAsPlanned in Version 1.0.0]
+#### [PartTypeInformation in Version 1.0.0]
 #### [singleLevelBoMAsPlanned in Version 1.0.1]
 #### [partSiteInformationAsPlanned in Version 1.0.0]
 #### [SingleLevelUsageAsBuilt in Version 1.0.1]

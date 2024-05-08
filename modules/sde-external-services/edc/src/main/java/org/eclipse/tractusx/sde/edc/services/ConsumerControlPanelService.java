@@ -33,6 +33,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.tractusx.sde.bpndiscovery.handler.BpnDiscoveryProxyService;
 import org.eclipse.tractusx.sde.bpndiscovery.model.request.BpnDiscoverySearchRequest;
 import org.eclipse.tractusx.sde.bpndiscovery.model.request.BpnDiscoverySearchRequest.Search;
@@ -67,7 +68,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ConsumerControlPanelService {
 
-	private static final String NEGOTIATED = "NEGOTIATED";
 	private static final String STATUS = "status";
 
 	private final ContractNegotiateManagementHelper contractNegotiateManagement;
@@ -175,7 +175,7 @@ public class ConsumerControlPanelService {
 
 	public Map<String, Object> subcribeAndDownloadOffer(Offer offer, ActionRequest action,
 			boolean flagToDownloadImidiate, String downloadAs) {
-		
+
 		Map<String, Object> resultFields = new ConcurrentHashMap<>();
 		try {
 			var recipientURL = UtilityFunctions.removeLastSlashOfUrl(offer.getConnectorOfferUrl());
@@ -216,13 +216,8 @@ public class ConsumerControlPanelService {
 					+ " but intiate data transfer is not completed and no EDR token available, download is not possible");
 		}
 
-		String state = Optional.ofNullable(checkContractNegotiationStatus).filter(
-				verifyEDRRequestStatusLocal -> NEGOTIATED.equalsIgnoreCase(verifyEDRRequestStatusLocal.getEdrState()))
-				.map(EDRCachedResponse::getEdrState)
-				.orElseThrow(() -> new ServiceException(
-						"Time out!! to get 'NEGOTIATED' EDC EDR status to download data, the current status is '"
-								+ checkContractNegotiationStatus.getEdrState() + "'"));
-		log.info("The EDR token status :" + state);
+		if (Optional.ofNullable(checkContractNegotiationStatus).isEmpty())
+			throw new ServiceException("Time out!! to get 'EDC EDR status to download data");
 	}
 
 	@SneakyThrows
@@ -260,7 +255,7 @@ public class ConsumerControlPanelService {
 
 	@SneakyThrows
 	private Object downloadFile(EDRCachedResponse verifyEDRRequestStatus, String downloadDataAs) {
-		if (verifyEDRRequestStatus != null && NEGOTIATED.equalsIgnoreCase(verifyEDRRequestStatus.getEdrState())) {
+		if (verifyEDRRequestStatus != null) {
 			try {
 				EDRCachedByIdResponse authorizationToken = contractNegotiationService
 						.getAuthorizationTokenForDataDownload(verifyEDRRequestStatus.getTransferProcessId());
@@ -282,14 +277,11 @@ public class ConsumerControlPanelService {
 
 	public List<QueryDataOfferModel> getEDCPolicy(List<QueryDataOfferRequest> queryDataOfferModel) {
 
-		Map<String, List<String>> collect = queryDataOfferModel.stream()
-				.collect(Collectors.groupingBy(QueryDataOfferRequest::getConnectorOfferUrl,
-						Collectors.mapping(QueryDataOfferRequest::getAssetId, Collectors.toList())));
-		
-		return collect.entrySet().stream()
-				.map(entry -> lookUpDTTwin.getEDCOffer(entry.getValue(), entry.getKey()))
-				.flatMap(Collection::stream)
-				.toList();
+		Map<Pair<String, String>, List<QueryDataOfferRequest>> collect = queryDataOfferModel.stream()
+				.collect(Collectors.groupingBy(ele -> Pair.of(ele.getConnectorOfferUrl(), ele.getPublisher())));
+
+		return collect.entrySet().stream().map(entry -> lookUpDTTwin.getEDCOffer(entry.getValue(), entry.getKey()))
+				.flatMap(Collection::stream).toList();
 	}
 
 }

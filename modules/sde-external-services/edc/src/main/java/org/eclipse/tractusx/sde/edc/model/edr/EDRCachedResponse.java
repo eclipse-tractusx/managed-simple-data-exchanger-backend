@@ -57,11 +57,8 @@ public class EDRCachedResponse {
 
 	@JsonProperty(EDCAssetConstant.ASSET_PREFIX + "providerId")
 	private String providerId;
-
-	@JsonProperty("tx:edrState")
-	private String edrState;
-
-	@JsonProperty("tx:expirationDate")
-	private String expirationDate;
+	
+	@JsonProperty(EDCAssetConstant.ASSET_PREFIX + "contractNegotiationId")
+	private String contractNegotiationId;
 
 }

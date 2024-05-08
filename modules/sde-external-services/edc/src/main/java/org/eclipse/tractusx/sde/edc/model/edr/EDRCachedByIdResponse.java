@@ -43,16 +43,25 @@ public class EDRCachedByIdResponse {
 	@JsonProperty(EDCAssetConstant.ASSET_PREFIX + "type")
 	private String type;
 
-	@JsonProperty(EDCAssetConstant.ASSET_PREFIX + "authCode")
-	private String authCode;
+	@JsonProperty(EDCAssetConstant.ASSET_PREFIX + "authorization")
+	private String authorization;
 
 	@JsonProperty(EDCAssetConstant.ASSET_PREFIX + "endpoint")
 	private String endpoint;
 
-	@JsonProperty(EDCAssetConstant.ASSET_PREFIX + "id")
-	private String id;
+	@JsonProperty(EDCAssetConstant.TX_AUTH_PREFIX + "refreshEndpoint")
+	private String refreshEndpoint;
+	
+	@JsonProperty(EDCAssetConstant.TX_AUTH_PREFIX + "audience")
+	private String audience;
+	
+	@JsonProperty(EDCAssetConstant.TX_AUTH_PREFIX + "refreshToken")
+	private String refreshToken;
+	
+	@JsonProperty(EDCAssetConstant.TX_AUTH_PREFIX + "expiresIn")
+	private String expiresIn;
 
-	@JsonProperty(EDCAssetConstant.ASSET_PREFIX + "authKey")
-	private String authKey;
+	@JsonProperty(EDCAssetConstant.ASSET_PREFIX + "refreshAudience")
+	private String refreshAudience;
 
 }

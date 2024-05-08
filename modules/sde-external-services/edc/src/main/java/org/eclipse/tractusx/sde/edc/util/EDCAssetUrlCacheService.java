@@ -69,13 +69,9 @@ public class EDCAssetUrlCacheService {
 					bpnNumber, Map.of(), queryDataOfferModel.getConnectorOfferUrl(), action, offer);
 
 			if (eDRCachedResponse == null) {
-				throw new ServiceException("Time out!! to get 'NEGOTIATED' EDC EDR status to lookup '"
+				throw new ServiceException("Time out!! to get EDC EDR status to lookup '"
 						+ queryDataOfferModel.getConnectorOfferUrl() + ", " + queryDataOfferModel.getAssetId()
 						+ "', The current status is null");
-			} else if (!"NEGOTIATED".equalsIgnoreCase(eDRCachedResponse.getEdrState())) {
-				throw new ServiceException("Time out!! to get 'NEGOTIATED' EDC EDR status to lookup  for '"
-						+ queryDataOfferModel.getConnectorOfferUrl() + ", " + queryDataOfferModel.getAssetId()
-						+ "', The current status is '" + eDRCachedResponse.getEdrState() + "'");
 			} else
 				return contractNegotiationService
 						.getAuthorizationTokenForDataDownload(eDRCachedResponse.getTransferProcessId());

@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(value = "IPartnerPoolExternalServiceApi", url = "${partner.pool.hostname}" , configuration = PartnerPoolExternalServiceApiConfiguration.class)
 public interface IPartnerPoolExternalServiceApi {
     
-	@GetMapping(path = "/api/catena/legal-entities")
+	@GetMapping(path = "/legal-entities")
     LegalEntityData fetchLegalEntityData(@RequestParam String legalName, @RequestParam Integer page, @RequestParam Integer size);
 
 }

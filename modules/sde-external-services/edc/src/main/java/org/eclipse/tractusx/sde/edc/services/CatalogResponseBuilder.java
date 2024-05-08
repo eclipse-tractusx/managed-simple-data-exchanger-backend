@@ -44,7 +44,7 @@ public class CatalogResponseBuilder extends AbstractEDCStepsHelper {
 	private final ContractOfferCatalogApi contractOfferCatalogApiProxy;
 	private final ContractOfferRequestFactory contractOfferRequestFactory;
 
-	public List<QueryDataOfferModel> queryOnDataOffers(String providerUrl, Integer offset, Integer limit,
+	public List<QueryDataOfferModel> queryOnDataOffers(String providerUrl, String counterPartyId, Integer offset, Integer limit,
 			String filterExpression) {
 
 		providerUrl = UtilityFunctions.removeLastSlashOfUrl(providerUrl);
@@ -57,7 +57,7 @@ public class CatalogResponseBuilder extends AbstractEDCStepsHelper {
 		List<QueryDataOfferModel> queryOfferResponse = new ArrayList<>();
 
 		JsonNode contractOfferCatalog = contractOfferCatalogApiProxy.getContractOffersCatalog(
-				contractOfferRequestFactory.getContractOfferRequest(sproviderUrl, limit, offset, filterExpression));
+				contractOfferRequestFactory.getContractOfferRequest(sproviderUrl, counterPartyId, limit, offset, filterExpression));
 
 		JsonNode jOffer = contractOfferCatalog.get("dcat:dataset");
 		if (jOffer.isArray()) {
@@ -76,7 +76,7 @@ public class CatalogResponseBuilder extends AbstractEDCStepsHelper {
 
 		JsonNode policy = offer.get("odrl:hasPolicy");
 
-		String edcstr = "edc:";
+		String edcstr = EDCAssetConstant.ASSET_PREFIX;
 
 		QueryDataOfferModel build = QueryDataOfferModel.builder()
 				.assetId(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_ID))
@@ -90,7 +90,7 @@ public class CatalogResponseBuilder extends AbstractEDCStepsHelper {
 				.version(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_VERSION))
 				.fileName(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_FILENAME))
 				.fileContentType(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_CONTENTTYPE))
-				.connectorId(getFieldFromJsonNode(contractOfferCatalog, "edc:participantId")).build();
+				.connectorId(getFieldFromJsonNode(contractOfferCatalog, edcstr+"participantId")).build();
 
 		checkAndSetPolicyPermission(build, policy);
 

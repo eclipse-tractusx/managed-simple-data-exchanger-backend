@@ -26,7 +26,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.mapper.JsonObjectMapper;
-import org.eclipse.tractusx.sde.common.utils.LogUtil;
 import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedByIdResponse;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.eclipse.tractusx.sde.edc.util.EDCAssetUrlCacheService;
@@ -80,7 +79,7 @@ public class ProxyRequestInterface {
 				pcfpushEnpoint = new URI(edrToken.getEndpoint());
 
 			Map<String, String> header = new HashMap<>();
-			header.put(edrToken.getAuthKey(), edrToken.getAuthCode());
+			header.put("authorization", edrToken.getAuthorization());
 
 			// Send request to data provider for PCF value push
 			pcfExchangeProxy.getPcfByProduct(pcfpushEnpoint, header, manufacturerId,
@@ -90,8 +89,8 @@ public class ProxyRequestInterface {
 			pcfRepositoryService.savePcfStatus(requestId, PCFRequestStatusEnum.REQUESTED);
 		} else {
 			sb.append(productId + ": Unable to request for PCF value becasue the EDR token status is null");
-			log.warn(LogUtil.encode("EDC connector " + dataset.getConnectorOfferUrl() + ":"+ requestId +","+ productId +
-					"Unable to request for PCF value becasue the EDR token status is null"));
+			log.warn("EDC connector " + dataset.getConnectorOfferUrl() + ": {},{},{}", requestId, productId,
+					"Unable to request for PCF value becasue the EDR token status is null");
 			pcfRepositoryService.savePcfStatus(requestId, PCFRequestStatusEnum.FAILED);
 		}
 	}
@@ -136,7 +135,7 @@ public class ProxyRequestInterface {
 						edrToken.getEndpoint() + SLASH_DELIMETER + PRODUCT_IDS + SLASH_DELIMETER + productId);
 
 				Map<String, String> header = new HashMap<>();
-				header.put(edrToken.getAuthKey(), edrToken.getAuthCode());
+				header.put("authorization", edrToken.getAuthorization());
 
 				pcfExchangeProxy.uploadPcfSubmodel(pcfpushEnpoint, header, bpnNumber, requestId, message,
 						jsonObjectMapper.gsonObjectToJsonNode(calculatedPCFValue));

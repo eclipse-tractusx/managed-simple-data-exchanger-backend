@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2024 T-Systems International GmbH
- * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2023 T-Systems International GmbH
+ * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -47,46 +47,46 @@ public interface DigitalTwinsFeignClient {
 	@PostMapping
 	KeycloakJWTTokenResponse readAuthToken(URI url, @RequestBody MultiValueMap<String, Object> body);
 
-	@PostMapping(path = "${digital-twins.registry.uri:/api/v3.0}/shell-descriptors")
+	@PostMapping(path = "${digital-twins.registry.uri:/api/v3}/shell-descriptors")
 	ResponseEntity<ShellDescriptorResponse> createShellDescriptor(@RequestBody ShellDescriptorRequest request);
 
-	@GetMapping(path = "${digital-twins.registry.uri:/api/v3.0}/shell-descriptors/{aasIdentifier}")
+	@GetMapping(path = "${digital-twins.registry.uri:/api/v3}/shell-descriptors/{aasIdentifier}")
 	ResponseEntity<ShellDescriptorResponse> getShellDescriptorByShellId(@PathVariable("aasIdentifier") String shellId,
 			@RequestHeader("Edc-Bpn") String edcBpn);
 
-	@PutMapping(path = "${digital-twins.registry.uri:/api/v3.0}/shell-descriptors/{aasIdentifier}")
+	@PutMapping(path = "${digital-twins.registry.uri:/api/v3}/shell-descriptors/{aasIdentifier}")
 	ResponseEntity<Void> updateShellDescriptorByShellId(@PathVariable("aasIdentifier") String shellId,
 			@RequestHeader("Edc-Bpn") String edcBpn, @RequestBody ShellDescriptorRequest request);
 
-	@DeleteMapping(path = "${digital-twins.registry.uri:/api/v3.0}/shell-descriptors/{aasIdentifier}")
+	@DeleteMapping(path = "${digital-twins.registry.uri:/api/v3}/shell-descriptors/{aasIdentifier}")
 	ResponseEntity<Void> deleteShell(@PathVariable("assetIds") String shellId);
 
-	@PostMapping(path = "${digital-twins.registry.uri:/api/v3.0}/shell-descriptors/{aasIdentifier}/submodel-descriptors")
+	@PostMapping(path = "${digital-twins.registry.uri:/api/v3}/shell-descriptors/{aasIdentifier}/submodel-descriptors")
 	ResponseEntity<String> createSubModel(@PathVariable("aasIdentifier") String shellId,
 			@RequestBody CreateSubModelRequest request, @RequestHeader("Edc-Bpn") String edcBpn);
 	
-	@PutMapping(path = "${digital-twins.registry.uri:/api/v3.0}/shell-descriptors/{aasIdentifier}/submodel-descriptors/{submodelIdentifier}")
+	@PutMapping(path = "${digital-twins.registry.uri:/api/v3}/shell-descriptors/{aasIdentifier}/submodel-descriptors/{submodelIdentifier}")
 	ResponseEntity<String> updateSubModel(@PathVariable("aasIdentifier") String shellId,
 			@PathVariable("submodelIdentifier") String submodelIdentifier, @RequestBody CreateSubModelRequest request,
 			@RequestHeader("Edc-Bpn") String edcBpn);
 
-	@GetMapping(path = "${digital-twins.registry.uri:/api/v3.0}/shell-descriptors/{aasIdentifier}/submodel-descriptors")
+	@GetMapping(path = "${digital-twins.registry.uri:/api/v3}/shell-descriptors/{aasIdentifier}/submodel-descriptors")
 	ResponseEntity<SubModelListResponse> getSubModels(@PathVariable("aasIdentifier") String shellId,
 			@RequestHeader("Edc-Bpn") String edcBpn);
 
-	@DeleteMapping(path = "${digital-twins.registry.uri:/api/v3.0}/shell-descriptors/{aasIdentifier}/submodel-descriptors/{submodelIdentifier}")
+	@DeleteMapping(path = "${digital-twins.registry.uri:/api/v3}/shell-descriptors/{aasIdentifier}/submodel-descriptors/{submodelIdentifier}")
 	ResponseEntity<Object> deleteSubmodelfromShellById(@PathVariable("aasIdentifier") String shellId,
 			@PathVariable("submodelIdentifier") String submodelIdentifier);
 
-	@GetMapping(path = "${digital-twins.registry.lookup.uri:/api/v3.0}/lookup/shells")
+	@GetMapping(path = "${digital-twins.registry.lookup.uri:/api/v3}/lookup/shells")
 	ResponseEntity<ShellLookupResponse> shellLookup(@RequestParam("assetIds") List<String> assetIds,
 			@RequestHeader("Edc-Bpn") String edcBpn);
 	
-	@PostMapping(path = "${digital-twins.registry.lookup.uri:/api/v3.0}/lookup/shells/{shellId}")
+	@PostMapping(path = "${digital-twins.registry.lookup.uri:/api/v3}/lookup/shells/{shellId}")
 	ResponseEntity<List<Object>> createShellSpecificAttributes(@PathVariable("shellId") String shellId,
 			@RequestHeader("Edc-Bpn") String edcBpn, @RequestBody List<Object> specificAssetIds);
 
-	@DeleteMapping(path = "${digital-twins.registry.lookup.uri:/api/v3.0}/lookup/shells/{shellId}")
+	@DeleteMapping(path = "${digital-twins.registry.lookup.uri:/api/v3}/lookup/shells/{shellId}")
 	ResponseEntity<Object> deleteShellSpecificAttributes(@PathVariable("assetIds") String shellId,
 			@RequestHeader("Edc-Bpn") String edcBpn);
 

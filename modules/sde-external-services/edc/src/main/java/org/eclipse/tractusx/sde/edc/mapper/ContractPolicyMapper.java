@@ -22,6 +22,7 @@ package org.eclipse.tractusx.sde.edc.mapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ActionRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PermissionRequest;
@@ -45,8 +46,8 @@ public abstract class ContractPolicyMapper {
 		if (!permissions.isEmpty())
 			permissionObj = permissions.get(0);
 		
-		return PolicyRequest.builder().type("odrl:Set")
-				.target(assetId)
+		return PolicyRequest.builder().type("http://www.w3.org/ns/odrl/2/Offer")
+				.target(Map.of("@id",assetId))
 				.permissions(permissionObj)
 				.prohibitions(new ArrayList<>())
 				.obligations(new ArrayList<>()).build();

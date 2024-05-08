@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2023 T-Systems International GmbH
- * Copyright (c) 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2024 T-Systems International GmbH
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -23,6 +23,7 @@ import static org.springframework.http.ResponseEntity.ok;
 
 import java.util.Map;
 
+import org.eclipse.tractusx.sde.common.utils.LogUtil;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
 import org.eclipse.tractusx.sde.pcfexchange.enums.PCFRequestStatusEnum;
 import org.eclipse.tractusx.sde.pcfexchange.enums.PCFTypeEnum;
@@ -58,7 +59,7 @@ public class PcfExchangeController {
 	@PreAuthorize("hasPermission('','request_for_pcf_value')")
 	public ResponseEntity<Object> requestForPcfDataOffer(@PathVariable String productId,
 			@Valid @RequestBody ConsumerRequest consumerRequest) throws Exception {
-		log.info("Request received for POST: /api/pcf/request/{}", productId);
+		log.info(LogUtil.encode("Request received for POST: /api/pcf/request/" + productId));
 		return ok().body(Map.of("msg", pcfExchangeService.requestForPcfDataExistingOffer(productId, consumerRequest)));
 	}
 	
@@ -66,7 +67,7 @@ public class PcfExchangeController {
 	@PreAuthorize("hasPermission('','request_for_pcf_value')")
 	public ResponseEntity<Object> requestForPcfNotExistDataOffer(@Valid @RequestBody PcfRequestModel pcfRequestModel)
 			throws Exception {
-		log.info("Request received for POST: /api/pcf/nonexistdataoffer/{}", pcfRequestModel.getProductId());
+		log.info(LogUtil.encode("Request received for POST: /api/pcf/nonexistdataoffer/" + pcfRequestModel.getProductId()));
 		return ok().body(Map.of("msg",
 				pcfExchangeService.requestForPcfNotExistDataOffer(pcfRequestModel)));
 	}
@@ -74,7 +75,7 @@ public class PcfExchangeController {
 	@GetMapping(value = "/request/{requestId}")
 	@PreAuthorize("hasPermission('','request_for_pcf_value')")
 	public ResponseEntity<Object> viewForPcfDataOffer(@PathVariable String requestId) throws Exception {
-		log.info("Request received for GET: /request/{}", requestId);
+		log.info(LogUtil.encode("Request received for GET: /request/" + requestId));
 		return ok().body(pcfExchangeService.viewForPcfDataOffer(requestId));
 	}
 
@@ -109,7 +110,7 @@ public class PcfExchangeController {
 			@RequestParam(value = "BPN", required = true) String bpnNumber,
 			@RequestParam(value = "requestId", required = true) String requestId, @RequestParam String message)
 			throws Exception {
-		log.info("Request received for GET: /api/pcf/productIds/{}", productId);
+		log.info(LogUtil.encode("Request received for GET: /api/pcf/productIds/" + productId));
 		pcfExchangeService.savePcfRequestData(requestId, productId, bpnNumber, message);
 		return ResponseEntity.accepted().body(Map.of("msg", "PCF request accepted"));
 	}
@@ -119,7 +120,7 @@ public class PcfExchangeController {
 			@RequestParam(value = "BPN", required = true) String bpnNumber,
 			@RequestParam(value = "requestId", required = false) String requestId,
 			@RequestParam(value = "message", required = false) String message, @RequestBody JsonNode pcfData) {
-		log.info("Request received for PUT: /api/pcf/productIds/{}", productId);
+		log.info(LogUtil.encode("Request received for PUT: /api/pcf/productIds/" + productId));
 
 		pcfExchangeService.recievedPCFData(productId, bpnNumber, requestId, message, pcfData);
 		return ResponseEntity.ok().body(Map.of("msg", "PCF response recieved"));

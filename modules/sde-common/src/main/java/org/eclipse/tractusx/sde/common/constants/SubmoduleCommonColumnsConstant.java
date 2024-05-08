@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2024T-Systems International GmbH
+ * Copyright (c) 2024 T-Systems International GmbH
  * Copyright (c) 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional

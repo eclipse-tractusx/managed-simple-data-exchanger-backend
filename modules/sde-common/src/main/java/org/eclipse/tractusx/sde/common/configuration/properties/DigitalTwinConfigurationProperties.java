@@ -1,6 +1,6 @@
 /********************************************************************************
- #* Copyright (c) 2022, 2023 T-Systems International GmbH
- #* Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ #* Copyright (c) 2024 T-Systems International GmbH
+ #* Copyright (c) 2024 Contributors to the Eclipse Foundation
  #*
  #* See the NOTICE file(s) distributed with this work for additional
  #* information regarding copyright ownership.
@@ -20,14 +20,10 @@
 
 package org.eclipse.tractusx.sde.common.configuration.properties;
 
-import java.net.URI;
-
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import lombok.Data;
-import lombok.SneakyThrows;
 
 @Configuration
 @Data

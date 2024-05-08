@@ -3,7 +3,7 @@
 		{
 			"operandLeft": "https://w3id.org/edc/v0.0.1/ns/type",
 			"operator": "=",
-			"operandRight": "${type}"
+			"operandRight": "data.core.digitalTwinRegistry"
 		}
 	]
 }

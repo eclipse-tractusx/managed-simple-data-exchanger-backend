@@ -1,7 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2023 BMW GmbH
- * Copyright (c) 2023 T-Systems International GmbH
- * Copyright (c) 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2024 T-Systems International GmbH
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -29,6 +28,7 @@ import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
 import org.eclipse.tractusx.sde.common.exception.ValidationException;
 import org.eclipse.tractusx.sde.common.model.PagingResponse;
+import org.eclipse.tractusx.sde.common.utils.LogUtil;
 import org.eclipse.tractusx.sde.core.policy.entity.PolicyEntity;
 import org.eclipse.tractusx.sde.core.policy.entity.PolicyMapper;
 import org.eclipse.tractusx.sde.core.policy.repository.PolicyRepository;
@@ -69,7 +69,7 @@ public class PolicyService {
 			request.setLastUpdatedTime(LocalDateTime.now());
 			request.setUuid(uuid);
 			repository.save(policy);
-			log.info("'" + request.getPolicyName() + "' policy saved in the database successfully");
+			log.info(LogUtil.encode("'" + request.getPolicyName() + "' policy saved in the database successfully"));
 			return request;
 		} else
 			throw new ValidationException(

@@ -62,12 +62,15 @@ Listed below are configuration keys needed to get the `sde-backend` up and runni
 | digital-twins.authentication.clientSecret            | X         | your secrete                                | Digital twin registry secrete      |
 | digital-twins.authentication.grantType               | X         | client_credentials                          | Default value, no need to change   |
 | edc.hostname                                         | X         | https://example.provider-connector.com      | Your EDC provider connector url    |
+| edc.managementpath                                   | X         | default                                     | edc provider management path       |
 | edc.apiKeyHeader                                     | X         | x-api-key                                   | Your connector api key             |
 | edc.apiKey                                           | X         | yourpass                                    | Your connector apikey value        |
 | edc.consumer.hostname                                | X         | https://example.consumer-connector.com      | Your EDC consumer connector        |
 | edc.consumer.apikeyheader                            | X         | x-api-key                                   | Your connector api key             |
 | edc.consumer.apikey                                  | X         | yourpass                                    | Your connector apikey value        |
 | edc.consumer.datauri                                 | X         | /api/v1/ids/data                            | IDS endpoint path                  |
+| edc.consumer.protocol.path                           | X         | default                                     | edc consumer protocol path         |
+| edc.consumer.managementpath                          | X         | default                                     | edc consumer management path       |
 | dft.hostname                                         | X         | https://example.sdehost.com                 | Your SDE hostname                  |
 | dft.apiKeyHeader                                     | X         | API_KEY                                     | Your default key                   |
 | dft.apiKey                                           | X         | yourpass                                    | Your default key password          |
@@ -77,7 +80,22 @@ Listed below are configuration keys needed to get the `sde-backend` up and runni
 | connector.discovery.clientId                         | X         | default                                     | client ID for connector discovery  |
 | connector.discovery.clientSecret                     | X         | default                                     | password for connector discovery   |
 | portal.backend.hostname                              | X         | default                                     | Portal backend svc URL based on BPN|
-| springdoc.api-docs.path                              | X         | /api-docs                                   | swagger API path                   |
+| springdoc.api-docs.path                              | X         | default                                     | swagger API path                   |
+| bpndiscovery.hostname                                | X         | default                                     | bpn discovery hostname             |
+| discovery.authentication.url                         | X         | default                                     | discovery authentication url       |
+| discovery.clientId                                   | X         | default                                     | discovery clientId                 |
+| discovery.clientSecret                               | X         | default                                     | discovery clientSecret             |
+| discovery.grantType                                  | X         | default                                     | discovery grantType                |
+| partner.pool.hostname                                | X         | default                                     | partner pool hostname              |
+| partner.pool.authentication.url                      | X         | default                                     | partner pool authentication url   |
+| partner.pool.clientId                                | X         | default                                     | partner pool clientId              |
+| partner.pool.clientSecret                            | X         | default                                     | partner pool clientSecret          |
+| partner.pool.grantType                               | X         | default                                     | partner pool grantType             |
+| portal.backend.hostname                              | X         | default                                     | portal backend hostname            |
+| portal.backend.authentication.url                    | X         | default                                     | portal authentication url          |
+| portal.backend.clientId                              | X         | default                                     | portal clientId                    |
+| portal.backend.clientSecret                          | X         | default                                     | portal clientSecret                |
+| portal.backend.grantType                             | X         | default                                     | portal grantType                   |
 
 #### Example Configuration/application.properties
 
@@ -152,6 +170,24 @@ connector.discovery.clientId=default
 connector.discovery.clientSecret=default
 portal.backend.hostname=default
 springdoc.api-docs.path=/api-docs
+bpndiscovery.hostname=default
+discovery.authentication.url=default
+discovery.clientId=default
+discovery.clientSecret=default
+discovery.grantType=default
+edc.consumer.protocol.path=default
+edc.consumer.managementpath=default
+edc.managementpath=default
+partner.pool.hostname=default
+partner.pool.authentication.url=default
+partner.pool.clientId=default
+partner.pool.clientSecret=default
+partner.pool.grantType=default
+portal.backend.hostname=default
+portal.backend.authentication.url=default
+portal.backend.clientId=default
+portal.backend.clientSecret=default
+portal.backend.grantType=default
 bpndiscovery.hostname=default
 discovery.authentication.url=default
 discovery.clientId=default
@@ -253,6 +289,12 @@ To find information about supported submodules and there version in SDE please v
 | **GET:- localhost:8080/api/legal-entities** |This API is used to fetch legal entities (list of company's) for Process| Refer Api Doc |Refer Api Doc|
 | **POST:- localhost:8080/api/connectors-discovery** |This API is used to fetch connectors information | Refer Api Doc |Refer Api Doc|
 
+## Detailed API specs available under:
+
+- [SDE-OPEN-API](src/main/resources/sde-open-api.yml)
+
+## Backend API Swagger-ui : 
+https://<host-url>/backend/api/swagger-ui/index.html
 
 ---
 #### **Response Status**
@@ -312,29 +354,17 @@ Authentication for the backend is handled via an API Key. This can be set in the
 ### EDC
 GitHub repository with correct version of the Eclipse DataSpace Connector Project: [repository](https://github.com/eclipse-tractusx/tractusx-edc).
 
-### Licenses
+## Licenses
 For used licenses, please see the [NOTICE](https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/blob/main/NOTICE.md).
+
+## Eclipse Dash Tool
+
+The Eclipse Dash tool is used to analyze the dependencies used in the project and ensure all legal requirements are met. We're using the official maven plugin to resolve all project dependencies and then run the tool and update the summary in the DEPENDENCIES file.
 
 ## Notice for Docker image
 
-This application provides container images for demonstration purposes.
+Bellow you can find the information regarding Docker Notice for this application.
 
-DockerHub: https://hub.docker.com/r/tractusx/managed-simple-data-exchanger-backend
+  - [Managed-simple-data-exchanger](DOCKER_NOTICE.md)
 
-Eclipse Tractus-X product(s) installed within the image:
-
-- GitHub: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend
-- Project home: https://projects.eclipse.org/projects/automotive.tractusx
-- Dockerfile: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/blob/main/build/Dockerfile
-- Project license: [Apache License, Version 2.0] https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/blob/main/LICENSE
-
-**Used base image**
-- [eclipse-temurin:19-jdk-jammy](https://github.com/adoptium/containers)
-- Official Eclipse Temurin DockerHub page: https://hub.docker.com/_/eclipse-temurin  
-- Eclipse Temurin Project: https://projects.eclipse.org/projects/adoptium.temurin  
-- Additional information about the Eclipse Temurin images: https://github.com/docker-library/repo-info/tree/master/repos/eclipse-temurin
-
-As with all Docker images, these likely also contain other software which may be under other licenses (such as Bash, etc from the base distribution, along with any direct or indirect dependencies of the primary software being contained).
-
-As for any pre-built image usage, it is the image user's responsibility to ensure that any use of this image complies with any relevant licenses for all software contained within.
 

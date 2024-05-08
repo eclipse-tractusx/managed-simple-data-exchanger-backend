@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -47,7 +47,6 @@ import org.eclipse.tractusx.sde.core.submodel.executor.GenericSubmodelExecutor;
 import org.eclipse.tractusx.sde.core.submodel.executor.step.DatabaseUsecaseHandler;
 import org.eclipse.tractusx.sde.core.utils.SubmoduleUtility;
 import org.eclipse.tractusx.sde.pcfexchange.service.impl.AsyncPushPCFDataForApproveRequest;
-import org.eclipse.tractusx.sde.retrieverl.service.PolicyProvider;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -85,13 +84,12 @@ public class SubmodelOrchestartorService {
 
 	private final PolicyMapper policyMapper;
 
-	private final PolicyProvider policyProvider;
-
 	private final AsyncPushPCFDataForApproveRequest asyncPushPCFDataForApproveRequest;
 
 	private final SubmoduleUtility submoduleUtility;
 
 	private final GenericSubmodelExecutor genericSubmodelExecutor;
+	
 	private final DatabaseUsecaseHandler databaseUsecaseHandler;
 
 	ObjectMapper mapper = new ObjectMapper();
@@ -110,20 +108,6 @@ public class SubmodelOrchestartorService {
 		PolicyModel submodelPolicyRequest = onFlyPolicyManagement(policyTemplateRequest);
 
 		processCsv(submodelPolicyRequest, processId, submodelSchemaObject, csvContent);
-
-	}
-
-	public void processSubmodelAutomationCsvThroughAPI(String originalFileName, String processId) {
-
-		CsvContent csvContent = csvHandlerService.processFile(processId);
-
-		List<String> columns = csvContent.getColumns();
-
-		Submodel foundSubmodelSchemaObject = findSubmodel(columns);
-
-		PolicyModel matchingPolicyBasedOnFileName = policyProvider.getMatchingPolicyBasedOnFileName(originalFileName);
-
-		processCsv(matchingPolicyBasedOnFileName, processId, foundSubmodelSchemaObject, csvContent);
 
 	}
 
@@ -357,5 +341,4 @@ public class SubmodelOrchestartorService {
 		}
 		return foundSubmodelSchemaObject;
 	}
-
 }

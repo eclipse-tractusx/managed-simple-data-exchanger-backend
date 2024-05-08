@@ -28,7 +28,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.1.5</version>
+		<version>3.1.6</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
@@ -40,9 +40,7 @@
 	<description>SDE for CatenaX</description>
 
 	<properties>
-		<java.version>18</java.version>
-		<maven.compiler.source>18</maven.compiler.source>
-        <maven.compiler.target>18</maven.compiler.target>
+		<java.version>17</java.version>
 		<log4j2.version>2.17.1</log4j2.version>
 		<spring-cloud.version>2022.0.3</spring-cloud.version>
 		<org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
@@ -55,14 +53,12 @@
 		<module>modules/sde-external-services/digital-twins</module>
 		<module>modules/sde-external-services/portal</module>
 		<module>modules/sde-external-services/bpn-discovery</module>
-		<module>modules/sde-external-services/sde-agent</module>
-		<module>modules/sde-external-services/sde-notification</module>
 		<module>modules/sde-external-services/policy-hub</module>
 
 		<module>modules/sde-common</module>
 		<module>modules/sde-core</module>
 		<module>modules/pcf-exchange</module>
-		
+
 		<module>modules/sde-submodules/serial-part</module>
 		<module>modules/sde-submodules/batch</module>
 		<module>modules/sde-submodules/single-level-bom-as-built</module>
@@ -72,6 +68,7 @@
 		<module>modules/sde-submodules/part-site-information-as-planned</module>
 		<module>modules/sde-submodules/single-level-usage-as-built</module>
 		<module>modules/sde-submodules/pcf</module>
+
 	</modules>
 
 	<dependencies>
@@ -98,9 +95,28 @@
 					<groupId>logback-classic</groupId>
 					<artifactId>slf4j-log4j12</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>ch.qos.logback</groupId>
+					<artifactId>logback-classic</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
-
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.4.14</version>
+			<exclusions>
+				<exclusion>
+					<groupId>ch.qos.logback</groupId>
+					<artifactId>logback-core</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-core</artifactId>
+			<version>1.4.14</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-openfeign</artifactId>
@@ -113,7 +129,16 @@
 					<groupId>commons-fileupload</groupId>
 					<artifactId>commons-fileupload</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>org.bouncycastle</groupId>
+					<artifactId>bcpkix-jdk15on</artifactId>
+				</exclusion>
 			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk18on</artifactId>
+			<version>1.77</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -132,7 +157,7 @@
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-core</artifactId>
-			<version>6.1.2</version>
+			<version>6.2.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -153,7 +178,7 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>compile</scope>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -178,13 +203,6 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
-			<dependency>
-				<groupId>org.testcontainers</groupId>
-				<artifactId>testcontainers-bom</artifactId>
-				<version>1.19.0</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -192,34 +210,45 @@
 		<pluginManagement>
 			<plugins>
 				<plugin>
+					<groupId>org.eclipse.dash</groupId>
+					<artifactId>license-tool-plugin</artifactId>
+					<version>1.0.3-SNAPSHOT</version>
+					<configuration>
+						<projectId>automotive.tractusx</projectId>
+						<!-- name of dependencies file -->
+						<summary>DEPENDENCIES</summary>
+						<!-- include test dependencies -->
+						<includeScope>test</includeScope>
+					</configuration>
+					<executions>
+						<execution>
+							<id>license-check</id>
+							<goals>
+								<goal>license-check</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
 				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<configuration>
-						<annotationProcessorPaths>
-							<path>
-								<groupId>org.projectlombok</groupId>
-								<artifactId>lombok</artifactId>
-								<version>${lombok.version}</version>
-							</path>
-							<path>
-								<groupId>org.mapstruct</groupId>
-								<artifactId>mapstruct-processor</artifactId>
-								<version>${org.mapstruct.processor.version}</version>
-							</path>
-						</annotationProcessorPaths>
-						<compilerArgs>
-							<compilerArg>
-								-Amapstruct.unmappedTargetPolicy=IGNORE
-							</compilerArg>
-						</compilerArgs>
-					</configuration>
-				</plugin>
 			</plugins>
 		</pluginManagement>
+    <resources>
+			<resource>
+				<directory>${project.basedir}/src/main/resources</directory>
+			</resource>
+			<resource>
+				<directory>${project.basedir}</directory>
+				<includes>
+					<include>LICENSE</include>
+					<include>NOTICE.md</include>
+					<include>DEPENDENCIES</include>
+				</includes>
+				<targetPath>META-INF/</targetPath>
+			</resource>
+		</resources>
 	</build>
 	<repositories>
 		<repository>
@@ -239,4 +268,13 @@
 			</snapshots>
 		</repository>
 	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>dash-licenses-snapshots</id>
+			<url>https://repo.eclipse.org/content/repositories/dash-licenses/</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
 </project>

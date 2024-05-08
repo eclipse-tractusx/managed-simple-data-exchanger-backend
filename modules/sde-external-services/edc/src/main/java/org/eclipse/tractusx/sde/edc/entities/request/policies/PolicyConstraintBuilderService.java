@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -42,40 +42,6 @@ public class PolicyConstraintBuilderService {
 	private final PolicyRequestFactory policyRequestFactory;
 
 	private final JsonObjectMapper jsonobjectMapper;
-
-	// private final IPolicyHubProxyService policyHubProxyService;
-
-//	public JsonNode getAccessPoliciesConstraints(PolicyModel policy) {
-//		return policyHubProxyService.getPolicyContent(
-//				mapPolicy(PolicyTypeIdEnum.ACCESS, ConstraintOperandIdEnum.OR, policy.getAccessPolicies()));
-//	}
-//
-//	public JsonNode getUsagePoliciesConstraints(PolicyModel policy) {
-//		return policyHubProxyService.getPolicyContent(
-//				mapPolicy(PolicyTypeIdEnum.USAGE, ConstraintOperandIdEnum.AND, policy.getUsagePolicies()));
-//	}
-
-//	private PolicyContentRequest mapPolicy(PolicyTypeIdEnum policyType, ConstraintOperandIdEnum constraintOperandId,
-//			List<Policies> policies) {
-//
-//		List<Constraint> constraintsList = new ArrayList<>();
-//		policies.forEach(policy -> {
-//			List<String> valueList = policy.getValue();
-//			OperatorIdEnum operator = OperatorIdEnum.EQUALS;
-//
-//			if (valueList.size() > 1) {
-//				operator = OperatorIdEnum.IN;
-//			}
-//
-//			for (String value : valueList) {
-//				constraintsList.add(
-//						Constraint.builder().key(policy.getTechnicalKey()).operator(operator).value(value).build());
-//			}
-//		});
-//
-//		return PolicyContentRequest.builder().policyType(policyType).constraintOperand(constraintOperandId)
-//				.constraints(constraintsList).build();
-//	}
 
 	public JsonNode getAccessPolicy(String assetId, PolicyModel policy) {
 		return jsonobjectMapper.objectToJsonNode(policyRequestFactory.getPolicy(assetId,

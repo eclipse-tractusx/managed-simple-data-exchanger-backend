@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2023 T-Systems International GmbH
- * Copyright (c) 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2024 T-Systems International GmbH
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -396,7 +396,8 @@ public class ConsumerService {
 				zippedOut.putNextEntry(e);
 				// There is no need for staging the CSV on filesystem or reading bytes into
 				// memory. Directly write bytes to the output stream.
-				CSVWriter writer = new CSVWriter(new OutputStreamWriter(zippedOut), ';', ICSVWriter.NO_QUOTE_CHARACTER,
+				CSVWriter writer = new CSVWriter(new OutputStreamWriter(zippedOut),
+						';', ICSVWriter.NO_QUOTE_CHARACTER,
 						'/', ICSVWriter.DEFAULT_LINE_END);
 
 				List<Object> valueList = (ArrayList<Object>) value;

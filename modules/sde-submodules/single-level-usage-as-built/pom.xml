@@ -50,11 +50,7 @@
 			<artifactId>digital-twins</artifactId>
 			<version>0.0.1</version>
 		</dependency>
-		<dependency>
-			<groupId>org.eclipse.tractusx</groupId>
-			<artifactId>serial-part</artifactId>
-			<version>0.0.1</version>
-		</dependency>
+
 	</dependencies>
 	<build>
 		<plugins>

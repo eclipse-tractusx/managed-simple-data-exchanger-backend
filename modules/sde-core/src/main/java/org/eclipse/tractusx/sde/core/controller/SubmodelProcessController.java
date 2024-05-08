@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -59,19 +59,6 @@ public class SubmodelProcessController {
 
 	private final PolicyTemplateObjectMapper mapper;
 
-	@PostMapping(value = "/upload")
-	@PreAuthorize("hasPermission(#submodel,'provider_create_contract_offer@provider_update_contract_offer')")
-	public ResponseEntity<Object> autoUpload(@RequestParam("file") MultipartFile file) {
-
-		String originalFileName = file.getOriginalFilename();
-
-		String processId = csvHandlerService.storeFile(file);
-
-		submodelOrchestartorService.processSubmodelAutomationCsvThroughAPI(originalFileName, processId);
-		
-		return prepareAndReturnResponse(processId);
-	}
-
 	@PostMapping(value = "/{submodel}/upload")
 	@PreAuthorize("hasPermission(#submodel,'provider_create_contract_offer@provider_update_contract_offer')")
 	public ResponseEntity<Object> upload(@PathVariable("submodel") String submodel,
@@ -122,5 +109,4 @@ public class SubmodelProcessController {
 		res.put("processId", processId);
 		return ok().body(res);
 	}
-
 }

@@ -239,7 +239,7 @@
 				}
 			]
 		},
-		"createShellIfNotExist": true,
+		"createShellIfNotExist": false,
 		"createShellSpecificAssetIdsSpecs": {
 			"partInstanceId": "${part_instance_id}",
 			"manufacturerPartId": "${manufacturer_part_id}",

@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2023, 2024 T-Systems International GmbH
- * Copyright (c) 2023, 2024 Contributors to the Eclipse Foundation
+ * Copyright (c) 2024 T-Systems International GmbH
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -31,6 +31,7 @@ import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.common.exception.ValidationException;
 import org.eclipse.tractusx.sde.common.model.PagingResponse;
 import org.eclipse.tractusx.sde.common.submodel.executor.DatabaseUsecaseStep;
+import org.eclipse.tractusx.sde.common.utils.LogUtil;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.eclipse.tractusx.sde.edc.util.EDCAssetUrlCacheService;
@@ -152,7 +153,7 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 			pcfRepositoryService.savePcfRequestData(pcfRequestModel.getRequestId(), pcfRequestModel.getProductId(),
 					pcfRequestModel.getBpnNumber(), pcfRequestModel.getMessage(), PCFTypeEnum.PROVIDER,
 					PCFRequestStatusEnum.FAILED, remark);
-			log.error(remark);
+			log.error(LogUtil.encode(remark));
 			throw new ValidationException(e.getMessage());
 		} catch (Exception e) {
 			pcfRepositoryService.savePcfStatus(pcfRequestModel.getRequestId(), PCFRequestStatusEnum.FAILED);
@@ -171,7 +172,7 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 		} catch (NoDataFoundException e) {
 			String msg = "The PCF calculated value does not exist in system, please upload PCF value for '" + productId
 					+ "' in systems using Manual/Recurring Upload";
-			log.warn(msg);
+			log.warn(LogUtil.encode(msg));
 			remark = msg;
 			status = PCFRequestStatusEnum.PENDING_DATA_FROM_PROVIDER;
 		}

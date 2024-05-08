@@ -8,7 +8,7 @@
 	"semantic_id": "urn:bamm:io.catenax.single_level_bom_as_planned:1.0.1#SingleLevelBomAsPlanned",
 	"title": "Single Level Bom AsPlanned",
 	"shortDescription": "BoM As-Planned - Submodel SingleLevelBomAsPlanned",
-	"description": "The single-level Bill of Material represents one sub-level of an assembly and does not include any lower-level subassemblies. In As-Planned lifecycle state all variants are covered ('120% BOM'). It includes multiple suppliers for the same component.",
+	"description":"The single-level Bill of Material represents one sub-level of an assembly and does not include any lower-level subassemblies. In As-Planned lifecycle state all variants are covered ('120% BOM'). It includes multiple suppliers for the same component.",
 	"items": {
 		"type": "object",
 		"required": [
@@ -20,7 +20,8 @@
 			"measurement_unit",
 			"created_on"
 		],
-		"dependentRequired": {},
+		"dependentRequired": {
+		},
 		"properties": {
 			"parent_uuid": {
 				"type": [
@@ -29,7 +30,11 @@
 				"minLength": 1,
 				"pattern" : "(^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)|(^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)",
 				"title": "Parent UUID",
+<<<<<<<< HEAD:modules/sde-submodules/single-level-bom-as-planned/src/main/resources/single-level-bom-as-planned-v1.0.1.json
 				 "description" : "The Catena-X ID of the given part (e.g. the component), valid for the Catena-X dataspace.",
+========
+				"description":"The Catena-X ID of the parent object, into which the given child object is assembled in.",
+>>>>>>>> main_clone:modules/sde-submodules/single-level-bom-as-planned/src/main/resources/single-level-bom-as-planned.json
 				"examples": [
 					"urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf34dfa4c2"
 				]
@@ -40,7 +45,7 @@
 				],
 				"minLength": 1,
 				"title": "Parent Manufacturer Part ID",
-				"description": "The Parent Manufacturer Part ID of the parent object Manufacturer Part ID, to identify parent object in digital twins.",
+				"description":"The Parent Manufacturer Part ID of the parent object Manufacturer Part ID, to identify parent object in digital twins.",
 				"examples": [
 					"37754B7-76"
 				]
@@ -51,8 +56,13 @@
 				],
 				"minLength": 1,
 				"title": "UUID",
+<<<<<<<< HEAD:modules/sde-submodules/single-level-bom-as-planned/src/main/resources/single-level-bom-as-planned-v1.0.1.json
 				"description" : "The Catena-X ID of the child object which is assembled into the given parent part.",
 				"pattern" : "(^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)|(^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)",
+========
+				"description":"The Catena-X ID of the given part (e.g. the component), valid for the Catena-X dataspace.",
+				"pattern": "^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+>>>>>>>> main_clone:modules/sde-submodules/single-level-bom-as-planned/src/main/resources/single-level-bom-as-planned.json
 				"examples": [
 					"urn:uuid:5daB938E-Cafa-92B3-7ca1-9aD7885e9dC8"
 				]
@@ -63,18 +73,36 @@
 				],
 				"minLength": 1,
 				"title": "Manufacturer Part ID",
-				"description": "The ID of the type/catalog part (of which the serialized part is an instance of) from the manufacturer.",
+				"description":"The ID of the type/catalog part (of which the serialized part is an instance of) from the manufacturer.",
 				"examples": [
 					"37754B7-76"
 				]
 			},
+<<<<<<<< HEAD:modules/sde-submodules/single-level-bom-as-planned/src/main/resources/single-level-bom-as-planned-v1.0.1.json
+========
+			"customer_part_id": {
+				"type": [
+					"string",
+					"null"
+				],
+				"title": "Customer Part Id",
+				"description":"The ID of the type/catalog part (of which the serialized part is an instance of) from the customer.",
+				"examples": [
+					"Currently missing the syntax"
+				]
+			},
+>>>>>>>> main_clone:modules/sde-submodules/single-level-bom-as-planned/src/main/resources/single-level-bom-as-planned.json
 			"quantity_number": {
 				"type": [
 					"number"
 				],
 				"minLength": 1,
 				"title": "Quantity Number",
+<<<<<<<< HEAD:modules/sde-submodules/single-level-bom-as-planned/src/main/resources/single-level-bom-as-planned-v1.0.1.json
 				"description" : "The number of objects related to the measurement unit",
+========
+				"description":"Quantity of which the child part is assembled into the parent part.",
+>>>>>>>> main_clone:modules/sde-submodules/single-level-bom-as-planned/src/main/resources/single-level-bom-as-planned.json
 				"examples": [
 					2.5
 				]
@@ -84,11 +112,30 @@
 					"string"
 				],
 				"minLength": 1,
+<<<<<<<< HEAD:modules/sde-submodules/single-level-bom-as-planned/src/main/resources/single-level-bom-as-planned-v1.0.1.json
 				"title": "Measurement Unit",
 				"pattern" : "[a-zA-Z]*:[a-zA-Z]+",
 				"description" : "Unit of Measurement for the quantity of serialized objects",
 				"examples": [
 					"unit:litre"
+========
+				"title": "Lexical Value",
+				"description":"Unit of Measurement for the quantity of serialized objects",
+				"examples": [
+					"litre",
+					"unit"
+				]
+			},
+			"datatype_uri": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"title": "Datatype URI",
+				"description":"",
+				"examples": [
+					"urn:bamm:io.openmanufacturing:meta-model:1.0.0#curie"
+>>>>>>>> main_clone:modules/sde-submodules/single-level-bom-as-planned/src/main/resources/single-level-bom-as-planned.json
 				]
 			},
 			"created_on": {
@@ -98,8 +145,12 @@
 				"minLength": 1,
 				"format": "date-time",
 				"title": "Created On",
+<<<<<<<< HEAD:modules/sde-submodules/single-level-bom-as-planned/src/main/resources/single-level-bom-as-planned-v1.0.1.json
 				"pattern" : "-?([1-9][0-9]{3,}|0[0-9]{3})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T(([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.[0-9]+)?|(24:00:00(\\.0+)?))(Z|(\\+|-)((0[0-9]|1[0-3]):[0-5][0-9]|14:00))?",
 				"description" : "Timestamp when the relation between the parent part and the child part was created",
+========
+				"description":"Timestamp when the relation between the parent part and the child part was created",
+>>>>>>>> main_clone:modules/sde-submodules/single-level-bom-as-planned/src/main/resources/single-level-bom-as-planned.json
 				"examples": [
 					"2022-02-03T14:48:54.709Z"
 				]
@@ -111,7 +162,7 @@
 				],
 				"format": "date-time",
 				"title": "Last Modified On",
-				"description": "Timestamp when the relationship between parent part and child part was last modified.",
+				"description":"Timestamp when the relationship between parent part and child part was last modified.",
 				"examples": [
 					"2022-02-03T14:48:54.709Z"
 				]
@@ -129,6 +180,7 @@
 			"created_on": "2022-02-03T14:48:54.709Z",
 			"last_modified_on": "2022-02-03T14:48:54.709Z"
 		}
+<<<<<<<< HEAD:modules/sde-submodules/single-level-bom-as-planned/src/main/resources/single-level-bom-as-planned-v1.0.1.json
 	],
 	"addOn": {
 		"identifier": "${uuid}",
@@ -165,3 +217,7 @@
 		}
 	}
 }
+========
+	]
+}
+>>>>>>>> main_clone:modules/sde-submodules/single-level-bom-as-planned/src/main/resources/single-level-bom-as-planned.json

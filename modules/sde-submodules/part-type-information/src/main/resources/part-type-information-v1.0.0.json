@@ -1,0 +1,197 @@
+{
+	"$schema": "https://json-schema.org/draft/2019-09/schema",
+	"$id": "http://example.com/example.json",
+	"type": "array",
+	"id": "parttypeinformation_100",
+	"idShort": "partTypeInformation",
+	"version": "1.0.0",
+	"semantic_id": "urn:samm:io.catenax.part_type_information:1.0.0#PartTypeInformation",
+	"title": "Part Type Information",
+	"shortDescription": "BoM As-Planned - Submodel PartTypeInformation",
+	"description": "A Part Type Information represents an item in the Catena-X Bill of Material (BOM) on a type level in a specific version.",
+	"items": {
+		"type": "object",
+		"required": [
+			"uuid",
+			"manufacturer_part_id",
+			"catenax_site_id",
+			"name_at_manufacturer",
+			"classification_standard",
+			"classification_id",
+			"function"
+		],
+		"dependentRequired": {
+		},
+		"properties": {
+			"uuid": {
+				"type": [
+					"string"
+				],
+				"title": "UUID URN",
+				"description": "The provided regular expression ensures that the UUID is composed of five groups of characters separated by hyphens, in the form 8-4-4-4-12 for a total of 36 characters (32 hexadecimal characters and 4 hyphens), optionally prefixed by \"urn:uuid:\" to make it an IRI.",
+				"minLength": 1,
+				"pattern" : "(^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)|(^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)",
+				"examples": [
+					"urn:uuid:8eea5f45-0823-48ce-a4fc-c3bf1cdfa4c2"
+				]
+			},
+			"manufacturer_part_id": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"title": "Manufacturer Part Id",
+				"description" : "Part ID as assigned by the manufacturer of the part. The part ID identifies the part in the manufacturer`s dataspace. The part ID references a specific version of a part. The version number must be included in the part ID if it is available. The part ID does not reference a specific instance of a part and must not be confused with the serial number.",
+				"examples": [
+					"123-0.740-3434-A"
+				]
+			},
+			"catenax_site_id": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"title": "catenaX Site Id",
+				"description": "The identifier of the site according to Catena-X BPDM. The catenaXsiteId must be a valid Catena-X BPN. The BPN is a unique, unchangeable identifier for Business Partners / company locations from foundation to closure, regardless of the different business relationships / structures between or within the Business Partners or company locations.",
+				"examples": [
+					"BPNS1234567890ZZ"
+				]
+			},
+			"classification_standard": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"title": "Classification Standard",
+				"description": "Identified classification standards that align to the Catena-X needs.",
+				"examples": [
+					"IEC"
+				]
+			},
+			"classification_id": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"title": "Classification Id",
+				"description": "The classification ID of the part type according to the corresponding standard definition mentioned in the key value pair.",
+				"examples": [
+					"61360- 2:2012"
+				]
+			},
+			"classification_description": {
+				"type": [
+					"string",
+					"null"
+				],
+				"title": "Classification Description",
+				"description": "Optional property describing the classification standard.",
+				"examples": [
+					"Standard data element types with associated classification scheme for electric components."
+				]
+			},
+			"function": {
+				"type": [
+					"string"
+				],
+				"enum": [
+					"production",
+					"warehouse",
+					"spare part warehouse"
+				],
+				"title": "Function",
+				"minLength": 1,
+				"description" : "The function of the site in relation to the part (i.e. the activity within the value chain of the part that is performed at the site).",
+				"examples": [
+					"production"
+				]
+			},
+			"function_valid_from": {
+				"type": [
+					"string",
+					"null"
+				],
+				"title": "Function Valid From",
+				"pattern" : "^(?:[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:[.][0-9]+)?Z|[0-9]{4}-[0-9]{2}-[0-9]{2}(?:T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:[.][0-9]+)?(?:Z|[+-][0-9]{2}:[0-9]{2}))?)$",
+				"description" : "Timestamp, from when the site has the specified function for the given part.",
+				"examples": [
+					"2024-01-29T12:00:00.123+02:00"
+				]
+			},
+			"function_valid_until": {
+				"type": [
+					"string",
+					"null"
+				],
+				"title": "Function Valid Until",
+				"pattern" : "^(?:[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:[.][0-9]+)?Z|[0-9]{4}-[0-9]{2}-[0-9]{2}(?:T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:[.][0-9]+)?(?:Z|[+-][0-9]{2}:[0-9]{2}))?)$",
+				"description" : "Timestamp, from when the site has the specified function for the given part.",
+				"examples": [
+					"2024-01-29T12:00:00.123+02:00"
+				]
+			},
+			"name_at_manufacturer": {
+				"type": [
+					"string"
+				],
+				"minLength": 1,
+				"title": "Name At Manufacturer",
+				"description": "Name of the part as assigned by the manufacturer",
+				"examples": [
+					"Mirror left"
+				]
+			}
+		}
+	},
+	"examples": [
+		{
+			"uuid": "urn:uuid:055c1128-0375-47c8-98de-7cf802c3241d",
+			"manufacturer_part_id": "123-0.740-3434-A",
+			"catenax_site_id": "BPNS1234567890ZZ",
+			"classification_standard": "IEC",
+			"classification_id": "61360- 2:2012",
+			"classification_description": "Standard data element types with associated classification scheme for electric components.",
+			"function": "production",
+			"function_valid_from": "2024-01-29T12:00:00.123+02:00",
+			"function_valid_until": "2024-03-29T12:00:00.123+02:00",
+			"name_at_manufacturer": "Mirror left"
+		}
+	],
+	"addOn": {
+		"identifier": "${uuid}",
+		"lookupShellSpecificAssetIdsSpecs": {
+			"manufacturerPartId": "${manufacturer_part_id}",
+			"assetLifecyclePhase" :"AsPlanned"
+		},
+		"shortIdSpecs": [
+			"${name_at_manufacturer}",
+			"${manufacturer_part_id}"
+		],
+		"createShellIfNotExist": true,
+		"bpnDiscoverySpecs": {
+			"manufacturerPartId": "${manufacturer_part_id}"
+		},
+		"responseTemplate": {
+			"partTypeInformation": {
+				"partClassification": [
+					{
+						"classificationStandard": "${classification_standard}",
+						"classificationID": "${classification_id}",
+						"classificationDescription": "${classification_description}"
+					}
+				],
+				"manufacturerPartId": "${manufacturer_part_id}",
+				"nameAtManufacturer": "${name_at_manufacturer}"
+			},
+			"partSitesInformationAsPlanned": [
+				{
+					"functionValidUntil": "${function_valid_until}",
+					"catenaXsiteId": "${catenax_site_id}",
+					"function": "${function}",
+					"functionValidFrom": "${function_valid_from}"
+				}
+			],
+			"catenaXId": "${uuid}"
+		}
+	}
+}

@@ -2,13 +2,97 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
-## [2.3.0] - 2023-09-20
+## [Unreleased]
+
 ### Added
-- Support_edc_edr_api_use.
-- Support combine zip download.
-- Maintain download history for the re-download.
+- Updated readme.md and open api yml file.
+- Added controller interface api's for Policy management.
+- External EDC service interface api updated.
+- Updated supported sub-model implementation classes.
+- EDC asset update refactored in supported submodels.
+- Support for pcf v6.0.0 submodel.
+- Added controller interface api's for PCF Exchange.
+- Added new classes for multiple submodel version support.
+- Added refactor code changes for external services.
+- Added different usecase Handler for multi version support.
+- Added usecase handle implementation for multiple submodel support.
+- Supported new serial part submodel with multi version support. 
+- Supported new single level bom as built submodel with multi version support.
+- Removed maven modules  serial-part-typization and assembly-part-relationship for update. 
+- New maven module for part type information submodel support.
+- Refactored/Updated batch maven module to support multi version.
+- Refactored/Updated PartAsPlanned and SingleLevelBoMAsPlanned maven module to support multi version.
+- Refactored/Updated PartSiteInformationAsPlanned maven module to support multi version.
+- Refactored/Updated SingleLevelUsageAsBuilt maven module to support multi version.
+- Refactored/Updated PCF maven module to support multi version.
+- Added new flyway files.
+
 ### Fixed
-- Update pcf schema.
+- Remove garbage character from 'edc_request_template' path. Fixed [#147](https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/issues/147).
+
+
+## [2.3.6] - 2024-03-06
+### Fixed
+- open api fix in sde-open-api.yml.
+- Fixed Postgres vulnerability CVE-2024-1597.
+- Fixed spring security Vulnerability CVE-2024-22234.
+
+## [2.3.5] - 2024-02-20
+
+### Added
+- Policy-Hub service api integration.
+- Added New Policy Entities and pojo classes.
+- Draft code of Policies changes.
+- Added new classes for file download history.
+- Added new classes for files for cache ddtr and bpndiscovery twin search.
+- Added DT asset provider configuration on start up.
+- Use common DTO in all submodels.
+- Use policy hub model in all submodels.
+- Add controller interface for download data.
+- Add test cases for consumer interface.
+- update open api docs.
+ 
+### Fixed
+- Fix new dDTR support changes.
+- Fixed Vulnerability logback issue of CVE-2023-6481.
+- Docker image updated to fix vulnerability.
+
+## [2.3.4] - 2023-12-21
+### Fixed
+- Removed time duration from policy.
+
+## [2.3.3] - 2023-12-06
+### Fixed
+- fixed veracode security in app CVE-2023-46589 and CVE-2023-34053 .
+- build base image version.
+
+## [2.3.2] - 2023-12-01
+### Fixed
+- fixed veracode security CVE-2023-6378(logback-classic Denial Of Service)
+
+## [2.3.1] - 2023-11-29
+### Fixed
+- docker cmd updated,removed r from run command.
+- fixed veracode security CVE-2023-33202(Bouncy Castle Denial of Service). 
+- Updated assembly-part-relationship csv and .md file.
+
+## [2.3.0] - 2023-11-29
+### Added
+- DT use refactor for look up twin.
+ 
+## [2.2.2] - non-released
+### Added
+- Added oauth security for sde public api.
+- BPN url add API path.
+
+### Fixed
+- Correct dataplane endpoint for digital twin.
+- DSP endpoint path for digital-twin edc url.
+- Trivy workflow update. 
+
+## [2.2.1] - non-released
+### Fixed
+- Update PCF schema fields for SDE.
 
 ## [2.2.0] - 2023-09-20
 ### Added
@@ -232,7 +316,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Compliance with Catena-X Guidelines
 - Integration with Digital Twin registry service.
 
-[unreleased]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.3.0...main
+[unreleased]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.3.6...main
+[2.3.6]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.3.5...v2.3.6
+[2.3.5]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.3.4...v2.3.5
+[2.3.4]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.3.3...v2.3.4
+[2.3.3]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.3.2...v2.3.3
+[2.3.2]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.3.1...v2.3.2
+[2.3.1]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.3.0...v2.3.1
 [2.3.0]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.1.1...v2.2.0
 [2.1.1]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.1.0...v2.1.1

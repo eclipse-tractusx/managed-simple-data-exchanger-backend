@@ -8,13 +8,19 @@ This module use for SingleLevelUsageAsBuilt submodel specification and descripto
 #### Version: 1.0.1
 #### AssemblyPartRelationship Aspect Model URN: urn:bamm:io.catenax.single_level_usage_as_built:1.0.1#SingleLevelUsageAsBuilt
 #### Semantic Id: urn:bamm:io.catenax.single_level_usage_as_built:1.0.1
+
+#### Version: 3.0.0
+#### AssemblyPartRelationship Aspect Model URN: urn:bamm:io.catenax.single_level_usage_as_built:3.0.0#SingleLevelUsageAsBuilt
+#### Semantic Id: urn:bamm:io.catenax.single_level_usage_as_built:3.0.0
+
 ---
 
 ### Schema
 
 Please find below links for schema details:
 
-- [schema](src/main/resources/single-level-usage-as-built.json)
+- [single-level-usage-as-built-v1.0.1-schema](src/main/resources/single-level-usage-as-built-v1.0.1.json)
+- [single-level-usage-as-built-v3.0.0-schema](src/main/resources/single-level-usage-as-built-v3.0.0.json)
 
 
 ### SingleLevelUsageAsBuilt CSV file headers
@@ -41,8 +47,6 @@ Please find below links for schema details:
 
 #### Example for submodel SingleLevelUsageAsBuilt
 
-<br/><br/><img src="src/main/resources/images/singlelevelusageasbuilt.png" height="60%" width="80%"/><br/><br/>
-
 ### Work Flow 
 
  - CSV to POJO
@@ -58,4 +62,4 @@ Please find below links for schema details:
 
  - DigitalTwins
  - EDC Connectors
-
+ - BPN Discovery

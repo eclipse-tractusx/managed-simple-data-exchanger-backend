@@ -1,6 +1,6 @@
 #################################################################################
-# Copyright (c) 2022,2023 T-Systems International GmbH
-# Copyright (c) 2022,2023 Contributors to the Eclipse Foundation
+# Copyright (c) 2022,2024 T-Systems International GmbH
+# Copyright (c) 2022,2024 Contributors to the Eclipse Foundation
 #
 # See the NOTICE file(s) distributed with this work for additional
 # information regarding copyright ownership.
@@ -18,7 +18,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ################################################################################
 # our base build image
-FROM maven:3.9.0-eclipse-temurin-19 AS build
+FROM maven:3.9.5-eclipse-temurin-17 AS build
 
 # copy the project files
 COPY ../pom.xml ./pom.xml
@@ -27,13 +27,11 @@ COPY ../pom.xml ./pom.xml
 COPY ../modules ./modules
 
 # build for release
-#Commeting this because workflow job already building jar file
-#As SDE its require some docker enviroment to run test cases so avoid it
-#RUN mvn clean install 
+RUN mvn clean install 
 
 # our final base image
 
-FROM eclipse-temurin:19-jdk-jammy
+FROM eclipse-temurin:17.0.10_7-jdk-focal
 
 ARG USERNAME=sdeuser
 ARG USER_UID=1001
@@ -41,18 +39,16 @@ ARG USER_GID=$USER_UID
 
 # Create the user
 
-RUN useradd -rm -d /home/sdeuser -s /bin/bash -u $USER_UID -U $USERNAME 
-
+RUN useradd -m -d /home/sdeuser -s /bin/bash -u $USER_UID -U $USERNAME 
 USER $USERNAME
 
 # set deployment directory
-WORKDIR /home/user/sdeuser/sdeapp
+WORKDIR /home/sdeuser/sdeapp
+COPY LICENSE NOTICE.md DEPENDENCIES SECURITY.md  ./
 
 # copy over the built artifact from the maven image
-
 COPY --from=build modules/sde-core/target/*.jar ./app.jar
-
 EXPOSE 8080
+
 # set the startup command to run your binary
-#CMD ["java", "-jar", "./app.jar"]
 CMD ["java", "-jar", "./app.jar","--spring.config.location=file:/app/configuration.properties"]

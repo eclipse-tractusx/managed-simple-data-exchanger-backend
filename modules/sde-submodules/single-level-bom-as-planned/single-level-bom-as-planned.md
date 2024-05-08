@@ -8,13 +8,18 @@ This module use for SingleLevelBomAsPlanned submodel specification and descripto
 #### Version: 1.0.1
 #### SingleLevelBomAsPlanned Aspect Model URN: urn:bamm:io.catenax.single_level_bom_as_planned:1.0.1#SingleLevelBomAsPlanned
 #### Semantic Id: urn:bamm:io.catenax.single_level_bom_as_planned:1.0.1
+
+#### Version: 3.0.3
+#### SingleLevelBomAsPlanned Aspect Model URN: urn:bamm:io.catenax.single_level_bom_as_planned:1.0.1#SingleLevelBomAsPlanned
+#### Semantic Id: urn:bamm:io.catenax.single_level_bom_as_planned:3.0.0
 ---
 
 ### Schema
 
 Please find below links for schema details:
 
-- [schema](src/main/resources/single-level-bom-as-planned.json)
+- [single-level-bom-as-planned-v1.0.1-schema](src/main/resources/single-level-bom-as-planned-v1.0.1.json)
+- [single-level-bom-as-planned-v3.0.0-schema](src/main/resources/single-level-bom-as-planned-v3.0.0.json)
 
 
 ### CSV file headers
@@ -36,8 +41,6 @@ Please find below links for schema details:
 
 #### Example for submodel SingleLevelBomAsPlanned
 
-<br/><br/><img src="src/main/resources/images/singlelevelbomasplanned.png" height="60%" width="80%"/><br/><br/>
-
 ### Work Flow 
 
  - CSV to POJO
@@ -52,5 +55,4 @@ Please find below links for schema details:
 
  - DigitalTwins
  - EDC Connectors
- 
-[CSV Sample File Link]: src/main/resources/SingleLevelBoMAsPlanned.csv
+ - BPD Discovery

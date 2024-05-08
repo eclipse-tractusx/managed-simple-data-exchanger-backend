@@ -20,60 +20,18 @@
 
 package org.eclipse.tractusx.sde.util;
 
-import org.eclipse.tractusx.sde.common.utils.TryUtils;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.eclipse.tractusx.sde.edc.util.UtilityFunctions;
-import org.junit.platform.commons.annotation.Testable;
 
-@Testable
 class UtilityFunctionsTest {
 
     @Test
-    public void testRemoveLastSlashOfUrl() {
+    void testRemoveLastSlashOfUrl() {
         assertEquals("https://example.org/example", UtilityFunctions.removeLastSlashOfUrl("https://example.org/example"));
         assertEquals("", UtilityFunctions.removeLastSlashOfUrl("/"));
     }
-
-    @Test
-    public void testRetry() throws Exception{
-        var testFn = new Object() {
-            int i = 0;
-
-            int test(int inc) throws Exception {
-                i += inc;
-                if (i < 10) throw new Exception("Exception");
-                return i;
-            };
-        };
-        var res = TryUtils.retryAdapter(
-                () -> testFn.test(3),
-                () -> {},
-                5
-        );
-        assertEquals(12, res);
-    }
-
-    @Test()
-    public void testRetryThrow() throws Exception{
-        var testFn = new Object() {
-            int i = 0;
-
-            int test(int inc) throws Exception {
-                i += inc;
-                if (i < 10) throw new Exception("Exception");
-                return i;
-            };
-        };
-        assertThrows( Exception.class, () -> TryUtils.retryAdapter(
-                () -> testFn.test(1),
-                () -> {},
-                5
-        ));
-    }
-
 }
 

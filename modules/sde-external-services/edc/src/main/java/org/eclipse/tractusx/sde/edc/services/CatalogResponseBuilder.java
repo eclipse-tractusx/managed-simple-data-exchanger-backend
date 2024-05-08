@@ -76,7 +76,7 @@ public class CatalogResponseBuilder extends AbstractEDCStepsHelper {
 
 		JsonNode policy = offer.get("odrl:hasPolicy");
 
-		String edcstr = EDCAssetConstant.ASSET_PREFIX;
+		String edcstr = "edc:";
 
 		QueryDataOfferModel build = QueryDataOfferModel.builder()
 				.assetId(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_ID))
@@ -90,7 +90,7 @@ public class CatalogResponseBuilder extends AbstractEDCStepsHelper {
 				.version(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_VERSION))
 				.fileName(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_FILENAME))
 				.fileContentType(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_CONTENTTYPE))
-				.connectorId(getFieldFromJsonNode(contractOfferCatalog, edcstr+"participantId")).build();
+				.connectorId(getFieldFromJsonNode(contractOfferCatalog, "edc:participantId")).build();
 
 		checkAndSetPolicyPermission(build, policy);
 

@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -35,9 +35,9 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ContractAgreementInfo {
 
-	private long contractSigningDate;
-	private long contractStartDate;
-	private long contractEndDate;
-	private String assetId;
-	private List<Policies> policies;
+    private long contractSigningDate;
+    private long contractStartDate;
+    private long contractEndDate;
+    private String assetId;
+    private List<Policies> policies;
 }

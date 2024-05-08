@@ -205,7 +205,7 @@ public class DigitalTwinUseCaseHandler extends Step implements DigitalTwinUsecas
 			List<JsonElement> allGlobalFiled = jArray.asList().stream()
 					.filter(ele -> {
 						JsonElement refElement = ele.getAsJsonObject().get("ref");
-						return refElement!= null && refElement.equals("shellGlobalAssetId");
+						return refElement!= null && refElement.getAsString().equals("shellGlobalAssetId");
 					})
 					.toList();
 			if (!allGlobalFiled.isEmpty()) {
@@ -295,8 +295,7 @@ public class DigitalTwinUseCaseHandler extends Step implements DigitalTwinUsecas
 		return digitalTwinFacilitator.shellLookup(shellLookupRequest);
 	}
 
-	// public ShellDescriptorResponse createShellDescriptor(ShellDescriptorRequest
-	// aasDescriptorRequest) {
+// 	public ShellDescriptorResponse createShellDescriptor(ShellDescriptorRequest aasDescriptorRequest) {
 //		return digitalTwinFacilitator.createShellDescriptor(aasDescriptorRequest);
 //	}
 //

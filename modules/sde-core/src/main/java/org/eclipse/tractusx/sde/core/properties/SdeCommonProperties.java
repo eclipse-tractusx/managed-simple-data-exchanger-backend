@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2024 T-Systems International GmbH
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -29,34 +29,33 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public class SdeCommonProperties {
-	
-	//DigitalTwin properties
-	@Value("${digital-twins.hostname:default}")
-	private  String digitalTwinRegistry;
-			
-	@Value("${digital-twins.managed.thirdparty:false}")
-	private boolean dDTRManagedThirdparty;
-	
-	@Value("${digital-twins.registry.uri:/api/v3.0}")
-	private  String digitalTwinRegistryURI;
-	
-	@Value("${digital-twins.registry.lookup.uri:/api/v3.0}")
-	private  String digitalTwinRegistryLookUpURI;
-	
-	@Value("${digital-twins.authentication.url:default}")
-	private String digitalTwinTokenUrl;
-	
-	@Value("${digital-twins.authentication.clientId:default}")
-	private String digitalTwinClientId;
-	
-	@Value("${digital-twins.authentication.clientSecret:default}")
-	private String digitalTwinClientSecret;
-	
-	@Value("${digital-twins.authentication.scope:}")
-	private String digitalTwinAuthenticationScope;
-	
-	//manufacturer Id properties
-	@Value(value = "${manufacturerId}")
-	private String manufacturerId;
 
+	//DigitalTwin properties
+		@Value("${digital-twins.hostname:default}")
+		private  String digitalTwinRegistry;
+				
+		@Value("${digital-twins.managed.thirdparty:false}")
+		private boolean dDTRManagedThirdparty;
+		
+		@Value("${digital-twins.registry.uri:/api/v3.0}")
+		private  String digitalTwinRegistryURI;
+		
+		@Value("${digital-twins.registry.lookup.uri:/api/v3.0}")
+		private  String digitalTwinRegistryLookUpURI;
+		
+		@Value("${digital-twins.authentication.url:default}")
+		private String digitalTwinTokenUrl;
+		
+		@Value("${digital-twins.authentication.clientId:default}")
+		private String digitalTwinClientId;
+		
+		@Value("${digital-twins.authentication.clientSecret:default}")
+		private String digitalTwinClientSecret;
+		
+		@Value("${digital-twins.authentication.scope:}")
+		private String digitalTwinAuthenticationScope;
+		
+		//manufacturer Id properties
+		@Value(value = "${manufacturerId}")
+		private String manufacturerId;
 }

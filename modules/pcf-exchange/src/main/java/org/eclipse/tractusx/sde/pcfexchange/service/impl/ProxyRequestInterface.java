@@ -26,7 +26,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.mapper.JsonObjectMapper;
-import org.eclipse.tractusx.sde.common.utils.LogUtil;
 import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedByIdResponse;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.eclipse.tractusx.sde.edc.util.EDCAssetUrlCacheService;
@@ -90,15 +89,15 @@ public class ProxyRequestInterface {
 			pcfRepositoryService.savePcfStatus(requestId, PCFRequestStatusEnum.REQUESTED);
 		} else {
 			sb.append(productId + ": Unable to request for PCF value becasue the EDR token status is null");
-			log.warn(LogUtil.encode("EDC connector " + dataset.getConnectorOfferUrl() + ":"+ requestId +","+ productId +
-					"Unable to request for PCF value becasue the EDR token status is null"));
+			log.warn("EDC connector " + dataset.getConnectorOfferUrl() + ": {},{},{}", requestId, productId,
+					"Unable to request for PCF value becasue the EDR token status is null");
 			pcfRepositoryService.savePcfStatus(requestId, PCFRequestStatusEnum.FAILED);
 		}
 	}
 	
 	@SneakyThrows
 	public void sendNotificationToConsumer(PCFRequestStatusEnum status, JsonObject calculatedPCFValue,
-			String productId, String bpnNumber, String requestId) {
+			String productId, String bpnNumber, String requestId, String message) {
 
 		// 1 fetch EDC connectors and DTR Assets from EDC connectors
 		List<QueryDataOfferModel> pcfExchangeUrlOffers = edcAssetUrlCacheService.getPCFExchangeUrlFromTwin(bpnNumber);
@@ -112,9 +111,9 @@ public class ProxyRequestInterface {
 			pcfExchangeUrlOffers.parallelStream().forEach(dtOffer -> {
 				
 				if (PCFRequestStatusEnum.SENDING_REJECT_NOTIFICATION.equals(status)) {
-					sendNotification(null, productId, bpnNumber, requestId, dtOffer, status);
+					sendNotification(null, productId, bpnNumber, requestId, dtOffer, status, message);
 				} else {
-					sendNotification(calculatedPCFValue, productId, bpnNumber, requestId, dtOffer, status);
+					sendNotification(calculatedPCFValue, productId, bpnNumber, requestId, dtOffer, status, message);
 				}
 				
 			});
@@ -123,11 +122,9 @@ public class ProxyRequestInterface {
 
 	@SneakyThrows
 	private void sendNotification(JsonObject calculatedPCFValue, String productId, String bpnNumber, String requestId,
-			QueryDataOfferModel dtOffer, PCFRequestStatusEnum status) {
+			QueryDataOfferModel dtOffer, PCFRequestStatusEnum status, String message) {
 		String sendNotificationStatus = "";
 		try {
-			String message = status.name();
-
 			EDRCachedByIdResponse edrToken = edcAssetUrlCacheService.verifyAndGetToken(bpnNumber, dtOffer);
 
 			if (edrToken != null) {

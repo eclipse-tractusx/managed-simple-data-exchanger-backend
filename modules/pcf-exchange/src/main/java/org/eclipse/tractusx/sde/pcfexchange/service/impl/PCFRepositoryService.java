@@ -25,7 +25,6 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.model.PagingResponse;
-import org.eclipse.tractusx.sde.common.utils.LogUtil;
 import org.eclipse.tractusx.sde.pcfexchange.entity.PcfRequestEntity;
 import org.eclipse.tractusx.sde.pcfexchange.enums.PCFRequestStatusEnum;
 import org.eclipse.tractusx.sde.pcfexchange.enums.PCFTypeEnum;
@@ -71,15 +70,18 @@ public class PCFRepositoryService {
 				&& SUCCESS.equalsIgnoreCase(sendNotificationStatus)) {
 			status = PCFRequestStatusEnum.PUSHED_UPDATED_DATA;
 			sendNotificationStatus ="PCF updated data successfuly pushed";
-		} else if (PCFRequestStatusEnum.REJECTED.equals(status) && SUCCESS.equalsIgnoreCase(sendNotificationStatus)) {
+		} else if ((PCFRequestStatusEnum.REJECTED.equals(status)
+				|| PCFRequestStatusEnum.SENDING_REJECT_NOTIFICATION.equals(status))
+				&& SUCCESS.equalsIgnoreCase(sendNotificationStatus)) {
 			status = PCFRequestStatusEnum.REJECTED;
-			sendNotificationStatus ="PCF request rejected successfuly";
+			sendNotificationStatus = "PCF request rejected successfuly";
 		} else if (PCFRequestStatusEnum.APPROVED.equals(status)
 				|| PCFRequestStatusEnum.FAILED_TO_PUSH_DATA.equals(status)
 				|| PCFRequestStatusEnum.PUSHING_DATA.equals(status)
 				|| PCFRequestStatusEnum.PUSHING_UPDATED_DATA.equals(status)) {
 			status = PCFRequestStatusEnum.FAILED_TO_PUSH_DATA;
 		} else if (PCFRequestStatusEnum.REJECTED.equals(status)
+				|| PCFRequestStatusEnum.SENDING_REJECT_NOTIFICATION.equals(status)
 				|| PCFRequestStatusEnum.FAILED_TO_SEND_REJECT_NOTIFICATION.equals(status))
 			status = PCFRequestStatusEnum.FAILED_TO_SEND_REJECT_NOTIFICATION;
 		else {
@@ -125,8 +127,8 @@ public class PCFRepositoryService {
 		if(StringUtils.isNotBlank(remark))
 			pcfRequestEntity.setRemark(remark);
 		
-		log.info(LogUtil.encode("'" + pcfRequestEntity.getProductId() + "' pcf request saved in the database successfully as " +
-				status));
+		log.info("'" + pcfRequestEntity.getProductId() + "' pcf request saved in the database successfully as {}",
+				status);
 		pcfRequestRepository.save(pcfRequestEntity);
 		return pcfRequestEntity;
 

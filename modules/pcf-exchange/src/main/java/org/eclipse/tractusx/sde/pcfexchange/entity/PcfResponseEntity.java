@@ -52,5 +52,8 @@ public class PcfResponseEntity {
 	
 	@Column(name = "last_updated_time")
 	private Long lastUpdatedTime;
+	
+	@Column(name = "message", columnDefinition = "TEXT")
+	private String message;
 
 }

@@ -20,6 +20,12 @@
 
 package org.eclipse.tractusx.sde.common.submodel.executor;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.eclipse.tractusx.sde.common.utils.JsonObjectUtility;
+
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -77,11 +83,29 @@ public abstract class Step {
 	public String getIdentifierOfModel() {
 		return this.getAddOnOfModel().get("identifier").getAsString();
 	}
+	
+	public List<String> getDatabaseIdentifierSpecsOfModel() {
+		JsonElement jsonElement = this.getAddOnOfModel().get("databaseIdentifierSpecs");
+		return jsonElement == null || jsonElement.isJsonNull()
+				? List.of(extractExactFieldName(this.getIdentifierOfModel()))
+				: converJsonArrayToList(jsonElement);
+	}
+	
+	protected List<String> converJsonArrayToList(JsonElement jsonArray) {
+		return jsonArray.getAsJsonArray().asList().stream().map(ele -> extractExactFieldName(ele.getAsString()))
+				.toList();
+	}
 
 	public boolean checkShellCreateOption() {
 		JsonElement jsonElement = this.getAddOnOfModel().get("createShellIfNotExist");
 		return jsonElement == null || jsonElement.isJsonNull() || jsonElement.getAsBoolean();
 	}
+	
+	public boolean checkAppendURNUUIDWithIdentifier() {
+		JsonElement jsonElement = this.getAddOnOfModel().get("appendURNUUIDWithIdentifier");
+		return jsonElement == null || jsonElement.isJsonNull() || jsonElement.getAsBoolean();
+	}
+	
 
 	public JsonObject checkIsRelationSubmodel() {
 		JsonElement jsonElement = this.getAddOnOfModel().get("isRelationSubmodel");
@@ -133,5 +157,30 @@ public abstract class Step {
 
 	protected void logInfo(String message) {
 		log.info(String.format("[%s] %s", this.getClass().getSimpleName(), message));
+	}
+	
+	public String getIdentifier(JsonNode jsonObject, String identifierOfModel) {
+		return JsonObjectUtility.getValueFromJsonObjectAsString(jsonObject,
+				extractExactFieldName(identifierOfModel));
+	}
+	
+	protected String getDatabaseIdentifierValues(JsonNode jsonObject, List<String> databaseIdentifier) {
+		return String.join("@",
+				databaseIdentifier.stream().map(
+						str -> JsonObjectUtility.getValueFromJsonObjectAsString(jsonObject, extractExactFieldName(str)))
+						.toList());
+	}
+	
+	protected List<String> getIdentifierValuesAsList(String value) {
+		return Arrays.asList(value.split("@")).stream().map(Object::toString).toList();
+	}
+	
+	public String extractExactFieldName(String str) {
+
+		if (str.startsWith("${")) {
+			return str.replace("${", "").replace("}", "").trim();
+		} else {
+			return str;
+		}
 	}
 }

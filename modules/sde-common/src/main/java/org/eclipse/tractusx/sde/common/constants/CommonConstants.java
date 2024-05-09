@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022, 2024 T-Systems International GmbH
+ * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -50,6 +50,7 @@ public class CommonConstants {
 	
 	public static final String EXTERNAL_REFERENCE = "ExternalReference";
 	public static final String GLOBAL_REFERENCE = "GlobalReference";
+	public static final String SUBMODEL = "Submodel";
 	public static final String BODY_ENCODING = "plain";
 	public static final String INTERFACE = "SUBMODEL-3.0";
 	

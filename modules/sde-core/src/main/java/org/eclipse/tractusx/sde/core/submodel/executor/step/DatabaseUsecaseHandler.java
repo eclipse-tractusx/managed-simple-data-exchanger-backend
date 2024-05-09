@@ -29,9 +29,11 @@ import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
 import org.eclipse.tractusx.sde.common.model.Submodel;
 import org.eclipse.tractusx.sde.common.submodel.executor.DatabaseUsecaseStep;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
+import org.eclipse.tractusx.sde.common.submodel.executor.SubmoduleMapperUsecaseStep;
 import org.eclipse.tractusx.sde.core.processreport.repository.SubmodelCustomHistoryGenerator;
 import org.eclipse.tractusx.sde.core.service.SubmodelService;
 import org.eclipse.tractusx.sde.core.utils.SubmoduleUtility;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -43,7 +45,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Service("DatabaseUsecaseHandler")
+@Service("databaseUsecaseHandler")
 @RequiredArgsConstructor
 public class DatabaseUsecaseHandler extends Step implements DatabaseUsecaseStep {
 
@@ -51,6 +53,10 @@ public class DatabaseUsecaseHandler extends Step implements DatabaseUsecaseStep 
 
 	private final SubmodelService submodelService;
 	private final SubmoduleUtility submoduleUtility;
+	
+	@Qualifier("submoduleResponseHandler")
+	private final SubmoduleMapperUsecaseStep submoduleResponseHandler;
+	
 
 	@SneakyThrows
 	public JsonNode run(Integer rowIndex, ObjectNode jsonObject, String processId, PolicyModel policy) {
@@ -60,7 +66,7 @@ public class DatabaseUsecaseHandler extends Step implements DatabaseUsecaseStep 
 		String tableName = submoduleUtility.getTableName(schemaObj);
 
 		submodelCustomHistoryGenerator.saveSubmodelData(columns, tableName, processId, jsonObject,
-				extractExactFieldName(getIdentifierOfModel()));
+				getDatabaseIdentifierSpecsOfModel());
 
 		return jsonObject;
 	}
@@ -70,12 +76,11 @@ public class DatabaseUsecaseHandler extends Step implements DatabaseUsecaseStep 
 	public void saveSubmoduleWithDeleted(Integer rowIndex, JsonObject jsonObject, String delProcessId,
 			String refProcessId) {
 
-		String uuid = jsonObject.get(extractExactFieldName(getIdentifierOfModel())).getAsString();
+		String identifier = extractExactFieldName(getIdentifierOfModel());
+		String uuid = jsonObject.get(identifier).getAsString();
 		Submodel schemaObj = submodelService.findSubmodelByNameAsSubmdelObject(getNameOfModel());
 		String tableName = submoduleUtility.getTableName(schemaObj);
-
-		submodelCustomHistoryGenerator.saveAspectWithDeleted(uuid, tableName,
-				extractExactFieldName(getIdentifierOfModel()));
+		submodelCustomHistoryGenerator.saveAspectWithDeleted(uuid, tableName, identifier);
 	}
 
 	@SneakyThrows
@@ -83,48 +88,54 @@ public class DatabaseUsecaseHandler extends Step implements DatabaseUsecaseStep 
 		Submodel schemaObj = submodelService.findSubmodelByNameAsSubmdelObject(getNameOfModel());
 		List<String> columns = submoduleUtility.getTableColomnHeader(schemaObj);
 		String tableName = submoduleUtility.getTableName(schemaObj);
-
-		List<JsonObject> allSubmoduleAsJsonList = submodelCustomHistoryGenerator.findAllSubmoduleAsJsonList(columns,
-				tableName, refProcessId, fetchNotDeletedRecord);
-
-		if (allSubmoduleAsJsonList.isEmpty())
-			throw new NoDataFoundException("No data founds for deletion " + refProcessId);
-
-		return allSubmoduleAsJsonList;
+		
+		submoduleResponseHandler.init(schemaObj.getSchema());
+		
+		return submodelCustomHistoryGenerator.findAllSubmoduleAsJsonList(columns,
+				tableName, refProcessId, fetchNotDeletedRecord)
+				.stream()
+				.map(submoduleResponseHandler::mapJsonbjectToFormatedResponse).toList();
 	}
 
 	@SneakyThrows
-	public JsonObject readCreatedTwinsBySpecifyColomn(String sematicId, String basedCol, String value) {
+	public JsonObject readCreatedTwinsBySpecifyColomn(String sematicId, String value) {
 
 		List<Submodel> allSubmodels = submodelService.getAllSubmodels();
 		List<Submodel> list = allSubmodels.stream().filter(ele -> ele.getSemanticId().startsWith(sematicId)).toList();
 
 		List<JsonObject> jsonObjectList = list.stream().flatMap(schemaObj -> {
 			try {
+				this.init(schemaObj.getSchema());
+				submoduleResponseHandler.init(schemaObj.getSchema());
+
 				List<String> columns = submoduleUtility.getTableColomnHeader(schemaObj);
 				String tableName = submoduleUtility.getTableName(schemaObj);
-				return submodelCustomHistoryGenerator.readCreatedTwinsDetails(columns, tableName, value, basedCol).stream();
+
+				return submodelCustomHistoryGenerator
+						.readCreatedTwinsDetails(columns, tableName, getIdentifierValuesAsList(value),
+								getDatabaseIdentifierSpecsOfModel())
+						.stream().map(submoduleResponseHandler::mapJsonbjectToFormatedResponse);
 			} catch (Exception e) {
-				log.debug("Exception for {}, {}, {}, {}", sematicId, basedCol, value, e.getMessage());
+				log.debug("Exception for {}, {}, {}", sematicId, value, e.getMessage());
 			}
 			return null;
-		})
-				.filter(ele-> Optional.ofNullable(ele).isPresent())
-				.toList();
-		
+		}).filter(ele -> Optional.ofNullable(ele).isPresent()).toList();
+
 		if (jsonObjectList.isEmpty())
-			throw new NoDataFoundException("No data founds for "+sematicId +", " + value);
+			throw new NoDataFoundException("No data founds for " + sematicId + ", " + value);
 		else
 			return jsonObjectList.get(0);
 	}
 
 	@SneakyThrows
 	public JsonObject readCreatedTwinsDetails(String uuid) {
+
 		Submodel schemaObj = submodelService.findSubmodelByNameAsSubmdelObject(getNameOfModel());
 		List<String> columns = submoduleUtility.getTableColomnHeader(schemaObj);
 		String tableName = submoduleUtility.getTableName(schemaObj);
-		return submodelCustomHistoryGenerator.readCreatedTwinsDetails(columns, tableName, uuid,
-				extractExactFieldName(getIdentifierOfModel())).get(0);
+
+		return submodelCustomHistoryGenerator.readCreatedTwinsDetails(columns, tableName,
+				getIdentifierValuesAsList(uuid), getDatabaseIdentifierSpecsOfModel()).get(0);
 	}
 
 	@SneakyThrows

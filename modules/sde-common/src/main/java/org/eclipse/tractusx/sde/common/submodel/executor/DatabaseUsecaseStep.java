@@ -38,7 +38,7 @@ public interface DatabaseUsecaseStep {
 
 	public List<JsonObject> readCreatedTwins(String processId, String isDeleted);
 	
-	public JsonObject readCreatedTwinsBySpecifyColomn(String sematicId, String basedCol, String value);
+	public JsonObject readCreatedTwinsBySpecifyColomn(String sematicId, String value);
 
 	public JsonObject readCreatedTwinsDetails(String uuid);
 

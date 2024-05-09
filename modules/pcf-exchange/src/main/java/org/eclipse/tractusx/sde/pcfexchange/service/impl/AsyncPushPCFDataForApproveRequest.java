@@ -43,7 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 @SuppressWarnings("unchecked")
 public class AsyncPushPCFDataForApproveRequest {
 
-	private static final String PRODUCT_ID = "product_id";
+	private static final String PRODUCT_ID = "productId";
 
 	private final PCFRepositoryService pcfRepositoryService;
 
@@ -54,13 +54,15 @@ public class AsyncPushPCFDataForApproveRequest {
 		List<String> accessBPNList = PolicyOperationUtil.getAccessBPNList(policy);
 
 		List<String> productList = jsonObjectList.stream()
-				.map(ele -> JsonObjectUtility.getValueFromJsonObject(ele, PRODUCT_ID)).toList();
+				.map(obj-> obj.get("csv").getAsJsonObject())
+				.map(ele -> JsonObjectUtility.getValueFromJsonObject(ele, PRODUCT_ID))
+				.toList();
 
 		markedPCFDataForPendingProviderRequestAsRequested(productList, jsonObjectList);
 
 		PagingResponse pcfData = pcfRepositoryService.getPcfData(
 				List.of(PCFRequestStatusEnum.PUSHED, PCFRequestStatusEnum.PUSHED_UPDATED_DATA), PCFTypeEnum.PROVIDER, 0,
-				1000);
+				100000);
 		List<PcfRequestModel> requestList = (List<PcfRequestModel>) pcfData.getItems();
 
 		if (!requestList.isEmpty()) {
@@ -75,9 +77,13 @@ public class AsyncPushPCFDataForApproveRequest {
 						request.setStatus(PCFRequestStatusEnum.PUSHING_UPDATED_DATA);
 
 						JsonObject calculatedPCFValue = jsonObjectList.stream()
-								.filter(ele -> request.getProductId()
-										.equals(JsonObjectUtility.getValueFromJsonObject(ele, PRODUCT_ID)))
-								.findAny().orElseThrow(() -> new NoDataFoundException(
+								.filter(ele -> {
+									ele = ele.get("csv").getAsJsonObject();
+									return request.getProductId().equals(JsonObjectUtility.getValueFromJsonObject(ele, PRODUCT_ID));
+								})
+								.map(obj-> obj.get("json").getAsJsonObject())
+								.findAny()
+								.orElseThrow(() -> new NoDataFoundException(
 										"No data found for product_id " + request.getProductId()));
 
 						PCFRequestStatusEnum status = pcfRepositoryService.identifyRunningStatus(request.getRequestId(),
@@ -86,7 +92,7 @@ public class AsyncPushPCFDataForApproveRequest {
 						// push api call
 						Runnable runnable = () -> proxyRequestInterface.sendNotificationToConsumer(status,
 								calculatedPCFValue, request.getProductId(), request.getBpnNumber(),
-								request.getRequestId());
+								request.getRequestId(), request.getMessage());
 
 						new Thread(runnable).start();
 
@@ -113,7 +119,7 @@ public class AsyncPushPCFDataForApproveRequest {
 			List<JsonObject> jsonObjectList) {
 
 		PagingResponse pcfData = pcfRepositoryService
-				.getPcfData(List.of(PCFRequestStatusEnum.PENDING_DATA_FROM_PROVIDER), PCFTypeEnum.PROVIDER, 0, 1000);
+				.getPcfData(List.of(PCFRequestStatusEnum.PENDING_DATA_FROM_PROVIDER), PCFTypeEnum.PROVIDER, 0, 100000);
 		List<PcfRequestModel> requestList = (List<PcfRequestModel>) pcfData.getItems();
 
 		if (!requestList.isEmpty()) {
@@ -122,7 +128,7 @@ public class AsyncPushPCFDataForApproveRequest {
 					String msg = "";
 					try {
 						
-						JsonObject calculatedPCFValue = jsonObjectList.stream()
+						jsonObjectList.stream()
 								.filter(ele -> request.getProductId()
 										.equals(JsonObjectUtility.getValueFromJsonObject(ele, PRODUCT_ID)))
 								.findAny().orElseThrow(() -> new NoDataFoundException(

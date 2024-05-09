@@ -62,7 +62,17 @@ public class SubmodelRegistration {
 
 		if (jsonElement != null && !jsonElement.isJsonNull()) {
 			String pkCol = extractExactFieldName(jsonElement.getAsJsonObject().get("identifier").getAsString());
-			submodelCustomHistoryGenerator.checkTableIfNotExistCreate(submodel.getSchema(), columns, tableName, pkCol);
+			
+			JsonElement databaseIdentifierSpecs = jsonElement.getAsJsonObject().get("databaseIdentifierSpecs");
+			
+			List<String> databaseIdentifierCols= null;
+			
+			if (databaseIdentifierSpecs != null && !databaseIdentifierSpecs.isJsonNull()) {
+				databaseIdentifierCols = databaseIdentifierSpecs.getAsJsonArray().asList().stream()
+						.map(ele -> extractExactFieldName(ele.getAsString())).toList();
+			}
+			
+			submodelCustomHistoryGenerator.checkTableIfNotExistCreate(submodel.getSchema(), columns, tableName, pkCol, databaseIdentifierCols);
 		}
 
 		submodelList.add(submodel);

@@ -26,6 +26,7 @@ import java.util.Optional;
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.entities.csv.RowData;
+import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
 import org.eclipse.tractusx.sde.common.submodel.executor.BPNDiscoveryUsecaseStep;
 import org.eclipse.tractusx.sde.common.submodel.executor.DatabaseUsecaseStep;
 import org.eclipse.tractusx.sde.common.submodel.executor.DigitalTwinUsecaseStep;
@@ -52,28 +53,23 @@ public class GenericSubmodelExecutor extends SubmodelExecutor {
 	private final GenerateUrnUUID generateUrnUUID;
 	private final JsonRecordValidate jsonRecordValidate;
 
-	@Qualifier("DigitalTwinUseCaseHandler")
 	private final DigitalTwinUsecaseStep digitalTwinUseCaseStep;
 
-	@Qualifier("EDCUsecaseHandler")
 	private final EDCUsecaseStep edcUseCaseStep;
 
-	@Qualifier("BPNDiscoveryUseCaseHandler")
 	private final BPNDiscoveryUsecaseStep bpnUseCaseTwinStep;
 
-	@Qualifier("DatabaseUsecaseHandler")
 	private final DatabaseUsecaseStep databaseUseCaseStep;
 
-	@Qualifier("SubmoduleResponseHandler")
 	private final SubmoduleMapperUsecaseStep submodelMapperUseCaseStep;
 
 	public GenericSubmodelExecutor(CsvParse csvParseStep, JsonRecordFormating jsonRecordformater,
 			GenerateUrnUUID generateUrnUUID, JsonRecordValidate jsonRecordValidate,
-			@Qualifier("DigitalTwinUseCaseHandler") DigitalTwinUsecaseStep digitalTwinUseCaseStep,
-			@Qualifier("EDCUsecaseHandler") EDCUsecaseStep edcUseCaseStep,
-			@Qualifier("BPNDiscoveryUseCaseHandler") BPNDiscoveryUsecaseStep bpnUseCaseTwinStep,
-			@Qualifier("DatabaseUsecaseHandler") DatabaseUsecaseStep databaseUseCaseStep,
-			@Qualifier("SubmoduleResponseHandler") SubmoduleMapperUsecaseStep submodelMapperUseCaseStep) {
+			@Qualifier("digitalTwinUseCaseHandler") DigitalTwinUsecaseStep digitalTwinUseCaseStep,
+			@Qualifier("eDCUsecaseHandler") EDCUsecaseStep edcUseCaseStep,
+			@Qualifier("bPNDiscoveryUseCaseHandler") BPNDiscoveryUsecaseStep bpnUseCaseTwinStep,
+			@Qualifier("databaseUsecaseHandler") DatabaseUsecaseStep databaseUseCaseStep,
+			@Qualifier("submoduleResponseHandler") SubmoduleMapperUsecaseStep submodelMapperUseCaseStep) {
 		this.csvParseStep = csvParseStep;
 		this.jsonRecordformater = jsonRecordformater;
 		this.generateUrnUUID = generateUrnUUID;
@@ -110,6 +106,7 @@ public class GenericSubmodelExecutor extends SubmodelExecutor {
 	@SneakyThrows
 	private void nextSteps(Integer rowIndex, ObjectNode jsonObject, String processId, PolicyModel policy) {
 
+		generateUrnUUID.init(getSubmodelSchema());
 		generateUrnUUID.run(jsonObject, processId);
 
 		jsonRecordValidate.init(getSubmodelSchema());
@@ -141,7 +138,10 @@ public class GenericSubmodelExecutor extends SubmodelExecutor {
 	@Override
 	public List<JsonObject> readCreatedTwinsforDelete(String refProcessId) {
 		getDatabaseExecutorStep().init(getSubmodelSchema());
-		return getDatabaseExecutorStep().readCreatedTwins(refProcessId, CommonConstants.DELETED_Y);
+		List<JsonObject> allSubmoduleAsJsonList= getDatabaseExecutorStep().readCreatedTwins(refProcessId, CommonConstants.DELETED_Y);
+		if (allSubmoduleAsJsonList.isEmpty())
+			throw new NoDataFoundException("No data founds for deletion " + refProcessId);
+		return allSubmoduleAsJsonList;
 	}
 
 	@Override

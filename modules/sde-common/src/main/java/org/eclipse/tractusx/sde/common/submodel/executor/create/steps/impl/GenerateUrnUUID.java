@@ -24,7 +24,6 @@ import org.eclipse.tractusx.sde.common.submodel.executor.Step;
 import org.eclipse.tractusx.sde.common.utils.UUIdGenerator;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import lombok.SneakyThrows;
@@ -35,17 +34,18 @@ public class GenerateUrnUUID extends Step {
 	@SneakyThrows
 	public ObjectNode run(ObjectNode jsonObject, String processId) {
 		
-		JsonNode jsonNode = jsonObject.get("uuid");
-		if (jsonNode == null || jsonNode.isNull())
-			return jsonObject;
+		String identifierField= extractExactFieldName(getIdentifierOfModel());
+		String identifier = getIdentifier(jsonObject, identifierField);
 		
-		String uUID = jsonNode.asText();
-		if (uUID == null || uUID.isBlank() || uUID.equals("null")) {
-			jsonObject.put("uuid", UUIdGenerator.getUrnUuid());
-		} else if (!uUID.startsWith(UUIdGenerator.URN_UUID_PREFIX)) {
-			String concat = UUIdGenerator.URN_UUID_PREFIX.concat(uUID);
-			jsonObject.put("uuid", concat);
+		if(checkAppendURNUUIDWithIdentifier()) {
+			if (identifier == null || identifier.isBlank() || identifier.equals("null")) {
+				jsonObject.put(identifierField, UUIdGenerator.getUrnUuid());
+			} else if (!identifier.startsWith(UUIdGenerator.URN_UUID_PREFIX)) {
+				String concat = UUIdGenerator.URN_UUID_PREFIX.concat(identifier);
+				jsonObject.put(identifierField, concat);
+			}
 		}
+		
 		return jsonObject;
 	}
 

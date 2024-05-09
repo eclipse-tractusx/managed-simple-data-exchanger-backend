@@ -26,6 +26,7 @@ public class SubmoduleCommonColumnsConstant {
 	}
 
 	public static final String SHELL_ID = "shell_id";
+	public static final String SHELL_ACCESS_RULE_IDS = "shell_access_rule_ids";
 	public static final String SUBMODULE_ID = "sub_model_id";
 	public static final String ASSET_ID = "asset_id";
 	public static final String USAGE_POLICY_ID = "usage_policy_id";

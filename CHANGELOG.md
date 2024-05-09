@@ -4,8 +4,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [2.3.7] - 2024-05-09 
 ### Fixed
-- Rename edc_request_template directory
-- This is fixed for issue #147
+- Rename edc_request_template directory.
+- This is fixed for issue #147.
 
 ## [2.3.6] - 2024-03-06
 ### Fixed

@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2024 T-Systems International GmbH
- * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022,2024 T-Systems International GmbH
+ * Copyright (c) 2022,2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -62,7 +62,17 @@ public class SubmodelRegistration {
 
 		if (jsonElement != null && !jsonElement.isJsonNull()) {
 			String pkCol = extractExactFieldName(jsonElement.getAsJsonObject().get("identifier").getAsString());
-			submodelCustomHistoryGenerator.checkTableIfNotExistCreate(submodel.getSchema(), columns, tableName, pkCol);
+			
+			JsonElement databaseIdentifierSpecs = jsonElement.getAsJsonObject().get("databaseIdentifierSpecs");
+			
+			List<String> databaseIdentifierCols= null;
+			
+			if (databaseIdentifierSpecs != null && !databaseIdentifierSpecs.isJsonNull()) {
+				databaseIdentifierCols = databaseIdentifierSpecs.getAsJsonArray().asList().stream()
+						.map(ele -> extractExactFieldName(ele.getAsString())).toList();
+			}
+			
+			submodelCustomHistoryGenerator.checkTableIfNotExistCreate(submodel.getSchema(), columns, tableName, pkCol, databaseIdentifierCols);
 		}
 
 		submodelList.add(submodel);

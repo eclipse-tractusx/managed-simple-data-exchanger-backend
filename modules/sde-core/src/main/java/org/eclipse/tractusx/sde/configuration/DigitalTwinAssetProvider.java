@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2024 T-Systems International GmbH
- * Copyright (c) 2024 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023,2024 T-Systems International GmbH
+ * Copyright (c) 2023,2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -26,9 +26,9 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
+import org.eclipse.tractusx.sde.common.configuration.properties.DigitalTwinConfigurationProperties;
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.utils.UUIdGenerator;
-import org.eclipse.tractusx.sde.core.properties.SdeCommonProperties;
 import org.eclipse.tractusx.sde.core.utils.ValueReplacerUtility;
 import org.eclipse.tractusx.sde.edc.constants.EDCAssetConstant;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequest;
@@ -56,19 +56,19 @@ public class DigitalTwinAssetProvider {
 	private final AssetEntryRequestFactory assetFactory;
 	private final EDCGateway edcGateway;
 	private final CreateEDCAssetFacilator createEDCAssetFacilator;
-	private final SdeCommonProperties sdeCommonProperties;
+	private final DigitalTwinConfigurationProperties digitalTwinConfigurationProperties;
 	private final ValueReplacerUtility valueReplacerUtility;
 
 	@PostConstruct
 	@SneakyThrows
 	public void init() {
 
-		if (sdeCommonProperties.getDigitalTwinRegistryURI()
-				.equals(sdeCommonProperties.getDigitalTwinRegistryLookUpURI())) {
-			create("registry", sdeCommonProperties.getDigitalTwinRegistryURI());
+		if (digitalTwinConfigurationProperties.getDigitalTwinsRegistryPath()
+				.equals(digitalTwinConfigurationProperties.getDigitalTwinsLookupPath())) {
+			create("registry", digitalTwinConfigurationProperties.getDigitalTwinsRegistryPath());
 		} else {
-			create("regisry-api", sdeCommonProperties.getDigitalTwinRegistryURI());
-			create("discovery-api", sdeCommonProperties.getDigitalTwinRegistryLookUpURI());
+			create("regisry-api", digitalTwinConfigurationProperties.getDigitalTwinsRegistryPath());
+			create("discovery-api", digitalTwinConfigurationProperties.getDigitalTwinsLookupPath());
 		}
 	}
 
@@ -79,28 +79,28 @@ public class DigitalTwinAssetProvider {
 		AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest("", "Digital twin registry information",
 				assetId, "1", "", "", "", EDCAssetConstant.DATA_CORE_DIGITAL_TWIN_REGISTRY_TYPE);
 
-		String baseUrl = sdeCommonProperties.getDigitalTwinRegistry() + registryAPI;
+		String baseUrl = digitalTwinConfigurationProperties.getDigitalTwinsHostname() + registryAPI;
 
 		assetEntryRequest.getProperties().put(registryType, baseUrl);
 
 		assetEntryRequest.getDataAddress().getProperties().put("baseUrl", baseUrl);
 
 		assetEntryRequest.getDataAddress().getProperties().put("oauth2:tokenUrl",
-				sdeCommonProperties.getDigitalTwinTokenUrl());
+				digitalTwinConfigurationProperties.getDigitalTwinsAuthenticationUrl());
 
 		assetEntryRequest.getDataAddress().getProperties().put("oauth2:clientId",
-				sdeCommonProperties.getDigitalTwinClientId());
+				digitalTwinConfigurationProperties.getDigitalTwinsAuthenticationClientId());
 
 		assetEntryRequest.getDataAddress().getProperties().put("oauth2:clientSecret",
-				sdeCommonProperties.getDigitalTwinClientSecret());
+				digitalTwinConfigurationProperties.getDigitalTwinsAuthenticationClientSecret());
 
 		if (assetEntryRequest.getDataAddress().getProperties().containsKey("oauth2:clientSecretKey")) {
 			assetEntryRequest.getDataAddress().getProperties().remove("oauth2:clientSecretKey");
 		}
 
-		if (StringUtils.isNotBlank(sdeCommonProperties.getDigitalTwinAuthenticationScope())) {
+		if (StringUtils.isNotBlank(digitalTwinConfigurationProperties.getDigitalTwinsAuthenticationScope())) {
 			assetEntryRequest.getDataAddress().getProperties().put("oauth2:scope",
-					sdeCommonProperties.getDigitalTwinAuthenticationScope());
+					digitalTwinConfigurationProperties.getDigitalTwinsAuthenticationScope());
 		}
 
 		Map<String, String> inputData = new HashMap<>();

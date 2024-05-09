@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2024 T-Systems International GmbH
- * Copyright (c) 2024 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023,2024 T-Systems International GmbH
+ * Copyright (c) 2023,2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -60,8 +60,10 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 	private final PCFRepositoryService pcfRepositoryService;
 	private final PcfReqsponseRepository pcfReqsponseRepository;
 	private final EDCAssetUrlCacheService edcAssetUrlCacheService;
+	
 	@Qualifier("DatabaseUsecaseHandler")
 	private final DatabaseUsecaseStep databaseUsecaseStep;
+	
 	private final ProxyRequestInterface proxyRequestInterface;
 
 	@SneakyThrows
@@ -133,14 +135,15 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 		try {
 
 			JsonObject calculatedPCFValue = databaseUsecaseStep.readCreatedTwinsBySpecifyColomn(
-					"urn:bamm:io.catenax.pcf", "productId", pcfRequestModel.getProductId());
-
+					"urn:bamm:io.catenax.pcf", pcfRequestModel.getProductId()).get("json").getAsJsonObject();
+			
 			PCFRequestStatusEnum status = pcfRepositoryService.identifyRunningStatus(pcfRequestModel.getRequestId(),
 					pcfRequestModel.getStatus());
 
 			// push api call
 			Runnable runnable = () -> proxyRequestInterface.sendNotificationToConsumer(status, calculatedPCFValue,
-					pcfRequestModel.getProductId(), pcfRequestModel.getBpnNumber(), pcfRequestModel.getRequestId());
+					pcfRequestModel.getProductId(), pcfRequestModel.getBpnNumber(), pcfRequestModel.getRequestId(),
+					pcfRequestModel.getMessage());
 
 			new Thread(runnable).start();
 
@@ -153,7 +156,7 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 			pcfRepositoryService.savePcfRequestData(pcfRequestModel.getRequestId(), pcfRequestModel.getProductId(),
 					pcfRequestModel.getBpnNumber(), pcfRequestModel.getMessage(), PCFTypeEnum.PROVIDER,
 					PCFRequestStatusEnum.FAILED, remark);
-			log.error(LogUtil.encode(remark));
+			log.warn(LogUtil.encode(remark));
 			throw new ValidationException(e.getMessage());
 		} catch (Exception e) {
 			pcfRepositoryService.savePcfStatus(pcfRequestModel.getRequestId(), PCFRequestStatusEnum.FAILED);
@@ -167,8 +170,7 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 		PCFRequestStatusEnum status = PCFRequestStatusEnum.REQUESTED;
 		String remark = "";
 		try {
-			databaseUsecaseStep.readCreatedTwinsBySpecifyColomn("urn:bamm:io.catenax.pcf", "productId",
-					productId);
+			databaseUsecaseStep.readCreatedTwinsBySpecifyColomn("urn:bamm:io.catenax.pcf", productId);
 		} catch (NoDataFoundException e) {
 			String msg = "The PCF calculated value does not exist in system, please upload PCF value for '" + productId
 					+ "' in systems using Manual/Recurring Upload";
@@ -180,27 +182,33 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 				status, remark);
 	}
 
+	@SneakyThrows
 	@Override
 	public void recievedPCFData(String productId, String bpnNumber, String requestId, String message,
 			JsonNode pcfData) {
 
-		PCFRequestStatusEnum status = PCFRequestStatusEnum.FAILED;
-		try {
-			status = PCFRequestStatusEnum.valueOf(message);
-		} catch (Exception e) {
-			log.error("Unable to find PCF value status " + e.getMessage());
-		}
+		PCFRequestStatusEnum status = null;
 
-		PcfResponseEntity entity = PcfResponseEntity.builder().pcfData(pcfData).requestId(requestId)
-				.responseId(UUID.randomUUID().toString()).lastUpdatedTime(Instant.now().getEpochSecond()).build();
+		PcfResponseEntity entity = PcfResponseEntity.builder()
+				.pcfData(pcfData)
+				.requestId(requestId)
+				.message(message)
+				.responseId(UUID.randomUUID().toString())
+				.lastUpdatedTime(Instant.now().getEpochSecond())
+				.build();
 
 		pcfReqsponseRepository.save(entity);
 
-		if (PCFRequestStatusEnum.APPROVED.equals(status) || PCFRequestStatusEnum.PUSHING_DATA.equals(status)
-				|| PCFRequestStatusEnum.PUSHING_UPDATED_DATA.equals(status)) {
+		if(StringUtils.isBlank(requestId))
+			throw new ServiceException("RequestId not recieved from provider to marked PCF exchange request");
+		
+		if (pcfData != null && !pcfData.isEmpty() && !pcfData.asText().equals("{}")) {
 			status = PCFRequestStatusEnum.RECEIVED;
-		}
-
+		} else if (StringUtils.isNotBlank(requestId)) {
+			status = PCFRequestStatusEnum.REJECTED;
+		} else
+			status = PCFRequestStatusEnum.FAILED;
+		
 		pcfRepositoryService.savePcfStatus(requestId, status);
 
 	}

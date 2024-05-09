@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2024 T-Systems International GmbH
- * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022,2024 T-Systems International GmbH
+ * Copyright (c) 2022,2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -123,17 +123,27 @@ public class SubmodelCustomHistoryGenerator {
 	@Modifying
 	@Transactional
 	@SneakyThrows
-	public List<JsonObject> readCreatedTwinsDetails(List<String> colNames, String tableEntityName, String uuid,
-			String pkColomn) {
+	public List<JsonObject> readCreatedTwinsDetails(List<String> colNames, String tableEntityName, List<String> uuids,
+			List<String> pkColomn) {
 
 		String columns = String.join(",", colNames);
+		
+		String pkColomns = String.join(" =? AND p.", pkColomn);
+		
+		if(pkColomn.size()==1) {
+			pkColomns = pkColomn.get(0)+ "=?";
+		}
+		
 		Query query = entityManager.createNativeQuery(
-				"SELECT " + columns + " FROM " + tableEntityName + " as p Where p." + pkColomn + "=? ");
-		query.setParameter(1, uuid);
+				"SELECT " + columns + " FROM " + tableEntityName + " as p Where p." + pkColomns + "");
+		
+		AtomicInteger atInt = new AtomicInteger(1);
+		uuids.stream().forEach(uuid -> query.setParameter(atInt.getAndIncrement(), uuid));
+		
 		List<Object[]> resultList = query.getResultList();
 
 		if (resultList.isEmpty())
-			throw new NoDataFoundException(String.format("No data found for %s ", uuid));
+			throw new NoDataFoundException(String.format("No data found for %s ", uuids));
 
 		List<JsonObject> records = new LinkedList<>();
 		
@@ -142,6 +152,7 @@ public class SubmodelCustomHistoryGenerator {
 		}
 		return records;
 	}
+	
 
 	private JsonObject getJsonNodes(List<String> colNames, Object[] objectArray) {
 		JsonObject innerObject = new JsonObject();
@@ -156,7 +167,7 @@ public class SubmodelCustomHistoryGenerator {
 	@Transactional
 	@SneakyThrows
 	public int saveSubmodelData(List<String> colNames, String tableEntityName, String processId, JsonNode submodelData,
-			String pkColomn) {
+			List<String> pkColomn) {
 		StringBuilder colname = new StringBuilder();
 		StringBuilder parameters = new StringBuilder();
 		StringBuilder updateParameters = new StringBuilder();
@@ -171,9 +182,18 @@ public class SubmodelCustomHistoryGenerator {
 				updateParameters.append("," + ele + " = EXCLUDED." + ele);
 			}
 		});
+		
+		StringBuilder pkColomns = new StringBuilder();
+		pkColomn.forEach(ele -> {
+			if (pkColomns.isEmpty()) {
+				pkColomns.append(ele);
+			} else {
+				pkColomns.append("," + ele);
+			}
+		});
 
 		Query query = entityManager.createNativeQuery("INSERT INTO " + tableEntityName + " (" + colname + ") VALUES ("
-				+ parameters + ")  ON CONFLICT (" + pkColomn + ")  DO " + " UPDATE SET " + updateParameters);
+				+ parameters + ")  ON CONFLICT (" + pkColomns + ")  DO " + " UPDATE SET " + updateParameters);
 
 		AtomicInteger i = new AtomicInteger(1);
 		colNames.forEach(col -> query.setParameter(i.getAndIncrement(),
@@ -204,7 +224,7 @@ public class SubmodelCustomHistoryGenerator {
 	}
 
 	@SneakyThrows
-	public void checkTableIfNotExistCreate(JsonObject schema, List<String> columns, String tableName, String pkCol) {
+	public void checkTableIfNotExistCreate(JsonObject schema, List<String> columns, String tableName, String pkCol, List<String> databaseIdentifierCols) {
 		boolean isTableNotExist = false;
 		try (Connection con = DriverManager.getConnection(dataSourceProperties.getUrl(),
 				dataSourceProperties.getUsername(), dataSourceProperties.getPassword())) {
@@ -226,16 +246,16 @@ public class SubmodelCustomHistoryGenerator {
 			}
 		} catch (Exception e) {
 			isTableNotExist = true;
-			log.error(tableName + " is not exist, so creating table");
+			log.error(tableName + " is not exist, so creating table becuase "+e.getMessage());
 		}
 
 		if (isTableNotExist) {
-			createTable(schema, columns, tableName, pkCol);
+			createTable(schema, columns, tableName, pkCol, databaseIdentifierCols);
 		}
 	}
 
 	@SneakyThrows
-	public void createTable(JsonObject schema, List<String> columns, String tableName, String pkCol) {
+	public void createTable(JsonObject schema, List<String> columns, String tableName, String pkCol, List<String> databaseIdentifierCols) {
 
 		try (Connection con = DriverManager.getConnection(dataSourceProperties.getUrl(),
 				dataSourceProperties.getUsername(), dataSourceProperties.getPassword())) {
@@ -260,6 +280,18 @@ public class SubmodelCustomHistoryGenerator {
 
 			colname.append(" CONSTRAINT " + tableName + "_pkey PRIMARY KEY (" + pkCol + ")");
 
+			if(databaseIdentifierCols!=null) {
+				StringBuilder uniqcol = new StringBuilder();
+				databaseIdentifierCols.forEach(ele -> {
+					if (uniqcol.isEmpty()) {
+						uniqcol.append(ele);
+					} else {
+						uniqcol.append("," + ele);
+					}
+				});
+				colname.append(", CONSTRAINT " + tableName + "_un UNIQUE (" + uniqcol + ")");
+			}
+			
 			try (Statement stmt = con.createStatement()) {
 				stmt.execute("CREATE TABLE " + tableName + " (" + colname + ")");
 				log.info(tableName + " created successfully");

@@ -47,11 +47,6 @@ public interface DigitalTwinUsecaseStep {
 		specificAssetIds.put(CommonConstants.MANUFACTURER_ID, manufacturerId);
 	}
 
-	default String getIdentifier(JsonNode jsonObject, String identifierOfModel) {
-		return JsonObjectUtility.getValueFromJsonObjectAsString(jsonObject,
-				extractExactFieldName(identifierOfModel));
-	}
-
 	default String generateShortId(JsonNode jsonObject, JsonArray shortIdSpecsOfModel) {
 		return shortIdSpecsOfModel.asList().stream().map(ele -> JsonObjectUtility
 				.getValueFromJsonObjectAsString(jsonObject, extractExactFieldName(ele.getAsString())))

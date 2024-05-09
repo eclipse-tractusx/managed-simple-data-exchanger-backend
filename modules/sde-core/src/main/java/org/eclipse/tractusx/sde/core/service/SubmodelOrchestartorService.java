@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2024 T-Systems International GmbH
- * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022,2024 T-Systems International GmbH
+ * Copyright (c) 2022,2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -89,7 +89,6 @@ public class SubmodelOrchestartorService {
 	private final SubmoduleUtility submoduleUtility;
 
 	private final GenericSubmodelExecutor genericSubmodelExecutor;
-	
 	private final DatabaseUsecaseHandler databaseUsecaseHandler;
 
 	ObjectMapper mapper = new ObjectMapper();
@@ -146,7 +145,7 @@ public class SubmodelOrchestartorService {
 					updatedcount);
 
 			// Push PCF value which already Approve request of consumer
-			if (submodelSchemaObject.getId().equalsIgnoreCase("pcf")) {
+			if (submodelSchemaObject.getId().contains("pcf")) {
 				databaseUsecaseHandler.init(submodelSchemaObject.getSchema());
 				List<JsonObject> readCreatedTwins = databaseUsecaseHandler.readCreatedTwins(processId, null);
 				asyncPushPCFDataForApproveRequest.pushPCFDataForApproveRequest(readCreatedTwins, submodelPolicyRequest);
@@ -196,7 +195,7 @@ public class SubmodelOrchestartorService {
 					updatedcount);
 
 			// Push PCF value which already Approve request of consumer
-			if (submodelSchemaObject.getId().equalsIgnoreCase("pcf")) {
+			if (submodelSchemaObject.getId().contains("pcf")) {
 				databaseUsecaseHandler.init(submodelSchemaObject.getSchema());
 				List<JsonObject> readCreatedTwins = databaseUsecaseHandler.readCreatedTwins(processId, null);
 				asyncPushPCFDataForApproveRequest.pushPCFDataForApproveRequest(readCreatedTwins, policy);
@@ -229,13 +228,15 @@ public class SubmodelOrchestartorService {
 			processReportUseCase.startDeleteProcess(oldProcessReport, refProcessId, submodel,
 					readCreatedTwinsforDelete.size(), delProcessId);
 
-			readCreatedTwinsforDelete.stream().forEach(obj -> {
+			List<JsonObject> filterList = readCreatedTwinsforDelete.stream().map(obj-> {
+				JsonObject rowjObj = obj.get("csv").getAsJsonObject();
 				int andIncrement = atInt.incrementAndGet();
-				obj.addProperty(ROW_NUMBER, andIncrement);
-				obj.addProperty(PROCESS_ID, refProcessId);
-			});
+				rowjObj.addProperty(ROW_NUMBER, andIncrement);
+				rowjObj.addProperty(PROCESS_ID, refProcessId);
+				return rowjObj;
+			}).toList();
 
-			readCreatedTwinsforDelete.parallelStream().forEach(rowjObj -> {
+			filterList.parallelStream().forEach(rowjObj -> {
 				try {
 					executor.executeDeleteRecord(rowjObj.get(ROW_NUMBER).getAsInt(), rowjObj, delProcessId,
 							refProcessId);
@@ -341,4 +342,5 @@ public class SubmodelOrchestartorService {
 		}
 		return foundSubmodelSchemaObject;
 	}
+
 }

@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2024 T-Systems International GmbH
- * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022,2024 T-Systems International GmbH
+ * Copyright (c) 2022,2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -57,7 +57,7 @@ public class SubmodelService {
 			if (neededSubmodelList.contains(obj.getId()) || usecases == null || usecases.isEmpty()) {
 				Map<String, String> sbBuild = new LinkedHashMap<>();
 				sbBuild.put("id", obj.getId());
-				sbBuild.put("name", obj.getName() +"-v"+obj.getVersion());
+				sbBuild.put("name", obj.getName());
 				sbBuild.put("version", obj.getVersion());
 				sbBuild.put("semanticId", obj.getSemanticId());
 				ls.add(sbBuild);

@@ -1,6 +1,6 @@
 /********************************************************************************
- #* Copyright (c) 2024 T-Systems International GmbH
- #* Copyright (c) 2024 Contributors to the Eclipse Foundation
+ #* Copyright (c) 2022,2024 T-Systems International GmbH
+ #* Copyright (c) 2022,2024 Contributors to the Eclipse Foundation
  #*
  #* See the NOTICE file(s) distributed with this work for additional
  #* information regarding copyright ownership.
@@ -28,7 +28,7 @@ import lombok.Data;
 @Configuration
 @Data
 public class DigitalTwinConfigurationProperties {
-
+	
     @Value("${digital-twins.hostname:default}")
     private String digitalTwinsHostname;
 
@@ -50,10 +50,10 @@ public class DigitalTwinConfigurationProperties {
     @Value(value = "${digital-twins.authentication.grantType}")
     private String digitalTwinsAuthenticationGrantType;
 
-    @Value("${digital-twins.registry.uri:/api/v3.0}")
+    @Value("${digital-twins.registry.uri:/api/v3}")
     private String digitalTwinsRegistryPath;
 
-    @Value("${digital-twins.lookup.uri:/api/v3.0}")
+    @Value("${digital-twins.lookup.uri:/api/v3}")
     private String digitalTwinsLookupPath;
 
     @Value(value = "${manufacturerId}")

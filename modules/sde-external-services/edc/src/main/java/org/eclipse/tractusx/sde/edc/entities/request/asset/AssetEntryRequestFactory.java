@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022, 2024 T-Systems International GmbH
- * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022,2024 T-Systems International GmbH
+ * Copyright (c) 2022,2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -71,7 +71,9 @@ public class AssetEntryRequestFactory {
 	}
 
 	private String subModelPayloadUrl(String submodel, String submoduleUriPath, String uuid) {
-		return UriComponentsBuilder.fromHttpUrl(dftHostname).path("/" + submodel + "/" + submoduleUriPath).path(uuid)
+		return UriComponentsBuilder.fromHttpUrl(dftHostname)
+				.path("/" + submodel + "/" + submoduleUriPath)
+				.path("/" + uuid)
 				.toUriString();
 	}
 
@@ -84,8 +86,8 @@ public class AssetEntryRequestFactory {
 		assetProperties.put(EDCAssetConstant.ASSET_PROP_VERSION, EDCAssetConstant.ASSET_PROP_VERSION_VALUE);
 		assetProperties.put(EDCAssetConstant.RDFS_LABEL, assetName);
 		assetProperties.put(EDCAssetConstant.RDFS_COMMENT, assetName);
-		assetProperties.put(EDCAssetConstant.DCAT_VERSION, EDCAssetConstant.ASSET_PROP_TWIN_VERSION);
-		assetProperties.put(EDCAssetConstant.CX_COMMON_VERSION, EDCAssetConstant.ASSET_PROP_TWIN_VERSION);
+		assetProperties.put(EDCAssetConstant.DCAT_VERSION, EDCAssetConstant.ASSET_PROP_DCAT_VERSION);
+		assetProperties.put(EDCAssetConstant.CX_COMMON_VERSION, EDCAssetConstant.ASSET_PROP_COMMON_VERSION);
 
 		if (StringUtils.isNotBlank(sematicId))
 			assetProperties.put(EDCAssetConstant.AAS_SEMANTICS_SEMANTIC_ID, Map.of("@id", sematicId));
@@ -115,4 +117,5 @@ public class AssetEntryRequestFactory {
 		dataAddressProperties.put("contentType", EDCAssetConstant.ASSET_PROP_CONTENT_TYPE);
 		return dataAddressProperties;
 	}
+
 }

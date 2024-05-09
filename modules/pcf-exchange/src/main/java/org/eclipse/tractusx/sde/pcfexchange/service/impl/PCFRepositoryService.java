@@ -71,15 +71,18 @@ public class PCFRepositoryService {
 				&& SUCCESS.equalsIgnoreCase(sendNotificationStatus)) {
 			status = PCFRequestStatusEnum.PUSHED_UPDATED_DATA;
 			sendNotificationStatus ="PCF updated data successfuly pushed";
-		} else if (PCFRequestStatusEnum.REJECTED.equals(status) && SUCCESS.equalsIgnoreCase(sendNotificationStatus)) {
+		} else if ((PCFRequestStatusEnum.REJECTED.equals(status)
+				|| PCFRequestStatusEnum.SENDING_REJECT_NOTIFICATION.equals(status))
+				&& SUCCESS.equalsIgnoreCase(sendNotificationStatus)) {
 			status = PCFRequestStatusEnum.REJECTED;
-			sendNotificationStatus ="PCF request rejected successfuly";
+			sendNotificationStatus = "PCF request rejected successfuly";
 		} else if (PCFRequestStatusEnum.APPROVED.equals(status)
 				|| PCFRequestStatusEnum.FAILED_TO_PUSH_DATA.equals(status)
 				|| PCFRequestStatusEnum.PUSHING_DATA.equals(status)
 				|| PCFRequestStatusEnum.PUSHING_UPDATED_DATA.equals(status)) {
 			status = PCFRequestStatusEnum.FAILED_TO_PUSH_DATA;
 		} else if (PCFRequestStatusEnum.REJECTED.equals(status)
+				|| PCFRequestStatusEnum.SENDING_REJECT_NOTIFICATION.equals(status)
 				|| PCFRequestStatusEnum.FAILED_TO_SEND_REJECT_NOTIFICATION.equals(status))
 			status = PCFRequestStatusEnum.FAILED_TO_SEND_REJECT_NOTIFICATION;
 		else {
@@ -127,6 +130,7 @@ public class PCFRepositoryService {
 		
 		log.info(LogUtil.encode("'" + pcfRequestEntity.getProductId() + "' pcf request saved in the database successfully as " +
 				status));
+		
 		pcfRequestRepository.save(pcfRequestEntity);
 		return pcfRequestEntity;
 

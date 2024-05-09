@@ -21,21 +21,22 @@ package org.eclipse.tractusx.sde.common.utils;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.entities.Policies;
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 
 public class PolicyOperationUtil {
-	
-	private PolicyOperationUtil() {}
+
+	private static final String BUSINESS_PARTNER_NUMBER = "BusinessPartnerNumber";
+
+	private PolicyOperationUtil() {
+	}
 
 	private static List<String> getBPNList(List<Policies> policies) {
-		return policies
-				.stream()
-				.filter(e -> e.getTechnicalKey().equals("BusinessPartnerNumber"))
-				.flatMap(e -> e.getValue().stream())
-				.toList();
+		return policies.stream().filter(e -> e.getTechnicalKey().equals(BUSINESS_PARTNER_NUMBER))
+				.flatMap(e -> e.getValue().stream().filter(StringUtils::isNotBlank)).toList();
 	}
-	
+
 	public static List<String> getAccessBPNList(PolicyModel policy) {
 		return getBPNList(policy.getAccessPolicies());
 	}
@@ -43,5 +44,4 @@ public class PolicyOperationUtil {
 	public static List<String> getUsageBPNList(PolicyModel policy) {
 		return getBPNList(policy.getUsagePolicies());
 	}
-
 }

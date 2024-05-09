@@ -127,8 +127,9 @@ public class PCFRepositoryService {
 		if(StringUtils.isNotBlank(remark))
 			pcfRequestEntity.setRemark(remark);
 		
-		log.info("'" + pcfRequestEntity.getProductId() + "' pcf request saved in the database successfully as {}",
-				status);
+		log.info(LogUtil.encode("'" + pcfRequestEntity.getProductId() + "' pcf request saved in the database successfully as " +
+				status));
+		
 		pcfRequestRepository.save(pcfRequestEntity);
 		return pcfRequestEntity;
 

@@ -155,7 +155,7 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 			pcfRepositoryService.savePcfRequestData(pcfRequestModel.getRequestId(), pcfRequestModel.getProductId(),
 					pcfRequestModel.getBpnNumber(), pcfRequestModel.getMessage(), PCFTypeEnum.PROVIDER,
 					PCFRequestStatusEnum.FAILED, remark);
-			log.error(remark);
+			log.warn(LogUtil.encode(msg));
 			throw new ValidationException(e.getMessage());
 		} catch (Exception e) {
 			pcfRepositoryService.savePcfStatus(pcfRequestModel.getRequestId(), PCFRequestStatusEnum.FAILED);

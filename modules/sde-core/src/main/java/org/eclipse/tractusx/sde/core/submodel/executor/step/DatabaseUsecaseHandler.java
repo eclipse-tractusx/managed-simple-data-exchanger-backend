@@ -30,6 +30,7 @@ import org.eclipse.tractusx.sde.common.model.Submodel;
 import org.eclipse.tractusx.sde.common.submodel.executor.DatabaseUsecaseStep;
 import org.eclipse.tractusx.sde.common.submodel.executor.Step;
 import org.eclipse.tractusx.sde.common.submodel.executor.SubmoduleMapperUsecaseStep;
+import org.eclipse.tractusx.sde.common.utils.LogUtil;
 import org.eclipse.tractusx.sde.core.processreport.repository.SubmodelCustomHistoryGenerator;
 import org.eclipse.tractusx.sde.core.service.SubmodelService;
 import org.eclipse.tractusx.sde.core.utils.SubmoduleUtility;
@@ -98,6 +99,7 @@ public class DatabaseUsecaseHandler extends Step implements DatabaseUsecaseStep 
 	}
 
 	@SneakyThrows
+	@Override
 	public JsonObject readCreatedTwinsBySpecifyColomn(String sematicId, String value) {
 
 		List<Submodel> allSubmodels = submodelService.getAllSubmodels();
@@ -116,7 +118,7 @@ public class DatabaseUsecaseHandler extends Step implements DatabaseUsecaseStep 
 								getDatabaseIdentifierSpecsOfModel())
 						.stream().map(submoduleResponseHandler::mapJsonbjectToFormatedResponse);
 			} catch (Exception e) {
-				log.debug("Exception for {}, {}, {}", sematicId, value, e.getMessage());
+				log.debug(LogUtil.encode("Exception for " + sematicId +", " + value + ", " + e.getMessage()));
 			}
 			return null;
 		}).filter(ele -> Optional.ofNullable(ele).isPresent()).toList();

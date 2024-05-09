@@ -173,7 +173,7 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 		} catch (NoDataFoundException e) {
 			String msg = "The PCF calculated value does not exist in system, please upload PCF value for '" + productId
 					+ "' in systems using Manual/Recurring Upload";
-			log.warn(msg);
+			log.warn(LogUtil.encode(msg));
 			remark = msg;
 			status = PCFRequestStatusEnum.PENDING_DATA_FROM_PROVIDER;
 		}

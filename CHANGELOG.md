@@ -31,6 +31,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 - Remove garbage character from 'edc_request_template' path. Fixed [#147](https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/issues/147).
+- Dependabot bump version fix in pom.xml and DEPENDENCIES file update.
+- Dockerfile image update. [#117](https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/pull/117)
 
 
 ## [2.3.6] - 2024-03-06

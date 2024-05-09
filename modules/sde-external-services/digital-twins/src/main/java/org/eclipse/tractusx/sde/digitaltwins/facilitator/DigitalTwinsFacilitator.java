@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2024 T-Systems International GmbH
- * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022,2024 T-Systems International GmbH
+ * Copyright (c) 2022,2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.CreateSubModelRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellDescriptorRequest;
@@ -32,10 +33,13 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorRe
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellLookupResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelListResponse;
 import org.eclipse.tractusx.sde.digitaltwins.gateways.external.DigitalTwinsFeignClient;
+import org.eclipse.tractusx.sde.digitaltwins.gateways.external.IAccessRuleManagementApi;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +52,7 @@ import lombok.extern.slf4j.Slf4j;
 public class DigitalTwinsFacilitator {
 
 	private final DigitalTwinsFeignClient digitalTwinsFeignClient;
-
+	
 	@Value(value = "${manufacturerId}")
 	private String manufacturerId;
 
@@ -56,6 +60,8 @@ public class DigitalTwinsFacilitator {
 	private boolean managedThirdParty;
 	
 	private final DigitalTwinsUtility digitalTwinsUtility;
+	
+	private final IAccessRuleManagementApi iAccessRuleManagementApi;
 	
 
 	@SneakyThrows
@@ -148,6 +154,22 @@ public class DigitalTwinsFacilitator {
 		}
 		return responseBody;
 	}
+	
+	public JsonNode createAccessControlsRule(String edcBpn, JsonNode request) {
+		return iAccessRuleManagementApi.createAccessControlsRule(edcBpn, request);
+	}
+	
+	public void updateAccessControlsRule(String ruleId, String edcBpn, JsonNode request) {
+		iAccessRuleManagementApi.updateAccessControlsRule(ruleId, edcBpn, request);
+	}
+	
+	public JsonNode getAccessControlsRule(String ruleId, String edcBpn) {
+		return iAccessRuleManagementApi.getAccessControlsRuleById(ruleId, edcBpn);
+	}
+	
+	public void deleteAccessControlsRule(String ruleId, String edcBpn) {
+		iAccessRuleManagementApi.deleteAccessControlsRule(ruleId, edcBpn);
+	}
 
 	public void updateShellDetails(String shellId, ShellDescriptorRequest aasDescriptorRequest,
 			CreateSubModelRequest createSubModelRequest) {
@@ -169,7 +191,11 @@ public class DigitalTwinsFacilitator {
 			
 			if (shellDescriptorResponse != null) {
 				
-				shellDescriptorResponse.getSubmodelDescriptors().forEach(e -> 
+				shellDescriptorResponse.getSubmodelDescriptors()
+				.stream()
+						.filter(ele -> createSubModelRequest == null || (createSubModelRequest != null
+								&& !ele.getIdShort().equals(createSubModelRequest.getIdShort())))
+				.forEach(e -> 
 					aasDescriptorRequest.getSubmodelDescriptors().add(CreateSubModelRequest.builder()
 							.id(e.getId())
 							.idShort(e.getIdShort())
@@ -178,10 +204,15 @@ public class DigitalTwinsFacilitator {
 							.description(e.getDescription())
 							.build())
 				);
-				
 			}
 			
+			if (StringUtils.isBlank(aasDescriptorRequest.getIdShort()) && (shellDescriptorResponse != null
+					&& StringUtils.isNotBlank(shellDescriptorResponse.getIdShort()))) {
+				aasDescriptorRequest.setIdShort(shellDescriptorResponse.getIdShort());
+			}
+				
 			aasDescriptorRequest.setId(shellId);
+			log.debug(aasDescriptorRequest.toJsonString());
 			
 			ResponseEntity<Void> updateShellDescriptorByShellId = digitalTwinsFeignClient
 					.updateShellDescriptorByShellId(digitalTwinsUtility.encodeValueAsBase64Utf8(shellId),

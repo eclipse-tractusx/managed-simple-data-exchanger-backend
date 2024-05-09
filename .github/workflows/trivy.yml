@@ -28,8 +28,8 @@ on:
   # Trigger manually
 
 jobs:
-
-  analyze-config:
+  analyze:
+    name: Analyze
     runs-on: ubuntu-latest
     permissions:
       actions: read

@@ -31,6 +31,7 @@ import org.eclipse.tractusx.sde.common.exception.ServiceException;
 import org.eclipse.tractusx.sde.common.exception.ValidationException;
 import org.eclipse.tractusx.sde.common.model.PagingResponse;
 import org.eclipse.tractusx.sde.common.submodel.executor.DatabaseUsecaseStep;
+import org.eclipse.tractusx.sde.common.utils.LogUtil;
 import org.eclipse.tractusx.sde.edc.model.request.ConsumerRequest;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.eclipse.tractusx.sde.edc.util.EDCAssetUrlCacheService;
@@ -155,7 +156,7 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 			pcfRepositoryService.savePcfRequestData(pcfRequestModel.getRequestId(), pcfRequestModel.getProductId(),
 					pcfRequestModel.getBpnNumber(), pcfRequestModel.getMessage(), PCFTypeEnum.PROVIDER,
 					PCFRequestStatusEnum.FAILED, remark);
-			log.warn(LogUtil.encode(msg));
+			log.warn(LogUtil.encode(remark));
 			throw new ValidationException(e.getMessage());
 		} catch (Exception e) {
 			pcfRepositoryService.savePcfStatus(pcfRequestModel.getRequestId(), PCFRequestStatusEnum.FAILED);

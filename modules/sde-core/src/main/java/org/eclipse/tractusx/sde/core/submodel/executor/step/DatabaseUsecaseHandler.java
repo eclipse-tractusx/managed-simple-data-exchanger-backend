@@ -60,6 +60,7 @@ public class DatabaseUsecaseHandler extends Step implements DatabaseUsecaseStep 
 	
 
 	@SneakyThrows
+	@Override
 	public JsonNode run(Integer rowIndex, ObjectNode jsonObject, String processId, PolicyModel policy) {
 
 		Submodel schemaObj = submodelService.findSubmodelByNameAsSubmdelObject(getNameOfModel());
@@ -85,6 +86,7 @@ public class DatabaseUsecaseHandler extends Step implements DatabaseUsecaseStep 
 	}
 
 	@SneakyThrows
+	@Override
 	public List<JsonObject> readCreatedTwins(String refProcessId, String fetchNotDeletedRecord) {
 		Submodel schemaObj = submodelService.findSubmodelByNameAsSubmdelObject(getNameOfModel());
 		List<String> columns = submoduleUtility.getTableColomnHeader(schemaObj);
@@ -130,6 +132,7 @@ public class DatabaseUsecaseHandler extends Step implements DatabaseUsecaseStep 
 	}
 
 	@SneakyThrows
+	@Override
 	public JsonObject readCreatedTwinsDetails(String uuid) {
 
 		Submodel schemaObj = submodelService.findSubmodelByNameAsSubmdelObject(getNameOfModel());
@@ -141,6 +144,7 @@ public class DatabaseUsecaseHandler extends Step implements DatabaseUsecaseStep 
 	}
 
 	@SneakyThrows
+	@Override
 	public int getUpdatedData(String processId) {
 		Submodel schemaObj = submodelService.findSubmodelByNameAsSubmdelObject(getNameOfModel());
 		String tableName = submoduleUtility.getTableName(schemaObj);

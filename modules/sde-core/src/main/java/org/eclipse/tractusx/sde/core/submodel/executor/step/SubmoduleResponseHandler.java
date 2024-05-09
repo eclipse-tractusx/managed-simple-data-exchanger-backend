@@ -61,14 +61,12 @@ public class SubmoduleResponseHandler extends Step  implements SubmoduleMapperUs
 				removeNullAndEmptyElementsFromJson(removeNullAndEmptyElementsFromJson(valueReplacer)));
 	}
 
-	@SuppressWarnings("deprecation")
 	public static String removeNullAndEmptyElementsFromJson(String jsonString) {
 		if (jsonString == null) {
 			return jsonString;
 		}
 		try {
-			JsonParser parser = new JsonParser();
-			JsonElement element = parser.parse(jsonString);
+			JsonElement element = JsonParser.parseString(jsonString);
 			cleanByTree(element);
 			jsonString = new GsonBuilder().disableHtmlEscaping().create().toJson(element);
 			return jsonString;
@@ -78,8 +76,8 @@ public class SubmoduleResponseHandler extends Step  implements SubmoduleMapperUs
 	}
 
 	private static void cleanByTree(JsonElement e1) {
-		if (e1 == null || e1.isJsonNull()) {
-		} else if (e1.isJsonArray()) {
+		if (e1 == null || e1.isJsonNull()) {} 
+		else if (e1.isJsonArray()) {
 			for (Iterator<JsonElement> it = e1.getAsJsonArray().iterator(); it.hasNext();) {
 				extracted(it);
 			}

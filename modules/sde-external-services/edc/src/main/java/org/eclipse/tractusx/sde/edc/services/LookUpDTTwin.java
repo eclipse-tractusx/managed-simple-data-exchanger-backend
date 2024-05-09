@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.KeyValuePair;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.MultiLanguage;
@@ -40,6 +41,7 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelResponse;
 import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsUtility;
 import org.eclipse.tractusx.sde.digitaltwins.gateways.external.EDCDigitalTwinProxyForLookUp;
 import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedByIdResponse;
+import org.eclipse.tractusx.sde.edc.model.request.QueryDataOfferRequest;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -83,7 +85,7 @@ public class LookUpDTTwin {
 		String endpoint = edrToken.getEndpoint();
 		String dtOfferUrl = dtOffer.getConnectorOfferUrl();
 		Map<String, String> header = new HashMap<>();
-		header.put(edrToken.getAuthKey(), edrToken.getAuthCode());
+		header.put("authorization", edrToken.getAuthorization());
 		submodel = StringUtils.isBlank(submodel) ? "" : submodel;
 
 		if (StringUtils.isNotBlank(bpnNumber))
@@ -192,26 +194,29 @@ public class LookUpDTTwin {
 					.filter(e -> e.getLanguage().contains("en")).map(MultiLanguage::getText).findFirst();
 
 			String description = descriptionOptional.isPresent() ? descriptionOptional.get() : "";
-			
-			QueryDataOfferModel qdm = QueryDataOfferModel.builder()
-						.publisher(manufacturerBPNId)
-						.manufacturerPartId(manufacturerPartId)
-						.connectorOfferUrl(connectorInfo[1])
-						.assetId(assetInfo[1])
-						.type(subModelResponse.getIdShort())
-						.sematicVersion(sematicId)
-						.title(shellDescriptorResponse.getIdShort())
-						.description(description)
-						.build();
 
+			QueryDataOfferModel qdm = QueryDataOfferModel.builder()
+					.publisher(manufacturerBPNId)
+					.manufacturerPartId(manufacturerPartId)
+					.connectorOfferUrl(connectorInfo[1])
+					.assetId(assetInfo[1])
+					.type(subModelResponse.getIdShort())
+					.sematicVersion(sematicId)
+					.title(shellDescriptorResponse.getIdShort())
+					.description(description)
+					.build();
+			
 			queryOnDataOffers.add(qdm);
 		}
 	}
 
-	public List<QueryDataOfferModel> getEDCOffer(List<String> assetId, String connectorOfferUrl) {
-		String joinStr = StringUtils.join(assetId, "\",\"");
+	public List<QueryDataOfferModel> getEDCOffer(List<QueryDataOfferRequest> assetId,
+			Pair<String, String> queryDataOfferRequestKey) {
+		
+		String joinStr = StringUtils.join(assetId.stream().map(QueryDataOfferRequest::getAssetId).toList(), "\",\"");
 		String filterExpression = String.format(filterExpressionTemplate, joinStr);
-		return catalogResponseBuilder.queryOnDataOffers(connectorOfferUrl, 0, 1000, filterExpression);
+		return catalogResponseBuilder.queryOnDataOffers(queryDataOfferRequestKey.getLeft(),
+				queryDataOfferRequestKey.getRight(), 0, 1000, filterExpression);
 	}
 
 	private String getSpecificKeyFromList(ShellDescriptorResponse shellDescriptorResponse, String key) {

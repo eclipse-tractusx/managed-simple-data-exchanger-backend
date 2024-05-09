@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2024 T-Systems International GmbH
- * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022,2024 T-Systems International GmbH
+ * Copyright (c) 2022,2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -22,11 +22,13 @@ package org.eclipse.tractusx.sde.edc.model.contractnegotiation;
 
 import java.util.Map;
 
+import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyRequest;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -44,23 +46,19 @@ public class ContractNegotiations {
 
 	@JsonProperty("@context")
 	@Builder.Default
-	private Map<String, String> context = Map.of("odrl", "http://www.w3.org/ns/odrl/2/");
+	private Map<String, String> context = Map.of("odrl", "http://www.w3.org/ns/odrl/2/",  
+			"edc", "https://w3id.org/edc/v0.0.1/ns/");
 
 	@JsonProperty("@type")
 	@Builder.Default
-	private String type = "NegotiationInitiateRequestDto";
+	private String type = "ContractRequest";
 
 	@JsonProperty("counterPartyAddress")
 	private String connectorAddress;
 
 	private String protocol;
 
-	@JsonProperty("counterPartyId")
-	private String connectorId;
-
-	private String providerId;
-
-	private Offer offer;
+	private PolicyRequest policy;
 	
 	@SneakyThrows
 	public String toJsonString() {

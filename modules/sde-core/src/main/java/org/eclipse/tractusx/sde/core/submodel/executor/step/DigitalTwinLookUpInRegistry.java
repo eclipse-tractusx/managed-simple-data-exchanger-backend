@@ -143,7 +143,7 @@ public class DigitalTwinLookUpInRegistry {
 		try {
 
 			Map<String, String> header = new HashMap<>();
-			header.put(edrToken.getAuthKey(), edrToken.getAuthCode());
+			header.put("authorization", edrToken.getAuthorization());
 			header.put("Edc-Bpn", bpnForRemoteRegistry);
 
 			ShellLookupResponse shellLookup = eDCDigitalTwinProxyForLookUp.shellLookup(new URI(endpoint),

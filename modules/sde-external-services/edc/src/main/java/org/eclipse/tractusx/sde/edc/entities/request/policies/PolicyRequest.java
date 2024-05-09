@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022, 2024 T-Systems International GmbH
- * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022,2024 T-Systems International GmbH
+ * Copyright (c) 2022,2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -47,8 +47,15 @@ public class PolicyRequest {
 
 	@JsonProperty("@type")
 	@Builder.Default
-	private String type = "Policy";
-
+	private String type = "Set";
+	
+	@JsonProperty("@context")
+	@Builder.Default
+	private String context = "http://www.w3.org/ns/odrl.jsonld";
+	
+	@JsonProperty("@id")
+	private String id;
+	
 	@JsonProperty("odrl:permission")
 	private Object permissions;
 
@@ -61,7 +68,11 @@ public class PolicyRequest {
 	private Map<String, String> extensibleProperties;
 
 	@JsonProperty("odrl:target")
-	private String target;
+	private Map<String, String> target;
+	
+	@JsonProperty("odrl:assigner")
+	private Map<String, String> assigner;
+	
 
 	@SneakyThrows
 	public String toJsonString() {

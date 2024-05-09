@@ -53,18 +53,20 @@ public class EDCAssetLookUp {
 	public List<QueryDataOfferModel> getEDCAssetsByType(String bpnNumber, String assetType) {
 
 		List<ConnectorInfo> connectorInfos = portalProxyService.fetchConnectorInfo(List.of(bpnNumber));
+		
+		List<ConnectorInfo> distinctList = connectorInfos.stream().distinct().toList();
 
 		List<QueryDataOfferModel> offers = new ArrayList<>();
 
 		String filterExpression = String.format(filterExpressionTemplate, assetType);
 
-		connectorInfos.stream().forEach(
+		distinctList.stream().forEach(
 				connectorInfo -> connectorInfo.getConnectorEndpoint().parallelStream().distinct().forEach(connector -> {
 					try {
 						if (!connector.contains(consumerHost)) {
 							
 							List<QueryDataOfferModel> queryDataOfferModel = catalogResponseBuilder
-									.queryOnDataOffers(connector, 0, 100, filterExpression);
+									.queryOnDataOffers(connector, bpnNumber, 0, 100, filterExpression);
 
 							log.info("For Connector " + connector + ", found " + assetType + " assets :"
 									+ queryDataOfferModel.size());
@@ -86,4 +88,5 @@ public class EDCAssetLookUp {
 
 		return offers;
 	}
+
 }

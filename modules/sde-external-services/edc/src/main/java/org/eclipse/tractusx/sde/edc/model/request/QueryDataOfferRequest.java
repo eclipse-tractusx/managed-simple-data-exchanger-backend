@@ -44,6 +44,8 @@ public class QueryDataOfferRequest {
 
 	private String connectorOfferUrl;
 	
+	private String publisher;
+	
 	private PolicyModel policy;
 
 }

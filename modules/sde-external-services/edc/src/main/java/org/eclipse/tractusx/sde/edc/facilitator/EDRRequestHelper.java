@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2023, 2024 T-Systems International GmbH
- * Copyright (c) 2023, 2024 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023,2024 T-Systems International GmbH
+ * Copyright (c) 2023,2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -34,6 +34,9 @@ import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedByIdResponse;
 import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedResponse;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -50,11 +53,11 @@ public class EDRRequestHelper extends AbstractEDCStepsHelper {
 	public String edrRequestInitiate(String providerUrl, String providerId, String offerId, String assetId,
 			ActionRequest action, Map<String, String> extensibleProperty) {
 
-		ContractNegotiations contractNegotiations = contractMapper
-				.prepareContractNegotiations(providerUrl, offerId, assetId, providerId, action);
-		
+		ContractNegotiations contractNegotiations = contractMapper.prepareContractNegotiations(providerUrl, offerId,
+				assetId, providerId, action);
+
 		log.info(contractNegotiations.toJsonString());
-		
+
 		AcknowledgementId acknowledgementId = edrApiProxy.edrCacheCreate(new URI(consumerHostWithDataPath),
 				contractNegotiations, getAuthHeader());
 		return acknowledgementId.getId();
@@ -62,21 +65,41 @@ public class EDRRequestHelper extends AbstractEDCStepsHelper {
 
 	@SneakyThrows
 	public List<EDRCachedResponse> getEDRCachedByAsset(String assetId) {
-		return edrApiProxy.getEDRCachedByAsset(new URI(consumerHostWithDataPath), assetId, getAuthHeader());
+		String requestbody = """
+				{
+				    "@context": {
+				        "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+				    },
+				    "@type": "QuerySpec",
+				    "offset": 0,
+				    "limit": 10,
+				    "sortOrder": "DESC",
+				    "sortField": "assetId",
+				    "filterExpression": [
+				        {
+				            "operandLeft": "assetId",
+				            "operator": "=",
+				            "operandRight": "%s"
+				        }
+				    ]
+				}
+				""";
+		JsonNode requestBody = new ObjectMapper().readTree(String.format(requestbody, assetId));
+
+		return edrApiProxy.getEDRCachedByAsset(new URI(consumerHostWithDataPath), requestBody, getAuthHeader());
 	}
 
 	@SneakyThrows
 	public EDRCachedByIdResponse getEDRCachedByTransferProcessId(String transferProcessId) {
-		return edrApiProxy.getEDRCachedByTransferProcessId(new URI(consumerHostWithDataPath), transferProcessId,
+		return edrApiProxy.getEDRCachedByTransferProcessId(new URI(consumerHostWithDataPath), transferProcessId, true,
 				getAuthHeader());
 	}
 
 	@SneakyThrows
 	public Object getDataFromProvider(EDRCachedByIdResponse authorizationToken, String endpoint) {
 		Map<String, String> authHeader = new HashMap<>();
-		authHeader.put(authorizationToken.getAuthKey(), authorizationToken.getAuthCode());
-		return edrApiProxy.getActualDataFromProviderDataPlane(new URI(endpoint),
-				authHeader);
+		authHeader.put("authorization", authorizationToken.getAuthorization());
+		return edrApiProxy.getActualDataFromProviderDataPlane(new URI(endpoint), authHeader);
 	}
 
 }

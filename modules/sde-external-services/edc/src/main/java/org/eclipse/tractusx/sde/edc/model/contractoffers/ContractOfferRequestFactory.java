@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2024 T-Systems International GmbH
- * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022,2024 T-Systems International GmbH
+ * Copyright (c) 2022,2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -32,7 +32,7 @@ import lombok.SneakyThrows;
 public class ContractOfferRequestFactory {
 
 	@SneakyThrows
-	public ObjectNode getContractOfferRequest(String providerUrl, Integer limit, Integer offset,
+	public ObjectNode getContractOfferRequest(String providerUrl, String counterPartyId, Integer limit, Integer offset,
 			String filterExpression) {
 
 		if (!StringUtils.isBlank(filterExpression))
@@ -45,6 +45,7 @@ public class ContractOfferRequestFactory {
 				 "@context": {},
 				 "protocol": "dataspace-protocol-http",
 				 "counterPartyAddress": "%s",
+				 "counterPartyId":"%s",
 				 "querySpec": {
 				 "offset": %s,
 				 "limit": %s
@@ -52,7 +53,7 @@ public class ContractOfferRequestFactory {
 				 }
 				}
 				""";
-		String jsonString = String.format(formatSchema, providerUrl, offset, limit,
+		String jsonString = String.format(formatSchema, providerUrl, counterPartyId, offset, limit,
 				filterExpression);
 
 		return (ObjectNode) new ObjectMapper().readTree(jsonString);

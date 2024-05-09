@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2023, 2024 T-Systems International GmbH
- * Copyright (c) 2023, 2024 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023,2024 T-Systems International GmbH
+ * Copyright (c) 2023,2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -57,11 +57,8 @@ public class EDRCachedResponse {
 
 	@JsonProperty(EDCAssetConstant.ASSET_PREFIX + "providerId")
 	private String providerId;
-
-	@JsonProperty("tx:edrState")
-	private String edrState;
-
-	@JsonProperty("tx:expirationDate")
-	private String expirationDate;
+	
+	@JsonProperty(EDCAssetConstant.ASSET_PREFIX + "contractNegotiationId")
+	private String contractNegotiationId;
 
 }

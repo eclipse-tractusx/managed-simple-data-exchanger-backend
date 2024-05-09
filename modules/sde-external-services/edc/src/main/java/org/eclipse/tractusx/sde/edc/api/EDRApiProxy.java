@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2023 T-Systems International GmbH
- * Copyright (c) 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023,2024 T-Systems International GmbH
+ * Copyright (c) 2023,2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -37,20 +37,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 @FeignClient(value = "EDRApiProxy", url = "placeholder")
 public interface EDRApiProxy {
 
-	@PostMapping(path = "/edrs", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(path = "/v2/edrs", consumes = MediaType.APPLICATION_JSON_VALUE)
 	AcknowledgementId edrCacheCreate(URI url, @RequestBody ContractNegotiations requestBody,
 			@RequestHeader Map<String, String> requestHeader);
 
-	@GetMapping(path = "/edrs", consumes = MediaType.APPLICATION_JSON_VALUE)
-	List<EDRCachedResponse> getEDRCachedByAsset(URI url, @RequestParam("assetId") String assetId,
+	@PostMapping(path = "/v2/edrs/request", consumes = MediaType.APPLICATION_JSON_VALUE)
+	List<EDRCachedResponse> getEDRCachedByAsset(URI url, @RequestBody JsonNode requestBody,
 			@RequestHeader Map<String, String> requestHeader);
 
-	@GetMapping(path = "/edrs/{transferProcessId}")
+	@GetMapping(path = "/v2/edrs/{transferProcessId}/dataaddress")
 	EDRCachedByIdResponse getEDRCachedByTransferProcessId(URI url,
-			@PathVariable("transferProcessId") String transferProcessId,
+			@PathVariable("transferProcessId") String transferProcessId, @RequestParam("auto_refresh") boolean autoRefresh,
 			@RequestHeader Map<String, String> requestHeader);
 
 	@GetMapping

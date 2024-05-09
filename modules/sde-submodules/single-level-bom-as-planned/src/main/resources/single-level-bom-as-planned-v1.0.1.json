@@ -8,7 +8,7 @@
 	"semantic_id": "urn:bamm:io.catenax.single_level_bom_as_planned:1.0.1#SingleLevelBomAsPlanned",
 	"title": "Single Level Bom AsPlanned",
 	"shortDescription": "BoM As-Planned - Submodel SingleLevelBomAsPlanned",
-	"description":"The single-level Bill of Material represents one sub-level of an assembly and does not include any lower-level subassemblies. In As-Planned lifecycle state all variants are covered ('120% BOM'). It includes multiple suppliers for the same component.",
+	"description": "The single-level Bill of Material represents one sub-level of an assembly and does not include any lower-level subassemblies. In As-Planned lifecycle state all variants are covered ('120% BOM'). It includes multiple suppliers for the same component.",
 	"items": {
 		"type": "object",
 		"required": [
@@ -20,8 +20,7 @@
 			"measurement_unit",
 			"created_on"
 		],
-		"dependentRequired": {
-		},
+		"dependentRequired": {},
 		"properties": {
 			"parent_uuid": {
 				"type": [
@@ -41,7 +40,7 @@
 				],
 				"minLength": 1,
 				"title": "Parent Manufacturer Part ID",
-				"description":"The Parent Manufacturer Part ID of the parent object Manufacturer Part ID, to identify parent object in digital twins.",
+				"description": "The Parent Manufacturer Part ID of the parent object Manufacturer Part ID, to identify parent object in digital twins.",
 				"examples": [
 					"37754B7-76"
 				]
@@ -64,7 +63,7 @@
 				],
 				"minLength": 1,
 				"title": "Manufacturer Part ID",
-				"description":"The ID of the type/catalog part (of which the serialized part is an instance of) from the manufacturer.",
+				"description": "The ID of the type/catalog part (of which the serialized part is an instance of) from the manufacturer.",
 				"examples": [
 					"37754B7-76"
 				]
@@ -112,7 +111,7 @@
 				],
 				"format": "date-time",
 				"title": "Last Modified On",
-				"description":"Timestamp when the relationship between parent part and child part was last modified.",
+				"description": "Timestamp when the relationship between parent part and child part was last modified.",
 				"examples": [
 					"2022-02-03T14:48:54.709Z"
 				]

@@ -81,13 +81,21 @@ public class CsvHandlerService {
             }
 
             UUID uuid = UUID.randomUUID();
+            
+            if (fileName.contains("..") || fileName.contains("/") || fileName.contains("\\")) {
+        		throw new IllegalArgumentException("Invalid csv filename");
+        	}
+            
             fileName = fileName.replace(
                     fileName.substring(0, fileName.lastIndexOf(".")),
                     uuid.toString()
             );
             Path targetLocation = this.fileStorageLocation.resolve(fileName);
 
-
+            if (!targetLocation.startsWith(this.fileStorageLocation + File.separator)) {
+        		throw new IllegalArgumentException("Invalid csv filename");
+        	}
+            
             Files.copy(stream, targetLocation, StandardCopyOption.REPLACE_EXISTING);
             stream.close();
 

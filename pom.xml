@@ -28,7 +28,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.1.6</version>
+		<version>3.2.5</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
@@ -41,11 +41,9 @@
 
 	<properties>
 		<java.version>17</java.version>
-		<log4j2.version>2.17.1</log4j2.version>
-		<spring-cloud.version>2022.0.3</spring-cloud.version>
-		<org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
-		<org.mapstruct.processor.version>1.4.2.Final</org.mapstruct.processor.version>
-		<snakey-version>2.0</snakey-version>
+		<spring-cloud.version>2023.0.1</spring-cloud.version>
+		<org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
+		<org.mapstruct.processor.version>1.5.5.Final</org.mapstruct.processor.version>
 	</properties>
 
 	<modules>
@@ -95,27 +93,7 @@
 					<groupId>logback-classic</groupId>
 					<artifactId>slf4j-log4j12</artifactId>
 				</exclusion>
-				<exclusion>
-					<groupId>ch.qos.logback</groupId>
-					<artifactId>logback-classic</artifactId>
-				</exclusion>
 			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>1.4.14</version>
-			<exclusions>
-				<exclusion>
-					<groupId>ch.qos.logback</groupId>
-					<artifactId>logback-core</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-core</artifactId>
-			<version>1.4.14</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
@@ -148,16 +126,7 @@
 					<groupId>org.springframework.security</groupId>
 					<artifactId>spring-security-config</artifactId>
 				</exclusion>
-				<exclusion>
-					<groupId>org.springframework.security</groupId>
-					<artifactId>spring-security-core</artifactId>
-				</exclusion>
 			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-core</artifactId>
-			<version>6.2.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -173,7 +142,7 @@
 		<dependency>
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct</artifactId>
-			<version>1.4.2.Final</version>
+			<version>${org.mapstruct.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -191,7 +160,6 @@
 		<dependency>
 			<groupId>org.yaml</groupId>
 			<artifactId>snakeyaml</artifactId>
-			<version>${snakey-version}</version>
 		</dependency>
 	</dependencies>
 	<dependencyManagement>
@@ -219,7 +187,7 @@
 				<plugin>
 					<groupId>org.eclipse.dash</groupId>
 					<artifactId>license-tool-plugin</artifactId>
-					<version>1.0.3-SNAPSHOT</version>
+					<version>1.1.0</version>
 					<configuration>
 						<projectId>automotive.tractusx</projectId>
 						<!-- name of dependencies file -->

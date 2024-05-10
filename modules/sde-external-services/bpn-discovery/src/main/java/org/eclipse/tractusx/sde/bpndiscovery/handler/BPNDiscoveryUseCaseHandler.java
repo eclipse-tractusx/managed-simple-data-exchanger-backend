@@ -96,7 +96,7 @@ public class BPNDiscoveryUseCaseHandler extends Step implements BPNDiscoveryUsec
 
 	private Map<String, String> generateBPNDiscoveryIdentifiersIds(JsonNode jsonObject) {
 		return getBPNDiscoverySpecsOfModel().entrySet().stream().map(entry -> {
-			String value = JsonObjectUtility.getValueFromJsonObjectAsString(jsonObject, entry.getValue().getAsString());
+			String value = JsonObjectUtility.getValueFromJsonObjectAsString(jsonObject, extractExactFieldName(entry.getValue().getAsString()));
 			if (StringUtils.isBlank(value)) {
 				value = entry.getValue().getAsString();
 			}

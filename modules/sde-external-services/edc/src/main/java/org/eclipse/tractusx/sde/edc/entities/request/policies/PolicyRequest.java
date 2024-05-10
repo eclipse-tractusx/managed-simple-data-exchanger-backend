@@ -56,6 +56,9 @@ public class PolicyRequest {
 	@JsonProperty("@id")
 	private String id;
 	
+	@JsonProperty("profile")
+	private String profile;
+	
 	@JsonProperty("odrl:permission")
 	private Object permissions;
 

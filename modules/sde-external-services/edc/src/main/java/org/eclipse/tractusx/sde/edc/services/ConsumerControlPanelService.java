@@ -21,12 +21,14 @@
 package org.eclipse.tractusx.sde.edc.services;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
@@ -81,10 +83,10 @@ public class ConsumerControlPanelService {
 	private final ContractNegotiationService contractNegotiationService;
 	private final LookUpDTTwin lookUpDTTwin;
 
-	public List<QueryDataOfferModel> queryOnDataOffers(String manufacturerPartId, String searchBpnNumber,
+	public Set<QueryDataOfferModel> queryOnDataOffers(String manufacturerPartId, String searchBpnNumber,
 			String submodel, Integer offset, Integer limit) {
 
-		List<QueryDataOfferModel> queryOnDataOffers = new ArrayList<>();
+		List<QueryDataOfferModel> queryOnDataOffers = new LinkedList<>();
 		List<String> bpnList = null;
 
 		// 1 find bpn if empty using BPN discovery
@@ -122,7 +124,7 @@ public class ConsumerControlPanelService {
 				}
 			}
 		}
-		return queryOnDataOffers;
+		return new HashSet<>(queryOnDataOffers);
 
 	}
 

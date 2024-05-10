@@ -11,12 +11,12 @@
 		{
 			"edc:operandLeft": "https://w3id.org/edc/v0.0.1/ns/type",
 			"edc:operator": "=",
-			"edc:operandRight": "data.core.digitalTwinRegistry"
+			"edc:operandRight": "${assetType}"
 		},
 		{
-			"edc:operandLeft": "https://w3id.org/edc/v0.0.1/ns/registry",
+			"edc:operandLeft": "https://w3id.org/edc/v0.0.1/ns/${registryType}",
 			"edc:operator": "=",
-			"edc:operandRight": "${digitalTwinRegistry}"
+			"edc:operandRight": "${baseUrl}"
 		}
 	]
 }

@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2024 T-Systems International GmbH
- * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022,2024 T-Systems International GmbH
+ * Copyright (c) 2022,2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -27,7 +27,9 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.tractusx.sde.common.entities.Policies;
 import org.eclipse.tractusx.sde.core.controller.ConsumerController;
@@ -66,7 +68,7 @@ class ConsumerControllerTest {
 	@Test
 	void testQueryOnDataOfferWithoutOfferModel() throws Exception {
 		when(consumerControlPanelService.queryOnDataOffers((String) any(), (String) any(), (String) any(), anyInt(),
-				anyInt())).thenReturn(new ArrayList<>());
+				anyInt())).thenReturn(new HashSet<>());
 		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/query-data-offers")
 				.param("bpnNumber", "foo");
 
@@ -78,7 +80,7 @@ class ConsumerControllerTest {
 
 	@Test
 	void testQueryOnDataOffersWithOfferModel() throws Exception {
-		ArrayList<QueryDataOfferModel> queryDataOfferModelList = new ArrayList<>();
+		Set<QueryDataOfferModel> queryDataOfferModelList = new HashSet<>();
 		queryDataOfferModelList.add(QueryDataOfferModel.builder()
 				.assetId("foo")
 				.connectorId("test")

@@ -45,9 +45,9 @@ public class EDCAssetLookUp {
 
 	private String filterExpressionTemplate = """
 			 "filterExpression": [{
-			    "operandLeft": "https://w3id.org/edc/v0.0.1/ns/type",
-			    "operator": "=",
-			    "operandRight": "%s"
+                "operandLeft": "'http://purl.org/dc/terms/type'.'@id'",
+                "operator": "=",
+                "operandRight": "https://w3id.org/catenax/taxonomy#%s"
 			}]""";
 
 	public List<QueryDataOfferModel> getEDCAssetsByType(String bpnNumber, String assetType) {

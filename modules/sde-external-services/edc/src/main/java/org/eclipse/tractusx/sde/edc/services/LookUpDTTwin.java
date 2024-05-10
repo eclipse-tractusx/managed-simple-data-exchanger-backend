@@ -30,6 +30,7 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.eclipse.tractusx.sde.common.configuration.properties.SDEConfigurationProperties;
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.KeyValuePair;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.MultiLanguage;
@@ -43,7 +44,6 @@ import org.eclipse.tractusx.sde.digitaltwins.gateways.external.EDCDigitalTwinPro
 import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedByIdResponse;
 import org.eclipse.tractusx.sde.edc.model.request.QueryDataOfferRequest;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import feign.FeignException;
@@ -62,11 +62,7 @@ public class LookUpDTTwin {
 
 	private final CatalogResponseBuilder catalogResponseBuilder;
 
-	@Value(value = "${digital-twins.managed.thirdparty:false}")
-	private boolean managedThirdParty;
-
-	@Value(value = "${manufacturerId}")
-	private String manufacturerId;
+	private final SDEConfigurationProperties sdeConfigurationProperties;
 
 	String filterExpressionTemplate = """
 			"filterExpression": [
@@ -88,8 +84,8 @@ public class LookUpDTTwin {
 		header.put("authorization", edrToken.getAuthorization());
 		submodel = StringUtils.isBlank(submodel) ? "" : submodel;
 
-		if (StringUtils.isNotBlank(bpnNumber))
-			header.put("Edc-Bpn", bpnNumber);
+		if (StringUtils.isNotBlank(sdeConfigurationProperties.getManufacturerId()))
+			header.put("Edc-Bpn", sdeConfigurationProperties.getManufacturerId());
 
 		if (StringUtils.isBlank(manufacturerPartId)) {
 			return lookUpAllShellForBPN(submodel, endpoint, dtOfferUrl, header, offset, limit);

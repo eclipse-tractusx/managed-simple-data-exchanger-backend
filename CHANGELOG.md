@@ -29,7 +29,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Supporting new submodel Singlelevelbomasplanned.
 - Support EDC 7.
 - Added new files for digital twin access rule support.
-- Refactor code for pcf, dt access API, EDC 7.   
+- Refactor code for pcf, dt access API, EDC 7. 
+- Dt access api use in digital twin processing  
 
 ### Fixed
 - Remove garbage character from 'edc_request_template' path. Fixed [#147](https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/issues/147).

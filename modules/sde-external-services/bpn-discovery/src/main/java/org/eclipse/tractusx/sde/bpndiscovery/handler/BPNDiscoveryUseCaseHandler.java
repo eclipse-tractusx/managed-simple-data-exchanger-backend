@@ -42,7 +42,7 @@ import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
-@Service
+@Service("bPNDiscoveryUseCaseHandler")
 @RequiredArgsConstructor
 public class BPNDiscoveryUseCaseHandler extends Step implements BPNDiscoveryUsecaseStep {
 

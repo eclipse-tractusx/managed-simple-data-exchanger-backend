@@ -39,7 +39,7 @@ import com.google.gson.JsonParser;
 
 import lombok.RequiredArgsConstructor;
 
-@Service("SubmoduleResponseHandler")
+@Service("submoduleResponseHandler")
 @RequiredArgsConstructor
 public class SubmoduleResponseHandler extends Step  implements SubmoduleMapperUsecaseStep {
 

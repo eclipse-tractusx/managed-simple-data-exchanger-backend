@@ -41,7 +41,7 @@ import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
-@Service("EDCUsecaseHandler")
+@Service("eDCUsecaseHandler")
 @RequiredArgsConstructor
 public class EDCUsecaseHandler extends Step implements EDCUsecaseStep {
 

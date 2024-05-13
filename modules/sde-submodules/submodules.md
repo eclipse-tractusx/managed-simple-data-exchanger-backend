@@ -1,4 +1,4 @@
-# SDE Submodules
+ # SDE Submodules
 ---
 ## Description
 This is maven package mainly build for supporting different semantic submodels like SerialPartTypization, Batch, AssemblyPartRelationship etc. 
@@ -8,14 +8,19 @@ Currently SDE supports below submodels.
  
 ### Supported Models
 
-#### [serial-part-typization in Version 1.1.1]
+#### [serial-part in Version 1.0.0]
+#### [serial-part in Version 3.0.0]
 #### [batch in Version 2.0.0]
-#### [assembly-part-relationship in Version 1.1.1]
-#### [partAsPlanned in Version 1.0.0]
-#### [PartTypeInformation in Version 1.0.0]
-#### [singleLevelBoMAsPlanned in Version 1.0.1]
-#### [partSiteInformationAsPlanned in Version 1.0.0]
-#### [SingleLevelUsageAsBuilt in Version 1.0.1]
+#### [batch in Version 3.0.0]
+#### [single-level-bom-as-built in Version 1.0.0]
+#### [single-level-bom-as-built in Version 3.0.0]
+#### [part-as-planned in Version 1.0.0]
+#### [part-type-information in Version 1.0.0]
+#### [part-site-information-as-planned in Version 1.0.0]
+#### [single-level-bom-as-planned in Version 1.0.1]
+#### [single-level-bom-as-planned in Version 3.0.0]
+#### [Single-level-usage-as-built in Version 1.0.1]
+#### [Single-level-usage-as-built in Version 3.0.0]
 #### [Product Carbon Footprint(PCF) in Version 6.0.0]
 
 ### How we can add Submodels?
@@ -37,11 +42,18 @@ Once your maven module ready just do the clean build and install so submodel wil
 
 
 
-[serial-part-typization in Version 1.1.1]: serial-part-typization/serial-part-typization.md
+[serial-part in Version 1.0.0]: serial-part/serial-part.md
+[serial-part in Version 3.0.0]: serial-part/serial-part.md
 [batch in Version 2.0.0]: batch/batch.md
-[assembly-part-relationship in Version 1.1.1]: assembly-part-relationship/assembly-part-relationship.md
-[partAsPlanned in Version 1.0.0]: part-as-planned/part-as-planned.md
-[singleLevelBoMAsPlanned in Version 1.0.1]: single-level-bom-as-planned/single-level-bom-as-planned.md
-[partSiteInformationAsPlanned in Version 1.0.0]: part-site-information-as-planned/part-site-information-as-planned.md
-[SingleLevelUsageAsBuilt in Version 1.0.1]: single-level-usage-as-built/single-level-usage-as-built.md
-[Product Carbon Footprint(PCF) in Version 6.0.0]: pcf/pcf.md
+[batch in Version 3.0.0]: batch/batch.md
+[single-level-bom-as-built in Version 1.0.0]: single-level-bom-as-built/single-level-bom-as-built.md
+[single-level-bom-as-built in Version 3.0.0]: single-level-bom-as-built/single-level-bom-as-built.md
+[part-as-planned in Version 1.0.0]: part-as-planned/part-as-planned.md
+[part-type-information in Version 1.0.0]: part-type-information/part-type-information.md
+[part-site-information-as-planned in Version 1.0.0]: part-site-information-as-planned/part-site-information-as-planned.md
+[single-level-bom-as-planned in Version 1.0.1]: single-level-bom-as-planned/single-level-bom-as-planned.md
+[single-level-bom-as-planned in Version 3.0.0]: single-level-bom-as-planned/single-level-bom-as-planned.md
+[Single-level-usage-as-built in Version 1.0.1]: Single-level-usage-as-built/Single-level-usage-as-built.md
+[Single-level-usage-as-built in Version 3.0.0]: Single-level-usage-as-built/Single-level-usage-as-built.md
+[Product Carbon Footprint(PCF) in Version 6.0.0] pcf/pcf.md
+

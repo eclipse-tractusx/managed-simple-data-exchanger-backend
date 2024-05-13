@@ -13,15 +13,18 @@ SDE backend splited into multiple services loosely-coupled Maven modules.
 - modules/sde-external-services/digital-twins
 - modules/sde-external-services/portal
 - modules/sde-external-services/bpn-discovery
+- modules/sde-external-services/policy-hub
+
 - modules/sde-common
 - modules/sde-core
-- modules/sde-submodules/serial-part-typization
+
+- modules/sde-submodules/serial-part
+- modules/sde-submodules/single-level-bom-as-built
 - modules/sde-submodules/batch
-- modules/sde-submodules/assembly-part-relationship
 - modules/sde-submodules/part-as-planned
+- modules/sde-submodules/part-type-information
 - modules/sde-submodules/part-site-information-as-planned
 - modules/sde-submodules/single-level-usage-as-built
 - modules/sde-submodules/single-level-bom-as-planned
 - modules/sde-submodules/pcf
-- modules/sde-usecases/traceability
 - modules/pcf-exchange

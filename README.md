@@ -87,7 +87,7 @@ Listed below are configuration keys needed to get the `sde-backend` up and runni
 | discovery.clientSecret                               | X         | default                                     | discovery clientSecret             |
 | discovery.grantType                                  | X         | default                                     | discovery grantType                |
 | partner.pool.hostname                                | X         | default                                     | partner pool hostname              |
-| partner.pool.authentication.url                      | X         | default                                     | partner pool authentication url   |
+| partner.pool.authentication.url                      | X         | default                                     | partner pool authentication url    |
 | partner.pool.clientId                                | X         | default                                     | partner pool clientId              |
 | partner.pool.clientSecret                            | X         | default                                     | partner pool clientSecret          |
 | partner.pool.grantType                               | X         | default                                     | partner pool grantType             |
@@ -96,6 +96,12 @@ Listed below are configuration keys needed to get the `sde-backend` up and runni
 | portal.backend.clientId                              | X         | default                                     | portal clientId                    |
 | portal.backend.clientSecret                          | X         | default                                     | portal clientSecret                |
 | portal.backend.grantType                             | X         | default                                     | portal grantType                   |
+| policy.hub.hostname	                               | X         | default                                     | policy hub hostname                |
+| policy.hub.authentication.url	                       | X         | default                                     | policy hub authentication url      |
+| policy.hub.clientId			                       | X         | default                                     | policy hub clientId                |
+| policy.hub.clientSecret			                   | X         | default                                     | policy hub clientSecret            |
+| policy.hub.grantType			              		   | X         | default                                     | policy hub grantType            |
+
 
 #### Example Configuration/application.properties
 
@@ -206,6 +212,11 @@ portal.backend.authentication.url=default
 portal.backend.clientId=default
 portal.backend.clientSecret=default
 portal.backend.grantType=default
+policy.hub.hostname=default
+policy.hub.authentication.url=default
+policy.hub.clientId=default
+policy.hub.clientSecret=default
+policy.hub.grantType=default
 ```
 
 The above configuration we can use as for different deployment as specified here [InstallationGuide.md](InstallationGuide.md)
@@ -222,6 +233,7 @@ To find information about supported submodules and there version in SDE please v
     * SingleLevelBoMAsBuilt
     * Batch
     * PartAsPlanned
+    * PartTypeInformation
     * SingleLevelBoMAsPlanned
     * PartSiteInformationAsPlanned
     * SingleLevelUsageAsBuilt
@@ -231,6 +243,7 @@ To find information about supported submodules and there version in SDE please v
     * SingleLevelBoMAsBuilt
     * Batch
     * PartAsPlanned
+    * PartTypeInformation
     * SingleLevelBoMAsPlanned
     * PartSiteInformationAsPlanned
  	* SingleLevelUsageAsBuilt
@@ -240,6 +253,7 @@ To find information about supported submodules and there version in SDE please v
     * SingleLevelBoMAsBuilt
     * Batch
     * PartAsPlanned
+    * PartTypeInformation
     * SingleLevelBoMAsPlanned
     * PartSiteInformationAsPlanned
     * SingleLevelUsageAsBuilt
@@ -288,6 +302,16 @@ To find information about supported submodules and there version in SDE please v
 | **GET:- localhost:8080/api/contract-offers** |This API is used to get all contract offers | Refer Api Doc |Refer Api Doc|
 | **GET:- localhost:8080/api/legal-entities** |This API is used to fetch legal entities (list of company's) for Process| Refer Api Doc |Refer Api Doc|
 | **POST:- localhost:8080/api/connectors-discovery** |This API is used to fetch connectors information | Refer Api Doc |Refer Api Doc|
+| **GET:- localhost:8080/api/policy-attributes** |This API is used to fetch policy attributes | Refer Api Doc |Refer Api Doc|
+| **GET:- localhost:8080/api/policy-types** |This API is used to fetch type of policy attributes | Refer Api Doc |Refer Api Doc|
+| **GET:- localhost:8080/api/policy-content** |This API is used to fetch policy content | Refer Api Doc |Refer Api Doc|
+| **POST:- localhost:8080/api/policy-content** |This API is used to create policy content | Refer Api Doc |Refer Api Doc|
+| **POST:- localhost:8080/api/policy** |This API is used to save policy | Refer Api Doc |Refer Api Doc|
+| **PUT:- localhost:8080/api/policy/{uuid}** |This API is used to update policy | Refer Api Doc |Refer Api Doc|
+| **GET:- localhost:8080/api/policy/{uuid}** |This API is used to get policy | Refer Api Doc |Refer Api Doc|
+| **GET:- localhost:8080/api/policy/is-policy-name-valid** |This API is used to check policy name valid or not | Refer Api Doc |Refer Api Doc|
+| **GET:- localhost:8080/api/policy** |This API is used to all policy | Refer Api Doc |Refer Api Doc|
+| **DELETE:- localhost:8080/api/policy/{uuid}** |This API is used to delete policy | Refer Api Doc |Refer Api Doc|
 
 ## Detailed API specs available under:
 
@@ -326,10 +350,16 @@ https://<host-url>/backend/api/swagger-ui/index.html
 | Tables | Description |  Unique Id |
 | ------ | ------ | ------ |
 | **aspect** | Table used to Store Date About Serialized Part |  **Primary Key**:UUID |
+| **serialpart_v_300** | Table used to Store Date About Serialized Part |  **Primary Key**:UUID |
 | **aspect_relationship** |Data about the relationship of parts to its child-components. | **Primary Key**:parent_catenax_id, child_catenax_id |
+| **single_level_bom_asbuilt_v_300** |Data about the relationship of parts to its child-components. | **Primary Key**:parent_catenax_id, child_catenax_id |
 | **batch** |Table used to Store Date about Serialized Part. |  **Primary Key**:UUID |
+| **batch_v_300** |Table used to Store Date about Serialized Part. |  **Primary Key**:UUID |
 | **part_as_planned** |Table used to Store Date about Part As Planned. |  **Primary Key**:UUID |
+| **part_type_information** |Table used to Store Date about Part As Planned. |  **Primary Key**:UUID |
+| **pcf_aspect** |Table used to Store Date about Part As Planned. |  **Primary Key**:UUID |
 | **single_level_bom_as_planned** |Data about the relationship of part As Planned to its child-components. | **Primary Key**:parent_catenax_id, child_catenax_id |
+| **single_level_bom_as_planned_v_300** |Data about the relationship of part As Planned to its child-components. | **Primary Key**:parent_catenax_id, child_catenax_id |
 | **part_site_information_as_planned** |Table used to Store Date about Part Site Information As Planned. |  **Primary Key**:UUID |
 | **contract_negotiation_info** |Tables Contains Contract Negotiation Info and offerid |  **Primary Key**: connector_id, offer_id |
 | **failure_log** |Table Contains Data About Failure Entries |  **Primary Key**:UUID |
@@ -339,6 +369,7 @@ https://<host-url>/backend/api/swagger-ui/index.html
 | **sde_permission** |Table Contains list of permissions |  **Primary Key**:sde_permission |
 | **sde_role_permission_mapping** |Table Contains mapping of role with permissions |  **Primary Key**:sde_role, sde_permission |
 | **single_level_usage_as_built** |Data about the relationship of parts to its child-components. | **Primary Key**:parent_catenax_id, child_catenax_id |
+| **single_level_usage_as_built_v_300** |Data about the relationship of parts to its child-components. | **Primary Key**:parent_catenax_id, child_catenax_id |
 
 ---
 ## flyway

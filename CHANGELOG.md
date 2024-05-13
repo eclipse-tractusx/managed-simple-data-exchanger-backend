@@ -33,6 +33,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Dt access api use in digital twin processing.  
 - Added test cases for PCF and policy controller.
 - Refactor code to make stable release
+- Documentation updated
 
 ### Fixed
 - Remove garbage character from 'edc_request_template' path. Fixed [#147](https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/issues/147).

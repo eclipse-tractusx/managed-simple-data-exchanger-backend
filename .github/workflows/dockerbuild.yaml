@@ -56,7 +56,7 @@ jobs:
       # Create SemVer or ref tags dependent of trigger event
       - name: Docker meta
         id: meta
-        uses: docker/metadata-action@v4
+        uses: docker/metadata-action@v5
         with:
            images: |
               ${{ env.IMAGE_NAMESPACE }}/${{ env.IMAGE_NAME }}
@@ -73,7 +73,7 @@ jobs:
 
       - name: DockerHub login
         if: github.event_name != 'pull_request'
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
            # Use existing DockerHub credentials present as secrets
            username: ${{ secrets.DOCKER_HUB_USER }}

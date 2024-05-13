@@ -18,7 +18,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ################################################################################
 # our base build image
-FROM maven:3.9-eclipse-temurin-17-focal AS build
+FROM maven:3-eclipse-temurin-19-focal AS build
 
 # copy the project files
 COPY ../pom.xml ./pom.xml
@@ -27,7 +27,9 @@ COPY ../pom.xml ./pom.xml
 COPY ../modules ./modules
 
 # build for release
-RUN mvn clean install 
+#Commeting this because workflow job already building jar file
+#As SDE its require some docker enviroment to run test cases so avoid it
+#RUN mvn clean install  
 
 # our final base image
 

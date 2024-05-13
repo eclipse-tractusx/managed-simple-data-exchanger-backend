@@ -31,8 +31,8 @@ maven/mavencentral/commons-io/commons-io/2.7, Apache-2.0, approved, clearlydefin
 maven/mavencentral/commons-logging/commons-logging/1.2, Apache-2.0, approved, CQ10162
 maven/mavencentral/io.github.openfeign.form/feign-form-spring/3.8.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.github.openfeign.form/feign-form/3.8.0, Apache-2.0, approved, clearlydefined
-maven/mavencentral/io.github.openfeign/feign-core/12.3, Apache-2.0, approved, clearlydefined
-maven/mavencentral/io.github.openfeign/feign-slf4j/12.3, Apache-2.0, approved, clearlydefined
+maven/mavencentral/io.github.openfeign/feign-core/13.2.1, Apache-2.0, approved, clearlydefined
+maven/mavencentral/io.github.openfeign/feign-slf4j/13.2.1, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.micrometer/micrometer-commons/1.12.5, Apache-2.0 AND (Apache-2.0 AND MIT), approved, #11679
 maven/mavencentral/io.micrometer/micrometer-observation/1.12.5, Apache-2.0, approved, #11680
 maven/mavencentral/io.smallrye/jandex/3.1.2, Apache-2.0, approved, clearlydefined
@@ -58,8 +58,8 @@ maven/mavencentral/org.apache.commons/commons-compress/1.24.0, Apache-2.0 AND BS
 maven/mavencentral/org.apache.commons/commons-csv/1.8, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.apache.commons/commons-lang3/3.13.0, Apache-2.0, approved, #9820
 maven/mavencentral/org.apache.commons/commons-text/1.10.0, Apache-2.0, approved, clearlydefined
-maven/mavencentral/org.apache.logging.log4j/log4j-api/2.17.1, Apache-2.0, approved, clearlydefined
-maven/mavencentral/org.apache.logging.log4j/log4j-to-slf4j/2.17.1, Apache-2.0, approved, #2163
+maven/mavencentral/org.apache.logging.log4j/log4j-api/2.21.1, Apache-2.0 AND (Apache-2.0 AND LGPL-2.0-or-later), approved, #11079
+maven/mavencentral/org.apache.logging.log4j/log4j-to-slf4j/2.21.1, Apache-2.0, approved, #11919
 maven/mavencentral/org.apache.tomcat.embed/tomcat-embed-core/10.1.20, Apache-2.0 AND (EPL-2.0 OR GPL-2.0-only WITH Classpath-exception-2.0) AND (CDDL-1.0 OR GPL-2.0-only WITH Classpath-exception-2.0) AND W3C AND CC0-1.0, approved, #5949
 maven/mavencentral/org.apache.tomcat.embed/tomcat-embed-el/10.1.20, Apache-2.0, approved, #6997
 maven/mavencentral/org.apache.tomcat.embed/tomcat-embed-websocket/10.1.20, Apache-2.0, approved, #7920
@@ -105,9 +105,9 @@ maven/mavencentral/org.junit.jupiter/junit-jupiter/5.10.2, EPL-2.0, approved, #1
 maven/mavencentral/org.junit.platform/junit-platform-commons/1.10.2, EPL-2.0, approved, #9715
 maven/mavencentral/org.junit.platform/junit-platform-engine/1.10.2, EPL-2.0, approved, #9709
 maven/mavencentral/org.mapstruct/mapstruct/1.5.5.Final, Apache-2.0, approved, #6277
-maven/mavencentral/org.mockito/mockito-core/4.8.1, MIT, approved, clearlydefined
-maven/mavencentral/org.mockito/mockito-junit-jupiter/4.8.1, MIT, approved, clearlydefined
-maven/mavencentral/org.objenesis/objenesis/3.2, Apache-2.0, approved, clearlydefined
+maven/mavencentral/org.mockito/mockito-core/5.7.0, MIT AND (Apache-2.0 AND MIT) AND Apache-2.0, approved, #11424
+maven/mavencentral/org.mockito/mockito-junit-jupiter/5.7.0, MIT, approved, #11423
+maven/mavencentral/org.objenesis/objenesis/3.3, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.opentest4j/opentest4j/1.3.0, Apache-2.0, approved, #9713
 maven/mavencentral/org.ow2.asm/asm/9.6, BSD-3-Clause, approved, #10776
 maven/mavencentral/org.postgresql/postgresql/42.7.3, BSD-2-Clause AND Apache-2.0, approved, #11681
@@ -137,11 +137,11 @@ maven/mavencentral/org.springframework.boot/spring-boot-starter/3.2.5, Apache-2.
 maven/mavencentral/org.springframework.boot/spring-boot-test-autoconfigure/3.2.5, Apache-2.0, approved, #12920
 maven/mavencentral/org.springframework.boot/spring-boot-test/3.2.5, Apache-2.0, approved, #12916
 maven/mavencentral/org.springframework.boot/spring-boot/3.2.5, Apache-2.0, approved, #11752
-maven/mavencentral/org.springframework.cloud/spring-cloud-commons/4.0.3, Apache-2.0, approved, #7292
-maven/mavencentral/org.springframework.cloud/spring-cloud-context/4.0.3, Apache-2.0, approved, #7306
-maven/mavencentral/org.springframework.cloud/spring-cloud-openfeign-core/4.0.3, Apache-2.0, approved, #7305
-maven/mavencentral/org.springframework.cloud/spring-cloud-starter-openfeign/4.0.3, Apache-2.0, approved, #7302
-maven/mavencentral/org.springframework.cloud/spring-cloud-starter/4.0.3, Apache-2.0, approved, #7299
+maven/mavencentral/org.springframework.cloud/spring-cloud-commons/4.1.2, Apache-2.0, approved, #13495
+maven/mavencentral/org.springframework.cloud/spring-cloud-context/4.1.2, Apache-2.0, approved, #13494
+maven/mavencentral/org.springframework.cloud/spring-cloud-openfeign-core/4.1.1, Apache-2.0, approved, clearlydefined
+maven/mavencentral/org.springframework.cloud/spring-cloud-starter-openfeign/4.1.1, Apache-2.0, approved, clearlydefined
+maven/mavencentral/org.springframework.cloud/spring-cloud-starter/4.1.2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.springframework.data/spring-data-commons/3.2.5, Apache-2.0, approved, #11917
 maven/mavencentral/org.springframework.data/spring-data-jpa/3.2.5, Apache-2.0, approved, #11882
 maven/mavencentral/org.springframework.security/spring-security-config/6.1.2, Apache-2.0, approved, #9736
@@ -150,7 +150,7 @@ maven/mavencentral/org.springframework.security/spring-security-crypto/6.2.4, Ap
 maven/mavencentral/org.springframework.security/spring-security-oauth2-core/6.2.4, Apache-2.0, approved, #11925
 maven/mavencentral/org.springframework.security/spring-security-oauth2-jose/6.2.4, Apache-2.0, approved, #11893
 maven/mavencentral/org.springframework.security/spring-security-oauth2-resource-server/6.2.4, Apache-2.0, approved, #11920
-maven/mavencentral/org.springframework.security/spring-security-rsa/1.0.11.RELEASE, Apache-2.0, approved, CQ20647
+maven/mavencentral/org.springframework.security/spring-security-rsa/1.1.2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.springframework.security/spring-security-test/6.2.4, Apache-2.0, approved, #12922
 maven/mavencentral/org.springframework.security/spring-security-web/6.2.4, Apache-2.0, approved, #11911
 maven/mavencentral/org.springframework/spring-aop/6.1.6, Apache-2.0, approved, #11755

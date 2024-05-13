@@ -959,6 +959,7 @@
 	],
 	"addOn": {
 		"identifier": "${id}",
+		"appendURNUUIDWithIdentifier": false,
 		"lookupShellSpecificAssetIdsSpecs": {
 			"assetLifecyclePhase": "${assetLifeCyclePhase}",
 			"manufacturerPartId": "${productId}",
@@ -971,6 +972,7 @@
 		"bpnDiscoverySpecs": {
 			"manufacturerPartId": "${productId}"
 		},
+		"databaseIdentifierSpecs": ["${productId}"],
 		"responseTemplate": {
 			"specVersion": "${specVersion}",
 			"companyIds": [

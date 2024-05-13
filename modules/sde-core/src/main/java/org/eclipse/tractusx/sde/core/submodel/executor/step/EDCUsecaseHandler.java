@@ -58,7 +58,8 @@ public class EDCUsecaseHandler extends Step implements EDCUsecaseStep {
 					SubmoduleCommonColumnsConstant.SHELL_ID);
 			String subModelId = JsonObjectUtility.getValueFromJsonObjectAsString(objectNode,
 					SubmoduleCommonColumnsConstant.SUBMODULE_ID);
-			String uuid = JsonObjectUtility.getValueFromJsonObjectAsString(objectNode, getIdentifierOfModel());
+			
+			String uuid = getDatabaseIdentifierValues(objectNode, getDatabaseIdentifierSpecsOfModel());
 
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodule,
 					getSubmodelShortDescriptionOfModel(), shellId, subModelId, getSubmoduleUriPathOfSubmodule(), uuid,

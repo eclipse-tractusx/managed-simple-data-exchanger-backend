@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2024 T-Systems International GmbH
- * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022,2024 T-Systems International GmbH
+ * Copyright (c) 2022,2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,6 +19,8 @@
  ********************************************************************************/
 
 package org.eclipse.tractusx.sde.edc.model.response;
+
+import java.util.Objects;
 
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 
@@ -72,5 +74,25 @@ public class QueryDataOfferModel {
 	private String policyId;
 
 	private PolicyModel policy;
+
+	@Override
+	public boolean equals(Object obj) {
+
+		if (this == obj)
+			return true;
+
+		if (obj == null || obj.getClass() != this.getClass())
+			return false;
+
+		// type casting of the argument.
+		QueryDataOfferModel offer = (QueryDataOfferModel) obj;
+
+		return (offer.assetId.equals(this.assetId) && offer.connectorOfferUrl.equals(this.connectorOfferUrl));
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.assetId.hashCode());
+	}
 
 }

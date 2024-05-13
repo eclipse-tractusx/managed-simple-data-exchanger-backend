@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022, 2024 T-Systems International GmbH
- * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022,2024 T-Systems International GmbH
+ * Copyright (c) 2022,2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -25,33 +25,56 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @Service
 public class PolicyRequestFactory {
 
+	@Value("${edc.policy.profile:noprofile}")
+	private String cxPolicyProfile;
+	
 	public PolicyDefinitionRequest getPolicy(String assetId, ActionRequest action,
 			Map<String, String> extensibleProperties, String type) {
 
 		List<PermissionRequest> permissions = getPermissions(assetId, action);
+		
+		if (cxPolicyProfile != null && cxPolicyProfile.equals("noprofile")) {
+			cxPolicyProfile = "cx-policy:profile2405";
+		}
 
 		PolicyRequest policyRequest = PolicyRequest.builder()
 				.permissions(permissions)
+				.profile(cxPolicyProfile)
 				.obligations(new ArrayList<>())
 				.extensibleProperties(extensibleProperties)
 				.prohibitions(new ArrayList<>()).build();
 		
 		//Use submodel id to generate unique policy id for asset use policy type as prefix asset/usage
-		String submodelId = assetId;
-		if (assetId.indexOf("urn:uuid") != -1) {
-			submodelId = assetId.substring(assetId.indexOf("urn:uuid", 9));
-			submodelId =submodelId.replace("urn:uuid:", "");
-		}
+		String policyId = getGeneratedPolicyId(assetId, type);
 				
 		return PolicyDefinitionRequest.builder()
-				.id(type +"-"+ submodelId)
+				.id(policyId)
 				.policyRequest(policyRequest).build();
 	}
+
+	public JsonNode setPolicyIdAndGetObject(String assetId, JsonNode jsonNode, String type) {
+		String policyId = getGeneratedPolicyId(assetId, type);
+		return ((ObjectNode) jsonNode).put("@id", policyId);
+	}
+	
+	private String getGeneratedPolicyId(String assetId, String type) {
+		String submodelId = assetId;
+		if (assetId.length() > 45) {
+			submodelId = assetId.substring(46);
+			submodelId = submodelId.replace("urn:uuid:", "");
+		}
+		return type + "-" + submodelId;
+	}
+	
 
 	public List<PermissionRequest> getPermissions(String assetId, ActionRequest action) {
 

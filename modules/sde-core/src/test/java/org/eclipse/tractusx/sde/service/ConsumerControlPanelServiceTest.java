@@ -28,6 +28,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.eclipse.tractusx.sde.bpndiscovery.handler.BpnDiscoveryProxyService;
@@ -143,7 +144,7 @@ class ConsumerControlPanelServiceTest {
 	void testQueryOnDataOfferEmpty() throws Exception {
 
 
-		List<QueryDataOfferModel> queryOnDataOffers = consumerControlPanelService.queryOnDataOffers("example", "", "",
+		Set<QueryDataOfferModel> queryOnDataOffers = consumerControlPanelService.queryOnDataOffers("example", "", "",
 				0, 0);
 		assertTrue(queryOnDataOffers.isEmpty());
 	}

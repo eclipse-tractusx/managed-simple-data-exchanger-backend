@@ -13,3 +13,4 @@ https://eclipse-tractusx.github.io/docs-kits/category/pcf-exchange-kit
 - dDTR service.
 - EDC Service.
 - BPN Discovery. 
+- Portal Service.

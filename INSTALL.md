@@ -96,6 +96,14 @@ Apart from both upload Batch upload is additional feature were added into DFT.
 4. Create Asset in EDC Connector.
 5. Stores the line in the database.
 
+<b>For PartTypeInformation Upload:</b>
+
+1. Maps the content of the line with an PartTypeInformation.
+2. Generates the UUID if it does not contain a UUID.
+3. Registers in DigitalTwins.
+4. Create Asset in EDC Connector.
+5. Stores the line in the database.
+
 <b>For SingleLevelBoMAsPlanned Upload:</b>
 
 1. Maps the content of the line with an SingleLevelBoMAsPlanned.
@@ -107,6 +115,14 @@ Apart from both upload Batch upload is additional feature were added into DFT.
 <b>For PartSiteInformationAsPlanned Upload:</b>
 
 1. Maps the content of the line with an PartSiteInformationAsPlanned.
+2. checks if an PartAsPlanned Aspect exists so it can be related to that Aspect.
+3. Registers in DigitalTwins.
+4. Create Asset in EDC Connector.
+5. Stores the line in the database.
+
+<b>For Pcf Upload:</b>
+
+1. Maps the content of the line with an Pcf.
 2. checks if an PartAsPlanned Aspect exists so it can be related to that Aspect.
 3. Registers in DigitalTwins.
 4. Create Asset in EDC Connector.

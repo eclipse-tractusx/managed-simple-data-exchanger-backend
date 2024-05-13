@@ -154,7 +154,7 @@ public class PolicyConstraintBuilderService {
 	private List<String> getAndOwnerBPNIfNotExist(Policies policy, List<String> values) {
 		
 		if (policy.getTechnicalKey().equals(BUSINESS_PARTNER_NUMBER) && !values.isEmpty()
-				&& !values.contains(manufacturerId) && (values.size() == 1 && !values.get(0).equals(""))) {
+				&& (values.size() == 1 && StringUtils.isNotBlank(values.get(0))) && !values.contains(manufacturerId)) {
 			
 			List<String> temp = new ArrayList<>();
 			values.stream().forEach(temp::add);

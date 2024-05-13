@@ -43,8 +43,8 @@
 		<java.version>17</java.version>
 		<log4j2.version>2.17.1</log4j2.version>
 		<spring-cloud.version>2022.0.3</spring-cloud.version>
-		<org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
-		<org.mapstruct.processor.version>1.5.5.Final</org.mapstruct.processor.version>
+		<org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
+		<org.mapstruct.processor.version>1.4.2.Final</org.mapstruct.processor.version>
 		<snakey-version>2.0</snakey-version>
 	</properties>
 
@@ -173,7 +173,7 @@
 		<dependency>
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct</artifactId>
-			<version>${org.mapstruct.version}</version>
+			<version>1.4.2.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -203,6 +203,13 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+			<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>testcontainers-bom</artifactId>
+				<version>1.19.0</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -212,7 +219,7 @@
 				<plugin>
 					<groupId>org.eclipse.dash</groupId>
 					<artifactId>license-tool-plugin</artifactId>
-					<version>1.1.0</version>
+					<version>1.0.3-SNAPSHOT</version>
 					<configuration>
 						<projectId>automotive.tractusx</projectId>
 						<!-- name of dependencies file -->
@@ -232,6 +239,29 @@
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<configuration>
+						<annotationProcessorPaths>
+							<path>
+								<groupId>org.projectlombok</groupId>
+								<artifactId>lombok</artifactId>
+								<version>${lombok.version}</version>
+							</path>
+							<path>
+								<groupId>org.mapstruct</groupId>
+								<artifactId>mapstruct-processor</artifactId>
+								<version>${org.mapstruct.processor.version}</version>
+							</path>
+						</annotationProcessorPaths>
+						<compilerArgs>
+							<compilerArg>
+								-Amapstruct.unmappedTargetPolicy=IGNORE
+							</compilerArg>
+						</compilerArgs>
+					</configuration>
 				</plugin>
 			</plugins>
 		</pluginManagement>

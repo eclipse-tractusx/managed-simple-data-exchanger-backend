@@ -18,7 +18,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ################################################################################
 # our base build image
-FROM maven:3.9-eclipse-temurin-17-focal AS build
+FROM maven:3-eclipse-temurin-19-focal AS build
 
 # copy the project files
 COPY ../pom.xml ./pom.xml

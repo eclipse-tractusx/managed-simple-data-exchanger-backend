@@ -36,7 +36,7 @@ in the GitHub organization https://github.com/eclipse-tractusx:
 
 This project leverages the following third party content.
 
-See DEPENDENCIES file (https://github.com/catenax-ng/tx-managed-simple-data-exchanger-backend/blob/main/DEPENDENCIES).
+See DEPENDENCIES file (https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/blob/main/DEPENDENCIES).
 
 ## Cryptography
 

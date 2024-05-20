@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.tractusx.sde.common.configuration.properties.SDEConfigurationProperties;
 import org.eclipse.tractusx.sde.common.mapper.JsonObjectMapper;
 import org.eclipse.tractusx.sde.common.utils.LogUtil;
 import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedByIdResponse;
@@ -32,7 +33,6 @@ import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.eclipse.tractusx.sde.edc.util.EDCAssetUrlCacheService;
 import org.eclipse.tractusx.sde.pcfexchange.enums.PCFRequestStatusEnum;
 import org.eclipse.tractusx.sde.pcfexchange.proxy.PCFExchangeProxy;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.JsonObject;
@@ -53,46 +53,48 @@ public class ProxyRequestInterface {
 	private final PCFRepositoryService pcfRepositoryService;
 	private final EDCAssetUrlCacheService edcAssetUrlCacheService;
 	private final JsonObjectMapper jsonObjectMapper;
-	
-	@Value(value = "${manufacturerId}")
-	private String manufacturerId;
-
-	@Value(value = "${digital-twins.managed.thirdparty:false}")
-	private boolean managedThirdParty;
+	private final SDEConfigurationProperties sdeConfigurationProperties; 
 	
 	@SneakyThrows
-	public void requestToProviderForPCFValue(String productId, StringBuilder sb, String requestId, String message,
+	public void requestToProviderForPCFValue(String productId, StringBuilder reponseMap, String requestId, String message,
 			QueryDataOfferModel dataset, boolean isRequestToNonexistingTwin) {
+		try {
+			EDRCachedByIdResponse edrToken = edcAssetUrlCacheService.verifyAndGetToken(dataset.getConnectorId(),
+					dataset);
 
-		EDRCachedByIdResponse edrToken = edcAssetUrlCacheService.verifyAndGetToken(dataset.getConnectorId(), dataset);
+			if (!reponseMap.isEmpty())
+				reponseMap.append("\n");
 
-		if (!sb.isEmpty())
-			sb.append("\n");
+			if (edrToken != null) {
 
-		if (edrToken != null) {
-			
-			URI pcfpushEnpoint = null;
-			
-			if(isRequestToNonexistingTwin)
-				pcfpushEnpoint = new URI(
-						edrToken.getEndpoint() + SLASH_DELIMETER + PRODUCT_IDS + SLASH_DELIMETER + productId);
-			else
-				pcfpushEnpoint = new URI(edrToken.getEndpoint());
+				URI pcfpushEnpoint = null;
 
-			Map<String, String> header = new HashMap<>();
-			header.put("authorization", edrToken.getAuthorization());
+				if (isRequestToNonexistingTwin)
+					pcfpushEnpoint = new URI(
+							edrToken.getEndpoint() + SLASH_DELIMETER + PRODUCT_IDS + SLASH_DELIMETER + productId);
+				else
+					pcfpushEnpoint = new URI(edrToken.getEndpoint());
 
-			// Send request to data provider for PCF value push
-			pcfExchangeProxy.getPcfByProduct(pcfpushEnpoint, header, manufacturerId,
-					requestId, message);
+				Map<String, String> header = new HashMap<>();
+				header.put("authorization", edrToken.getAuthorization());
+				header.put("Edc-Bpn", sdeConfigurationProperties.getManufacturerId());
 
-			sb.append(productId + ": requested for PCF value");
-			pcfRepositoryService.savePcfStatus(requestId, PCFRequestStatusEnum.REQUESTED);
-		} else {
-			sb.append(productId + ": Unable to request for PCF value becasue the EDR token status is null");
-			log.warn(LogUtil.encode("EDC connector " + dataset.getConnectorOfferUrl() + ":"+ requestId +","+ productId +
-					"Unable to request for PCF value becasue the EDR token status is null"));
-			pcfRepositoryService.savePcfStatus(requestId, PCFRequestStatusEnum.FAILED);
+				// Send request to data provider for PCF value push
+				pcfExchangeProxy.getPcfByProduct(pcfpushEnpoint, header, requestId, message);
+				reponseMap.append("Successfully requested to provider '"+ dataset.getConnectorOfferUrl()+"' for '"+productId+"' product PCF value");
+				pcfRepositoryService.savePcfStatus(requestId, PCFRequestStatusEnum.REQUESTED);
+			} else {
+				String errorMsg= "Unable to request to provider '"+ dataset.getConnectorOfferUrl()+"' for '"+productId+"' product PCF value becasue the EDR token status is null";
+				log.error(LogUtil.encode(errorMsg));
+				pcfRepositoryService.savePcfStatus(requestId, PCFRequestStatusEnum.FAILED);
+				reponseMap.append(errorMsg);
+			}
+		} catch (FeignException e) {
+			log.error("FeignRequest requestToProviderForPCFValue:" + e.request());
+			String error= StringUtils.isBlank(e.contentUTF8()) ? e.getMessage() : e.contentUTF8();
+			String errorMsg= "Unable to request to provider '"+ dataset.getConnectorOfferUrl()+"' for '"+productId+"' product PCF value beacuse error in remote service execution";
+			log.error("FeignException requestToProviderForPCFValue: " + errorMsg + ", because: " +error);
+			reponseMap.append(errorMsg);
 		}
 	}
 	
@@ -135,8 +137,9 @@ public class ProxyRequestInterface {
 
 				Map<String, String> header = new HashMap<>();
 				header.put("authorization", edrToken.getAuthorization());
-
-				pcfExchangeProxy.uploadPcfSubmodel(pcfpushEnpoint, header, bpnNumber, requestId, message,
+				header.put("Edc-Bpn", bpnNumber);
+				
+				pcfExchangeProxy.uploadPcfSubmodel(pcfpushEnpoint, header, requestId, message,
 						jsonObjectMapper.gsonObjectToJsonNode(calculatedPCFValue));
 
 				sendNotificationStatus = "SUCCESS";

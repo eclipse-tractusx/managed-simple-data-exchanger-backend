@@ -69,11 +69,11 @@ public class ContractNegotiationService extends AbstractEDCStepsHelper {
 
 		if (checkContractNegotiationStatus == null) {
 			String contractAgreementId = checkandGetContractAgreementId(assetId);
-			if (StringUtils.isBlank(contractAgreementId)) {
+			if (StringUtils.isBlank(contractAgreementId) || !eDRCachedResponseList.isEmpty()) {
 				log.info(LogUtil.encode("The EDR process was not completed, no EDR status found "
 						+ "and not valid contract agreementId for " + recipientURL + ", " + assetId
 						+ ", so initiating EDR process"));
-				edrRequestHelper.edrRequestInitiate(recipientURL, connectorId, offer.getOfferId(), assetId, action,
+				edrRequestHelper.edrRequestInitiate(recipientURL, connectorId, offer, assetId, action,
 						extensibleProperty);
 				checkContractNegotiationStatus = verifyEDRRequestStatus(assetId);
 			} else {
@@ -109,7 +109,13 @@ public class ContractNegotiationService extends AbstractEDCStepsHelper {
 		EDRCachedResponse eDRCachedResponse = null;
 		if (eDRCachedResponseList != null && !eDRCachedResponseList.isEmpty()) {
 			for (EDRCachedResponse edrCachedResponseObj : eDRCachedResponseList) {
-				eDRCachedResponse = edrCachedResponseObj;
+				try {
+					getAuthorizationTokenForDataDownload(edrCachedResponseObj.getTransferProcessId());
+					eDRCachedResponse = edrCachedResponseObj;
+					break;
+				} catch (Exception e) {
+					log.error(LogUtil.encode("The EDR token has expired for " + edrCachedResponseObj.getTransferProcessId()));
+				}
 			}
 		}
 		return eDRCachedResponse;

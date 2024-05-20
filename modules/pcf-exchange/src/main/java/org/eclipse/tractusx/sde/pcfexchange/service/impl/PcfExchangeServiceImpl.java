@@ -90,21 +90,26 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 					false);
 		});
 
+		if (sb.indexOf("Unable to request") != -1)
+			throw new ValidationException(sb.toString());
+
 		return sb.toString();
 
 	}
 
 	@Override
 	public Object requestForPcfNotExistDataOffer(PcfRequestModel pcfRequestModel) {
+		
 		StringBuilder sb = new StringBuilder();
 		String requestId = UUID.randomUUID().toString();
+		List<QueryDataOfferModel> pcfExchangeUrlOffers = null;
 		try {
 			pcfRepositoryService.savePcfRequestData(requestId, pcfRequestModel.getProductId(),
 					pcfRequestModel.getBpnNumber(), pcfRequestModel.getMessage(), PCFTypeEnum.CONSUMER,
 					PCFRequestStatusEnum.SENDING_REQUEST, "");
 
 			// 1 fetch EDC connectors and DTR Assets from EDC connectors
-			List<QueryDataOfferModel> pcfExchangeUrlOffers = edcAssetUrlCacheService
+			pcfExchangeUrlOffers = edcAssetUrlCacheService
 					.getPCFExchangeUrlFromTwin(pcfRequestModel.getBpnNumber());
 
 			// 2 request for PCF value for non existing sub model and send notification to
@@ -121,9 +126,12 @@ public class PcfExchangeServiceImpl implements IPCFExchangeService {
 			log.error("FeignException requestForPcfNotExistDataOffer: " + errorMsg);
 		}
 
-		if (sb.isEmpty())
-			throw new ValidationException("Not requested to provider for '" + pcfRequestModel.getProductId()
+		if (pcfExchangeUrlOffers == null || pcfExchangeUrlOffers.isEmpty())
+			throw new NoDataFoundException("Not requested to provider for '" + pcfRequestModel.getProductId()
 					+ "' because there is no PCF exchange endpoint found");
+
+		if (sb.indexOf("Unable to request") != -1)
+			throw new ValidationException(sb.toString());
 
 		return sb.toString();
 	}

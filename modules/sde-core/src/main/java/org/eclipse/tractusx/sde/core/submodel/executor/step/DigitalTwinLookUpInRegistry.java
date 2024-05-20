@@ -40,6 +40,7 @@ import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.eclipse.tractusx.sde.edc.util.EDCAssetUrlCacheService;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.JsonObject;
 
@@ -60,6 +61,8 @@ public class DigitalTwinLookUpInRegistry {
 	private final EDCDigitalTwinProxyForLookUp eDCDigitalTwinProxyForLookUp;
 
 	private final DigitalTwinsFacilitator digitalTwinFacilitator;
+	
+	private ObjectMapper mapper= new ObjectMapper();
 
 	@SneakyThrows
 	public String lookupTwinInLocalRrgistry(Integer rowIndex, Map<String, String> specificAssetIds,
@@ -146,11 +149,13 @@ public class DigitalTwinLookUpInRegistry {
 			header.put("authorization", edrToken.getAuthorization());
 			header.put("Edc-Bpn", bpnForRemoteRegistry);
 
-			ShellLookupResponse shellLookup = eDCDigitalTwinProxyForLookUp.shellLookup(new URI(endpoint),
+			String shellLookup = eDCDigitalTwinProxyForLookUp.shellLookup(new URI(endpoint),
 					digitalTwinsUtility.encodeAssetIdsObjectOnlyPartInstanceId(shellLookupRequest), header);
+			
+			ShellLookupResponse response = mapper.readValue(shellLookup, ShellLookupResponse.class);
 
 			childUUID = getChildSubmodelDetails(rowIndex, shellLookupRequest, endpoint, header, jsonObject, dtOfferUrl,
-					shellLookup.getResult());
+					response.getResult());
 
 		} catch (FeignException e) {
 			String err = e.contentUTF8();
@@ -182,9 +187,12 @@ public class DigitalTwinLookUpInRegistry {
 					"Multiple shell id's found for childAspect %s, %s", dtOfferUrl, shellLookupRequest.toJsonString()));
 		} else if (childshellIds.size() == 1) {
 
-			ShellDescriptorResponse shellDescriptorResponse = eDCDigitalTwinProxyForLookUp.getShellDescriptorByShellId(
+			String shellDescriptorResponseStr = eDCDigitalTwinProxyForLookUp.getShellDescriptorByShellId(
 					new URI(endpoint), encodeShellIdBase64Utf8(childshellIds.get(0)), header);
-
+			
+			ShellDescriptorResponse shellDescriptorResponse = mapper.readValue(shellDescriptorResponseStr,
+					ShellDescriptorResponse.class); 
+			
 			childUUID = shellDescriptorResponse.getGlobalAssetId();
 
 			log.info(rowIndex + ", " + dtOfferUrl + ", Child aspect found for " + shellLookupRequest.toJsonString());

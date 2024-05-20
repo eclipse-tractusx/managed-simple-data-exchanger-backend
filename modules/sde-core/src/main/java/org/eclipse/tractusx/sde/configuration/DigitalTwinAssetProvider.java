@@ -27,10 +27,12 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.eclipse.tractusx.sde.common.configuration.properties.DigitalTwinConfigurationProperties;
+import org.eclipse.tractusx.sde.common.entities.Policies;
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
+import org.eclipse.tractusx.sde.common.utils.PolicyOperationUtil;
 import org.eclipse.tractusx.sde.common.utils.UUIdGenerator;
 import org.eclipse.tractusx.sde.core.utils.ValueReplacerUtility;
-import org.eclipse.tractusx.sde.edc.constants.EDCAssetConstant;
+import org.eclipse.tractusx.sde.edc.constants.EDCAssetConfigurableConstant;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequestFactory;
 import org.eclipse.tractusx.sde.edc.facilitator.CreateEDCAssetFacilator;
@@ -58,6 +60,7 @@ public class DigitalTwinAssetProvider {
 	private final CreateEDCAssetFacilator createEDCAssetFacilator;
 	private final DigitalTwinConfigurationProperties digitalTwinConfigurationProperties;
 	private final ValueReplacerUtility valueReplacerUtility;
+	private final EDCAssetConfigurableConstant edcAssetConfigurableConstant;
 
 	@PostConstruct
 	@SneakyThrows
@@ -77,7 +80,7 @@ public class DigitalTwinAssetProvider {
 		String assetId = UUIdGenerator.getUuid();
 
 		AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest("", "Digital twin registry information",
-				assetId, "1", "", "", "", EDCAssetConstant.DATA_CORE_DIGITAL_TWIN_REGISTRY_TYPE);
+				assetId, "1", "", "", "", edcAssetConfigurableConstant.getAssetPropTypeDigitalTwin());
 
 		String baseUrl = digitalTwinConfigurationProperties.getDigitalTwinsHostname() + registryAPI;
 
@@ -106,14 +109,22 @@ public class DigitalTwinAssetProvider {
 		Map<String, String> inputData = new HashMap<>();
 		inputData.put("baseUrl", baseUrl);
 		inputData.put("registryType", registryType);
-		inputData.put("assetType", EDCAssetConstant.DATA_CORE_DIGITAL_TWIN_REGISTRY_TYPE);
+		inputData.put("assetType", edcAssetConfigurableConstant.getAssetPropTypeDigitalTwin());
 
 		ObjectNode requestBody = (ObjectNode) new ObjectMapper().readTree(valueReplacerUtility
 				.valueReplacerUsingFileTemplate("/edc_request_template/edc_asset_lookup.json", inputData));
 
 		if (!edcGateway.assetExistsLookupBasedOnType(requestBody)) {
 
-			PolicyModel policy = PolicyModel.builder().accessPolicies(List.of()).usagePolicies(List.of()).build();
+			List<Policies> accessPolicy = PolicyOperationUtil
+					.getStringPolicyAsPolicyList(edcAssetConfigurableConstant.getDigitalTwinExchangeAccessPolicy());
+			
+			List<Policies> usagePolicy = PolicyOperationUtil
+					.getStringPolicyAsPolicyList(edcAssetConfigurableConstant.getDigitalTwinExchangeUsagePolicy());
+			
+			PolicyModel policy = PolicyModel.builder().accessPolicies(accessPolicy)
+					.usagePolicies(usagePolicy)
+					.build();
 
 			Map<String, String> createEDCAsset = createEDCAssetFacilator.createEDCAsset(assetEntryRequest, policy);
 			log.info("Digital twin " + registryType + " asset creates :" + createEDCAsset.toString());

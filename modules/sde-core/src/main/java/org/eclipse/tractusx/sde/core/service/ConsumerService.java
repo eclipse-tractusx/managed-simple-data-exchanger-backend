@@ -47,10 +47,10 @@ import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
 import org.eclipse.tractusx.sde.common.model.Acknowledgement;
 import org.eclipse.tractusx.sde.common.model.PagingResponse;
 import org.eclipse.tractusx.sde.common.model.Submodel;
-import org.eclipse.tractusx.sde.core.failurelog.repository.ConsumerDownloadHistoryRepository;
 import org.eclipse.tractusx.sde.core.processreport.entity.ConsumerDownloadHistoryEntity;
 import org.eclipse.tractusx.sde.core.processreport.mapper.ConsumerDownloadHistoryMapper;
 import org.eclipse.tractusx.sde.core.processreport.model.ConsumerDownloadHistory;
+import org.eclipse.tractusx.sde.core.processreport.repository.ConsumerDownloadHistoryRepository;
 import org.eclipse.tractusx.sde.edc.constants.EDCAssetConstant;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ActionRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyConstraintBuilderService;
@@ -208,8 +208,8 @@ public class ConsumerService {
 
 				offerList.stream()
 						.forEach(offer -> prepareFromOfferResponse(
-								downloadFileFromEDCUsingifAlreadyTransferStatusCompleted, failedCount, successCount,
-								dataWithValue, offer, true, type));
+								downloadFileFromEDCUsingifAlreadyTransferStatusCompleted.get(offer.getAssetId()),
+								failedCount, successCount, dataWithValue, offer, true, type));
 
 				entity.setEndDate(LocalDateTime.now());
 				entity.setOffers(mapper.writeValueAsString(offerList));

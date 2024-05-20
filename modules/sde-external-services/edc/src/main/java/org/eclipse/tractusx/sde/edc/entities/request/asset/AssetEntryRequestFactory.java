@@ -24,14 +24,18 @@ package org.eclipse.tractusx.sde.edc.entities.request.asset;
 import java.util.HashMap;
 import java.util.Map;
 
-import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.tractusx.sde.edc.constants.EDCAssetConfigurableConstant;
 import org.eclipse.tractusx.sde.edc.constants.EDCAssetConstant;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+
 @Service
+@RequiredArgsConstructor
 public class AssetEntryRequestFactory {
 
 	@Value(value = "${dft.hostname}")
@@ -48,6 +52,8 @@ public class AssetEntryRequestFactory {
 
 	@Value(value = "${digital-twins.authentication.clientId}")
 	private String clientId;
+
+	private final EDCAssetConfigurableConstant edcAssetConfigurableConstant;
 
 	@SneakyThrows
 	public String createAssetId(String shellId, String subModelId) {
@@ -71,23 +77,22 @@ public class AssetEntryRequestFactory {
 	}
 
 	private String subModelPayloadUrl(String submodel, String submoduleUriPath, String uuid) {
-		return UriComponentsBuilder.fromHttpUrl(dftHostname)
-				.path("/" + submodel + "/" + submoduleUriPath)
-				.path("/" + uuid)
-				.toUriString();
+		return UriComponentsBuilder.fromHttpUrl(dftHostname).path("/" + submodel + "/" + submoduleUriPath)
+				.path("/" + uuid).toUriString();
 	}
 
 	private HashMap<String, Object> getAssetProperties(String assetId, String assetName, String sematicId,
 			String edcAssetType) {
 		HashMap<String, Object> assetProperties = new HashMap<>();
 		assetProperties.put(EDCAssetConstant.ASSET_PROP_ID, assetId);
-		assetProperties.put(EDCAssetConstant.ASSET_PROP_POLICYID, EDCAssetConstant.ASSET_PROP_POLICYID);
 		assetProperties.put(EDCAssetConstant.ASSET_PROP_CONTENTTYPE, EDCAssetConstant.ASSET_PROP_CONTENT_TYPE);
 		assetProperties.put(EDCAssetConstant.ASSET_PROP_VERSION, EDCAssetConstant.ASSET_PROP_VERSION_VALUE);
+		assetProperties.put(EDCAssetConstant.ASSET_PROP_NAME, assetName);
 		assetProperties.put(EDCAssetConstant.RDFS_LABEL, assetName);
 		assetProperties.put(EDCAssetConstant.RDFS_COMMENT, assetName);
-		assetProperties.put(EDCAssetConstant.DCAT_VERSION, EDCAssetConstant.ASSET_PROP_DCAT_VERSION);
-		assetProperties.put(EDCAssetConstant.CX_COMMON_VERSION, EDCAssetConstant.ASSET_PROP_COMMON_VERSION);
+		assetProperties.put(EDCAssetConstant.DCAT_VERSION, edcAssetConfigurableConstant.getAssetPropDcatVersion());
+		assetProperties.put(EDCAssetConstant.CX_COMMON_VERSION,
+				edcAssetConfigurableConstant.getAssetPropCommonVersion());
 
 		if (StringUtils.isNotBlank(sematicId))
 			assetProperties.put(EDCAssetConstant.AAS_SEMANTICS_SEMANTIC_ID, Map.of("@id", sematicId));
@@ -97,7 +102,8 @@ public class AssetEntryRequestFactory {
 					Map.of("@id", EDCAssetConstant.CX_TAXO_PREFIX + edcAssetType));
 			assetProperties.put(EDCAssetConstant.ASSET_PROP_TYPE, edcAssetType);
 		} else {
-			assetProperties.put(EDCAssetConstant.ASSET_PROP_TYPE, EDCAssetConstant.ASSET_PROP_TYPE_VALUE);
+			assetProperties.put(EDCAssetConstant.ASSET_PROP_TYPE,
+					edcAssetConfigurableConstant.getAssetPropTypeDefaultValue());
 		}
 
 		return assetProperties;

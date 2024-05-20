@@ -25,33 +25,34 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.eclipse.tractusx.sde.edc.constants.EDCAssetConfigurableConstant;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class PolicyRequestFactory {
 
-	@Value("${edc.policy.profile:noprofile}")
-	private String cxPolicyProfile;
+	private final EDCAssetConfigurableConstant edcAssetConfigurableConstant;
 	
-	public PolicyDefinitionRequest getPolicy(String assetId, ActionRequest action,
-			Map<String, String> extensibleProperties, String type) {
+	public PolicyDefinitionRequest getPolicy(String assetId, ActionRequest action, String type) {
 
 		List<PermissionRequest> permissions = getPermissions(assetId, action);
-		
-		if (cxPolicyProfile != null && cxPolicyProfile.equals("noprofile")) {
-			cxPolicyProfile = "cx-policy:profile2405";
-		}
 
 		PolicyRequest policyRequest = PolicyRequest.builder()
 				.permissions(permissions)
-				.profile(cxPolicyProfile)
+				.profile(edcAssetConfigurableConstant.getCxPolicyPrefix()
+						+ edcAssetConfigurableConstant.getCxPolicyProfile())
 				.obligations(new ArrayList<>())
-				.extensibleProperties(extensibleProperties)
-				.prohibitions(new ArrayList<>()).build();
+				.prohibitions(new ArrayList<>())
+				.profile(edcAssetConfigurableConstant.getCxPolicyPrefix()
+						+ edcAssetConfigurableConstant.getCxPolicyProfile())
+				.target(Map.of("@id", assetId))
+				.build();
 		
 		//Use submodel id to generate unique policy id for asset use policy type as prefix asset/usage
 		String policyId = getGeneratedPolicyId(assetId, type);
@@ -82,7 +83,7 @@ public class PolicyRequestFactory {
 		if (action != null) {
 			PermissionRequest permissionRequest = PermissionRequest
 					.builder().action(Map.of("odrl:type", "USE"))
-					.target(assetId)
+//					.target(assetId)
 					.constraint(action.getAction())
 					.build();
 			permissions.add(permissionRequest);

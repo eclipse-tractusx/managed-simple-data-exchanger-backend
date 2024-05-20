@@ -26,6 +26,7 @@ import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.exception.NoDataFoundException;
 import org.eclipse.tractusx.sde.common.model.PagingResponse;
 import org.eclipse.tractusx.sde.common.utils.JsonObjectUtility;
+import org.eclipse.tractusx.sde.common.utils.LogUtil;
 import org.eclipse.tractusx.sde.common.utils.PolicyOperationUtil;
 import org.eclipse.tractusx.sde.pcfexchange.enums.PCFRequestStatusEnum;
 import org.eclipse.tractusx.sde.pcfexchange.enums.PCFTypeEnum;
@@ -49,16 +50,19 @@ public class AsyncPushPCFDataForApproveRequest {
 
 	private final ProxyRequestInterface proxyRequestInterface;
 
-	public void pushPCFDataForApproveRequest(List<JsonObject> jsonObjectList, PolicyModel policy) {
+	public void pushPCFDataForApproveRequest(List<JsonObject> originalObjectList, PolicyModel policy) {
 
 		List<String> accessBPNList = PolicyOperationUtil.getAccessBPNList(policy);
 
-		List<String> productList = jsonObjectList.stream()
+		List<JsonObject> csvObjectList= originalObjectList.stream()
 				.map(obj-> obj.get("csv").getAsJsonObject())
+				.toList();
+		
+		List<String> productList = csvObjectList.stream()
 				.map(ele -> JsonObjectUtility.getValueFromJsonObject(ele, PRODUCT_ID))
 				.toList();
 
-		markedPCFDataForPendingProviderRequestAsRequested(productList, jsonObjectList);
+		markedPCFDataForPendingProviderRequestAsRequested(productList, csvObjectList);
 
 		PagingResponse pcfData = pcfRepositoryService.getPcfData(
 				List.of(PCFRequestStatusEnum.PUSHED, PCFRequestStatusEnum.PUSHED_UPDATED_DATA), PCFTypeEnum.PROVIDER, 0,
@@ -76,7 +80,7 @@ public class AsyncPushPCFDataForApproveRequest {
 					try {
 						request.setStatus(PCFRequestStatusEnum.PUSHING_UPDATED_DATA);
 
-						JsonObject calculatedPCFValue = jsonObjectList.stream()
+						JsonObject calculatedPCFValue = originalObjectList.stream()
 								.filter(ele -> {
 									ele = ele.get("csv").getAsJsonObject();
 									return request.getProductId().equals(JsonObjectUtility.getValueFromJsonObject(ele, PRODUCT_ID));
@@ -101,7 +105,7 @@ public class AsyncPushPCFDataForApproveRequest {
 
 					} catch (NoDataFoundException e) {
 						msg = "Unable to take action on PCF request becasue pcf calculated value does not exist, please provide/upload PCF value for "
-								+ request.getProductId() + ", requestId " + request.getRequestId();
+								+ request.getProductId() + ", request Id " + request.getRequestId();
 						log.error("Async PushPCFDataForApproveRequest" + msg);
 						throw new NoDataFoundException(msg);
 					} catch (Exception e) {
@@ -116,10 +120,10 @@ public class AsyncPushPCFDataForApproveRequest {
 	}
 
 	public void markedPCFDataForPendingProviderRequestAsRequested(List<String> productList,
-			List<JsonObject> jsonObjectList) {
+			List<JsonObject> csvObjectList) {
 
 		PagingResponse pcfData = pcfRepositoryService
-				.getPcfData(List.of(PCFRequestStatusEnum.PENDING_DATA_FROM_PROVIDER), PCFTypeEnum.PROVIDER, 0, 100000);
+				.getPcfData(List.of(PCFRequestStatusEnum.PENDING_DATA_FROM_PROVIDER), PCFTypeEnum.PROVIDER, 0, 1000000);
 		List<PcfRequestModel> requestList = (List<PcfRequestModel>) pcfData.getItems();
 
 		if (!requestList.isEmpty()) {
@@ -128,10 +132,10 @@ public class AsyncPushPCFDataForApproveRequest {
 					String msg = "";
 					try {
 						
-						jsonObjectList.stream()
-								.filter(ele -> request.getProductId()
-										.equals(JsonObjectUtility.getValueFromJsonObject(ele, PRODUCT_ID)))
-								.findAny().orElseThrow(() -> new NoDataFoundException(
+						csvObjectList.stream()
+								.filter(ele -> request.getProductId().equals(JsonObjectUtility.getValueFromJsonObject(ele, PRODUCT_ID)))
+								.findAny()
+								.orElseThrow(() -> new NoDataFoundException(
 										"No data found for product_id " + request.getProductId()));
 						
 						pcfRepositoryService.savePcfStatus(request.getRequestId(), PCFRequestStatusEnum.REQUESTED);
@@ -139,10 +143,11 @@ public class AsyncPushPCFDataForApproveRequest {
 					} catch (NoDataFoundException e) {
 						msg = "Unable to markedPCFDataForPendingProviderRequestAsRequested becasue pcf calculated value does not exist  "
 								+ request.getProductId() + ", requestId " + request.getRequestId();
-						log.error("Async PushPCFDataForApproveRequest" + msg);
-						throw new NoDataFoundException(msg);
+						log.warn(LogUtil.encode(msg));
 					} catch (Exception e) {
-						pcfRepositoryService.savePcfStatus(request.getRequestId(), PCFRequestStatusEnum.FAILED);
+						msg = "Unable to markedPCFDataForPendingProviderRequestAsRequested for " + request.getProductId()
+								+ ", requestId " + request.getRequestId() + ", becasue " + e.getMessage();
+						log.error(LogUtil.encode(msg));
 					}
 				}
 			});

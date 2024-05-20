@@ -19,6 +19,7 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.common.utils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -43,5 +44,22 @@ public class PolicyOperationUtil {
 
 	public static List<String> getUsageBPNList(PolicyModel policy) {
 		return getBPNList(policy.getUsagePolicies());
+	}
+	
+	public static List<Policies> getStringPolicyAsPolicyList(String policyStr){
+		
+		List<Policies> policies = new ArrayList<>();
+		
+		if(StringUtils.isNotBlank(policyStr)) {
+			String[] split = policyStr.split(";");
+			for (int i = 0; i < split.length; i++) {
+				String[] split1 = split[i].split("@");
+				if (split1.length == 2) {
+					policies.add(Policies.builder().technicalKey(split1[0]).value(List.of(split1[1])).build());
+				}
+			}
+		}
+		
+		return policies;
 	}
 }

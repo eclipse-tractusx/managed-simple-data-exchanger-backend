@@ -43,6 +43,7 @@ import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorRe
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.SubModelResponse;
 import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsFacilitator;
 import org.eclipse.tractusx.sde.digitaltwins.facilitator.DigitalTwinsUtility;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -69,6 +70,9 @@ public class DigitalTwinUseCaseHandler extends Step implements DigitalTwinUsecas
 	private final DigitalTwinLookUpInRegistry digitalTwinLookUpInRegistry;
 	
 	private final DigitalTwinAccessRuleFacilator digitalTwinAccessRuleFacilator;
+	
+	@Value(value = "${edc.hostname}${edc.dataplane.endpointpath:/api/public}")
+	public String digitalTwinEdcDataplaneEndpoint;
 	
 	public void delete(Integer rowIndex, JsonObject jsonObject, String delProcessId, String refProcessId) {
 		String shellId = JsonObjectUtility.getValueFromJsonObject(jsonObject, SubmoduleCommonColumnsConstant.SHELL_ID);
@@ -168,7 +172,8 @@ public class DigitalTwinUseCaseHandler extends Step implements DigitalTwinUsecas
 
 		Map<String, String> identification = findIdentificationForSubmodule(rowIndex, jsonObject);
 
-		String path = getSubmoduleUriPathOfSubmodule();
+		String path = getUriPathOfSubmodule();
+		String submodelDataPlaneUrl = getDataPlaneUrlOfSubmodule();
 		
 		String submodelRequestidentifier= identification.get("submodelRequestidentifier");
 		String submodelIdentifier = identification.get("submodelIdentifier");
@@ -178,8 +183,12 @@ public class DigitalTwinUseCaseHandler extends Step implements DigitalTwinUsecas
 					+ submodelRequestidentifier;
 		}
 		
+		if (StringUtils.isBlank(submodelDataPlaneUrl)) {
+			submodelDataPlaneUrl = digitalTwinEdcDataplaneEndpoint;
+		}
+		
 		CreateSubModelRequest createSubModelRequest = digitalTwinsUtility.getCreateSubModelRequest(shellId,
-				getsemanticIdOfModel(), getIdShortOfModel(), submodelIdentifier, path,
+				getsemanticIdOfModel(), getIdShortOfModel(), submodelIdentifier, submodelDataPlaneUrl + path,
 				getSubmodelShortDescriptionOfModel());
 		
 		if (foundSubmodel == null) {
@@ -188,8 +197,6 @@ public class DigitalTwinUseCaseHandler extends Step implements DigitalTwinUsecas
 			jsonObject.put(SubmoduleCommonColumnsConstant.SUBMODULE_ID, createSubModelRequest.getId());
 
 		} else {
-			// There is no need to send submodel because of nothing to change in it so
-			// sending null of it
 			boolean isSubmodelRequestidentifierSame = false;
 			if(foundSubmodel.getEndpoints()!=null) {
 				isSubmodelRequestidentifierSame = foundSubmodel.getEndpoints().stream()
@@ -203,6 +210,8 @@ public class DigitalTwinUseCaseHandler extends Step implements DigitalTwinUsecas
 				jsonObject.put(SubmoduleCommonColumnsConstant.SUBMODULE_ID, createSubModelRequest.getId());
 			} else {
 				jsonObject.put(SubmoduleCommonColumnsConstant.SUBMODULE_ID, foundSubmodel.getId());
+				// There is no need to send submodel because of nothing to change in it so
+				// sending null of it
 				digitalTwinFacilitator.updateShellDetails(shellId, aasDescriptorRequest, null);
 				logDebug("Complete Digital Twins Update Update Digital Twins");
 			}

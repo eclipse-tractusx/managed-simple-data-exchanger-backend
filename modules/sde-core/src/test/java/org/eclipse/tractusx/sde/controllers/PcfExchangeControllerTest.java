@@ -88,7 +88,7 @@ class PcfExchangeControllerTest {
 	@Test
 	void testGetPcfByProductSuccess() throws Exception {
 		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/pcf/productIds/{productId}","test_product")
-				.param("BPN", "BPNL001000TS0100")
+				.header("Edc-Bpn", "BPNL001000TS0100")
 				.param("requestId", UUID.randomUUID().toString())
 				.param("message", "This is test request");
 		ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(pcfExchangeController).build()
@@ -99,7 +99,7 @@ class PcfExchangeControllerTest {
 	@Test
 	void testUploadPcfSubmodelSuccess() throws Exception {
 		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put("/pcf/productIds/{productId}","test_product")
-				.param("BPN", "BPNL001000TS0100")
+				.header("Edc-Bpn", "BPNL001000TS0100")
 				.param("requestId", UUID.randomUUID().toString())
 				.param("message", "This is test request")
 				.contentType("application/json")
@@ -112,7 +112,7 @@ class PcfExchangeControllerTest {
 	@Test
 	void testUploadPcfSubmodelFailure() throws Exception {
 		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put("/pcf/productIds/{productId}","test_product")
-				.param("BPN", "")
+				.header("Edc-Bpn", "")
 				.param("requestId", UUID.randomUUID().toString())
 				.param("message", "This is test request");
 		ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(pcfExchangeController).build()

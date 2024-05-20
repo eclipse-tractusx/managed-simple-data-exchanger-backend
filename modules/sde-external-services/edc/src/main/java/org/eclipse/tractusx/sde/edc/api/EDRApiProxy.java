@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.tractusx.sde.edc.model.contractnegotiation.AcknowledgementId;
-import org.eclipse.tractusx.sde.edc.model.contractnegotiation.ContractNegotiations;
 import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedByIdResponse;
 import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedResponse;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -43,7 +42,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 public interface EDRApiProxy {
 
 	@PostMapping(path = "/v2/edrs", consumes = MediaType.APPLICATION_JSON_VALUE)
-	AcknowledgementId edrCacheCreate(URI url, @RequestBody ContractNegotiations requestBody,
+	AcknowledgementId edrCacheCreate(URI url, @RequestBody JsonNode requestBody,
 			@RequestHeader Map<String, String> requestHeader);
 
 	@PostMapping(path = "/v2/edrs/request", consumes = MediaType.APPLICATION_JSON_VALUE)

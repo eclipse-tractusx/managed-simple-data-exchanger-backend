@@ -90,7 +90,9 @@ public class CatalogResponseBuilder extends AbstractEDCStepsHelper {
 				.version(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_VERSION))
 				.fileName(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_FILENAME))
 				.fileContentType(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_CONTENTTYPE))
-				.connectorId(getFieldFromJsonNode(contractOfferCatalog, edcstr+"participantId")).build();
+				.connectorId(getFieldFromJsonNode(contractOfferCatalog, edcstr+"participantId"))
+				.hasPolicy(policy)
+				.build();
 
 		checkAndSetPolicyPermission(build, policy);
 

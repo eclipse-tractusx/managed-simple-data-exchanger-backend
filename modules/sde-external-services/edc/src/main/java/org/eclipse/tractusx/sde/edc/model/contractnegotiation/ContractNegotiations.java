@@ -22,8 +22,6 @@ package org.eclipse.tractusx.sde.edc.model.contractnegotiation;
 
 import java.util.Map;
 
-import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyRequest;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -58,7 +56,7 @@ public class ContractNegotiations {
 
 	private String protocol;
 
-	private PolicyRequest policy;
+	private Object policy;
 	
 	@SneakyThrows
 	public String toJsonString() {

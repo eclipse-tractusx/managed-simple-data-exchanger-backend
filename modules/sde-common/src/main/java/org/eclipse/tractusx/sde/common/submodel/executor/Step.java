@@ -71,9 +71,14 @@ public abstract class Step {
 		return this.submodelSchema.get("semantic_id").getAsString();
 	}
 
-	public String getSubmoduleUriPathOfSubmodule() {
+	public String getUriPathOfSubmodule() {
 		JsonElement jsonElement = this.submodelSchema.get("submodelUriPath");
 		return jsonElement == null || jsonElement.isJsonNull() ? "public" : jsonElement.getAsString();
+	}
+	
+	public String getDataPlaneUrlOfSubmodule() {
+		JsonElement jsonElement = this.submodelSchema.get("submodelDataPlaneUrl");
+		return jsonElement == null || jsonElement.isJsonNull() ? "" : jsonElement.getAsString();
 	}
 
 	public JsonObject getAddOnOfModel() {

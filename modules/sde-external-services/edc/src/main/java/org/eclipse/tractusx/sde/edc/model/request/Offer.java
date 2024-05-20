@@ -23,6 +23,7 @@ package org.eclipse.tractusx.sde.edc.model.request;
 import org.springframework.lang.NonNull;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -45,6 +46,9 @@ public class Offer {
 	private String offerId;
 	@NotNull
 	private String assetId;
+	
+	private JsonNode hasPolicy;
+	
 	private String policyId;
 	private String agreementId;
 	private String expirationDate;

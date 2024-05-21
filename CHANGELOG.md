@@ -2,7 +2,6 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
-
 ## [Unreleased]
 
 ### Added
@@ -10,7 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - EDC code changes refactor.
 
 ### Fixed
-- Fix for PCF data sovereignty test
+- Fix for PCF data sovereignty test.
+- Security issue fixed.
 
 ## [2.4.0] - 2024-05-14
 

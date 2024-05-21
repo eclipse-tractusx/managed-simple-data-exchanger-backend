@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022,2024 T-Systems International GmbH
+ * Copyright (c) 2022,2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -23,12 +23,14 @@ package org.eclipse.tractusx.sde.digitaltwins.entities.response;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.Endpoint;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.Extensions;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.MultiLanguage;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.SemanticId;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AllArgsConstructor;
@@ -46,11 +48,24 @@ public class SubModelResponse {
 
     private List<MultiLanguage> description;
     private String idShort;
-    private String id;
+    
+	@JsonProperty("identification")
+	private String identification;
+	
+	@JsonProperty("id")
+	private String id;
+	
     private SemanticId semanticId;
     private List<Endpoint> endpoints;
     private List<MultiLanguage> displayName;  
     private Extensions extensions;
+    
+    public String getId() {
+		if (StringUtils.isBlank(this.id)) {
+			id = this.identification;
+		}
+		return this.id;
+	}
 
     @SneakyThrows
     public String toJsonString() {

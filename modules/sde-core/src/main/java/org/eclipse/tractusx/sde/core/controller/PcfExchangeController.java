@@ -37,6 +37,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -107,8 +108,9 @@ public class PcfExchangeController {
 	// PCF data exchange api's
 	@GetMapping(value = "/productIds/{productId}")
 	public ResponseEntity<Object> getPcfByProduct(@PathVariable String productId,
-			@RequestParam(value = "BPN", required = true) String bpnNumber,
-			@RequestParam(value = "requestId", required = true) String requestId, @RequestParam String message)
+			@RequestHeader(value = "Edc-Bpn") String bpnNumber,
+			@RequestParam(value = "requestId") String requestId, 
+			@RequestParam(value = "message", required = false) String message)
 			throws Exception {
 		log.info(LogUtil.encode("Request received for GET: /api/pcf/productIds/" + productId));
 		pcfExchangeService.savePcfRequestData(requestId, productId, bpnNumber, message);
@@ -117,9 +119,10 @@ public class PcfExchangeController {
 
 	@PutMapping(value = "/productIds/{productId}")
 	public ResponseEntity<Object> uploadPcfSubmodel(@PathVariable String productId,
-			@RequestParam(value = "BPN", required = true) String bpnNumber,
+			@RequestHeader(value = "Edc-Bpn") String bpnNumber,
 			@RequestParam(value = "requestId", required = false) String requestId,
-			@RequestParam(value = "message", required = false) String message, @RequestBody JsonNode pcfData) {
+			@RequestParam(value = "message", required = false) String message, 
+			@RequestBody JsonNode pcfData) {
 		log.info(LogUtil.encode("Request received for PUT: /api/pcf/productIds/" + productId));
 
 		pcfExchangeService.recievedPCFData(productId, bpnNumber, requestId, message, pcfData);

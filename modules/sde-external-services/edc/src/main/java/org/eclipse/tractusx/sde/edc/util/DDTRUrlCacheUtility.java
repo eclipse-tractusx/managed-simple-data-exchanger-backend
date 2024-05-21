@@ -22,7 +22,7 @@ package org.eclipse.tractusx.sde.edc.util;
 
 import java.util.List;
 
-import org.eclipse.tractusx.sde.edc.constants.EDCAssetConstant;
+import org.eclipse.tractusx.sde.edc.constants.EDCAssetConfigurableConstant;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -37,10 +37,12 @@ import lombok.extern.slf4j.Slf4j;
 public class DDTRUrlCacheUtility {
 
 	private final EDCAssetLookUp edcAssetLookUp;
+	
+	private final EDCAssetConfigurableConstant edcAssetConfigurableConstant;
 
 	@Cacheable(value = "bpn-ddtr", key = "#bpnNumber")
 	public List<QueryDataOfferModel> getDDTRUrl(String bpnNumber) {
-		return edcAssetLookUp.getEDCAssetsByType(bpnNumber, EDCAssetConstant.DATA_CORE_DIGITAL_TWIN_REGISTRY_TYPE);
+		return edcAssetLookUp.getEDCAssetsByType(bpnNumber, edcAssetConfigurableConstant.getAssetPropTypeDigitalTwin());
 	}
 
 	@CacheEvict(value = "bpn-ddtr", key = "#bpnNumber")

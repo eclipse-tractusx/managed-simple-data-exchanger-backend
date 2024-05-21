@@ -63,7 +63,9 @@ public class EDCAssetUrlCacheService {
 		Offer offer = Offer.builder().assetId(queryDataOfferModel.getAssetId())
 				.offerId(queryDataOfferModel.getOfferId()).policyId(queryDataOfferModel.getPolicyId())
 				.connectorId(queryDataOfferModel.getConnectorId())
-				.connectorOfferUrl(queryDataOfferModel.getConnectorOfferUrl()).build();
+				.connectorOfferUrl(queryDataOfferModel.getConnectorOfferUrl())
+				.hasPolicy(queryDataOfferModel.getHasPolicy())
+				.build();
 		try {
 			EDRCachedResponse eDRCachedResponse = contractNegotiationService.verifyOrCreateContractNegotiation(
 					bpnNumber, Map.of(), queryDataOfferModel.getConnectorOfferUrl(), action, offer);

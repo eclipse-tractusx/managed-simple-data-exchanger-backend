@@ -62,7 +62,7 @@ public class EDCUsecaseHandler extends Step implements EDCUsecaseStep {
 			String uuid = getDatabaseIdentifierValues(objectNode, getDatabaseIdentifierSpecsOfModel());
 
 			AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest(submodule,
-					getSubmodelShortDescriptionOfModel(), shellId, subModelId, getSubmoduleUriPathOfSubmodule(), uuid,
+					getSubmodelShortDescriptionOfModel(), shellId, subModelId, getUriPathOfSubmodule(), uuid,
 					getsemanticIdOfModel(), "");
 
 			Map<String, String> eDCAsset = null;

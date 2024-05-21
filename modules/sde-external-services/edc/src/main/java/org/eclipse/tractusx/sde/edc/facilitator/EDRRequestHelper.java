@@ -24,7 +24,9 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import org.eclipse.tractusx.sde.common.utils.LogUtil;
 import org.eclipse.tractusx.sde.edc.api.EDRApiProxy;
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ActionRequest;
 import org.eclipse.tractusx.sde.edc.mapper.ContractMapper;
@@ -32,10 +34,12 @@ import org.eclipse.tractusx.sde.edc.model.contractnegotiation.AcknowledgementId;
 import org.eclipse.tractusx.sde.edc.model.contractnegotiation.ContractNegotiations;
 import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedByIdResponse;
 import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedResponse;
+import org.eclipse.tractusx.sde.edc.model.request.Offer;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -48,18 +52,29 @@ public class EDRRequestHelper extends AbstractEDCStepsHelper {
 
 	private final EDRApiProxy edrApiProxy;
 	private final ContractMapper contractMapper;
+	private final ObjectMapper mapper = new ObjectMapper();
 
 	@SneakyThrows
-	public String edrRequestInitiate(String providerUrl, String providerId, String offerId, String assetId,
+	public String edrRequestInitiate(String providerUrl, String providerId, Offer offer, String assetId,
 			ActionRequest action, Map<String, String> extensibleProperty) {
 
+		String offerId = offer.getOfferId();
 		ContractNegotiations contractNegotiations = contractMapper.prepareContractNegotiations(providerUrl, offerId,
 				assetId, providerId, action);
-
-		log.info(contractNegotiations.toJsonString());
-
-		AcknowledgementId acknowledgementId = edrApiProxy.edrCacheCreate(new URI(consumerHostWithDataPath),
-				contractNegotiations, getAuthHeader());
+		
+		log.debug(LogUtil.encode(contractNegotiations.toJsonString()));
+		
+		if (Optional.ofNullable(offer.getHasPolicy()).isPresent()) {
+			JsonNode hasPolicy = offer.getHasPolicy();
+			((ObjectNode) hasPolicy).putPOJO("odrl:assigner", Map.of("@id", providerId));
+			contractNegotiations.setPolicy(offer.getHasPolicy());
+		}
+		
+		JsonNode jsonNode = mapper.convertValue(contractNegotiations, JsonNode.class);
+		log.debug(LogUtil.encode(jsonNode.toPrettyString()));
+		
+		AcknowledgementId acknowledgementId = edrApiProxy.edrCacheCreate(new URI(consumerHostWithDataPath), jsonNode,
+				getAuthHeader());
 		return acknowledgementId.getId();
 	}
 

@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022,2024 T-Systems International GmbH
+ * Copyright (c) 2022,2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -40,7 +40,15 @@ public class PolicyDefinitionRequest {
 
 	@JsonProperty("@context")
 	@Builder.Default
-	private Map<String, String> context = Map.of("odrl","http://www.w3.org/ns/odrl/2/");
+	private Map<String, String> context = Map.of(
+			"@vocab", "https://w3id.org/edc/v0.0.1/ns/",
+	        "edc", "https://w3id.org/edc/v0.0.1/ns/",
+			"odrl","http://www.w3.org/ns/odrl/2/",
+			"tx", "https://w3id.org/tractusx/v0.0.1/ns/",
+			"cx-common", "https://w3id.org/catenax/ontology/common#",
+	        "cx-taxo", "https://w3id.org/catenax/taxonomy#",
+	        "cx-policy", "https://w3id.org/catenax/policy/"
+			);
 
 	@JsonProperty("@type")
 	@Builder.Default

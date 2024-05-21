@@ -68,9 +68,6 @@ public class DigitalTwinsUtility {
 	@Value(value = "${edc.hostname}${edc.dsp.endpointpath:/api/v1/dsp}")
 	public String digitalTwinEdcDspEndpoint;
 
-	@Value(value = "${edc.hostname}${edc.dataplane.endpointpath:/api/public}")
-	public String digitalTwinEdcDataplaneEndpoint;
-
 	ObjectMapper mapper = new ObjectMapper();
 
 	private static final Map<String, List<String>> publicReadableSpecificAssetIDs = Map.of(MANUFACTURER_PART_ID,
@@ -102,12 +99,12 @@ public class DigitalTwinsUtility {
 
 	@SneakyThrows
 	public CreateSubModelRequest getCreateSubModelRequest(String shellId, String sematicId, String idShortofModel,
-			String identification, String path, String description) {
+			String identification, String endpointAddress, String description) {
 
 		SemanticId semanticId = SemanticId.builder().type(CommonConstants.EXTERNAL_REFERENCE)
 				.keys(List.of(new Keys(CommonConstants.SUBMODEL, sematicId))).build();
 
-		List<Endpoint> endpoints = prepareDtEndpoint(shellId, identification, path);
+		List<Endpoint> endpoints = prepareDtEndpoint(shellId, identification, endpointAddress);
 
 		MultiLanguage engLang = MultiLanguage.builder().language("en").text(description).build();
 
@@ -115,12 +112,12 @@ public class DigitalTwinsUtility {
 				.description(List.of(engLang)).endpoints(endpoints).build();
 	}
 
-	public List<Endpoint> prepareDtEndpoint(String shellId, String submodelIdentification, String path) {
+	public List<Endpoint> prepareDtEndpoint(String shellId, String submodelIdentification, String endpointAddress) {
 
 		List<Endpoint> endpoints = new ArrayList<>();
 		endpoints.add(Endpoint.builder().endpointInterface(CommonConstants.INTERFACE)
 				.protocolInformation(ProtocolInformation.builder()
-						.endpointAddress(digitalTwinEdcDataplaneEndpoint + path)
+						.endpointAddress(endpointAddress)
 						.endpointProtocol(CommonConstants.HTTP)
 						.endpointProtocolVersion(List.of(CommonConstants.ENDPOINT_PROTOCOL_VERSION))
 						.subProtocol(CommonConstants.SUB_PROTOCOL)

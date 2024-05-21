@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022,2024 T-Systems International GmbH
+ * Copyright (c) 2022,2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -23,9 +23,11 @@ package org.eclipse.tractusx.sde.digitaltwins.entities.response;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.KeyValuePair;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.MultiLanguage;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -35,12 +37,28 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ShellDescriptorResponse {
 	private String idShort;
-	@JsonProperty("id")
+	
+	@JsonProperty("identification")
 	private String identification;
+	
+	@JsonProperty("id")
+	private String id;
+	
 	private List<MultiLanguage> description;
+	
 	private String globalAssetId;
+	
 	private List<KeyValuePair> specificAssetIds;
+	
 	private List<SubModelResponse> submodelDescriptors;
+	
+	public String getIdentification() {
+		if (StringUtils.isBlank(this.identification)) {
+			identification = this.id;
+		}
+		return this.identification;
+	}
 }

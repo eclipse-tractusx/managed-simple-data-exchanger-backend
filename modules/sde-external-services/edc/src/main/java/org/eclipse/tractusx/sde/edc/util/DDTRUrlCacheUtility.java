@@ -23,6 +23,7 @@ package org.eclipse.tractusx.sde.edc.util;
 import java.util.List;
 
 import org.eclipse.tractusx.sde.edc.constants.EDCAssetConfigurableConstant;
+import org.eclipse.tractusx.sde.edc.entities.request.contractdefinition.Criterion;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -42,7 +43,7 @@ public class DDTRUrlCacheUtility {
 
 	@Cacheable(value = "bpn-ddtr", key = "#bpnNumber")
 	public List<QueryDataOfferModel> getDDTRUrl(String bpnNumber) {
-		return edcAssetLookUp.getEDCAssetsByType(bpnNumber, edcAssetConfigurableConstant.getAssetPropTypeDigitalTwin());
+		return edcAssetLookUp.getEDCAssetsByType(bpnNumber, getFilterCriteria());
 	}
 
 	@CacheEvict(value = "bpn-ddtr", key = "#bpnNumber")
@@ -53,5 +54,15 @@ public class DDTRUrlCacheUtility {
 	@CacheEvict(value = "bpn-ddtr", allEntries = true)
 	public void cleareDDTRUrlAllCache() {
 		log.info("Cleared All bpn-ddtr cache");
+	}
+	
+	private List<Criterion> getFilterCriteria() {
+
+		return List.of(
+				Criterion.builder()
+				.operandLeft("'http://purl.org/dc/terms/type'.'@id'")
+				.operator("=")
+				.operandRight("https://w3id.org/catenax/taxonomy#" + edcAssetConfigurableConstant.getAssetPropTypeDigitalTwin())
+				.build());
 	}
 }

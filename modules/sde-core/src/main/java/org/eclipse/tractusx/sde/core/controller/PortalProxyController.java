@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2023 T-Systems International GmbH
- * Copyright (c) 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023,2024 T-Systems International GmbH
+ * Copyright (c) 2023,2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -23,6 +23,7 @@ import static org.springframework.http.ResponseEntity.ok;
 
 import java.util.List;
 
+import org.eclipse.tractusx.sde.core.service.PartnerPoolService;
 import org.eclipse.tractusx.sde.portal.handler.PortalProxyService;
 import org.eclipse.tractusx.sde.portal.model.ConnectorInfo;
 import org.eclipse.tractusx.sde.portal.model.response.LegalEntityResponse;
@@ -46,13 +47,16 @@ public class PortalProxyController {
 	@Autowired
 	private PortalProxyService portalProxyService;
 	
+	@Autowired
+	private PartnerPoolService partnerPoolService;
+	
 	
 	@GetMapping(value = "/legal-entities")
 	@PreAuthorize("hasPermission('','consumer_search_connectors')")
-	public ResponseEntity<List<LegalEntityResponse>> fetchLegalEntitiesData(@RequestParam String searchText,
+	public ResponseEntity<List<LegalEntityResponse>> fetchLegalEntitiesData(@RequestParam (required = false) String bpnLs, @RequestParam String searchText,
 			@RequestParam Integer page, @RequestParam Integer size) throws Exception {
 		log.info("Request received : /api/legal-entities");
-		List<LegalEntityResponse> legalEntitiesResponse = portalProxyService.fetchLegalEntitiesData(searchText,
+		List<LegalEntityResponse> legalEntitiesResponse = partnerPoolService.fetchLegalEntitiesData(bpnLs, searchText,
 				page, size);
 		return ok().body(legalEntitiesResponse);
 	}

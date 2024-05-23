@@ -119,6 +119,11 @@ public class PCFRepositoryService {
 	}
 	
 	@SneakyThrows
+	public List<PcfRequestEntity> findByProductId(String productId) {
+		return pcfRequestRepository.findByProductId(productId);
+	}
+	
+	@SneakyThrows
 	public PcfRequestEntity savePcfStatus(String requestId, PCFRequestStatusEnum status, String remark) {
 
 		PcfRequestEntity pcfRequestEntity = pcfRequestRepository.getReferenceById(requestId);
@@ -150,5 +155,4 @@ public class PCFRepositoryService {
 		return PagingResponse.builder().items(requestList).pageSize(result.getSize()).page(result.getNumber())
 				.totalItems(result.getTotalElements()).build();
 	}
-
 }

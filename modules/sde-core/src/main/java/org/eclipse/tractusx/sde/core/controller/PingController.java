@@ -1,7 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022, 2024 T-Systems International GmbH
- * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022,2024 T-Systems International GmbH
+ * Copyright (c) 2022,2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -55,6 +55,12 @@ public class PingController {
 	@GetMapping(value = "/cache/clear-ddtrurl")
 	public ResponseEntity<String> clearDdtrurlCache() {
 		edcAssetUrlCacheService.clearDDTRUrlCache();
+		return ok().body("Cleared");
+	}
+	
+	@GetMapping(value = "/cache/clear-pcfurl")
+	public ResponseEntity<String> clearPCFExchangeUrlCache() {
+		edcAssetUrlCacheService.clearPCFExchangeUrlCache();
 		return ok().body("Cleared");
 	}
 }

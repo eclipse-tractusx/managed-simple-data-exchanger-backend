@@ -32,7 +32,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PcfRequestRepository extends JpaRepository<PcfRequestEntity, String> {
-
+	
+	List<PcfRequestEntity> findByProductId(String productId);
+	
 	Optional<PcfRequestEntity> findByRequestIdAndProductIdAndBpnNumber(String requestId, String productId,
 			String bpnNumber);
 	

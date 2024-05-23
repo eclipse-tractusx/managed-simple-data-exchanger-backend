@@ -90,7 +90,9 @@ public class QueryDataOfferModel {
 		// type casting of the argument.
 		QueryDataOfferModel offer = (QueryDataOfferModel) obj;
 
-		return (offer.assetId.equals(this.assetId) && offer.connectorOfferUrl.equals(this.connectorOfferUrl));
+		return (offer.assetId.equals(this.assetId) 
+				&& offer.connectorOfferUrl.equals(this.connectorOfferUrl)
+				&& offer.sematicVersion.equals(this.sematicVersion));
 	}
 
 	@Override

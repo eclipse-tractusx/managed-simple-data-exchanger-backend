@@ -59,6 +59,16 @@ public class ProxyRequestInterface {
 	public void requestToProviderForPCFValue(String productId, StringBuilder reponseMap, String requestId, String message,
 			QueryDataOfferModel dataset, boolean isRequestToNonexistingTwin) {
 		try {
+			String connectorOfferUrl = dataset.getConnectorOfferUrl();
+			String pcfProductPath = "";
+			if (connectorOfferUrl.contains("@")) {
+				String[] split = connectorOfferUrl.split("@");
+				if (split.length > 1) {
+					dataset.setConnectorOfferUrl(split[0]);
+					pcfProductPath = split[1];
+				}
+			}
+			
 			EDRCachedByIdResponse edrToken = edcAssetUrlCacheService.verifyAndGetToken(dataset.getConnectorId(),
 					dataset);
 
@@ -73,7 +83,7 @@ public class ProxyRequestInterface {
 					pcfpushEnpoint = new URI(
 							edrToken.getEndpoint() + SLASH_DELIMETER + PRODUCT_IDS + SLASH_DELIMETER + productId);
 				else
-					pcfpushEnpoint = new URI(edrToken.getEndpoint());
+					pcfpushEnpoint = new URI(edrToken.getEndpoint() + pcfProductPath);
 
 				Map<String, String> header = new HashMap<>();
 				header.put("authorization", edrToken.getAuthorization());
@@ -90,17 +100,17 @@ public class ProxyRequestInterface {
 				reponseMap.append(errorMsg);
 			}
 		} catch (FeignException e) {
-			log.error(LogUtil.encode("FeignRequest requestToProviderForPCFValue:" + e.request()));
+			log.error("FeignRequest requestToProviderForPCFValue:" + e.request());
 			String error= StringUtils.isBlank(e.contentUTF8()) ? e.getMessage() : e.contentUTF8();
 			String errorMsg= "Unable to request to provider '"+ dataset.getConnectorOfferUrl()+"' for '"+productId+"' product PCF value beacuse error in remote service execution";
-			log.error(LogUtil.encode("FeignException requestToProviderForPCFValue: " + errorMsg + ", because: " +error));
+			log.error("FeignException requestToProviderForPCFValue: " + errorMsg + ", because: " +error);
 			reponseMap.append(errorMsg);
 		}
 	}
 	
 	@SneakyThrows
 	public void sendNotificationToConsumer(PCFRequestStatusEnum status, JsonObject calculatedPCFValue,
-			String productId, String bpnNumber, String requestId, String message) {
+			String productId, String bpnNumber, String requestId, String message, boolean isNeedToSendRequestIdtoConsumer) {
 
 		// 1 fetch EDC connectors and DTR Assets from EDC connectors
 		List<QueryDataOfferModel> pcfExchangeUrlOffers = edcAssetUrlCacheService.getPCFExchangeUrlFromTwin(bpnNumber);
@@ -114,9 +124,9 @@ public class ProxyRequestInterface {
 			pcfExchangeUrlOffers.parallelStream().forEach(dtOffer -> {
 				
 				if (PCFRequestStatusEnum.SENDING_REJECT_NOTIFICATION.equals(status)) {
-					sendNotification(null, productId, bpnNumber, requestId, dtOffer, status, message);
+					sendNotification(null, productId, bpnNumber, requestId, dtOffer, status, message, isNeedToSendRequestIdtoConsumer);
 				} else {
-					sendNotification(calculatedPCFValue, productId, bpnNumber, requestId, dtOffer, status, message);
+					sendNotification(calculatedPCFValue, productId, bpnNumber, requestId, dtOffer, status, message, isNeedToSendRequestIdtoConsumer);
 				}
 				
 			});
@@ -125,7 +135,7 @@ public class ProxyRequestInterface {
 
 	@SneakyThrows
 	private void sendNotification(JsonObject calculatedPCFValue, String productId, String bpnNumber, String requestId,
-			QueryDataOfferModel dtOffer, PCFRequestStatusEnum status, String message) {
+			QueryDataOfferModel dtOffer, PCFRequestStatusEnum status, String message, boolean isNeedToSendRequestIdtoConsumer) {
 		String sendNotificationStatus = "";
 		try {
 			EDRCachedByIdResponse edrToken = edcAssetUrlCacheService.verifyAndGetToken(bpnNumber, dtOffer);
@@ -139,7 +149,11 @@ public class ProxyRequestInterface {
 				header.put("authorization", edrToken.getAuthorization());
 				header.put("Edc-Bpn", bpnNumber);
 				
-				pcfExchangeProxy.uploadPcfSubmodel(pcfpushEnpoint, header, requestId, message,
+				String sendRequestId = requestId;
+				if (!isNeedToSendRequestIdtoConsumer)
+					sendRequestId = "";
+				
+				pcfExchangeProxy.uploadPcfSubmodel(pcfpushEnpoint, header, sendRequestId, message,
 						jsonObjectMapper.gsonObjectToJsonNode(calculatedPCFValue));
 
 				sendNotificationStatus = "SUCCESS";

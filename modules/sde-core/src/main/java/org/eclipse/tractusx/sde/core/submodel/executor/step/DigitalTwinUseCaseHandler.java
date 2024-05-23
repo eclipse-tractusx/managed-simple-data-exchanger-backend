@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.tractusx.sde.common.configuration.properties.PCFAssetStaticPropertyHolder;
 import org.eclipse.tractusx.sde.common.configuration.properties.SDEConfigurationProperties;
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.constants.SubmoduleCommonColumnsConstant;
@@ -70,6 +71,8 @@ public class DigitalTwinUseCaseHandler extends Step implements DigitalTwinUsecas
 	private final DigitalTwinLookUpInRegistry digitalTwinLookUpInRegistry;
 	
 	private final DigitalTwinAccessRuleFacilator digitalTwinAccessRuleFacilator;
+	
+	private final PCFAssetStaticPropertyHolder pcfAssetStaticPropertyHolder;
 	
 	@Value(value = "${edc.hostname}${edc.dataplane.endpointpath:/api/public}")
 	public String digitalTwinEdcDataplaneEndpoint;
@@ -179,17 +182,28 @@ public class DigitalTwinUseCaseHandler extends Step implements DigitalTwinUsecas
 		String submodelIdentifier = identification.get("submodelIdentifier");
 		
 		if (StringUtils.isNotBlank(path)) {
-			path = FORWARD_SLASH + getNameOfModel() + FORWARD_SLASH + path + FORWARD_SLASH
-					+ submodelRequestidentifier;
+			path =  FORWARD_SLASH + path + FORWARD_SLASH+ submodelRequestidentifier;
 		}
 		
 		if (StringUtils.isBlank(submodelDataPlaneUrl)) {
 			submodelDataPlaneUrl = digitalTwinEdcDataplaneEndpoint;
 		}
 		
+		String endPointAddress= submodelDataPlaneUrl + path;
+		
+		String edcAssetId = shellId + "-" + submodelIdentifier;
+		
+		if (usePCFAssetIdAsDTSubprotocolBodyId())
+			edcAssetId = pcfAssetStaticPropertyHolder.getPcfExchangeAssetId();
+		
+		
+		String sematicIdReference = getSematicIdReferenceOfSubmodule();
+		
+		String interfaceName = getInterfaceNameOfSubmodule();
+		
 		CreateSubModelRequest createSubModelRequest = digitalTwinsUtility.getCreateSubModelRequest(shellId,
-				getsemanticIdOfModel(), getIdShortOfModel(), submodelIdentifier, submodelDataPlaneUrl + path,
-				getSubmodelShortDescriptionOfModel());
+				getsemanticIdOfModel(), getIdShortOfModel(), submodelIdentifier, edcAssetId, endPointAddress,
+				getSubmodelShortDescriptionOfModel(), sematicIdReference, interfaceName);
 		
 		if (foundSubmodel == null) {
 			logDebug(String.format("No submodels for '%s'", shellId));

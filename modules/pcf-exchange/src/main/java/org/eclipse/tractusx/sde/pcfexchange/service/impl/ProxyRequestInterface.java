@@ -100,10 +100,10 @@ public class ProxyRequestInterface {
 				reponseMap.append(errorMsg);
 			}
 		} catch (FeignException e) {
-			log.error("FeignRequest requestToProviderForPCFValue:" + e.request());
+			log.error(LogUtil.encode("FeignRequest requestToProviderForPCFValue:" + e.request()));
 			String error= StringUtils.isBlank(e.contentUTF8()) ? e.getMessage() : e.contentUTF8();
 			String errorMsg= "Unable to request to provider '"+ dataset.getConnectorOfferUrl()+"' for '"+productId+"' product PCF value beacuse error in remote service execution";
-			log.error("FeignException requestToProviderForPCFValue: " + errorMsg + ", because: " +error);
+			log.error(LogUtil.encode("FeignException requestToProviderForPCFValue: " + errorMsg + ", because: " +error));
 			reponseMap.append(errorMsg);
 		}
 	}

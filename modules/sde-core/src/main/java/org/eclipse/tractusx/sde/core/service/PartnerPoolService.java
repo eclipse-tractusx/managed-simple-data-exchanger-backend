@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.tractusx.sde.common.utils.LogUtil;
 import org.eclipse.tractusx.sde.edc.constants.EDCAssetConfigurableConstant;
 import org.eclipse.tractusx.sde.edc.model.edr.EDRCachedByIdResponse;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
@@ -99,11 +100,11 @@ public class PartnerPoolService {
 			err = StringUtils.isBlank(err) ? e.getMessage() : err;
 			String errorMsg = "Unable to fetch LegalEntity Data for  " + legalName + "Or BpnLs " + bpnLs + " because: "
 					+ err;
-			log.error("FeignException : " + errorMsg);
+			log.error(LogUtil.encode("FeignException : " + errorMsg));
 		} catch (Exception e) {
 			String errorMsg = "Unable to fetch LegalEntity Data for  " + legalName + "Or BpnLs " + bpnLs + "because: "
 					+ e.getMessage();
-			log.error("Exception : " + errorMsg);
+			log.error(LogUtil.encode("Exception : " + errorMsg));
 		}
 		return legalEntityData;
 	}

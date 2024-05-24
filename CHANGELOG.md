@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
-## [Unreleased]
+## [2.4.1] - 2024-05-24
 
 ### Added
 - Correction in semanticId changes in pcf.
@@ -344,7 +344,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Compliance with Catena-X Guidelines
 - Integration with Digital Twin registry service.
 
-[unreleased]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.4.0...main
+[unreleased]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.4.1...main
+[2.4.1]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.4.0...v2.4.1
 [2.4.0]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.3.7...v2.4.0
 [2.3.7]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.3.6...v2.3.7
 [2.3.6]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.3.5...v2.3.6

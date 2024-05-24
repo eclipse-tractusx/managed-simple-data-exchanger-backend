@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022,2024 T-Systems International GmbH
+ * Copyright (c) 2022,2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -25,6 +25,7 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 
 import org.eclipse.tractusx.sde.core.controller.PortalProxyController;
+import org.eclipse.tractusx.sde.core.service.PartnerPoolService;
 import org.eclipse.tractusx.sde.portal.handler.PortalProxyService;
 import org.eclipse.tractusx.sde.portal.model.ConnectorInfo;
 import org.eclipse.tractusx.sde.portal.model.response.UnifiedBPNValidationStatusEnum;
@@ -50,6 +51,9 @@ class PortalProxyControllerTest {
 
     @MockBean
     private PortalProxyService portalProxyService;
+    
+    @MockBean
+    private PartnerPoolService partnerPoolService;
 
     @Autowired
     private PortalProxyController consumerController;
@@ -57,7 +61,7 @@ class PortalProxyControllerTest {
     
     @Test
     void testFetchLegalEntitiesData() throws Exception {
-        when(portalProxyService.fetchLegalEntitiesData((String) any(), (Integer) any(), (Integer) any()))
+        when(partnerPoolService.fetchLegalEntitiesData((String) any(),(String) any(), (Integer) any(), (Integer) any()))
                 .thenReturn(List.of());
         MockHttpServletRequestBuilder getResult = MockMvcRequestBuilders.get("/legal-entities");
         MockHttpServletRequestBuilder paramResult = getResult.param("page", String.valueOf(0)).param("searchText", "bmw");

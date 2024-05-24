@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 - Correction in semanticId changes in pcf.
 - EDC code changes refactor.
+- PCF exchange code changes refactor.
+- New changes for BPDM service api access/call using EDC.
 
 ### Fixed
 - Fix for PCF data sovereignty test.

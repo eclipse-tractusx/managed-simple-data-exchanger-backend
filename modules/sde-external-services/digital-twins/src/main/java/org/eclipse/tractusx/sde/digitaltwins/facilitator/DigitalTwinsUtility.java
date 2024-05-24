@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.utils.PolicyOperationUtil;
@@ -99,12 +100,16 @@ public class DigitalTwinsUtility {
 
 	@SneakyThrows
 	public CreateSubModelRequest getCreateSubModelRequest(String shellId, String sematicId, String idShortofModel,
-			String identification, String endpointAddress, String description) {
+			String identification, String edcAssetId, String endpointAddress, String description,
+			String sematicIdReference, String interfaceName) {
+
+		if (StringUtils.isAllBlank(sematicIdReference))
+			sematicIdReference = CommonConstants.SUBMODEL;
 
 		SemanticId semanticId = SemanticId.builder().type(CommonConstants.EXTERNAL_REFERENCE)
-				.keys(List.of(new Keys(CommonConstants.SUBMODEL, sematicId))).build();
+				.keys(List.of(new Keys(sematicIdReference, sematicId))).build();
 
-		List<Endpoint> endpoints = prepareDtEndpoint(shellId, identification, endpointAddress);
+		List<Endpoint> endpoints = prepareDtEndpoint(edcAssetId, endpointAddress, interfaceName);
 
 		MultiLanguage engLang = MultiLanguage.builder().language("en").text(description).build();
 
@@ -112,17 +117,19 @@ public class DigitalTwinsUtility {
 				.description(List.of(engLang)).endpoints(endpoints).build();
 	}
 
-	public List<Endpoint> prepareDtEndpoint(String shellId, String submodelIdentification, String endpointAddress) {
+	public List<Endpoint> prepareDtEndpoint(String edcAssetId, String endpointAddress, String interfaceName) {
 
 		List<Endpoint> endpoints = new ArrayList<>();
-		endpoints.add(Endpoint.builder().endpointInterface(CommonConstants.INTERFACE)
-				.protocolInformation(ProtocolInformation.builder()
-						.endpointAddress(endpointAddress)
+
+		if (StringUtils.isAllBlank(interfaceName))
+			interfaceName = CommonConstants.INTERFACE;
+
+		endpoints.add(Endpoint.builder().endpointInterface(interfaceName)
+				.protocolInformation(ProtocolInformation.builder().endpointAddress(endpointAddress)
 						.endpointProtocol(CommonConstants.HTTP)
 						.endpointProtocolVersion(List.of(CommonConstants.ENDPOINT_PROTOCOL_VERSION))
-						.subProtocol(CommonConstants.SUB_PROTOCOL)
-						.subprotocolBody("id=" + shellId + "-" + submodelIdentification + ";dspEndpoint="
-								+ digitalTwinEdcDspEndpoint)
+						.subprotocol(CommonConstants.SUB_PROTOCOL)
+						.subprotocolBody("id=" + edcAssetId + ";dspEndpoint=" + digitalTwinEdcDspEndpoint)
 						.subprotocolBodyEncoding(CommonConstants.BODY_ENCODING)
 						.securityAttributes(List.of(new SecurityAttributes("NONE", "NONE", "NONE"))).build())
 				.build());
@@ -256,5 +263,4 @@ public class DigitalTwinsUtility {
 	public String encodeValueAsBase64Utf8(String string) {
 		return Base64.getUrlEncoder().encodeToString(string.getBytes());
 	}
-
 }

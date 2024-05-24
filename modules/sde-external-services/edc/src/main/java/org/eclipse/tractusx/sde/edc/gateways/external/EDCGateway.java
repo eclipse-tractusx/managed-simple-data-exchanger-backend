@@ -1,7 +1,7 @@
 /********************************************************************************
-   * Copyright (c) 2022 BMW GmbH
- * Copyright (c) 2022, 2024 T-Systems International GmbH
- * Copyright (c) 2022, 2024 Contributors to the Eclipse Foundation
+ * Copyright (c) 2022 BMW GmbH
+ * Copyright (c) 2022,2024 T-Systems International GmbH
+ * Copyright (c) 2022,2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -65,6 +65,17 @@ public class EDCGateway {
 			throw e;
 		}
 		return true;
+	}
+	
+	public JsonNode assetExistsLookupBasedOnTypeGetAsAsset(ObjectNode requestBody) {
+		try {
+			return edcFeignClientApi.getAssetByType(requestBody);
+		} catch (FeignException e) {
+			if (e.status() == HttpStatus.NOT_FOUND.value()) {
+				return null;
+			}
+			throw e;
+		}
 	}
 
 	public String createAsset(AssetEntryRequest request) {

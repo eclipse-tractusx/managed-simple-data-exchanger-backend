@@ -80,6 +80,16 @@ public abstract class Step {
 		JsonElement jsonElement = this.submodelSchema.get("submodelDataPlaneUrl");
 		return jsonElement == null || jsonElement.isJsonNull() ? "" : jsonElement.getAsString();
 	}
+	
+	public String getSematicIdReferenceOfSubmodule() {
+		JsonElement jsonElement = this.submodelSchema.get("sematicIdReference");
+		return jsonElement == null || jsonElement.isJsonNull() ? "" : jsonElement.getAsString();
+	}
+	
+	public String getInterfaceNameOfSubmodule() {
+		JsonElement jsonElement = this.submodelSchema.get("interfaceName");
+		return jsonElement == null || jsonElement.isJsonNull() ? "" : jsonElement.getAsString();
+	}
 
 	public JsonObject getAddOnOfModel() {
 		return this.submodelSchema.get("addOn").getAsJsonObject();
@@ -111,7 +121,11 @@ public abstract class Step {
 		return jsonElement == null || jsonElement.isJsonNull() || jsonElement.getAsBoolean();
 	}
 	
-
+	public boolean usePCFAssetIdAsDTSubprotocolBodyId() {
+		JsonElement jsonElement = this.getAddOnOfModel().get("usePCFAssetIdAsDTSubprotocolBodyId");
+		return !(jsonElement == null || jsonElement.isJsonNull()) || (jsonElement !=null && jsonElement.getAsBoolean());
+	}
+	
 	public JsonObject checkIsRelationSubmodel() {
 		JsonElement jsonElement = this.getAddOnOfModel().get("isRelationSubmodel");
 		return jsonElement == null || jsonElement.isJsonNull() ? null : jsonElement.getAsJsonObject();

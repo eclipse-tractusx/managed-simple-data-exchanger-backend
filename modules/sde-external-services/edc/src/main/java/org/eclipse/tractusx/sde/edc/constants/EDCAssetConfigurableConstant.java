@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2024 T-Systems International GmbH
- * Copyright (c) 2024 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023,2024 T-Systems International GmbH
+ * Copyright (c) 2023,2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,6 +19,8 @@
  ********************************************************************************/
 
 package org.eclipse.tractusx.sde.edc.constants;
+
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -67,5 +69,17 @@ public class EDCAssetConfigurableConstant {
 	
 	@Value("${edc.policy.digital-twin.usage:Membership@active}")
 	private String digitalTwinExchangeUsagePolicy;
+	
+	@Value("#{'${edc.bpdm.asset.search.criteria:https://purl.org/dc/terms/subject@cx-taxo:ReadAccessPoolForCatenaXMember;https://w3id.org/catenax/ontology/common/version@6.0}'.split(';')}")
+	private List<String> edcBPDMSearchCriteria;
+	
+	@Value("${bpdm.provider.edc.dataspace.api}")
+	private String bpdmProviderEdcDataspaceApi;
+	
+	@Value("${bpdm.provider.edc.public.api}")
+	private String bpdmProviderEdcPublicApi;
+	
+	@Value("${bpdm.provider.bpnl}")
+	private String bpdmProviderBpnl;
 
 }

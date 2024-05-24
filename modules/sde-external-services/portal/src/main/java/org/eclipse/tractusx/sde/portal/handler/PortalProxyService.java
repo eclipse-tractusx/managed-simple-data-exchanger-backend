@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2023 T-Systems International GmbH
- * Copyright (c) 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2023,2024 T-Systems International GmbH
+ * Copyright (c) 2023,2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,15 +19,10 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.portal.handler;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
-import org.eclipse.tractusx.sde.portal.api.IPartnerPoolExternalServiceApi;
 import org.eclipse.tractusx.sde.portal.api.IPortalExternalServiceApi;
 import org.eclipse.tractusx.sde.portal.model.ConnectorInfo;
-import org.eclipse.tractusx.sde.portal.model.LegalEntityData;
-import org.eclipse.tractusx.sde.portal.model.response.LegalEntityResponse;
 import org.eclipse.tractusx.sde.portal.model.response.UnifiedBPNValidationStatusEnum;
 import org.eclipse.tractusx.sde.portal.model.response.UnifiedBpnValidationResponse;
 import org.eclipse.tractusx.sde.portal.utils.MemberCompanyBPNCacheUtilityService;
@@ -43,21 +38,6 @@ public class PortalProxyService {
 	private final MemberCompanyBPNCacheUtilityService cacheUtilityService;
 
 	private final IPortalExternalServiceApi portalExternalServiceApi;
-
-	private final IPartnerPoolExternalServiceApi partnerPoolExternalServiceApi;
-
-	@SneakyThrows
-	public List<LegalEntityResponse> fetchLegalEntitiesData(String searchText, Integer page, Integer size) {
-		LegalEntityData legalEntity = partnerPoolExternalServiceApi.fetchLegalEntityData(searchText, page, size);
-		return Optional
-				.ofNullable(legalEntity.getContent()
-						.stream()
-						.map(companyData -> LegalEntityResponse.builder()
-						.bpn(companyData.getBpnl()).name(companyData.getLegalName()).build())
-						.toList())
-				.orElse(Collections.emptyList());  
-		
-	}
 
 	@SneakyThrows
 	public List<ConnectorInfo> fetchConnectorInfo(List<String> bpns) {

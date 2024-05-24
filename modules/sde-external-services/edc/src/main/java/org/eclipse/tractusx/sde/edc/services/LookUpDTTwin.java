@@ -35,6 +35,7 @@ import org.eclipse.tractusx.sde.common.constants.CommonConstants;
 import org.eclipse.tractusx.sde.common.utils.LogUtil;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.KeyValuePair;
 import org.eclipse.tractusx.sde.digitaltwins.entities.common.MultiLanguage;
+import org.eclipse.tractusx.sde.digitaltwins.entities.common.ProtocolInformation;
 import org.eclipse.tractusx.sde.digitaltwins.entities.request.ShellLookupRequest;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorResponse;
 import org.eclipse.tractusx.sde.digitaltwins.entities.response.ShellDescriptorResponseList;
@@ -93,7 +94,7 @@ public class LookUpDTTwin {
 			header.put("Edc-Bpn", sdeConfigurationProperties.getManufacturerId());
 
 		if (StringUtils.isBlank(manufacturerPartId)) {
-			return lookUpAllShellForBPN(submodel, endpoint, dtOfferUrl, header, offset, limit);
+			return lookUpAllShellForBPN(bpnNumber, submodel, endpoint, dtOfferUrl, header, offset, limit);
 		} else {
 			return lookUpTwinBasedOnBPNAndManufacturerPartId(manufacturerPartId, bpnNumber, submodel, endpoint,
 					dtOfferUrl, header);
@@ -113,7 +114,7 @@ public class LookUpDTTwin {
 			ShellLookupResponse response = mapper.readValue(shellLookup, ShellLookupResponse.class);
 
 			return getSubmodelDetails(shellLookupRequest, endpoint, header, dtOfferUrl, response.getResult(),
-					submodel);
+					submodel, bpnNumber);
 
 		} catch (FeignException e) {
 			log.error(LogUtil.encode("LookUpTwinBasedOnBPNAndManufacturerPartId RequestBody: " + e.request()));
@@ -131,7 +132,7 @@ public class LookUpDTTwin {
 		return Collections.emptyList();
 	}
 
-	private List<QueryDataOfferModel> lookUpAllShellForBPN(String submodel, String endpoint, String dtOfferUrl,
+	private List<QueryDataOfferModel> lookUpAllShellForBPN(String searchBPN, String submodel, String endpoint, String dtOfferUrl,
 			Map<String, String> header, Integer offset, Integer limit) {
 		List<QueryDataOfferModel> queryOnDataOffers = new ArrayList<>();
 		try {
@@ -139,7 +140,7 @@ public class LookUpDTTwin {
 			ShellDescriptorResponseList allShell = eDCDigitalTwinProxyForLookUp.getAllShell(new URI(endpoint), offset,
 					limit, header);
 			for (ShellDescriptorResponse shellDescriptorResponse : allShell.getResult())
-				preapreSubmodelResult(submodel, queryOnDataOffers, shellDescriptorResponse);
+				preapreSubmodelResult(submodel, queryOnDataOffers, shellDescriptorResponse, searchBPN);
 
 		} catch (FeignException e) {
 			log.error(LogUtil.encode("FeignException LookUpAllShellForBPN request : "+e.request()));
@@ -159,7 +160,7 @@ public class LookUpDTTwin {
 
 	@SneakyThrows
 	private List<QueryDataOfferModel> getSubmodelDetails(ShellLookupRequest shellLookupRequest, String endpoint,
-			Map<String, String> header, String dtOfferUrl, List<String> shellIds, String submodel) {
+			Map<String, String> header, String dtOfferUrl, List<String> shellIds, String submodel, String searchBPN) {
 		List<QueryDataOfferModel> queryOnDataOffers = new ArrayList<>();
 
 		for (String shellId : shellIds) {
@@ -169,26 +170,29 @@ public class LookUpDTTwin {
 					+ shellDescriptorResponseStr));
 			ShellDescriptorResponse shellDescriptorResponse = mapper.readValue(shellDescriptorResponseStr,
 					ShellDescriptorResponse.class); 
-			preapreSubmodelResult(submodel, queryOnDataOffers, shellDescriptorResponse);
+			preapreSubmodelResult(submodel, queryOnDataOffers, shellDescriptorResponse, searchBPN);
 		}
 		return queryOnDataOffers;
 	}
 
 	private void preapreSubmodelResult(String submodel, List<QueryDataOfferModel> queryOnDataOffers,
-			ShellDescriptorResponse shellDescriptorResponse) {
+			ShellDescriptorResponse shellDescriptorResponse, String searchBPN) {
 
 		String manufacturerPartId = getSpecificKeyFromList(shellDescriptorResponse, "manufacturerPartId");
 
 		String manufacturerBPNId = getSpecificKeyFromList(shellDescriptorResponse, "manufacturerId");
+		
+		if(StringUtils.isBlank(manufacturerBPNId)) {
+			manufacturerBPNId= searchBPN;
+		}
 
-		if (StringUtils.isNotBlank(shellDescriptorResponse.getIdShort()))
-			for (SubModelResponse subModelResponse : shellDescriptorResponse.getSubmodelDescriptors()) {
+		for (SubModelResponse subModelResponse : shellDescriptorResponse.getSubmodelDescriptors()) {
 
-				String sematicId = subModelResponse.getSemanticId().getKeys().get(0).getValue();
+			String sematicId = subModelResponse.getSemanticId().getKeys().get(0).getValue();
 
-				buildQdmOffer(submodel, queryOnDataOffers, shellDescriptorResponse, manufacturerPartId,
-						manufacturerBPNId, subModelResponse, sematicId);
-			}
+			buildQdmOffer(submodel, queryOnDataOffers, shellDescriptorResponse, manufacturerPartId,
+					manufacturerBPNId, subModelResponse, sematicId);
+		}
 	}
 
 	private void buildQdmOffer(String submodel, List<QueryDataOfferModel> queryOnDataOffers,
@@ -198,8 +202,17 @@ public class LookUpDTTwin {
 		if (!subModelResponse.getIdShort().isEmpty() && sematicId.toLowerCase().contains(submodel.toLowerCase())
 				&& subModelResponse.getEndpoints() != null) {
 
-			String subprotocolBody = subModelResponse.getEndpoints().get(0).getProtocolInformation()
-					.getSubprotocolBody();
+			ProtocolInformation protocolInformation = subModelResponse.getEndpoints().get(0).getProtocolInformation();
+			
+			String subprotocolBody = protocolInformation.getSubprotocolBody();
+			
+			String submodelIdShort = subModelResponse.getIdShort();
+			
+			String href = "";
+			if(submodelIdShort.equals("PCFExchangeEndpoint")) {
+				href = protocolInformation.getEndpointAddress();
+				href = href.replace("https://edc.data.plane", "@");
+			}
 
 			String[] edcInfo = subprotocolBody.split(";");
 			String[] assetInfo = edcInfo[0].split("=");
@@ -210,14 +223,19 @@ public class LookUpDTTwin {
 
 			String description = descriptionOptional.isPresent() ? descriptionOptional.get() : "";
 
+			String shellIdShort = shellDescriptorResponse.getIdShort();
+			
+			if(StringUtils.isBlank(shellIdShort))
+				shellIdShort ="ShellTwinIdShortNotVisible";
+			
 			QueryDataOfferModel qdm = QueryDataOfferModel.builder()
 					.publisher(manufacturerBPNId)
 					.manufacturerPartId(manufacturerPartId)
-					.connectorOfferUrl(connectorInfo[1])
+					.connectorOfferUrl(connectorInfo[1]+href)
 					.assetId(assetInfo[1])
 					.type(subModelResponse.getIdShort())
 					.sematicVersion(sematicId)
-					.title(shellDescriptorResponse.getIdShort())
+					.title(shellIdShort)
 					.description(description)
 					.build();
 			
@@ -230,8 +248,22 @@ public class LookUpDTTwin {
 		
 		String joinStr = StringUtils.join(assetId.stream().map(QueryDataOfferRequest::getAssetId).toList(), "\",\"");
 		String filterExpression = String.format(filterExpressionTemplate, joinStr);
-		return catalogResponseBuilder.queryOnDataOffers(queryDataOfferRequestKey.getLeft(),
+		
+		String connectorOfferUrl = queryDataOfferRequestKey.getLeft();
+		if (connectorOfferUrl.contains("@")) {
+			String[] split = connectorOfferUrl.split("@");
+			if (split.length > 1) {
+				connectorOfferUrl = split[0];
+			}
+		}
+		
+		List<QueryDataOfferModel> queryOnDataOffers = catalogResponseBuilder.queryOnDataOffers(connectorOfferUrl,
 				queryDataOfferRequestKey.getRight(), 0, 1000, filterExpression);
+		
+		return queryOnDataOffers.stream().map(obj-> {
+				obj.setConnectorOfferUrl(queryDataOfferRequestKey.getLeft());
+				return obj;
+			}).toList();
 	}
 
 	private String getSpecificKeyFromList(ShellDescriptorResponse shellDescriptorResponse, String key) {

@@ -17,14 +17,18 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
+
 package org.eclipse.tractusx.sde.edc.util;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.common.utils.LogUtil;
 import org.eclipse.tractusx.sde.edc.constants.EDCAssetConfigurableConstant;
 import org.eclipse.tractusx.sde.edc.entities.request.contractdefinition.Criterion;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
+import org.eclipse.tractusx.sde.portal.model.ConnectorInfo;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -35,34 +39,50 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class PCFExchangeAssetUtils {
-	
+public class BPDMEdcAssetUtility {
+
 	private final EDCAssetLookUp edcAssetLookUp;
 	
 	private final EDCAssetConfigurableConstant edcAssetConfigurableConstant;
 	
-	@Cacheable(value = "bpn-pcfexchange", key = "#bpnNumber")
-	public List<QueryDataOfferModel> getPCFExchangeUrl(String bpnNumber) {
-		return edcAssetLookUp.getEDCAssetsByType(bpnNumber, getFilterCriteria());
+	@Cacheable(value = "bpn-bpdm", key = "#bpnNumber")
+	public List<QueryDataOfferModel> getBpdmUrl(String bpnNumber) {
+		
+		ConnectorInfo confo =ConnectorInfo.builder().bpn(bpnNumber)
+				.connectorEndpoint(List.of(edcAssetConfigurableConstant.getBpdmProviderEdcDataspaceApi()))
+				.build();
+		
+		return edcAssetLookUp.getEDCAssetsByType(List.of(confo), getFilterCriteria());
 	}
 
-	@CacheEvict(value = "bpn-pcfexchange", key = "#bpnNumber")
-	public void removePCFExchangeCache(String bpnNumber) {
-		log.info(LogUtil.encode("Cleared '" + bpnNumber + "' bpn-pcfexchange cache"));
+	@CacheEvict(value = "bpn-bpdm", key = "#bpnNumber")
+	public void removeBpdmCache(String bpnNumber) {
+		log.info(LogUtil.encode("Cleared '" + bpnNumber + "' bpn-bpdm cache"));
 	}
 
-	@CacheEvict(value = "bpn-pcfexchange", allEntries = true)
-	public void clearePCFExchangeAllCache() {
+	@CacheEvict(value = "bpn-bpdm", allEntries = true)
+	public void cleareBpdmAllCache() {
 		log.info("Cleared All bpn-pcfexchange cache");
 	}
 	
 	private List<Criterion> getFilterCriteria() {
 
-		return List.of(
-				Criterion.builder()
-				.operandLeft("'http://purl.org/dc/terms/type'.'@id'")
-				.operator("=")
-				.operandRight("https://w3id.org/catenax/taxonomy#"+edcAssetConfigurableConstant.getAssetPropTypePCFExchangeType())
-				.build());
+		List<Criterion> criterias = new ArrayList<>();
+
+		List<String> edcBPDMSearchCriteriaList = edcAssetConfigurableConstant.getEdcBPDMSearchCriteria();
+		for (String edcBPDMSearchCriteria : edcBPDMSearchCriteriaList) {
+			if (StringUtils.isNotBlank(edcBPDMSearchCriteria)) {
+					String[] split1 = edcBPDMSearchCriteria.split("@");
+					if (split1.length == 2) {
+						criterias.add(Criterion.builder()
+								.operandLeft(split1[0])
+								.operator("=")
+								.operandRight(split1[1])
+								.build());
+					}
+			}
+		}
+		return criterias;
 	}
+
 }

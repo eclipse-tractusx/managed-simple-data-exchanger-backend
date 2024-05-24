@@ -62,6 +62,8 @@ public class DigitalTwinAccessRuleFacilator extends Step {
 	@Qualifier("DatabaseUsecaseHandler")
 	private final DatabaseUsecaseStep databaseUseCaseStep;
 
+	private static final String PUBLIC_READABLE = "PUBLIC_READABLE";
+
 	private String createRuleTemplate = """
 			{
 			    "validFrom": "2020-01-02T03:04:05Z",
@@ -111,17 +113,12 @@ public class DigitalTwinAccessRuleFacilator extends Step {
 			List<String> accessBPNList = PolicyOperationUtil.getAccessBPNList(policy);
 			List<String> accessruleIds = new ArrayList<>();
 
-			for (String bpn : accessBPNList) {
-				
-				String requestTemplate = String.format(createRuleTemplate, bpn,
-						digitalTwinsUtility.createAccessRuleMandatorySpecificAssetIds(specificAssetIds),
-						digitalTwinsUtility.createAccessRuleVisibleSpecificAssetIdNames(specificAssetIds), sematicId);
-
-				JsonNode requestBody = new ObjectMapper().readTree(requestTemplate);
-
-				JsonNode response = digitalTwinFacilitator
-						.createAccessControlsRule(sdeConfigProperties.getManufacturerId(), requestBody);
-				accessruleIds.add(response.get("id").asText());
+			if (accessBPNList.isEmpty()) {
+				createAccessRuleMethod(specificAssetIds, sematicId, accessruleIds, PUBLIC_READABLE);
+			} else {
+				for (String bpn : accessBPNList) {
+					createAccessRuleMethod(specificAssetIds, sematicId, accessruleIds, bpn);
+				}
 			}
 
 			jsonObject.put(SubmoduleCommonColumnsConstant.SHELL_ACCESS_RULE_IDS, StringUtils.join(accessruleIds, ","));
@@ -133,6 +130,23 @@ public class DigitalTwinAccessRuleFacilator extends Step {
 					String.format("Row: %s: DigitalTwin exception: unable to create digital twin access rule %s",
 							rowIndex, specificAssetIds.toString()));
 		}
+	}
+
+	@SneakyThrows
+	private void createAccessRuleMethod(Map<String, String> specificAssetIds, String sematicId,
+			List<String> accessruleIds, String bpn) {
+
+		String requestTemplate = String.format(createRuleTemplate, bpn,
+				digitalTwinsUtility.createAccessRuleMandatorySpecificAssetIds(specificAssetIds),
+				digitalTwinsUtility.createAccessRuleVisibleSpecificAssetIdNames(specificAssetIds), sematicId);
+
+		JsonNode requestBody = new ObjectMapper().readTree(requestTemplate);
+
+		JsonNode response = digitalTwinFacilitator.createAccessControlsRule(sdeConfigProperties.getManufacturerId(),
+				requestBody);
+		
+		accessruleIds.add(response.get("id").asText());
+
 	}
 
 	private void deleteAllExistingDTAccessRulesIfExist(Integer rowIndex, ObjectNode jsonObject) {

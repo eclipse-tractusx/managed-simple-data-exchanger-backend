@@ -47,7 +47,8 @@ public class EDCAssetLookUp {
 	private String consumerHost;
 
 	private String filterExpressionTemplate = """
-			"filterExpression": %s""";
+			"filterExpression": %s
+			""";
 
 	public List<QueryDataOfferModel> getEDCAssetsByType(String bpnNumber, List<Criterion> filtercriteria) {
 
@@ -62,8 +63,8 @@ public class EDCAssetLookUp {
 
 		List<QueryDataOfferModel> offers = new ArrayList<>();
 		
-		 Gson gson = new Gson();
-		 String filterCriteriaList = gson.toJson(filterCriteria);
+		Gson gson = new Gson();
+		String filterCriteriaList = gson.toJson(filterCriteria);
 		String filterExpression = String.format(filterExpressionTemplate, filterCriteriaList);
 
 		distinctList.stream().forEach(

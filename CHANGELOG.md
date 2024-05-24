@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - EDC code changes refactor.
 - PCF exchange code changes refactor.
 - New changes for BPDM service api access/call using EDC.
+- Refactors PCF asset exchange code changes.
 
 ### Fixed
 - Fix for PCF data sovereignty test.

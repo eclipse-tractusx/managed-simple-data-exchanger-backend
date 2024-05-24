@@ -66,7 +66,7 @@ public class PartnerPoolService {
 			
 			if (edrToken != null) {
 				
-				LegalEntityData legalEntity = fetchLegalEntityDataByEdrToken(bpnLs, searchText, edcAssetConfigurableConstant.getBpdmProviderEdcPublicApi(), edrToken, page, size );
+				LegalEntityData legalEntity = fetchLegalEntityDataByEdrToken(bpnLs, searchText, edrToken, page, size );
 				legalEntityResponseList.addAll(legalEntity.getContent().stream().map(companyData ->
 				LegalEntityResponse.builder()
 				.bpn(companyData.getBpnl())
@@ -84,8 +84,7 @@ public class PartnerPoolService {
 	}
 
 	
-	private LegalEntityData fetchLegalEntityDataByEdrToken(String bpnLs, String legalName,
-			String bpdmProviderEdcPublicUrl, EDRCachedByIdResponse edrToken, Integer page, Integer size) {
+	private LegalEntityData fetchLegalEntityDataByEdrToken(String bpnLs, String legalName, EDRCachedByIdResponse edrToken, Integer page, Integer size) {
 
 		LegalEntityData legalEntityData = null;
 		try {

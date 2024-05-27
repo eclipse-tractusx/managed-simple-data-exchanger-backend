@@ -95,8 +95,8 @@ public class PcfExchangeController {
 	@GetMapping(value = "/{type}/requests")
 	@PreAuthorize("hasPermission('','view_pcf_history')")
 	public ResponseEntity<Object> getPcfProviderData(@PathVariable PCFTypeEnum type,
-			@RequestParam(value = "status", required = false) PCFRequestStatusEnum status, @Param("page") Integer page,
-			@Param("pageSize") Integer pageSize) throws Exception {
+			@RequestParam(value = "status", required = false) PCFRequestStatusEnum status, @RequestParam("offset") Integer page,
+			@RequestParam("maxLimit") Integer pageSize) throws Exception {
 		log.info("Request received for GET: /api/pcf/{}/requests/", type.name().toLowerCase());
 
 		page = page == null ? 0 : page;

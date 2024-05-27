@@ -96,7 +96,7 @@ public class AsyncPushPCFDataForApproveRequest {
 						// push api call
 						Runnable runnable = () -> proxyRequestInterface.sendNotificationToConsumer(status,
 								calculatedPCFValue, request.getProductId(), request.getBpnNumber(),
-								request.getRequestId(), request.getMessage(), false);
+								request.getRequestId(), "Pushed PCF updated data", false);
 
 						new Thread(runnable).start();
 
@@ -138,7 +138,7 @@ public class AsyncPushPCFDataForApproveRequest {
 								.orElseThrow(() -> new NoDataFoundException(
 										"No data found for product_id " + request.getProductId()));
 						
-						pcfRepositoryService.savePcfStatus(request.getRequestId(), PCFRequestStatusEnum.REQUESTED);
+						pcfRepositoryService.savePcfStatus(request.getRequestId(), PCFRequestStatusEnum.REQUESTED, "PCF data available please take action on request");
 
 					} catch (NoDataFoundException e) {
 						msg = "Unable to markedPCFDataForPendingProviderRequestAsRequested becasue pcf calculated value does not exist  "

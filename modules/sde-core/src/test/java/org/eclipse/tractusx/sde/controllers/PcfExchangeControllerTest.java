@@ -56,8 +56,8 @@ class PcfExchangeControllerTest {
 	void testGetPcfConsumerDataSuccess() throws Exception {
 		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/pcf/{type}/requests","CONSUMER")
 				.param("status", "")
-				.param("page", String.valueOf(0))
-				.param("pageSize", String.valueOf(10));
+				.param("offset", String.valueOf(0))
+				.param("maxLimit", String.valueOf(10));
 		ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(pcfExchangeController).build()
 				.perform(requestBuilder);
 		actualPerformResult.andExpect(MockMvcResultMatchers.status().is(200));
@@ -67,8 +67,8 @@ class PcfExchangeControllerTest {
 	void testGetPcfProviderDataSuccess() throws Exception {
 		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/pcf/{type}/requests","PROVIDER")
 				.param("status", "REQUESTED")
-				.param("page", String.valueOf(0))
-				.param("pageSize", String.valueOf(10));
+				.param("offset", String.valueOf(0))
+				.param("maxLimit", String.valueOf(10));
 		ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(pcfExchangeController).build()
 				.perform(requestBuilder);
 		actualPerformResult.andExpect(MockMvcResultMatchers.status().is(200));
@@ -78,8 +78,8 @@ class PcfExchangeControllerTest {
 	void testGetPcfProviderDataFailure() throws Exception {
 		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/pcf/{type}/requests","")
 				.param("status", "REQUESTED")
-				.param("page", String.valueOf(0))
-				.param("pageSize", String.valueOf(10));
+				.param("offset", String.valueOf(0))
+				.param("maxLimit", String.valueOf(10));
 		ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(pcfExchangeController).build()
 				.perform(requestBuilder);
 		actualPerformResult.andExpect(MockMvcResultMatchers.status().is(404));
@@ -102,6 +102,17 @@ class PcfExchangeControllerTest {
 				.header("Edc-Bpn", "BPNL001000TS0100")
 				.param("requestId", UUID.randomUUID().toString())
 				.param("message", "This is test request")
+				.contentType("application/json")
+				.content(getPCFJsonResponse());
+		ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(pcfExchangeController).build()
+				.perform(requestBuilder);
+		actualPerformResult.andExpect(MockMvcResultMatchers.status().isOk());
+	}
+	
+	@Test
+	void testUploadPcfSubmodelSuccessForceUpdate() throws Exception {
+		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put("/pcf/productIds/{productId}","test_product")
+				.header("Edc-Bpn", "BPNL001000TS0100")
 				.contentType("application/json")
 				.content(getPCFJsonResponse());
 		ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(pcfExchangeController).build()

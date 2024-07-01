@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [2.3.8] - 2024-06-20
+### Fixed
+-  Added fix for issue #191 (https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/issues/191).
+
 ## [2.3.7] - 2024-05-09 
 ### Fixed
 - Rename edc_request_template directory.
@@ -292,7 +296,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Compliance with Catena-X Guidelines
 - Integration with Digital Twin registry service.
 
-[unreleased]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.3.7...release-24-03-hotfix
+[unreleased]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.3.8...release-24-03-hotfix
+[2.3.8]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.3.7...v2.3.8
 [2.3.7]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.3.6...v2.3.7
 [2.3.6]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.3.5...v2.3.6
 [2.3.5]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.3.4...v2.3.5

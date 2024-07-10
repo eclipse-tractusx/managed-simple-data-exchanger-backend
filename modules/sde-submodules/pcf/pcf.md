@@ -9,12 +9,18 @@ This module use for PCF submodel specification and descriptors. It's contain the
 #### PCF Aspect Model URN: urn:samm:io.catenax.pcf:6.0.0#Pcf
 #### Semantic Id: urn:samm:io.catenax.pcf:6.0.0
 ---
+---
+#### Version: 7.0.0
+#### PCF Aspect Model URN: urn:samm:io.catenax.pcf:7.0.0#Pcf
+#### Semantic Id: urn:samm:io.catenax.pcf:7.0.0
+---
 
 ### Schema
 
 Please find below links for schema details:
 
 - [schema](src/main/resources/pcf-v6.0.0.json)
+- [schema](src/main/resources/pcf-v7.0.0.json)
 
 
 ### PCF CSV file headers

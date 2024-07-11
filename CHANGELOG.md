@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - New changes for PCF v7.0.0 support.
 - Security config changes.
 - Updated changelog and dependency file.
+- Dependencies jar versions updated. 
 
 ## [2.4.1] - 2024-05-24
 

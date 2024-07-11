@@ -33,6 +33,8 @@ import lombok.RequiredArgsConstructor;
 public class PcfV600 extends SubmodelExtension {
 
 	private Submodel submodel = null;
+	
+	private final PCFEDCUsecaseHandler pcfEDCUsecaseHandler;
 
 	@PostConstruct
 	public void init() {
@@ -48,6 +50,8 @@ public class PcfV600 extends SubmodelExtension {
 		submodel = loadSubmodel(input);
 		
 		submodel.addProperties("tableName", "pcf_aspect");
+		
+		submodel.setEdcUseCaseStep(pcfEDCUsecaseHandler);
 	}
 
 	@Override

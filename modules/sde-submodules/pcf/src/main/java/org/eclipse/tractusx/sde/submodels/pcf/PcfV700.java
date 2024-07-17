@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class PcfV600 extends SubmodelExtension {
+public class PcfV700 extends SubmodelExtension {
 
 	private Submodel submodel = null;
 	
@@ -39,7 +39,7 @@ public class PcfV600 extends SubmodelExtension {
 	@PostConstruct
 	public void init() {
 
-		String resource = "pcf-v6.0.0.json";
+		String resource = "pcf-v7.0.0.json";
 		// this is the path within the jar file
 		InputStream input = this.getClass().getResourceAsStream("/resources/" + resource);
 		if (input == null) {
@@ -49,7 +49,7 @@ public class PcfV600 extends SubmodelExtension {
 
 		submodel = loadSubmodel(input);
 		
-		submodel.addProperties("tableName", "pcf_aspect");
+		submodel.addProperties("tableName", "pcf_v_700");
 		
 		submodel.setEdcUseCaseStep(pcfEDCUsecaseHandler);
 	}

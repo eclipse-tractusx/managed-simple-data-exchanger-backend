@@ -123,7 +123,7 @@ public class SecurityConfig {
 		        // @formatter:on
 		http.headers(headers -> headers
 				.xssProtection(xssProtection -> xssProtection.headerValue(HeaderValue.ENABLED_MODE_BLOCK))
-				.contentSecurityPolicy(policy -> policy.policyDirectives("default-src 'self'; script-src 'self'"))
+				.contentSecurityPolicy(policy -> policy.policyDirectives("default-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src * 'self' data: https:;"))
 				.httpStrictTransportSecurity(httStrict -> httStrict.includeSubDomains(true).maxAgeInSeconds(15724800)));
 
 		return http.build();

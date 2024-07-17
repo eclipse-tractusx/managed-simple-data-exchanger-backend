@@ -17,46 +17,33 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
+
 package org.eclipse.tractusx.sde.submodels.pcf;
 
-import java.io.InputStream;
+import org.eclipse.tractusx.sde.common.entities.PolicyModel;
+import org.eclipse.tractusx.sde.common.submodel.executor.EDCUsecaseStep;
+import org.eclipse.tractusx.sde.common.submodel.executor.Step;
+import org.springframework.stereotype.Service;
 
-import org.eclipse.tractusx.sde.common.extensions.SubmodelExtension;
-import org.eclipse.tractusx.sde.common.model.Submodel;
-import org.springframework.stereotype.Component;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.gson.JsonObject;
 
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
-@Component
+@Slf4j
+@Service("pcfEDCUsecaseHandler")
 @RequiredArgsConstructor
-public class PcfV600 extends SubmodelExtension {
+public class PCFEDCUsecaseHandler extends Step implements EDCUsecaseStep {
 
-	private Submodel submodel = null;
-	
-	private final PCFEDCUsecaseHandler pcfEDCUsecaseHandler;
-
-	@PostConstruct
-	public void init() {
-
-		String resource = "pcf-v6.0.0.json";
-		// this is the path within the jar file
-		InputStream input = this.getClass().getResourceAsStream("/resources/" + resource);
-		if (input == null) {
-			// this is how we load file within editor (eg eclipse)
-			input = this.getClass().getClassLoader().getResourceAsStream(resource);
-		}
-
-		submodel = loadSubmodel(input);
-		
-		submodel.addProperties("tableName", "pcf_aspect");
-		
-		submodel.setEdcUseCaseStep(pcfEDCUsecaseHandler);
+	@SneakyThrows
+	public ObjectNode run(Integer rowNumber, ObjectNode objectNode, String processId, PolicyModel policy) {
+		log.warn("No need to create EDC asset for PCF exchange");
+		return objectNode;
 	}
 
-	@Override
-	public Submodel submodel() {
-		return submodel;
+	public void delete(Integer rowIndex, JsonObject jsonObject, String delProcessId, String refProcessId) {
+		log.warn("No need to delete EDC asset for PCF exchange");
 	}
-
 }

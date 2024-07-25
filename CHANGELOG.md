@@ -10,6 +10,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Updated changelog and dependency file.
 - Dependencies jar versions updated. 
 
+### Fixed
+- Dependabot bump jar version fixed.
+- Trivy high security issue fixed for CVE-2024-24750.  
+
+
 ## [2.4.1] - 2024-05-24
 
 ### Added

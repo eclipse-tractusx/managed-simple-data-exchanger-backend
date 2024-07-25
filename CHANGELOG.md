@@ -12,7 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 - Dependabot bump jar version fixed.
-- Trivy high security issue fixed for CVE-2024-24750.  
+- Trivy high security issue fixed for CVE-2024-34750.  
 
 
 ## [2.4.1] - 2024-05-24

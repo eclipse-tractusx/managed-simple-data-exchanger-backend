@@ -59,6 +59,7 @@ public class PCFEDCUsecaseHandler extends Step implements EDCUsecaseStep {
     private final EDCGateway edcGateway;
 
     @SneakyThrows
+    @Override
     public ObjectNode run(Integer rowNumber, ObjectNode objectNode, String processId, PolicyModel policy) {
 
         Map<String, String> output = new HashMap<>();
@@ -127,7 +128,7 @@ public class PCFEDCUsecaseHandler extends Step implements EDCUsecaseStep {
 
     }
 
-
+    @Override
     public void delete(Integer rowIndex, JsonObject jsonObject, String delProcessId, String refProcessId) {
         log.warn("No need to delete EDC asset for PCF exchange");
 

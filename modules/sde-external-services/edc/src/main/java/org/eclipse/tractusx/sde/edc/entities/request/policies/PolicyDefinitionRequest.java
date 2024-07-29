@@ -21,8 +21,8 @@
 
 package org.eclipse.tractusx.sde.edc.entities.request.policies;
 
-import java.util.Map;
-
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -36,29 +36,21 @@ import lombok.SneakyThrows;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(value = Include.NON_NULL)
 public class PolicyDefinitionRequest {
 
 	@JsonProperty("@context")
-	@Builder.Default
-	private Map<String, String> context = Map.of(
-			"@vocab", "https://w3id.org/edc/v0.0.1/ns/",
-	        "edc", "https://w3id.org/edc/v0.0.1/ns/",
-			"odrl","http://www.w3.org/ns/odrl/2/",
-			"tx", "https://w3id.org/tractusx/v0.0.1/ns/",
-			"cx-common", "https://w3id.org/catenax/ontology/common#",
-	        "cx-taxo", "https://w3id.org/catenax/taxonomy#",
-	        "cx-policy", "https://w3id.org/catenax/policy/"
-			);
+	private Object context;
 
 	@JsonProperty("@type")
 	@Builder.Default
-	private String polityRootType = "PolicyDefinitionRequestDto";
+	private String polityRootType = "PolicyDefinition";
 
 	@JsonProperty("@id")
     private String id;
 	
     @JsonProperty("policy")
-    private PolicyRequest policyRequest;
+    private Object policyRequest;
 
     @SneakyThrows
     public String toJsonString() {

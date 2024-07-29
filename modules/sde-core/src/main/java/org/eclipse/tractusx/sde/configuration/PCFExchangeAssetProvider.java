@@ -31,7 +31,6 @@ import org.eclipse.tractusx.sde.common.entities.PolicyModel;
 import org.eclipse.tractusx.sde.common.utils.PolicyOperationUtil;
 import org.eclipse.tractusx.sde.common.utils.UUIdGenerator;
 import org.eclipse.tractusx.sde.core.utils.ValueReplacerUtility;
-import org.eclipse.tractusx.sde.edc.constants.EDCAssetConfigurableConstant;
 import org.eclipse.tractusx.sde.edc.constants.EDCAssetConstant;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequestFactory;
@@ -61,7 +60,6 @@ public class PCFExchangeAssetProvider {
 	private final CreateEDCAssetFacilator createEDCAssetFacilator;
 	private final ValueReplacerUtility valueReplacerUtility;
 	private final SDEConfigurationProperties sdeConfigurationProperties;
-	private final EDCAssetConfigurableConstant edcAssetConfigurableConstant;
 	private final PCFAssetStaticPropertyHolder pcfAssetStaticPropertyHolder;
 
 	@PostConstruct
@@ -70,7 +68,7 @@ public class PCFExchangeAssetProvider {
 
 		String assetId = UUIdGenerator.getUuid();
 		AssetEntryRequest assetEntryRequest = assetFactory.getAssetRequest("", "PCF Exchange endpoint information",
-				assetId, "1", "", "", pcfAssetStaticPropertyHolder.getSematicId(), edcAssetConfigurableConstant.getAssetPropTypePCFExchangeType());
+				assetId, "1", "", "", pcfAssetStaticPropertyHolder.getSematicId(), pcfAssetStaticPropertyHolder.getAssetPropTypePCFExchangeType());
 
 		String baseUrl = sdeConfigurationProperties.getSdeHostname() + "/pcf";
 		assetEntryRequest.getDataAddress().getProperties().put("baseUrl", baseUrl);
@@ -81,7 +79,7 @@ public class PCFExchangeAssetProvider {
 		Map<String, String> inputData = new HashMap<>();
 		inputData.put("baseUrl", baseUrl);
 		inputData.put(REGISTRY_TYPE, REGISTRY_TYPE);
-		inputData.put("assetType", edcAssetConfigurableConstant.getAssetPropTypePCFExchangeType());
+		inputData.put("assetType", pcfAssetStaticPropertyHolder.getAssetPropTypePCFExchangeType());
 
 		ObjectNode requestBody = (ObjectNode) new ObjectMapper().readTree(valueReplacerUtility
 				.valueReplacerUsingFileTemplate("/edc_request_template/edc_asset_lookup.json", inputData));
@@ -91,12 +89,19 @@ public class PCFExchangeAssetProvider {
 		if (assetExistsLookupBasedOnTypeGetAsAsset == null || 
 				assetExistsLookupBasedOnTypeGetAsAsset.isNull() || 
 				(assetExistsLookupBasedOnTypeGetAsAsset.isArray() && assetExistsLookupBasedOnTypeGetAsAsset.isEmpty())) {
-			
+
+			List<String> pcfBPNList = pcfAssetStaticPropertyHolder.getWhiteListBusinessList();
+
+			//iterate over pcfBPNList and create business partner group
+			for (String pcfBPN : pcfBPNList) {
+				edcGateway.addBPNintoPCFBusinessPartnerGroup(pcfBPN, pcfAssetStaticPropertyHolder.getPcfBusinessPartnerGroup());
+			}
+
 			List<Policies> accessPolicy = PolicyOperationUtil
-					.getStringPolicyAsPolicyList(edcAssetConfigurableConstant.getPcfExcahngeAccessPolicy());
+					.getStringPolicyAsPolicyList(pcfAssetStaticPropertyHolder.getPcfExchangeAccessPolicy());
 			
 			List<Policies> usagePolicy = PolicyOperationUtil
-					.getStringPolicyAsPolicyList(edcAssetConfigurableConstant.getPcfExcahngeUsagePolicy());
+					.getStringPolicyAsPolicyList(pcfAssetStaticPropertyHolder.getPcfExchangeUsagePolicy());
 			
 			PolicyModel policy= PolicyModel.builder()
 					.accessPolicies(accessPolicy)

@@ -20,6 +20,7 @@
 
 package org.eclipse.tractusx.sde.core.service;
 
+import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -91,8 +92,9 @@ public class PartnerPoolService {
 
 			Map<String, String> header = new HashMap<>();
 			header.put("authorization", edrToken.getAuthorization());
-
-			legalEntityData = partnerPoolExternalServiceApi.fetchLegalEntityData(bpnLs, legalName, page, size, header);
+			URI endpoint = new URI(edrToken.getEndpoint());
+			
+			legalEntityData = partnerPoolExternalServiceApi.fetchLegalEntityData(endpoint, bpnLs, legalName, page, size, header);
 
 		} catch (FeignException e) {
 			String err = e.contentUTF8();

@@ -61,6 +61,10 @@
 			<artifactId>commons-codec</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.retry</groupId>
+			<artifactId>spring-retry</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.16.1</version>
@@ -187,13 +191,13 @@
 			<artifactId>pcf</artifactId>
 			<version>0.0.1</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.eclipse.tractusx</groupId>
 			<artifactId>pcf-exchange</artifactId>
 			<version>0.0.1</version>
 		</dependency>
-		
+
 		<dependency>
 		    <groupId>com.opencsv</groupId>
 		    <artifactId>opencsv</artifactId>
@@ -222,6 +226,7 @@
 		    <artifactId>spring-security-test</artifactId>
 		    <scope>test</scope>
 		</dependency>
+
 	</dependencies>
 
 	<build>

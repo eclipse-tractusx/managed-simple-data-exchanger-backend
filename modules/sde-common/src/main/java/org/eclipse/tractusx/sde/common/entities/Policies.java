@@ -39,6 +39,7 @@ import lombok.experimental.SuperBuilder;
 public class Policies {
 	
 	private String technicalKey;
+	private String operator;
 	private List<String> value;
 
 }

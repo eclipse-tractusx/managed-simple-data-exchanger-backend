@@ -42,13 +42,13 @@ public class ConstraintRequest {
 	private String type = "Constraint";
 
 	@JsonProperty("odrl:leftOperand")
-	private String leftOperand;
+	private LinkJsonLDId leftOperand;
 
 	@JsonProperty("odrl:rightOperand")
 	private Object rightOperand;
 
 	@JsonProperty("odrl:operator")
-	private Operator operator;
+	private LinkJsonLDId operator;
 
 	@SneakyThrows
 	public String toJsonString() {

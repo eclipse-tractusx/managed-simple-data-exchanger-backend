@@ -51,9 +51,9 @@ public class SubmodelRegistration {
 	}
 
 	@SneakyThrows
-	public void register(SubmodelExtension subomdelService) {
-		Submodel submodel = subomdelService.submodel();
-		log.info(submodel.toString());
+	public void register(SubmodelExtension submodelService) {
+		Submodel submodel = submodelService.submodel();
+		log.debug(submodel.toString());
 
 		
 		List<String> columns = submoduleUtility.getTableColomnHeader(submodel);
@@ -74,7 +74,7 @@ public class SubmodelRegistration {
 			
 			submodelCustomHistoryGenerator.checkTableIfNotExistCreate(submodel.getSchema(), columns, tableName, pkCol, databaseIdentifierCols);
 		}
-
+		log.info(submodel.getSchema().get("id") + " sub model registered successfully");
 		submodelList.add(submodel);
 	}
 

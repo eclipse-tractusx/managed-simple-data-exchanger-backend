@@ -173,7 +173,7 @@ public class DigitalTwinUseCaseHandler extends Step implements DigitalTwinUsecas
 	public JsonNode checkAndCreateSubmodulIfNotExist(Integer rowIndex, ObjectNode jsonObject, String shellId,
 			ShellDescriptorRequest aasDescriptorRequest, SubModelResponse foundSubmodel) {
 
-		Map<String, String> identification = findIdentificationForSubmodule(rowIndex, jsonObject);
+		Map<String, String> identification = findIdentificationForSubmodule(rowIndex, jsonObject, foundSubmodel);
 
 		String path = getUriPathOfSubmodule();
 		String submodelDataPlaneUrl = getDataPlaneUrlOfSubmodule();
@@ -275,7 +275,7 @@ public class DigitalTwinUseCaseHandler extends Step implements DigitalTwinUsecas
 	}
 
 	@SneakyThrows
-	private Map<String, String> findIdentificationForSubmodule(Integer rowIndex, ObjectNode jsonObject) {
+	private Map<String, String> findIdentificationForSubmodule(Integer rowIndex, ObjectNode jsonObject, SubModelResponse foundSubmodel) {
 		
 		String submodelIdentifier =null;
 		String identificationField = extractExactFieldName(getIdentifierOfModel());
@@ -306,7 +306,10 @@ public class DigitalTwinUseCaseHandler extends Step implements DigitalTwinUsecas
 				}
 			}
 		} 
-		
+
+		if(foundSubmodel != null)
+			submodelIdentifier = foundSubmodel.getId();
+
 		if(submodelIdentifier == null) {
 			submodelIdentifier = UUIdGenerator.getUrnUuid();
 		}

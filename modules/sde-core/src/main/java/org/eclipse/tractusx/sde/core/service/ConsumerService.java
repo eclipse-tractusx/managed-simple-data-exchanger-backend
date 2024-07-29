@@ -133,7 +133,7 @@ public class ConsumerService {
 			// Save consumer Download history in DB
 			consumerDownloadHistoryRepository.save(entity);
 
-			ActionRequest action = policyConstraintBuilderService
+			List<ActionRequest> action = policyConstraintBuilderService
 					.getUsagePoliciesConstraints(consumerRequest.getUsagePolicies());
 
 			entry.getValue().parallelStream().forEach(offer -> {

@@ -53,6 +53,9 @@ public class AbstractEDCStepsHelper {
 
 	@Value("${edc.consumer.protocol.path:/api/v1/dsp}")
 	protected String protocolPath;
+	
+	@Value("${edc.consumer.protocol.path.append:true}")
+	protected boolean appendProtocolPath;
 
 	@Value("${edc.apiKeyHeader}")
 	private String edcProviderApiKeyHeader;

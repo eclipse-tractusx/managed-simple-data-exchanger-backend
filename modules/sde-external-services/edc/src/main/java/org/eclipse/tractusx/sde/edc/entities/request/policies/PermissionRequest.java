@@ -44,8 +44,7 @@ public class PermissionRequest {
 //	private String target;
 
 	@JsonProperty("odrl:action")
-	@Builder.Default
-	private Map<String, String> action = Map.of("odrl:type", "USE");
+	private LinkJsonLDId action;
 
 	@JsonProperty("odrl:constraint")
 	private Map<String, Object> constraint;

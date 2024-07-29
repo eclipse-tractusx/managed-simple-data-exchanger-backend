@@ -33,7 +33,7 @@ public class PolicyOperationUtil {
 	private PolicyOperationUtil() {
 	}
 
-	private static List<String> getBPNList(List<Policies> policies) {
+	public static List<String> getBPNList(List<Policies> policies) {
 		return policies.stream().filter(e -> e.getTechnicalKey().equals(BUSINESS_PARTNER_NUMBER))
 				.flatMap(e -> e.getValue().stream().filter(StringUtils::isNotBlank)).toList();
 	}
@@ -54,7 +54,12 @@ public class PolicyOperationUtil {
 			String[] split = policyStr.split(";");
 			for (int i = 0; i < split.length; i++) {
 				String[] split1 = split[i].split("@");
-				if (split1.length == 2) {
+				
+				if (split1.length == 3) {
+					policies.add(Policies.builder().technicalKey(split1[0]).operator(split1[1]).value(List.of(split1[2])).build());
+				}
+				
+				else if (split1.length == 2) {
 					policies.add(Policies.builder().technicalKey(split1[0]).value(List.of(split1[1])).build());
 				}
 			}

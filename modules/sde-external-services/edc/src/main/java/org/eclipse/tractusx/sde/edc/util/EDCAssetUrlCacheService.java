@@ -63,7 +63,7 @@ public class EDCAssetUrlCacheService {
 	@SneakyThrows
 	public EDRCachedByIdResponse verifyAndGetToken(String bpnNumber, QueryDataOfferModel queryDataOfferModel) {
 
-		ActionRequest action = policyConstraintBuilderService
+		List<ActionRequest> action = policyConstraintBuilderService
 				.getUsagePoliciesConstraints(queryDataOfferModel.getPolicy().getUsagePolicies());
 
 		Offer offer = Offer.builder().assetId(queryDataOfferModel.getAssetId())
@@ -187,5 +187,5 @@ public class EDCAssetUrlCacheService {
 	public void removeBpdmCache() {
 		bpdmEdcAssetUtility.removeBpdmCache(edcAssetConfigurableConstant.getBpdmProviderBpnl());
 		bpdmMap.remove(edcAssetConfigurableConstant.getBpdmProviderBpnl());
-	}	
+	}
 }

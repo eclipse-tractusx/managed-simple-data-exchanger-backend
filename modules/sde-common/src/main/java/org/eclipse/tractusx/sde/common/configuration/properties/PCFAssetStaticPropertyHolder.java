@@ -24,21 +24,39 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
+import lombok.Getter;
+
+import java.util.List;
+
 @Component
 @Configuration
+@Getter
 public class PCFAssetStaticPropertyHolder {
 
 	@Value(value = "${digital-twin.pcf.sematicid:}")
 	public String sematicId;
 
-	@Value(value = "${digital-twin.pcf.sematicid:}")
+	@Value(value = "${digital-twin.pcf.sematicid-part:}")
 	public String sematicIdPart;
+	
+	@Value("${edc.asset.prop.type.pcfexchange.value:PcfExchange}")
+	private String assetPropTypePCFExchangeType;
+	
+	@Value("${edc.policy.pcf.access:tx:BusinessPartnerGroup@odrl:eq@pcf-business-partner-group;Membership@active}")
+	private String pcfExchangeAccessPolicy;
+
+	@Value("#{'${edc.policy.pcf.bpn:}'.split(',')}")
+	private List<String> whiteListBusinessList;
+	private static String PCF_BG = "pcf-business-partner-group";
+	
+	@Value("${edc.policy.pcf.usage:FrameworkAgreement@DataExchangeGovernance:1.0;Membership@active;UsagePurpose@cx.pcf.base:1}")
+	private String pcfExchangeUsagePolicy;
 
 	private String pcfExchangeAssetId;
-
+	
 	public String getSematicId() {
 		if (StringUtils.isAllBlank(sematicId))
-			sematicId = "urn:samm:io.catenax.pcf:6.0.0#Pcf";
+			sematicId = "urn:samm:io.catenax.pcf:7.0.0#Pcf";
 		return sematicId;
 	}
 
@@ -62,6 +80,10 @@ public class PCFAssetStaticPropertyHolder {
 
 	public void setPcfExchangeAssetId(String pcfExchangeAssetId) {
 		this.pcfExchangeAssetId = pcfExchangeAssetId;
+	}
+	
+	public String getPcfBusinessPartnerGroup() {
+		return PCF_BG;
 	}
 
 }

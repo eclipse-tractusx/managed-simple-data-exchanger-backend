@@ -175,7 +175,7 @@ maven/mavencentral/org.testcontainers/database-commons/1.20.0, MIT, approved, cl
 maven/mavencentral/org.testcontainers/jdbc/1.20.0, MIT, approved, clearlydefined
 maven/mavencentral/org.testcontainers/junit-jupiter/1.20.0, MIT, approved, clearlydefined
 maven/mavencentral/org.testcontainers/postgresql/1.20.0, MIT, approved, clearlydefined
-maven/mavencentral/org.testcontainers/testcontainers/1.20.0, None, restricted, #15747
+maven/mavencentral/org.testcontainers/testcontainers/1.20.0, MIT, approved, #15747
 maven/mavencentral/org.webjars/swagger-ui/5.17.14, Apache-2.0 AND MIT, approved, #15701
 maven/mavencentral/org.xmlunit/xmlunit-core/2.9.1, Apache-2.0, approved, #6272
 maven/mavencentral/org.yaml/snakeyaml/2.2, Apache-2.0 AND (Apache-2.0 OR BSD-3-Clause OR EPL-1.0 OR GPL-2.0-or-later OR LGPL-2.1-or-later), approved, #10232

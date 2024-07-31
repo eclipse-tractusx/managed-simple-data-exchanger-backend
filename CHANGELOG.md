@@ -2,18 +2,19 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
-## [Unreleased]
+## [2.4.3] - 2024-05-31
 
 ### Added
 - New changes for PCF v7.0.0 support.
 - Security config changes.
 - Updated changelog and dependency file.
-- Dependencies jar versions updated. 
+
+## [2.4.2] - 2024-05-30
 
 ### Fixed
 - Dependabot bump jar version fixed.
 - Trivy high security issue fixed for CVE-2024-34750.  
-
+- Dependencies jar versions updated. 
 
 ## [2.4.1] - 2024-05-24
 
@@ -357,7 +358,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Compliance with Catena-X Guidelines
 - Integration with Digital Twin registry service.
 
-[unreleased]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.4.1...main
+[unreleased]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.4.3...main
+[2.4.3]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.4.2...v2.4.3
+[2.4.2]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.4.1...v2.4.2
 [2.4.1]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.4.0...v2.4.1
 [2.4.0]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.3.7...v2.4.0
 [2.3.7]: https://github.com/eclipse-tractusx/managed-simple-data-exchanger-backend/compare/v2.3.6...v2.3.7

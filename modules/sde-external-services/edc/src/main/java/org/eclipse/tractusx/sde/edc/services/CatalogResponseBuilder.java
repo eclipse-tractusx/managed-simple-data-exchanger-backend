@@ -49,7 +49,7 @@ public class CatalogResponseBuilder extends AbstractEDCStepsHelper {
 
 		providerUrl = UtilityFunctions.removeLastSlashOfUrl(providerUrl);
 
-		if (!providerUrl.endsWith(protocolPath))
+		if (!providerUrl.endsWith(protocolPath) && appendProtocolPath)
 			providerUrl = providerUrl + protocolPath;
 
 		String sproviderUrl = providerUrl;
@@ -61,26 +61,24 @@ public class CatalogResponseBuilder extends AbstractEDCStepsHelper {
 
 		JsonNode jOffer = contractOfferCatalog.get("dcat:dataset");
 		if (jOffer.isArray()) {
-
 			jOffer.forEach(
-					offer -> queryOfferResponse.add(buildContractOffer(sproviderUrl, contractOfferCatalog, offer)));
-
+					offer -> handleContractOffer(sproviderUrl, contractOfferCatalog, offer, queryOfferResponse));
 		} else {
-			queryOfferResponse.add(buildContractOffer(sproviderUrl, contractOfferCatalog, jOffer));
+			handleContractOffer(sproviderUrl, contractOfferCatalog, jOffer, queryOfferResponse);
 		}
 
 		return queryOfferResponse;
 	}
 
-	public QueryDataOfferModel buildContractOffer(String sproviderUrl, JsonNode contractOfferCatalog, JsonNode offer) {
+	public void handleContractOffer(String sproviderUrl, JsonNode contractOfferCatalog, JsonNode offer, List<QueryDataOfferModel> queryOfferResponse) {
 
-		JsonNode policy = offer.get("odrl:hasPolicy");
-
+		JsonNode contractOffers = offer.get("odrl:hasPolicy");
+		
 		String edcstr = EDCAssetConstant.ASSET_PREFIX;
-
+		
 		QueryDataOfferModel build = QueryDataOfferModel.builder()
 				.assetId(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_ID))
-				.connectorOfferUrl(sproviderUrl).offerId(getFieldFromJsonNode(policy, "@id"))
+				.connectorOfferUrl(sproviderUrl)
 				.title(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_NAME))
 				.type(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_TYPE))
 				.description(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_DESCRIPTION))
@@ -91,27 +89,49 @@ public class CatalogResponseBuilder extends AbstractEDCStepsHelper {
 				.fileName(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_FILENAME))
 				.fileContentType(getFieldFromJsonNode(offer, edcstr + EDCAssetConstant.ASSET_PROP_CONTENTTYPE))
 				.connectorId(getFieldFromJsonNode(contractOfferCatalog, edcstr+"participantId"))
-				.hasPolicy(policy)
 				.build();
+		
+		if (contractOffers.isArray()) {
+			contractOffers.forEach(
+					contractOffer -> queryOfferResponse.add(buildContractOffer(build, contractOffer)));
+		} else {
+			queryOfferResponse.add(buildContractOffer(build, contractOffers));
+		}
 
-		checkAndSetPolicyPermission(build, policy);
-
-		return build;
 	}
 
+	public QueryDataOfferModel buildContractOffer(QueryDataOfferModel build, JsonNode contractOffer) {
+		
+		build.setOfferId(getFieldFromJsonNode(contractOffer, "@id"));
+		build.setHasPolicy(contractOffer);
+		checkAndSetPolicyPermission(build, contractOffer);
+		return build;
+	}
+	
 	private void checkAndSetPolicyPermission(QueryDataOfferModel build, JsonNode policy) {
 
 		if (policy != null && policy.isArray()) {
 			policy.forEach(pol -> {
 				JsonNode permission = pol.get("odrl:permission");
-				checkAndSetPolicyPermissionConstraints(build, permission);
+				checkAndSetPolicyPermissionsConstraints(build, permission);
 			});
 		} else if (policy != null) {
 			JsonNode permission = policy.get("odrl:permission");
-			checkAndSetPolicyPermissionConstraints(build, permission);
+			checkAndSetPolicyPermissionsConstraints(build, permission);
 		}
 	}
+	private void checkAndSetPolicyPermissionsConstraints(QueryDataOfferModel build, JsonNode permissions) {
 
+		if (permissions != null && permissions.isArray()) {
+			permissions.forEach(permission -> {
+				checkAndSetPolicyPermissionConstraints(build, permission);
+			});
+		} else {
+			checkAndSetPolicyPermissionConstraints(build, permissions);
+		}
+	}
+	
+	
 	private void checkAndSetPolicyPermissionConstraints(QueryDataOfferModel build, JsonNode permission) {
 
 		JsonNode constraints = permission.get("odrl:constraint");
@@ -137,7 +157,14 @@ public class CatalogResponseBuilder extends AbstractEDCStepsHelper {
 		// accespoliocy already applied for access control,
 		// in this constrain all are usage policy
 
-		String leftOperand = getFieldFromJsonNode(jsonNode, "odrl:leftOperand");
+		JsonNode letfOerand = jsonNode.get("odrl:leftOperand");
+		String leftOperand = "";
+		if(letfOerand.isObject()) {
+			leftOperand = getFieldFromJsonNode(letfOerand, "@id");
+		} else {
+			leftOperand = getFieldFromJsonNode(jsonNode, "odrl:leftOperand");
+		}
+		
 		String rightOperand = getFieldFromJsonNode(jsonNode, "odrl:rightOperand");
 		Policies policyResponse = UtilityFunctions.identyAndGetUsagePolicy(leftOperand, rightOperand);
 		if (policyResponse != null)

@@ -37,7 +37,7 @@ public abstract class ContractPolicyMapper {
 	@Autowired
 	PolicyRequestFactory policyRequestFactory;
 
-	public PolicyRequest preparePolicy(String assetId, ActionRequest action) {
+	public PolicyRequest preparePolicy(String assetId, List<ActionRequest> action) {
 		Object permissionObj = null;
 
 		List<PermissionRequest> permissions = policyRequestFactory.getPermissions(assetId, action);
@@ -46,7 +46,8 @@ public abstract class ContractPolicyMapper {
 		if (!permissions.isEmpty())
 			permissionObj = permissions.get(0);
 		
-		return PolicyRequest.builder().type("http://www.w3.org/ns/odrl/2/Offer")
+		return PolicyRequest.builder()
+				.type("odrl:Offer")
 				.target(Map.of("@id",assetId))
 				.permissions(permissionObj)
 				.prohibitions(new ArrayList<>())

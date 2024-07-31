@@ -57,7 +57,7 @@ public class ContractNegotiationService extends AbstractEDCStepsHelper {
 
 	@SneakyThrows
 	public EDRCachedResponse verifyOrCreateContractNegotiation(String connectorId,
-			Map<String, String> extensibleProperty, String recipientURL, ActionRequest action, Offer offer) {
+			Map<String, String> extensibleProperty, String recipientURL, List<ActionRequest> action, Offer offer) {
 
 		if (!offer.getConnectorOfferUrl().endsWith(protocolPath))
 			recipientURL = recipientURL + protocolPath;

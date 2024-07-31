@@ -61,7 +61,7 @@ public class ContractNegotiateManagementHelper extends AbstractEDCStepsHelper {
 
 	@SneakyThrows
 	public String negotiateContract(String providerUrl, String providerId, String offerId, String assetId,
-			ActionRequest action, Map<String, String> extensibleProperty) {
+			List<ActionRequest> action, Map<String, String> extensibleProperty) {
 
 		var recipientURL = UtilityFunctions.removeLastSlashOfUrl(providerUrl);
 		if (!recipientURL.endsWith(protocolPath))

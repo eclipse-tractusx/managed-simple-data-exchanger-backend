@@ -21,6 +21,7 @@
 package org.eclipse.tractusx.sde.edc.api;
 
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequest;
+import org.eclipse.tractusx.sde.edc.entities.request.businesspartnergroup.BusinessPartnerGroupRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.contractdefinition.ContractDefinitionRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -56,6 +57,9 @@ public interface EDCFeignClientApi {
 	
 	
 	//Policy & Contract
+	@GetMapping("${edc.managementpath.apiversion:/v2}/policydefinitions/{id}")
+	public JsonNode getPolicy(@PathVariable("id") String policyId);
+	
 	@PostMapping("${edc.managementpath.apiversion:/v2}/policydefinitions")
 	public JsonNode createPolicy(@RequestBody JsonNode requestBody);
 
@@ -70,7 +74,6 @@ public interface EDCFeignClientApi {
 	@PutMapping("${edc.managementpath.apiversion:/v2}/contractdefinitions")
 	public void updateContractDefination(@RequestBody ContractDefinitionRequest requestBody);
 	
-	
 	@GetMapping("${edc.managementpath.apiversion:/v2}/contractdefinitions/{id}")
 	public JsonNode getContractDefination(@PathVariable("id") String id);
 
@@ -80,5 +83,19 @@ public interface EDCFeignClientApi {
 
 	@DeleteMapping(path = "${edc.managementpath.apiversion:/v2}/policydefinitions/{id}")
 	public ResponseEntity<Object> deletePolicyDefinitions(@PathVariable("id") String policydefinitionsId);
+
+	
+	//Business Partner Group
+	@GetMapping("/business-partner-groups/{bpn}")
+	public JsonNode getBusinessPartnerGroups(@PathVariable("bpn") String bpn);
+	
+	@PutMapping("/business-partner-groups")
+	public void updateBusinessPartnerGroups(@RequestBody BusinessPartnerGroupRequest requestBody);
+	
+	@PostMapping("/business-partner-groups")
+	public void createBusinessPartnerGroups(@RequestBody BusinessPartnerGroupRequest requestBody);
+	
+	@DeleteMapping("/business-partner-groups/{bpn}")
+	public void deleteBusinessPartnerGroups(@PathVariable("bpn") String bpn);
 
 }

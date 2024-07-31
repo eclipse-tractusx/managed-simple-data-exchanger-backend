@@ -135,7 +135,7 @@ public class ConsumerControlPanelService {
 		AtomicReference<String> negotiateContractId = new AtomicReference<>();
 		AtomicReference<ContractNegotiationDto> checkContractNegotiationStatus = new AtomicReference<>();
 
-		ActionRequest action = policyConstraintBuilderService
+		List<ActionRequest> action = policyConstraintBuilderService
 				.getUsagePoliciesConstraints(consumerRequest.getUsagePolicies());
 
 		consumerRequest.getOffers().parallelStream().forEach(offer -> {
@@ -175,7 +175,7 @@ public class ConsumerControlPanelService {
 
 	}
 
-	public Map<String, Object> subcribeAndDownloadOffer(Offer offer, ActionRequest action,
+	public Map<String, Object> subcribeAndDownloadOffer(Offer offer, List<ActionRequest> action,
 			boolean flagToDownloadImidiate, String downloadAs) {
 
 		Map<String, Object> resultFields = new ConcurrentHashMap<>();

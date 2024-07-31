@@ -1,6 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2022, 2023 T-Systems International GmbH
- * Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2024 T-Systems International GmbH
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -18,31 +18,41 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.sde.edc.entities.request.policies.accesspolicy;
+package org.eclipse.tractusx.sde.edc.entities.request.businesspartnergroup;
 
-import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
-import org.eclipse.tractusx.sde.edc.entities.request.policies.Operator;
+import java.util.List;
+import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class AccessPolicyDTO {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class BusinessPartnerGroupRequest {
+	
+	@JsonProperty("@context")
+	@Builder.Default
+	private Map<String,String> context = Map.of("tx", "https://w3id.org/tractusx/v0.0.1/ns/");
 
-	Object bpnNumber;
-
-	public ConstraintRequest toConstraint() {
-
-		String operator = "odrl:eq";
-		return ConstraintRequest.builder()
-				.leftOperand("BusinessPartnerNumber")
-				.operator(Operator.builder().id(operator).build())
-				.rightOperand(bpnNumber)
-				.build();
+	@JsonProperty("@id")
+	private String id;
+	
+	@JsonProperty("tx:groups")
+	private List<String> groups;
+	
+	@SneakyThrows
+	public String toJsonString() {
+		final ObjectMapper mapper = new ObjectMapper();
+		return mapper.writeValueAsString(this);
 	}
 }

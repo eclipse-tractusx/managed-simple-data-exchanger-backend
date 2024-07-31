@@ -19,6 +19,7 @@
  ********************************************************************************/
 package org.eclipse.tractusx.sde.portal.api;
 
+import java.net.URI;
 import java.util.Map;
 
 import org.eclipse.tractusx.sde.portal.model.LegalEntityData;
@@ -28,10 +29,10 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
-@FeignClient(value = "IPartnerPoolExternalServiceApi", url = "${bpdm.provider.edc.public.api}")
+@FeignClient(value = "IPartnerPoolExternalServiceApi", url = "placeholder")
 public interface IPartnerPoolExternalServiceApi {
     
 	@GetMapping(path = "/legal-entities")
-    LegalEntityData fetchLegalEntityData(@RequestParam String bpnLs, @RequestParam String legalName, @RequestParam Integer page, @RequestParam Integer size,@RequestHeader Map<String, String> header);
+    LegalEntityData fetchLegalEntityData(URI url, @RequestParam String bpnLs, @RequestParam String legalName, @RequestParam Integer page, @RequestParam Integer size,@RequestHeader Map<String, String> header);
 
 }

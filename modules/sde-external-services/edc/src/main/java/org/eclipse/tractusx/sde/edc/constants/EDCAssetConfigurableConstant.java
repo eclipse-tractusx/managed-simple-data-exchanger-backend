@@ -46,9 +46,6 @@ public class EDCAssetConfigurableConstant {
 	@Value("${edc.asset.prop.type.digital-twin.value:DigitalTwinRegistry}")
 	private String assetPropTypeDigitalTwin;
 
-	@Value("${edc.asset.prop.type.pcfexchange.value:PcfExchange}")
-	private String assetPropTypePCFExchangeType;
-
 	@Value("${edc.policy.prefix:cx-policy:}")
 	private String cxPolicyPrefix;
 	
@@ -57,12 +54,6 @@ public class EDCAssetConfigurableConstant {
 	
 	@Value("${edc.policy.pcf.auto-applied:false}")
 	private boolean autoApplyPCFEDCPolicy;
-	
-	@Value("${edc.policy.pcf.access:Membership@active}")
-	private String pcfExcahngeAccessPolicy;
-	
-	@Value("${edc.policy.pcf.usage:FrameworkAgreement@Pcf:1.0;Membership@active;UsagePurpose@cx.pcf.base:1}")
-	private String pcfExcahngeUsagePolicy;
 	
 	@Value("${edc.policy.digital-twin.access:Membership@active}")
 	private String digitalTwinExchangeAccessPolicy;
@@ -73,11 +64,8 @@ public class EDCAssetConfigurableConstant {
 	@Value("#{'${edc.bpdm.asset.search.criteria:https://purl.org/dc/terms/subject@cx-taxo:ReadAccessPoolForCatenaXMember;https://w3id.org/catenax/ontology/common/version@6.0}'.split(';')}")
 	private List<String> edcBPDMSearchCriteria;
 	
-	@Value("${bpdm.provider.edc.dataspace.api}")
+	@Value("${bpdm.provider.edc.dsp.api}")
 	private String bpdmProviderEdcDataspaceApi;
-	
-	@Value("${bpdm.provider.edc.public.api}")
-	private String bpdmProviderEdcPublicApi;
 	
 	@Value("${bpdm.provider.bpnl}")
 	private String bpdmProviderBpnl;

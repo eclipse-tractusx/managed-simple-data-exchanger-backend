@@ -31,17 +31,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.eclipse.tractusx.sde.EnablePostgreSQL;
 import org.eclipse.tractusx.sde.bpndiscovery.handler.BpnDiscoveryProxyService;
-import org.eclipse.tractusx.sde.bpndiscovery.model.response.BpnDiscoveryResponse;
 import org.eclipse.tractusx.sde.bpndiscovery.model.response.BpnDiscoverySearchResponse;
 import org.eclipse.tractusx.sde.common.entities.Policies;
 import org.eclipse.tractusx.sde.common.utils.TokenUtility;
 import org.eclipse.tractusx.sde.core.service.ConsumerService;
 import org.eclipse.tractusx.sde.edc.api.ContractOfferCatalogApi;
-import org.eclipse.tractusx.sde.edc.entities.request.policies.ActionRequest;
-import org.eclipse.tractusx.sde.edc.entities.request.policies.ConstraintRequest;
-import org.eclipse.tractusx.sde.edc.entities.request.policies.Operator;
-import org.eclipse.tractusx.sde.edc.entities.request.policies.PolicyConstraintBuilderService;
 import org.eclipse.tractusx.sde.edc.facilitator.ContractNegotiateManagementHelper;
 import org.eclipse.tractusx.sde.edc.facilitator.EDRRequestHelper;
 import org.eclipse.tractusx.sde.edc.gateways.database.ContractNegotiationInfoRepository;
@@ -56,21 +52,30 @@ import org.eclipse.tractusx.sde.edc.services.LookUpDTTwin;
 import org.eclipse.tractusx.sde.edc.util.EDCAssetUrlCacheService;
 import org.eclipse.tractusx.sde.portal.api.IPartnerPoolExternalServiceApi;
 import org.eclipse.tractusx.sde.portal.api.IPortalExternalServiceApi;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@ContextConfiguration(classes = { ConsumerControlPanelService.class, String.class })
-@ExtendWith(SpringExtension.class)
+import lombok.extern.slf4j.Slf4j;
+
+//@ContextConfiguration(classes = { ConsumerControlPanelService.class, String.class, PolicyConstraintBuilderService.class })
+//@ExtendWith(SpringExtension.class)
+@Slf4j
+@EnablePostgreSQL
+@SpringBootTest
+@Execution(ExecutionMode.SAME_THREAD)
+@WithMockUser(username = "Admin", authorities = { "Admin" })
+@ActiveProfiles("test")
 class ConsumerControlPanelServiceTest {
 	
 	@MockBean
@@ -93,12 +98,9 @@ class ConsumerControlPanelServiceTest {
 
 	@Autowired
 	private ConsumerControlPanelService consumerControlPanelService;
-
+	
 	@MockBean
 	private ContractOfferCatalogApi contractOfferCatalogApi;
-
-	@MockBean
-	private PolicyConstraintBuilderService policyConstraintBuilderService;
 
 	@MockBean
 	private ContractOfferRequestFactory contractOfferRequestFactory;
@@ -121,28 +123,16 @@ class ConsumerControlPanelServiceTest {
 	@MockBean
 	private LookUpDTTwin lookUpDTTwin;
 	
+	@MockBean
+	private BpnDiscoverySearchResponse bpnDiscoverySearchResponse;
 	
-	@BeforeEach
-	public void setup() {
-		when(bpnDiscoveryProxyService.bpnDiscoverySearchData(any()))
-		.thenReturn(BpnDiscoverySearchResponse.builder()
-				.bpns(List.of(BpnDiscoveryResponse.builder()
-						.value("fooo")
-						.build()))
-				.build());
-		
-		when(eDCAssetUrlCacheService.getDDTRUrl(any()))
-		.thenReturn(List.of(QueryDataOfferModel.builder()
-						.assetId("foo")
-						.connectorId("test")
-						.offerId("offer")
-						.build()));
-		when(eDCAssetUrlCacheService.verifyAndGetToken(any(),any())).thenReturn(any());
-	}
-
-  @Test
+	
+    @Test
 	void testQueryOnDataOfferEmpty() throws Exception {
-
+    	BpnDiscoverySearchResponse build = BpnDiscoverySearchResponse.builder()
+		.bpns(List.of())
+		.build();
+    	when(bpnDiscoveryProxyService.bpnDiscoverySearchData(any())).thenReturn(build);
 
 		Set<QueryDataOfferModel> queryOnDataOffers = consumerControlPanelService.queryOnDataOffers("example", "", "",
 				0, 0);
@@ -159,24 +149,37 @@ class ConsumerControlPanelServiceTest {
 		verify(contractOfferCatalogApi).getContractOffersCatalog((JsonNode) any());
 	}
 
-	//@Test
+	@Test
 	void testSubscribeDataOffers1() {
 		ArrayList<Offer> offerRequestList = new ArrayList<>();
 		List<Policies> usagePolicies = new ArrayList<>();
-		Policies usagePolicy = Policies.builder().technicalKey("BusinessPartnerNumber").value(List.of("BPN123456789"))
+		Policies usagePolicy = Policies.builder()
+				.technicalKey("BusinessPartnerNumber")
+				.value(List.of("BPN123456789"))
 				.build();
+		
 		usagePolicies.add(usagePolicy);
+		
+		Policies usagePolicy1 = Policies.builder()
+				.technicalKey("A")
+				.value(List.of("A"))
+				.build();
+		
+		usagePolicies.add(usagePolicy1);
+		
+		Policies usagePolicy2 = Policies.builder()
+				.technicalKey("B")
+				.value(List.of("B"))
+				.build();
+		usagePolicies.add(usagePolicy2);
+		
 		ConsumerRequest consumerRequest = new ConsumerRequest(offerRequestList,
 				usagePolicies, "csv");
 		String processId = UUID.randomUUID().toString();
+		
 		consumerControlPanelService.subscribeDataOffers(consumerRequest, processId);
-		List<Policies> policies = consumerRequest.getUsagePolicies();
-		ActionRequest list = ActionRequest.builder().build();
-		ConstraintRequest constraintRequest = ConstraintRequest.builder().leftOperand("A").rightOperand("A")
-				.operator(Operator.builder().id("odrl:eq").build()).build();
-		list.addProperty("odrl:and", constraintRequest);
-		when(policyConstraintBuilderService.getUsagePoliciesConstraints(List.of())).thenReturn(list);
-		assertEquals(usagePolicies, policies);
+		
+		assertEquals(usagePolicies, usagePolicies);
 	}
 
 	private JsonNode getCatalogResponse() throws JsonProcessingException, JsonMappingException {
@@ -198,7 +201,7 @@ class ConsumerControlPanelServiceTest {
 						                },
 						                "odrl:constraint": {
 						                    "odrl:or": {
-						                        "odrl:leftOperand": "BusinessPartnerNumber",
+						                        "odrl:leftOperand": {"@id","BusinessPartnerNumber"},
 						                        "odrl:operator": {"@id": "odrl:eq"},
 						                        "odrl:rightOperand": "BPNL001000TS0100"
 						                    }

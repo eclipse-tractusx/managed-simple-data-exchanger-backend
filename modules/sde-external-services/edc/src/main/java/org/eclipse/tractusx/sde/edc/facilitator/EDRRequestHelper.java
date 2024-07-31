@@ -56,17 +56,29 @@ public class EDRRequestHelper extends AbstractEDCStepsHelper {
 
 	@SneakyThrows
 	public String edrRequestInitiate(String providerUrl, String providerId, Offer offer, String assetId,
-			ActionRequest action, Map<String, String> extensibleProperty) {
+			List<ActionRequest> action, Map<String, String> extensibleProperty) {
 
+		Map<String,String> contextMap= Map.of(
+			        "@vocab", "https://w3id.org/edc/v0.0.1/ns/",
+			        "edc", "https://w3id.org/edc/v0.0.1/ns/",
+			        "tx", "https://w3id.org/tractusx/v0.0.1/ns/",
+			        "tx-auth", "https://w3id.org/tractusx/auth/",
+			        "cx-policy", "https://w3id.org/catenax/policy/",
+			        "odrl", "http://www.w3.org/ns/odrl/2/"
+				);
+		
 		String offerId = offer.getOfferId();
 		ContractNegotiations contractNegotiations = contractMapper.prepareContractNegotiations(providerUrl, offerId,
 				assetId, providerId, action);
+		
+		contractNegotiations.setContext(contextMap);
 		
 		log.debug(LogUtil.encode(contractNegotiations.toJsonString()));
 		
 		if (Optional.ofNullable(offer.getHasPolicy()).isPresent()) {
 			JsonNode hasPolicy = offer.getHasPolicy();
 			((ObjectNode) hasPolicy).putPOJO("odrl:assigner", Map.of("@id", providerId));
+			((ObjectNode) hasPolicy).putPOJO("odrl:target", Map.of("@id", assetId));
 			contractNegotiations.setPolicy(offer.getHasPolicy());
 		}
 		

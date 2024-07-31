@@ -33,7 +33,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Operator {
+public class LinkJsonLDId {
 
 	@JsonProperty("@id")
 	private String id;

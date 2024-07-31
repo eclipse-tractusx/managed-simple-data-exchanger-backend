@@ -53,7 +53,7 @@ public class UtilityFunctions {
 
 	public static List<Policies> getUsagePolicies(List<Policies> usagePolicies, List<ConstraintRequest> constraints) {
 		constraints.forEach(constraint -> {
-			String leftExpVal = constraint.getLeftOperand();
+			String leftExpVal = constraint.getLeftOperand().getId();
 			String rightExpVal = constraint.getRightOperand().toString();
 			Policies policyResponse = identyAndGetUsagePolicy(leftExpVal, rightExpVal);
 			if (policyResponse != null)

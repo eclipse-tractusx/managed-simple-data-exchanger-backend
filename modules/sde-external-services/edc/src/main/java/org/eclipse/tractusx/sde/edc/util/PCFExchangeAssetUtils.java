@@ -21,8 +21,8 @@ package org.eclipse.tractusx.sde.edc.util;
 
 import java.util.List;
 
+import org.eclipse.tractusx.sde.common.configuration.properties.PCFAssetStaticPropertyHolder;
 import org.eclipse.tractusx.sde.common.utils.LogUtil;
-import org.eclipse.tractusx.sde.edc.constants.EDCAssetConfigurableConstant;
 import org.eclipse.tractusx.sde.edc.entities.request.contractdefinition.Criterion;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
 import org.springframework.cache.annotation.CacheEvict;
@@ -39,7 +39,7 @@ public class PCFExchangeAssetUtils {
 	
 	private final EDCAssetLookUp edcAssetLookUp;
 	
-	private final EDCAssetConfigurableConstant edcAssetConfigurableConstant;
+	private final PCFAssetStaticPropertyHolder pcfAssetStaticPropertyHolder;
 	
 	@Cacheable(value = "bpn-pcfexchange", key = "#bpnNumber")
 	public List<QueryDataOfferModel> getPCFExchangeUrl(String bpnNumber) {
@@ -62,7 +62,8 @@ public class PCFExchangeAssetUtils {
 				Criterion.builder()
 				.operandLeft("'http://purl.org/dc/terms/type'.'@id'")
 				.operator("=")
-				.operandRight("https://w3id.org/catenax/taxonomy#"+edcAssetConfigurableConstant.getAssetPropTypePCFExchangeType())
+				.operandRight("https://w3id.org/catenax/taxonomy#"+pcfAssetStaticPropertyHolder.getAssetPropTypePCFExchangeType())
 				.build());
 	}
+
 }

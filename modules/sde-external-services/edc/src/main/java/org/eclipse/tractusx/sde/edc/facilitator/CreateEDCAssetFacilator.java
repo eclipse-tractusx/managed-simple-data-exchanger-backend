@@ -52,16 +52,16 @@ public class CreateEDCAssetFacilator extends AbstractEDCStepsHelper {
 
 		String assetId = assetEntryRequest.getId();
 
-		JsonNode accessPolicyDefinitionRequest = policyConstraintBuilderService.getAccessPolicy(assetId, policy);
+		JsonNode accessPolicyDefinitionRequest = policyConstraintBuilderService.getAccessPolicy(assetId, assetId, policy);
 		String accessPolicyUUId = accessPolicyDefinitionRequest.get("@id").asText();
 		edcGateway.createPolicyDefinition(accessPolicyDefinitionRequest);
 
-		JsonNode usagePolicyDefinitionRequest = policyConstraintBuilderService.getUsagePolicy(assetId, policy);
+		JsonNode usagePolicyDefinitionRequest = policyConstraintBuilderService.getUsagePolicy(assetId ,assetId, policy);
 		String usagePolicyUUId = usagePolicyDefinitionRequest.get("@id").asText();
 		edcGateway.createPolicyDefinition(usagePolicyDefinitionRequest);
 
 		ContractDefinitionRequest contractDefinitionRequest = contractFactory.getContractDefinitionRequest(assetId,
-				accessPolicyUUId, usagePolicyUUId);
+				assetId, accessPolicyUUId, usagePolicyUUId);
 
 		edcGateway.createContractDefinition(contractDefinitionRequest);
 
@@ -81,16 +81,16 @@ public class CreateEDCAssetFacilator extends AbstractEDCStepsHelper {
 
 		String assetId = assetEntryRequest.getId();
 
-		JsonNode accessPolicyDefinitionRequest = policyConstraintBuilderService.getAccessPolicy(assetId, policy);
+		JsonNode accessPolicyDefinitionRequest = policyConstraintBuilderService.getAccessPolicy(assetId, assetId, policy);
 		String accessPolicyUUId = accessPolicyDefinitionRequest.get("@id").asText();
 		edcGateway.updatePolicyDefinition(accessPolicyUUId, accessPolicyDefinitionRequest);
 
-		JsonNode usagePolicyDefinitionRequest = policyConstraintBuilderService.getUsagePolicy(assetId, policy);
+		JsonNode usagePolicyDefinitionRequest = policyConstraintBuilderService.getUsagePolicy(assetId, assetId, policy);
 		String usagePolicyUUId = usagePolicyDefinitionRequest.get("@id").asText();
 		edcGateway.updatePolicyDefinition(usagePolicyUUId, usagePolicyDefinitionRequest);
 
 		ContractDefinitionRequest contractDefinitionRequest = contractFactory.getContractDefinitionRequest(assetId,
-				accessPolicyUUId, usagePolicyUUId);
+				assetId, accessPolicyUUId, usagePolicyUUId);
 
 		edcGateway.updateContractDefinition(contractDefinitionRequest);
 

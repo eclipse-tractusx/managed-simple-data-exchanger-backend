@@ -257,13 +257,9 @@ public class LookUpDTTwin {
 			}
 		}
 		
-		List<QueryDataOfferModel> queryOnDataOffers = catalogResponseBuilder.queryOnDataOffers(connectorOfferUrl,
+		return catalogResponseBuilder.queryOnDataOffers(connectorOfferUrl,
 				queryDataOfferRequestKey.getRight(), 0, 1000, filterExpression);
-		
-		return queryOnDataOffers.stream().map(obj-> {
-				obj.setConnectorOfferUrl(queryDataOfferRequestKey.getLeft());
-				return obj;
-			}).toList();
+				
 	}
 
 	private String getSpecificKeyFromList(ShellDescriptorResponse shellDescriptorResponse, String key) {

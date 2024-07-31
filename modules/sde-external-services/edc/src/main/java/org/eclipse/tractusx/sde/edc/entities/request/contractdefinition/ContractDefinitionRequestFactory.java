@@ -29,7 +29,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ContractDefinitionRequestFactory {
 
-	public ContractDefinitionRequest getContractDefinitionRequest(String uuid, String accessPolicyId,
+	public ContractDefinitionRequest getContractDefinitionRequest(String uuid, String assetId, String accessPolicyId,
 			String usagePolicyId) {
 		
 		String submodelId = uuid;
@@ -42,7 +42,7 @@ public class ContractDefinitionRequestFactory {
 		criteria.add(Criterion.builder()
 				.operandLeft("https://w3id.org/edc/v0.0.1/ns/id")
 				.operator("=")
-				.operandRight(uuid)
+				.operandRight(assetId)
 				.build());
 		
 		return ContractDefinitionRequest.builder()

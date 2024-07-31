@@ -21,8 +21,12 @@
 
 package org.eclipse.tractusx.sde.edc.gateways.external;
 
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tractusx.sde.edc.api.EDCFeignClientApi;
 import org.eclipse.tractusx.sde.edc.entities.request.asset.AssetEntryRequest;
+import org.eclipse.tractusx.sde.edc.entities.request.businesspartnergroup.BusinessPartnerGroupRequest;
 import org.eclipse.tractusx.sde.edc.entities.request.contractdefinition.ContractDefinitionRequest;
 import org.eclipse.tractusx.sde.edc.exceptions.EDCGatewayException;
 import org.springframework.http.HttpStatus;
@@ -34,13 +38,15 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class EDCGateway {
 
 	private final EDCFeignClientApi edcFeignClientApi;
-
+	
 	public boolean assetExistsLookup(String id) {
 		try {
 			edcFeignClientApi.getAsset(id);
@@ -100,6 +106,19 @@ public class EDCGateway {
 		}
 	}
 
+	
+	public boolean policyExistsLookup(String policyId) {
+		try {
+			edcFeignClientApi.getPolicy(policyId);
+		} catch (FeignException e) {
+			if (e.status() == HttpStatus.NOT_FOUND.value()) {
+				return false;
+			}
+			throw e;
+		}
+		return true;
+	}
+	
 	@SneakyThrows
 	public JsonNode createPolicyDefinition(JsonNode request) {
 		try {
@@ -118,6 +137,19 @@ public class EDCGateway {
 		}
 	}
 
+	
+	public boolean contractDefinitionExistsLookup(String contractDefinitionId) {
+		try {
+			edcFeignClientApi.getContractDefination(contractDefinitionId);
+		} catch (FeignException e) {
+			if (e.status() == HttpStatus.NOT_FOUND.value()) {
+				return false;
+			}
+			throw e;
+		}
+		return true;
+	}
+	
 	public String createContractDefinition(ContractDefinitionRequest request) {
 		try {
 			return edcFeignClientApi.createContractDefination(request);
@@ -131,6 +163,36 @@ public class EDCGateway {
 			edcFeignClientApi.updateContractDefination(request);
 		} catch (FeignException e) {
 			throw new EDCGatewayException(e.getMessage());
+		}
+	}
+	
+	public void addBPNintoPCFBusinessPartnerGroup(String bpnNumber, String groupName) {
+		
+		try {
+			if (StringUtils.isNotBlank(bpnNumber)) {
+				edcFeignClientApi.getBusinessPartnerGroups(bpnNumber);
+			}else {
+				log.info("BPN found empty not adding in business partner group {}", groupName);
+			}
+		} catch (FeignException e) {
+			log.info("BPN not exist in group so adding business partner group {}, {}", groupName, e.getMessage());
+			if (e.status() == HttpStatus.NOT_FOUND.value()) {
+				edcFeignClientApi.createBusinessPartnerGroups(
+						BusinessPartnerGroupRequest.builder().id(bpnNumber).groups(List.of(groupName)).build());
+				
+			}
+		}
+	}
+
+	public void deleteBPNfromPCFBusinessPartnerGroup(String bpnNumber, String groupName) {
+		try {
+			if (StringUtils.isNotBlank(bpnNumber)) {
+				edcFeignClientApi.deleteBusinessPartnerGroups(bpnNumber);
+			}else {
+				log.info("BPN found empty not going to delete from business partner group {}", groupName);
+			}
+		} catch (FeignException e) {
+			log.error("Unable to perform delete bpn {} from business partner group {}, {}", bpnNumber, groupName, e.getMessage());
 		}
 	}
 }

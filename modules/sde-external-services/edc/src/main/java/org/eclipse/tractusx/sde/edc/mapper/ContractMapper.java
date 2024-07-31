@@ -20,6 +20,7 @@
 
 package org.eclipse.tractusx.sde.edc.mapper;
 
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.tractusx.sde.edc.entities.request.policies.ActionRequest;
@@ -38,7 +39,7 @@ public class ContractMapper {
 
 	@SneakyThrows
 	public ContractNegotiations prepareContractNegotiations(String providerProtocolUrl, String offerId, String assetId,
-			String provider, ActionRequest action) {
+			String provider, List<ActionRequest> action) {
 
 		PolicyRequest policy = contractPolicyMapper.preparePolicy(assetId, action);
 		policy.setId(offerId);

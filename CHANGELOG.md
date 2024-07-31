@@ -9,6 +9,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Security config changes.
 - Updated changelog and dependency file.
 - Dependencies jar versions updated. 
+- PCF exchange changes for 2408 version.
+
+### Fixed
+- Dependabot bump jar version fixed.
+- Trivy high security issue fixed for CVE-2024-34750.
 
 ### Fixed
 - Dependabot bump jar version fixed.

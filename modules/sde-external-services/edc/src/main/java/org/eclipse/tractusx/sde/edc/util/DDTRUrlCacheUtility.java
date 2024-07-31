@@ -22,6 +22,7 @@ package org.eclipse.tractusx.sde.edc.util;
 
 import java.util.List;
 
+import org.eclipse.tractusx.sde.common.utils.LogUtil;
 import org.eclipse.tractusx.sde.edc.constants.EDCAssetConfigurableConstant;
 import org.eclipse.tractusx.sde.edc.entities.request.contractdefinition.Criterion;
 import org.eclipse.tractusx.sde.edc.model.response.QueryDataOfferModel;
@@ -48,7 +49,7 @@ public class DDTRUrlCacheUtility {
 
 	@CacheEvict(value = "bpn-ddtr", key = "#bpnNumber")
 	public void removeDDTRUrlCache(String bpnNumber) {
-		log.info("Cleared '" + bpnNumber + "' bpn-ddtr cache");
+		log.info(LogUtil.encode("Cleared '" + bpnNumber + "' bpn-ddtr cache"));
 	}
 
 	@CacheEvict(value = "bpn-ddtr", allEntries = true)
